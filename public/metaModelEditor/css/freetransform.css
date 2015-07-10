@@ -1,0 +1,93 @@
+.free-transform .rotate {
+    display: none;
+}
+
+.free-transform .resize {
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-width: 2px;
+}
+
+.free-transform  > div.in-operation,
+.free-transform .resize[data-position]:hover {
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    z-index: 9;
+}
+
+.free-transform .resize[data-position="top-left"] {
+    border-radius: 0px 0px 5px 0px; 
+    top: -1px;
+    left: -1px;
+    z-index: 3;
+}
+
+.free-transform .resize[data-position="top-right"] {
+    border-radius: 0px 0px 0px 5px; 
+    top: -1px;
+    right: -1px;
+    z-index: 2;
+}
+
+.free-transform .resize[data-position="bottom-left"] {
+    border-radius: 0px 5px 0px 0px; 
+    bottom: -1px;
+    left: -1px;
+    z-index: 2;
+}
+.free-transform .resize[data-position="bottom-right"] {
+    border-radius: 5px 0px 0px 0px; 
+    bottom: -1px;
+    right: -1px;
+    z-index: 3;
+}
+.free-transform .resize[data-position="top"] {
+    border-radius: 0px 0px 5px 5px;
+    top: -1px;
+    left: 50%;
+    margin-left: -5px;
+    z-index: 1;
+}
+
+.free-transform .resize[data-position="bottom"] {
+    border-radius: 5px 5px 0px 0px;
+    bottom: -1px;
+    left: 50%;
+    margin-left: -5px;
+    z-index: 1;
+}
+.free-transform .resize[data-position="left"] {
+    border-radius: 0px 5px 5px 0px;
+    left: -1px;
+    top: 50%;
+    margin-top: -5px;
+    z-index: 1;
+}
+.free-transform .resize[data-position="right"] {
+    border-radius: 5px 0px 0px 5px;
+    right: -1px;
+    top: 50%;
+    margin-top: -5px;
+    z-index: 1;
+}
+
+.free-transform .resize[data-position="bottom"]:hover,
+.free-transform .resize[data-position="top"]:hover,
+.free-transform .resize[data-position="bottom"].in-operation,
+.free-transform .resize[data-position="top"].in-operation {
+    margin-left: -7px;
+}
+
+.free-transform .resize[data-position="left"]:hover,
+.free-transform .resize[data-position="right"]:hover,
+.free-transform .resize[data-position="left"].in-operation,
+.free-transform .resize[data-position="right"].in-operation {
+    margin-top: -7px;
+}
+
+.free-transform[data-type="devs.Atomic"] .resize[data-position="left"],
+.free-transform[data-type="devs.Atomic"]  .resize[data-position="right"] {
+    display: none;
+}

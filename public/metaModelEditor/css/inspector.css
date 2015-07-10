@@ -1,0 +1,102 @@
+.inspector {
+    position: relative;
+    overflow: auto;
+    width: 100%;
+}
+
+.inspector .btn-list-del {
+    margin-right: 5px;
+}
+
+.inspector-container-inner {
+    padding: 5px;
+}
+
+.inspector .group {
+    overflow: hidden;
+}
+
+.inspector .group.closed {
+    height: 42px;
+    max-height: 42px;
+}
+
+.inspector .group > .group-label {
+    cursor: pointer;
+}
+
+.inspector .group > .group-label:before {
+    content: '';
+    width: 0;
+    height: 0;
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 5px;
+    position: relative;
+    top: 5px;
+    border: 5px solid transparent;
+    border-top-color: #2c3e50;
+}
+
+.inspector .group.closed > .group-label:before {
+    top: 2px;
+    left: 2px;
+    border: 5px solid transparent;
+    border-left-color: #2c3e50;
+}
+
+.link-tools .tool-options {
+    display: block;
+}
+
+/* Toggle */
+
+.custom-span-list-collapse {
+    overflow: hidden;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.inspector .list-item > .field > label {
+    display: none;
+}
+
+.inspector .hidden {
+    display: none;
+}
+
+.inspector-container {
+    overflow: auto;
+    margin: 0;
+}
+
+.inspector .field, .inspector .list-item {
+    padding: 4px;
+    margin: 2px;
+}
+
+.inspector label {
+    font-weight: normal;
+}
+
+@media screen and (min-width: 0\0
+) {
+    /* IE9 & IE10 */
+    .inspector input[type="range"] {
+        height: 20px;
+        line-height: 20px;
+    }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* IE10 only */
+    .inspector .group > .field > form {
+        height: 60px;
+    }
+
+    .inspector input[type="range"] {
+        height: 10px;
+        border-style: hidden;
+        box-shadow: none;
+    }
+}

@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "Attribute.js",
+  "sourceRoot": "",
+  "sources": [
+    "Attribute.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,EAAM,MAAM,CAAC;AAEE,IAAA,mBAAC,QAAD,EAAY,YAAZ,GAAA;AAA4B,MAA3B,IAAC,CAAA,WAAD,QAA2B,CAAA;AAAA,MAAhB,IAAC,CAAA,eAAD,YAAgB,CAA5B;IAAA,CAAb;;AAAA,wBAGA,WAAA,GAAa,SAAA,GAAA;aACX,IAAC,CAAA,SADU;IAAA,CAHb,CAAA;;AAAA,wBAOA,eAAA,GAAiB,SAAA,GAAA;aACf,IAAC,CAAA,aADc;IAAA,CAPjB,CAAA;;qBAAA;;MAFF,CAAA;AAAA"
+}
