@@ -21,6 +21,14 @@ case class SecureSocialUser(uuid: UUID, admin: Boolean = false, profile: BasicPr
 /** User Service Object implements SecureSocial Users */
 object MongoDbUserService extends UserService[SecureSocialUser]{
 
+
+  /** Salat Context **/
+  implicit val ctx =  new Context{
+    val name ="Custom_Salat_Context"
+  }
+  ctx.registerClassLoader(Play.classloader(Play.current))
+
+
   import com.mongodb.casbah.commons.conversions.scala._
   RegisterJodaTimeConversionHelpers()
 
@@ -185,17 +193,9 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
         coll.update(user, update)
         true
 
-      case None =>
-        false
+      case None => false
     }
   }
-
-
-  /** Salat Context **/
-  implicit val ctx =  new Context{
-    val name ="Custom_Salat_Context"
-  }
-  ctx.registerClassLoader(Play.classloader(Play.current))
 
   /** Implicit Salat Conversions */
   implicit def User2DBObj(u: SecureSocialUser) : DBObject = grater[SecureSocialUser].asDBObject(u)

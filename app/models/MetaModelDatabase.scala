@@ -1,6 +1,6 @@
 package models
 
-import com.mongodb.ServerAddress
+import com.mongodb.{DBObject, ServerAddress}
 import com.mongodb.casbah._
 import com.mongodb.casbah.commons._
 import com.novus.salat._
@@ -9,7 +9,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 /** Represents a metamodel*/
-case class MetaModel(json: String, title: String, uuid: String, userUuid: String)
+case class MetaModel(model: String, name: String, uuid: String, userUuid: String)
 
 object MetaModelDatabase {
   val log = Logger(this getClass() getName())
@@ -17,6 +17,12 @@ object MetaModelDatabase {
   val mongoClient = MongoClient(new ServerAddress(AppConfig.mongoDbIp))
   val db = mongoClient(AppConfig.mongoDbName)
   val coll = db("MetaModels")
+
+  /** Salat Context **/
+  implicit val ctx =  new Context{
+    val name ="MetaModelCtx"
+  }
+  ctx.registerClassLoader(Play.classloader(Play.current))
 
   /** upserts the metamodel in the database */
   def saveModel(model: MetaModel) = Future(
@@ -30,7 +36,7 @@ object MetaModelDatabase {
   /** loads Model with uuid */
   def loadModel(uuid: String) : Future[Option[MetaModel]] = Future{
       coll.find(MongoDBObject("uuid" -> uuid)).next() match {
-        case x: MongoDBObject => Some(grater[MetaModel].asObject(x))
+        case x: DBObject  => Some(grater[MetaModel].asObject(new MongoDBObject(x)))
         case _ => None
       }
   }
@@ -39,13 +45,7 @@ object MetaModelDatabase {
   def modelsOfUser(userUuid: String) : Future[List[MetaModel]] = Future{
     coll
       .find(MongoDBObject("userUuid" -> userUuid))
-      .map(x =>  grater[MetaModel].asObject(x)).toList
+      .map(x =>  grater[MetaModel].asObject(new MongoDBObject(x))).toList
   }
-
-  /** Salat Context **/
-  implicit val ctx =  new Context{
-    val name ="MetaModelCtx"
-  }
-  ctx.registerClassLoader(Play.classloader(Play.current))
 }
 
