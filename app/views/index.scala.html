@@ -1,4 +1,4 @@
-@()
+@( user: Option[SecureSocialUser])
 
 <!DOCTYPE html>
 <head>
@@ -10,3 +10,32 @@
         <li><a href="@routes.App.metaModelEditor">Meta Model Editor</a></li>
     </ul>
 </body>
+@main("Overview", user) {
+
+    <div class="row">
+        <div class="lead col-xs-10 col-xs-offset-1">
+            <p>Hello,
+                @user match {
+                    case Some(u) => { @u.profile.fullName! }
+                    case _ => { Guest! }
+            }
+            </p>
+        </div>
+    </div>
+
+
+        <div class="row">
+            <div class="lead col-xs-10 col-xs-offset-1">
+
+                <div class="tile lead col-xs-12 col-md-4">
+                    <div class="tileBorder">
+                        <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
+                        <div class="transparentBackground"></div>
+                        <div class="linkText">Meta-Model-Editor</div>
+                        <a class="ecoreLink" href="@routes.App.metaModelEditor"></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+}

@@ -11,6 +11,7 @@ import models.AppConfig._
 import play.api.{Logger, Play}
 import securesocial.core._
 import securesocial.core.providers.MailToken
+import securesocial.core.providers.utils.PasswordHasher
 import securesocial.core.services.{SaveMode, UserService}
 
 import scala.concurrent.Future
@@ -34,6 +35,43 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
   val db = mongoClient(MONGO_DB_NAME)
   val coll= db(MONGO_USER_DB_NAME)
   val tokenColl = db(MONGO_TOKENS_DB_NAME)
+
+
+  /** Create test users if userdb is empty */
+  if(getNumberOfRegisteredUsers==0) {
+
+    val testUser = new BasicProfile(
+      providerId = "userpass",
+      userId = "example@htwg-konstanz.de",
+      firstName = Some("Example"),
+      lastName = Some("Example"),
+      fullName = Some("Testuser"),
+      email = Some("example@htwg-konstanz.de"),
+      avatarUrl = None,
+      authMethod = AuthenticationMethod.UserPassword,
+      oAuth1Info = None,
+      oAuth2Info = None,
+      passwordInfo = Some(new PasswordHasher.Default().hash("supersecretpassword"))
+    )
+
+    MongoDbUserService.save(profile = testUser, admin = false, mode = SaveMode.PasswordChange)
+    // admin@htwg-konstanz.de:admin
+    val admin = new BasicProfile(
+      providerId = "userpass",
+      userId = "admin@htwg-konstanz.de",
+      firstName = Some("Admin"),
+      lastName = Some("Admin"),
+      fullName = Some("Adminuser"),
+      email = Some("admin@htwg-konstanz.de"),
+      avatarUrl = None,
+      authMethod = AuthenticationMethod.UserPassword,
+      oAuth1Info = None,
+      oAuth2Info = None,
+      passwordInfo = Some(new PasswordHasher.Default().hash("supersecretpassword"))
+    )
+    MongoDbUserService.save(profile = admin, admin = true, mode = SaveMode.PasswordChange)
+  }
+
 
 
   def getNumberOfRegisteredUsers: Int = coll.count()
@@ -122,7 +160,6 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
         updated
     }
   )
-
 
   def save(profile: BasicProfile, admin: Boolean,  mode: SaveMode): Future[SecureSocialUser] =  Future.successful(
     coll.findOne(MongoDBObject("profile.userId" -> profile.userId, "profile.providerId" -> profile.providerId)) match {
