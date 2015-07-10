@@ -110,7 +110,7 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
       case None =>
         log.debug(profile.toString)
         log.error("save mit bool")
-        val created = new SecureSocialUser(UUID.randomUUID(), false, profile)
+        val created = new SecureSocialUser(UUID.randomUUID(), admin = false, profile = profile)
         coll.save(created)
         created
 
@@ -142,13 +142,9 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
     }
   )
 
-  def makeAdmin(email: String): Boolean = {
-    setAdminStatus(email, true)
-  }
+  def makeAdmin(email: String): Boolean = setAdminStatus(email = email, admin = true)
 
-  def revokeAdmin(email: String): Boolean = {
-    setAdminStatus(email, false)
-  }
+  def revokeAdmin(email: String): Boolean = setAdminStatus(email = email, admin = false)
 
   def setAdminStatus(email: String, admin: Boolean): Boolean = {
     coll.findOne(MongoDBObject("profile.userId" -> email)) match {
