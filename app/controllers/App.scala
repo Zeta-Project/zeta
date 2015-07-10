@@ -11,7 +11,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   val log = Logger(this getClass() getName())
 
   def index() = SecuredAction { implicit request =>
-    Ok(views.html.index.render())
+    Ok(views.html.index.render(Some(request.user)))
   }
 
   def metaModelEditor() = SecuredAction { implicit request =>
