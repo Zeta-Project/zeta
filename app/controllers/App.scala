@@ -17,4 +17,9 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   def metaModelEditor() = SecuredAction { implicit request =>
     Ok(views.html.metaModelEditor.render())
   }
+
+  def saveMetaModel() = SecuredAction { implicit request =>
+    // TODO
+    Ok("success")
+  }
 }

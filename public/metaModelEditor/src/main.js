@@ -424,6 +424,13 @@ var Rappid = Backbone.Router.extend({
                 var metaModelWindow = window.open("", "", "width=800,height=600");
                 metaModelWindow.document.write('<pre>' + metaModel.toString(true) + '</pre>');
                 metaModelWindow.document.title = 'Exported Meta Model';
+
+                // Send exported Metamodel to server
+                var metaModelName = metaModelWindow.prompt('Enter a name for this meta model and click "ok" to save it. Click "cancel" if you don\'t want to save it.');
+                if (metaModelName) {
+                    this.saveMetaModel(metaModel.getMetaModel(), metaModelName);
+                }
+
             } else {
                 var errorMessage = "";
                 metaModel.getMessages().forEach(function (message) {
@@ -432,6 +439,23 @@ var Rappid = Backbone.Router.extend({
                 alert(errorMessage);
             }
         }, this));
+    },
+
+    saveMetaModel: function (metaModel, metaModelName) {
+        $.ajax({
+            type: 'POST',
+            url: '/saveMetaModel',
+            data: {
+                name: metaModelName,
+                data: metaModel
+            },
+            success: function (data, textStatus, jqXHR) {
+                alert("Saved meta model: " + data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Error saving meta model: " + errorThrown);
+            }
+        });
     },
 
     initializeToolbarTooltips: function () {
