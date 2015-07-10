@@ -1,0 +1,38 @@
+/*! Rappid - the diagramming toolkit
+
+Copyright (c) 2014 client IO
+
+ 2014-04-14 
+
+
+This Source Code Form is subject to the terms of the Rappid Academic License
+, v. 1.0. If a copy of the Rappid License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/rappid_academic_v1.txt
+ or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+
+
+.selection {
+   position: absolute;
+   background-color: #3498DB;
+   opacity: .3;
+   border: 2px solid #2980B9;
+   overflow: visible;
+}
+
+.selection.selected {
+   background-color: transparent;
+   border: none;
+   opacity: 1;
+   cursor: move;
+   /* Position the selection rectangle static so that the selection-boxe are contained within
+     the paper container (which is supposed to be positioned relative). The height 0 !important
+     makes sure the selection rectangle is not-visible, only the selection-boxes inside it (thanks to overflow: visible). */
+   position: static;
+   height: 0 !important;
+}
+
+.selection-box {
+   position: absolute;
+   border: 1px solid black;
+}
+

@@ -1,0 +1,68 @@
+.toolbar-container {
+    width: 100%;
+    text-align: center;
+}
+
+.toolbar-container button:focus {
+    outline: none;
+}
+
+.toolbar-container .btn-group {
+    z-index: 2;
+    padding: 1px 0 0 0;
+}
+
+.toolbar-gridsize {
+    display: inline;
+    margin-left : -5px;
+    color : black;
+    width: 155px;
+    height: 34px;
+}
+
+.toolbar-gridsize label {
+    font-weight: normal;
+    margin-right: 5px;
+}
+
+.toolbar-gridsize input[type=range], .toolbar-gridsize output {
+    display: inline;
+}
+
+.toolbar-container output {
+    font-size: .8em;
+}
+
+.toolbar-container input[type="range"] {
+    width: 80px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+@media screen and (min-width: 0\0
+) {
+    /* IE9 & IE10 */
+    .toolbar-container input[type="range"] {
+        height: 20px;
+        text-align: right;
+    }
+
+    #output-gridsize {
+        display: none;
+    }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* IE10 only */
+    .toolbar-container input[type="range"] {
+        height: 5px;
+        border-style: hidden;
+        box-shadow: none;
+        position: absolute;
+    }
+
+    #output-gridsize {
+        margin-left: 90px;
+        display: inline;
+    }
+}

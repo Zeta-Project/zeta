@@ -1,0 +1,110 @@
+/*! Rappid - the diagramming toolkit
+
+Copyright (c) 2014 client IO
+
+ 2014-04-14 
+
+
+This Source Code Form is subject to the terms of the Rappid Academic License
+, v. 1.0. If a copy of the Rappid License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/rappid_academic_v1.txt
+ or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+
+
+.free-transform {
+   position: absolute;
+   pointer-events: none;
+   border: 1px dashed black;
+   border-radius: 5px;
+   -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+.free-transform > div {
+    position: absolute;
+    pointer-events: auto;
+    background-color: #c0392b;
+    border: 1px solid black;
+}
+
+.free-transform > div:hover {
+    background-color: #e74c3c;
+}
+
+.free-transform .resize {
+    border-radius: 6px;
+    width: 8px;
+    height: 8px;
+}
+
+.free-transform .resize[data-position="top-left"] {
+    top: -6px;
+    left: -6px;
+}
+.free-transform .resize[data-position="top-right"] {
+    top: -6px;
+    right: -6px;
+}
+.free-transform .resize[data-position="bottom-left"] {
+    bottom: -6px;
+    left: -6px;
+}
+.free-transform .resize[data-position="bottom-right"] {
+    bottom: -6px;
+    right: -6px;
+}
+.free-transform .resize[data-position="top"] {
+    top: -6px;
+    left: 50%;
+    margin-left: -6px;
+}
+.free-transform .resize[data-position="bottom"] {
+    bottom: -6px;
+    left: 50%;
+    margin-left: -6px;
+}
+.free-transform .resize[data-position="left"] {
+    left: -6px;
+    top: 50%;
+    margin-top: -8px;
+}
+.free-transform .resize[data-position="right"] {
+    right: -6px;
+    top: 50%;
+    margin-top: -8px;
+}
+
+.free-transform .resize.n { cursor: n-resize; }
+.free-transform .resize.s { cursor: s-resize; }
+.free-transform .resize.e { cursor: e-resize; }
+.free-transform .resize.w { cursor: w-resize; }
+.free-transform .resize.ne { cursor: ne-resize; }
+.free-transform .resize.nw { cursor: nw-resize; }
+.free-transform .resize.se { cursor: se-resize; }
+.free-transform .resize.sw { cursor: sw-resize; }
+
+.free-transform .rotate {
+    border-radius: 6px;
+    width: 10px;
+    height: 10px;
+    top: -20px;
+    left: -20px;
+    cursor: pointer;
+}
+
+.free-transform.in-operation {
+    border-style: hidden;
+}
+
+.free-transform.in-operation > div{
+    display: none;
+}
+
+.free-transform  > div.in-operation {
+    display: block;
+    background-color: #e74c3c;
+}
