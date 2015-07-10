@@ -7,8 +7,7 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
 import com.novus.salat._
-import models.AppConfig._
-import play.api.{Logger, Play}
+import play.api.{Play, Logger}
 import securesocial.core._
 import securesocial.core.providers.MailToken
 import securesocial.core.providers.utils.PasswordHasher
@@ -19,7 +18,6 @@ import scala.concurrent.Future
 /** Extend this to store custom info for users */
 case class SecureSocialUser(uuid: UUID, admin: Boolean = false, profile: BasicProfile)
 
-
 /** User Service Object implements SecureSocial Users */
 object MongoDbUserService extends UserService[SecureSocialUser]{
 
@@ -28,14 +26,10 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
 
   val log = Logger(this getClass() getName())
 
-
-  val server = new ServerAddress(MONGO_URL, MONGO_PORT)
- // val credentials = MongoCredential.createMongoCRCredential(MONGO_DB_USER, MONGO_DB_NAME, MONGO_DB_PWD.toCharArray)
-  val mongoClient = MongoClient(server)//, List(credentials))
-  val db = mongoClient(MONGO_DB_NAME)
-  val coll= db(MONGO_USER_DB_NAME)
-  val tokenColl = db(MONGO_TOKENS_DB_NAME)
-
+  val mongoClient = MongoClient(new ServerAddress(AppConfig.mongoDbIp))
+  val db = mongoClient(AppConfig.mongoDbName)
+  val coll= db("Users")
+  val tokenColl = db("Tokens")
 
   /** Create test users if userdb is empty */
   if(getNumberOfRegisteredUsers==0) {
@@ -196,12 +190,14 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
     }
   }
 
-  /** Salat conversions */
-  implicit val ctx = new Context{
+
+  /** Salat Context **/
+  implicit val ctx =  new Context{
     val name ="Custom_Salat_Context"
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
+  /** Implicit Salat Conversions */
   implicit def User2DBObj(u: SecureSocialUser) : DBObject = grater[SecureSocialUser].asDBObject(u)
   implicit def DBObj2User(obj: DBObject) : SecureSocialUser = grater[SecureSocialUser].asObject(obj)
   implicit def MDBObj2User(obj: MongoDBObject) : SecureSocialUser = grater[SecureSocialUser].asObject(obj)
