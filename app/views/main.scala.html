@@ -1,0 +1,17 @@
+@(title: String, user: Option[SecureSocialUser])(content: Html)
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf8"/>
+		<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/bootstrap/bootstrap.min.css")">
+	    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
+		<link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+		<script src="@routes.Assets.at("javascripts/jquery.min.js")"></script>
+		<script src="@routes.Assets.at("javascripts/bootstrap/bootstrap.min.js")"></script>
+	</head>
+	<body>
+		@navBar(user)
+		<div>@content</div>
+	</body>
+</html>

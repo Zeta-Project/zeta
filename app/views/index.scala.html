@@ -1,4 +1,31 @@
-@()
+@( user: Option[SecureSocialUser])
+
+@main("New Diagram", user) {
+
+    <div class="row">
+        <div class="lead col-xs-10 col-xs-offset-1">
+            <p>Hello,
+                @user match {
+                    case Some(u) => { @u.profile.fullName! }
+                    case _ => { Guest! }
+            }
+            </p>
+        </div>
+    </div>
 
 
-hello
+        <div class="row">
+            <div class="lead col-xs-10 col-xs-offset-1">
+
+                <div class="tile lead col-xs-12 col-md-4">
+                    <div class="tileBorder">
+                        <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
+                        <div class="transparentBackground"></div>
+                        <div class="linkText">Meta-Model-Editor</div>
+                        <a class="ecoreLink" href=""></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+}

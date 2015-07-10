@@ -15,8 +15,7 @@ libraryDependencies ++= Seq(
   ws,
   "org.mongodb" %% "casbah" % "2.7.3",
   "com.novus" %% "salat" % "1.9.9",
-  "ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
-  "com.escalatesoft.subcut" %% "subcut" % "2.1"
+  "ws.securesocial" %% "securesocial" % "master-SNAPSHOT"
 )
 
 unmanagedResourceDirectories in Test <+=  baseDirectory ( _ /"target/web/public/test" )  
