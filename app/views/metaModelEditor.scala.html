@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Meta Model Editor</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.ui.freeTransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.ui.selectionView.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.ui.paperScroller.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.format.print.css")">
+
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/layout.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/paper.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/inspector.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/stencil.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/halo.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/selection.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/toolbar.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/freetransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/style.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/linkTypeSelector.css")">
+
+
+</head>
+<body>
+
+<div class="toolbar-container panel panel-default">
+
+    <div class="btn-group">
+        <button id="btn-mmedit" class="btn btn-primary">
+            <!--
+                This button could be used as a dropdown-menu for actions like creating a new model,
+                opening an existing model, information about the editor etc.
+            -->
+            Meta Model Editor
+        </button>
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-undo" class="btn btn-default" data-tooltip="Undo last Operation">
+            <span class="glyphicon glyphicon-share-alt icon-flipped"></span>
+        </button>
+        <button id="btn-redo" class="btn btn-default" data-tooltip="Redo">
+            <span class="glyphicon glyphicon-share-alt"></span>
+        </button>
+        <button id="btn-clear" class="btn btn-default" data-tooltip="Clear Paper">
+            <span class="glyphicon glyphicon-trash"></span>
+        </button>
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-zoom-in" class="btn btn-default" data-tooltip="Zoom In">
+            <span class="glyphicon glyphicon-zoom-in"></span>
+        </button>
+        <button id="btn-zoom-out" class="btn btn-default" data-tooltip="Zoom Out">
+            <span class="glyphicon glyphicon-zoom-out"></span>
+        </button>
+        <button id="btn-fullscreen" class="btn btn-default" data-tooltip="Toggle Fullscreen Mode">
+            <span class="glyphicon glyphicon-fullscreen"></span>
+        </button>
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-to-front" class="btn btn-default" data-tooltip="Bring current Element to Front">
+            To Front
+        </button>
+        <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
+            To Back
+        </button>
+        <div class="toolbar-gridsize btn btn-default" id="btn-gridsize" data-tooltip="Change Grid Size">
+            <label for="input-gridsize">Grid</label>
+            <input type="range" value="10" min="1" max="50" step="1" id="input-gridsize">
+            <output for="input-gridsize" id="output-gridsize">10</output>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button id="btn-print" class="btn btn-default" data-tooltip="Open Print Dialog for current Model">
+            <span class="glyphicon glyphicon-print"></span>
+        </button>
+        <button id="btn-export-mm" class="btn btn-default" data-tooltip="Export current Model as JSON">
+            <span class="glyphicon glyphicon-export"></span>
+        </button>
+        <button id="btn-svg" class="btn btn-default" data-tooltip="Open current Model as SVG in a new Window">
+            SVG
+        </button>
+        <button id="btn-png" class="btn btn-default" data-tooltip="Open current Model as PNG in a new Window">
+            PNG
+        </button>
+    </div>
+
+</div>
+
+<div class="stencil-container panel panel-default">
+    <div class="panel-heading">
+        <strong>Stencil</strong>
+    </div>
+</div>
+
+<div class="paper-container"></div>
+
+<div class="inspector-container panel panel-default">
+    <div class="panel-heading">
+        <strong>Inspector</strong>
+    </div>
+    <div class="inspector-container-inner panel-body"></div>
+</div>
+
+<div id="contextMenuContainer"></div>
+
+<script src="@routes.Assets.at("metaModelEditor/ext/mCoreUtil.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/edgeValidator.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/linkTypeSelector.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/mEnum.js")"></script>
+
+<script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Constants.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/ExportedMetaModel.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Attribute.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/ValidationResult.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Graph.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Exporter.js")"></script>
+
+
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.js")"></script>
+
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.shapes.uml.js")"></script>
+
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.halo.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.dia.freeTransform.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.freeTransform.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.inspector.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.selectionView.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.clipboard.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.stencil.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.paperScroller.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.tooltip.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.format.svg.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.format.raster.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.format.print.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.dia.command.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.dia.validator.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.layout.ForceDirected.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.layout.GridLayout.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/dist/joint.layout.DirectedGraph.js")"></script>
+
+<script src="@routes.Assets.at("metaModelEditor/lib/keyboard.js")"></script>
+
+<script src="@routes.Assets.at("metaModelEditor/src/inspector.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/src/stencil.js")"></script>
+<script src="@routes.Assets.at("metaModelEditor/src/main.js")"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+<!--[if IE 9]>
+<script src="./lib/base64.js"></script>
+<script type="text/javascript">
+    window.btoa = base64.encode;
+    document.onselectstart = function () {
+        return false;
+    };
+</script>
+<![endif]-->
+
+<script type="text/javascript">
+    var app = new Rappid();
+    Backbone.history.start();
+</script>
+
+</body>
+</html>
