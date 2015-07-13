@@ -20,6 +20,10 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     Ok(views.html.metaModelEditor.render())
   }
 
+  def modelValidator() = SecuredAction { implicit request =>
+    Ok(views.html.modelValidator.render())
+  }
+
   def saveMetaModel() = SecuredAction { implicit request =>
     request.body.asJson match {
       case None =>
