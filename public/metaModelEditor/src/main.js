@@ -445,10 +445,11 @@ var Rappid = Backbone.Router.extend({
         $.ajax({
             type: 'POST',
             url: '/saveMetaModel',
-            data: {
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({
                 name: metaModelName,
                 data: metaModel
-            },
+            }),
             success: function (data, textStatus, jqXHR) {
                 alert("Saved meta model: " + data);
             },

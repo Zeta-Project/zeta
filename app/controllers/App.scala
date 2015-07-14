@@ -4,6 +4,7 @@ import java.util.UUID
 
 import models._
 import play.api.Logger
+import play.api.libs.json.JsValue
 import securesocial.core.RuntimeEnvironment
 
 class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
@@ -25,18 +26,17 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   }
 
   def saveMetaModel() = SecuredAction { implicit request =>
-    request.body.asJson match {
-      case None =>
-        BadRequest("No Body Supplied")
+    println(request.body.toString)
+    request.body.asJson match{
       case Some(json) =>
-        MetaModelDatabase.saveModel(
-          new MetaModel(
-            model = (json \ "data").as[String],
-            name = (json \ "name").as[String],
-            uuid = UUID.randomUUID().toString,
-            userUuid = request.user.uuid.toString
-          ))
-        Ok("Success.")
+        MetaModelDatabase.saveModel(new MetaModel(
+          model = (json \ "data").as[JsValue].toString(),
+          name = (json \ "name").as[String],
+          uuid = UUID.randomUUID().toString,
+          userUuid = request.user.uuid.toString))
+        Ok("Saved.")
+      case _ =>
+        BadRequest("No valid Json Supplied.")
     }
   }
 }
