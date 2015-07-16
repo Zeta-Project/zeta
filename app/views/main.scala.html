@@ -4,11 +4,16 @@
 <html>
 	<head>
 		<meta charset="utf8"/>
-		<link rel="stylesheet" type="text/css" href="@routes.Assets.at("deps/css/bootstrap.min.css")">
 	    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
-		<link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-		<script src="@routes.Assets.at("deps/javascripts/jquery-2.1.4.min.js")"></script>
-		<script src="@routes.Assets.at("deps/javascripts/bootstrap.min.js")"></script>
+        <link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
+
+        <script type="text/javascript" src="@routes.Assets.at("lib/webcomponentsjs/webcomponents.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+
 	</head>
 	<body>
 		@navBar(user)
