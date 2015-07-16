@@ -23,6 +23,7 @@ object Global extends play.api.GlobalSettings {
     }.map {
       _.asInstanceOf[Constructor[A]].newInstance(UserServiceRuntimeEnv)
     }
+
     instance.getOrElse(super.getControllerInstance(controllerClass))
   }
 
