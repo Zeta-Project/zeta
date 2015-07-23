@@ -14,6 +14,7 @@ lazy val server = (project in file("server")).settings(
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.2.8",
+    "com.lihaoyi" %% "upickle" % "0.3.4",
     "ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "org.webjars" %% "webjars-play" % "2.3.0",
@@ -37,7 +38,7 @@ lazy val client = (project in file("client")).settings(
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
     "com.lihaoyi" %%% "scalarx" % "0.2.8",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-    "com.lihaoyi" %%% "upickle" % "0.2.8"
+    "com.lihaoyi" %%% "upickle" % "0.3.4"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)
