@@ -1,0 +1,65 @@
+/*! Rappid - the diagramming toolkit
+
+Copyright (c) 2014 client IO
+
+ 2014-04-14 
+
+
+This Source Code Form is subject to the terms of the Rappid Academic License
+, v. 1.0. If a copy of the Rappid License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/rappid_academic_v1.txt
+ or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+
+
+@media print {
+
+    @page {
+        margin: 5mm;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body:before {
+        content: 'JointJS';
+        font-size: 15mm;
+        position: absolute;
+        top: 5mm;
+        right: 5mm;
+        z-index: 100000;
+    }
+
+    .printarea {
+        left: 0 !important;
+        top: 0 !important;
+        background: none !important;
+        border: none !important;
+        margin: 0mm; !important;
+        padding: 0mm; !important;
+        overflow: visible; !important;
+        z-index: 99999;
+    }
+
+    .printarea > *:not(svg) {
+        display: none;
+    }
+}
+
+@media print and (orientation:landscape) {
+
+    .printarea.a4 {
+        width: 270mm !important;
+        height: 168mm !important;
+    }
+
+}
+
+@media print and (orientation:portrait) {
+
+    .printarea.a4 {
+        width: 200mm !important;
+        height: 232mm !important;
+    }
+}

@@ -1,0 +1,286 @@
+/*! Rappid - the diagramming toolkit
+
+Copyright (c) 2014 client IO
+
+ 2014-04-14 
+
+
+This Source Code Form is subject to the terms of the Rappid Academic License
+, v. 1.0. If a copy of the Rappid License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/rappid_academic_v1.txt
+ or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+
+
+.inspector {
+   position: absolute;
+   top: 0;
+   bottom: 0;
+   right: 0;
+   left: 0;
+   overflow: auto;
+}
+
+.inspector label {
+   display: block;
+   margin-top: 5px;
+   margin-bottom: 10px;
+   font-size: 12px;
+}
+.inspector input,
+.inspector textarea {
+   width: 200px;
+   text-shadow: 0 -1px 0 #000;
+   color: #ddd;
+   box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1),0px 0 0 1px rgba(255,255,255,0.1);
+   border: 1px solid black;
+   background: transparent;
+   height: 20px;
+   line-height: 20px;
+}
+.inspector input[type="range"] {
+   height: 1px;
+   line-height: 1px;
+}
+
+@media screen and (min-width:0\0) {
+    /* IE9 & IE10 */
+    .inspector input[type="range"] {
+	height: 20px;
+	line-height: 20px;
+    }
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    /* IE10 only */
+    .inspector .group > .field > form {
+	height: 60px;
+    }
+
+    .inspector input[type="range"] {
+	height: 10px;
+	border-style: hidden;
+	box-shadow: none;
+    }
+
+    .inspector input[type="range"]::-ms-fill-lower {
+	background-color: lightgray;
+    }
+
+    .inspector input[type="range"]::-ms-fill-upper {
+	background-color: white;
+    }
+    .inspector input[type="range"]::-ms-track {
+	color: transparent;
+    }
+
+    .inspector input[type="range"]::-ms-thumb {
+	background-color:  #242424;
+	border-style: hidden;
+    }
+
+    .inspector input[type="range"]::-ms-tooltip {
+	display: none;
+    }
+}
+
+.inspector .group {
+   overflow: hidden;
+   padding: 10px;
+}
+.inspector .group.closed {
+   height: 16px;
+}
+
+.inspector .group > .group-label {
+   padding: 5px 4px;
+   position: relative;
+   left: -10px;
+   margin-right: -20px;
+   margin-top: 0;
+   margin-bottom: 0;
+   font-size: 10px;
+   font-weight: 700;
+   text-transform: uppercase;
+   border-top: 1px solid #3a3a3a;
+   border-bottom: 2px solid #1f1f1f;
+   background: #242424;
+   cursor: pointer;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+.inspector .group > .group-label:before {
+   content: '';
+   width: 0;
+   height: 0;
+   display: inline-block;
+   margin-left: 2px;
+   margin-right: 5px;
+   position: relative;
+   top: 5px;
+   border-top: 5px solid white;
+   border-right: 5px solid transparent;
+   border-left: 5px solid transparent;
+   border-bottom: 5px solid transparent;
+}
+.inspector .group.closed > .group-label:before {
+   top: 2px;
+   left: 2px;
+   border-top: 5px solid transparent;
+   border-bottom: 5px solid transparent;
+   border-right: 5px solid transparent;
+   border-left: 5px solid white;
+}
+
+.link-tools .tool-options {
+   display: block;
+}
+
+/* Toggle */
+
+.inspector .toggle {
+   position: relative;
+   width: 97px;
+   height: 14px;
+}
+.inspector .toggle input {
+   top: 0;
+   right: 0;
+   bottom: 0;
+   left: 0;
+   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+   filter: alpha(opacity=0);
+   -moz-opacity: 0;
+   opacity: 0;
+   z-index: 100;
+   position: absolute;
+   width: 100%;
+   height: 100%;
+   cursor: pointer;
+   box-sizing: border-box;
+   padding: 0;
+   box-shadow: none;
+   -webkit-appearance: none;
+}
+.inspector .toggle input:checked + span {
+   background: #9abb82;
+}
+.inspector .toggle span {
+   display: block;
+   width: 100%;
+   height: 100%;
+   background: #a5a39d;
+   border-radius: 40px;
+   box-shadow: inset 0 3px 8px 1px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.5);
+   position: relative;
+}
+.inspector .toggle span:before {
+   box-sizing: border-box;
+   padding: 0;
+   margin: 0;
+   content: "";
+   position: absolute;
+   z-index: -1;
+   top: -18px;
+   right: -18px;
+   bottom: -18px;
+   left: -18px;
+   border-radius: inherit;
+   background: #eee;
+   background: -moz-linear-gradient(#e5e7e6, #eee);
+   background: -ms-linear-gradient(#e5e7e6, #eee);
+   background: -o-linear-gradient(#e5e7e6, #eee);
+   background: -webkit-gradient(linear, 0 0, 0 100%, from(#e5e7e6), to(#eee));
+   background: -webkit-linear-gradient(#e5e7e6, #eee);
+   background: linear-gradient(#e5e7e6, #eee);
+   box-shadow: 0 1px 0 rgba(255,255,255,0.5);
+}
+.inspector .toggle input:checked + span i {
+   right: -1%;
+}
+.inspector .toggle input:checked + span i:before {
+   content: "on";
+   right: 115%;
+   color: #82a06a;
+   text-shadow: 0 1px 0 #afcb9b, 0 -1px 0 #6b8659;   
+}
+.inspector .toggle span i {
+   display: block;
+   height: 100%;
+   width: 60%;
+   border-radius: inherit;
+   background: silver;
+   position: absolute;
+   z-index: 2;
+   right: 40%;
+   top: 0;
+   background: #b2ac9e;
+   background: -moz-linear-gradient(#f7f2f6, #b2ac9e);
+   background: -ms-linear-gradient(#f7f2f6, #b2ac9e);
+   background: -o-linear-gradient(#f7f2f6, #b2ac9e);
+   background: -webkit-gradient(linear, 0 0, 0 100%, from(#f7f2f6), to(#b2ac9e));
+   background: -webkit-linear-gradient(#f7f2f6, #b2ac9e);
+   background: linear-gradient(#f7f2f6, #b2ac9e);
+   box-shadow: inset 0 1px 0 white, 0 0 8px rgba(0,0,0,0.3), 0 5px 5px rgba(0,0,0,0.2);   
+}
+.inspector .toggle span i:before {
+   content: "off";
+   text-transform: uppercase;
+   font-style: normal;
+   font-weight: bold;
+   color: rgba(0,0,0,0.4);
+   text-shadow: 0 1px 0 #bcb8ae, 0 -1px 0 #97958e;
+   font-family: Helvetica, Arial, sans-serif;
+   font-size: 10px;
+   position: absolute;
+   top: 50%;
+   margin-top: -5px;
+   right: -50%;   
+}
+
+.inspector .btn-list-add,
+.inspector .btn-list-del {
+   background: transparent;
+   color: white;
+   border: 1px solid gray;
+   cursor: pointer;
+   border-radius: 2px;
+   box-shadow: 1px 1px 1px black;
+   width: 23px;
+   margin: 2px;
+   margin-right: 8px;
+}
+.inspector .btn-list-add:hover,
+.inspector .btn-list-del:hover {
+   box-shadow: inset 1px 1px 1px black;   
+}
+
+.inspector .list-items {
+   margin-top: 4px;
+}
+.inspector .list-item {
+   margin-top: 2px;
+   border: 1px solid rgb(36, 36, 36);
+   padding: 10px;
+   background-color: rgb(58, 58, 58);
+   box-shadow: inset 0 0 2px gray;
+}
+.inspector .list-item input {
+   width: 150px;
+}
+.inspector .list-item .list-item input {
+   width: 125px;
+}
+
+.inspector .list-item > .field > label {
+   display: none;
+}
+
+.inspector .field {
+   display: inline;
+}
+
+.inspector .hidden {
+   display: none;
+}

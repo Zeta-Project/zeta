@@ -1,0 +1,93 @@
+/*! Rappid - the diagramming toolkit
+
+Copyright (c) 2014 client IO
+
+ 2014-04-14 
+
+
+This Source Code Form is subject to the terms of the Rappid Academic License
+, v. 1.0. If a copy of the Rappid License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/rappid_academic_v1.txt
+ or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+
+
+.tooltip {
+   position: fixed;
+   z-index: 100;
+   border-radius: 5px;
+   background-color: #333;
+   border: 2px solid rgb(36, 36, 36);
+   color: #bcbcbc;
+   pointer-events: none;
+   padding: 10px;
+   font-size: 14px;
+   text-shadow: 0 -1px 0 #000;
+}
+.tooltip.small {
+   padding: 5px;
+   font-size: 10px;
+}
+.tooltip:after, .tooltip:before {
+   border: solid transparent;
+   content: " ";
+   height: 0;
+   width: 0;
+   position: absolute;
+   pointer-events: none;
+}
+.tooltip.left:after, .tooltip.left:before {
+   right: 100%;
+   top: 50%;
+}
+.tooltip.right:after, .tooltip.right:before {
+   top: 50%;
+   left: 100%;
+}
+.tooltip.top:after, .tooltip.top:before {
+   left: 50%;
+   bottom: 100%;
+}
+.tooltip.bottom:after, .tooltip.bottom:before {
+   left: 50%;
+   top: 100%;
+}
+
+.tooltip:after {
+   border-width: 6px;
+}
+.tooltip.left:after {
+   border-right-color: #333;
+   margin-top: -6px;
+}
+.tooltip.right:after {
+   border-left-color: #333;
+   margin-top: -6px;
+}
+.tooltip.top:after {
+   border-bottom-color: #333;
+   margin-left: -6px;
+}
+.tooltip.bottom:after {
+   border-top-color: #333;
+   margin-left: -6px;
+}
+
+.tooltip:before {
+   border-width: 8px;
+}
+.tooltip.left:before {
+   border-right-color: rgb(36, 36, 36);
+   margin-top: -8px;
+}
+.tooltip.right:before {
+   border-left-color: rgb(36, 36, 36);
+   margin-top: -8px;
+}
+.tooltip.top:before {
+   border-bottom-color: rgb(36, 36, 36);
+   margin-left: -8px;
+}
+.tooltip.bottom:before {
+   border-top-color: rgb(36, 36, 36);
+   margin-left: -8px;
+}

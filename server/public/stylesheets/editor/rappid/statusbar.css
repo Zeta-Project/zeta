@@ -1,0 +1,19 @@
+.statusbar-container {
+   background-color: hsla(220,11%,97%,.95);
+   border-top: 1px solid lightgray;
+}
+
+/* Validation message */
+
+.statusbar-container.error {
+   background-color: #e74c3c;
+   color: white;
+   text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+   background-image: -webkit-linear-gradient(top,#e74c3c,#c0392b);
+   background-image: -moz-linear-gradient(top,#e74c3c,#c0392b);
+   border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+   font-size: 10px;
+   line-height: 20px;
+}
+
+

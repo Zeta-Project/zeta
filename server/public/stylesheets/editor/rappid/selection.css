@@ -1,0 +1,8 @@
+.selection-box {
+   border: 2px dashed #F39C12;
+   padding-right: 5px;
+   padding-bottom: 5px;
+   margin-top: -4px;
+   margin-left: -4px;
+   box-shadow: 2px 2px 5px lightgray;
+}

@@ -1,0 +1,33 @@
+.halo .box {
+   box-shadow: 2px 2px 5px lightgray;  
+   border: 1px solid #4f4f4f;
+   text-shadow: 0 -1px 0 #000;
+   font-size: 8px;
+   color: #bcbcbc;
+   background-color: #333;
+}
+
+.halo  .resize {
+    display: none;
+}
+
+.halo  .clone {
+    left: auto;
+    top: auto;
+    bottom: -25px;
+    right: -25px;
+}
+
+.halo.small .clone {
+    left: auto;
+    top: auto;
+    bottom: -19px;
+    right: -19px;
+}
+
+.halo.tiny  .clone {
+    left: auto;
+    top: auto;
+    bottom: -13px;
+    right: -13px;
+}

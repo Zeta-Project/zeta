@@ -1,0 +1,18 @@
+.paper-container {
+   background-color: hsla(220,11%,97%,.95);
+}
+.paper-container svg {
+   /* Grid background image */
+   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQYV2NkYGAwBuKzQIwXMBJSAJMfVUidcAQAnUQBC6jEGBUAAAAASUVORK5CYII=');
+   background-color: white;
+   box-shadow: 1px 1px 1px lightgray;
+}
+
+.element.basic.Rect rect,
+.element.basic.Circle circle,
+.element.devs.Atomic rect {
+   -webkit-svg-shadow: 2px 2px 5px gray;
+}
+.element.basic.Path path { 
+   -webkit-svg-shadow: 1px 1px 2px gray; 
+}
