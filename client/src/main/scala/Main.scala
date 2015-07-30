@@ -15,8 +15,6 @@ object Main extends js.JSApp {
 
   @JSExport
   def main(): Unit = jQuery(dom.document).ready { () =>
-
-    println("HEllo World!")
     val editorController = new CodeEditorController()
 
     val btn = jQuery(
@@ -29,7 +27,7 @@ object Main extends js.JSApp {
   /*  jQuery("body").append(
       )).render)*/
 
-
+/*
    val editor = ace.edit("editor")
     editor.setTheme("ace/theme/monokai")
     editor.getSession().setMode("ace/mode/scala")
@@ -50,6 +48,6 @@ object Main extends js.JSApp {
 
     jQuery("#sendBtn").click(() => {
       console.log("Fuu")
-    })
+    })*/
   }
 }
