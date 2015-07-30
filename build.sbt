@@ -13,16 +13,20 @@ lazy val server = (project in file("server")).settings(
     jdbc,
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
-    "com.lihaoyi" %% "upickle" % "0.2.8",
     "com.lihaoyi" %% "upickle" % "0.3.4",
     "ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
+    "com.typesafe.akka" %% "akka-contrib" % "2.3.4",
+    "com.typesafe.akka" %% "akka-actor" % "2.3.4",
+    "com.typesafe.akka" %% "akka-kernel" % "2.3.4",
+    "com.typesafe.akka" %% "akka-cluster" % "2.3.4",
     "org.webjars" %% "webjars-play" % "2.3.0",
     "org.webjars" % "font-awesome" % "4.1.0",
-    "org.webjars" % "polymer" % "1.0.6",
     "org.webjars" % "bootstrap" % "3.3.5",
     "org.webjars" % "webcomponentsjs" % "0.7.2",
-    "org.webjars" % "jquery" % "2.1.4"
+    "org.webjars" % "jquery" % "2.1.4",
+    "org.webjars" % "jquery-ui" % "1.11.4",
+    "org.webjars" % "jquery-ui-themes" % "1.11.4"
   )
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
@@ -31,6 +35,8 @@ lazy val server = (project in file("server")).settings(
 lazy val client = (project in file("client")).settings(
   scalaVersion := scalaV,
   persistLauncher := true,
+  resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
+  resolvers += "Vaadin Components wrapper" at "http://hezamu.github.io/repository/snapshots",
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
   libraryDependencies ++= Seq(
@@ -38,7 +44,8 @@ lazy val client = (project in file("client")).settings(
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
     "com.lihaoyi" %%% "scalarx" % "0.2.8",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-    "com.lihaoyi" %%% "upickle" % "0.3.4"
+    "com.lihaoyi" %%% "upickle" % "0.3.4",
+    "org.vaadin.addons" %%% "scala-js-vaadin-components" % "0.1.0-SNAPSHOT"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)

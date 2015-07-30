@@ -5,7 +5,9 @@ import java.util.UUID
 import models._
 import play.api.Logger
 import play.api.libs.json.JsValue
+import play.api.mvc.WebSocket
 import securesocial.core.RuntimeEnvironment
+import play.api.Play.current
 
 class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
 
@@ -27,7 +29,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
 
   def saveMetaModel() = SecuredAction { implicit request =>
     println(request.body.toString)
-    request.body.asJson match{
+    request.body.asJson match {
       case Some(json) =>
         MetaModelDatabase.saveModel(new MetaModel(
           model = (json \ "data").as[JsValue].toString(),
@@ -38,5 +40,14 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
       case _ =>
         BadRequest("No valid Json Supplied.")
     }
+  }
+
+  def codeEditor() = SecuredAction { implicit request =>
+    Ok(views.html.codeEditor.render(Some(request.user)))
+  }
+
+
+  def socket = WebSocket.acceptWithActor[String, String] { request => out =>
+    CodeWSActor.props(out)
   }
 }

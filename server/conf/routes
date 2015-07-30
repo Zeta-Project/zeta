@@ -7,6 +7,11 @@
 GET         /                       @controllers.App.index
 GET         /metaModelEditor        @controllers.App.metaModelEditor
 GET         /modelValidator         @controllers.App.modelValidator
+GET         /codeEditor             @controllers.App.codeEditor
+
+
+GET         /socket                  @controllers.App.socket
+
 
 POST        /saveMetaModel          @controllers.App.saveMetaModel
 
