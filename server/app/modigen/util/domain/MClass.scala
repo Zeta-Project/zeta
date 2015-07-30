@@ -1,9 +1,8 @@
 package modigen.util.domain
 
-case class MClass(override val name:String, val superTypes:List[MClass], val attributes:List[MAttribute]) extends MObj with ObjectWithAttributes{
-  var isAbstract = false
-  var inputs:List[MLinkDef] = List()
-  var outputs:List[MLinkDef] = List()
+case class MClass(override val name:String, superTypes:List[MClass], attributes:List[MAttribute], isAbstract:Boolean = false,
+                   var inputs:List[MLinkDef] = List(), var outputs:List[MLinkDef] = List()) extends MObj with ObjectWithAttributes{
+
   val mappedAttributes = allAttributes.map(a => a.name -> a).toMap
 
   override def attribute(name:String) = mappedAttributes get name

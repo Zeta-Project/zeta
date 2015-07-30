@@ -4,20 +4,31 @@ import java.io.File
 
 import akka.actor.{Actor, ActorRef, Props}
 import models.DiagramWSActor.DataVisInvalidError
+import modigen.util.MetamodelBuilder
 import modigen.util.datavis.domain.Conditional
-import modigen.util.datavis.dummy.Dummy
 import modigen.util.datavis.generator.ListenersGenerator
 import modigen.util.datavis.parser.DataVisParsers
 import modigen.util.datavis.validator.ConstrainedDataVisValidator
-import modigen.util.domain.{ObjectWithAttributes, MReference, MClass}
+import modigen.util.domain.{MClass, MReference, Metamodel, ObjectWithAttributes}
 import play.api.Logger
-import shared.DiagramWSMessage.{DataVisScopeQuery, DataVisCodeMessage}
+import play.api.libs.json.{JsObject, Json}
+import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
 import shared.DiagramWSOutMessage.DataVisScope
 
-class DataVisActor(socket:ActorRef, instanceId:String) extends Actor with DataVisParsers{
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends Actor with DataVisParsers{
   val log = Logger(this getClass() getName())
-  val metamodel = Dummy.metamodel(instanceId)
+  var metamodel:Metamodel = null
   val generator = new ListenersGenerator
+
+  MetaModelDatabase.loadModel(graphType) onComplete{
+    case scala.util.Success(opt) => opt match {
+      case None => log.error("No metamodel present")
+      case Some(mm) => metamodel = MetamodelBuilder().fromJson(Json.parse(mm.model).asInstanceOf[JsObject])
+    }
+    case scala.util.Failure(t) => log.error("Unable to load metamodel")
+  }
 
   override def receive = {
     case msg:DataVisCodeMessage => handleDataVisCode(msg)
@@ -63,5 +74,5 @@ class DataVisActor(socket:ActorRef, instanceId:String) extends Actor with DataVi
 }
 
 object DataVisActor{
-  def props(socket:ActorRef, instanceId:String) = Props(new DataVisActor(socket, instanceId))
+  def props(socket:ActorRef, instanceId:String, graphType:String) = Props(new DataVisActor(socket, instanceId, graphType))
 }

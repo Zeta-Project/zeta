@@ -1,36 +1,44 @@
 package modigen.util.domain
 
-sealed abstract class MAttribute(override val name:String, override val upperBound: Int, override val lowerBound: Int) extends MObj with MBounds{
-  val default:Any
-  var uniqueLocal = false
-  var singleAssignment = false
-  var uniqueGlobal = false
-  var ordered = false
-  var transient = false
-  var constant = false
+sealed abstract class MAttribute(override val name:String, override val upperBound: Int, override val lowerBound: Int, uniqueLocal:Boolean = false,
+                                 uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false, transient:Boolean = false,
+                                  constant:Boolean = false) extends MObj with MBounds{
+  val default:Option[Any]
   val _type:String
 }
 
-case class MAttributeNumber(override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Double = 0) extends MAttribute(name, upperBound, lowerBound){
+case class MAttributeNumber(override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[Double] = None,
+                            uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
+                            transient:Boolean = false,constant:Boolean = false) extends MAttribute(name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
   val _type = "Number"
 }
 
-case class MAttributeString(override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:String = "") extends MAttribute(name, upperBound, lowerBound){
+case class MAttributeString(override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[String] = None,
+                            uniqueLocal:Boolean = false, uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
+                            transient:Boolean = false, constant:Boolean = false) extends MAttribute(name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
   val _type = "String"
 }
 
-case class MAttributeBoolean(override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Boolean = false) extends MAttribute(name, upperBound, lowerBound){
+case class MAttributeBoolean(override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[Boolean] = None,
+                             uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
+                             transient:Boolean = false,constant:Boolean = false) extends MAttribute(name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
   val _type = "Boolean"
 }
 
-abstract sealed class MAttributeMEnum(val enum:MEnum, override val name:String, override val upperBound: Int, override val lowerBound: Int) extends MAttribute(name, upperBound, lowerBound){
+abstract sealed class MAttributeMEnum(val enum:MEnum, override val name:String, override val upperBound: Int, override val lowerBound: Int,
+                                      uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
+                                      transient:Boolean = false,constant:Boolean = false) extends MAttribute(name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
   val _type = enum.name
 }
 
-case class MAttributeMEnumNumber(override val enum:MEnumNumber, override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Double = 0) extends MAttributeMEnum(enum, name, upperBound, lowerBound){
+case class MAttributeMEnumNumber(override val enum:MEnumNumber, override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[Double] = None,
+                                 uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
+                                 transient:Boolean = false,constant:Boolean = false) extends MAttributeMEnum(enum, name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
   if (!enum.values.contains(default)) throw new IllegalArgumentException("Default value is not part of specified M_Enum")
 }
 
-case class MAttributeMEnumString(override val enum:MEnumString, override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:String = "") extends MAttributeMEnum(enum, name, upperBound, lowerBound){
+case class MAttributeMEnumString(override val enum:MEnumString, override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[String] = None,
+                                 uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
+                                 transient:Boolean = false,constant:Boolean = false) extends MAttributeMEnum(enum, name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
   if (!enum.values.contains(default)) throw new IllegalArgumentException("Default value is not part of specified M_Enum")
 }

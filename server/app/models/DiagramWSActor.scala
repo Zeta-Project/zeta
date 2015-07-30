@@ -10,10 +10,10 @@ import shared.DiagramWSMessage.{DataVisScopeQuery, DataVisCodeMessage}
 import shared.DiagramWSOutMessage.{DataVisError, DataVisScope, NewScriptFile}
 import upickle.default._
 
-class DiagramWSActor(out:ActorRef, instanceId:String) extends Actor{
+class DiagramWSActor(out:ActorRef, instanceId:String, graphType:String) extends Actor{
   val mediator = DistributedPubSubExtension(context.system).mediator
   val log = Logger(this getClass() getName())
-  val dataVisActor = context.actorOf(DataVisActor.props(self, instanceId))
+  val dataVisActor = context.actorOf(DataVisActor.props(self, instanceId, graphType))
 
   mediator ! Subscribe(instanceId, self)
 
@@ -49,7 +49,7 @@ class DiagramWSActor(out:ActorRef, instanceId:String) extends Actor{
 }
 
 object DiagramWSActor{
-  def props(out:ActorRef, instanceId:String) = Props(new DiagramWSActor(out, instanceId))
+  def props(out:ActorRef, instanceId:String, graphType:String) = Props(new DiagramWSActor(out, instanceId, graphType))
   case class PublishFile(context:String, path:String)
   case class DataVisParseError(msg:String, context:String)
   case class DataVisInvalidError(msg:List[String], context:String)

@@ -1,10 +1,8 @@
 package modigen.util.domain
 
-case class MReference(override val name:String, val attributes:List[MAttribute]) extends MObj with ObjectWithAttributes{
-  var targetDeletionDeletesSource = false
-  var sourceDeletionDeletesTarget = false
-  var source:List[MLinkDef] = List()
-  var target:List[MLinkDef] = List()
+case class MReference(override val name:String, attributes:List[MAttribute], targetDeletionDeletesSource:Boolean = false,
+                       sourceDeletionDeletesTarget:Boolean = false, var source:List[MLinkDef] = List(), var target:List[MLinkDef] = List())
+  extends MObj with ObjectWithAttributes{
 
   val mappedAttributes = attributes.map(a => a.name -> a).toMap
 

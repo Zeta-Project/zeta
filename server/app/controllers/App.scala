@@ -73,7 +73,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     CodeWSActor.props(out)
   }
 
-  def diagramSocket(instanceId:String) = WebSocket.acceptWithActor[String, String]{ request => out =>
-    DiagramWSActor.props(out, instanceId)
+  def diagramSocket(instanceId:String, graphType:String) = WebSocket.acceptWithActor[String, String]{ request => out =>
+    DiagramWSActor.props(out, instanceId, graphType)
   }
 }
