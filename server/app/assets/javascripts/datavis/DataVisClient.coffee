@@ -10,7 +10,7 @@ class DataVisClient
   sendCode: (context, code) ->
     objectId = context.id
     message =
-      $type: "models.WebSocketMessage.DataVisCodeMessage"
+      $type: "shared.DiagramWSMessage.DataVisCodeMessage"
       context: objectId
       classname: context.get("ecoreName")
       code: code
@@ -19,7 +19,7 @@ class DataVisClient
   queryScope: (context) ->
     this.log("Querying scope for "+context.id);
     message =
-      $type: "models.WebSocketMessage.DataVisScopeQuery"
+      $type: "shared.DiagramWSMessage.DataVisScopeQuery"
       classname: context.get("ecoreName")
     root.webSocket.send(message)
 

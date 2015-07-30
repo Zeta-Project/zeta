@@ -4,20 +4,23 @@
 
 
 # Home page
-GET         /                       @controllers.App.index
-GET         /metaModelEditor        @controllers.App.metaModelEditor
-GET         /modelValidator         @controllers.App.modelValidator
-GET         /codeEditor             @controllers.App.codeEditor
+GET         /                               @controllers.App.index
+GET         /metaModelEditor                @controllers.App.metaModelEditor
+GET         /modelValidator                 @controllers.App.modelValidator
+GET         /codeEditor                     @controllers.App.codeEditor
+GET         /newgraph/:graphType            @controllers.App.newGraph(graphType: String)
+GET         /editor/:graphType/:uuid        @controllers.App.editor(graphType: String, uuid: String)
+GET         /diagrams                       @controllers.App.diagrams
+
+GET         /socket                         @controllers.App.codeSocket
+GET         /diagramsocket/:instanceId      @controllers.App.diagramSocket(instanceId:String)
 
 
-GET         /socket                  @controllers.App.socket
-
-
-POST        /saveMetaModel          @controllers.App.saveMetaModel
+POST        /saveMetaModel                  @controllers.App.saveMetaModel
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file           controllers.Assets.at(path="/public", file)
+GET         /assets/*file                   controllers.Assets.at(path="/public", file)
 
 
 # include securesocial routes
-->          /auth                   securesocial.Routes
+->          /auth                           securesocial.Routes

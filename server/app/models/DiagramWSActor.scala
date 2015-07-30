@@ -27,7 +27,7 @@ class DiagramWSActor(out:ActorRef, instanceId:String) extends Actor{
       }catch{
         case e: upickle.Invalid => log.debug("Invalid JSON message")
           e.printStackTrace()
-        case e: MatchError => log.error("Unexpected Match Error:")
+        case e: MatchError => log.error("Unexpected Match Error:" + e.getMessage())
       }
 
     case DiagramWSActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))

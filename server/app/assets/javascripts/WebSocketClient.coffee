@@ -1,7 +1,7 @@
 root = exports ? this
 
 debug = true
-WEB_SOCKET_URI = "ws://" + window.location.host + "/websocket/" + window._global_uuid
+WEB_SOCKET_URI = "ws://" + window.location.host + "/diagramsocket/" + window._global_uuid
 
 class WebSocketClient
   socket: null
@@ -18,9 +18,9 @@ class WebSocketClient
     data = JSON.parse(messageEvent.data)
     this.log(data.$type)
     switch data.$type
-      when "models.WebSocketOutMessage.NewScriptFile" then root.dataVisClient.loadFile(data.context, data.path)
-      when "models.WebSocketOutMessage.DataVisScope" then root.dataVisClient.scoping(data.classname, data.scope)
-      when "models.WebSocketOutMessage.DataVisError" then root.dataVisClient.handleErrors(data.context, data.msg)
+      when "shared.DiagramWSOutMessage.NewScriptFile" then root.dataVisClient.loadFile(data.context, data.path)
+      when "shared.DiagramWSOutMessage.DataVisScope" then root.dataVisClient.scoping(data.classname, data.scope)
+      when "shared.DiagramWSOutMessage.DataVisError" then root.dataVisClient.handleErrors(data.context, data.msg)
 
   send: (messageObject) ->
     this.log("send")

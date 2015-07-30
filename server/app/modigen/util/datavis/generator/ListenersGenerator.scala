@@ -7,7 +7,7 @@ import modigen.util.datavis.domain._
 
 class ListenersGenerator {
   val filesuffix = "listeners.js"
-  val public = "public" + File.separator
+  val public = "server" + File.separator + "public" + File.separator
   val path = "javascripts" + File.separator + "generated" + File.separator
 
   def generate(diagramId:String, objectId:String, conditionals:List[Conditional]) = {

@@ -41,6 +41,13 @@ object MetaModelDatabase {
       }
   }
 
+  def modelExists(uuid:String) : Future[Boolean] = Future{
+    coll.findOne(MongoDBObject("uuid" -> uuid)) match {
+      case Some(_) => true
+      case None => false
+    }
+  }
+
   /** returns all models created by [[models.SecureSocialUser]] with uuid ==  userUuid */
   def modelsOfUser(userUuid: String) : Future[List[MetaModel]] = Future{
     coll

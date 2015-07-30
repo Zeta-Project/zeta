@@ -1,0 +1,49 @@
+@(metaModels: List[MetaModel], user: Option[SecureSocialUser])
+
+@main("New Diagram", user) {
+
+	<div class="row">
+		<div class="lead col-xs-10 col-xs-offset-1">
+			<p>Hello,
+				@user match {
+					case Some(u) => { @u.profile.fullName! }
+					case _ => { Guest! }
+				}
+			</p>
+		</div>
+	</div>
+
+	@if(metaModels.nonEmpty) {
+		<div class="row">
+			<div class="lead col-xs-10 col-xs-offset-1">
+    			<p>Create new diagram:</p>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="lead col-xs-10 col-xs-offset-1">
+
+		   		@for(model <- metaModels) {
+		   			<div class="tile lead col-xs-12 col-md-4">
+		   				<div class="tileBorder">
+			   				<img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
+		   					<div class="transparentBackground"></div>
+		   					<div class="linkText">@model.name</div>
+			   				<a class="ecoreLink" href="@routes.App.newGraph(model.uuid)"></a>
+		   				</div>
+		   			</div>
+				}
+
+			</div>
+	    </div>
+
+	} else {
+		<div class="row">
+			<div class="lead col-xs-10 col-xs-offset-1">
+				<p>
+					No meta models available.<br>
+				</p>
+			</div>
+		</div>
+	}
+}

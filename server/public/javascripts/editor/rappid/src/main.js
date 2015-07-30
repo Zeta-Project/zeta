@@ -45,9 +45,6 @@ var Rappid = Backbone.Router.extend({
         if(contextMenu){
             contextMenu.init(this.graph, this.paper);
         }
-        if (serverCommunication) {
-        	serverCommunication.init(this.graph, this.paper);
-        }
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
