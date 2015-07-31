@@ -14,8 +14,8 @@ case class MetaModel(model: String, name: String, uuid: String, userUuid: String
 object MetaModelDatabase {
   val log = Logger(this getClass() getName())
 
-  val mongoClient = MongoClient(new ServerAddress(AppConfig.mongoDbIp))
-  val db = mongoClient(AppConfig.mongoDbName)
+  val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.ip").get))
+  val db = mongoClient(Play.current.configuration.getString("mongodb.name").get)
   val coll = db("MetaModels")
 
   /** Salat Context **/
