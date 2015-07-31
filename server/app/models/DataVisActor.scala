@@ -3,6 +3,7 @@ package models
 import java.io.File
 
 import akka.actor.{Actor, ActorRef, Props}
+import models.DataVisActor.{MetamodelFailure, MetamodelLoaded}
 import models.DiagramWSActor.DataVisInvalidError
 import modigen.util.MetamodelBuilder
 import modigen.util.datavis.domain.Conditional
@@ -24,15 +25,17 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
 
   MetaModelDatabase.loadModel(graphType) onComplete{
     case scala.util.Success(opt) => opt match {
-      case None => log.error("No metamodel present")
-      case Some(mm) => metamodel = MetamodelBuilder().fromJson(Json.parse(mm.model).asInstanceOf[JsObject])
+      case None => self ! MetamodelFailure()
+      case Some(mm) => self ! MetamodelLoaded(mm.model)
     }
-    case scala.util.Failure(t) => log.error("Unable to load metamodel")
+    case scala.util.Failure(t) => self ! MetamodelFailure
   }
 
   override def receive = {
     case msg:DataVisCodeMessage => handleDataVisCode(msg)
     case DataVisScopeQuery(mClass) => handleScopeQuery(mClass)
+    case MetamodelLoaded(code) => metamodel = MetamodelBuilder().fromJson(Json.parse(code).asInstanceOf[JsObject])
+    case MetamodelFailure() => log.error("Unable to lead metamodel")
     case _ => log.error("Unknown message received")
   }
 
@@ -75,4 +78,6 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
 
 object DataVisActor{
   def props(socket:ActorRef, instanceId:String, graphType:String) = Props(new DataVisActor(socket, instanceId, graphType))
+  case class MetamodelLoaded(json:String)
+  case class MetamodelFailure()
 }
