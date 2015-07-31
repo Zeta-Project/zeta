@@ -34,8 +34,8 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
 
   val log = Logger(this getClass() getName())
 
-  val mongoClient = MongoClient(new ServerAddress(AppConfig.mongoDbIp))
-  val db = mongoClient(AppConfig.mongoDbName)
+  val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.ip").get))
+  val db = mongoClient(Play.current.configuration.getString("mongodb.name").get)
   val coll= db("Users")
   val tokenColl = db("Tokens")
 
