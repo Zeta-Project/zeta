@@ -34,11 +34,17 @@ abstract sealed class MAttributeMEnum(val enum:MEnum, override val name:String, 
 case class MAttributeMEnumNumber(override val enum:MEnumNumber, override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[Double] = None,
                                  uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
                                  transient:Boolean = false,constant:Boolean = false) extends MAttributeMEnum(enum, name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
-  if (!enum.values.contains(default)) throw new IllegalArgumentException("Default value is not part of specified M_Enum")
+  default match {
+    case Some(d) => if (!enum.values.contains(d)) throw new IllegalArgumentException("Default value is not part of specified M_Enum")
+    case _ =>
+  }
 }
 
 case class MAttributeMEnumString(override val enum:MEnumString, override val name:String, override val upperBound: Int, override val lowerBound: Int, override val default:Option[String] = None,
                                  uniqueLocal:Boolean = false,uniqueGlobal:Boolean = false, singleAssignment:Boolean = false, ordered:Boolean = false,
                                  transient:Boolean = false,constant:Boolean = false) extends MAttributeMEnum(enum, name, upperBound, lowerBound, uniqueLocal, uniqueGlobal, singleAssignment, ordered, transient, constant){
-  if (!enum.values.contains(default)) throw new IllegalArgumentException("Default value is not part of specified M_Enum")
+  default match {
+    case Some(d) => if (!enum.values.contains(d)) throw new IllegalArgumentException("Default value is not part of specified M_Enum")
+    case _ =>
+  }
 }
