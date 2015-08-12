@@ -1,6 +1,6 @@
 root = exports ? this
 
-root.getManipulationGrammar = ->
+root.dataVisGrammar =
   RegExpID: "RegExp::"
 
   Style:
