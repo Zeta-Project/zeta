@@ -3,7 +3,7 @@ package controller
 import org.scalajs.dom
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket, console}
 import shared.CodeEditorMessage
-import shared.WebSocketMessages.{GetDocs, DocsAdded, DocChanged}
+import shared.CodeEditorMessage.TextOperation
 import upickle.default._
 
 case class WebSocketConnection(uri:String = "ws://127.0.0.1:9000/socket", controller: CodeEditorController) {
@@ -17,7 +17,6 @@ case class WebSocketConnection(uri:String = "ws://127.0.0.1:9000/socket", contro
 
   def onOpen(e: Event) = {
     console.log("Opened Websocket: ", e.toString)
-    sendMessage(GetDocs)
   }
 
   def onMessage(msg: MessageEvent) = {
@@ -25,13 +24,10 @@ case class WebSocketConnection(uri:String = "ws://127.0.0.1:9000/socket", contro
 
     read[CodeEditorMessage](msg.data.toString) match {
 
-      case msg: DocChanged =>
+      case msg: TextOperation =>
         console.log("Received Change Message" + msg.toString)
-        controller.receivedChangeMessage(msg)
+        controller.operationFromRemote(msg.op)
 
-      case msg: DocsAdded =>
-        console.log("Got DocsAdded message")
-        controller.receivedAddDocsMessage(msg)
       case _ => console.error("Unknown message received from Server!")
     }
   }
