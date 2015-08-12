@@ -52,7 +52,6 @@ object ScalotAceAdaptor {
               text = doc.getValue().substring(base, len)
             ).asInstanceOf[Delta]
           )
-          base = base - len
 
         case InsComp(str) =>
           deltas ++= Seq(
