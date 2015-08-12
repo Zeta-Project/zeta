@@ -12,7 +12,7 @@ lazy val server = (project in file("server")).settings(
   libraryDependencies ++= Seq(
     filters,
     jdbc,
-    "com.github.jahoefne" %% "scalot" % "0.3.2",
+    "com.github.jahoefne" %% "scalot" % "0.3.3",
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
@@ -43,7 +43,7 @@ lazy val client = (project in file("client")).settings(
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
   libraryDependencies ++= Seq(
-    "com.github.jahoefne" %%% "scalot" % "0.3.2",
+    "com.github.jahoefne" %%% "scalot" % "0.3.3",
     "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
     "com.github.jahoefne" %%% "scalot" % "0.1",
