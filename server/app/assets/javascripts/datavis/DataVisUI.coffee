@@ -17,11 +17,11 @@ root.jQuery(document).ready(() ->
 
   #deactivate on ESC
   onDocumentKeyUp = (event) ->
-    deactivate if event.code == 27
+    deactivate() if event.keyCode == 27
 
   #deactivate on click outside
   onDocumentClick = (event) ->
-    deactivate if event.target == cover
+    deactivate() if event.target == cover
 
   activate = (context) ->
     document.addEventListener( 'keyup', onDocumentKeyUp, false );
@@ -44,7 +44,7 @@ root.jQuery(document).ready(() ->
     document.removeEventListener( 'keyup', onDocumentKeyUp, false );
     document.removeEventListener( 'click', onDocumentClick, false );
     removeClass( container, 'nodeCodeEditor-active' );
-    root.dataVisEditor.unload()
+    root.dataVisEditor.unload() if root.dataVisEditor?
     root.dataVisEditor = null
 
   displayErrors = (errors) ->
