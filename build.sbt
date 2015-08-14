@@ -7,10 +7,12 @@ lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
   scalaJSProjects := clients,
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  resolvers += "Sonatype OSS Stage" at "https://oss.sonatype.org/content/groups/staging",
   pipelineStages := Seq(scalaJSProd, gzip),
   libraryDependencies ++= Seq(
     filters,
     jdbc,
+    "com.github.jahoefne" %% "scalot" % "0.3.4",
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
@@ -20,10 +22,10 @@ lazy val server = (project in file("server")).settings(
     "com.typesafe.akka" %% "akka-actor" % "2.3.4",
     "com.typesafe.akka" %% "akka-kernel" % "2.3.4",
     "com.typesafe.akka" %% "akka-cluster" % "2.3.4",
-    "org.webjars" %% "webjars-play" % "2.3.0",
+    "org.webjars" %% "webjars-play" % "2.4.0-1",
     "org.webjars" % "font-awesome" % "4.1.0",
     "org.webjars" % "bootstrap" % "3.3.5",
-    "org.webjars" % "webcomponentsjs" % "0.7.2",
+    "org.webjars.bower" % "polymer" % "1.0.7",
     "org.webjars" % "jquery" % "2.1.4",
     "org.webjars" % "jquery-ui" % "1.11.4",
     "org.webjars" % "jquery-ui-themes" % "1.11.4"
@@ -36,22 +38,25 @@ lazy val client = (project in file("client")).settings(
   scalaVersion := scalaV,
   persistLauncher := true,
   resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
-  resolvers += "Vaadin Components wrapper" at "http://hezamu.github.io/repository/snapshots",
+  resolvers += "Sonatype OSS Stage" at "https://oss.sonatype.org/content/groups/staging",
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
   libraryDependencies ++= Seq(
+    "com.github.jahoefne" %%% "scalot" % "0.3.4",
     "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
+    "com.github.jahoefne" %%% "scalot" % "0.1",
     "com.lihaoyi" %%% "scalarx" % "0.2.8",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-    "com.lihaoyi" %%% "upickle" % "0.3.4",
-    "org.vaadin.addons" %%% "scala-js-vaadin-components" % "0.1.0-SNAPSHOT"
+    "com.lihaoyi" %%% "upickle" % "0.3.4"
   )
 ).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
   dependsOn(sharedJs)
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
-  settings(scalaVersion := scalaV).
+  settings(scalaVersion := scalaV,
+    libraryDependencies += "com.github.jahoefne" %%% "scalot" % "0.3"
+  ).
   jsConfigure(_ enablePlugins ScalaJSPlay).
   jsSettings(sourceMapsBase := baseDirectory.value / "..")
 

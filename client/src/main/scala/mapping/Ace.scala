@@ -42,8 +42,8 @@ trait TokenInfo extends js.Object {
 }
 
 trait Position extends js.Object {
-  var row: Double = js.native
-  var column: Double = js.native
+  var row: Int = js.native
+  var column: Int = js.native
 }
 
 @JSName("AceAjax.KeyBinding")
@@ -126,7 +126,7 @@ class Document protected () extends js.Object {
   def getLine(row: Double): String = js.native
   def getLines(firstRow: Double, lastRow: Double): js.Array[String] = js.native
   def getAllLines(): js.Array[String] = js.native
-  def getLength(): Double = js.native
+  def getLength(): Int = js.native
   def getTextRange(range: Range): String = js.native
   def insert(position: Position, text: String): js.Dynamic = js.native
   def insertLines(row: Double, lines: js.Array[String]): js.Dynamic = js.native
@@ -139,8 +139,8 @@ class Document protected () extends js.Object {
   def replace(range: Range, text: String): js.Dynamic = js.native
   def applyDeltas(deltas: js.Array[Delta]): js.Dynamic = js.native
   def revertDeltas(deltas: js.Array[Delta]): js.Dynamic = js.native
-  def indexToPosition(index: Double, startRow: Double): Position = js.native
-  def positionToIndex(pos: Position, startRow: Double): Double = js.native
+  def indexToPosition(index: Int, startRow: Int): Position = js.native
+  def positionToIndex(pos: Position, startRow: Int): Int = js.native
 }
 
 @JSName("AceAjax.Document")
