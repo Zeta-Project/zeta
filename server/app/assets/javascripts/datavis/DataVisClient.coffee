@@ -29,7 +29,7 @@ class DataVisClient
   loadFile: (context, path) ->
     cell = window.globalGraph.getCell(context)
     if cell?
-      root.jQuery.getScript(path)
+      root.jQuery.getScript(path, (a,b,c) -> cell.trigger("change:mAttributes", cell))
     else
       this.log("Discarded script file for non-existing object.")
 
