@@ -21,13 +21,19 @@ class ListenersGenerator {
     fileName
   }
   
-  def generateContents(objectId: String, conditionals:List[Conditional]) = generateHead + generateListeners(objectId, conditionals)
+  def generateContents(objectId: String, conditionals:List[Conditional]) = generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
 
   def generateHead =
     """|/*
       |* Individual listeners for model.
       |*/
     """.stripMargin
+
+  def generateListenerObject(objectId:String) =
+  s"""
+     | dataVisListeners["$objectId"] = {};
+     | _.extend(dataVisListeners["$objectId"], Backbone.Events);
+   """.stripMargin
 
   def generateListeners(objectId:String, conditional: List[Conditional]) = conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
 
@@ -38,7 +44,7 @@ class ListenersGenerator {
     val assignment = generateAssignment(conditional.assignment)
     val tmp = conditional.assignment.target
     s"""
-    |window.globalGraph.getCell("$objectId").listenTo(window.globalGraph.getCell("$objectId"),'change:mAttributes', function(){
+    |dataVisListeners["$objectId"].listenTo(window.globalGraph.getCell("$objectId"),'change:mAttributes', function(){
     | var cell = window.globalGraph.getCell("$objectId");
     | if($comparisonLeft $comparison $comparisonRight){
     |   $assignment

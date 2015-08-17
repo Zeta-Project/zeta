@@ -27,6 +27,7 @@ class DataVisClient
   # Received Messages
   ####
   loadFile: (context, path) ->
+    this.unloadListener(context)
     cell = window.globalGraph.getCell(context)
     if cell?
       root.jQuery.getScript(path, (a,b,c) -> cell.trigger("change:mAttributes", cell))
@@ -51,8 +52,13 @@ class DataVisClient
   ####
   # Utilities
   ####
+
+  unloadListener: (context) ->
+    root.dataVisListeners[context].stopListening() if root.dataVisListeners[context]?
+
   log: (message) ->
     message ?= ""
     root.console.log("[DataVisClient]" + message) if debug
 
 root.dataVisClient = new DataVisClient()
+root.dataVisListeners = {}
