@@ -9,9 +9,16 @@ import shared.CodeEditorMessage
 import shared.CodeEditorMessage.TextOperation
 import upickle.default._
 
-object SingleDoc{
-  val doc = scalot.Server("")
+object SingleDoc {
+  var doc = scalot.Server("")
+
+  def receiveOperation(op: scalot.Operation) = {
+    synchronized {
+      doc.receiveOperation(op)
+    }
+  }
 }
+
 case class MediatorMessage(msg: Any, broadcaster: ActorRef)
 
 class CodeWSActor(out: ActorRef) extends Actor with ActorLogging {
@@ -34,6 +41,7 @@ class CodeWSActor(out: ActorRef) extends Actor with ActorLogging {
         case _ => println("Disarding message, probably sent by myself")
       }
     }
+
     case medMsg : MediatorMessage =>
       out ! medMsg.msg
 

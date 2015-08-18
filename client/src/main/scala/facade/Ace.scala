@@ -1,4 +1,4 @@
-package mapping
+package facade
 
 import org.scalajs.dom.raw._
 import scala.scalajs.js
