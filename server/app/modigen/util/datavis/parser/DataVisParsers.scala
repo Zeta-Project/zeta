@@ -5,7 +5,7 @@ import modigen.util.datavis.domain._
 import scala.util.parsing.combinator.JavaTokenParsers
 
 trait DataVisParsers extends JavaTokenParsers {
-  def script = conditional +
+  def script = conditional *
 
   def conditional = "if" ~ condition ~ ":" ~ assignment ^^ { case _ ~ cond ~ _ ~ assign => new Conditional(cond, assign) }
 
