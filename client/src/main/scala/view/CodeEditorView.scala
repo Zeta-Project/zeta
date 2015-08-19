@@ -1,10 +1,8 @@
 package view
 
-import controller.CodeEditorController
+import controller.{ModeController, CodeEditorController}
 import facade._
 import org.scalajs.dom
-import org.scalajs.dom.console
-import org.scalajs.dom.raw.MouseEvent
 import scalot._
 import scala.scalajs.js
 import js.JSConverters._
@@ -17,19 +15,15 @@ import facade.JQueryUi._
 class CodeEditorView(tgtDiv: String,
                      controller: CodeEditorController) {
 
-  val files = Seq[String]("File1", "File12", "File42")
   private val aceId = Random.alphanumeric.take(20).mkString
 
   createSkeleton()
-  renderSideBar()
-  val editor = ace.ace.edit(s"$aceId")
+  upadteSideBar(Seq[Client]())
 
+  val editor = ace.ace.edit(s"$aceId")
   editor.setTheme("ace/theme/xcode")
   editor.getSession().setMode("scala")
-
-  editor.getSession().getDocument().setValue("")
-
-  editor.setReadOnly(true)
+  editor.$blockScrolling = Double.PositiveInfinity
 
   editor.setOptions(js.Dynamic.literal(
     enableBasicAutocompletion = true,
@@ -37,51 +31,89 @@ class CodeEditorView(tgtDiv: String,
     enableLiveAutocompletion = true
   ))
 
+  jQuery(".ace-container .editor").hide()
+
+  var selectedId: String = ""
+
+  private def renderNewDocumentForm() = div(
+    div(`class` := "form-group")(
+      label(`for` := "titel")("Title:"),
+      input(`type` := "titel", `class` := "form-control", `id` := "newDocTitle")("Titel")
+    ),
+    div(`class` := "form-group")(
+      label(`for` := "doctype")("File Type"),
+      select(`type` := "doctype", `class` := "form-control", `id` := "newDocType")
+        (for (mode <- ModeController.getAllModes) yield option(mode))
+    )
+  ).render
+
   private def createSkeleton() =
     dom.document.getElementById(s"$tgtDiv").appendChild(
       div(`class` := "ace-container container")(
         div(`class` := "row")(
           div(`class` := "toolbar")(
             span(
-              `class` := "btn btn-default typcn typcn-document-add toolbarbtn",
+              `class` := "btn btn-default typcn typcn-document-add toolbarbtn typcnbtn",
               onclick := { (e: dom.MouseEvent) => {
-                Alertify.alertify.prompt(
-                    "Please enter a document title",
-                    "New Document",
-                    (_: js.Any, x: js.Any) => println("Adding new doc with name: "+x.toString))
-                  .set(literal())
+                Bootbox.bootbox.dialog(literal(
+                  title = "Please enter a document title and filetype",
+                  message = renderNewDocumentForm(),
+                  closeButton = true,
+                  buttons = literal(
+                    ok = literal(label = "Cancel", callback = () => {}),
+                    cancel = literal(label = "Add", callback = () => {
+                      controller.addDocument(jQuery("#newDocTitle").`val`().asInstanceOf[String],jQuery("#newDocType").`val`().toString)
+                    }
+                    )
+                  )
+                ))
               }
               }
-            ).render
-            ,
-            span(`class` := "btn btn-default typcn typcn-document-delete toolbarbtn",
+            ).render,
+            span(`class` := "btn btn-default typcn typcn-document-delete toolbarbtn typcnbtn",
               onclick := { (e: dom.MouseEvent) => {
-                Alertify.alertify.confirm(
-                  "Are you sure that you want to delete the file?",
-                  (confirmed: Boolean) => println("Deleting document!"))
+                if (selectedId != "") {
+                  Bootbox.bootbox.confirm(
+                    s"Are you sure that you want to delete '${controller.getDocForId(selectedId).title}'?",
+                    (result: Boolean) => if (result) controller.deleteDocument(selectedId))
+                }
               }
               })
           )
         ),
         div(`class` := "row")(
           div(`id` := "sidebar", `class` := "col-md-4")(),
-          div(`class` := "editor col-md-8", `id` := aceId)
+          div(style := "background-color: gray;")(
+            div(`class` := "editor col-md-8", `id` := aceId)
+          )
         )
       ).render
     )
 
-
-
-  private def renderSideBar() = {
+  def upadteSideBar(docs: Seq[Client]) = {
+    jQuery(s"#$tgtDiv .ace-container .row #sidebar #selectable").remove()
     val sidebar = jQuery(
       ol(`id` := "selectable")(
-        for (file <- files) yield {
-          li(`class` := "ui-widget-content",
-            onclick := { (e: dom.MouseEvent) => {
-              jQuery(s"#$tgtDiv #selectable").children().removeClass("ui-selected")
-              jQuery(e.srcElement).addClass("ui-selected")
+        for (file <- docs) yield {
+          li(`class` := s"ui-widget-content ${
+            if (file.id == selectedId) {
+              "ui-selected"
             }
-            })(file).render
+          }",
+            `id` := file.id,
+            onclick := { (e: dom.MouseEvent) => {
+              jQuery(s".ui-widget-content").removeClass("ui-selected")
+              selectedId = file.id
+              displayDoc(controller.getDocForId(file.id))
+              jQuery(s"#${file.id}").addClass("ui-selected")
+            }
+            })(
+              span(
+                file.title,
+                span(`class` := "typcn typcn-document pull-right"),
+                span(`style` := "color: gray;",`class` := "pull-right")(file.docType)
+              )
+            ).render
         }
       ).render
     )
@@ -89,29 +121,15 @@ class CodeEditorView(tgtDiv: String,
     sidebar.appendTo(jQuery(s"#$tgtDiv .ace-container .row #sidebar"))
   }
 
+
   // Helper
   var broadcast = true
   var currentId: String = ""
 
   var session: IEditSession = null
 
-  val sendBtn = jQuery(
-    div(`class` := "btn btn-default col-md-offset-5")(
-      "Send next Msg To Server"
-    ).render)
-  sendBtn.appendTo(jQuery("body"))
-  sendBtn.click(() => controller.ws.sendFromBuffer())
-
-  val receiveBtn = jQuery(
-    div(`class` := "btn btn-default")(
-      "Receive From Buffer"
-    ).render)
-  receiveBtn.appendTo(jQuery("body"))
-  receiveBtn.click(() => controller.ws.receiveFromBuffer())
-
   def displayDoc(doc: Client) = {
-    editor.setReadOnly(false)
-    session = ace.ace.createEditSession(doc.str, "ace/mode/scala")
+    session = ace.ace.createEditSession(doc.str, "ace/mode/"+doc.docType.toLowerCase)
     session.on("change", {
       (delta: js.Any) =>
         if (broadcast) {
@@ -121,11 +139,13 @@ class CodeEditorView(tgtDiv: String,
               .asInstanceOf[js.Dynamic]
               .selectDynamic("data")
               .asInstanceOf[Delta],
-                editor.getSession().getDocument()))
+                editor.getSession().getDocument()),
+            selectedId)
         }
     }: js.Function1[js.Any, Any]
     )
     editor.setSession(session)
+    jQuery(".ace-container .editor").show()
   }
 
   def updateView(op: Operation) = {
@@ -135,4 +155,12 @@ class CodeEditorView(tgtDiv: String,
     doc.applyDeltas(ScalotAceAdaptor.scalotOpToAceDelta(op, doc).toJSArray)
     broadcast = was
   }
+
+  def deletedDoc(id: String) = {
+    if (selectedId == id) {
+      selectedId = ""
+      jQuery(".ace-container .editor").hide()
+    }
+  }
+
 }

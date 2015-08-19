@@ -2,11 +2,12 @@ package controllers
 
 import java.util.UUID
 
+import akka.actor.ActorRef
 import models._
 import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
-import scalot.Server
+import play.filters.csrf.Global
 import securesocial.core.RuntimeEnvironment
 import play.api.Play.current
 
@@ -71,16 +72,10 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   }
 
   def codeSocket = WebSocket.acceptWithActor[String, String] { request => out =>
-    CodeWSActor.props(out)
+    CodeDocWSActor.props(out, CodeDocManagingActor.getCodeDocManager, "fakeDiagramId")
   }
 
   def diagramSocket(instanceId:String, graphType:String) = WebSocket.acceptWithActor[String, String]{ request => out =>
     DiagramWSActor.props(out, instanceId, graphType)
-  }
-
-  def clearCode() = UserAwareAction{
-    println("Clearing Document!")
-    SingleDoc.doc = new Server("")
-    Ok("Done.")
   }
 }

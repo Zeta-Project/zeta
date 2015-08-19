@@ -28,7 +28,8 @@ lazy val server = (project in file("server")).settings(
     "org.webjars" % "jquery" % "2.1.4",
     "org.webjars" % "jquery-ui" % "1.11.4",
     "org.webjars" % "typicons" % "2.0.7",
-    "org.webjars" % "jquery-ui-themes" % "1.11.4")
+    "org.webjars" % "jquery-ui-themes" % "1.11.4",
+    "org.webjars.bower" % "bootbox.js" % "4.4.0")
 ).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
   dependsOn(sharedJvm)

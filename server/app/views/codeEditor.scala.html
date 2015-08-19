@@ -7,56 +7,18 @@
 
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/codeEditor.css")">
 
+    <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+
     <script type="text/javascript" src="@routes.Assets.at("lib/jquery-ui/jquery-ui.min.js")"></script>
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/jquery-ui-themes/flick/jquery-ui.min.css")">
 
     <link rel='stylesheet' href="@routes.Assets.at("lib/typicons/typicons.css")"/>
 
-    <!-- Alertify used for code editor dialoges -->
-    <script src="//cdn.jsdelivr.net/alertifyjs/1.4.1/alertify.min.js"></script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.4.1/css/themes/bootstrap.min.css"/>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.4.1/css/alertify.min.css"/>
-
-
-    <div class="btn btn-xs" onclick="$.get('/clearcode')">Clear Doc!</div>
+    <script src="@routes.Assets.at("lib/bootbox.js/bootbox.js")"></script>
 
     <div class="row">
         <div class="col-md-offset-2 col-md-5" id="editor">
         </div>
     </div>
-    <br><br>
-    <div class="grid">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Client State</h3>
-                    </div>
-                    <div id="clientStateView">
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Send Buffer</h3>
-                    </div>
-                    <ul class="list-group" id="sendBuffer">
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Receive Buffer</h3>
-                    </div>
-                    <div id="receiveBuffer">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="ui-test"></div>
 }

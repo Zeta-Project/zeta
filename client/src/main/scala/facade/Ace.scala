@@ -275,6 +275,7 @@ class Editor protected () extends js.Object {
   var renderer: VirtualRenderer = js.native
   var keyBinding: KeyBinding = js.native
   var container: HTMLElement = js.native
+  var $blockScrolling : js.Any = js.native
   def onSelectionChange(e: js.Any): js.Dynamic = js.native
   def onChangeMode(e: js.Any = ???): js.Dynamic = js.native
   def execCommand(command: String, args: js.Any = ???): js.Dynamic = js.native

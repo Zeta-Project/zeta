@@ -15,8 +15,6 @@ GET         /diagrams                       @controllers.App.diagrams
 GET         /socket                         @controllers.App.codeSocket
 GET         /diagramsocket/:graphType/:instanceId      @controllers.App.diagramSocket(instanceId:String, graphType:String)
 
-GET         /clearcode                      @controllers.App.clearCode
-
 POST        /saveMetaModel                  @controllers.App.saveMetaModel
 
 # Map static resources from the /public folder to the /assets URL path

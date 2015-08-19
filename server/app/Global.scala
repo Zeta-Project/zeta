@@ -1,13 +1,13 @@
 import java.lang.reflect.Constructor
 
-import models.{SecureSocialUser, MongoDbUserService}
+import akka.actor.{Props, ActorRef}
+import models.{CodeDocManagingActor, SecureSocialUser, MongoDbUserService}
 import securesocial.core.RuntimeEnvironment
 import securesocial.core.providers.UsernamePasswordProvider
 
 import scala.collection.immutable.ListMap
 
 object Global extends play.api.GlobalSettings {
-
 
   object UserServiceRuntimeEnv extends RuntimeEnvironment.Default[SecureSocialUser] {
     override lazy val userService = MongoDbUserService
