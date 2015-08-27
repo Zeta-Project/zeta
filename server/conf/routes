@@ -17,6 +17,11 @@ GET         /diagramsocket/:graphType/:instanceId      @controllers.App.diagramS
 
 POST        /saveMetaModel                  @controllers.App.saveMetaModel
 
+# MetaModel API
+GET        /metamodels/:modelId/mclasses    @controllers.MetaModelAPI.mClasses(modelId: String)
+GET        /metamodels/:modelId/mrefs    @controllers.MetaModelAPI.mRefs(modelId: String)
+## TODO: Extend as necessary
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                   controllers.Assets.at(path="/public", file)
 

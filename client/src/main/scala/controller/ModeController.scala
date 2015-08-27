@@ -1,6 +1,13 @@
 package controller
 
+import scala.scalajs.js.Dynamic.literal
+import scala.scalajs.js._
 
 object ModeController {
-  def getAllModes: Seq[String] = Seq[String]("Scala", "Python", "Ruby", "Markdown", "Java")
+
+  def getAllModesForModel(modelId: String):  Map[String, scalajs.js.Any] = Map[String, scalajs.js.Any](
+    "Scala" -> "Scala",
+    "Python" -> "Python",
+    "TestMode" -> TestLanguage.langForModel(modelId)
+  )
 }

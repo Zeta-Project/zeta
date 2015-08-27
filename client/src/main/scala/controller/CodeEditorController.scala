@@ -10,9 +10,11 @@ import shared.CodeEditorMessage.{DocDeleted, DocAdded, TextOperation}
 import view.CodeEditorView
 import scalatags.Text.all._
 
-case class CodeEditorController(tgtDiv: String, diagramId: String) {
+case class CodeEditorController(tgtDiv: String,
+                                diagramId: String,
+                                metaModelId: String) {
 
-  val view = new CodeEditorView(tgtDiv, this)
+  val view = new CodeEditorView(tgtDiv = tgtDiv, controller = this, metaModelId = metaModelId)
   val ws = new WebSocketConnection(controller = this)
   val clientId = UUID.randomUUID().toString
 

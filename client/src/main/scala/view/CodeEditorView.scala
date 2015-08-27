@@ -13,7 +13,8 @@ import scalajs.js.Dynamic.literal
 import facade.JQueryUi._
 
 class CodeEditorView(tgtDiv: String,
-                     controller: CodeEditorController) {
+                     controller: CodeEditorController,
+                     metaModelId: String) {
 
   private val aceId = Random.alphanumeric.take(20).mkString
 
@@ -32,7 +33,6 @@ class CodeEditorView(tgtDiv: String,
   ))
 
   jQuery(".ace-container .editor").hide()
-
   var selectedId: String = ""
 
   private def renderNewDocumentForm() = div(
@@ -43,7 +43,7 @@ class CodeEditorView(tgtDiv: String,
     div(`class` := "form-group")(
       label(`for` := "doctype")("File Type"),
       select(`type` := "doctype", `class` := "form-control", `id` := "newDocType")
-        (for (mode <- ModeController.getAllModes) yield option(mode))
+        (for (mode <- ModeController.getAllModesForModel(metaModelId).keysIterator.toArray) yield option(mode))
     )
   ).render
 
@@ -62,7 +62,7 @@ class CodeEditorView(tgtDiv: String,
                   buttons = literal(
                     ok = literal(label = "Cancel", callback = () => {}),
                     cancel = literal(label = "Add", callback = () => {
-                      controller.addDocument(jQuery("#newDocTitle").`val`().asInstanceOf[String],jQuery("#newDocType").`val`().toString)
+                      controller.addDocument(jQuery("#newDocTitle").`val`().asInstanceOf[String], jQuery("#newDocType").`val`().toString)
                     }
                     )
                   )
@@ -111,7 +111,7 @@ class CodeEditorView(tgtDiv: String,
               span(
                 file.title,
                 span(`class` := "typcn typcn-document pull-right"),
-                span(`style` := "color: gray;",`class` := "pull-right")(file.docType)
+                span(`style` := "color: gray;", `class` := "pull-right")(file.docType)
               )
             ).render
         }
@@ -121,29 +121,28 @@ class CodeEditorView(tgtDiv: String,
     sidebar.appendTo(jQuery(s"#$tgtDiv .ace-container .row #sidebar"))
   }
 
-
-  // Helper
   var broadcast = true
   var currentId: String = ""
-
   var session: IEditSession = null
 
   def displayDoc(doc: Client) = {
-    session = ace.ace.createEditSession(doc.str, "ace/mode/"+doc.docType.toLowerCase)
+    session = ace.ace.createEditSession(
+      doc.str,
+      ModeController.getAllModesForModel(metaModelId)(doc.docType))
     session.on("change", {
       (delta: js.Any) =>
         if (broadcast) {
           controller.operationFromLocal(
             ScalotAceAdaptor
-              .aceDeltatoScalotOp(delta
-              .asInstanceOf[js.Dynamic]
-              .selectDynamic("data")
-              .asInstanceOf[Delta],
+              .aceDeltatoScalotOp(
+                delta
+                  .asInstanceOf[js.Dynamic]
+                  .selectDynamic("data")
+                  .asInstanceOf[Delta],
                 editor.getSession().getDocument()),
             selectedId)
         }
-    }: js.Function1[js.Any, Any]
-    )
+    }: js.Function1[js.Any, Any])
     editor.setSession(session)
     jQuery(".ace-container .editor").show()
   }
@@ -162,5 +161,4 @@ class CodeEditorView(tgtDiv: String,
       jQuery(".ace-container .editor").hide()
     }
   }
-
 }
