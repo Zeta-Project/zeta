@@ -2,12 +2,10 @@ package controllers
 
 import java.util.UUID
 
-import akka.actor.ActorRef
 import models._
 import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
-import play.filters.csrf.Global
 import securesocial.core.RuntimeEnvironment
 import play.api.Play.current
 

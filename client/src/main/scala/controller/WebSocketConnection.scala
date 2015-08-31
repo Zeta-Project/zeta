@@ -10,7 +10,7 @@ import scala.collection.mutable
 import org.scalajs.jquery._
 import scalatags.Text.all._
 
-case class WebSocketConnection(uri: String = "ws://141.37.112.195:9000/socket", controller: CodeEditorController) {
+case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/socket", controller: CodeEditorController) {
 
   /** Set up WebSocket connection */
   val ws = new dom.WebSocket(uri)

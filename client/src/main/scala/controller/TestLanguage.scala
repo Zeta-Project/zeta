@@ -13,7 +13,7 @@ object TestLanguage {
           decorator = "constant.support",
           comment = "comment",
           keyword = "keyword",
-          mclasses = "keyword",
+          mclasses = "comment",
           mrefs = "keyword",
           builtin = "constant.support",
           operator = "operator",

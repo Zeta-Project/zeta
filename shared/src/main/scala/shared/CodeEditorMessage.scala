@@ -2,8 +2,6 @@ package shared
 
 import scalot.Operation
 
-
-
 sealed trait CodeEditorMessage
 
 object CodeEditorMessage {

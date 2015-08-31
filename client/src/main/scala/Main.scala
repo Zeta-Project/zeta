@@ -14,6 +14,9 @@ object Main extends js.JSApp {
 
   @JSExport
   def main(): Unit = jQuery(dom.document).ready { () =>
-    val editorController = new CodeEditorController(tgtDiv = "editor", diagramId = "fakeDiagramId", metaModelId = "29c40d86-12a3-4aa9-9d87-9ea4e4f27a7f")
+    val editorController = new CodeEditorController(
+      tgtDiv = "editor",
+      diagramId = "fakeDiagramId",
+      metaModelId = "29c40d86-12a3-4aa9-9d87-9ea4e4f27a7f")
   }
 }
