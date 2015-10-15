@@ -82,17 +82,18 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
 
   def diagrams(uuid: String) = SecuredAction { implicit request =>
     val metaModels = Await.result(MetaModelDatabase.modelsOfUser(request.user.uuid.toString), 30 seconds)
+    var metaModel: MetaModel = null
+
     if (uuid != null) {
-      val metaModelExists = Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)
-      if (metaModelExists) {
-        val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
-        Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, metaModel))
-      } else {
-        Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, null))
+      if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
+        val dbMetaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
+        if (dbMetaModel.userUuid == request.user.uuid.toString) {
+          metaModel = dbMetaModel
+        }
       }
-    } else {
-      Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, null))
     }
+
+    Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, metaModel))
 
   }
 
