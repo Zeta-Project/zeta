@@ -428,7 +428,7 @@ var Rappid = Backbone.Router.extend({
                 // Send exported Metamodel to server
                 var metaModelName = metaModelWindow.prompt('Enter a name for this meta model and click "ok" to save it. Click "cancel" if you don\'t want to save it.');
                 if (metaModelName) {
-                    this.saveMetaModel(metaModel.getMetaModel(), metaModelName);
+                    this.saveMetaModel(metaModel.getMetaModel(), this.graph.toJSON(), metaModelName);
                 }
 
             } else {
@@ -441,14 +441,16 @@ var Rappid = Backbone.Router.extend({
         }, this));
     },
 
-    saveMetaModel: function (metaModel, metaModelName) {
+    saveMetaModel: function (metaModel, graph, metaModelName) {
         $.ajax({
             type: 'POST',
             url: '/saveMetaModel',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
                 name: metaModelName,
-                data: metaModel
+                data: metaModel,
+                graph: graph,
+                uuid: window.metaModelUUID
             }),
             success: function (data, textStatus, jqXHR) {
                 alert("Saved meta model: " + data);

@@ -8,8 +8,8 @@ import play.api.{Play, Logger}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-/** Represents a metamodel*/
-case class MetaModel(model: String, name: String, uuid: String, userUuid: String)
+/** Represents a metamodel */
+case class MetaModel(model: String, graph: String, name: String, uuid: String, userUuid: String)
 
 object MetaModelDatabase {
   val log = Logger(this getClass() getName())
@@ -19,8 +19,8 @@ object MetaModelDatabase {
   val coll = db("MetaModels")
 
   /** Salat Context **/
-  implicit val ctx =  new Context{
-    val name ="MetaModelCtx"
+  implicit val ctx = new Context {
+    val name = "MetaModelCtx"
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
@@ -34,14 +34,14 @@ object MetaModelDatabase {
   )
 
   /** loads Model with uuid */
-  def loadModel(uuid: String) : Future[Option[MetaModel]] = Future{
-      coll.find(MongoDBObject("uuid" -> uuid)).next() match {
-        case x: DBObject  => Some(grater[MetaModel].asObject(new MongoDBObject(x)))
-        case _ => None
-      }
+  def loadModel(uuid: String): Future[Option[MetaModel]] = Future {
+    coll.find(MongoDBObject("uuid" -> uuid)).next() match {
+      case x: DBObject => Some(grater[MetaModel].asObject(new MongoDBObject(x)))
+      case _ => None
+    }
   }
 
-  def modelExists(uuid:String) : Future[Boolean] = Future{
+  def modelExists(uuid: String): Future[Boolean] = Future {
     coll.findOne(MongoDBObject("uuid" -> uuid)) match {
       case Some(_) => true
       case None => false
@@ -49,10 +49,10 @@ object MetaModelDatabase {
   }
 
   /** returns all models created by [[models.SecureSocialUser]] with uuid ==  userUuid */
-  def modelsOfUser(userUuid: String) : Future[List[MetaModel]] = Future{
+  def modelsOfUser(userUuid: String): Future[List[MetaModel]] = Future {
     coll
       .find(MongoDBObject("userUuid" -> userUuid))
-      .map(x =>  grater[MetaModel].asObject(new MongoDBObject(x))).toList
+      .map(x => grater[MetaModel].asObject(new MongoDBObject(x))).toList
   }
 }
 

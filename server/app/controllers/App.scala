@@ -22,8 +22,16 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     Ok(views.html.index.render(Some(request.user)))
   }
 
-  def metaModelEditor() = SecuredAction { implicit request =>
-    Ok(views.html.metaModelEditor.render())
+  def metaModelEditor(uuid: String) = SecuredAction { implicit request =>
+    Ok(views.html.metaModelEditor.render(uuid))
+  }
+
+  def metaModelOverview() = SecuredAction { implicit request =>
+    Ok(views.html.metaModelOverview.render(Some(request.user)))
+  }
+
+  def newMetaModel() = SecuredAction { implicit request =>
+    Redirect(routes.App.metaModelEditor(UUID.randomUUID().toString))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
@@ -33,13 +41,22 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   def saveMetaModel() = SecuredAction { implicit request =>
     println(request.body.toString)
     request.body.asJson match {
-      case Some(json) =>
+      case Some(json) => {
+        val model = (json \ "data").as[JsValue].toString()
+        val graph = (json \ "graph").as[JsValue].toString()
+        val name = (json \ "name").as[String]
+        val uuid = (json \ "uuid").as[String]
+        val userUuid = request.user.uuid.toString
+
         MetaModelDatabase.saveModel(new MetaModel(
-          model = (json \ "data").as[JsValue].toString(),
-          name = (json \ "name").as[String],
-          uuid = UUID.randomUUID().toString,
-          userUuid = request.user.uuid.toString))
+          model = model,
+          graph = graph,
+          name = name,
+          uuid = uuid,
+          userUuid = userUuid))
         Ok("Saved.")
+      }
+
       case _ =>
         BadRequest("No valid Json Supplied.")
     }
@@ -49,23 +66,23 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     Ok(views.html.codeEditor.render(Some(request.user)))
   }
 
-  def newGraph(metaModelId:String) = SecuredAction{ implicit request =>
-      log.debug("Calling newGraph(" + metaModelId + ")")
-      if (Await.result(MetaModelDatabase.modelExists(metaModelId), 30 seconds)) {
-        Redirect(routes.App.editor(metaModelId, ShortUUID.uuid))
-      }
-      else {
-        log.error("attempting to create an editor with unknown ecore type")
-        Redirect(routes.App.index())
-      }
+  def newGraph(metaModelId: String) = SecuredAction { implicit request =>
+    log.debug("Calling newGraph(" + metaModelId + ")")
+    if (Await.result(MetaModelDatabase.modelExists(metaModelId), 30 seconds)) {
+      Redirect(routes.App.editor(metaModelId, ShortUUID.uuid))
+    }
+    else {
+      log.error("attempting to create an editor with unknown ecore type")
+      Redirect(routes.App.index())
+    }
   }
 
-  def diagrams = SecuredAction{ implicit request =>
+  def diagrams = SecuredAction { implicit request =>
     val metaModels = Await.result(MetaModelDatabase.modelsOfUser(request.user.uuid.toString), 30 seconds)
     Ok(views.html.diagramsOverview.render(metaModels, Some(request.user)))
   }
 
-  def editor(metaModelId:String, uuid:String) = SecuredAction{implicit request =>
+  def editor(metaModelId: String, uuid: String) = SecuredAction { implicit request =>
     Ok(views.html.editor.render(metaModelId, uuid, request.user.uuid.toString, request.user.profile.fullName.getOrElse("")))
   }
 
@@ -73,7 +90,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     CodeDocWSActor.props(out, CodeDocManagingActor.getCodeDocManager, "fakeDiagramId")
   }
 
-  def diagramSocket(instanceId:String, graphType:String) = WebSocket.acceptWithActor[String, String]{ request => out =>
+  def diagramSocket(instanceId: String, graphType: String) = WebSocket.acceptWithActor[String, String]{ request => out =>
     DiagramWSActor.props(out, instanceId, graphType)
   }
 }

@@ -4,27 +4,30 @@
 
 
 # Home page
-GET         /                               @controllers.App.index
-GET         /metaModelEditor                @controllers.App.metaModelEditor
-GET         /modelValidator                 @controllers.App.modelValidator
-GET         /codeEditor                     @controllers.App.codeEditor
-GET         /newgraph/:graphType            @controllers.App.newGraph(graphType: String)
-GET         /editor/:graphType/:uuid        @controllers.App.editor(graphType: String, uuid: String)
-GET         /diagrams                       @controllers.App.diagrams
+GET         /                                            @controllers.App.index
+GET         /metaModelEditor/:uuid                       @controllers.App.metaModelEditor(uuid: String)
+GET         /metaModels                                  @controllers.App.metaModelOverview()
+GET         /modelValidator                              @controllers.App.modelValidator
+GET         /codeEditor                                  @controllers.App.codeEditor
+GET         /newgraph/:graphType                         @controllers.App.newGraph(graphType: String)
+GET         /editor/:graphType/:uuid                     @controllers.App.editor(graphType: String, uuid: String)
+GET         /diagrams                                    @controllers.App.diagrams
 
-GET         /socket                         @controllers.App.codeSocket
-GET         /diagramsocket/:graphType/:instanceId      @controllers.App.diagramSocket(instanceId:String, graphType:String)
+GET         /newMetaModel                                @controllers.App.newMetaModel
 
-POST        /saveMetaModel                  @controllers.App.saveMetaModel
+GET         /socket                                      @controllers.App.codeSocket
+GET         /diagramsocket/:graphType/:instanceId        @controllers.App.diagramSocket(instanceId:String, graphType:String)
+
+POST        /saveMetaModel                               @controllers.App.saveMetaModel
 
 # MetaModel API
-GET        /metamodels/:modelId/mclasses    @controllers.MetaModelAPI.mClasses(modelId: String)
-GET        /metamodels/:modelId/mrefs    @controllers.MetaModelAPI.mRefs(modelId: String)
+GET         /metamodels/:modelId/mclasses                @controllers.MetaModelAPI.mClasses(modelId: String)
+GET         /metamodels/:modelId/mrefs                   @controllers.MetaModelAPI.mRefs(modelId: String)
 ## TODO: Extend as necessary
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                   controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                controllers.Assets.at(path="/public", file)
 
 
 # include securesocial routes
-->          /auth                           securesocial.Routes
+->          /auth                                        securesocial.Routes
