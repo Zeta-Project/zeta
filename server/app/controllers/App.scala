@@ -27,10 +27,6 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     Ok(views.html.metaModelEditor.render(uuid))
   }
 
-  def metaModelOverview() = SecuredAction { implicit request =>
-    Ok(views.html.metaModelOverview.render(Some(request.user)))
-  }
-
   def newMetaModel() = SecuredAction { implicit request =>
     Redirect(routes.App.metaModelEditor(UUID.randomUUID().toString))
   }
@@ -84,9 +80,20 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     }
   }
 
-  def diagrams = SecuredAction { implicit request =>
+  def diagrams(uuid: String) = SecuredAction { implicit request =>
     val metaModels = Await.result(MetaModelDatabase.modelsOfUser(request.user.uuid.toString), 30 seconds)
-    Ok(views.html.diagramsOverview.render(metaModels, Some(request.user)))
+    if (uuid != null) {
+      val metaModelExists = Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)
+      if (metaModelExists) {
+        val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
+        Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, metaModel))
+      } else {
+        Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, null))
+      }
+    } else {
+      Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, null))
+    }
+
   }
 
   def editor(metaModelId: String, uuid: String) = SecuredAction { implicit request =>

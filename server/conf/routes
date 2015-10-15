@@ -6,12 +6,12 @@
 # Home page
 GET         /                                            @controllers.App.index
 GET         /metaModelEditor/:uuid                       @controllers.App.metaModelEditor(uuid: String)
-GET         /metaModels                                  @controllers.App.metaModelOverview()
 GET         /modelValidator                              @controllers.App.modelValidator
 GET         /codeEditor                                  @controllers.App.codeEditor
 GET         /newgraph/:graphType                         @controllers.App.newGraph(graphType: String)
 GET         /editor/:graphType/:uuid                     @controllers.App.editor(graphType: String, uuid: String)
-GET         /diagrams                                    @controllers.App.diagrams
+GET         /diagrams                                    @controllers.App.diagrams(uuid: String = null)
+GET         /diagrams/:uuid                              @controllers.App.diagrams(uuid: String)
 
 GET         /newMetaModel                                @controllers.App.newMetaModel
 
