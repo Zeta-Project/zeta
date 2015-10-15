@@ -26,7 +26,7 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
   MetaModelDatabase.loadModel(graphType) onComplete{
     case scala.util.Success(opt) => opt match {
       case None => self ! MetamodelFailure()
-      case Some(mm) => self ! MetamodelLoaded(mm.model)
+      case Some(mm) => self ! MetamodelLoaded(mm.metaModel.data)
     }
     case scala.util.Failure(t) => self ! MetamodelFailure
   }

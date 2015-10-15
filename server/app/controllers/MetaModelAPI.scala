@@ -18,7 +18,7 @@ class MetaModelAPI(override implicit val env: RuntimeEnvironment[SecureSocialUse
   def mClasses(modelId: String) = SecuredAction { implicit request =>
      getModel(modelId) match {
        case Some(model) =>
-         Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
+         Ok(MetamodelBuilder().fromJson(Json.parse(model.metaModel.data).asInstanceOf[JsObject])
            .classes.keys.mkString("",", ",""))
        case _ => BadRequest("Model For Id Does Not Exist!")
      }
@@ -27,7 +27,7 @@ class MetaModelAPI(override implicit val env: RuntimeEnvironment[SecureSocialUse
   def mRefs(modelId: String) = SecuredAction { implicit request =>
     getModel(modelId) match {
       case Some(model) =>
-        Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
+        Ok(MetamodelBuilder().fromJson(Json.parse(model.metaModel.data).asInstanceOf[JsObject])
           .references.keys.mkString("",", ",""))
       case _ => BadRequest("Model For Id Does Not Exist!")
     }  }

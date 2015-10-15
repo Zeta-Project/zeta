@@ -12,6 +12,7 @@ import play.api.Play.current
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
+
 class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
 
   extends securesocial.core.SecureSocial[SecureSocialUser] {
@@ -42,18 +43,24 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     println(request.body.toString)
     request.body.asJson match {
       case Some(json) => {
-        val model = (json \ "data").as[JsValue].toString()
+        val data = (json \ "data").as[JsValue].toString()
         val graph = (json \ "graph").as[JsValue].toString()
         val name = (json \ "name").as[String]
         val uuid = (json \ "uuid").as[String]
         val userUuid = request.user.uuid.toString
 
         MetaModelDatabase.saveModel(new MetaModel(
-          model = model,
-          graph = graph,
-          name = name,
           uuid = uuid,
-          userUuid = userUuid))
+          userUuid = userUuid,
+          metaModel = new MetaModelData(
+            name = name,
+            data = data,
+            graph = graph
+          ),
+          style = new MetaModelStyle,
+          shape = new MetaModelShape,
+          diagram = new MetaModelDiagram
+        ))
         Ok("Saved.")
       }
 
