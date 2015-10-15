@@ -24,11 +24,20 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   }
 
   def metaModelEditor(uuid: String) = SecuredAction { implicit request =>
-    Ok(views.html.metaModelEditor.render(uuid))
+    if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
+      val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
+      if (metaModel.userUuid == request.user.uuid.toString) {
+        Ok(views.html.metaModelEditor.render(uuid, metaModel))
+      } else {
+        Redirect(routes.App.index())
+      }
+    } else {
+      Ok(views.html.metaModelEditor.render(uuid, null))
+    }
   }
 
   def newMetaModel() = SecuredAction { implicit request =>
-    Redirect(routes.App.metaModelEditor(UUID.randomUUID().toString))
+    Redirect(routes.App.metaModelEditor(UUID.randomUUID.toString))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
@@ -45,7 +54,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
         val uuid = (json \ "uuid").as[String]
         val userUuid = request.user.uuid.toString
 
-        MetaModelDatabase.saveModel(new MetaModel(
+        val metaModel = new MetaModel(
           uuid = uuid,
           userUuid = userUuid,
           metaModel = new MetaModelData(
@@ -56,7 +65,9 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
           style = new MetaModelStyle,
           shape = new MetaModelShape,
           diagram = new MetaModelDiagram
-        ))
+        )
+
+        MetaModelDatabase.saveModel(metaModel)
         Ok("Saved.")
       }
 

@@ -450,7 +450,7 @@ var Rappid = Backbone.Router.extend({
                 name: metaModelName,
                 data: metaModel,
                 graph: graph,
-                uuid: window.metaModelUUID
+                uuid: window.loadedMetaModel.uuid
             }),
             success: function (data, textStatus, jqXHR) {
                 alert("Saved meta model: " + data);
