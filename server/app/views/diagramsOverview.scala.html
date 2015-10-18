@@ -1,6 +1,6 @@
 @(metaModels: List[MetaModel], user: Option[SecureSocialUser])
 
-@main("New Diagram", user) {
+@webpage.WebpageGeneralLayout("New Diagram", user) {
 
 	<div class="row">
 		<div class="lead col-xs-10 col-xs-offset-1">
@@ -29,7 +29,7 @@
 			   				<img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
 		   					<div class="transparentBackground"></div>
 		   					<div class="linkText">@model.name</div>
-			   				<a class="ecoreLink" href="@routes.App.newGraph(model.uuid)"></a>
+			   				<a class="ecoreLink" href="@routes.Webpage.newGraph(model.uuid)"></a>
 		   				</div>
 		   			</div>
 				}

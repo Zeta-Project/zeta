@@ -1,6 +1,5 @@
 package controllers
 
-import akka.actor.ActorRef
 import models._
 import securesocial.core.RuntimeEnvironment
 

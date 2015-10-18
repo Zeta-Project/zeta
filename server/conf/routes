@@ -3,28 +3,71 @@
 # ~~~~
 
 
-# Home page
-GET         /                               @controllers.App.index
-GET         /metaModelEditor                @controllers.App.metaModelEditor
-GET         /modelValidator                 @controllers.App.modelValidator
-GET         /codeEditor                     @controllers.App.codeEditor
-GET         /newgraph/:graphType            @controllers.App.newGraph(graphType: String)
-GET         /editor/:graphType/:uuid        @controllers.App.editor(graphType: String, uuid: String)
-GET         /diagrams                       @controllers.App.diagrams
+### Webpage
+GET         /                                               @controllers.Webpage.index
 
-GET         /socket                         @controllers.App.codeSocket
-GET         /diagramsocket/:graphType/:instanceId      @controllers.App.diagramSocket(instanceId:String, graphType:String)
+### Metamodel
+GET         /metaModelEditor                                @controllers.MetaModelController.metaModelEditor
+POST        /saveMetaModel                                  @controllers.MetaModelController.saveMetaModel
+GET         /metaModelcodeEditor                            @controllers.MetaModelController.codeEditor
+GET         /metaModelValidator                             @controllers.MetaModelController.modelValidator
 
-POST        /saveMetaModel                  @controllers.App.saveMetaModel
+### MetaModel REST API
+GET        /metamodels/:metamodelId                         @controllers.MetaModelRESTAPI.getMetaModel(metamodelId: String)
+# POST
+# PUT
+# DELETE
+GET        /metamodels/:metamodelId/mclasses                @controllers.MetaModelRESTAPI.getmClasses(metamodelId: String)
+# POST
+# PUT
+# DELETE
+GET        /metamodels/mclasses/:mclassId                   @controllers.MetaModelRESTAPI.getmClass(mclassId: String)
+# POST
+# PUT
+# DELETE
+GET        /metamodels/:metamodelId/mrefs                   @controllers.MetaModelRESTAPI.getmRefs(metamodelId: String)
+# POST
+# PUT
+# DELETE
+GET        /metamodels/mrefs/:mrefId                        @controllers.MetaModelRESTAPI.getmRef(mrefId: String)
+# POST
+# PUT
+# DELETE
 
-# MetaModel API
-GET        /metamodels/:modelId/mclasses    @controllers.MetaModelAPI.mClasses(modelId: String)
-GET        /metamodels/:modelId/mrefs    @controllers.MetaModelAPI.mRefs(modelId: String)
-## TODO: Extend as necessary
 
-# Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                   controllers.Assets.at(path="/public", file)
+### Model
+GET         /newgraph/:graphType                            @controllers.Webpage.newGraph(graphType: String)
+GET         /editor/:graphType/:uuid                        @controllers.Webpage.editor(graphType: String, uuid: String)
+GET         /diagrams                                       @controllers.Webpage.diagrams
 
+### Model REST API
+GET        /models/:modelId                                 @controllers.ModelRESTAPI.getModel(modelId: String)
+# POST
+# PUT
+# DELETE
+GET        /models/:modelId/nodes                           @controllers.ModelRESTAPI.getNodes(modelId: String)
+# POST
+# PUT
+# DELETE
+GET        /models/nodes/:nodeId                            @controllers.ModelRESTAPI.getNode(nodeId: String)
+# POST
+# PUT
+# DELETE
+GET        /models/:modelId/edges                           @controllers.ModelRESTAPI.getEdges(modelId: String)
+# POST
+# PUT
+# DELETE
+GET        /models/edges/:edgeId                            @controllers.ModelRESTAPI.getEdge(edgeId: String)
+# POST
+# PUT
+# DELETE
 
-# include securesocial routes
-->          /auth                           securesocial.Routes
+### Common
+GET         /socket                                         @controllers.Webpage.codeSocket
+GET         /diagramsocket/:graphType/:instanceId           @controllers.Webpage.diagramSocket(instanceId:String, graphType:String)
+
+### Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                               controllers.Assets.at(path="/public", file)
+
+### include securesocial routes
+->          /auth                                       securesocial.Routes

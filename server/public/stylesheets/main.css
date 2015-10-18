@@ -76,3 +76,18 @@
 .btn-uuid {
     min-width: 21em;
 }
+
+paper-button {
+    font-size: 14px;
+    width: 150px;
+    background: darkgray;
+    color: black;
+}
+
+paper-button:hover {
+    background: lightblue;
+}
+
+paper-button::shadow #ripple {
+    color: #2a56c6;
+}

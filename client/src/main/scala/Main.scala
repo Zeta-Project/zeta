@@ -18,5 +18,8 @@ object Main extends js.JSApp {
       tgtDiv = "editor",
       diagramId = "fakeDiagramId",
       metaModelId = "29c40d86-12a3-4aa9-9d87-9ea4e4f27a7f")
+
+
   }
+
 }
