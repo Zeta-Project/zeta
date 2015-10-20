@@ -78,12 +78,16 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
 
   def deleteMetaModel(uuid: String) = SecuredAction { implicit request =>
     val userUuid = request.user.uuid.toString
-    val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds)
-    if (metaModel.isDefined && metaModel.get.userUuid == userUuid) {
-      MetaModelDatabase.deleteModel(uuid)
-      Redirect(routes.App.diagrams(null))
+    if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
+      val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds)
+      if (metaModel.isDefined && metaModel.get.userUuid == userUuid) {
+        MetaModelDatabase.deleteModel(uuid)
+        Redirect(routes.App.diagrams(null))
+      } else {
+        Redirect(routes.App.index())
+      }
     } else {
-      BadRequest("No your Model.")
+      Redirect(routes.App.index())
     }
   }
 
