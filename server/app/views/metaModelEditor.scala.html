@@ -1,3 +1,4 @@
+@import play.api.libs.json.Json
 @(uuid: String, metaModel: MetaModel)
 
 <!DOCTYPE html>
@@ -12,8 +13,9 @@
         window.loadedMetaModel.uuid = "@uuid";
         @if(metaModel != null) {
             window.loadedMetaModel.loadOnStart = true;
-            window.loadedMetaModel.graph = "@metaModel.metaModel.graph.";
-            window.loadedMetaModel.metaModel = "@metaModel.metaModel.data";
+            window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.graph))));
+            window.loadedMetaModel.metaModel = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.data))));
+            window.loadedMetaModel.name = "@metaModel.metaModel.name";
         }
         </script>
         <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>

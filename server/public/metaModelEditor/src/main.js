@@ -23,11 +23,19 @@ var Rappid = Backbone.Router.extend({
         this.initializeStencil();
         this.initializeSelection();
         this.initializeMEnum();
+
+        if (window.loadedMetaModel.loadOnStart === true) {
+            this.graph.fromJSON(_.extend({}, window.loadedMetaModel.graph));
+        }
+
         this.initializeHaloAndInspector();
         this.initializeClipboard();
         this.initializeCommandManager();
+
         this.initializeToolbar();
         linkTypeSelector.init(this.graph);
+
+
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
@@ -426,7 +434,7 @@ var Rappid = Backbone.Router.extend({
                 metaModelWindow.document.title = 'Exported Meta Model';
 
                 // Send exported Metamodel to server
-                var metaModelName = metaModelWindow.prompt('Enter a name for this meta model and click "ok" to save it. Click "cancel" if you don\'t want to save it.');
+                var metaModelName = metaModelWindow.prompt('Enter a name for this meta model and click "ok" to save it. Click "cancel" if you don\'t want to save it.', window.loadedMetaModel.name || "");
                 if (metaModelName) {
                     this.saveMetaModel(metaModel.getMetaModel(), this.graph.toJSON(), metaModelName);
                 }
