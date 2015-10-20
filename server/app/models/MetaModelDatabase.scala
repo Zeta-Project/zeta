@@ -58,5 +58,10 @@ object MetaModelDatabase {
       .find(MongoDBObject("userUuid" -> userUuid))
       .map(x => grater[MetaModel].asObject(new MongoDBObject(x))).toList
   }
+
+  def deleteModel(uuid: String): Future[Boolean] = Future {
+    coll.remove(MongoDBObject("uuid" -> uuid))
+    true
+  }
 }
 

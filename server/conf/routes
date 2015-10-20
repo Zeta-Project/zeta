@@ -20,6 +20,8 @@ GET         /diagramsocket/:graphType/:instanceId        @controllers.App.diagra
 
 POST        /saveMetaModel                               @controllers.App.saveMetaModel
 
+GET         /deleteMetaModel/:uuid                       @controllers.App.deleteMetaModel(uuid: String)
+
 # MetaModel API
 GET         /metamodels/:modelId/mclasses                @controllers.MetaModelAPI.mClasses(modelId: String)
 GET         /metamodels/:modelId/mrefs                   @controllers.MetaModelAPI.mRefs(modelId: String)

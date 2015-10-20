@@ -22,19 +22,19 @@
                             <strong>Your Meta Models</strong>
                         </div>
                         <div class="panel-body">
-                            @if(metaModels != null && metaModels.nonEmpty) {
-                                <div class="list-group">
-                                @for(model <- metaModels) {
-                                    <a href="@routes.App.diagrams(model.uuid)" class="list-group-item
+                        @if(metaModels != null && metaModels.nonEmpty) {
+                            <div class="list-group">
+                            @for(model <- metaModels) {
+                                <a href="@routes.App.diagrams(model.uuid)" class="list-group-item
                                     @if(metaModel != null && model.uuid == metaModel.uuid) {
-                                        active
-                                    }
-                                    ">@model.metaModel.name</a>
+                                    active
                                 }
-                                </div>
-                            } else {
-                                There are no meta models.
+                                ">@model.metaModel.name</a>
                             }
+                            </div>
+                        } else {
+                            There are no meta models.
+                        }
                         </div>
                         <div class="panel-footer">
                             <a href="@routes.App.newMetaModel" class="btn btn-default">New Meta Model</a>
@@ -92,6 +92,9 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="panel-footer">
+                                <a href="@routes.App.deleteMetaModel(metaModel.uuid)" class="btn btn-danger">Delete Meta Model</a>
+                            </div>
                         </div>
                     </div>
                 }
@@ -106,7 +109,8 @@
                                 There are no model instances.
                             </div>
                             <div class="panel-footer">
-                                <a href="@routes.App.newGraph(metaModel.uuid)" class="btn btn-default">New Model Instance</a>
+                                <a href="@routes.App.newGraph(metaModel.uuid)" class="btn btn-default">
+                                    New Model Instance</a>
                             </div>
                         </div>
                     </div>
