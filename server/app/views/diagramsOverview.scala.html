@@ -1,120 +1,117 @@
 @(user: Option[SecureSocialUser], metaModels: List[MetaModel], metaModel: MetaModel)
 
-@main("New Diagram", user) {
-    <div class="container">
+    @main("New Diagram", user) {
+        <div class="container">
 
-        <div class="row">
-            <div class="lead col-md-10">
-                <p>Hello,
-                    @user match {
-                        case Some(u) => {
-                            @u.profile.fullName! }
-                        case _ => { Guest! }
-                }
-                </p>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-10">
-                <p>
-                    <a href="@routes.App.newMetaModel" class="btn btn-default">New Meta Model</a>
-                </p>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                         <strong>Your Meta Models</strong>
-                    </div>
-                    <div class="panel-body">
-                    @if(metaModels != null && metaModels.nonEmpty) {
-                        <div class="list-group">
-                        @for(model <- metaModels) {
-                            <a href="@routes.App.diagrams(model.uuid)" class="list-group-item
-                                    @if(metaModel != null && model.uuid == metaModel.uuid) {
-                                active
-                            }
-                            ">@model.metaModel.name</a>
-                        }
-                        </div>
-                    } else {
-                        There are no meta models.
+            <div class="row">
+                <div class="lead col-md-10">
+                    <p>Hello,
+                        @user match {
+                            case Some(u) => {
+                                @u.profile.fullName! }
+                            case _ => { Guest! }
                     }
-                    </div>
+                    </p>
                 </div>
             </div>
 
-            @if(metaModel != null) {
+            <div class="row">
                 <div class="col-md-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <strong>Edit @metaModel.metaModel.name</strong>
-                        </div>
-                        <div class="panel-body text-center">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <a href="@routes.App.codeEditor">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Style</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-6">
-                                    <a href="@routes.App.codeEditor">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Shape</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="@routes.App.codeEditor">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Diagram</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="@routes.App.metaModelEditor(metaModel.uuid)">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Meta Model Editor</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            @if(metaModel != null) {
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <strong>Model Instances</strong>
+                            <strong>Your Meta Models</strong>
                         </div>
                         <div class="panel-body">
-                            No instances
+                            @if(metaModels != null && metaModels.nonEmpty) {
+                                <div class="list-group">
+                                @for(model <- metaModels) {
+                                    <a href="@routes.App.diagrams(model.uuid)" class="list-group-item
+                                    @if(metaModel != null && model.uuid == metaModel.uuid) {
+                                        active
+                                    }
+                                    ">@model.metaModel.name</a>
+                                }
+                                </div>
+                            } else {
+                                There are no meta models.
+                            }
+                        </div>
+                        <div class="panel-footer">
+                            <a href="@routes.App.newMetaModel" class="btn btn-default">New Meta Model</a>
                         </div>
                     </div>
                 </div>
-            }
 
+                @if(metaModel != null) {
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <strong>Edit Meta Model <em>@metaModel.metaModel.name</em></strong>
+                            </div>
+                            <div class="panel-body text-center">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <a href="@routes.App.codeEditor">
+                                            <div class="panel panel-default">
+                                                <div class="panel-body">
+                                                    <strong>Style</strong>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <a href="@routes.App.codeEditor">
+                                            <div class="panel panel-default">
+                                                <div class="panel-body">
+                                                    <strong>Shape</strong>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="@routes.App.codeEditor">
+                                            <div class="panel panel-default">
+                                                <div class="panel-body">
+                                                    <strong>Diagram</strong>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <a href="@routes.App.metaModelEditor(metaModel.uuid)">
+                                            <div class="panel panel-default">
+                                                <div class="panel-body">
+                                                    <strong>Meta Model Editor</strong>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @if(metaModel != null) {
+                    <div class="col-md-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <strong>Model Instances for Meta Model <em>@metaModel.metaModel.name</em></strong>
+                            </div>
+                            <div class="panel-body">
+                                There are no model instances.
+                            </div>
+                            <div class="panel-footer">
+                                <a href="@routes.App.newGraph(metaModel.uuid)" class="btn btn-default">New Model Instance</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
         </div>
-    </div>
-}
+    }
