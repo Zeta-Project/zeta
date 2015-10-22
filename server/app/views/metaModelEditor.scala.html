@@ -1,5 +1,5 @@
 @import play.api.libs.json.Json
-@(uuid: String, metaModel: MetaModel)
+@(uuid: String, metaModel: Option[MetaModel])
 
 <!DOCTYPE html>
 <html>
@@ -11,11 +11,11 @@
         <script type="text/javascript">
         window.loadedMetaModel = {};
         window.loadedMetaModel.uuid = "@uuid";
-        @if(metaModel != null) {
+        @if(metaModel.isDefined) {
             window.loadedMetaModel.loadOnStart = true;
-            window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.graph))));
-            window.loadedMetaModel.metaModel = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.data))));
-            window.loadedMetaModel.name = "@metaModel.metaModel.name";
+            window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.graph))));
+            window.loadedMetaModel.metaModel = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.data))));
+            window.loadedMetaModel.name = "@metaModel.get.metaModel.name";
         }
         </script>
         <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>

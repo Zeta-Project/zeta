@@ -27,17 +27,17 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
       val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
       if (metaModel.userUuid == request.user.uuid.toString) {
-        Ok(views.html.metaModelEditor.render(uuid, metaModel))
+        Ok(views.html.metaModelEditor.render(uuid, Some(metaModel)))
       } else {
         Redirect(routes.App.index())
       }
     } else {
-      Ok(views.html.metaModelEditor.render(uuid, null))
+      Ok(views.html.metaModelEditor.render(uuid, None))
     }
   }
 
   def newMetaModel() = SecuredAction { implicit request =>
-    Redirect(routes.App.metaModelEditor(UUID.randomUUID.toString))
+    Ok(views.html.metaModelEditor.render(UUID.randomUUID.toString, None))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
@@ -45,31 +45,41 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   }
 
   def saveMetaModel() = SecuredAction { implicit request =>
-    println(request.body.toString)
     request.body.asJson match {
-      case Some(json) => {
-        val data = (json \ "data").as[JsValue].toString()
-        val graph = (json \ "graph").as[JsValue].toString()
-        val name = (json \ "name").as[String]
+      case Some(json) =>
         val uuid = (json \ "uuid").as[String]
-        val userUuid = request.user.uuid.toString
 
-        val metaModel = new MetaModel(
-          uuid = uuid,
-          userUuid = userUuid,
-          metaModel = new MetaModelData(
-            name = name,
-            data = data,
-            graph = graph
-          ),
-          style = new MetaModelStyle,
-          shape = new MetaModelShape,
-          diagram = new MetaModelDiagram
-        )
+        var validUuid = true
+        try {
+          UUID.fromString(uuid)
+        } catch {
+          case _: IllegalArgumentException => validUuid = false
+        }
 
-        MetaModelDatabase.saveModel(metaModel)
-        Ok("Saved.")
-      }
+        if (validUuid) {
+          val data = (json \ "data").as[JsValue].toString()
+          val graph = (json \ "graph").as[JsValue].toString()
+          val name = (json \ "name").as[String]
+          val userUuid = request.user.uuid.toString
+
+          val metaModel = new MetaModel(
+            uuid = uuid,
+            userUuid = userUuid,
+            metaModel = new MetaModelData(
+              name = name,
+              data = data,
+              graph = graph
+            ),
+            style = new MetaModelStyle,
+            shape = new MetaModelShape,
+            diagram = new MetaModelDiagram
+          )
+
+          MetaModelDatabase.saveModel(metaModel)
+          Ok("Saved.")
+        } else {
+          BadRequest("Invalid UUID")
+        }
 
       case _ =>
         BadRequest("No valid Json Supplied.")
@@ -108,18 +118,18 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
 
   def diagrams(uuid: String) = SecuredAction { implicit request =>
     val metaModels = Await.result(MetaModelDatabase.modelsOfUser(request.user.uuid.toString), 30 seconds)
-    var metaModel: MetaModel = null
+    var metaModel: Option[MetaModel] = None
 
     if (uuid != null) {
       if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
         val dbMetaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
         if (dbMetaModel.userUuid == request.user.uuid.toString) {
-          metaModel = dbMetaModel
+          metaModel = Some(dbMetaModel)
         }
       }
     }
 
-    Ok(views.html.diagramsOverview.render(Some(request.user), metaModels, metaModel))
+    Ok(views.html.diagramsOverview.render(Some(request.user), Some(metaModels), metaModel))
 
   }
 
