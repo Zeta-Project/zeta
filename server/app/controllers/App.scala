@@ -3,6 +3,7 @@ package controllers
 import java.util.UUID
 
 import models._
+import modigen.util.graph.MetamodelGraphDiff
 import play.api.Logger
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
@@ -27,6 +28,9 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
       val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
       if (metaModel.userUuid == request.user.uuid.toString) {
+
+        new MetamodelGraphDiff(metaModel.metaModel).fixMetaModel()
+
         Ok(views.html.metaModelEditor.render(uuid, Some(metaModel)))
       } else {
         Redirect(routes.App.index())
