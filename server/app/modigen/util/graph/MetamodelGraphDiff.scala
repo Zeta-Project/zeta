@@ -1,7 +1,7 @@
 package modigen.util.graph
 
 import models.MetaModelData
-import play.api.libs.json.{JsArray, JsObject, Json}
+import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 import scala.collection.Set
 
@@ -9,14 +9,36 @@ class MetamodelGraphDiff(val metaModelData: MetaModelData) {
   val metaModel = Json.parse(metaModelData.data).as[JsObject]
   var graph = Json.parse(metaModelData.graph).as[JsObject]
 
-  def fixMetaModel() = {
-    fixAttributes()
+  def fixMetaModel(): MetaModelData = {
 
     def fixAttributes() = {
       metaModel.keys.foreach { elementKey =>
-        metaModelOnlyAttributes(elementKey).foreach(attribute => removeFromGraph(elementKey, attributeName(attribute)))
-        graphOnlyAttributes(elementKey).foreach(attribute => addToGraph(elementKey, attribute))
-        changedAttributes(elementKey).foreach(attribute => changeInGraph(elementKey, attribute))
+        graphOnlyAttributes(elementKey).foreach(attribute => graph = removeFromGraph(elementKey, attribute))
+        metaModelOnlyAttributes(elementKey).foreach(attribute => graph = addToGraph(elementKey, attribute))
+        changedAttributes(elementKey).foreach { a =>
+          val graphAttribute = a._2
+          val metaModelAttribute = a._1
+          graph = removeFromGraph(elementKey, graphAttribute)
+          graph = addToGraph(elementKey, metaModelAttribute)
+        }
+      }
+
+      def removeFromGraph(elementKey: String, attribute: JsObject): JsObject = {
+        val newAttributes = JsArray((graphAttributes(elementKey) - attribute).toSeq)
+        val newGraph = replaceAttributes(elementKey, newAttributes)
+        newGraph
+      }
+
+      def addToGraph(elementKey: String, attribute: JsObject) = {
+        val newAttributes = JsArray((graphAttributes(elementKey) + attribute).toSeq)
+        val newGraph = replaceAttributes(elementKey, newAttributes)
+        newGraph
+      }
+
+      def replaceAttributes(elementKey: String, newAttributes: JsArray): JsObject = {
+        val newCell = JsObject((graphCell(elementKey).get.as[Map[String, JsValue]] - "m_attributes" + ("m_attributes" -> newAttributes)).toSeq)
+        val newCells = JsArray((graphCells - graphCell(elementKey).get + newCell).toSeq)
+        JsObject((graph.as[Map[String, JsValue]] - "cells" + ("cells" -> newCells)).toSeq)
       }
 
       def graphCells: Set[JsObject] = (graph \ "cells").as[Set[JsObject]]
@@ -64,32 +86,32 @@ class MetamodelGraphDiff(val metaModelData: MetaModelData) {
         diff.map(attrName => graphAttributes(elementKey).filter(attr => attributeName(attr) == attrName).head)
       }
 
-      def changedAttributes(elementKey: String): Set[JsObject] = {
-        var changedAttrs = Set[JsObject]()
+      /*
+       * Das Tupel enthaelt die folgenden zwei Objekte:
+       * 1. Das Attribut-Objekt des Metamodells
+       * 2. Das Attribut-Objekt des Graphs
+       */
+      def changedAttributes(elementKey: String): Set[(JsObject, JsObject)] = {
+        var changedAttrs = Set[(JsObject, JsObject)]()
         metaModelAttributes(elementKey).foreach { metaModelAttribute =>
-          val graphAttribute = graphAttributes(elementKey).filter(attr => attributeName(attr) == attributeName(metaModelAttribute)).head
-          if (metaModelAttribute != graphAttribute) {
-            changedAttrs = changedAttrs + metaModelAttribute
+          val graphAttribute = graphAttributes(elementKey).find(attr => attributeName(attr) == attributeName(metaModelAttribute))
+          graphAttribute match {
+            case Some(attribute) =>
+              if (metaModelAttribute != attribute) {
+                val attrs = (metaModelAttribute, attribute)
+                changedAttrs = changedAttrs + attrs
+              }
+            case None => ;
           }
+
         }
         changedAttrs
       }
 
-      def removeFromGraph(elementKey: String, attributeKey: String) = {
-
-      }
-
-      def addToGraph(elementKey: String, attribute: JsObject) = {
-
-      }
-
-      def changeInGraph(elementKey: String, attribute: JsObject) = {
-
-      }
-
-
     }
 
-  }
+    fixAttributes()
+    metaModelData.copy(graph = graph.toString())
 
+  }
 }

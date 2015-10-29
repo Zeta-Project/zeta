@@ -29,9 +29,12 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
       val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
       if (metaModel.userUuid == request.user.uuid.toString) {
 
-        new MetamodelGraphDiff(metaModel.metaModel).fixMetaModel()
+        // Fix Graph if something changed in the Meta Model
+        val metaModelData = new MetamodelGraphDiff(metaModel.metaModel).fixMetaModel()
+        val newModel = metaModel.copy(metaModel = metaModelData)
+        // MetaModelDatabase.saveModel(newModel) <-- Direkt abspeichern?
 
-        Ok(views.html.metaModelEditor.render(uuid, Some(metaModel)))
+        Ok(views.html.metaModelEditor.render(uuid, Some(newModel)))
       } else {
         Redirect(routes.App.index())
       }
