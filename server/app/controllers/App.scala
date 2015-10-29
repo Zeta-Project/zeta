@@ -30,7 +30,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
       if (metaModel.userUuid == request.user.uuid.toString) {
 
         // Fix Graph if something changed in the Meta Model
-        val metaModelData = new MetamodelGraphDiff(metaModel.metaModel).fixMetaModel()
+        val metaModelData = MetamodelGraphDiff.fixMetaModel(metaModel.metaModel)
         val newModel = metaModel.copy(metaModel = metaModelData)
         // MetaModelDatabase.saveModel(newModel) <-- Direkt abspeichern?
 

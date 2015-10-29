@@ -5,13 +5,14 @@ import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 import scala.collection.Set
 
-class MetamodelGraphDiff(val metaModelData: MetaModelData) {
-  val metaModel = Json.parse(metaModelData.data).as[JsObject]
-  var graph = Json.parse(metaModelData.graph).as[JsObject]
+object MetamodelGraphDiff {
 
-  def fixMetaModel(): MetaModelData = {
+  def fixMetaModel(metaModelData: MetaModelData): MetaModelData = {
+    val metaModel = Json.parse(metaModelData.data).as[JsObject]
+    var graph = Json.parse(metaModelData.graph).as[JsObject]
 
     def fixAttributes() = {
+
       metaModel.keys.foreach { elementKey =>
         graphOnlyAttributes(elementKey).foreach(attribute => graph = removeFromGraph(elementKey, attribute))
         metaModelOnlyAttributes(elementKey).foreach(attribute => graph = addToGraph(elementKey, attribute))
@@ -88,8 +89,8 @@ class MetamodelGraphDiff(val metaModelData: MetaModelData) {
 
       /*
        * Das Tupel enthaelt die folgenden zwei Objekte:
-       * 1. Das Attribut-Objekt des Metamodells
-       * 2. Das Attribut-Objekt des Graphs
+       * ._1 Das Attribut-Objekt des Metamodells
+       * ._2 Das Attribut-Objekt des Graphs
        */
       def changedAttributes(elementKey: String): Set[(JsObject, JsObject)] = {
         var changedAttrs = Set[(JsObject, JsObject)]()
