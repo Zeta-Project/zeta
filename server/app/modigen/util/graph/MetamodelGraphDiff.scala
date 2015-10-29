@@ -7,6 +7,16 @@ import scala.collection.Set
 
 object MetamodelGraphDiff {
 
+  /**
+   * Die Funktion prueft, ob der Graph zum Metamodell noch konsistent ist. Dies kann dann notwendig sein, wenn von
+   * ausserhalb, bspw. ueber die REST-Schnittstelle zum Metamodell, das Metamodell veraendert wurden
+   * ohne den Graph dazu anzupassen.
+   * Aenderungen sind nur an den Attributen zugelassen; die Funktion kann den Graph korrigieren, wenn Attribute aus
+   * dem Metamodell entfernt, zum Metamodell hinzugefuegt oder Attribute im Metamodell veraendert wurden.
+   *
+   * @param metaModelData MetaModelData-Objekt, welches Graph und Data enthaelt.
+   * @return Ein neues MetaModelData-Objekt mit korrigiertem Graph.
+   */
   def fixMetaModel(metaModelData: MetaModelData): MetaModelData = {
     val metaModel = Json.parse(metaModelData.data).as[JsObject]
     var graph = Json.parse(metaModelData.graph).as[JsObject]

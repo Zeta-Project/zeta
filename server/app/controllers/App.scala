@@ -12,6 +12,7 @@ import play.api.Play.current
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.Try
 
 
 class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
@@ -29,7 +30,7 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
       val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
       if (metaModel.userUuid == request.user.uuid.toString) {
 
-        // Fix Graph if something changed in the Meta Model
+        // Fix Graph if something has been changed in the Meta Model
         val metaModelData = MetamodelGraphDiff.fixMetaModel(metaModel.metaModel)
         val newModel = metaModel.copy(metaModel = metaModelData)
         // MetaModelDatabase.saveModel(newModel) <-- Direkt abspeichern?
@@ -54,42 +55,26 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   def saveMetaModel() = SecuredAction { implicit request =>
     request.body.asJson match {
       case Some(json) =>
-        val uuid = (json \ "uuid").as[String]
+        Try(UUID.fromString((json \ "uuid").as[String])).toOption match {
+          case Some(uuid) =>
+            MetaModelDatabase.saveModel(new MetaModel(
+                uuid = uuid.toString,
+                userUuid = request.user.uuid.toString,
+                metaModel = new MetaModelData(
+                  name = (json \ "name").as[String],
+                  data = (json \ "data").as[JsValue].toString(),
+                  graph = (json \ "graph").as[JsValue].toString()
+                ),
+                style = new MetaModelStyle,
+                shape = new MetaModelShape,
+                diagram = new MetaModelDiagram
+              ))
 
-        var validUuid = true
-        try {
-          UUID.fromString(uuid)
-        } catch {
-          case _: IllegalArgumentException => validUuid = false
+            Ok("Saved")
+          case None => BadRequest("Invalid UUID")
         }
-
-        if (validUuid) {
-          val data = (json \ "data").as[JsValue].toString()
-          val graph = (json \ "graph").as[JsValue].toString()
-          val name = (json \ "name").as[String]
-          val userUuid = request.user.uuid.toString
-
-          val metaModel = new MetaModel(
-            uuid = uuid,
-            userUuid = userUuid,
-            metaModel = new MetaModelData(
-              name = name,
-              data = data,
-              graph = graph
-            ),
-            style = new MetaModelStyle,
-            shape = new MetaModelShape,
-            diagram = new MetaModelDiagram
-          )
-
-          MetaModelDatabase.saveModel(metaModel)
-          Ok("Saved.")
-        } else {
-          BadRequest("Invalid UUID")
-        }
-
-      case _ =>
-        BadRequest("No valid Json Supplied.")
+      case None =>
+        BadRequest("No valid JSON")
     }
   }
 
