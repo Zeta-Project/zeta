@@ -4,70 +4,73 @@
 
 
 ### Webpage
-GET         /                                               @controllers.Webpage.index
+GET         /                                            @controllers.Webpage.index
 
 ### Metamodel
-GET         /metaModelEditor                                @controllers.MetaModelController.metaModelEditor
-POST        /saveMetaModel                                  @controllers.MetaModelController.saveMetaModel
-GET         /metaModelcodeEditor                            @controllers.MetaModelController.codeEditor
-GET         /metaModelValidator                             @controllers.MetaModelController.modelValidator
+GET         /metaModelEditor                             @controllers.MetaModelController.metaModelEditor
+POST        /saveMetaModel                               @controllers.MetaModelController.saveMetaModel
+GET         /metaModelcodeEditor                         @controllers.MetaModelController.codeEditor
+GET         /metaModelValidator                          @controllers.MetaModelController.modelValidator
 
 ### MetaModel REST API
-GET        /metamodels/:metamodelId                         @controllers.MetaModelRESTAPI.getMetaModel(metamodelId: String)
+GET         /metamodels/:metamodelId                     @controllers.MetaModelRESTAPI.getMetaModel(metamodelId: String)
 # POST
 # PUT
 # DELETE
-GET        /metamodels/:metamodelId/mclasses                @controllers.MetaModelRESTAPI.getmClasses(metamodelId: String)
+GET         /metamodels/:metamodelId/mclasses            @controllers.MetaModelRESTAPI.getmClasses(metamodelId: String)
 # POST
 # PUT
 # DELETE
-GET        /metamodels/mclasses/:mclassId                   @controllers.MetaModelRESTAPI.getmClass(mclassId: String)
+GET         /metamodels/mclasses/:mclassId               @controllers.MetaModelRESTAPI.getmClass(mclassId: String)
 # POST
 # PUT
 # DELETE
-GET        /metamodels/:metamodelId/mrefs                   @controllers.MetaModelRESTAPI.getmRefs(metamodelId: String)
+GET         /metamodels/:metamodelId/mrefs               @controllers.MetaModelRESTAPI.getmRefs(metamodelId: String)
 # POST
 # PUT
 # DELETE
-GET        /metamodels/mrefs/:mrefId                        @controllers.MetaModelRESTAPI.getmRef(mrefId: String)
+GET         /metamodels/mrefs/:mrefId                    @controllers.MetaModelRESTAPI.getmRef(mrefId: String)
 # POST
 # PUT
 # DELETE
 
 
 ### Model
-GET         /newgraph/:graphType                            @controllers.Webpage.newGraph(graphType: String)
-GET         /editor/:graphType/:uuid                        @controllers.Webpage.editor(graphType: String, uuid: String)
-GET         /diagrams                                       @controllers.Webpage.diagrams
+GET         /newgraph/:graphType                         @controllers.Webpage.newGraph(graphType: String)
+GET         /editor/:graphType/:uuid                     @controllers.Webpage.editor(graphType: String, uuid: String)
+GET         /diagrams                                    @controllers.Webpage.diagrams
 
 ### Model REST API
-GET        /models/:modelId                                 @controllers.ModelRESTAPI.getModel(modelId: String)
+GET         /models/:modelId                             @controllers.ModelRESTAPI.getModel(modelId: String)
 # POST
 # PUT
 # DELETE
-GET        /models/:modelId/nodes                           @controllers.ModelRESTAPI.getNodes(modelId: String)
+GET         /models/:modelId/nodes                       @controllers.ModelRESTAPI.getNodes(modelId: String)
 # POST
 # PUT
 # DELETE
-GET        /models/nodes/:nodeId                            @controllers.ModelRESTAPI.getNode(nodeId: String)
+GET         /models/nodes/:nodeId                        @controllers.ModelRESTAPI.getNode(nodeId: String)
 # POST
 # PUT
 # DELETE
-GET        /models/:modelId/edges                           @controllers.ModelRESTAPI.getEdges(modelId: String)
+GET         /models/:modelId/edges                       @controllers.ModelRESTAPI.getEdges(modelId: String)
 # POST
 # PUT
 # DELETE
-GET        /models/edges/:edgeId                            @controllers.ModelRESTAPI.getEdge(edgeId: String)
+GET         /models/edges/:edgeId                        @controllers.ModelRESTAPI.getEdge(edgeId: String)
 # POST
 # PUT
 # DELETE
+
+
+#POST        /oauth/access_token                          @controllers.OAuthController.accessToken
 
 ### Common
-GET         /socket                                         @controllers.Webpage.codeSocket
-GET         /diagramsocket/:graphType/:instanceId           @controllers.Webpage.diagramSocket(instanceId:String, graphType:String)
+GET         /socket                                      @controllers.Webpage.codeSocket
+GET         /diagramsocket/:graphType/:instanceId        @controllers.Webpage.diagramSocket(instanceId:String, graphType:String)
 
 ### Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                               controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                controllers.Assets.at(path="/public", file)
 
 ### include securesocial routes
-->          /auth                                       securesocial.Routes
+->          /auth                                        securesocial.Routes

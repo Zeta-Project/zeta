@@ -21,8 +21,9 @@ class MetaModelRESTAPI(override implicit val env: RuntimeEnvironment[SecureSocia
   def getmClasses(modelId: String) = SecuredAction { implicit request =>
     getModel(modelId) match {
       case Some(model) =>
-        Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
-          .classes.keys.mkString("", ", ", ""))
+       /* Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
+          .classes.keys.mkString("", ", ", ""))*/
+        Ok("")
       case _ => BadRequest("Model For Id Does Not Exist!")
     }
   }
@@ -30,8 +31,9 @@ class MetaModelRESTAPI(override implicit val env: RuntimeEnvironment[SecureSocia
   def getmRefs(modelId: String) = SecuredAction { implicit request =>
     getModel(modelId) match {
       case Some(model) =>
-        Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
-          .references.keys.mkString("", ", ", ""))
+        /*Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
+          .references.keys.mkString("", ", ", ""))*/
+        Ok("")
       case _ => BadRequest("Model For Id Does Not Exist!")
     }
   }

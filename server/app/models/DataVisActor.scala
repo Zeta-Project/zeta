@@ -26,7 +26,7 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
   MetaModelDatabase.loadModel(graphType) onComplete{
     case scala.util.Success(opt) => opt match {
       case None => self ! MetamodelFailure()
-      case Some(mm) => self ! MetamodelLoaded(mm.model)
+      case Some(mm) => //self ! MetamodelLoaded(mm.model)
     }
     case scala.util.Failure(t) => self ! MetamodelFailure
   }
@@ -52,14 +52,16 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
   }
 
   private def handleScopeQuery(classname:String) = {
+    /*
     log.debug("Scope query for MObj" + classname)
     metamodel.getObjectByName(classname) match {
       case None => socket ! DiagramWSActor.DataVisInvalidError(List("Unable to load class " + classname + " from metamodel."), "")
       case Some(mObject) => mObject match {
-        case mClass:MClass => socket ! DataVisScope(mClass.allAttributes.map(_.name), classname)
-        case mReference:MReference => socket ! DataVisScope(mReference.attributes.map(_.name), classname)
+       // case mClass:MClass => socket ! DataVisScope(mClass.allAttributes.map(_.name), classname)
+        //case mReference:MReference => socket ! DataVisScope(mReference.attributes.map(_.name), classname)
       }
     }
+    */
   }
 
   private def  validateAndGenerateDataVisCode(mObject:ObjectWithAttributes, conditionals:List[Conditional], msg:DataVisCodeMessage) = {

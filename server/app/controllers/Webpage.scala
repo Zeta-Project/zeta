@@ -16,13 +16,9 @@ class Webpage(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   val log = Logger(this getClass() getName())
 
   def index() = SecuredAction { implicit request =>
+   // MongoDbUserService.createClient(request.user)
     Ok(views.html.webpage.WebpageIndex.render(Some(request.user)))
   }
-
-
-
-
-
 
 
   def newGraph(metaModelId:String) = SecuredAction{ implicit request =>
@@ -52,4 +48,6 @@ class Webpage(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   def diagramSocket(instanceId:String, graphType:String) = WebSocket.acceptWithActor[String, String]{ request => out =>
     DiagramWSActor.props(out, instanceId, graphType)
   }
+
+
 }
