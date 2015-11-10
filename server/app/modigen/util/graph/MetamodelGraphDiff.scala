@@ -27,10 +27,8 @@ object MetamodelGraphDiff {
         graphOnlyAttributes(elementKey).foreach(attribute => graph = removeFromGraph(elementKey, attribute))
         metaModelOnlyAttributes(elementKey).foreach(attribute => graph = addToGraph(elementKey, attribute))
         changedAttributes(elementKey).foreach { a =>
-          val graphAttribute = a._2
-          val metaModelAttribute = a._1
-          graph = removeFromGraph(elementKey, graphAttribute)
-          graph = addToGraph(elementKey, metaModelAttribute)
+          graph = removeFromGraph(elementKey, a._1)
+          graph = addToGraph(elementKey, a._2)
         }
       }
 
@@ -99,8 +97,8 @@ object MetamodelGraphDiff {
 
       /*
        * Das Tupel enthaelt die folgenden zwei Objekte:
-       * ._1 Das Attribut-Objekt des Metamodells
-       * ._2 Das Attribut-Objekt des Graphs
+       * ._1 Das Attribut-Objekt des Graphs
+       * ._2 Das Attribut-Objekt des Metamodells
        */
       def changedAttributes(elementKey: String): Set[(JsObject, JsObject)] = {
         var changedAttrs = Set[(JsObject, JsObject)]()
@@ -109,7 +107,7 @@ object MetamodelGraphDiff {
           graphAttribute match {
             case Some(attribute) =>
               if (metaModelAttribute != attribute) {
-                val attrs = (metaModelAttribute, attribute)
+                val attrs = (attribute, metaModelAttribute)
                 changedAttrs = changedAttrs + attrs
               }
             case None => ;
