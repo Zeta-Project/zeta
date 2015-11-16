@@ -27,10 +27,10 @@ object OauthAccessToken extends ModelCompanion[OauthAccessToken, ObjectId] {
 
   private def randomString(length: Int) = new Random(new SecureRandom()).alphanumeric.take(length).mkString
 
-  def create(account: Account, client: OauthClient): OauthAccessToken = {
+  def create(user: SecureSocialUser, client: OauthClient): OauthAccessToken = {
     val token = OauthAccessToken(
       new ObjectId,
-      account.id,
+      user.profile.userId,
       client.id,
       randomString(40),
       randomString(40),
@@ -41,22 +41,22 @@ object OauthAccessToken extends ModelCompanion[OauthAccessToken, ObjectId] {
   }
 
   // sql version returns Int at this point
-  def delete(account: Account, client: OauthClient): Unit = {
-    remove(MongoDBObject("accountId" -> account.id, "oauthClientId" -> client.id))
+  def delete(user: SecureSocialUser, client: OauthClient): Unit = {
+    remove(MongoDBObject("accountId" -> user.profile.userId, "oauthClientId" -> client.id))
   }
 
-  def refresh(account: Account, client: OauthClient): OauthAccessToken = {
-    delete(account, client)
-    create(account, client)
+  def refresh(user: SecureSocialUser, client: OauthClient): OauthAccessToken = {
+    delete(user, client)
+    create(user, client)
   }
 
   def findByAccessToken(accessToken: String): Option[OauthAccessToken] = {
     findOne(MongoDBObject("accessToken" -> accessToken))
   }
 
-  def findByAuthorized(account: Account, clientId: String): Option[OauthAccessToken] = {
+  def findByAuthorized(user: SecureSocialUser, clientId: String): Option[OauthAccessToken] = {
     val client = OauthClient.findByClientId(clientId)
-    client.map(c => findOne(MongoDBObject("accountId" -> account.id, "oauthClientId" -> c.id))).getOrElse(None)
+    client.map(c => findOne(MongoDBObject("accountId" -> user.profile.userId, "oauthClientId" -> c.id))).getOrElse(None)
   }
 
   def findByRefreshToken(refreshToken: String): Option[OauthAccessToken] = {

@@ -30,9 +30,9 @@ object OauthClient extends ModelCompanion[OauthClient, ObjectId] {
 
   def findByClientId(clientId: String): Option[OauthClient] = findOne(MongoDBObject("clientId" -> clientId))
 
-  def findClientCredentials(clientId: String, clientSecret: String): Option[Account] = {
+  def findClientCredentials(clientId: String, clientSecret: String): Option[SecureSocialUser] = {
     val client = findOne(MongoDBObject("clientId" -> clientId, "clientSecret" -> clientSecret))
-    client.map(c => Account.findOneById(c.ownerId)).getOrElse(None)
+    client.map(c => MongoDbUserService.findOneById(c.ownerId)).getOrElse(None)
   }
 
 }
