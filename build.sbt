@@ -15,7 +15,7 @@ lazy val server = (project in file("server")).settings(
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
-    "ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
+    "ws.securesocial" % "securesocial_2.11" % "3.0-M3",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "com.typesafe.akka" %% "akka-contrib" % "2.3.4",
     "com.typesafe.akka" %% "akka-actor" % "2.3.4",
@@ -31,7 +31,7 @@ lazy val server = (project in file("server")).settings(
     "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
     "org.webjars" % "typicons" % "2.0.7",
     "org.webjars.bower" % "bootbox.js" % "4.4.0",
-    "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.1",
+    "com.nulab-inc" %% "play2-oauth2-provider" % "0.14.0",
     "io.argonaut" %% "argonaut" % "6.0.4"
   )).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).

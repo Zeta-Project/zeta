@@ -62,15 +62,17 @@ GET         /models/edges/:edgeId                        @controllers.ModelRESTA
 # PUT
 # DELETE
 
-
-#POST        /oauth/access_token                          @controllers.OAuthController.accessToken
-
 ### Common
 GET         /socket                                      @controllers.Webpage.codeSocket
 GET         /diagramsocket/:graphType/:instanceId        @controllers.Webpage.diagramSocket(instanceId:String, graphType:String)
 
 ### Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                controllers.Assets.at(path="/public", file)
+
+### oauth2 related routes
+POST    /access_token         @controllers.OAuthController.accessToken
+GET     /resources                  @controllers.OAuthController.resources
+GET		/reset						@controllers.OAuthController.resetMongo
 
 ### include securesocial routes
 ->          /auth                                        securesocial.Routes

@@ -1,21 +1,25 @@
 package controllers
 
+import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 import models._
+import play.api.Logger
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc.{Action, Controller}
+import models.custom_context._
 
 import scala.concurrent.Future
-import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 import scalaoauth2.provider._
-import java.util.Date
+import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 class OAuthController extends Controller with OAuth2Provider {
-/*
-  implicit val authInfoWrites = new Writes[AuthInfo[SecureSocialUser]] {
-    def writes(authInfo: AuthInfo[SecureSocialUser]) = {
+
+  RegisterJodaTimeConversionHelpers()
+
+  implicit val authInfoWrites = new Writes[AuthInfo[Account]] {
+    def writes(authInfo: AuthInfo[Account]) = {
       Json.obj(
         "account" -> Json.obj(
-          "email" -> authInfo.user.profile.userId
+          "email" -> authInfo.user.email
         ),
         "clientId" -> authInfo.clientId,
         "redirectUri" -> authInfo.redirectUri
@@ -24,69 +28,75 @@ class OAuthController extends Controller with OAuth2Provider {
   }
 
   def accessToken = Action.async { implicit request =>
+    Logger.debug(s"#OAuthController - accessToken")
     issueAccessToken(new MyDataHandler())
   }
 
-  def resources = AuthorizedAction(new MyDataHandler()) { request =>
+  def resources = AuthorizedAction({Logger.debug(s"#OAuthController - resources"); new MyDataHandler()}) { request =>
     Ok(Json.toJson(request.authInfo))
   }
 
-  class MyDataHandler extends DataHandler[SecureSocialUser] {
+  def resetMongo = Action {
+    Setup.resetMongo()
+    Ok("reset")
+  }
+
+  class MyDataHandler extends DataHandler[Account] {
 
     // common
 
-    override def validateClient(clientCredential: ClientCredential, grantType: String): Future[Boolean] = {
-      Future.successful(
-        MongoDbUserService.validate(clientCredential.clientId, clientCredential.clientSecret.getOrElse(""), grantType)
-      )
+    override def validateClient(clientCredential: ClientCredential, grantType: String): Future[Boolean] =  {
+      Logger.debug(s" MyDataHandler - validateClient")
+      Future.successful(OauthClient.validate(clientCredential.clientId, clientCredential.clientSecret.getOrElse(""), grantType))
     }
 
-    override def getStoredAccessToken(authInfo: AuthInfo[SecureSocialUser]): Future[Option[AccessToken]] = {
-      Future.successful(
-        MongoDbUserService.findByAuthorized(authInfo.user, authInfo.clientId.getOrElse("")).map(toAccessToken)
-      )
+    override def getStoredAccessToken(authInfo: AuthInfo[Account]): Future[Option[AccessToken]] = {
+      Logger.debug(s" MyDataHandler - getStoredAccessToken")
+      Future.successful(OauthAccessToken.findByAuthorized(authInfo.user, authInfo.clientId.getOrElse("")).map(toAccessToken))
     }
 
-    override def createAccessToken(authInfo: AuthInfo[SecureSocialUser]): Future[AccessToken] = {
+    override def createAccessToken(authInfo: AuthInfo[Account]): Future[AccessToken] = {
+      Logger.debug(s" MyDataHandler - createAccessToken")
       val clientId = authInfo.clientId.getOrElse(throw new InvalidClient())
-      val oauthClient = MongoDbUserService.findByClientId(clientId).getOrElse(throw new InvalidClient())
-      val accessToken = MongoDbUserService.create(authInfo.user, oauthClient)
+      val oauthClient = OauthClient.findByClientId(clientId).getOrElse(throw new InvalidClient())
+      val accessToken = OauthAccessToken.create(authInfo.user, oauthClient)
       Future.successful(toAccessToken(accessToken))
     }
 
     private val accessTokenExpireSeconds = 3600
-
-    private def toAccessToken(accessToken: Oauth_access_token) = {
+    private def toAccessToken(accessToken: OauthAccessToken) = {
+      Logger.debug(s" MyDataHandler - toAccessToken")
       AccessToken(
-        accessToken.access_token,
-        Some(accessToken.refresh_token),
+        accessToken.accessToken,
+        Some(accessToken.refreshToken),
         None,
         Some(accessTokenExpireSeconds),
-        new Date(accessToken.created_at)
+        accessToken.createdAt.toDate
       )
     }
 
     // Password grant
 
-    override def findUser(username: String, password: String): Future[Option[SecureSocialUser]] = {
-      Future.successful(
-        MongoDbUserService.authenticate(username, password)
-      )
+    override def findUser(username: String, password: String): Future[Option[Account]] = {
+      Logger.debug(s" MyDataHandler - findUser")
+      Future.successful(Account.authenticate(username, password))
     }
 
     // Client credentials grant
 
-    override def findClientUser(clientCredential: ClientCredential, scope: Option[String]): Future[Option[SecureSocialUser]] = {
-      Future.successful(MongoDbUserService.findClientCredentials(clientCredential.clientId, clientCredential.clientSecret.getOrElse("")))
+    override def findClientUser(clientCredential: ClientCredential, scope: Option[String]): Future[Option[Account]] =  {
+      Logger.debug(s" MyDataHandler - findClientUser")
+      Future.successful(OauthClient.findClientCredentials(clientCredential.clientId, clientCredential.clientSecret.getOrElse("")))
     }
 
     // Refresh token grant
 
-    override def findAuthInfoByRefreshToken(refreshToken: String): Future[Option[AuthInfo[SecureSocialUser]]] = {
-      Future.successful(MongoDbUserService.findByRefreshToken(refreshToken).flatMap { accessToken =>
+    override def findAuthInfoByRefreshToken(refreshToken: String): Future[Option[AuthInfo[Account]]] = {
+      Logger.debug(s" MyDataHandler - findAuthInfoByRefreshToken")
+      Future.successful(OauthAccessToken.findByRefreshToken(refreshToken).flatMap { accessToken =>
         for {
-          account <- accessToken.account
-          client <- accessToken.oauthClient
+          account <- Account.findOneById(accessToken.accountId)
+          client <- OauthClient.findOneById(accessToken.oauthClientId)
         } yield {
           AuthInfo(
             user = account,
@@ -98,20 +108,22 @@ class OAuthController extends Controller with OAuth2Provider {
       })
     }
 
-    override def refreshAccessToken(authInfo: AuthInfo[SecureSocialUser], refreshToken: String): Future[AccessToken] = {
+    override def refreshAccessToken(authInfo: AuthInfo[Account], refreshToken: String): Future[AccessToken] =  {
+      Logger.debug(s" MyDataHandler - refreshAccessToken")
       val clientId = authInfo.clientId.getOrElse(throw new InvalidClient())
-      val client = MongoDbUserService.findByClientId(clientId).getOrElse(throw new InvalidClient())
-      val accessToken = MongoDbUserService.refresh(authInfo.user, client)
+      val client = OauthClient.findByClientId(clientId).getOrElse(throw new InvalidClient())
+      val accessToken = OauthAccessToken.refresh(authInfo.user, client)
       Future.successful(toAccessToken(accessToken))
     }
 
     // Authorization code grant
 
-    override def findAuthInfoByCode(code: String): Future[Option[AuthInfo[SecureSocialUser]]] = {
+    override def findAuthInfoByCode(code: String): Future[Option[AuthInfo[Account]]] =  {
+      Logger.debug(s" MyDataHandler - findAuthInfoByCode")
       Future.successful(OauthAuthorizationCode.findByCode(code).flatMap { authorization =>
         for {
-          account <- authorization.account
-          client <- authorization.oauthClient
+          account <- Account.findOneById(authorization.accountId)
+          client <- OauthClient.findOneById(authorization.oauthClientId)
         } yield {
           AuthInfo(
             user = account,
@@ -124,36 +136,32 @@ class OAuthController extends Controller with OAuth2Provider {
     }
 
     override def deleteAuthCode(code: String): Future[Unit] = {
-      Future.successful(
-        OauthAuthorizationCode.delete(code)
-      )
+      Logger.debug(s" MyDataHandler - deleteAuthCode")
+      Future.successful(OauthAuthorizationCode.delete(code))
     }
 
     // Protected resource
 
     override def findAccessToken(token: String): Future[Option[AccessToken]] = {
-      Future.successful(
-        MongoDbUserService.findByAccessToken(token).map(toAccessToken)
-      )
+      Logger.debug(s" MyDataHandler - findAccessToken")
+      Future.successful(OauthAccessToken.findByAccessToken(token).map(toAccessToken))
     }
 
-    override def findAuthInfoByAccessToken(accessToken: AccessToken): Future[Option[AuthInfo[SecureSocialUser]]] = {
-      Future.successful(
-        MongoDbUserService.findByAccessToken(accessToken.token).flatMap { case accessToken =>
-          for {
-            account <- accessToken.account
-            client <- accessToken.oauthClient
-          } yield {
-            AuthInfo(
-              user = account,
-              clientId = Some(client.clientId),
-              scope = None,
-              redirectUri = None
-            )
-          }
+    override def findAuthInfoByAccessToken(accessToken: AccessToken): Future[Option[AuthInfo[Account]]] =  {
+      Logger.debug(s" MyDataHandler - findAuthInfoByAccessToken")
+      Future.successful(OauthAccessToken.findByAccessToken(accessToken.token).flatMap { case accessToken =>
+        for {
+          account <- Account.findOneById(accessToken.accountId)
+          client <- OauthClient.findOneById(accessToken.oauthClientId)
+        } yield {
+          AuthInfo(
+            user = account,
+            clientId = Some(client.clientId),
+            scope = None,
+            redirectUri = None
+          )
         }
-      )
+      })
     }
   }
-*/
 }
