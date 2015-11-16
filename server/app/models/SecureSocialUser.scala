@@ -197,6 +197,21 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
     }
   }
 
+  // oauth related
+  // don't wrap in futures (is done elsewhere)
+
+  def authenticate(email: String, password: String): Option[SecureSocialUser] = {
+    val user = for {
+      u <- coll.findOne(MongoDBObject("profile.email" -> email))
+      pwInfo <- u.profile.passwordInfo if new PasswordHasher.Default().matches(pwInfo, password)
+    } yield u
+    user.flatMap {Some(_)}
+  }
+
+  def findOneById(id: String): Option[SecureSocialUser] = {
+    coll.findOne(MongoDBObject("profile.userId" -> id)).flatMap {Some(_)}
+  }
+
   /** Implicit Salat Conversions */
   implicit def User2DBObj(u: SecureSocialUser) : DBObject = grater[SecureSocialUser].asDBObject(u)
   implicit def DBObj2User(obj: DBObject) : SecureSocialUser = grater[SecureSocialUser].asObject(obj)

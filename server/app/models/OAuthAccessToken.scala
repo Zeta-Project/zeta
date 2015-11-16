@@ -5,7 +5,6 @@ import java.security.SecureRandom
 import com.mongodb.casbah.Imports._
 import com.novus.salat.annotations._
 import com.novus.salat.dao.{ModelCompanion, SalatDAO}
-import models.OauthClient
 import org.joda.time.DateTime
 import models.custom_context._
 
@@ -13,7 +12,7 @@ import scala.util.Random
 
 case class OauthAccessToken(
   @Key("_id") id: ObjectId,
-  accountId: ObjectId,
+  accountId: String,
   oauthClientId: ObjectId,
   accessToken: String,
   refreshToken: String,

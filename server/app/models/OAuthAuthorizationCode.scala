@@ -8,7 +8,7 @@ import models.custom_context._
 
 case class OauthAuthorizationCode (
   @Key("_id") id: ObjectId,
-  accountId: ObjectId,
+  accountId: String,
   oauthClientId: ObjectId,
   code: String,
   redirectUri: Option[String],

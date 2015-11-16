@@ -9,7 +9,7 @@ import models.custom_context._
 
 case class OauthClient(
   @Key("_id") id: ObjectId,
-  ownerId: ObjectId,
+  ownerId: String,
   grantType: String,
   clientId: String,
   clientSecret: String,

@@ -79,7 +79,8 @@ class OAuthController extends Controller with OAuth2Provider {
 
     override def findUser(username: String, password: String): Future[Option[Account]] = {
       Logger.debug(s" MyDataHandler - findUser")
-      Future.successful(Account.authenticate(username, password))
+      val x = Account.authenticate(username, password)
+      Future.successful(x)
     }
 
     // Client credentials grant
