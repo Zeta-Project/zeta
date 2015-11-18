@@ -1,10 +1,11 @@
-package models
+package models.oauth
 
 import com.mongodb.casbah.Imports._
 import com.novus.salat.annotations._
 import com.novus.salat.dao.{ModelCompanion, SalatDAO}
+import models.{MongoDbUserService, SecureSocialUser}
 import org.joda.time.DateTime
-import models.custom_context._
+import models.oauth.custom_context._
 
 
 case class OauthClient(
@@ -19,8 +20,7 @@ case class OauthClient(
 
 object OauthClient extends ModelCompanion[OauthClient, ObjectId] {
 
-  val client: MongoClient = MongoClient(MongoClientURI("mongodb://localhost:27017"))
-  val collection = client("modigen_v3")("oauth_client")
+  val collection =  MongoInstance("oauth_client")
   override val dao = new SalatDAO[OauthClient, ObjectId](collection = collection) {}
 
   def validate(clientId: String, clientSecret: String, grantType: String): Boolean = {

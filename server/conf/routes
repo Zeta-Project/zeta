@@ -70,9 +70,10 @@ GET         /diagramsocket/:graphType/:instanceId        @controllers.Webpage.di
 GET         /assets/*file                                controllers.Assets.at(path="/public", file)
 
 ### oauth2 related routes
-POST    /access_token         @controllers.OAuthController.accessToken
-GET     /resources                  @controllers.OAuthController.resources
-GET		/reset						@controllers.OAuthController.resetMongo
+POST        /oauth/accessToken                           @controllers.OAuthController.accessToken
+# temp. route for testing purposes
+GET         /oauth/info                                  @controllers.OAuthController.info
+GET         /oauth/setup                                 @controllers.OAuthController.setup
 
 ### include securesocial routes
 ->          /auth                                        securesocial.Routes

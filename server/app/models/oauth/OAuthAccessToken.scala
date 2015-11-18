@@ -1,12 +1,13 @@
-package models
+package models.oauth
 
 import java.security.SecureRandom
 
 import com.mongodb.casbah.Imports._
 import com.novus.salat.annotations._
 import com.novus.salat.dao.{ModelCompanion, SalatDAO}
+import models.SecureSocialUser
 import org.joda.time.DateTime
-import models.custom_context._
+import models.oauth.custom_context._
 
 import scala.util.Random
 
@@ -21,8 +22,7 @@ case class OauthAccessToken(
 
 object OauthAccessToken extends ModelCompanion[OauthAccessToken, ObjectId] {
 
-  val client: MongoClient = MongoClient(MongoClientURI("mongodb://localhost:27017"))
-  val collection = client("modigen_v3")("oauth_accesstoken")
+  val collection = MongoInstance("oauth_accesstoken")
   override val dao = new SalatDAO[OauthAccessToken, ObjectId](collection = collection) {}
 
   private def randomString(length: Int) = new Random(new SecureRandom()).alphanumeric.take(length).mkString

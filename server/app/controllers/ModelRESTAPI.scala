@@ -1,29 +1,32 @@
 package controllers
 
-import models.SecureSocialUser
-import securesocial.core.RuntimeEnvironment
+import models.oauth.OAuthDataHandler
+import play.api.libs.json.Json
+import play.api.mvc.Controller
+
+import scalaoauth2.provider.OAuth2Provider
+import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 
-class ModelRESTAPI(override implicit val env: RuntimeEnvironment[SecureSocialUser])
-  extends securesocial.core.SecureSocial[SecureSocialUser]{
+class ModelRESTAPI extends Controller with OAuth2Provider {
 
-  def getModel(modelId: String) = SecuredAction { implicit request =>
+  def getModel(modelId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
     BadRequest("currently not implemented")
   }
 
-  def getNodes(modelId: String) = SecuredAction { implicit request =>
+  def getNodes(modelId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
     BadRequest("currently not implemented")
   }
 
-  def getEdges(modelId: String) = SecuredAction { implicit request =>
+  def getEdges(modelId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
     BadRequest("currently not implemented")
   }
 
-  def getEdge(edgeId: String) = SecuredAction { implicit request =>
+  def getEdge(edgeId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
     BadRequest("currently not implemented")
   }
 
-  def getNode(nodeId: String) = SecuredAction { implicit request =>
+  def getNode(nodeId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
     BadRequest("currently not implemented")
   }
 
