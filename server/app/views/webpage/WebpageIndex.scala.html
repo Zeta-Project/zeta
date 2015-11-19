@@ -1,101 +1,50 @@
 @(user: Option[SecureSocialUser])
 
-@webpage.WebpageGeneralLayout("Overview", user) {
+    @webpage.WebpageGeneralLayout("Overview", user) {
 
-    <!--<link rel="import" href="  @routes.Assets.at("lib/polymer/polymer.html")">-->
-    <link rel="import" href="@routes.Assets.at("components/bower_components/paper-button/paper-button.html")">
-
-    <div class="row">
-        <div class="lead col-xs-10 col-xs-offset-1">
-            <p>Hello,
-                @user match {
-                    case Some(u) => {
-                        @u.profile.fullName! }
-                    case _ => { Guest! }
-            }
-            </p>
-        </div>
-    </div>
-
-
-    <div class="row">
-        <div class="lead col-xs-3 col-xs-offset-1">
-
-            <div class="tile lead col-xs-12 col-md-4">
-                MetaModel's
-                <div>
-                    <a href="@routes.MetaModelController.metaModelEditor">
-                        <paper-button raised>Meta Model Editor</paper-button>
-                    </a>
-                </div>
-
-                <div>
-                    <form action="@routes.MetaModelController.codeEditor" method="post">
-                        <input id="test" name="test">
-                            <!--<paper-button raised>MoDiGen</paper-button>-->
-                        <input type="submit">
-                    </form>
-                        <!--<a href="">-->
-
-                    </a>
-                </div>
-                <div>
-                    <a href="@routes.MetaModelController.codeEditor">
-                        <paper-button raised>Shape</paper-button>
-                    </a>
-                </div>
-                <div>
-                    <a href="@routes.MetaModelController.codeEditor">
-                        <paper-button raised>Style</paper-button>
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-        <div class="lead col-xs-3 col-xs-offset-1">
-            <div class="tile lead col-xs-12 col-md-4">
-                Diagram
-
+        <div class="row">
+            <div class="lead col-xs-10 col-xs-offset-1">
+                <p>Hello,
+                    @user match {
+                        case Some(u) => {
+                            @u.profile.fullName! }
+                        case _ => { Guest! }
+                }
+                </p>
             </div>
         </div>
-        <div class="lead col-xs-3 col-xs-offset-1">
 
-            <div class="tile lead col-xs-12 col-md-4">
-                Generators
 
+        <div class="row">
+            <div class="lead col-xs-10 col-xs-offset-1">
+
+                <div class="tile lead col-xs-12 col-md-4">
+                    <div class="tileBorder">
+                        <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
+                        <div class="transparentBackground"></div>
+                        <div class="linkText">Models</div>
+                        <a class="ecoreLink" href="@routes.Webpage.diagrams(null)"></a>
+                    </div>
+                </div>
+
+                <div class="tile lead col-xs-12 col-md-4">
+                    <div class="tileBorder">
+                        <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
+                        <div class="transparentBackground"></div>
+                        <div class="linkText">Model Validator</div>
+                        <a class="ecoreLink" href="@routes.MetaModelController.modelValidator"></a>
+                    </div>
+                </div>
+
+
+                <div class="tile lead col-xs-12 col-md-4">
+                    <div class="tileBorder">
+                        <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
+                        <div class="transparentBackground"></div>
+                        <div class="linkText">Code Editor</div>
+                        <a class="ecoreLink" href="@routes.MetaModelController.codeEditor"></a>
+                    </div>
+                </div>
             </div>
-
         </div>
-
-
-    </div>
-}
-
-
-    <!--
- <div class="tileBorder">
-                        <img class="backgroundImage" src=" @routes.Assets.at("images/petri_test.png")
-    "/>
-<div class="transparentBackground"></div>
-<div class="linkText">Model Validator</div>
-<a class="ecoreLink" href="@routes.MetaModelController.modelValidator"></a>
-    </div>
-<div class="tileBorder">
-    <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
-    <div class="transparentBackground"></div>
-    <div class="linkText">Model Validator</div>
-    <a class="ecoreLink" href="@routes.MetaModelController.modelValidator"></a>
-</div>
-
-
-<div class="tile lead col-xs-12 col-md-4">
-    <div class="tileBorder">
-        <img class="backgroundImage" src="@routes.Assets.at("images/petri_test.png")"/>
-        <div class="transparentBackground"></div>
-        <div class="linkText">New Diagram</div>
-        <a class="ecoreLink" href="@routes.Webpage.diagrams"></a>
-    </div>
-</div>
-    </div>
-    -->
+    }

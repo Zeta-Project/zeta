@@ -1,6 +1,17 @@
-@(user: Option[SecureSocialUser])
+@(user: Option[SecureSocialUser], metaModel: Option[MetaModel])
 
 @webpage.WebpageGeneralLayout("Meta Model Editor", user) {
+
+    <script type="text/javascript">
+    window.loadedMetaModel = {};
+    @if(metaModel.isDefined) {
+        window.loadedMetaModel.uuid = "@metaModel.get.uuid";
+        window.loadedMetaModel.loadOnStart = true;
+        window.loadedMetaModel.graph = JSON.parse(@Html("JSON.stringify(JSON.toJson(metaModel.get.model))"));
+        window.loadedMetaModel.metaModel = JSON.parse(@Html("JSON.stringify(JSON.toJson(metaModel.get.model))"));
+        window.loadedMetaModel.name = "@metaModel.get.name";
+    }
+    </script>
 
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.ui.freeTransform.css")">

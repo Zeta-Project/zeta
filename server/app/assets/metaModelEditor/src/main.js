@@ -23,6 +23,11 @@ var Rappid = Backbone.Router.extend({
         this.initializeStencil();
         this.initializeSelection();
         this.initializeMEnum();
+
+        if (window.loadedMetaModel.loadOnStart === true) {
+            this.graph.fromJSON(_.extend({}, window.loadedMetaModel.graph));
+        }
+
         this.initializeHaloAndInspector();
         this.initializeClipboard();
         this.initializeCommandManager();

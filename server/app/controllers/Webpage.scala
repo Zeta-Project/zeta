@@ -32,9 +32,20 @@ class Webpage(override implicit val env: RuntimeEnvironment[SecureSocialUser])
       }
   }
 
-  def diagrams = SecuredAction{ implicit request =>
+  def diagrams(uuid: String) = SecuredAction{ implicit request =>
     val metaModels = Await.result(MetaModelDatabase.modelsOfUser(request.user.uuid.toString), 30 seconds)
-    Ok(views.html.diagramsOverview.render(metaModels, Some(request.user)))
+    var metaModel: Option[MetaModel] = None
+
+    if (uuid != null) {
+      if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
+        val dbMetaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds).get
+        if (dbMetaModel.userUuid == request.user.uuid.toString) {
+          metaModel = Some(dbMetaModel)
+        }
+      }
+    }
+
+    Ok(views.html.diagramsOverview.render(Some(request.user), Some(metaModels), metaModel))
   }
 
   def editor(metaModelId:String, uuid:String) = SecuredAction{implicit request =>

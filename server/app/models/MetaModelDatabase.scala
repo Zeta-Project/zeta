@@ -11,16 +11,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
-/** Represents a metamodel*/
+/** Represents a metamodel */
 
 case class MetaModel(model: MetaModelDefinition, name: String, uuid: String, userUuid: String)
 
 trait MObject {
-  def name:String
+  def name: String
 }
 
 trait MBounds {
   def upperBound: Int
+
   def lowerBound: Int
 }
 
@@ -28,19 +29,19 @@ trait MSum {}
 
 case class MetaModelDefinition(mClasses: List[MClass], mReferences: List[MReference], mEnums: List[MEnums])
 
-case class MClass(name:String, abstractness: Boolean, superTypes: List[MClass], inputs: List[MLinkDef], outputs: List[MLinkDef], attributes: List[MAttributes]) extends MObject with MSum
+case class MClass(name: String, abstractness: Boolean, superTypes: List[MClass], inputs: List[MLinkDef], outputs: List[MLinkDef], attributes: List[MAttributes]) extends MObject with MSum
 
 case class MReference(name: String, sourceDeletionDeletesTarget: Boolean, targetDeletionDeletesSource: Boolean, source: List[MLinkDef], target: List[MLinkDef]) extends MObject with MSum
 
-case class MAttributes(name: String, globalUnique:Boolean, localUnique:Boolean, default: Types, constant: Boolean, singleAssignment: Boolean, expression: String, mtype:Types, ordered:Boolean, transient:Boolean, upperBound:Int, lowerBound:Int) extends MObject with MBounds
+case class MAttributes(name: String, globalUnique: Boolean, localUnique: Boolean, default: Types, constant: Boolean, singleAssignment: Boolean, expression: String, mtype: Types, ordered: Boolean, transient: Boolean, upperBound: Int, lowerBound: Int) extends MObject with MBounds
 
-case class MLinkDef(mtype:MSum, deleteIfLower:Boolean,upperBound:Int, lowerBound:Int ) extends MBounds
+case class MLinkDef(mtype: MSum, deleteIfLower: Boolean, upperBound: Int, lowerBound: Int) extends MBounds
 
-case class MEnums(name: String, values:List[Types]) extends MObject
+case class MEnums(name: String, values: List[Types]) extends MObject
 
 object Types extends Enumeration {
   type Types = Value
-  val Int,String,Double,Boolean,MEnums = Value
+  val Int, String, Double, Boolean, MEnums = Value
 }
 
 object MetaModelDatabase {
@@ -51,8 +52,8 @@ object MetaModelDatabase {
   val coll = db("MetaModels")
 
   /** Salat Context **/
-  implicit val ctx =  new Context{
-    val name ="MetaModelCtx"
+  implicit val ctx = new Context {
+    val name = "MetaModelCtx"
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
@@ -66,14 +67,14 @@ object MetaModelDatabase {
   )
 
   /** loads Model with uuid */
-  def loadModel(uuid: String) : Future[Option[MetaModel]] = Future{
-      coll.find(MongoDBObject("uuid" -> uuid)).next() match {
-        case x: DBObject  => Some(grater[MetaModel].asObject(new MongoDBObject(x)))
-        case _ => None
-      }
+  def loadModel(uuid: String): Future[Option[MetaModel]] = Future {
+    coll.find(MongoDBObject("uuid" -> uuid)).next() match {
+      case x: DBObject => Some(grater[MetaModel].asObject(new MongoDBObject(x)))
+      case _ => None
+    }
   }
 
-  def modelExists(uuid:String) : Future[Boolean] = Future{
+  def modelExists(uuid: String): Future[Boolean] = Future {
     coll.findOne(MongoDBObject("uuid" -> uuid)) match {
       case Some(_) => true
       case None => false
@@ -81,10 +82,15 @@ object MetaModelDatabase {
   }
 
   /** returns all models created by [[models.SecureSocialUser]] with uuid ==  userUuid */
-  def modelsOfUser(userUuid: String) : Future[List[MetaModel]] = Future{
+  def modelsOfUser(userUuid: String): Future[List[MetaModel]] = Future {
     coll
       .find(MongoDBObject("userUuid" -> userUuid))
-      .map(x =>  grater[MetaModel].asObject(new MongoDBObject(x))).toList
+      .map(x => grater[MetaModel].asObject(new MongoDBObject(x))).toList
+  }
+
+  def deleteModel(uuid: String): Future[Boolean] = Future {
+    coll.remove(MongoDBObject("uuid" -> uuid))
+    true
   }
 }
 
