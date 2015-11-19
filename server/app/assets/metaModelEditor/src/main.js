@@ -31,8 +31,11 @@ var Rappid = Backbone.Router.extend({
         this.initializeHaloAndInspector();
         this.initializeClipboard();
         this.initializeCommandManager();
+
         this.initializeToolbar();
         linkTypeSelector.init(this.graph);
+
+
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
@@ -431,9 +434,9 @@ var Rappid = Backbone.Router.extend({
                 metaModelWindow.document.title = 'Exported Meta Model';
 
                 // Send exported Metamodel to server
-                var metaModelName = metaModelWindow.prompt('Enter a name for this meta model and click "ok" to save it. Click "cancel" if you don\'t want to save it.');
+                var metaModelName = metaModelWindow.prompt('Enter a name for this meta model and click "ok" to save it. Click "cancel" if you don\'t want to save it.', window.loadedMetaModel.name || "");
                 if (metaModelName) {
-                    this.saveMetaModel(metaModel.getMetaModel(), metaModelName);
+                    this.saveMetaModel(metaModel.getMetaModel(), this.graph.toJSON(), metaModelName);
                 }
 
             } else {
@@ -446,14 +449,16 @@ var Rappid = Backbone.Router.extend({
         }, this));
     },
 
-    saveMetaModel: function (metaModel, metaModelName) {
+    saveMetaModel: function (metaModel, graph, metaModelName) {
         $.ajax({
             type: 'POST',
             url: '/saveMetaModel',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({
                 name: metaModelName,
-                data: metaModel
+                data: metaModel,
+                graph: graph,
+                uuid: window.loadedMetaModel.uuid
             }),
             success: function (data, textStatus, jqXHR) {
                 alert("Saved meta model: " + data);
