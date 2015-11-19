@@ -15,7 +15,7 @@ lazy val server = (project in file("server")).settings(
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
-    "ws.securesocial" %% "securesocial" % "master-SNAPSHOT",
+    "ws.securesocial" %% "securesocial" % "3.0-M3",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "com.typesafe.akka" %% "akka-contrib" % "2.3.4",
     "com.typesafe.akka" %% "akka-actor" % "2.3.4",

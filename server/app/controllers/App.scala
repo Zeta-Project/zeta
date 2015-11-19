@@ -31,9 +31,8 @@ class App(override implicit val env: RuntimeEnvironment[SecureSocialUser])
       if (metaModel.userUuid == request.user.uuid.toString) {
 
         // Fix Graph if something has been changed in the Meta Model
-        val metaModelData = MetamodelGraphDiff.fixMetaModel(metaModel.metaModel)
-        val newModel = metaModel.copy(metaModel = metaModelData)
-        // MetaModelDatabase.saveModel(newModel)
+        val newModel = metaModel.copy(metaModel = MetamodelGraphDiff.fixMetaModel(metaModel.metaModel))
+        MetaModelDatabase.saveModel(newModel)
 
         Ok(views.html.metaModelEditor.render(uuid, Some(newModel)))
       } else {
