@@ -7,7 +7,7 @@
 GET         /                                            @controllers.Webpage.index
 
 ### Metamodel
-GET         /metaModelEditor                             @controllers.MetaModelController.metaModelEditor(uuid: String = null)
+GET         /newMetaModel                                @controllers.MetaModelController.newMetaModel
 GET         /metaModelEditor/:uuid                       @controllers.MetaModelController.metaModelEditor(uuid: String)
 POST        /saveMetaModel                               @controllers.MetaModelController.saveMetaModel
 GET         /metaModelcodeEditor                         @controllers.MetaModelController.codeEditor

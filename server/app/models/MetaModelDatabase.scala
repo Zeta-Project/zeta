@@ -1,19 +1,23 @@
 package models
 
-import com.mongodb.{DBObject, ServerAddress}
 import com.mongodb.casbah._
 import com.mongodb.casbah.commons._
+import com.mongodb.{DBObject, ServerAddress}
 import com.novus.salat._
 import models.Types.Types
+import play.api.{Logger, Play}
 
-import play.api.{Play, Logger}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
 /** Represents a metamodel */
 
-case class MetaModel(model: MetaModelDefinition, name: String, uuid: String, userUuid: String)
+case class MetaModel(uuid: String, userUuid: String, metaModel: MetaModelData, style: MetaModelStyle, shape: MetaModelShape, diagram: MetaModelDiagram)
+case class MetaModelData(name: String, data: String, graph: String)
+case class MetaModelStyle()
+case class MetaModelShape()
+case class MetaModelDiagram()
 
 trait MObject {
   def name: String

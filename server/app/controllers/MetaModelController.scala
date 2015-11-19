@@ -3,19 +3,16 @@ package controllers
 
 import java.util.UUID
 
-
-import argonaut.{DecodeJson, Argonaut}
-import Argonaut._
-import com.mongodb.casbah.Imports._
-import com.mongodb.util.JSON
-
-import models.{MetaModelDefinition, MetaModel, MetaModelDatabase, SecureSocialUser}
+import argonaut.Argonaut._
+import argonaut.DecodeJson
+import models._
+import modigen.util.graph.MetamodelGraphDiff
 import play.api.libs.json.JsValue
-
 import securesocial.core.RuntimeEnvironment
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.Try
 
 /**
   * Created by mgt on 17.10.15.
@@ -30,16 +27,19 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
     Ok(views.html.metamodel.MetaModelCodeEditor.render(Some(request.user)))
   }
 
+  def newMetaModel() = SecuredAction { implicit request =>
+    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), UUID.randomUUID.toString, None))
+  }
+
   def metaModelEditor(uuid: String) = SecuredAction { implicit request =>
     var metaModel: Option[MetaModel] = None
     if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
       val tmpMetaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds)
-      if (metaModel.get.userUuid == request.user.uuid.toString) {
-        metaModel = tmpMetaModel
+      if (tmpMetaModel.get.userUuid == request.user.uuid.toString) {
+        metaModel = Some(tmpMetaModel.get.copy(metaModel = MetamodelGraphDiff.fixMetaModel(tmpMetaModel.get.metaModel)))
       }
     }
-
-    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), metaModel))
+    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), uuid, metaModel))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
@@ -47,40 +47,28 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
   }
 
   def saveMetaModel() = SecuredAction { implicit request =>
-    println(request.body.toString)
-
-
+    println(request.body.asJson)
     request.body.asJson match {
       case Some(json) =>
-        //println(json)
+        Try(UUID.fromString((json \ "uuid").as[String])).toOption match {
+          case Some(uuid) =>
+            MetaModelDatabase.saveModel(new MetaModel(
+              uuid = uuid.toString,
+              userUuid = request.user.uuid.toString,
+              metaModel = new MetaModelData(
+                name = (json \ "name").as[String],
+                data = (json \ "data").as[JsValue].toString(),
+                graph = (json \ "graph").as[JsValue].toString()
+              ),
+              style = new MetaModelStyle,
+              shape = new MetaModelShape,
+              diagram = new MetaModelDiagram
+            ))
 
-        // val content = (json \ "data").as[JsValue].toString()
-
-        val content =
-          """ {"Class":"Test"} """
-
-        println(content)
-
-        //val model : MetaModelDefinition = content.decodeOption[MetaModelDefinition].get
-
-        val message = content.decodeOption[MetaModelDefinition] match {
-          case None => "Error"
-          case Some(model) => "Passt"
+            Ok("Saved")
+          case None => BadRequest("Invalid UUID")
         }
-
-        println(message)
-        /*
-                MetaModelDatabase.saveModel(new MetaModel(
-                  model = model,
-                  name = (json \ "name").as[String],
-                  uuid = UUID.randomUUID().toString,
-                  userUuid = request.user.uuid.toString))
-        */
-        Ok("Saved.")
-      case _ =>
-        BadRequest("No valid Json Supplied.")
     }
-
   }
 
   def deleteMetaModel(uuid: String) = SecuredAction { implicit request =>
