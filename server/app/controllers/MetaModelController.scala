@@ -28,7 +28,7 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
   }
 
   def newMetaModel() = SecuredAction { implicit request =>
-    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), UUID.randomUUID.toString, None))
+    Redirect(routes.MetaModelController.metaModelEditor(UUID.randomUUID.toString))
   }
 
   def metaModelEditor(uuid: String) = SecuredAction { implicit request =>

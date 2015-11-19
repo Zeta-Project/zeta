@@ -10,7 +10,7 @@ GET         /                                            @controllers.Webpage.in
 GET         /newMetaModel                                @controllers.MetaModelController.newMetaModel
 GET         /metaModelEditor/:uuid                       @controllers.MetaModelController.metaModelEditor(uuid: String)
 POST        /saveMetaModel                               @controllers.MetaModelController.saveMetaModel
-GET         /metaModelcodeEditor                         @controllers.MetaModelController.codeEditor
+GET         /metaModelCodeEditor                         @controllers.MetaModelController.codeEditor
 GET         /metaModelValidator                          @controllers.MetaModelController.modelValidator
 GET         /deleteMetaModel/:uuid                       @controllers.MetaModelController.deleteMetaModel(uuid: String)
 
@@ -66,7 +66,7 @@ GET         /models/edges/:edgeId                        @controllers.ModelRESTA
 # DELETE
 
 ### Common
-GET         /socket                                      @controllers.Webpage.codeSocket
+GET         /socket/                                     @controllers.Webpage.codeSocket
 GET         /diagramsocket/:graphType/:instanceId        @controllers.Webpage.diagramSocket(instanceId:String, graphType:String)
 
 ### Map static resources from the /public folder to the /assets URL path

@@ -12,9 +12,7 @@ import scalatags.JsDom.all._
 import scalajs.js.Dynamic.literal
 import facade.JQueryUi._
 
-class CodeEditorView(tgtDiv: String,
-                     controller: CodeEditorController,
-                     metaModelId: String) {
+class CodeEditorView(tgtDiv: String, controller: CodeEditorController, metaModelId: String) {
 
   private val aceId = Random.alphanumeric.take(20).mkString
 
@@ -43,7 +41,7 @@ class CodeEditorView(tgtDiv: String,
     div(`class` := "form-group")(
       label(`for` := "doctype")("File Type"),
       select(`type` := "doctype", `class` := "form-control", `id` := "newDocType")
-        (for (mode <- ModeController.getAllModesForModel(metaModelId).keysIterator.toArray) yield option(mode))
+      (for (mode <- ModeController.getAllModesForModel(metaModelId).keysIterator.toArray) yield option(mode))
     )
   ).render
 
@@ -108,12 +106,12 @@ class CodeEditorView(tgtDiv: String,
               jQuery(s"#${file.id}").addClass("ui-selected")
             }
             })(
-              span(
-                file.title,
-                span(`class` := "typcn typcn-document pull-right"),
-                span(`style` := "color: gray;", `class` := "pull-right")(file.docType)
-              )
-            ).render
+            span(
+              file.title,
+              span(`class` := "typcn typcn-document pull-right"),
+              span(`style` := "color: gray;", `class` := "pull-right")(file.docType)
+            )
+          ).render
         }
       ).render
     )
