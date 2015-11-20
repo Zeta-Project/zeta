@@ -1,33 +1,52 @@
 package controllers
 
+import models.Model
 import models.oauth.OAuthDataHandler
-import play.api.libs.json.Json
-import play.api.mvc.Controller
+import play.api.mvc.{Result, Action, Controller}
 
+import scala.concurrent.Future
 import scalaoauth2.provider.OAuth2Provider
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 
 class ModelRESTAPI extends Controller with OAuth2Provider {
 
-  def getModel(modelId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
-    BadRequest("currently not implemented")
+  def getModel(modelId: String) = Action.async { implicit request =>
+    authorize(OAuthDataHandler()) { authInfo =>
+      serve(Model.findById(modelId))
+    }
   }
 
-  def getNodes(modelId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
-    BadRequest("currently not implemented")
+  def getNodes(modelId: String) = Action.async { implicit request =>
+    authorize(OAuthDataHandler()) { authInfo =>
+      serve(Model.getNodes(modelId))
+    }
   }
 
-  def getEdges(modelId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
-    BadRequest("currently not implemented")
+  def getEdges(modelId: String) = Action.async { implicit request =>
+    authorize(OAuthDataHandler()) { authInfo =>
+      serve(Model.getEdges(modelId))
+    }
   }
 
-  def getEdge(edgeId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
-    BadRequest("currently not implemented")
+  def getNode(nodeId: String) = Action.async { implicit request =>
+    authorize(OAuthDataHandler()) { authInfo =>
+      serve(Model.getNode(nodeId))
+    }
   }
 
-  def getNode(nodeId: String) = AuthorizedAction(OAuthDataHandler()) { request =>
-    BadRequest("currently not implemented")
+  def getEdge(edgeId: String) = Action.async { implicit request =>
+    authorize(OAuthDataHandler()) { authInfo =>
+      serve(Model.getEdge(edgeId))
+    }
+  }
+
+  private def serve(model: Future[Option[Model]]): Future[Result] = {
+    model.map { om => om match {
+      case Some(m) => Ok(m.modelDataJson)
+      case _ => NotFound
+      }
+    }
   }
 
 }
