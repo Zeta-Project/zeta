@@ -1,6 +1,18 @@
-@(user: Option[SecureSocialUser])
+@import play.api.libs.json.Json
+@(user: Option[SecureSocialUser], uuid: String, metaModel: Option[MetaModel])
 
 @webpage.WebpageGeneralLayout("Meta Model Editor", user) {
+
+    <script type="text/javascript">
+    window.loadedMetaModel = {};
+    window.loadedMetaModel.uuid = "@uuid";
+    @if(metaModel.isDefined) {
+        window.loadedMetaModel.loadOnStart = true;
+        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.graph))));
+        window.loadedMetaModel.metaModel = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.data))));
+        window.loadedMetaModel.name = "@metaModel.get.metaModel.name";
+    }
+    </script>
 
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/joint.ui.freeTransform.css")">

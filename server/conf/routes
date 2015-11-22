@@ -7,10 +7,12 @@
 GET         /                                            @controllers.Webpage.index
 
 ### Metamodel
-GET         /metaModelEditor                             @controllers.MetaModelController.metaModelEditor
+GET         /newMetaModel                                @controllers.MetaModelController.newMetaModel
+GET         /metaModelEditor/:uuid                       @controllers.MetaModelController.metaModelEditor(uuid: String)
 POST        /saveMetaModel                               @controllers.MetaModelController.saveMetaModel
 GET         /metaModelcodeEditor                         @controllers.MetaModelController.codeEditor
 GET         /metaModelValidator                          @controllers.MetaModelController.modelValidator
+GET         /deleteMetaModel/:uuid                       @controllers.MetaModelController.deleteMetaModel(uuid: String)
 
 ### MetaModel REST API
 GET         /metamodels/:metamodelId                     @controllers.MetaModelRESTAPI.getMetaModel(metamodelId: String)
@@ -38,7 +40,8 @@ GET         /metamodels/mrefs/:mrefId                    @controllers.MetaModelR
 ### Model
 GET         /newgraph/:graphType                         @controllers.Webpage.newGraph(graphType: String)
 GET         /editor/:graphType/:uuid                     @controllers.Webpage.editor(graphType: String, uuid: String)
-GET         /diagrams                                    @controllers.Webpage.diagrams
+GET         /diagrams                                    @controllers.Webpage.diagrams(uuid: String = null)
+GET         /diagrams/:uuid                              @controllers.Webpage.diagrams(uuid: String)
 
 ### Model REST API
 GET         /models/:modelId                             @controllers.ModelRESTAPI.getModel(modelId: String)
