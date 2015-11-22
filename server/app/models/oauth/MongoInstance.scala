@@ -41,12 +41,13 @@ object OAuthSetup {
     val adminAcc = "admin@htwg-konstanz.de"
     val exampleAcc = "example@htwg-konstanz.de"
 
-    // setting up three clients, admin user uses credentials client, exmaple user uses auth client and passwort client
+    // setting up three clients, admin user owns credentials client, example user owns auth client and password client
+    // "owns" => "was created by". Has nothing to do with usage later on, anyone can use any client
     val client1 = OauthClient(new ObjectId, adminAcc, "client_credentials", "credClientid", "credClientSecret", None, new DateTime())
     val client2 = OauthClient(new ObjectId, exampleAcc, "authorization_code", "authClientId", "authClientSecret", Some("http://localhost:3000/callback"), new DateTime())
     val client3 = OauthClient(new ObjectId, exampleAcc, "password", "pwClientId", "pwClientSecret", None, new DateTime())
 
-    // auth code for auth client user
+    // auth code for authorization_code mode, can be used by example acc only
     val authCode = OauthAuthorizationCode(
       new ObjectId,
       exampleAcc,
@@ -56,11 +57,13 @@ object OAuthSetup {
       new DateTime()
     )
 
+    // do inserts...
     OauthClient.insert(client1)
     OauthClient.insert(client2)
     OauthClient.insert(client3)
     OauthAuthorizationCode.insert(authCode)
 
+    // insert sample json model to be able to test model rest api
     val json = Json.parse(
       """
         |[
