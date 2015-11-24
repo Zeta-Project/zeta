@@ -13,7 +13,7 @@ import scalatags.Text.all._
 case class CodeEditorController(tgtDiv: String, diagramId: String, metaModelId: String) {
 
   val view = new CodeEditorView(tgtDiv = tgtDiv, controller = this, metaModelId = metaModelId)
-  val ws = new WebSocketConnection(controller = this)
+  val ws = new WebSocketConnection(controller = this, editorType = diagramId)
   val clientId = UUID.randomUUID().toString
 
   var docs = Seq[Client]()

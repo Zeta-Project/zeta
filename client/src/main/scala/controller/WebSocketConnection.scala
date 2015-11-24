@@ -10,10 +10,10 @@ import scala.collection.mutable
 import org.scalajs.jquery._
 import scalatags.Text.all._
 
-case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/socket", controller: CodeEditorController) {
+case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/socket", controller: CodeEditorController, editorType: String) {
 
   /** Set up WebSocket connection */
-  val ws = new dom.WebSocket(uri)
+  val ws = new dom.WebSocket(uri + "/" + editorType)
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
   ws.onopen = (e: Event) => onOpen(e)
   ws.onerror = (e: ErrorEvent) => console.error(s"Websocket Error! ${e.message}")

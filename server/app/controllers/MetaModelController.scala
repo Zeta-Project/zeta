@@ -22,9 +22,10 @@ import scala.util.Try
 class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   extends securesocial.core.SecureSocial[SecureSocialUser] {
 
-  def codeEditor() = SecuredAction { implicit request =>
+  def codeEditor(uuid: String, editorType: String) = SecuredAction { implicit request =>
     //println(request.body.asFormUrlEncoded.get.get("test").head)
-    Ok(views.html.metamodel.MetaModelCodeEditor.render(Some(request.user)))
+    // TODO: uuid und editorType übergeben
+    Ok(views.html.metamodel.MetaModelCodeEditor.render(Some(request.user), uuid, editorType))
   }
 
   def newMetaModel() = SecuredAction { implicit request =>

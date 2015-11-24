@@ -9,15 +9,21 @@ import org.scalajs.jquery._
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSExport
 
-
+@JSExport
 object Main extends js.JSApp {
 
   @JSExport
   def main(): Unit = jQuery(dom.document).ready { () =>
+    println("MAIN")
+  }
+
+  @JSExport
+  def editor(uuid: String, editorType: String): Unit = jQuery(dom.document).ready { () =>
+    println("called editor with " + uuid + " and " + editorType)
     val editorController = new CodeEditorController(
       tgtDiv = "editor",
-      diagramId = "fakeDiagramId",
-      metaModelId = "4357a224-5fed-43d5-b528-639f39d423a0")
+      diagramId = editorType,
+      metaModelId = uuid)
   }
 
 }

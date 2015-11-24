@@ -52,9 +52,8 @@ class Webpage(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     Ok(views.html.model.ModelGraphicalEditor.render(metaModelId, uuid, request.user.uuid.toString, request.user.profile.fullName.getOrElse("")))
   }
 
-  def codeSocket() = WebSocket.acceptWithActor[String, String] { request => out =>
-    // TODO: Moritz Fragen, wie das alles gemeint ist. Skype: m.hoefner
-    CodeDocWSActor.props(out, CodeDocManagingActor.getCodeDocManager, "fakeDiagramId")
+  def codeSocket(editorType: String) = WebSocket.acceptWithActor[String, String] { request => out =>
+    CodeDocWSActor.props(out, CodeDocManagingActor.getCodeDocManager, editorType)
   }
 
   def diagramSocket(instanceId:String, graphType:String) = WebSocket.acceptWithActor[String, String]{ request => out =>
