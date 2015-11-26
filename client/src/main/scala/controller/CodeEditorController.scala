@@ -36,6 +36,10 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
     ws.sendMessage(DocDeleted(id, dslType))
   }
 
+  def saveCode() = {
+    ws.sendMessage(SaveCode(dslType, metaModelUuid, document.str))
+  }
+
   /** Apply changes to the corresponding doc */
   def operationFromRemote(op: TextOperation) = {
     val res = document.applyRemote(op.op)

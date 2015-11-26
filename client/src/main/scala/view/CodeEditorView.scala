@@ -37,7 +37,7 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
             span(
               `class` := "btn btn-default glyphicon glyphicon-floppy-disk toolbarbtn typcnbtn",
               onclick := { (e: dom.MouseEvent) => {
-                println("TODO: Save in MetaModel")
+                controller.saveCode()
               }
               }
             ).render,

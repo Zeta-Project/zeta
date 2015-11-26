@@ -1,10 +1,5 @@
 package controller
 
-import org.scalajs.dom
-
-import scala.scalajs.js.Dynamic.literal
-import scala.scalajs.js._
-
 object ModeController {
 
   def getAllModesForModel(modelId: String):  Map[String, scalajs.js.Any] = {

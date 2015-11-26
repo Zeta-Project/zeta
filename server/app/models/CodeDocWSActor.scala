@@ -59,6 +59,10 @@ class CodeDocManagingActor extends Actor {
           documents = documents - msg.id
           CodeDocumentDB.deleteDocWithId(msg.id)
           mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
+
+        case msg: SaveCode => MetaModelDatabase.saveCode(msg.dslType, msg.metaModelUuid, msg.code)
+
+        case _ => ;
       }
   }
 }
@@ -113,6 +117,10 @@ class CodeDocWSActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
 
         case msg: DocDeleted =>
           log.debug("WS: Got DocDeleted")
+          docManager ! msg
+
+        case msg: SaveCode =>
+          log.debug("WS: Save Code")
           docManager ! msg
 
         case _ => log.error("Discarding message, probably sent by myself")

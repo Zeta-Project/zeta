@@ -16,4 +16,6 @@ object CodeEditorMessage {
 
   case class DocDeleted(id: String, dslType: String) extends CodeEditorMessage
 
+  case class SaveCode(dslType: String, metaModelUuid: String, code: String) extends CodeEditorMessage
+
 }

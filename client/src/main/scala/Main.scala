@@ -18,7 +18,7 @@ object Main extends js.JSApp {
     if (ModeController.getAllModesForModel(metaModelUuid).keySet.contains(dslType)) {
       new CodeEditorController(dslType, metaModelUuid)
     } else {
-      jQuery("#editor").text("No language " + dslType + " defined.")
+      jQuery("#editor").text("No language \"" + dslType + "\" defined.")
     }
   }
 
