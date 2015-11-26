@@ -1,8 +1,7 @@
 
 package client
 
-import controller.CodeEditorController
-
+import controller.{ModeController, CodeEditorController}
 import org.scalajs.dom
 import org.scalajs.jquery._
 
@@ -15,11 +14,12 @@ object Main extends js.JSApp {
   def main(): Unit = {}
 
   @JSExport
-  def main(uuid: String, dslType: String): Unit = jQuery(dom.document).ready { () =>
-    println("called editor with " + uuid + " and " + dslType)
-    val editorController = new CodeEditorController(
-      dslType = dslType,
-      metaModelUuid = uuid)
+  def main(metaModelUuid: String, dslType: String): Unit = jQuery(dom.document).ready { () =>
+    if (ModeController.getAllModesForModel(metaModelUuid).keySet.contains(dslType)) {
+      new CodeEditorController(dslType, metaModelUuid)
+    } else {
+      jQuery("#editor").text("No language " + dslType + " defined.")
+    }
   }
 
 }
