@@ -12,18 +12,14 @@ import scala.scalajs.js.annotation.JSExport
 @JSExport
 object Main extends js.JSApp {
 
-  @JSExport
-  def main(): Unit = jQuery(dom.document).ready { () =>
-    println("MAIN")
-  }
+  def main(): Unit = {}
 
   @JSExport
-  def editor(uuid: String, editorType: String): Unit = jQuery(dom.document).ready { () =>
-    println("called editor with " + uuid + " and " + editorType)
+  def main(uuid: String, dslType: String): Unit = jQuery(dom.document).ready { () =>
+    println("called editor with " + uuid + " and " + dslType)
     val editorController = new CodeEditorController(
-      tgtDiv = "editor",
-      diagramId = editorType,
-      metaModelId = uuid)
+      dslType = dslType,
+      metaModelUuid = uuid)
   }
 
 }

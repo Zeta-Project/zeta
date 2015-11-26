@@ -9,14 +9,12 @@ import play.api.{Play, Logger}
 import com.novus.salat._
 
 /** Represents a Serverside CodeDocument which is stored in the Database */
-case class DBCodeDocument(docId: String,
-                          diagramId: String,
-                          doc: scalot.Server)
+case class DBCodeDocument(docId: String, dslType: String, metaModelUuid: String, doc: scalot.Server)
 
 /**
- * Code Database Responsible for persisting and retrieving the CodeDocuments.
- * Each CodeDocument
- */
+  * Code Database Responsible for persisting and retrieving the CodeDocuments.
+  * Each CodeDocument
+  */
 object CodeDocumentDB {
   val log = Logger(this getClass() getName())
 
@@ -33,14 +31,19 @@ object CodeDocumentDB {
 
   def saveDocument(doc: DBCodeDocument) = coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
 
-
   def getDocWithId(id: String): Option[DBCodeDocument] = coll.find((x: DBObject) => x.docId == id) match {
     case Some(doc) => Some(grater[DBCodeDocument].asObject(doc))
     case _ => None
   }
 
-  def getDocsWithDiagramId(diagramId: String): Seq[DBCodeDocument] =
-    coll.find(MongoDBObject("diagramId" -> diagramId)).map(DBObj2Doc).toSeq
+  def getDocWithUuidAndDslType(metaModelUuid: String, dslType: String): Option[DBCodeDocument] =
+    coll.find((x: DBObject) => x.metaModelUuid == metaModelUuid && x.dslType == dslType) match {
+      case Some(doc) => Some(grater[DBCodeDocument].asObject(doc))
+      case _ => None
+    }
+
+  def getDocsWithDslType(dslType: String): Seq[DBCodeDocument] =
+    coll.find(MongoDBObject("dslType" -> dslType)).map(DBObj2Doc).toSeq
 
   def getAllDocuments: Seq[DBCodeDocument] = coll
     .find(MongoDBObject())
