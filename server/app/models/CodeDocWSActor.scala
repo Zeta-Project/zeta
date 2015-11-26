@@ -1,17 +1,15 @@
 package models
 
-import java.util.UUID
-
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe}
 import akka.event.Logging
+import play.api.Play.current
+import play.api.libs.concurrent.Akka
 import scalot.Server
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage._
 import upickle.default._
-import play.api.libs.concurrent.Akka
-import play.api.Play.current
 
 
 case class MediatorMessage(msg: Any, broadcaster: ActorRef)
@@ -81,18 +79,6 @@ class CodeDocWSActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
   mediator ! Subscribe(dslType, self)
 
   /** Tell the client about the existing document */
-  for (doc <- CodeDocumentDB.getDocsWithDslType(dslType)) {
-    println("Sending docadded message!" + CodeDocumentDB.getDocsWithDslType(dslType).length)
-    out ! write[CodeEditorMessage](
-      DocAdded(str = doc.doc.str,
-        revision = doc.doc.operations.length,
-        docType = doc.doc.docType,
-        title = doc.doc.title,
-        id = doc.docId,
-        dslType = doc.dslType,
-        metaModelUuid = doc.metaModelUuid))
-  }
-
   CodeDocumentDB.getDocWithUuidAndDslType(metaModelUuid, dslType) match {
     case doc: Some[DBCodeDocument] => out ! write[CodeEditorMessage](
       DocLoaded(

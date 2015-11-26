@@ -85,9 +85,4 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
     broadcast = was
   }
 
-  def deletedDoc(id: String) = {
-    if (selectedId == id) {
-      selectedId = ""
-    }
-  }
 }

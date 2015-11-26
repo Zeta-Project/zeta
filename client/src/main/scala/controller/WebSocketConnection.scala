@@ -6,10 +6,6 @@ import shared.CodeEditorMessage
 import shared.CodeEditorMessage._
 import upickle.default._
 
-import scala.collection.mutable
-import org.scalajs.jquery._
-import scalatags.Text.all._
-
 case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/socket", controller: CodeEditorController, metaModelUuid: String, dslType: String) {
 
   /** Set up WebSocket connection */
@@ -26,8 +22,6 @@ case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/socket", contr
   def onMessage(msg: MessageEvent) = {
     read[CodeEditorMessage](msg.data.toString) match {
       case msg: TextOperation => controller.operationFromRemote(msg)
-      case msg: DocAdded => controller.docsAddedMessage(msg)
-      case msg: DocDeleted => controller.docDeleteMessage(msg.id)
       case msg: DocLoaded => controller.docLoadedMessage(msg)
       case msg: DocNotFound => controller.docNotFoundMessage(msg)
       case _ =>
