@@ -29,15 +29,15 @@ class ModelRESTAPI extends Controller with OAuth2Provider {
     }
   }
 
-  def getNode(nodeId: String) = Action.async { implicit request =>
+  def getNode(modelId:String, nodeId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.getNode(nodeId))
+      serve(Model.getNode(modelId, nodeId))
     }
   }
 
-  def getEdge(edgeId: String) = Action.async { implicit request =>
+  def getEdge(modelId: String, edgeId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.getEdge(edgeId))
+      serve(Model.getEdge(modelId, edgeId))
     }
   }
 
