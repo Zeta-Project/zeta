@@ -52,7 +52,7 @@ GET         /models/:modelId/nodes                              @controllers.Mod
 # POST
 # PUT
 # DELETE
-GET         /models/nodes/:nodeId                               @controllers.ModelRESTAPI.getNode(nodeId: String)
+GET         /models/:modelId/nodes/:nodeId                @controllers.ModelRESTAPI.getNode(modelId: String, nodeId: String)
 # POST
 # PUT
 # DELETE
@@ -60,7 +60,7 @@ GET         /models/:modelId/edges                              @controllers.Mod
 # POST
 # PUT
 # DELETE
-GET         /models/edges/:edgeId                               @controllers.ModelRESTAPI.getEdge(edgeId: String)
+GET         /models/:modelId/edges/:edgeId                @controllers.ModelRESTAPI.getEdge(modelId: String, edgeId: String)
 # POST
 # PUT
 # DELETE

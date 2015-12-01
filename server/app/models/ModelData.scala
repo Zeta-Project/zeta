@@ -40,12 +40,12 @@ object Model extends ModelCompanion[Model, ObjectId] {
 
   def getNodes(id: String): Future[Option[Model]] = Future { findElements(id, "mClass")}
 
-  def getNode(id: String): Future[Option[Model]] = Future { findElement(id, "mClass") }
+  def getNode(modelId: String, nodeId: String): Future[Option[Model]] = Future { findElement(modelId, nodeId, "mClass") }
 
-  def getEdge(id: String): Future[Option[Model]] = Future { findElement(id, "mRef") }
+  def getEdge(modelId: String, edgeId: String): Future[Option[Model]] = Future { findElement(modelId, edgeId, "mRef") }
 
-  private def findElement(elementId: String, elementType: String): Option[Model] = {
-    val query = "modelData" $elemMatch MongoDBObject("id" -> elementId, "mObj" -> elementType)
+  private def findElement(modelId: String, elementId: String, elementType: String): Option[Model] = {
+    val query = MongoDBObject("_id" -> new ObjectId(modelId)) ++ ("modelData" $elemMatch MongoDBObject("id" -> elementId, "mObj" -> elementType))
     val projection = "modelData" $elemMatch MongoDBObject("id" -> elementId)
     val res = find(query, projection).limit(1)
     if(res.hasNext) Some(res.next) else None
