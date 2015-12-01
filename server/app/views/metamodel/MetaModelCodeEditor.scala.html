@@ -1,7 +1,11 @@
-@(user: Option[SecureSocialUser])
+@(user: Option[SecureSocialUser], uuid: String, dslType: String)
 
 @webpage.WebpageGeneralLayout("CodeEditor", user) {
-    @playscalajs.html.scripts("client", "/assets")
+    @playscalajs.html.selectScript("client" , "/assets")
+
+    <script type="text/javascript">
+        client.Main().main("@uuid", "@dslType");
+    </script>
 
     <script type="text/javascript" src="@routes.Assets.at("ace/ace.js")"></script>
     <script type="text/javascript" src="@routes.Assets.at("ace/ext-language_tools.js")"></script>
@@ -15,8 +19,6 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/jquery-ui/jquery-ui.min.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/jquery-ui-themes/flick/jquery-ui.min.css")">
 
-    <div class="row">
-        <div class="col-md-offset-2 col-md-5" id="editor">
+        <div id="editor">
         </div>
-    </div>
 }

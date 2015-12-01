@@ -1,25 +1,23 @@
 package models
 
-import java.util.UUID
-
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe}
 import akka.event.Logging
+import play.api.Play.current
+import play.api.libs.concurrent.Akka
 import scalot.Server
 import shared.CodeEditorMessage
-import shared.CodeEditorMessage.{DocDeleted, DocAdded, TextOperation}
+import shared.CodeEditorMessage._
 import upickle.default._
-import play.api.libs.concurrent.Akka
-import play.api.Play.current
 
 
 case class MediatorMessage(msg: Any, broadcaster: ActorRef)
 
 
 /**
- * This Actor takes care of applying the changed to the documents.
- */
+  * This Actor takes care of applying the changed to the documents.
+  */
 class CodeDocManagingActor extends Actor {
 
   var documents: Map[String, DBCodeDocument] = CodeDocumentDB.getAllDocuments.map(x => (x.docId, x)).toMap
@@ -34,7 +32,7 @@ class CodeDocManagingActor extends Actor {
           documents(docId).doc.receiveOperation(op) match {
             case Some(send) =>
               mediator ! Publish(
-                documents(docId).diagramId,
+                documents(docId).dslType,
                 MediatorMessage(TextOperation(send, docId), self)
               )
             case _ => // Nothing to do!
@@ -45,21 +43,26 @@ class CodeDocManagingActor extends Actor {
           println("Manager: Got DocAdded")
           documents = documents + (newDoc.id -> new DBCodeDocument(
             docId = newDoc.id,
-            diagramId = newDoc.diagramId,
+            dslType = newDoc.dslType,
+            metaModelUuid = newDoc.metaModelUuid,
             doc = new Server(
               str = "",
               title = newDoc.title,
               docType = newDoc.docType,
               id = newDoc.id)
           ))
-          println(s"Manager: Added, publishing to ${newDoc.diagramId}")
+          println(s"Manager: Added, publishing to ${newDoc.dslType}")
           CodeDocumentDB.saveDocument(documents(newDoc.id))
-          mediator ! Publish(newDoc.diagramId, MediatorMessage(newDoc, sender()))
+          mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, sender()))
 
         case msg: DocDeleted =>
           documents = documents - msg.id
           CodeDocumentDB.deleteDocWithId(msg.id)
-          mediator ! Publish(msg.diagramId, MediatorMessage(msg, sender()))
+          mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
+
+        case msg: SaveCode => MetaModelDatabase.saveCode(msg.dslType, msg.metaModelUuid, msg.code)
+
+        case _ => ;
       }
   }
 }
@@ -72,24 +75,32 @@ object CodeDocManagingActor {
 
 
 /**
- * This Actor is responsible of the communictaion with the users browser
- */
-class CodeDocWSActor(out: ActorRef, docManager: ActorRef, diagramId: String) extends Actor with ActorLogging {
+  * This Actor is responsible of the communictaion with the users browser
+  */
+class CodeDocWSActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) extends Actor with ActorLogging {
 
   val mediator = DistributedPubSubExtension(context.system).mediator
-  mediator ! Subscribe(diagramId, self)
+  mediator ! Subscribe(dslType, self)
 
-  /** Tell the client about the existing documents */
-  for (doc <- CodeDocumentDB.getDocsWithDiagramId(diagramId)) {
-    println("Sending docadded message!"+  CodeDocumentDB.getDocsWithDiagramId(diagramId).length)
-
-    out ! write[CodeEditorMessage](
-      DocAdded(str = doc.doc.str,
-        revision = doc.doc.operations.length,
-        docType = doc.doc.docType,
-        title = doc.doc.title,
-        id = doc.docId,
-        diagramId = doc.diagramId))
+  /** Tell the client about the existing document */
+  CodeDocumentDB.getDocWithUuidAndDslType(metaModelUuid, dslType) match {
+    case doc: Some[DBCodeDocument] => out ! write[CodeEditorMessage](
+      DocLoaded(
+        str = doc.get.doc.str,
+        revision = doc.get.doc.operations.length,
+        docType = doc.get.doc.docType,
+        title = doc.get.doc.title,
+        id = doc.get.docId,
+        dslType = doc.get.dslType,
+        metaModelUuid = doc.get.metaModelUuid
+      )
+    )
+    case None => out ! write[CodeEditorMessage](
+      DocNotFound(
+        dslType = dslType,
+        metaModelUuid = metaModelUuid
+      )
+    )
   }
 
 
@@ -106,6 +117,10 @@ class CodeDocWSActor(out: ActorRef, docManager: ActorRef, diagramId: String) ext
 
         case msg: DocDeleted =>
           log.debug("WS: Got DocDeleted")
+          docManager ! msg
+
+        case msg: SaveCode =>
+          log.debug("WS: Save Code")
           docManager ! msg
 
         case _ => log.error("Discarding message, probably sent by myself")
@@ -129,6 +144,6 @@ class CodeDocWSActor(out: ActorRef, docManager: ActorRef, diagramId: String) ext
 }
 
 object CodeDocWSActor {
-  def props(out: ActorRef, docManager: ActorRef, diagramId: String) = Props(new CodeDocWSActor(out, docManager, diagramId))
+  def props(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) = Props(new CodeDocWSActor(out, docManager, metaModelUuid, dslType))
 }
 

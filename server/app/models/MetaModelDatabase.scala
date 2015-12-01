@@ -8,16 +8,20 @@ import models.Types.Types
 import play.api.{Logger, Play}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
 
 /** Represents a metamodel */
 
 case class MetaModel(uuid: String, userUuid: String, metaModel: MetaModelData, style: MetaModelStyle, shape: MetaModelShape, diagram: MetaModelDiagram)
+
 case class MetaModelData(name: String, data: String, graph: String)
-case class MetaModelStyle()
-case class MetaModelShape()
-case class MetaModelDiagram()
+
+case class MetaModelStyle(code: String = "")
+
+case class MetaModelShape(code: String = "")
+
+case class MetaModelDiagram(code: String = "")
 
 trait MObject {
   def name: String
@@ -92,9 +96,20 @@ object MetaModelDatabase {
       .map(x => grater[MetaModel].asObject(new MongoDBObject(x))).toList
   }
 
-  def deleteModel(uuid: String): Future[Boolean] = Future {
+  def deleteModel(uuid: String) = Future {
     coll.remove(MongoDBObject("uuid" -> uuid))
-    true
   }
+
+  def saveCode(dslType: String, metaModelUuid: String, code: String) = Future {
+    coll.update(
+      MongoDBObject("uuid" -> metaModelUuid),
+      MongoDBObject(
+        "$set" -> MongoDBObject(
+          dslType + ".code" -> code
+        )
+      )
+    )
+  }
+
 }
 

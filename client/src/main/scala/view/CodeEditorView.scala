@@ -1,25 +1,21 @@
 package view
 
-import controller.{ModeController, CodeEditorController}
+import controller.{CodeEditorController, ModeController}
 import facade._
 import org.scalajs.dom
 import scalot._
+
 import scala.scalajs.js
-import js.JSConverters._
-import org.scalajs.jquery._
+import scala.scalajs.js.JSConverters._
 import scala.util.Random
 import scalatags.JsDom.all._
-import scalajs.js.Dynamic.literal
-import facade.JQueryUi._
 
-class CodeEditorView(tgtDiv: String,
-                     controller: CodeEditorController,
-                     metaModelId: String) {
+class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, dslType: String) {
 
   private val aceId = Random.alphanumeric.take(20).mkString
+  var selectedId: String = ""
 
   createSkeleton()
-  upadteSideBar(Seq[Client]())
 
   val editor = ace.ace.edit(s"$aceId")
   editor.setTheme("ace/theme/xcode")
@@ -32,57 +28,23 @@ class CodeEditorView(tgtDiv: String,
     enableLiveAutocompletion = true
   ))
 
-  jQuery(".ace-container .editor").hide()
-  var selectedId: String = ""
-
-  private def renderNewDocumentForm() = div(
-    div(`class` := "form-group")(
-      label(`for` := "titel")("Title:"),
-      input(`type` := "titel", `class` := "form-control", `id` := "newDocTitle")("Titel")
-    ),
-    div(`class` := "form-group")(
-      label(`for` := "doctype")("File Type"),
-      select(`type` := "doctype", `class` := "form-control", `id` := "newDocType")
-        (for (mode <- ModeController.getAllModesForModel(metaModelId).keysIterator.toArray) yield option(mode))
-    )
-  ).render
 
   private def createSkeleton() =
-    dom.document.getElementById(s"$tgtDiv").appendChild(
+    dom.document.getElementById("editor").appendChild(
       div(`class` := "ace-container container")(
         div(`class` := "row")(
           div(`class` := "toolbar")(
             span(
-              `class` := "btn btn-default typcn typcn-document-add toolbarbtn typcnbtn",
+              `class` := "btn btn-default glyphicon glyphicon-floppy-disk toolbarbtn typcnbtn",
               onclick := { (e: dom.MouseEvent) => {
-                Bootbox.bootbox.dialog(literal(
-                  title = "Please enter a document title and filetype",
-                  message = renderNewDocumentForm(),
-                  closeButton = true,
-                  buttons = literal(
-                    ok = literal(label = "Cancel", callback = () => {}),
-                    cancel = literal(label = "Add", callback = () => {
-                      controller.addDocument(jQuery("#newDocTitle").`val`().asInstanceOf[String], jQuery("#newDocType").`val`().toString)
-                    }
-                    )
-                  )
-                ))
+                controller.saveCode()
               }
               }
             ).render,
-            span(`class` := "btn btn-default typcn typcn-document-delete toolbarbtn typcnbtn",
-              onclick := { (e: dom.MouseEvent) => {
-                if (selectedId != "") {
-                  Bootbox.bootbox.confirm(
-                    s"Are you sure that you want to delete '${controller.getDocForId(selectedId).title}'?",
-                    (result: Boolean) => if (result) controller.deleteDocument(selectedId))
-                }
-              }
-              })
+            span(s"edit $dslType of $metaModelUuid")
           )
         ),
         div(`class` := "row")(
-          div(`id` := "sidebar", `class` := "col-md-4")(),
           div(style := "background-color: gray;")(
             div(`class` := "editor col-md-8", `id` := aceId)
           )
@@ -90,45 +52,14 @@ class CodeEditorView(tgtDiv: String,
       ).render
     )
 
-  def upadteSideBar(docs: Seq[Client]) = {
-    jQuery(s"#$tgtDiv .ace-container .row #sidebar #selectable").remove()
-    val sidebar = jQuery(
-      ol(`id` := "selectable")(
-        for (file <- docs) yield {
-          li(`class` := s"ui-widget-content ${
-            if (file.id == selectedId) {
-              "ui-selected"
-            }
-          }",
-            `id` := file.id,
-            onclick := { (e: dom.MouseEvent) => {
-              jQuery(s".ui-widget-content").removeClass("ui-selected")
-              selectedId = file.id
-              displayDoc(controller.getDocForId(file.id))
-              jQuery(s"#${file.id}").addClass("ui-selected")
-            }
-            })(
-              span(
-                file.title,
-                span(`class` := "typcn typcn-document pull-right"),
-                span(`style` := "color: gray;", `class` := "pull-right")(file.docType)
-              )
-            ).render
-        }
-      ).render
-    )
-    sidebar.sortable()
-    sidebar.appendTo(jQuery(s"#$tgtDiv .ace-container .row #sidebar"))
-  }
-
   var broadcast = true
-  var currentId: String = ""
   var session: IEditSession = null
 
   def displayDoc(doc: Client) = {
+    selectedId = doc.id
     session = ace.ace.createEditSession(
       doc.str,
-      ModeController.getAllModesForModel(metaModelId)(doc.docType))
+      ModeController.getAllModesForModel(metaModelUuid)(doc.docType))
     session.on("change", {
       (delta: js.Any) =>
         if (broadcast) {
@@ -144,7 +75,6 @@ class CodeEditorView(tgtDiv: String,
         }
     }: js.Function1[js.Any, Any])
     editor.setSession(session)
-    jQuery(".ace-container .editor").show()
   }
 
   def updateView(op: Operation) = {
@@ -155,10 +85,4 @@ class CodeEditorView(tgtDiv: String,
     broadcast = was
   }
 
-  def deletedDoc(id: String) = {
-    if (selectedId == id) {
-      selectedId = ""
-      jQuery(".ace-container .editor").hide()
-    }
-  }
 }

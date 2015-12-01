@@ -2,60 +2,47 @@ package controller
 
 import java.util.UUID
 
-import facade._
-import org.scalajs.jquery._
 import scalot._
-import shared.CodeEditorMessage.{DocDeleted, DocAdded, TextOperation}
-
+import shared.CodeEditorMessage._
 import view.CodeEditorView
-import scalatags.Text.all._
 
-case class CodeEditorController(tgtDiv: String,
-                                diagramId: String,
-                                metaModelId: String) {
+case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
-  val view = new CodeEditorView(tgtDiv = tgtDiv, controller = this, metaModelId = metaModelId)
-  val ws = new WebSocketConnection(controller = this)
+  val view = new CodeEditorView(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
+  val ws = new WebSocketConnection(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
   val clientId = UUID.randomUUID().toString
+  var document: Client = null
 
-  var docs = Seq[Client]()
+  def docLoadedMessage(msg: DocLoaded) = {
+    println("Got DocLoadedMessage")
+    document = new Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id)
+    view.displayDoc(document)
+  }
 
-  def docsAddedMessage(msg: DocAdded) = {
-    println("Got DocsAddedMessage")
-    docs = docs ++ Seq(new Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id))
-    view.upadteSideBar(docs)
+  def docNotFoundMessage(msg: DocNotFound) = {
+    println("Got DocNotFoundMessage")
+    addDocument(msg.metaModelUuid, msg.dslType)
+    view.displayDoc(document)
   }
 
   def addDocument(title: String, docType: String) = {
-    val newDoc = new Client(str = "", revision = 0, title = title, docType = docType)
-    docs = docs ++ Seq(newDoc)
-    view.upadteSideBar(docs)
-    ws.sendMessage(DocAdded(
-      str = "",
-      revision = 0,
-      docType = docType,
-      title = title,
-      id = newDoc.id,
-      diagramId = diagramId))
-  }
-
-  def docDeleteMessage(id: String) = {
-    docs = docs.filter(x => x.id != id)
-    view.deletedDoc(id)
-    view.upadteSideBar(docs)
+    document = new Client(str = "", revision = 0, title = title, docType = docType)
+    ws.sendMessage(
+      DocAdded(str = "", revision = 0, docType = docType, title = title, id = document.id, dslType = dslType, metaModelUuid = metaModelUuid)
+    )
   }
 
   def deleteDocument(id: String) = {
-    view.selectedId = ""
-    docDeleteMessage(id)
-    ws.sendMessage(DocDeleted(id, diagramId))
+    ws.sendMessage(DocDeleted(id, dslType))
   }
 
-  def getDocForId(id: String): Client = docs.find(_.id == id).get
+  def saveCode() = {
+    ws.sendMessage(SaveCode(dslType, metaModelUuid, document.str))
+  }
 
   /** Apply changes to the corresponding doc */
   def operationFromRemote(op: TextOperation) = {
-    val res = docs.find(x => x.id == op.docId).get.applyRemote(op.op)
+    val res = document.applyRemote(op.op)
     res.apply match {
       case Some(apply) if op.docId == view.selectedId =>
         view.updateView(apply)
@@ -68,7 +55,7 @@ case class CodeEditorController(tgtDiv: String,
   }
 
   def operationFromLocal(op: scalot.Operation, docId: String) = {
-    docs.find(x => x.id == docId).get.applyLocal(op) match {
+    document.applyLocal(op) match {
       case ApplyResult(Some(send), _) => ws.sendMessage(TextOperation(send, docId))
       case _ =>
     }

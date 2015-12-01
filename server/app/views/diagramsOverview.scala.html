@@ -54,7 +54,7 @@
                             <div class="panel-body text-center">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <a href="@routes.MetaModelController.codeEditor">
+                                        <a href="@routes.MetaModelController.codeEditor(metaModel.get.uuid, "style")">
                                             <div class="panel panel-default">
                                                 <div class="panel-body">
                                                     <strong>Style</strong>
@@ -63,7 +63,7 @@
                                         </a>
                                     </div>
                                     <div class="col-md-6">
-                                        <a href="@routes.MetaModelController.codeEditor">
+                                        <a href="@routes.MetaModelController.codeEditor(metaModel.get.uuid, "shape")">
                                             <div class="panel panel-default">
                                                 <div class="panel-body">
                                                     <strong>Shape</strong>
@@ -74,7 +74,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <a href="@routes.MetaModelController.codeEditor">
+                                        <a href="@routes.MetaModelController.codeEditor(metaModel.get.uuid, "diagram")">
                                             <div class="panel panel-default">
                                                 <div class="panel-body">
                                                     <strong>Diagram</strong>

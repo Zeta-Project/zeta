@@ -22,24 +22,23 @@ import scala.util.Try
 class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   extends securesocial.core.SecureSocial[SecureSocialUser] {
 
-  def codeEditor() = SecuredAction { implicit request =>
-    //println(request.body.asFormUrlEncoded.get.get("test").head)
-    Ok(views.html.metamodel.MetaModelCodeEditor.render(Some(request.user)))
+  def codeEditor(metaModelUuid: String, dslType: String) = SecuredAction { implicit request =>
+    Ok(views.html.metamodel.MetaModelCodeEditor.render(Some(request.user), metaModelUuid, dslType))
   }
 
   def newMetaModel() = SecuredAction { implicit request =>
-    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), UUID.randomUUID.toString, None))
+    Redirect(routes.MetaModelController.metaModelEditor(UUID.randomUUID.toString))
   }
 
-  def metaModelEditor(uuid: String) = SecuredAction { implicit request =>
+  def metaModelEditor(metaModelUuid: String) = SecuredAction { implicit request =>
     var metaModel: Option[MetaModel] = None
-    if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
-      val tmpMetaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds)
+    if (Await.result(MetaModelDatabase.modelExists(metaModelUuid), 30 seconds)) {
+      val tmpMetaModel = Await.result(MetaModelDatabase.loadModel(metaModelUuid), 30 seconds)
       if (tmpMetaModel.get.userUuid == request.user.uuid.toString) {
         metaModel = Some(tmpMetaModel.get.copy(metaModel = MetamodelGraphDiff.fixMetaModel(tmpMetaModel.get.metaModel)))
       }
     }
-    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), uuid, metaModel))
+    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), metaModelUuid, metaModel))
   }
 
   def modelValidator() = SecuredAction { implicit request =>

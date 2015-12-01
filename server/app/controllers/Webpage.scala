@@ -52,8 +52,8 @@ class Webpage(override implicit val env: RuntimeEnvironment[SecureSocialUser])
     Ok(views.html.model.ModelGraphicalEditor.render(metaModelId, uuid, request.user.uuid.toString, request.user.profile.fullName.getOrElse("")))
   }
 
-  def codeSocket = WebSocket.acceptWithActor[String, String] { request => out =>
-    CodeDocWSActor.props(out, CodeDocManagingActor.getCodeDocManager, "fakeDiagramId")
+  def codeSocket(metaModelUuid: String, dslType: String) = WebSocket.acceptWithActor[String, String] { request => out =>
+    CodeDocWSActor.props(out, CodeDocManagingActor.getCodeDocManager, metaModelUuid, dslType)
   }
 
   def diagramSocket(instanceId:String, graphType:String) = WebSocket.acceptWithActor[String, String]{ request => out =>

@@ -1,10 +1,8 @@
 package controller
 
-import scala.scalajs.js.{Array, JSON}
 import org.scalajs.jquery._
+
 import scala.scalajs.js.Dynamic.literal
-import scala.scalajs.js
-import org.scalajs.dom
 
 
 case class ModelLoader(modelId: String) {
