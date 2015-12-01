@@ -96,14 +96,19 @@ object MetaModelDatabase {
       .map(x => grater[MetaModel].asObject(new MongoDBObject(x))).toList
   }
 
-  def deleteModel(uuid: String): Future[Boolean] = Future {
+  def deleteModel(uuid: String) = Future {
     coll.remove(MongoDBObject("uuid" -> uuid))
-    true
   }
 
-  def saveCode(dslType: String, metaModelUuid: String, code: String) = {
-    // TODO Save in Database
-    println("SAVING NOT YET IMPLEMENTED!")
+  def saveCode(dslType: String, metaModelUuid: String, code: String) = Future {
+    coll.update(
+      MongoDBObject("uuid" -> metaModelUuid),
+      MongoDBObject(
+        "$set" -> MongoDBObject(
+          dslType + ".code" -> code
+        )
+      )
+    )
   }
 
 }
