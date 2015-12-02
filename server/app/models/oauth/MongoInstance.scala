@@ -47,6 +47,9 @@ object OAuthSetup {
     val client2 = OauthClient(new ObjectId, exampleAcc, "authorization_code", "authClientId", "authClientSecret", Some("http://localhost:3000/callback"), new DateTime())
     val client3 = OauthClient(new ObjectId, exampleAcc, "password", "pwClientId", "pwClientSecret", None, new DateTime())
 
+    // an additional client for testing OAuthLocalController
+    val modigenClient = OauthClient(new ObjectId, adminAcc, "implicit", "modigen-browser-app1", "", None, new DateTime())
+
     // auth code for authorization_code mode, can be used by example acc only
     val authCode = OauthAuthorizationCode(
       new ObjectId,
@@ -61,6 +64,7 @@ object OAuthSetup {
     OauthClient.insert(client1)
     OauthClient.insert(client2)
     OauthClient.insert(client3)
+    OauthClient.insert(modigenClient)
     OauthAuthorizationCode.insert(authCode)
 
     // insert sample json model to be able to test model rest api

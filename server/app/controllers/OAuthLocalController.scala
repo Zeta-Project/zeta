@@ -2,11 +2,16 @@ package controllers
 
 import models.SecureSocialUser
 import models.oauth.OAuthDataHandler
+import play.api.data._
+import play.api.data.Forms._
 import play.api.libs.json._
+import play.api.data.validation.Constraints._
+import play.api.mvc.{AnyContent, Result, Request}
+import play.mvc.Http.RequestBody
 import securesocial.core.RuntimeEnvironment
 
 import scala.concurrent.Future
-import scalaoauth2.provider.{AccessToken, GrantHandlerResult, AuthInfo, AuthorizationHandler}
+import scalaoauth2.provider._
 
 /**
   * This controller handles OAuth access token requests for users already authenticated
@@ -16,11 +21,32 @@ import scalaoauth2.provider.{AccessToken, GrantHandlerResult, AuthInfo, Authoriz
 class OAuthLocalController(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   extends securesocial.core.SecureSocial[SecureSocialUser] {
 
-  //val modigenClients = Set("modigen-browser-app1", "modigen-browserapp2")
+  val handler = OAuthDataHandler()
+
+  val oauthData = Form(
+    tuple("grant_type" -> nonEmptyText, "client_id" -> nonEmptyText)
+  )
+
+  // a whitelist for modigen clients
+  // => it's not possible to get access tokens for other (third party) clients using this controller
+  val modigenClients = Set("modigen-browser-app1", "modigen-browserapp2")
 
   def accessToken = SecuredAction.async { implicit request =>
-    val authInfo = createAuthInfo(request.user)
-    issueAccessToken(OAuthDataHandler(), authInfo).map { Ok(_) }
+    oauthData.bindFromRequest.fold(
+      error => Future.successful(BadRequest("missing params")),
+      data => handleRequest(data, request.user)
+    )
+  }
+
+  private def handleRequest(params: (String, String), user: SecureSocialUser) = {
+    val (grantType, clientId) = params
+    handler.validateClient(ClientCredential(clientId, Some("")), grantType) flatMap {
+      case true if modigenClients contains(clientId) => {
+        val authInfo = createAuthInfo(user, clientId)
+        issueAccessToken(handler, authInfo).map { Ok(_) }
+      }
+      case _ => Future.successful(BadRequest("invalid client"))
+    }
   }
 
   private def issueAccessToken(
@@ -38,8 +64,8 @@ class OAuthLocalController(override implicit val env: RuntimeEnvironment[SecureS
     }.map(jsonResult)
   }
 
-  private def createAuthInfo(user: SecureSocialUser) = {
-    AuthInfo(user, Some("authClientId"), None, None)
+  private def createAuthInfo(user: SecureSocialUser, clientId: String) = {
+    AuthInfo(user, Some(clientId), None, None)
   }
 
   private def jsonResult(accessToken: AccessToken) = {
