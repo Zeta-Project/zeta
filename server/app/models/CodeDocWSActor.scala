@@ -60,7 +60,7 @@ class CodeDocManagingActor extends Actor {
           CodeDocumentDB.deleteDocWithId(msg.id)
           mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
 
-        case msg: SaveCode => MetaModelDatabase.saveCode(msg.dslType, msg.metaModelUuid, msg.code)
+        case msg: SaveCode => MetaModelDatabase.updateCode(msg.dslType, msg.metaModelUuid, msg.code)
 
         case _ => ;
       }

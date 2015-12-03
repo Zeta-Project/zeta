@@ -100,12 +100,23 @@ object MetaModelDatabase {
     coll.remove(MongoDBObject("uuid" -> uuid))
   }
 
-  def saveCode(dslType: String, metaModelUuid: String, code: String) = Future {
+  def updateCode(dslType: String, metaModelUuid: String, code: String) = Future {
     coll.update(
       MongoDBObject("uuid" -> metaModelUuid),
       MongoDBObject(
         "$set" -> MongoDBObject(
           dslType + ".code" -> code
+        )
+      )
+    )
+  }
+
+  def updateMetaModelData(metaModelUuid: String, metaModelData: MetaModelData) = Future {
+    coll.update(
+      MongoDBObject("uuid" -> metaModelUuid),
+      MongoDBObject(
+        "$set" -> MongoDBObject(
+          "metaModel" -> grater[MetaModelData].asDBObject(metaModelData)
         )
       )
     )

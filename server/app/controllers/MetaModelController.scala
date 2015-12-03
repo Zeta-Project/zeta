@@ -51,18 +51,29 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
       case Some(json) =>
         Try(UUID.fromString((json \ "uuid").as[String])).toOption match {
           case Some(uuid) =>
-            MetaModelDatabase.saveModel(new MetaModel(
-              uuid = uuid.toString,
-              userUuid = request.user.uuid.toString,
-              metaModel = new MetaModelData(
-                name = (json \ "name").as[String],
-                data = (json \ "data").as[JsValue].toString(),
-                graph = (json \ "graph").as[JsValue].toString()
-              ),
-              style = new MetaModelStyle,
-              shape = new MetaModelShape,
-              diagram = new MetaModelDiagram
-            ))
+            val uuidStr = uuid.toString
+
+            val metaModelData = new MetaModelData(
+              name = (json \ "name").as[String],
+              data = (json \ "data").as[JsValue].toString(),
+              graph = (json \ "graph").as[JsValue].toString()
+            )
+
+            if (Await.result(MetaModelDatabase.modelExists(uuidStr), 30 seconds)) {
+              // Change the existing Meta Model
+              MetaModelDatabase.updateMetaModelData(uuidStr, metaModelData)
+            } else {
+              // Create a new Meta Model
+              MetaModelDatabase.saveModel(new MetaModel(
+                uuid = uuidStr,
+                userUuid = request.user.uuid.toString,
+                metaModel = metaModelData,
+                style = new MetaModelStyle,
+                shape = new MetaModelShape,
+                diagram = new MetaModelDiagram
+              ))
+
+            }
 
             Ok("Saved")
           case None => BadRequest("Invalid UUID")
