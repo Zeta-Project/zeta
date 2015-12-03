@@ -8,9 +8,9 @@ import view.CodeEditorView
 
 case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
-  val AUTO_SAVE = true
+  val autoSave = true
 
-  val view = new CodeEditorView(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
+  val view = new CodeEditorView(controller = this, metaModelUuid = metaModelUuid, dslType = dslType, autoSave = autoSave)
   val ws = new WebSocketConnection(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
   val clientId = UUID.randomUUID().toString
   var document: Client = null
@@ -60,7 +60,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
     document.applyLocal(op) match {
       case ApplyResult(Some(send), _) =>
         ws.sendMessage(TextOperation(send, docId))
-        if (AUTO_SAVE) {
+        if (autoSave) {
           saveCode()
         }
       case _ =>

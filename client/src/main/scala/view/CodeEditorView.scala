@@ -10,12 +10,15 @@ import scala.scalajs.js.JSConverters._
 import scala.util.Random
 import scalatags.JsDom.all._
 
-class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, dslType: String) {
+class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, dslType: String, autoSave: Boolean) {
 
   private val aceId = Random.alphanumeric.take(20).mkString
   var selectedId: String = ""
 
   createSkeleton()
+  if (autoSave) {
+    dom.document.getElementById("btn-save").classList.add("hidden")
+  }
 
   val editor = ace.ace.edit(s"$aceId")
   editor.setTheme("ace/theme/xcode")
@@ -38,6 +41,7 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
               strong()(s"$dslType"),
               span(
                 `class` := "btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right",
+                id := "btn-save",
                 title := "Save Document",
                 onclick := { (e: dom.MouseEvent) => {
                   controller.saveCode()
