@@ -8,6 +8,8 @@ import view.CodeEditorView
 
 case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
+  val AUTO_SAVE = true
+
   val view = new CodeEditorView(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
   val ws = new WebSocketConnection(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
   val clientId = UUID.randomUUID().toString
@@ -56,7 +58,11 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
   def operationFromLocal(op: scalot.Operation, docId: String) = {
     document.applyLocal(op) match {
-      case ApplyResult(Some(send), _) => ws.sendMessage(TextOperation(send, docId))
+      case ApplyResult(Some(send), _) =>
+        ws.sendMessage(TextOperation(send, docId))
+        if (AUTO_SAVE) {
+          saveCode()
+        }
       case _ =>
     }
   }

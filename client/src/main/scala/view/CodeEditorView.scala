@@ -31,22 +31,25 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
 
   private def createSkeleton() =
     dom.document.getElementById("editor").appendChild(
-      div(`class` := "ace-container container")(
-        div(`class` := "row")(
-          div(`class` := "toolbar")(
-            span(
-              `class` := "btn btn-default glyphicon glyphicon-floppy-disk toolbarbtn typcnbtn",
-              onclick := { (e: dom.MouseEvent) => {
-                controller.saveCode()
-              }
-              }
-            ).render,
-            span(s"edit $dslType of $metaModelUuid")
-          )
-        ),
-        div(`class` := "row")(
-          div(style := "background-color: gray;")(
-            div(`class` := "editor col-md-8", `id` := aceId)
+      div(`class` := "container")(
+        div(`class` := "panel panel-default")(
+          div(`class` := "panel-heading")(
+            h3(`class` := "panel-title editor-title")(
+              strong()(s"$dslType"),
+              span(
+                `class` := "btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right",
+                title := "Save Document",
+                onclick := { (e: dom.MouseEvent) => {
+                  controller.saveCode()
+                }
+                }
+              )
+            )
+          ),
+          div(`class` := "panel-body editor-body")(
+            div(style := "background-color: gray;")(
+              div(`class` := "editor", `id` := aceId)
+            )
           )
         )
       ).render

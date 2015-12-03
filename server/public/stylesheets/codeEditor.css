@@ -2,7 +2,16 @@
     height:500px;
 }
 
-#ace-editor {
+.editor-body {
+    padding: 0;
+}
+
+.editor-title {
+    height: 40px;
+    line-height: 40px;
+}
+
+.ace-editor {
     height: 100%;
     width:70%;
 }
