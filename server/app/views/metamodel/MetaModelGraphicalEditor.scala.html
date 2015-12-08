@@ -6,6 +6,7 @@
     <script type="text/javascript">
     window.loadedMetaModel = {};
     window.loadedMetaModel.uuid = "@uuid";
+    window.loadedMetaModel.userUuid = "@user.get.uuid";
     @if(metaModel.isDefined) {
         window.loadedMetaModel.loadOnStart = true;
         window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.graph))));
@@ -126,6 +127,8 @@
     <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/ValidationResult.js")"></script>
     <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Graph.js")"></script>
     <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Exporter.js")"></script>
+
+    <script src="@routes.Assets.at("metaModelEditor/ext/collaboration.js")"></script>
 
     <script src="@routes.Assets.at("metaModelEditor/dist/joint.js")"></script>
     <script src="@routes.Assets.at("metaModelEditor/dist/joint.shapes.uml.js")"></script>

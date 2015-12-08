@@ -33,9 +33,9 @@ var Rappid = Backbone.Router.extend({
         this.initializeCommandManager();
 
         this.initializeToolbar();
+
         linkTypeSelector.init(this.graph);
-
-
+        collaboration.init(this.graph, this.paper);
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.

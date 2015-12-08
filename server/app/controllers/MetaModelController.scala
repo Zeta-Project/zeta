@@ -7,7 +7,9 @@ import argonaut.Argonaut._
 import argonaut.DecodeJson
 import models._
 import modigen.util.graph.MetamodelGraphDiff
+import play.api.Play.current
 import play.api.libs.json.JsValue
+import play.api.mvc.WebSocket
 import securesocial.core.RuntimeEnvironment
 
 import scala.concurrent.Await
@@ -81,12 +83,12 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
     }
   }
 
-  def deleteMetaModel(uuid: String) = SecuredAction { implicit request =>
+  def deleteMetaModel(metaModelUuid: String) = SecuredAction { implicit request =>
     val userUuid = request.user.uuid.toString
-    if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {
-      val metaModel = Await.result(MetaModelDatabase.loadModel(uuid), 30 seconds)
+    if (Await.result(MetaModelDatabase.modelExists(metaModelUuid), 30 seconds)) {
+      val metaModel = Await.result(MetaModelDatabase.loadModel(metaModelUuid), 30 seconds)
       if (metaModel.isDefined && metaModel.get.userUuid == userUuid) {
-        MetaModelDatabase.deleteModel(uuid)
+        MetaModelDatabase.deleteModel(metaModelUuid)
         Redirect(routes.Webpage.diagrams(null))
       } else {
         Redirect(routes.Webpage.index())
@@ -94,6 +96,10 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
     } else {
       Redirect(routes.Webpage.index())
     }
+  }
+
+  def metaModelSocket(metaModelUuid: String) = WebSocket.acceptWithActor[String, String] { request => out =>
+    MetaModelWSActor.props(out, metaModelUuid)
   }
 
   /** Argonaut Conversions */

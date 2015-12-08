@@ -12,7 +12,8 @@ GET         /metaModelEditor/:metaModelUuid                     @controllers.Met
 POST        /saveMetaModel                                      @controllers.MetaModelController.saveMetaModel
 GET         /metaModelCodeEditor/:metaModelUuid/:dslType        @controllers.MetaModelController.codeEditor(metaModelUuid: String, dslType: String)
 GET         /metaModelValidator                                 @controllers.MetaModelController.modelValidator
-GET         /deleteMetaModel/:uuid                              @controllers.MetaModelController.deleteMetaModel(uuid: String)
+GET         /deleteMetaModel/:metaModelUuid                     @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
+GET         /metaModelSocket/:metaModelUuid                     @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
 
 ### MetaModel REST API
 GET         /metamodels/:metamodelId                            @controllers.MetaModelRESTAPI.getMetaModel(metamodelId: String)
@@ -66,7 +67,7 @@ GET         /models/:modelId/edges/:edgeId                      @controllers.Mod
 # DELETE
 
 ### Common
-GET         /socket/:metaModelUuid/:dslType                     @controllers.Webpage.codeSocket(metaModelUuid: String, dslType: String)
+GET         /metaModelCodeSocket/:metaModelUuid/:dslType        @controllers.Webpage.codeSocket(metaModelUuid: String, dslType: String)
 GET         /diagramsocket/:graphType/:instanceId               @controllers.Webpage.diagramSocket(instanceId:String, graphType:String)
 
 ### Map static resources from the /public folder to the /assets URL path
