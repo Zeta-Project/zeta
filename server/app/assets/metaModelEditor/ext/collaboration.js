@@ -17,46 +17,45 @@ var collaboration = (function () {
     var batchEvent = null;
     var batchCells = [];
 
-    var init = function init(_graph, _paper) {
+    function init(_graph, _paper) {
         log("init");
 
         graph = _graph;
         paper = _paper;
         socket = createSocket();
         graph.on("all", onGraphEvent);
-    };
+    }
 
-    var createSocket = function createSocket() {
+    function createSocket() {
         log("createSocket");
 
         var socket = new WebSocket(webSocketUri);
         socket.onopen = onSocketOpen;
         socket.onclose = onSocketClose;
-        socket.onError = onSocketError;
-        socket.onMessage = onSocketMessage;
+        socket.onerror = onSocketError;
+        socket.onmessage = onSocketMessage;
         return socket;
-    };
+    }
 
-    var onSocketOpen = function onSocketOpen() {
+    function onSocketOpen() {
         log("onSocketOpen");
         getGraph();
-    };
+    }
 
-    var onSocketClose = function onSocketClose() {
+    function onSocketClose() {
         log("onSocketClose");
-    };
+    }
 
-    var onSocketError = function onSocketError() {
+    function onSocketError() {
         log("onSocketError");
-    };
+    }
 
-    var onSocketMessage = function onSocketMessage(message) {
+    function onSocketMessage(message) {
         log("onSocketMessage");
+        updateGraph(JSON.parse(message.data));
+    }
 
-        updateGraph(JSON.parse(message));
-    };
-
-    var onGraphEvent = function onGraphEvent(eventName, cell, data, options) {
+    function onGraphEvent(eventName, cell, data, options) {
         log("onGraphEvent", eventName);
 
         if (options && options.remote) {
@@ -68,25 +67,25 @@ var collaboration = (function () {
         } else {
             processEventNoRealTime(eventName, cell);
         }
-    };
+    }
 
-    var notifyCellChanged = function notifyCellChanged(eventName, cell) {
+    function notifyCellChanged(eventName, cell) {
         log("notifyCellChanged", eventName);
+        if (isRemoteRelevant(eventName)) {
+            var message = {
+                type: "cellChanged",
+                userUuid: userUuid,
+                data: {
+                    eventName: eventName,
+                    cell: cell
+                }
+            };
+            messageQueue.push(message);
+            send();
+        }
+    }
 
-        var message = {
-            type: "cellChanged",
-            userUuid: userUuid,
-            data: {
-                eventName: eventName,
-                cell: cell
-            }
-        };
-
-        messageQueue.push(message);
-        send();
-    };
-
-    var processEventNoRealTime = function processEventNoRealTime(eventName, cell) {
+    function processEventNoRealTime(eventName, cell) {
         log("processEventNoRealTime", eventName);
 
         if (!isBatchEvent(eventName)) {
@@ -112,20 +111,22 @@ var collaboration = (function () {
                 break;
 
             default:
-                if (batchStarted) {
-                    batchEvent = eventName;
-                    if (batchCells.indexOf(cell) === -1) {
-                        batchCells.push(cell);
+                if (isRemoteRelevant(eventName)) {
+                    if (batchStarted) {
+                        batchEvent = eventName;
+                        if (batchCells.indexOf(cell) === -1) {
+                            batchCells.push(cell);
+                        }
+                    } else {
+                        notifyCellChanged(eventName, cell);
                     }
-                } else {
-                    notifyCellChanged(eventName, cell);
                 }
                 break;
 
         }
-    };
+    }
 
-    var updateGraph = function updateGraph(message) {
+    function updateGraph(message) {
         log("updateGraph");
 
         if (message.error) {
@@ -168,9 +169,9 @@ var collaboration = (function () {
                 }
                 break;
         }
-    };
+    }
 
-    var getGraph = function getGraph() {
+    function getGraph() {
         log("getGraph");
 
         var message = {
@@ -180,9 +181,9 @@ var collaboration = (function () {
 
         messageQueue.push(message);
         send();
-    };
+    }
 
-    var send = function send() {
+    function send() {
         log("send");
 
         if (socket.readyState !== socket.OPEN) {
@@ -206,9 +207,9 @@ var collaboration = (function () {
         if (messageQueue.length) {
             send();
         }
-    };
+    }
 
-    var sendMessage = function sendMessage(message) {
+    function sendMessage(message) {
         log("sendMessage");
 
         if (socket.readyState !== socket.OPEN) {
@@ -217,18 +218,23 @@ var collaboration = (function () {
 
         socket.send(JSON.stringify(message));
         return true;
-    };
+    }
 
-    var isBatchEvent = function isBatchEvent(eventName) {
+    function isBatchEvent(eventName) {
         return nonBatchEvents.indexOf(eventName) === -1;
-    };
+    }
 
-    var log = function log(fnName, message, force) {
+    function isRemoteRelevant(eventName) {
+        log("isRemoteRelevant", eventName);
+        return eventName === "add" || eventName === "remove" || eventName.substr(0, "change:".length) === "change:";
+    }
+
+    function log(fnName, message, force) {
         if (debug || force) {
             message = message || "";
             console.log("[" + fnName + "] " + message);
         }
-    };
+    }
 
     return {
         init: init

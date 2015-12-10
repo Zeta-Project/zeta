@@ -98,7 +98,7 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
     }
   }
 
-  def metaModelSocket(metaModelUuid: String) = WebSocket.acceptWithActor[String, String] { request => out =>
+  def metaModelSocket(metaModelUuid: String) = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
     MetaModelWSActor.props(out, metaModelUuid)
   }
 
