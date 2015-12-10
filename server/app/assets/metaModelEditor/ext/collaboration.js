@@ -1,7 +1,7 @@
 var collaboration = (function () {
     'use strict';
 
-    var debug = true;
+    var debug = false;
     var realTime = true;
     var webSocketUri = "ws://" + window.location.host + "/metaModelSocket/" + window.loadedMetaModel.uuid;
     var userUuid = window.loadedMetaModel.userUuid;
@@ -12,6 +12,8 @@ var collaboration = (function () {
     var socket;
 
     var messageQueue = [];
+
+    var waitingForGraph = false;
 
     var batchStarted = false;
     var batchEvent = null;
@@ -39,6 +41,7 @@ var collaboration = (function () {
 
     function onSocketOpen() {
         log("onSocketOpen");
+        waitingForGraph = true;
         getGraph();
     }
 
@@ -50,9 +53,36 @@ var collaboration = (function () {
         log("onSocketError");
     }
 
-    function onSocketMessage(message) {
+    function onSocketMessage(wsMessage) {
         log("onSocketMessage");
-        updateGraph(JSON.parse(message.data));
+
+        var wsMessageData = JSON.parse(wsMessage.data);
+        switch (wsMessageData.type) {
+
+            case "getGraph":
+                log("onSocketMessage", "getGraph");
+                var message = {
+                    type: "gotGraph",
+                    userUuid: userUuid,
+                    data: graph.toJSON()
+                };
+                messageQueue.push(message);
+                send();
+                break;
+
+            case "gotGraph":
+                log("onSocketMessage", "gotGraph");
+                if (waitingForGraph && wsMessageData.data.cells) {
+                    waitingForGraph = false;
+                    graph.fromJSON(wsMessageData.data, {remote: true});
+                }
+                break;
+
+            default:
+                updateGraph(wsMessageData);
+                break;
+        }
+
     }
 
     function onGraphEvent(eventName, cell, data, options) {
@@ -126,20 +156,20 @@ var collaboration = (function () {
         }
     }
 
-    function updateGraph(message) {
+    function updateGraph(wsMessage) {
         log("updateGraph");
 
-        if (message.error) {
+        if (wsMessage.error) {
             return;
         }
 
-        var remoteCell = message.data.cell;
+        var remoteCell = wsMessage.data.cell;
         var localCell = graph.getCell(remoteCell.id);
 
-        switch (message.type) {
+        switch (wsMessage.type) {
             case "cellChanged":
 
-                switch (message.data.eventName) {
+                switch (wsMessage.data.eventName) {
                     case "add":
                         graph.addCell(remoteCell, {remote: true});
                         break;
@@ -155,18 +185,12 @@ var collaboration = (function () {
 
                     default:
                         if (localCell) {
-                            var attribute = message.data.eventName.substr("change:".length);
-                            localCell.set(attribute, message.data.cell[attribute], {remote: true});
+                            var attribute = wsMessage.data.eventName.substr("change:".length);
+                            localCell.set(attribute, wsMessage.data.cell[attribute], {remote: true});
                         }
                         break;
                 }
 
-                break;
-
-            case "getGraph":
-                if (message.data.cells) {
-                    graph.fromJSON(message.data, {remote: true});
-                }
                 break;
         }
     }

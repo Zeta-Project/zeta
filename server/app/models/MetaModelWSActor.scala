@@ -1,11 +1,10 @@
 package models
 
-import akka.actor.{Props, ActorRef, Actor}
+import akka.actor.{Actor, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
-import akka.contrib.pattern.DistributedPubSubMediator.{Publish, SubscribeAck, Subscribe}
+import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
 import play.api.Logger
 import play.api.libs.json.JsValue
-
 
 class MetaModelWSActor(out: ActorRef, metaModelUuid: String) extends Actor {
 
@@ -15,14 +14,9 @@ class MetaModelWSActor(out: ActorRef, metaModelUuid: String) extends Actor {
   mediator ! Subscribe(metaModelUuid, self)
 
   override def receive = {
-
-    case webSocketMsg: JsValue => (webSocketMsg \ "type").as[String] match {
-      case "getGraph" =>
-      case _ => mediator ! Publish(metaModelUuid, MediatorMessage(webSocketMsg, self))
-    }
-
-    case msg: MediatorMessage => out ! msg.msg
-    case msg: SubscribeAck => log.info(s"Subscribed to ${msg.subscribe.topic}")
+    case msg: JsValue => mediator ! Publish(metaModelUuid, MediatorMessage(msg, self))
+    case msg: MediatorMessage => if (msg.broadcaster != self) out ! msg.msg
+    case ack: SubscribeAck => log.info(s"Subscribed to ${ack.subscribe.topic}")
     case _ => log.error("Got unknown message")
   }
 }
