@@ -8,14 +8,19 @@ import play.api.libs.json.JsValue
 
 class MetaModelWSActor(out: ActorRef, metaModelUuid: String) extends Actor {
 
-  val log = Logger(this getClass() getName())
+  val log = Logger(getClass getName)
   val mediator = DistributedPubSubExtension(context.system).mediator
 
   mediator ! Subscribe(metaModelUuid, self)
 
+  /**
+    * Send an incoming WebSocket message to all other subscribed WebSocket actors.
+    * Every actor, except of the broadcaster itself, forwards the received message to its client.
+    */
   override def receive = {
     case msg: JsValue => mediator ! Publish(metaModelUuid, MediatorMessage(msg, self))
     case msg: MediatorMessage => if (msg.broadcaster != self) out ! msg.msg
+
     case ack: SubscribeAck => log.info(s"Subscribed to ${ack.subscribe.topic}")
     case _ => log.error("Got unknown message")
   }

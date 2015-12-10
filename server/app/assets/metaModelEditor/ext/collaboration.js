@@ -1,77 +1,110 @@
-var collaboration = (function () {
+/**
+ * Handle the direct collaboration between multiple clients which are connected to the same Meta Model.
+ * The init function has to be called once. After the initialization, all functions will be triggered by
+ * events from the JointJS graph or messages from the WebSocket.
+ */
+var collaboration = (function collaboration() {
     'use strict';
 
-    var debug = false;
-    var realTime = true;
-    var webSocketUri = "ws://" + window.location.host + "/metaModelSocket/" + window.loadedMetaModel.uuid;
-    var userUuid = window.loadedMetaModel.userUuid;
-    var nonBatchEvents = ["add", "remove", "change:source", "change:target", "change:attrs", "change:embeds", "change:parent", "change:z", "change:smooth", "change:manhattan"];
+    var config = {
+        debug: false,
+        realTime: true,
+        webSocketUri: "ws://" + window.location.host + "/metaModelSocket/" + window.loadedMetaModel.uuid,
+        nonBatchEvents: ["add", "remove", "change:source", "change:target", "change:attrs", "change:embeds", "change:parent", "change:z", "change:smooth", "change:manhattan"]
+    };
 
-    var graph;
-    var paper;
-    var socket;
-
-    var messageQueue = [];
+    var graph = null;
+    var webSocket = null;
 
     var waitingForGraph = false;
+
+    var messageQueue = [];
 
     var batchStarted = false;
     var batchEvent = null;
     var batchCells = [];
 
-    function init(_graph, _paper) {
-        log("init");
+    log(collaboration.name, "Collaboration started");
+
+    /**
+     * Initialize the collaboration module.
+     * Call it exactly once when starting the application.
+     *
+     * @param {joint.dia.Graph} _graph - The JointJS Graph.
+     */
+    function init(_graph) {
+        log(init.name, "Initialized");
 
         graph = _graph;
-        paper = _paper;
-        socket = createSocket();
-        graph.on("all", onGraphEvent);
+        webSocket = createWebSocket();
+        graph.on("all", function (eventName, cell, data, options) {
+            onGraphEvent(eventName, cell, options);
+        });
     }
 
-    function createSocket() {
-        log("createSocket");
+    /**
+     * Create the WebSocket with the configured webSocketUri.
+     *
+     * @returns {WebSocket} The WebSocket.
+     */
+    function createWebSocket() {
+        log(createWebSocket.name);
 
-        var socket = new WebSocket(webSocketUri);
-        socket.onopen = onSocketOpen;
-        socket.onclose = onSocketClose;
-        socket.onerror = onSocketError;
-        socket.onmessage = onSocketMessage;
-        return socket;
+        var webSocket = new WebSocket(config.webSocketUri);
+        webSocket.onopen = onSocketOpen;
+        webSocket.onclose = onSocketClose;
+        webSocket.onerror = onSocketError;
+        webSocket.onmessage = onSocketMessage;
+        return webSocket;
     }
 
+    /**
+     * Is called when the WebSocket opens.
+     */
     function onSocketOpen() {
-        log("onSocketOpen");
+        log(onSocketOpen.name);
+
         waitingForGraph = true;
         getGraph();
     }
 
+    /**
+     * Is called when the WebSocket closes.
+     */
     function onSocketClose() {
-        log("onSocketClose");
+        log(onSocketClose.name);
     }
 
+    /**
+     * Is called when the WebSocket throws an error.
+     */
     function onSocketError() {
-        log("onSocketError");
+        log(onSocketError.name);
     }
 
+    /**
+     * Is called when the WebSocket retrieves a message.
+     *
+     * @param {Object} wsMessage - The message.
+     */
     function onSocketMessage(wsMessage) {
-        log("onSocketMessage");
+        log(onSocketMessage.name);
 
         var wsMessageData = JSON.parse(wsMessage.data);
         switch (wsMessageData.type) {
 
             case "getGraph":
-                log("onSocketMessage", "getGraph");
+                log(onSocketMessage.name, "getGraph");
                 var message = {
                     type: "gotGraph",
-                    userUuid: userUuid,
                     data: graph.toJSON()
                 };
                 messageQueue.push(message);
-                send();
+                processMessageQueue();
                 break;
 
             case "gotGraph":
-                log("onSocketMessage", "gotGraph");
+                log(onSocketMessage.name, "gotGraph");
                 if (waitingForGraph && wsMessageData.data.cells) {
                     waitingForGraph = false;
                     graph.fromJSON(wsMessageData.data, {remote: true});
@@ -85,38 +118,58 @@ var collaboration = (function () {
 
     }
 
-    function onGraphEvent(eventName, cell, data, options) {
-        log("onGraphEvent", eventName);
+    /**
+     * Is called when an event on the graph occurs.
+     *
+     * @param {string} eventName - The name of the event.
+     * @param {joint.dia.Cell} cell - The cell on which the event occurred.
+     * @param {Object} options - Options that were set when triggering the event.
+     */
+    function onGraphEvent(eventName, cell, options) {
+        log(onGraphEvent.name, eventName);
 
         if (options && options.remote) {
             return;
         }
 
-        if (realTime) {
+        if (config.realTime) {
             notifyCellChanged(eventName, cell);
         } else {
             processEventNoRealTime(eventName, cell);
         }
     }
 
+    /**
+     * Create the message for a graph event and send it.
+     *
+     * @param {string} eventName - The name of the event.
+     * @param {joint.dia.Cell} cell - The cell on which the event occurred.
+     */
     function notifyCellChanged(eventName, cell) {
-        log("notifyCellChanged", eventName);
+        log(notifyCellChanged.name, eventName);
+
         if (isRemoteRelevant(eventName)) {
             var message = {
                 type: "cellChanged",
-                userUuid: userUuid,
                 data: {
                     eventName: eventName,
                     cell: cell
                 }
             };
+
             messageQueue.push(message);
-            send();
+            processMessageQueue();
         }
     }
 
+    /**
+     * Process an incoming graph event when the configuration realTime is false.
+     *
+     * @param {string} eventName - The name of the event.
+     * @param {joint.dia.Cell} cell - The cell on which the event occurred.
+     */
     function processEventNoRealTime(eventName, cell) {
-        log("processEventNoRealTime", eventName);
+        log(processEventNoRealTime.name, eventName);
 
         if (!isBatchEvent(eventName)) {
             notifyCellChanged(eventName, cell);
@@ -156,20 +209,25 @@ var collaboration = (function () {
         }
     }
 
-    function updateGraph(wsMessage) {
-        log("updateGraph");
+    /**
+     * Update the graph considering a remote message from the WebSocket.
+     *
+     * @param {Object} wsMessageData - The data-part of the WebSocket message.
+     */
+    function updateGraph(wsMessageData) {
+        log(updateGraph.name);
 
-        if (wsMessage.error) {
+        if (wsMessageData.error) {
             return;
         }
 
-        var remoteCell = wsMessage.data.cell;
+        var remoteCell = wsMessageData.data.cell;
         var localCell = graph.getCell(remoteCell.id);
 
-        switch (wsMessage.type) {
+        switch (wsMessageData.type) {
             case "cellChanged":
 
-                switch (wsMessage.data.eventName) {
+                switch (wsMessageData.data.eventName) {
                     case "add":
                         graph.addCell(remoteCell, {remote: true});
                         break;
@@ -185,8 +243,8 @@ var collaboration = (function () {
 
                     default:
                         if (localCell) {
-                            var attribute = wsMessage.data.eventName.substr("change:".length);
-                            localCell.set(attribute, wsMessage.data.cell[attribute], {remote: true});
+                            var attribute = wsMessageData.data.eventName.substr("change:".length);
+                            localCell.set(attribute, wsMessageData.data.cell[attribute], {remote: true});
                         }
                         break;
                 }
@@ -195,22 +253,27 @@ var collaboration = (function () {
         }
     }
 
+    /**
+     * Create the message for getting the graph from remote and send it.
+     */
     function getGraph() {
-        log("getGraph");
+        log(getGraph.name);
 
         var message = {
-            type: "getGraph",
-            userUuid: userUuid
+            type: "getGraph"
         };
 
         messageQueue.push(message);
-        send();
+        processMessageQueue();
     }
 
-    function send() {
-        log("send");
+    /**
+     * Send all messages from the messageQueue.
+     */
+    function processMessageQueue() {
+        log(processMessageQueue.name);
 
-        if (socket.readyState !== socket.OPEN) {
+        if (webSocket.readyState !== webSocket.OPEN) {
             return;
         }
 
@@ -229,32 +292,57 @@ var collaboration = (function () {
         });
 
         if (messageQueue.length) {
-            send();
+            processMessageQueue();
         }
     }
 
+    /**
+     * Send one message.
+     *
+     * @param {Object} message - The message to send.
+     * @returns {boolean} - True if the message was successfully sent, otherwise false.
+     */
     function sendMessage(message) {
-        log("sendMessage");
+        log(sendMessage.name);
 
-        if (socket.readyState !== socket.OPEN) {
+        if (webSocket.readyState !== webSocket.OPEN) {
             return false;
         }
 
-        socket.send(JSON.stringify(message));
+        webSocket.send(JSON.stringify(message));
         return true;
     }
 
+    /**
+     * Check whether an event will occur surrounded by batch:start and batch:stop events.
+     *
+     * @param {string} eventName - The event to check.
+     * @returns {boolean} - True if the event is a batch event, otherwise false.
+     */
     function isBatchEvent(eventName) {
-        return nonBatchEvents.indexOf(eventName) === -1;
+        log(isBatchEvent.name, eventName);
+        return config.nonBatchEvents.indexOf(eventName) === -1;
     }
 
+    /**
+     * Check whether an event is relevant for sending it to the WebSocket.
+     *
+     * @param {string} eventName - The event to check.
+     * @returns {boolean} - True if the event is relevant, otherwise false.
+     */
     function isRemoteRelevant(eventName) {
-        log("isRemoteRelevant", eventName);
+        log(isRemoteRelevant.name, eventName);
         return eventName === "add" || eventName === "remove" || eventName.substr(0, "change:".length) === "change:";
     }
 
+    /**
+     * Log a message to the browser console.
+     * @param {string} fnName - The name of the function that wants to log something.
+     * @param {string} [message] - The message to log.
+     * @param {boolean} [force] - Force the logging, even if the debug configuration is set to false.
+     */
     function log(fnName, message, force) {
-        if (debug || force) {
+        if (config.debug || force) {
             message = message || "";
             console.log("[" + fnName + "] " + message);
         }
