@@ -1,4 +1,4 @@
-package modelValidator;
+package assets.modelValidator.server.src.main.java.modelValidator;
 
 import org.mozilla.javascript.JavaScriptException;
 
