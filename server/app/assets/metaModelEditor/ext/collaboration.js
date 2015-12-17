@@ -9,7 +9,7 @@ var collaboration = (function collaboration() {
     var config = {
         debug: false,
         realTime: true,
-        webSocketUri: "ws://" + window.location.host + "/metaModelSocket/" + window.loadedMetaModel.uuid,
+        webSocketUri: "ws://" + window.location.host + "/metamodel/socket/" + window.loadedMetaModel.uuid,
         nonBatchEvents: ["add", "remove", "change:source", "change:target", "change:attrs", "change:embeds", "change:parent", "change:z", "change:smooth", "change:manhattan"]
     };
 

@@ -1,7 +1,7 @@
 root = exports ? this
 
 debug = true
-WEB_SOCKET_URI = "ws://" + window.location.host + "/modelSocket/" + window._global_graph_type + "/" + window._global_uuid
+WEB_SOCKET_URI = "ws://" + window.location.host + "/model/socket/" + window._global_graph_type + "/" + window._global_uuid
 
 class WebSocketClient
   socket: null

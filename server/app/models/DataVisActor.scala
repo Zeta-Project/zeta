@@ -10,11 +10,10 @@ import modigen.util.datavis.domain.Conditional
 import modigen.util.datavis.generator.ListenersGenerator
 import modigen.util.datavis.parser.DataVisParsers
 import modigen.util.datavis.validator.ConstrainedDataVisValidator
-import modigen.util.domain.{MClass, MReference, Metamodel, ObjectWithAttributes}
+import modigen.util.domain.{Metamodel, ObjectWithAttributes}
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
-import shared.DiagramWSOutMessage.DataVisScope
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

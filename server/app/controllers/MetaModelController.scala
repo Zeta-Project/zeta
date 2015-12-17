@@ -24,10 +24,6 @@ import scala.util.Try
 class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   extends securesocial.core.SecureSocial[SecureSocialUser] {
 
-  def codeEditor(metaModelUuid: String, dslType: String) = SecuredAction { implicit request =>
-    Ok(views.html.metamodel.MetaModelCodeEditor.render(Some(request.user), metaModelUuid, dslType))
-  }
-
   def newMetaModel() = SecuredAction { implicit request =>
     Redirect(routes.MetaModelController.metaModelEditor(UUID.randomUUID.toString))
   }
