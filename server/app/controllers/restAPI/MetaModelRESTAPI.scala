@@ -1,7 +1,8 @@
 package controllers.restApi
 
+import models.SecureSocialUser
 import models.Test.Test
-import models.{MetaModel, MetaModelDatabase, SecureSocialUser}
+import models.metaModel.{MetaModel, MetaModelDatabase}
 import play.api.mvc.{Action, BodyParsers}
 import securesocial.core.RuntimeEnvironment
 

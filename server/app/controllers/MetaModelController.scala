@@ -7,11 +7,11 @@ import argonaut.Argonaut._
 import argonaut.DecodeJson
 import models._
 import models.metaModel._
-import modigen.util.graph.MetamodelGraphDiff
 import play.api.Play.current
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
 import securesocial.core.RuntimeEnvironment
+import util.graph.MetamodelGraphDiff
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

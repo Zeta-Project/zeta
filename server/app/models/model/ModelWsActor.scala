@@ -3,7 +3,6 @@ package models.model
 import akka.actor.{Actor, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
-import models.model.DataVisActor
 import models.model.ModelWsActor.{DataVisInvalidError, DataVisParseError}
 import play.api.Logger
 import shared.DiagramWSMessage

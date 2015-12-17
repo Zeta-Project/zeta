@@ -6,12 +6,12 @@ import akka.actor.{Actor, ActorRef, Props}
 import models.metaModel.MetaModelDatabase
 import models.model.DataVisActor.{MetamodelLoaded, MetamodelFailure}
 import models.model.ModelWsActor.DataVisInvalidError
-import modigen.util.MetamodelBuilder
-import modigen.util.datavis.domain.Conditional
-import modigen.util.datavis.generator.ListenersGenerator
-import modigen.util.datavis.parser.DataVisParsers
-import modigen.util.datavis.validator.ConstrainedDataVisValidator
-import modigen.util.domain.{Metamodel, ObjectWithAttributes}
+import util.MetamodelBuilder
+import util.datavis.domain.Conditional
+import util.datavis.generator.ListenersGenerator
+import util.datavis.parser.DataVisParsers
+import util.datavis.validator.ConstrainedDataVisValidator
+import util.domain.{Metamodel, ObjectWithAttributes}
 import play.api.Logger
 import play.api.libs.json.{JsObject, Json}
 import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
