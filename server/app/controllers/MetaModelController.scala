@@ -43,10 +43,6 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
     Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), metaModelUuid, metaModel))
   }
 
-  def modelValidator() = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelValidator.render())
-  }
-
   def saveMetaModel() = SecuredAction { implicit request =>
     println(request.body.asJson)
     request.body.asJson match {
@@ -101,7 +97,7 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
   }
 
   def metaModelSocket(metaModelUuid: String) = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
-    MetaModelWSActor.props(out, metaModelUuid)
+    MetaModelWsActor.props(out, metaModelUuid)
   }
 
   /** Argonaut Conversions */

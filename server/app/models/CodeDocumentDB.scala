@@ -8,13 +8,13 @@ import com.novus.salat.{Context, _}
 import play.api.{Logger, Play}
 
 /** Represents a Serverside CodeDocument which is stored in the Database */
-case class DBCodeDocument(docId: String, dslType: String, metaModelUuid: String, doc: scalot.Server)
+case class DbCodeDocument(docId: String, dslType: String, metaModelUuid: String, doc: scalot.Server)
 
 /**
   * Code Database Responsible for persisting and retrieving the CodeDocuments.
   * Each CodeDocument
   */
-object CodeDocumentDB {
+object CodeDocumentDb {
   val log = Logger(this getClass() getName())
 
   val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.ip").get))
@@ -28,32 +28,32 @@ object CodeDocumentDB {
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
-  def saveDocument(doc: DBCodeDocument) = coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
+  def saveDocument(doc: DbCodeDocument) = coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
 
-  def getDocWithId(id: String): Option[DBCodeDocument] = coll.find((x: DBObject) => x.docId == id) match {
-    case Some(doc) => Some(grater[DBCodeDocument].asObject(doc))
+  def getDocWithId(id: String): Option[DbCodeDocument] = coll.find((x: DBObject) => x.docId == id) match {
+    case Some(doc) => Some(grater[DbCodeDocument].asObject(doc))
     case _ => None
   }
 
-  def getDocWithUuidAndDslType(metaModelUuid: String, dslType: String): Option[DBCodeDocument] =
+  def getDocWithUuidAndDslType(metaModelUuid: String, dslType: String): Option[DbCodeDocument] =
     coll.find((x: DBObject) => x.metaModelUuid == metaModelUuid && x.dslType == dslType) match {
-      case Some(doc) => Some(grater[DBCodeDocument].asObject(doc))
+      case Some(doc) => Some(grater[DbCodeDocument].asObject(doc))
       case _ => None
     }
 
-  def getDocsWithDslType(dslType: String): Seq[DBCodeDocument] =
+  def getDocsWithDslType(dslType: String): Seq[DbCodeDocument] =
     coll.find(MongoDBObject("dslType" -> dslType)).map(DBObj2Doc).toSeq
 
-  def getAllDocuments: Seq[DBCodeDocument] = coll
+  def getAllDocuments: Seq[DbCodeDocument] = coll
     .find(MongoDBObject())
     .map(DBObj2Doc).toSeq
 
   def deleteDocWithId(docId: String) = coll.remove(MongoDBObject("docId" -> docId))
 
   /** Implicit Salat Conversions */
-  implicit def Doc2DBObj(u: DBCodeDocument): DBObject = grater[DBCodeDocument].asDBObject(u)
+  implicit def Doc2DBObj(u: DbCodeDocument): DBObject = grater[DbCodeDocument].asDBObject(u)
 
-  implicit def DBObj2Doc(obj: DBObject): DBCodeDocument = grater[DBCodeDocument].asObject(obj)
+  implicit def DBObj2Doc(obj: DBObject): DbCodeDocument = grater[DbCodeDocument].asObject(obj)
 
-  implicit def MDBObj2Doc(obj: MongoDBObject): DBCodeDocument = grater[DBCodeDocument].asObject(obj)
+  implicit def MDBObj2Doc(obj: MongoDBObject): DbCodeDocument = grater[DbCodeDocument].asObject(obj)
 }

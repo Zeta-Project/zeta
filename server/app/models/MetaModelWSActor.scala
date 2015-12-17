@@ -6,7 +6,7 @@ import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, Subsc
 import play.api.Logger
 import play.api.libs.json.JsValue
 
-class MetaModelWSActor(out: ActorRef, metaModelUuid: String) extends Actor {
+class MetaModelWsActor(out: ActorRef, metaModelUuid: String) extends Actor {
 
   val log = Logger(getClass getName)
   val mediator = DistributedPubSubExtension(context.system).mediator
@@ -26,6 +26,6 @@ class MetaModelWSActor(out: ActorRef, metaModelUuid: String) extends Actor {
   }
 }
 
-object MetaModelWSActor {
-  def props(out: ActorRef, metaModelUuid: String) = Props(new MetaModelWSActor(out, metaModelUuid))
+object MetaModelWsActor {
+  def props(out: ActorRef, metaModelUuid: String) = Props(new MetaModelWsActor(out, metaModelUuid))
 }

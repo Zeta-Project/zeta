@@ -20,7 +20,7 @@ case class MediatorMessage(msg: Any, broadcaster: ActorRef)
   */
 class CodeDocManagingActor extends Actor {
 
-  var documents: Map[String, DBCodeDocument] = CodeDocumentDB.getAllDocuments.map(x => (x.docId, x)).toMap
+  var documents: Map[String, DbCodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.docId, x)).toMap
 
   val mediator = DistributedPubSubExtension(context.system).mediator
   val log = Logging(context.system, this)
@@ -37,11 +37,11 @@ class CodeDocManagingActor extends Actor {
               )
             case _ => // Nothing to do!
           }
-          CodeDocumentDB.saveDocument(documents(docId))
+          CodeDocumentDb.saveDocument(documents(docId))
 
         case newDoc: DocAdded =>
           println("Manager: Got DocAdded")
-          documents = documents + (newDoc.id -> new DBCodeDocument(
+          documents = documents + (newDoc.id -> new DbCodeDocument(
             docId = newDoc.id,
             dslType = newDoc.dslType,
             metaModelUuid = newDoc.metaModelUuid,
@@ -52,12 +52,12 @@ class CodeDocManagingActor extends Actor {
               id = newDoc.id)
           ))
           println(s"Manager: Added, publishing to ${newDoc.dslType}")
-          CodeDocumentDB.saveDocument(documents(newDoc.id))
+          CodeDocumentDb.saveDocument(documents(newDoc.id))
           mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, sender()))
 
         case msg: DocDeleted =>
           documents = documents - msg.id
-          CodeDocumentDB.deleteDocWithId(msg.id)
+          CodeDocumentDb.deleteDocWithId(msg.id)
           mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
 
         case msg: SaveCode => MetaModelDatabase.updateCode(msg.dslType, msg.metaModelUuid, msg.code)
@@ -77,14 +77,14 @@ object CodeDocManagingActor {
 /**
   * This Actor is responsible of the communictaion with the users browser
   */
-class CodeDocWSActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) extends Actor with ActorLogging {
+class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) extends Actor with ActorLogging {
 
   val mediator = DistributedPubSubExtension(context.system).mediator
   mediator ! Subscribe(dslType, self)
 
   /** Tell the client about the existing document */
-  CodeDocumentDB.getDocWithUuidAndDslType(metaModelUuid, dslType) match {
-    case doc: Some[DBCodeDocument] => out ! write[CodeEditorMessage](
+  CodeDocumentDb.getDocWithUuidAndDslType(metaModelUuid, dslType) match {
+    case doc: Some[DbCodeDocument] => out ! write[CodeEditorMessage](
       DocLoaded(
         str = doc.get.doc.str,
         revision = doc.get.doc.operations.length,
@@ -143,7 +143,7 @@ class CodeDocWSActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
   }
 }
 
-object CodeDocWSActor {
-  def props(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) = Props(new CodeDocWSActor(out, docManager, metaModelUuid, dslType))
+object CodeDocWsActor {
+  def props(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) = Props(new CodeDocWsActor(out, docManager, metaModelUuid, dslType))
 }
 

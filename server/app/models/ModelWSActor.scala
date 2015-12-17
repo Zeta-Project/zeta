@@ -3,14 +3,14 @@ package models
 import akka.actor.{Actor, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
-import models.ModelWSActor.{DataVisInvalidError, DataVisParseError}
+import models.ModelWsActor.{DataVisInvalidError, DataVisParseError}
 import play.api.Logger
 import shared.DiagramWSMessage
 import shared.DiagramWSMessage.{DataVisScopeQuery, DataVisCodeMessage}
 import shared.DiagramWSOutMessage.{DataVisError, DataVisScope, NewScriptFile}
 import upickle.default._
 
-class ModelWSActor(out:ActorRef, instanceId:String, graphType:String) extends Actor{
+class ModelWsActor(out:ActorRef, instanceId:String, graphType:String) extends Actor{
   val mediator = DistributedPubSubExtension(context.system).mediator
   val log = Logger(this getClass() getName())
   val dataVisActor = context.actorOf(DataVisActor.props(self, instanceId, graphType))
@@ -30,7 +30,7 @@ class ModelWSActor(out:ActorRef, instanceId:String, graphType:String) extends Ac
         case e: MatchError => log.error("Unexpected Match Error:" + e.getMessage())
       }
 
-    case ModelWSActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))
+    case ModelWsActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))
 
     case newFile: NewScriptFile => out ! write(newFile)
     case scope: DataVisScope => out ! write(scope)
@@ -48,8 +48,8 @@ class ModelWSActor(out:ActorRef, instanceId:String, graphType:String) extends Ac
   }
 }
 
-object ModelWSActor{
-  def props(out:ActorRef, instanceId:String, graphType:String) = Props(new ModelWSActor(out, instanceId, graphType))
+object ModelWsActor{
+  def props(out:ActorRef, instanceId:String, graphType:String) = Props(new ModelWsActor(out, instanceId, graphType))
   case class PublishFile(context:String, path:String)
   case class DataVisParseError(msg:String, context:String)
   case class DataVisInvalidError(msg:List[String], context:String)

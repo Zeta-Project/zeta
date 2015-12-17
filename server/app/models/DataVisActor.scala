@@ -4,7 +4,7 @@ import java.io.File
 
 import akka.actor.{Actor, ActorRef, Props}
 import models.DataVisActor.{MetamodelFailure, MetamodelLoaded}
-import models.ModelWSActor.DataVisInvalidError
+import models.ModelWsActor.DataVisInvalidError
 import modigen.util.MetamodelBuilder
 import modigen.util.datavis.domain.Conditional
 import modigen.util.datavis.generator.ListenersGenerator
@@ -43,9 +43,9 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
     log.debug("DataVis Code for object " + msg.context + ": " + msg.code)
 
     metamodel.getObjectByName(msg.classname) match {
-      case None => socket ! ModelWSActor.DataVisInvalidError(List("Unable to load class " + msg.classname + " from metamodel."), msg.context)
+      case None => socket ! ModelWsActor.DataVisInvalidError(List("Unable to load class " + msg.classname + " from metamodel."), msg.context)
       case Some(mObject) => parseAll(script, msg.code) match {
-        case NoSuccess(error, _) => socket ! ModelWSActor.DataVisParseError("Could not parse code: " + error, msg.context)
+        case NoSuccess(error, _) => socket ! ModelWsActor.DataVisParseError("Could not parse code: " + error, msg.context)
         case Success(conditionals, _) => validateAndGenerateDataVisCode(mObject, conditionals, msg)
       }
     }
@@ -74,7 +74,7 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
 
   private def generateAndPublish(msg:DataVisCodeMessage, conditionals:List[Conditional]) = {
     val fileName = generator.generate(instanceId, msg.context, conditionals)
-    socket ! ModelWSActor.PublishFile(msg.context,  ("/assets/" + fileName).replace(File.separator, "/"))
+    socket ! ModelWsActor.PublishFile(msg.context,  ("/assets/" + fileName).replace(File.separator, "/"))
   }
 }
 
