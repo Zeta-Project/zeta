@@ -1,10 +1,10 @@
-package models.oauth
+package models.oAuth
 
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 import com.novus.salat._
-import models.Model
+import models.ModelData
 import org.joda.time.DateTime
 import play.api.Play
 import play.api.libs.json.Json
@@ -217,8 +217,8 @@ object OAuthSetup {
         |    ]
       """.stripMargin)
 
-    val model = Model(new ObjectId("564e048cdb5c98e56b7deba5"), Some(exampleAcc), Some(new DateTime()), json)
-    Model.save(model)
+    val model = ModelData(new ObjectId("564e048cdb5c98e56b7deba5"), Some(exampleAcc), Some(new DateTime()), json)
+    ModelData.save(model)
 
   }
 }

@@ -1,51 +1,50 @@
-package controllers
+package controllers.restApi
 
-import models.Model
-import models.oauth.OAuthDataHandler
-import play.api.mvc.{Result, Action, Controller}
+import models.ModelData
+import models.oAuth.OAuthDataHandler
+import play.api.mvc.{Action, Controller, Result}
 
 import scala.concurrent.Future
 import scalaoauth2.provider.OAuth2Provider
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 
-class ModelRESTAPI extends Controller with OAuth2Provider {
+class ModelRestApi extends Controller with OAuth2Provider {
 
   def getModel(modelId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.findById(modelId))
+      serve(ModelData.findById(modelId))
     }
   }
 
   def getNodes(modelId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.getNodes(modelId))
+      serve(ModelData.getNodes(modelId))
     }
   }
 
   def getEdges(modelId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.getEdges(modelId))
+      serve(ModelData.getEdges(modelId))
     }
   }
 
-  def getNode(modelId:String, nodeId: String) = Action.async { implicit request =>
+  def getNode(modelId: String, nodeId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.getNode(modelId, nodeId))
+      serve(ModelData.getNode(modelId, nodeId))
     }
   }
 
   def getEdge(modelId: String, edgeId: String) = Action.async { implicit request =>
     authorize(OAuthDataHandler()) { authInfo =>
-      serve(Model.getEdge(modelId, edgeId))
+      serve(ModelData.getEdge(modelId, edgeId))
     }
   }
 
-  private def serve(model: Future[Option[Model]]): Future[Result] = {
-    model.map { om => om match {
+  private def serve(model: Future[Option[ModelData]]): Future[Result] = {
+    model.map {
       case Some(m) => Ok(m.modelDataJson)
       case _ => NotFound
-      }
     }
   }
 

@@ -3,14 +3,14 @@ package models
 import akka.actor.{Actor, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
-import models.DiagramWSActor.{DataVisInvalidError, DataVisParseError}
+import models.ModelWSActor.{DataVisInvalidError, DataVisParseError}
 import play.api.Logger
 import shared.DiagramWSMessage
 import shared.DiagramWSMessage.{DataVisScopeQuery, DataVisCodeMessage}
 import shared.DiagramWSOutMessage.{DataVisError, DataVisScope, NewScriptFile}
 import upickle.default._
 
-class DiagramWSActor(out:ActorRef, instanceId:String, graphType:String) extends Actor{
+class ModelWSActor(out:ActorRef, instanceId:String, graphType:String) extends Actor{
   val mediator = DistributedPubSubExtension(context.system).mediator
   val log = Logger(this getClass() getName())
   val dataVisActor = context.actorOf(DataVisActor.props(self, instanceId, graphType))
@@ -30,7 +30,7 @@ class DiagramWSActor(out:ActorRef, instanceId:String, graphType:String) extends 
         case e: MatchError => log.error("Unexpected Match Error:" + e.getMessage())
       }
 
-    case DiagramWSActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))
+    case ModelWSActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))
 
     case newFile: NewScriptFile => out ! write(newFile)
     case scope: DataVisScope => out ! write(scope)
@@ -48,8 +48,8 @@ class DiagramWSActor(out:ActorRef, instanceId:String, graphType:String) extends 
   }
 }
 
-object DiagramWSActor{
-  def props(out:ActorRef, instanceId:String, graphType:String) = Props(new DiagramWSActor(out, instanceId, graphType))
+object ModelWSActor{
+  def props(out:ActorRef, instanceId:String, graphType:String) = Props(new ModelWSActor(out, instanceId, graphType))
   case class PublishFile(context:String, path:String)
   case class DataVisParseError(msg:String, context:String)
   case class DataVisInvalidError(msg:List[String], context:String)

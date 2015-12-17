@@ -2,20 +2,20 @@
 
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf8"/>
-		<link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+    <head>
+        <meta charset="utf8"/>
+        <link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
 
-		<link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
-		<link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("lib/bootstrap/css/bootstrap.min.css")">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")">
 
         <script type="text/javascript" src="@routes.Assets.at("lib/webcomponentsjs/webcomponents.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
-		<script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
-	</head>
-	<body>
-		@webpage.WebpageNavBar(user)
-		<div>@content</div>
-	</body>
+        <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
+    </head>
+    <body>
+        @views.html.webpage.WebpageNavBar(user)
+    <div>@content</div>
+    </body>
 </html>

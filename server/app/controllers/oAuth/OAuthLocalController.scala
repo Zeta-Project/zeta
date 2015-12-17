@@ -1,13 +1,10 @@
-package controllers
+package controllers.oAuth
 
 import models.SecureSocialUser
-import models.oauth.OAuthDataHandler
-import play.api.data._
+import models.oAuth.OAuthDataHandler
 import play.api.data.Forms._
+import play.api.data._
 import play.api.libs.json._
-import play.api.data.validation.Constraints._
-import play.api.mvc.{AnyContent, Result, Request}
-import play.mvc.Http.RequestBody
 import securesocial.core.RuntimeEnvironment
 
 import scala.concurrent.Future
@@ -41,18 +38,19 @@ class OAuthLocalController(override implicit val env: RuntimeEnvironment[SecureS
   private def handleRequest(params: (String, String), user: SecureSocialUser) = {
     val (grantType, clientId) = params
     handler.validateClient(ClientCredential(clientId, Some("")), grantType) flatMap {
-      case true if modigenClients contains(clientId) => {
+      case true if modigenClients contains clientId =>
         val authInfo = createAuthInfo(user, clientId)
-        issueAccessToken(handler, authInfo).map { Ok(_) }
-      }
+        issueAccessToken(handler, authInfo).map {
+          Ok(_)
+        }
       case _ => Future.successful(BadRequest("invalid client"))
     }
   }
 
   private def issueAccessToken(
-    handler: AuthorizationHandler[SecureSocialUser],
-    authInfo: AuthInfo[SecureSocialUser]
-  ): Future[JsObject] = {
+                                handler: AuthorizationHandler[SecureSocialUser],
+                                authInfo: AuthInfo[SecureSocialUser]
+                              ): Future[JsObject] = {
     handler.getStoredAccessToken(authInfo).flatMap {
       case Some(token) if token.isExpired => token.refreshToken.map {
         handler.refreshAccessToken(authInfo, _)

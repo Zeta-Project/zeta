@@ -44,7 +44,7 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
   }
 
   def modelValidator() = SecuredAction { implicit request =>
-    Ok(views.html.model.modelValidator.render())
+    Ok(views.html.model.ModelValidator.render())
   }
 
   def saveMetaModel() = SecuredAction { implicit request =>
@@ -80,6 +80,7 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
             Ok("Saved")
           case None => BadRequest("Invalid UUID")
         }
+      case None => BadRequest("Invalid JSON")
     }
   }
 
@@ -89,12 +90,13 @@ class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSo
       val metaModel = Await.result(MetaModelDatabase.loadModel(metaModelUuid), 30 seconds)
       if (metaModel.isDefined && metaModel.get.userUuid == userUuid) {
         MetaModelDatabase.deleteModel(metaModelUuid)
-        Redirect(routes.Webpage.diagrams(null))
+
+        Redirect(controllers.webpage.routes.Webpage.diagramsOverview(null))
       } else {
-        Redirect(routes.Webpage.index())
+        Redirect(controllers.webpage.routes.Webpage.index())
       }
     } else {
-      Redirect(routes.Webpage.index())
+      Redirect(controllers.webpage.routes.Webpage.index())
     }
   }
 

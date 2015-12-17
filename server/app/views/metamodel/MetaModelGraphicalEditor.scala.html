@@ -1,17 +1,17 @@
 @import play.api.libs.json.Json
 @(user: Option[SecureSocialUser], uuid: String, metaModel: Option[MetaModel])
 
-@webpage.WebpageGeneralLayout("Meta Model Editor", user) {
+@views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {
 
     <script type="text/javascript">
     window.loadedMetaModel = {};
     window.loadedMetaModel.uuid = "@uuid";
     window.loadedMetaModel.userUuid = "@user.get.uuid";
     @if(metaModel.isDefined) {
-        window.loadedMetaModel.loadOnStart = true;
-        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.graph))));
-        window.loadedMetaModel.metaModel = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.data))));
-        window.loadedMetaModel.name = "@metaModel.get.metaModel.name";
+    window.loadedMetaModel.loadOnStart = true;
+    window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.graph))));
+    window.loadedMetaModel.metaModel = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.get.metaModel.data))));
+    window.loadedMetaModel.name = "@metaModel.get.metaModel.name";
     }
     </script>
 
@@ -157,7 +157,7 @@
     <script src="@routes.Assets.at("metaModelEditor/src/main.js")"></script>
 
 
-    <!--[if IE 9]>
+        <!--[if IE 9]>
               <script src="./lib/base64.js"></script>
               <script type="text/javascript">
                 window.btoa = base64.encode;
@@ -168,9 +168,9 @@
             <![endif]-->
 
     <script type="text/javascript">
-                var app = new Rappid();
-                Backbone.history.start();
-            </script>
+            var app = new Rappid();
+            Backbone.history.start();
+    </script>
 
 
 }

@@ -1,16 +1,12 @@
-package controllers
+package controllers.oAuth
 
-import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 import models._
-import models.oauth._
-import play.api.Logger
+import models.oAuth.{OAuthDataHandler, OAuthSetup}
 import play.api.libs.json.{Json, Writes}
 import play.api.mvc.{Action, Controller}
-import models.oauth.custom_context._
 
-import scala.concurrent.Future
-import scalaoauth2.provider._
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
+import scalaoauth2.provider._
 
 class OAuthController extends Controller with OAuth2Provider {
 

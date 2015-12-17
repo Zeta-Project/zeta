@@ -1,18 +1,15 @@
-package controllers
+package controllers.restApi
 
 import models.Test.Test
 import models.{MetaModel, MetaModelDatabase, SecureSocialUser}
-import modigen.util.MetamodelBuilder
-import play.api.libs.json.{JsError, JsObject, Json}
-import play.api.mvc.{BodyParsers, Action}
+import play.api.mvc.{Action, BodyParsers}
 import securesocial.core.RuntimeEnvironment
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
 
-
-class MetaModelRESTAPI(override implicit val env: RuntimeEnvironment[SecureSocialUser])
+class MetaModelRestApi(override implicit val env: RuntimeEnvironment[SecureSocialUser])
   extends securesocial.core.SecureSocial[SecureSocialUser] {
 
   private def getModel(modelId: String): Option[MetaModel] =
@@ -21,8 +18,8 @@ class MetaModelRESTAPI(override implicit val env: RuntimeEnvironment[SecureSocia
   def getmClasses(modelId: String) = SecuredAction { implicit request =>
     getModel(modelId) match {
       case Some(model) =>
-       /* Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
-          .classes.keys.mkString("", ", ", ""))*/
+        /* Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
+           .classes.keys.mkString("", ", ", ""))*/
         Ok("")
       case _ => BadRequest("Model For Id Does Not Exist!")
     }

@@ -1,4 +1,4 @@
-package models.oauth
+package models.oAuth
 
 import java.security.SecureRandom
 
@@ -7,18 +7,18 @@ import com.novus.salat.annotations._
 import com.novus.salat.dao.{ModelCompanion, SalatDAO}
 import models.SecureSocialUser
 import org.joda.time.DateTime
-import models.oauth.custom_context._
+import models.oAuth.custom_context._
 
 import scala.util.Random
 
 case class OauthAccessToken(
-  @Key("_id") id: ObjectId,
-  accountId: String,
-  oauthClientId: ObjectId,
-  accessToken: String,
-  refreshToken: String,
-  createdAt: DateTime
-)
+                             @Key("_id") id: ObjectId,
+                             accountId: String,
+                             oauthClientId: ObjectId,
+                             accessToken: String,
+                             refreshToken: String,
+                             createdAt: DateTime
+                           )
 
 object OauthAccessToken extends ModelCompanion[OauthAccessToken, ObjectId] {
 

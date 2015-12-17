@@ -1,4 +1,4 @@
-package models.oauth
+package models.oAuth
 
 import models.{MongoDbUserService, SecureSocialUser}
 
@@ -7,6 +7,7 @@ import scalaoauth2.provider._
 
 object OAuthDataHandler {
   private val handler = new OAuthDataHandler
+
   def apply() = handler
 }
 
@@ -14,7 +15,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
 
   // common
 
-  override def validateClient(clientCredential: ClientCredential, grantType: String): Future[Boolean] =  {
+  override def validateClient(clientCredential: ClientCredential, grantType: String): Future[Boolean] = {
     Future.successful(OauthClient.validate(clientCredential.clientId, clientCredential.clientSecret.getOrElse(""), grantType))
   }
 
@@ -30,6 +31,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
   }
 
   private val accessTokenExpireSeconds = 3600
+
   private def toAccessToken(accessToken: OauthAccessToken) = {
     AccessToken(
       accessToken.accessToken,
@@ -49,7 +51,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
 
   // Client credentials grant
 
-  override def findClientUser(clientCredential: ClientCredential, scope: Option[String]): Future[Option[SecureSocialUser]] =  {
+  override def findClientUser(clientCredential: ClientCredential, scope: Option[String]): Future[Option[SecureSocialUser]] = {
     Future.successful(OauthClient.findClientCredentials(clientCredential.clientId, clientCredential.clientSecret.getOrElse("")))
   }
 
@@ -71,7 +73,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
     })
   }
 
-  override def refreshAccessToken(authInfo: AuthInfo[SecureSocialUser], refreshToken: String): Future[AccessToken] =  {
+  override def refreshAccessToken(authInfo: AuthInfo[SecureSocialUser], refreshToken: String): Future[AccessToken] = {
     val clientId = authInfo.clientId.getOrElse(throw new InvalidClient())
     val client = OauthClient.findByClientId(clientId).getOrElse(throw new InvalidClient())
     val accessToken = OauthAccessToken.refresh(authInfo.user, client)
@@ -80,7 +82,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
 
   // Authorization code grant
 
-  override def findAuthInfoByCode(code: String): Future[Option[AuthInfo[SecureSocialUser]]] =  {
+  override def findAuthInfoByCode(code: String): Future[Option[AuthInfo[SecureSocialUser]]] = {
     Future.successful(OauthAuthorizationCode.findByCode(code).flatMap { authorization =>
       for {
         account <- MongoDbUserService.findOneById(authorization.accountId)
@@ -106,7 +108,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
     Future.successful(OauthAccessToken.findByAccessToken(token).map(toAccessToken))
   }
 
-  override def findAuthInfoByAccessToken(accessToken: AccessToken): Future[Option[AuthInfo[SecureSocialUser]]] =  {
+  override def findAuthInfoByAccessToken(accessToken: AccessToken): Future[Option[AuthInfo[SecureSocialUser]]] = {
     Future.successful(OauthAccessToken.findByAccessToken(accessToken.token).flatMap { case accessToken =>
       for {
         account <- MongoDbUserService.findOneById(accessToken.accountId)
