@@ -1,4 +1,4 @@
-package models
+package models.codeEditor
 
 import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports._

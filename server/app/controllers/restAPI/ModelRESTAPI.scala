@@ -1,6 +1,6 @@
 package controllers.restApi
 
-import models.ModelData
+import models.model.ModelData
 import models.oAuth.OAuthDataHandler
 import play.api.mvc.{Action, Controller, Result}
 

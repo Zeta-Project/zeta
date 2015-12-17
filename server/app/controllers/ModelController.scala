@@ -1,6 +1,8 @@
 package controllers
 
-import models.{ModelWsActor, MetaModelDatabase, SecureSocialUser, ShortUuid}
+import models.metaModel.MetaModelDatabase
+import models.model.ModelWsActor
+import models.{SecureSocialUser, ShortUuid}
 import play.api.Logger
 import play.api.Play.current
 import play.api.mvc.WebSocket

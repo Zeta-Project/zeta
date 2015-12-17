@@ -1,8 +1,9 @@
-package models
+package models.metaModel
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
+import models.codeEditor.MediatorMessage
 import play.api.Logger
 import play.api.libs.json.JsValue
 

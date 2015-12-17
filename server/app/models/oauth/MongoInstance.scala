@@ -4,7 +4,7 @@ import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 import com.novus.salat._
-import models.ModelData
+import models.model.ModelData
 import org.joda.time.DateTime
 import play.api.Play
 import play.api.libs.json.Json

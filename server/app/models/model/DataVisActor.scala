@@ -1,10 +1,11 @@
-package models
+package models.model
 
 import java.io.File
 
 import akka.actor.{Actor, ActorRef, Props}
-import models.DataVisActor.{MetamodelFailure, MetamodelLoaded}
-import models.ModelWsActor.DataVisInvalidError
+import models.metaModel.MetaModelDatabase
+import models.model.DataVisActor.{MetamodelLoaded, MetamodelFailure}
+import models.model.ModelWsActor.DataVisInvalidError
 import modigen.util.MetamodelBuilder
 import modigen.util.datavis.domain.Conditional
 import modigen.util.datavis.generator.ListenersGenerator

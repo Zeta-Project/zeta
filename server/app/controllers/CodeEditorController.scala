@@ -1,6 +1,7 @@
 package controllers
 
-import models.{CodeDocWsActor, CodeDocManagingActor, SecureSocialUser}
+import models.SecureSocialUser
+import models.codeEditor.{CodeDocWsActor, CodeDocManagingActor}
 import play.api.Play.current
 import play.api.mvc.WebSocket
 import securesocial.core.RuntimeEnvironment

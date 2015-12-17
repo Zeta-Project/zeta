@@ -1,9 +1,10 @@
-package models
+package models.codeEditor
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe}
 import akka.event.Logging
+import models.metaModel.MetaModelDatabase
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
 import scalot.Server

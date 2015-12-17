@@ -1,7 +1,6 @@
 import java.lang.reflect.Constructor
 
-import akka.actor.{Props, ActorRef}
-import models.{CodeDocManagingActor, SecureSocialUser, MongoDbUserService}
+import models.{MongoDbUserService, SecureSocialUser}
 import securesocial.core.RuntimeEnvironment
 import securesocial.core.providers.UsernamePasswordProvider
 

@@ -1,14 +1,14 @@
-package models
+package models.metaModel
 
 import com.mongodb.casbah._
 import com.mongodb.casbah.commons._
 import com.mongodb.{DBObject, ServerAddress}
 import com.novus.salat._
-import models.Types.Types
+import models.metaModel.Types.Types
 import play.api.{Logger, Play}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 
 /** Represents a metamodel */
@@ -35,6 +35,11 @@ trait MBounds {
 
 trait MSum {}
 
+object Types extends Enumeration {
+  type Types = Value
+  val Int, String, Double, Boolean, MEnums = Value
+}
+
 case class MetaModelDefinition(mClasses: List[MClass], mReferences: List[MReference], mEnums: List[MEnums])
 
 case class MClass(name: String, abstractness: Boolean, superTypes: List[MClass], inputs: List[MLinkDef], outputs: List[MLinkDef], attributes: List[MAttributes]) extends MObject with MSum
@@ -46,11 +51,6 @@ case class MAttributes(name: String, globalUnique: Boolean, localUnique: Boolean
 case class MLinkDef(mtype: MSum, deleteIfLower: Boolean, upperBound: Int, lowerBound: Int) extends MBounds
 
 case class MEnums(name: String, values: List[Types]) extends MObject
-
-object Types extends Enumeration {
-  type Types = Value
-  val Int, String, Double, Boolean, MEnums = Value
-}
 
 object MetaModelDatabase {
   val log = Logger(this getClass() getName())

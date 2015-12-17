@@ -1,6 +1,6 @@
 package modigen.util.graph
 
-import models.MetaModelData
+import models.metaModel.MetaModelData
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 import scala.collection.Set

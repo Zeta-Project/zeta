@@ -1,12 +1,13 @@
-package models
+package models.model
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe, SubscribeAck}
-import models.ModelWsActor.{DataVisInvalidError, DataVisParseError}
+import models.model.DataVisActor
+import models.model.ModelWsActor.{DataVisInvalidError, DataVisParseError}
 import play.api.Logger
 import shared.DiagramWSMessage
-import shared.DiagramWSMessage.{DataVisScopeQuery, DataVisCodeMessage}
+import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
 import shared.DiagramWSOutMessage.{DataVisError, DataVisScope, NewScriptFile}
 import upickle.default._
 

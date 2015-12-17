@@ -1,4 +1,4 @@
-package models
+package models.model
 
 import com.mongodb.casbah.Imports._
 import com.novus.salat._
