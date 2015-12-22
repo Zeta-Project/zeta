@@ -47,18 +47,18 @@
     <body class="body">
         <h1>MoDiGen</h1>
         <div class="toolbar-container">
-            <button id="btn-undo" class="btn" data-tooltip="Undo"><img src="@routes.Assets.at("images/editor/rappid/undo.png")" alt="Undo"/></button>
-            <button id="btn-redo" class="btn" data-tooltip="Redo"><img src="@routes.Assets.at("images/editor/rappid/redo.png")" alt="Redo"/></button>
-            <button id="btn-clear" class="btn" data-tooltip="Clear Paper"><img src="@routes.Assets.at("images/editor/rappid/clear.png")" alt="Clear"/></button>
+            <button id="btn-undo" class="btn" data-tooltip="Undo"><img src="@routes.Assets.at("modelEditor/editor/images/undo.png")" alt="Undo"/></button>
+            <button id="btn-redo" class="btn" data-tooltip="Redo"><img src="@routes.Assets.at("modelEditor/editor/images/redo.png")" alt="Redo"/></button>
+            <button id="btn-clear" class="btn" data-tooltip="Clear Paper"><img src="@routes.Assets.at("modelEditor/editor/images/clear.png")" alt="Clear"/></button>
             <button id="btn-svg" class="btn" data-tooltip="Open as SVG in a New Window">open as SVG</button>
             <button id="btn-png" class="btn" data-tooltip="Open as PNG in a New Window">open as PNG</button>
             <button id="btn-code-editor" rel="leanModal" class="btn" data-tooltip="Open the code editor for this diagram" href="#code-overlay">
                 open Code</button>
 
-            <button id="btn-print" class="btn" data-tooltip="Open a Print Dialog"><img src="@routes.Assets.at("images/editor/rappid/print.png")" alt="Print"/></button>
-            <button id="btn-zoom-in" class="btn" data-tooltip="Zoom In"><img src="@routes.Assets.at("images/editor/rappid/zoomin.png")" alt="Zoom in"/></button>
-            <button id="btn-zoom-out" class="btn" data-tooltip="Zoom Out"><img src="@routes.Assets.at("images/editor/rappid/zoomout.png")" alt="Zoom out"/></button>
-            <button id="btn-fullscreen" class="btn" data-tooltip="Toggle Fullscreen Mode"><img src="@routes.Assets.at("images/editor/rappid/fullscreen.png")" alt="Fullscreen"/></button>
+            <button id="btn-print" class="btn" data-tooltip="Open a Print Dialog"><img src="@routes.Assets.at("modelEditor/editor/images/print.png")" alt="Print"/></button>
+            <button id="btn-zoom-in" class="btn" data-tooltip="Zoom In"><img src="@routes.Assets.at("modelEditor/editor/images/zoomin.png")" alt="Zoom in"/></button>
+            <button id="btn-zoom-out" class="btn" data-tooltip="Zoom Out"><img src="@routes.Assets.at("modelEditor/editor/images/zoomout.png")" alt="Zoom out"/></button>
+            <button id="btn-fullscreen" class="btn" data-tooltip="Toggle Fullscreen Mode"><img src="@routes.Assets.at("modelEditor/editor/images/fullscreen.png")" alt="Fullscreen"/></button>
             <button id="btn-to-front" class="btn" data-tooltip="Bring Object to Front">to front</button>
             <button id="btn-to-back" class="btn" data-tooltip="Send Object to Back">to back</button>
 
@@ -227,7 +227,7 @@
             <span id="datavis-error">There is an error in your code</span>
             <ul id="validation-errors"></ul>
             <button type="button" onclick="dataVisEditor.save()" id="saveDatavis">Save</button>
-            <img id="close-button" src="@routes.Assets.at("images/grey_close_x.png")" onclick="nodeCodeEditor.deactivate();" style="position: absolute ; right: 0.2em ; top: 0.2em ; width: 1.2em ; height: 1.2em ;">
+            <img id="close-button" src="@routes.Assets.at("modelEditor/editor/images/grey_close_x.png")" onclick="nodeCodeEditor.deactivate();" style="position: absolute ; right: 0.2em ; top: 0.2em ; width: 1.2em ; height: 1.2em ;">
 
         </aside>
 
