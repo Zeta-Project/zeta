@@ -131,42 +131,41 @@
 
     <script src="@routes.Assets.at("metaModelEditor/ext/collaboration.js")"></script>
 
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.shapes.uml.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.halo.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.dia.freeTransform.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.freeTransform.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.inspector.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.selectionView.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.clipboard.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.stencil.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.paperScroller.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.ui.tooltip.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.format.svg.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.format.raster.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.format.print.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.dia.command.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.dia.validator.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.layout.ForceDirected.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.layout.GridLayout.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/dist/joint.layout.DirectedGraph.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.halo.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.dia.freeTransform.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.freeTransform.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.inspector.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.selectionView.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.clipboard.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.stencil.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.paperScroller.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.tooltip.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.format.svg.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.format.raster.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.format.print.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.dia.command.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.dia.validator.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.layout.ForceDirected.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.layout.GridLayout.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
 
-    <script src="@routes.Assets.at("metaModelEditor/lib/keyboard.js")"></script>
+    <script src="@routes.Assets.at("jointjs/lib/keyboard.js")"></script>
 
     <script src="@routes.Assets.at("metaModelEditor/src/inspector.js")"></script>
     <script src="@routes.Assets.at("metaModelEditor/src/stencil.js")"></script>
     <script src="@routes.Assets.at("metaModelEditor/src/main.js")"></script>
 
-
-        <!--[if IE 9]>
-              <script src="./lib/base64.js"></script>
-              <script type="text/javascript">
-                window.btoa = base64.encode;
-                document.onselectstart = function () {
-                return false;
-              };
-              </script>
-            <![endif]-->
+    <!--[if IE 9]>
+    <script src='@routes.Assets.at("jointjs/lib/base64.js")'></script>
+    <script type="text/javascript">
+        window.btoa = base64.encode;
+        document.onselectstart = function () {
+            return false;
+        };
+    </script>
+    <![endif]-->
 
     <script type="text/javascript">
             var app = new Rappid();
