@@ -1,4 +1,7 @@
-@(user: SecureSocialUser)
+@(user: SecureSocialUser, accountForm: Form[AccountFormData])
+
+@import helper._
+
 @views.html.webpage.WebpageGeneralLayout("New Diagram", Some(user)) {
     <div class="container">
         <div class="panel panel-default">
@@ -6,45 +9,22 @@
                 <h2>Edit account information</h2>
             </div>
 
-            <form action="" method="post">
+            @form(action = controllers.routes.AccountController.saveChanges) {
                 <div class="panel-body">
                     <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="@user.profile.firstName" value="@user.profile.firstName">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="@user.profile.lastName" value="@user.profile.lastName">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" class="form-control" id="username" placeholder="@user.profile.fullName" value="@user.profile.fullName">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">E-Mail</label>
-                        <input type="text" class="form-control" id="email" placeholder="@user.profile.email" value="@user.profile.email">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="password">New Password</label>
-                        <input type="password" class="form-control" id="password" placeholder="********">
-                        <span class="help-block">Leave blank if you don't want to change your password.</span>
-                    </div>
-                    <div class="form-group">
-                        <label for="passwordRepeat">Repeat Password</label>
-                        <input type="password" class="form-control" id="passwordRepeat" placeholder="********">
-                        <span class="help-block">Leave blank if you don't want to change your password.</span>
+                        @inputText(accountForm("firstName"), 'class -> "form-control", '_label -> "First Name", 'placeholder -> accountForm.get.firstName)
+                        @inputText(accountForm("lastName"), 'class -> "form-control", '_label -> "Last Name", 'placeholder -> accountForm.get.lastName)
+                        @inputText(accountForm("fullName"), 'class -> "form-control", '_label -> "Username", 'placeholder -> accountForm.get.fullName)
+                        @inputText(accountForm("eMail"), 'class -> "form-control", '_label -> "E-Mail", 'placeholder -> accountForm.get.eMail)
+                        @inputPassword(accountForm("password.main"), 'class -> "form-control", '_label -> "Password", 'placeholder -> "********")
+                        @inputPassword(accountForm("password.confirm"), 'class -> "form-control", '_label -> "Confirm Password", 'placeholder -> "********")
+                        <span class="help-block">Leave both password fields blank if you don't want to change your password.</span>
                     </div>
                 </div>
-
                 <div class="panel-footer">
                     <button type="submit" class="btn btn-primary">save account information</button>
                 </div>
-
-            </form>
+            }
         </div>
     </div>
 
