@@ -43,15 +43,15 @@ object OAuthSetup {
 
     // setting up three clients, admin user owns credentials client, example user owns auth client and password client
     // "owns" => "was created by". Has nothing to do with usage later on, anyone can use any client
-    val client1 = OauthClient(new ObjectId, adminAcc, "client_credentials", "credClientid", "credClientSecret", None, new DateTime())
-    val client2 = OauthClient(new ObjectId, exampleAcc, "authorization_code", "authClientId", "authClientSecret", Some("http://localhost:3000/callback"), new DateTime())
-    val client3 = OauthClient(new ObjectId, exampleAcc, "password", "pwClientId", "pwClientSecret", None, new DateTime())
+    val client1 = OAuthClient(new ObjectId, adminAcc, "client_credentials", "credClientid", "credClientSecret", None, new DateTime())
+    val client2 = OAuthClient(new ObjectId, exampleAcc, "authorization_code", "authClientId", "authClientSecret", Some("http://localhost:3000/callback"), new DateTime())
+    val client3 = OAuthClient(new ObjectId, exampleAcc, "password", "pwClientId", "pwClientSecret", None, new DateTime())
 
     // an additional client for testing OAuthLocalController
-    val modigenClient = OauthClient(new ObjectId, adminAcc, "implicit", "modigen-browser-app1", "", None, new DateTime())
+    val modigenClient = OAuthClient(new ObjectId, adminAcc, "implicit", "modigen-browser-app1", "", None, new DateTime())
 
     // auth code for authorization_code mode, can be used by example acc only
-    val authCode = OauthAuthorizationCode(
+    val authCode = OAuthAuthorizationCode(
       new ObjectId,
       exampleAcc,
       client2.id,
@@ -61,11 +61,11 @@ object OAuthSetup {
     )
 
     // do inserts...
-    OauthClient.insert(client1)
-    OauthClient.insert(client2)
-    OauthClient.insert(client3)
-    OauthClient.insert(modigenClient)
-    OauthAuthorizationCode.insert(authCode)
+    OAuthClient.insert(client1)
+    OAuthClient.insert(client2)
+    OAuthClient.insert(client3)
+    OAuthClient.insert(modigenClient)
+    OAuthAuthorizationCode.insert(authCode)
 
     // insert sample json model to be able to test model rest api
     val json = Json.parse(
