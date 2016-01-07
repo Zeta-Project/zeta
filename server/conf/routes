@@ -35,7 +35,7 @@ GET         /models/:modelId/edges                            @controllers.restA
 GET         /models/:modelId/edges/:edgeId                    @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeId: String)
 
 
-## Code Editor
+### Code Editor
 GET         /codeeditor/editor/:metaModelUuid/:dslType        @controllers.CodeEditorController.codeEditor(metaModelUuid: String, dslType: String)
 GET         /codeeditor/socket/:metaModelUuid/:dslType        @controllers.CodeEditorController.codeSocket(metaModelUuid: String, dslType: String)
 
@@ -46,6 +46,11 @@ POST        /oauth/accessTokenLocal                           @controllers.oAuth
 # temp. route for testing purposes
 GET         /oauth/info                                       @controllers.oAuth.OAuthController.info
 GET         /oauth/setup                                      @controllers.oAuth.OAuthController.setup
+
+
+### Account management
+GET         /account/overview                                 @controllers.AccountController.overview
+GET         /account/edit                                     @controllers.AccountController.edit
 
 
 ### Map static resources from the /public folder to the /assets URL path

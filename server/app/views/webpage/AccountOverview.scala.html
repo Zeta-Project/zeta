@@ -1,0 +1,37 @@
+@(user: SecureSocialUser)
+@views.html.webpage.WebpageGeneralLayout("New Diagram", Some(user)) {
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>Account Overview</h2>
+            </div>
+            <table class="table">
+                <tr>
+                    <td>First Name</td>
+                    <td>@user.profile.firstName</td>
+                </tr>
+                <tr>
+                    <td>Last Name</td>
+                    <td>@user.profile.lastName</td>
+                </tr>
+                <tr>
+                    <td>Username</td>
+                    <td>@user.profile.fullName</td>
+                </tr>
+                <tr>
+                    <td>E-Mail</td>
+                    <td>@user.profile.email</td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td>********</td>
+                </tr>
+            </table>
+            <div class="panel-footer">
+                <a href="@controllers.routes.AccountController.edit" class="btn btn-primary" role="button">edit account information</a>
+            </div>
+        </div>
+    </div>
+
+
+}
