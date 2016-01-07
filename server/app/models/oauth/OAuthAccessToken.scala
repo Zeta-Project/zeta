@@ -11,7 +11,7 @@ import models.oAuth.custom_context._
 
 import scala.util.Random
 
-case class OauthAccessToken(
+case class OAuthAccessToken(
                              @Key("_id") id: ObjectId,
                              accountId: String,
                              oauthClientId: ObjectId,
@@ -20,15 +20,15 @@ case class OauthAccessToken(
                              createdAt: DateTime
                            )
 
-object OauthAccessToken extends ModelCompanion[OauthAccessToken, ObjectId] {
+object OAuthAccessToken extends ModelCompanion[OAuthAccessToken, ObjectId] {
 
   val collection = MongoInstance("oauth_accesstoken")
-  override val dao = new SalatDAO[OauthAccessToken, ObjectId](collection = collection) {}
+  override val dao = new SalatDAO[OAuthAccessToken, ObjectId](collection = collection) {}
 
   private def randomString(length: Int) = new Random(new SecureRandom()).alphanumeric.take(length).mkString
 
-  def create(user: SecureSocialUser, client: OauthClient): OauthAccessToken = {
-    val token = OauthAccessToken(
+  def create(user: SecureSocialUser, client: OAuthClient): OAuthAccessToken = {
+    val token = OAuthAccessToken(
       new ObjectId,
       user.profile.userId,
       client.id,
@@ -41,25 +41,25 @@ object OauthAccessToken extends ModelCompanion[OauthAccessToken, ObjectId] {
   }
 
   // sql version returns Int at this point
-  def delete(user: SecureSocialUser, client: OauthClient): Unit = {
+  def delete(user: SecureSocialUser, client: OAuthClient): Unit = {
     remove(MongoDBObject("accountId" -> user.profile.userId, "oauthClientId" -> client.id))
   }
 
-  def refresh(user: SecureSocialUser, client: OauthClient): OauthAccessToken = {
+  def refresh(user: SecureSocialUser, client: OAuthClient): OAuthAccessToken = {
     delete(user, client)
     create(user, client)
   }
 
-  def findByAccessToken(accessToken: String): Option[OauthAccessToken] = {
+  def findByAccessToken(accessToken: String): Option[OAuthAccessToken] = {
     findOne(MongoDBObject("accessToken" -> accessToken))
   }
 
-  def findByAuthorized(user: SecureSocialUser, clientId: String): Option[OauthAccessToken] = {
-    val client = OauthClient.findByClientId(clientId)
+  def findByAuthorized(user: SecureSocialUser, clientId: String): Option[OAuthAccessToken] = {
+    val client = OAuthClient.findByClientId(clientId)
     client.map(c => findOne(MongoDBObject("accountId" -> user.profile.userId, "oauthClientId" -> c.id))).getOrElse(None)
   }
 
-  def findByRefreshToken(refreshToken: String): Option[OauthAccessToken] = {
+  def findByRefreshToken(refreshToken: String): Option[OAuthAccessToken] = {
     val expireAt = new DateTime().minusMonths(1)
     findOne(MongoDBObject("refreshToken" -> refreshToken, "createdAt" -> MongoDBObject("$gt" -> expireAt)))
   }
