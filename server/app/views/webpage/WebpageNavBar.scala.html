@@ -12,16 +12,12 @@
             </button>
 
             <a class="navbar-brand" href="/">
-                <img src="@routes.Assets.at("images/modigen_logo.png")" style="max-height:40px ; padding-bottom:18px">
+                <img src="@routes.Assets.at("webpage/images/modigen_logo.png")" style="max-height:40px ; padding-bottom:18px">
             </a>
         </div>
 
         <div class="collapse navbar-collapse" id="navbar-collapse-overview">
             <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="@controllers.webpage.routes.Webpage.index">Admin Panel</a>
-                </li>
-
                     <!-- only display logout/change-password buttons if a user is logged in -->
                 @user match {
                     case Some(u) => {
