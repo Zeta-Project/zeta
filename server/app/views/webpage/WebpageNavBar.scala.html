@@ -24,10 +24,11 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 <span class="glyphicon glyphicon-lock" aria-hidden="true"> </span>
-                                <span>@u.profile.email</span>
+                                <span>@u.profile.fullName</span>
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu navbar-right" role="menu">
+                                <li><a href="@controllers.routes.AccountController.overview">Account</a></li>
                                 <li><a href="/auth/logout">Logout</a></li>
                                 <li><a href="/auth/password">Change Password</a></li>
                             </ul>

@@ -73,3 +73,5 @@ onLoad in Global := (Command.process("project server", _: State)) compose (onLoa
 
 // for Eclipse users
 EclipseKeys.skipParents in ThisBuild := false
+
+fork in run := true
