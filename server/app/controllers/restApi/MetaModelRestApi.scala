@@ -1,7 +1,6 @@
 package controllers.restApi
 
 import models.SecureSocialUser
-import models.Test.Test
 import models.metaModel.{MetaModel, MetaModelDatabase}
 import play.api.mvc.{Action, BodyParsers}
 import securesocial.core.RuntimeEnvironment
@@ -38,16 +37,7 @@ class MetaModelRestApi(override implicit val env: RuntimeEnvironment[SecureSocia
 
 
   def getMetaModel(metamodelId: String) = Action(BodyParsers.parse.json) { request =>
-    val b = request.body.validate[Test]
-    b.fold(
-      errors => {
-        BadRequest("Error")
-      },
-      test => {
-        Ok("ok")
-      }
-
-    )
+    Ok("ok")
     /*
     request.body.asJson.map { json =>
       json.validate[Test].map {
