@@ -19,7 +19,7 @@ import scala.concurrent.Future
 case class SecureSocialUser(uuid: UUID, admin: Boolean = false, profile: BasicProfile)
 
 /** User Service Object implements SecureSocial Users */
-object MongoDbUserService extends UserService[SecureSocialUser]{
+class MongoDbUserService extends UserService[SecureSocialUser]{
 
 
   /** Salat Context **/
@@ -56,7 +56,7 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
       passwordInfo = Some(new PasswordHasher.Default().hash("supersecretpassword"))
     )
 
-    MongoDbUserService.save(profile = testUser, admin = false, mode = SaveMode.PasswordChange)
+    save(profile = testUser, admin = false, mode = SaveMode.PasswordChange)
     // admin@htwg-konstanz.de:admin
     val admin = new BasicProfile(
       providerId = "userpass",
@@ -71,7 +71,7 @@ object MongoDbUserService extends UserService[SecureSocialUser]{
       oAuth2Info = None,
       passwordInfo = Some(new PasswordHasher.Default().hash("supersecretpassword"))
     )
-    MongoDbUserService.save(profile = admin, admin = true, mode = SaveMode.PasswordChange)
+    save(profile = admin, admin = true, mode = SaveMode.PasswordChange)
   }
 
 

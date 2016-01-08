@@ -1,15 +1,17 @@
 package controllers.webpage
 
+import javax.inject.Inject
+
 import models._
 import models.metaModel.{MetaModelDatabase, MetaModel}
 import play.api.Logger
 import securesocial.core.RuntimeEnvironment
+import util.definitions.UserEnvironment
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class Webpage(override implicit val env: RuntimeEnvironment[SecureSocialUser])
-  extends securesocial.core.SecureSocial[SecureSocialUser] {
+class Webpage @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   val log = Logger(this getClass() getName())
 
