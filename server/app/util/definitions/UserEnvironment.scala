@@ -1,8 +1,5 @@
 package util.definitions
 
-/**
-  * Created by Felix on 07.01.2016.
-  */
 import com.google.inject.{ Inject, Singleton }
 import models.{MongoDbUserService, SecureSocialUser}
 import securesocial.core.providers.UsernamePasswordProvider

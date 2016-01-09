@@ -9,14 +9,14 @@ import models.oAuth.custom_context._
 
 
 case class OAuthClient(
-                        @Key("_id") id: ObjectId,
-                        ownerId: String,
-                        grantType: String,
-                        clientId: String,
-                        clientSecret: String,
-                        redirectUri: Option[String],
-                        createdAt: DateTime
-                      )
+  @Key("_id") id: ObjectId,
+  ownerId: String,
+  grantType: String,
+  clientId: String,
+  clientSecret: String,
+  redirectUri: Option[String],
+  createdAt: DateTime
+)
 
 object OAuthClient extends ModelCompanion[OAuthClient, ObjectId] {
 
