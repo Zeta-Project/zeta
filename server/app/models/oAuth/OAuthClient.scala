@@ -9,16 +9,18 @@ import models.oAuth.custom_context._
 
 
 case class OAuthClient(
-                        @Key("_id") id: ObjectId,
-                        ownerId: String,
-                        grantType: String,
-                        clientId: String,
-                        clientSecret: String,
-                        redirectUri: Option[String],
-                        createdAt: DateTime
-                      )
+  @Key("_id") id: ObjectId,
+  ownerId: String,
+  grantType: String,
+  clientId: String,
+  clientSecret: String,
+  redirectUri: Option[String],
+  createdAt: DateTime
+)
 
 object OAuthClient extends ModelCompanion[OAuthClient, ObjectId] {
+
+  lazy val userService = new MongoDbUserService()
 
   val collection = MongoInstance("oauth_client")
   override val dao = new SalatDAO[OAuthClient, ObjectId](collection = collection) {}
@@ -32,7 +34,7 @@ object OAuthClient extends ModelCompanion[OAuthClient, ObjectId] {
 
   def findClientCredentials(clientId: String, clientSecret: String): Option[SecureSocialUser] = {
     val client = findOne(MongoDBObject("clientId" -> clientId, "clientSecret" -> clientSecret))
-    client.map(c => MongoDbUserService.findOneById(c.ownerId)).getOrElse(None)
+    client.map(c => userService.findOneById(c.ownerId)).getOrElse(None)
   }
 
 }

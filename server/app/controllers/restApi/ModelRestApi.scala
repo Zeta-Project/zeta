@@ -1,11 +1,14 @@
 package controllers.restApi
 
+import javax.inject.Inject
+
+import models.SecureSocialUser
 import models.model.ModelData
 import models.oAuth.OAuthDataHandler
 import play.api.mvc.{Action, Controller, Result}
 
 import scala.concurrent.Future
-import scalaoauth2.provider.OAuth2Provider
+import scalaoauth2.provider.{DataHandler, OAuth2Provider}
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 

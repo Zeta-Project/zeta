@@ -2,6 +2,7 @@ package controllers
 
 
 import java.util.UUID
+import javax.inject.Inject
 
 import argonaut.Argonaut._
 import argonaut.DecodeJson
@@ -11,6 +12,7 @@ import play.api.Play.current
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
 import securesocial.core.RuntimeEnvironment
+import util.definitions.UserEnvironment
 import util.graph.MetamodelGraphDiff
 
 import scala.concurrent.Await
@@ -22,8 +24,7 @@ import scala.util.Try
   */
 
 
-class MetaModelController(override implicit val env: RuntimeEnvironment[SecureSocialUser])
-  extends securesocial.core.SecureSocial[SecureSocialUser] {
+class MetaModelController @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   def newMetaModel() = SecuredAction { implicit request =>
     Redirect(routes.MetaModelController.metaModelEditor(UUID.randomUUID.toString))

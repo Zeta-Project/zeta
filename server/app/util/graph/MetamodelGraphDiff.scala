@@ -61,7 +61,7 @@ object MetamodelGraphDiff {
           case Some(cell) =>
             val mAttributes = (cell \ "mAttributes").asOpt[JsObject]
             mAttributes match {
-              case Some(attributes) => attributes.values.map(_.as[JsObject])
+              case Some(attributes) => attributes.values.map(_.as[JsObject]).toSet
               case None => Set.empty
             }
           case None => Set.empty

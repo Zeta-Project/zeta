@@ -1,21 +1,23 @@
 import sbt.Project.projectToRef
 
 lazy val clients = Seq(client)
-lazy val scalaV = "2.11.6"
+lazy val scalaV = "2.11.7"
 
 lazy val server = (project in file("server")).settings(
   scalaVersion := scalaV,
   scalaJSProjects := clients,
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
   pipelineStages := Seq(scalaJSProd, gzip),
   libraryDependencies ++= Seq(
     filters,
     jdbc,
+    specs2 % "test",
     "com.github.jahoefne" %% "scalot" % "0.4.4-SNAPSHOT",
     "org.mongodb" %% "casbah" % "2.7.3",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
-    "ws.securesocial" % "securesocial_2.11" % "3.0-M3",
+    "ws.securesocial" %% "securesocial" % "3.0-M4",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "com.typesafe.akka" %% "akka-contrib" % "2.3.4",
     "com.typesafe.akka" %% "akka-actor" % "2.3.4",
@@ -31,9 +33,10 @@ lazy val server = (project in file("server")).settings(
     "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
     "org.webjars" % "typicons" % "2.0.7",
     "org.webjars.bower" % "bootbox.js" % "4.4.0",
-    "com.nulab-inc" %% "play2-oauth2-provider" % "0.14.0",
+    "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.1",
     "io.argonaut" %% "argonaut" % "6.0.4",
-    "org.mozilla" % "rhino" % "1.7.6"
+    "org.mozilla" % "rhino" % "1.7.6",
+    "net.codingwell" %% "scala-guice" % "4.0.0"
   )).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
   dependsOn(sharedJvm)
@@ -70,8 +73,3 @@ lazy val sharedJs = shared.js
 
 // loads the jvm project at sbt startup
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
-
-// for Eclipse users
-EclipseKeys.skipParents in ThisBuild := false
-
-fork in run := true

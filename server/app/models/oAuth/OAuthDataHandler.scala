@@ -13,6 +13,8 @@ object OAuthDataHandler {
 
 class OAuthDataHandler extends DataHandler[SecureSocialUser] {
 
+  lazy val userService = new MongoDbUserService()
+
   // common
 
   override def validateClient(clientCredential: ClientCredential, grantType: String): Future[Boolean] = {
@@ -45,7 +47,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
   // Password grant
 
   override def findUser(username: String, password: String): Future[Option[SecureSocialUser]] = {
-    val x = MongoDbUserService.authenticate(username, password)
+    val x = userService.authenticate(username, password)
     Future.successful(x)
   }
 
@@ -60,7 +62,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
   override def findAuthInfoByRefreshToken(refreshToken: String): Future[Option[AuthInfo[SecureSocialUser]]] = {
     Future.successful(OAuthAccessToken.findByRefreshToken(refreshToken).flatMap { accessToken =>
       for {
-        account <- MongoDbUserService.findOneById(accessToken.accountId)
+        account <- userService.findOneById(accessToken.accountId)
         client <- OAuthClient.findOneById(accessToken.oauthClientId)
       } yield {
         AuthInfo(
@@ -85,7 +87,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
   override def findAuthInfoByCode(code: String): Future[Option[AuthInfo[SecureSocialUser]]] = {
     Future.successful(OAuthAuthorizationCode.findByCode(code).flatMap { authorization =>
       for {
-        account <- MongoDbUserService.findOneById(authorization.accountId)
+        account <- userService.findOneById(authorization.accountId)
         client <- OAuthClient.findOneById(authorization.oauthClientId)
       } yield {
         AuthInfo(
@@ -111,7 +113,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
   override def findAuthInfoByAccessToken(accessToken: AccessToken): Future[Option[AuthInfo[SecureSocialUser]]] = {
     Future.successful(OAuthAccessToken.findByAccessToken(accessToken.token).flatMap { case accessToken =>
       for {
-        account <- MongoDbUserService.findOneById(accessToken.accountId)
+        account <- userService.findOneById(accessToken.accountId)
         client <- OAuthClient.findOneById(accessToken.oauthClientId)
       } yield {
         AuthInfo(
