@@ -6,6 +6,7 @@ import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
+import com.ning.http.util.AuthenticatorUtils
 import com.novus.salat._
 import play.api.{Play, Logger}
 import securesocial.core._
@@ -19,28 +20,29 @@ import scala.concurrent.Future
 case class SecureSocialUser(uuid: UUID, admin: Boolean = false, profile: BasicProfile)
 
 /** User Service Object implements SecureSocial Users */
-class MongoDbUserService extends UserService[SecureSocialUser]{
+class MongoDbUserService extends UserService[SecureSocialUser] {
 
 
   /** Salat Context **/
-  implicit val ctx =  new Context{
-    val name ="Custom_Salat_Context"
+  implicit val ctx = new Context {
+    val name = "Custom_Salat_Context"
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
 
   import com.mongodb.casbah.commons.conversions.scala._
+
   RegisterJodaTimeConversionHelpers()
 
   val log = Logger(this getClass() getName())
 
   val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.ip").get))
   val db = mongoClient(Play.current.configuration.getString("mongodb.name").get)
-  val coll= db("Users")
+  val coll = db("Users")
   val tokenColl = db("Tokens")
 
   /** Create test users if userdb is empty */
-  if(getNumberOfRegisteredUsers==0) {
+  if (getNumberOfRegisteredUsers == 0) {
 
     val testUser = new BasicProfile(
       providerId = "userpass",
@@ -75,7 +77,6 @@ class MongoDbUserService extends UserService[SecureSocialUser]{
   }
 
 
-
   def getNumberOfRegisteredUsers: Int = coll.count()
 
   override def find(providerId: String, userId: String): Future[Option[BasicProfile]] = {
@@ -89,7 +90,7 @@ class MongoDbUserService extends UserService[SecureSocialUser]{
 
   override def findByEmailAndProvider(email: String, providerId: String): Future[Option[BasicProfile]] = {
     Future.successful(
-      coll.findOne(MongoDBObject("profile" -> ("profile.email" -> email, "profile.providerId" -> providerId))) match {
+      coll.findOne(MongoDBObject("profile" ->("profile.email" -> email, "profile.providerId" -> providerId))) match {
         case Some(obj) => Some(obj.profile)
         case None => None
       }
@@ -112,7 +113,7 @@ class MongoDbUserService extends UserService[SecureSocialUser]{
 
   override def passwordInfoFor(user: SecureSocialUser): Future[Option[PasswordInfo]] = {
     Future.successful(
-      coll.findOne(MongoDBObject("uuid" -> user.uuid.toString)) match {
+      coll.findOne(MongoDBObject("uuid" -> user.uuid)) match {
         case Some(info) => info.profile.passwordInfo
         case None => None
       }
@@ -135,9 +136,30 @@ class MongoDbUserService extends UserService[SecureSocialUser]{
   override def updatePasswordInfo(user: SecureSocialUser, info: PasswordInfo): Future[Option[BasicProfile]] = {
     Future.successful {
       val updated = new SecureSocialUser(user.uuid, user.admin, user.profile.copy(passwordInfo = Some(info)))
-      coll.update(MongoDBObject("uuid" -> user.uuid.toString), updated, upsert = true)
+      coll.update(MongoDBObject("uuid" -> user.uuid), updated, upsert = true)
       Option(updated.profile)
     }
+  }
+
+  def updateProfile(user: SecureSocialUser,
+                    firstName: Option[String] = None,
+                    lastName: Option[String] = None,
+                    fullName: Option[String] = None,
+                    eMail: Option[String] = None): Future[SecureSocialUser] = {
+    val profile = new BasicProfile(
+      providerId = user.profile.providerId,
+      userId = user.profile.userId,
+      firstName = Some(firstName.getOrElse(user.profile.firstName.get)),
+      lastName = Some(lastName.getOrElse(user.profile.lastName.get)),
+      fullName = Some(fullName.getOrElse(user.profile.fullName.get)),
+      email = Some(eMail.getOrElse(user.profile.email.get)),
+      avatarUrl = user.profile.avatarUrl,
+      authMethod = user.profile.authMethod,
+      oAuth1Info = user.profile.oAuth1Info,
+      oAuth2Info = user.profile.oAuth2Info,
+      passwordInfo = user.profile.passwordInfo
+    )
+    save(profile, admin = user.admin, null)
   }
 
   override def saveToken(token: MailToken): Future[MailToken] = {
@@ -163,7 +185,7 @@ class MongoDbUserService extends UserService[SecureSocialUser]{
     }
   )
 
-  def save(profile: BasicProfile, admin: Boolean,  mode: SaveMode): Future[SecureSocialUser] =  Future.successful(
+  def save(profile: BasicProfile, admin: Boolean, mode: SaveMode): Future[SecureSocialUser] = Future.successful(
     coll.findOne(MongoDBObject("profile.userId" -> profile.userId, "profile.providerId" -> profile.providerId)) match {
       case None =>
         log.debug(profile.toString)
@@ -205,15 +227,21 @@ class MongoDbUserService extends UserService[SecureSocialUser]{
       u <- coll.findOne(MongoDBObject("profile.email" -> email))
       pwInfo <- u.profile.passwordInfo if new PasswordHasher.Default().matches(pwInfo, password)
     } yield u
-    user.flatMap {Some(_)}
+    user.flatMap {
+      Some(_)
+    }
   }
 
   def findOneById(id: String): Option[SecureSocialUser] = {
-    coll.findOne(MongoDBObject("profile.userId" -> id)).flatMap {Some(_)}
+    coll.findOne(MongoDBObject("profile.userId" -> id)).flatMap {
+      Some(_)
+    }
   }
 
   /** Implicit Salat Conversions */
-  implicit def User2DBObj(u: SecureSocialUser) : DBObject = grater[SecureSocialUser].asDBObject(u)
-  implicit def DBObj2User(obj: DBObject) : SecureSocialUser = grater[SecureSocialUser].asObject(obj)
-  implicit def MDBObj2User(obj: MongoDBObject) : SecureSocialUser = grater[SecureSocialUser].asObject(obj)
+  implicit def User2DBObj(u: SecureSocialUser): DBObject = grater[SecureSocialUser].asDBObject(u)
+
+  implicit def DBObj2User(obj: DBObject): SecureSocialUser = grater[SecureSocialUser].asObject(obj)
+
+  implicit def MDBObj2User(obj: MongoDBObject): SecureSocialUser = grater[SecureSocialUser].asObject(obj)
 }

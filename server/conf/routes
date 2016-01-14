@@ -49,9 +49,9 @@ GET         /oauth/setup                                      @controllers.oAuth
 
 
 ### Account management
-GET         /account                                          @controllers.AccountController.overview
-GET         /account/edit                                     @controllers.AccountController.edit
-POST        /account/edit                                     @controllers.AccountController.saveChanges
+GET         /profile                                          @controllers.ProfileController.overview
+GET         /profile/edit                                     @controllers.ProfileController.edit
+POST        /profile/edit                                     @controllers.ProfileController.saveChanges
 
 ### Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                     controllers.Assets.at(path="/public", file)
