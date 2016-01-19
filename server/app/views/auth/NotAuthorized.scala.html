@@ -2,12 +2,19 @@
 @import play.i18n._
 @import play.api.Play.current
 @import play.api.i18n.Messages.Implicits._
-@securesocial.views.html.main(play.i18n.Messages.get("securesocial.notAuthorized.title")) {
-    <div class="page-header">
-        <h1>@Messages.get("securesocial.notAuthorized.title")</h1>
-    </div>
-
-    <div class="alert alert-error">
-    @Messages.get("securesocial.notAuthorized.message")
+@views.html.webpage.WebpageGeneralLayout(play.i18n.Messages.get("securesocial.notAuthorized.title"), None) {
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>@Messages.get("securesocial.notAuthorized.title")</h2>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-danger">
+                    @Messages.get("securesocial.notAuthorized.message")
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 }

@@ -1,64 +1,87 @@
-@(signUpForm:Form[securesocial.controllers.RegistrationInfo], mailToken: String)(implicit request: RequestHeader, messages: Messages, env: securesocial.core.RuntimeEnvironment)
-@import securesocial.core.providers.UsernamePasswordProvider
-@import securesocial.core.IdentityProvider
-@import helper._
-@implicitFieldConstructor = @{ FieldConstructor(securesocial.views.html.inputFieldConstructor.f) }
-
-@securesocial.views.html.main( Messages("securesocial.signup.title") ) {
-    <div class="page-header">
-        <h1>@Messages("securesocial.signup.title")</h1>
-    </div>
-
-    @request.flash.get("error").map { msg =>
-        <div class="alert alert-error">
-            @msg
-        </div>
+@(signUpForm: Form[securesocial.controllers.RegistrationInfo], mailToken: String)(implicit request: RequestHeader, messages: Messages, env: securesocial.core.RuntimeEnvironment)
+    @import securesocial.core.providers.UsernamePasswordProvider
+    @import securesocial.core.IdentityProvider
+    @import helper._
+    @implicitFieldConstructor = @{
+        FieldConstructor(securesocial.views.html.inputFieldConstructor.f)
     }
 
-    <form action="@env.routes.handleSignUpUrl(mailToken)"
-    class="form-horizontal"
-    autocomplete= "off"
-    method="POST"
-    >
-        <fieldset>
-            @CSRF.formField
-            @if( UsernamePasswordProvider.withUserNameSupport ) {
-                @helper.inputText(
-                    signUpForm("userName"),
-                    '_label -> Messages("securesocial.signup.username"),
-                    'class -> "input-xlarge"
-                )
-            }
+    @views.html.webpage.WebpageGeneralLayout(Messages("securesocial.signup.title"), None) {
 
-            @helper.inputText(
-                signUpForm("firstName"),
-                '_label -> Messages("securesocial.signup.firstName"),
-                'class -> "input-xlarge"
-            )
+        <div class="container">
+            <div class="panel panel-default">
 
-            @helper.inputText(
-                signUpForm("lastName"),
-                '_label -> Messages("securesocial.signup.lastName"),
-                'class -> "input-xlarge"
-            )
+                <div class="panel-heading">
+                    <h2>@Messages("securesocial.signup.title")</h2>
+                </div>
 
-            @helper.inputPassword(
-                signUpForm("password.password1"),
-                '_label -> Messages("securesocial.signup.password1"),
-                'class -> "input-xlarge"
-            )
+                <div class="panel-body">
 
-            @helper.inputPassword(
-                signUpForm("password.password2"),
-                '_label -> Messages("securesocial.signup.password2"),
-                '_error -> signUpForm.error("password"),
-                'class -> "input-xlarge"
-            )
+                    <ul class="list-group">
+                    @request.flash.get("error").map { msg =>
+                        <li class="list-group-item list-group-item-danger">@msg</li>
+                    }
+                    </ul>
 
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">@Messages("securesocial.signup.createAccount")</button>
-                <a class="btn" href="@env.routes.loginPageUrl">@Messages("securesocial.signup.cancel")</a>
+                    <form action="@env.routes.handleSignUpUrl(mailToken)" autocomplete= "off" method="POST">
+                        @CSRF.formField
+
+                        <div class="form-group">
+                        @if(UsernamePasswordProvider.withUserNameSupport) {
+                            @helper.inputText(
+                                signUpForm("userName"),
+                                '_label -> Messages("securesocial.signup.username"),
+                                'class -> "form-control",
+                                '_showConstraints -> false
+                            )
+                        }
+                        </div>
+
+                        <div class="form-group">
+                        @helper.inputText(
+                            signUpForm("firstName"),
+                            '_label -> Messages("securesocial.signup.firstName"),
+                            'class -> "form-control",
+                            '_showConstraints -> false
+                        )
+                        </div>
+
+                        <div class="form-group">
+                        @helper.inputText(
+                            signUpForm("lastName"),
+                            '_label -> Messages("securesocial.signup.lastName"),
+                            'class -> "form-control",
+                            '_showConstraints -> false
+                        )
+                        </div>
+
+                        <div class="form-group">
+                        @helper.inputPassword(
+                            signUpForm("password.password1"),
+                            '_label -> Messages("securesocial.signup.password1"),
+                            'class -> "form-control",
+                            '_showConstraints -> false
+                        )
+                        </div>
+
+                        <div class="form-group">
+                        @helper.inputPassword(
+                            signUpForm("password.password2"),
+                            '_label -> Messages("securesocial.signup.password2"),
+                            '_error -> signUpForm.error("password"),
+                            'class -> "form-control",
+                            '_showConstraints -> false
+                        )
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">@Messages("securesocial.signup.createAccount")</button>
+                            <a class="btn btn-danger" href="@env.routes.loginPageUrl">@Messages("securesocial.signup.cancel")</a>
+                        </div>
+                    </form>
+
+                </div>
+
             </div>
-        </fieldset>
-    </form>
-}
+        </div>
+    }
