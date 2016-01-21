@@ -16,7 +16,7 @@ class Webpage @Inject() (override implicit val env: UserEnvironment) extends sec
   val log = Logger(this getClass() getName())
 
   def index() = SecuredAction { implicit request =>
-    Ok(views.html.webpage.WebpageIndex.render(Some(request.user)))
+    Ok(views.html.webpage.WebpageIndex(Some(request.user)))
   }
 
   def diagramsOverview(uuid: String) = SecuredAction { implicit request =>
@@ -32,6 +32,6 @@ class Webpage @Inject() (override implicit val env: UserEnvironment) extends sec
       }
     }
 
-    Ok(views.html.webpage.WebpageDiagramsOverview.render(Some(request.user), Some(metaModels), metaModel))
+    Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.user), Some(metaModels), metaModel))
   }
 }

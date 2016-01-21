@@ -38,7 +38,7 @@ class MetaModelController @Inject() (override implicit val env: UserEnvironment)
         metaModel = Some(tmpMetaModel.get.copy(metaModel = MetamodelGraphDiff.fixMetaModel(tmpMetaModel.get.metaModel)))
       }
     }
-    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), metaModelUuid, metaModel))
+    Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, metaModel))
   }
 
   def saveMetaModel() = SecuredAction { implicit request =>

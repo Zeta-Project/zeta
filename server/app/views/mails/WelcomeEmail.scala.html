@@ -1,0 +1,10 @@
+@(user: securesocial.core.BasicProfile)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment)
+<html>
+    <body>
+        <p>Welcome @user.firstName,</p>
+
+        <p>
+            Your new account is ready.
+            Click <a href="@env.routes.loginPageUrl">here</a> to log in</p>
+    </body>
+</html>

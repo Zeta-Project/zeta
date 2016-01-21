@@ -29,11 +29,11 @@ class ModelController @Inject() (override implicit val env: UserEnvironment) ext
   }
 
   def modelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelGraphicalEditor.render(metaModelUuid, modelUuid, request.user.uuid.toString, request.user.profile.fullName.getOrElse("")))
+    Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, request.user.uuid.toString, request.user.profile.fullName.getOrElse("")))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelValidator.render(Some(request.user)))
+    Ok(views.html.model.ModelValidator(Some(request.user)))
   }
 
   def modelSocket(instanceId: String, graphType: String) = WebSocket.acceptWithActor[String, String] { request => out =>
