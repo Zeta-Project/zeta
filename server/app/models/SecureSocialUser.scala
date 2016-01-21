@@ -89,7 +89,6 @@ class MongoDbUserService extends UserService[SecureSocialUser] {
   }
 
   override def findByEmailAndProvider(email: String, providerId: String): Future[Option[BasicProfile]] = {
-    log.error("findByEmailAndProvider: %s & %s".format(email, providerId))
     Future.successful(
       coll.findOne(MongoDBObject("profile.email" -> email, "profile.providerId" -> providerId)) match {
         case Some(obj) => Some(obj.profile)
