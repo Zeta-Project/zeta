@@ -69,4 +69,7 @@ mails.passwordResetOk.subject=Password change confirmation
 securesocial.link.accessDenied=Your account was not linked because you denied access to it
 securesocial.link.error=There was an error while trying to link your account. Please try again.
 
-
+#
+# Profile page
+#
+error.email=E-Mail address is not valid!

@@ -1,0 +1,54 @@
+@(loginForm: Form[(String, String)], errorMsg: Option[String] = None)(implicit request: RequestHeader, messages: Messages, env: util.definitions.UserEnvironment)
+
+@import securesocial.core.providers.UsernamePasswordProvider.UsernamePassword
+
+@views.html.webpage.WebpageGeneralLayout(Messages("securesocial.login.title"), None) {
+
+    <div class="container">
+        <div class="panel panel-default">
+
+            <div class="panel-heading">
+                <h2>@Messages("securesocial.login.title")</h2>
+            </div>
+
+            <div class="panel-body">
+                <ul class="list-group">
+                    @errorMsg.map { msg =>
+                        <li class="list-group-item list-group-item-danger">@Messages(msg)</li>
+                    }
+
+                    @request.flash.get("success").map { msg =>
+                        <li class="list-group-item list-group-item-success">@msg</li>
+                    }
+
+                    @request.flash.get("error").map { msg =>
+                        <li class="list-group-item list-group-item-danger">@msg</li>
+                    }
+                </ul>
+
+                @defining(env.providers.values.filter(_.id != UsernamePassword)) { externalProviders =>
+
+                    @if(externalProviders.nonEmpty) {
+                        <span class="help-block">@Messages("securesocial.login.instructions")</span>
+                        @for(p <- externalProviders) {
+                            @securesocial.views.html.provider(p.id)
+                        }
+                    }
+
+                    @env.providers.get(UsernamePassword).map { up =>
+                        @views.html.auth.Provider("userpass", Some(loginForm))
+
+                        @if(externalProviders.nonEmpty) {
+                            <!-- <span class="help-block">@Messages("securesocial.login.useEmailAndPassword")</span> -->
+                        } else {
+                            <!-- <span class="help-block">@Messages("securesocial.login.useEmailAndPasswordOnly")</span> -->
+                        }
+
+                    }
+                }
+
+            </div>
+
+        </div>
+    </div>
+}
