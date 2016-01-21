@@ -2,45 +2,43 @@
 
 @views.html.webpage.WebpageGeneralLayout("ModelValidator", user) {
     <style>
-        textarea {
-            width: 100%;
-            height: 150px;
-        }
+    textarea {
+    width: 100% ;
+    height: 150px ;
+    }
 
-        label {
-            display: block;
-        }
+    label {
+    display: block ;
+    }
 
-        .text-output {
-            margin-top: 20px;
-        }
+    .text-output {
+    margin-top: 20px ;
+    }
 
-        .text-output > textarea {
-            color: red;
-        }
+    .text-output > textarea {
+    color: red ;
+    }
     </style>
 
-    <div class="container">
-        <h1>Validator</h1>
+    <h1>Validator</h1>
 
-        <div class="text-input">
-            <label for="txt-metaModel">Meta Model</label>
-            <textarea id="txt-metaModel"></textarea>
-        </div>
+    <div class="text-input">
+        <label for="txt-metaModel">Meta Model</label>
+        <textarea id="txt-metaModel"></textarea>
+    </div>
 
-        <div class="text-input">
-            <label for="txt-instance">Instance</label>
-            <textarea id="txt-instance"></textarea>
-        </div>
+    <div class="text-input">
+        <label for="txt-instance">Instance</label>
+        <textarea id="txt-instance"></textarea>
+    </div>
 
-        <button id="btn-validate">Validate</button>
+    <button id="btn-validate">Validate</button>
 
-        <div class="text-output">
-            <label for="inp-valid">Valid</label>
-            <input type="text" id="inp-valid" readonly>
-            <label for="txt-output">Output</label>
-            <textarea id="txt-output" readonly></textarea>
-        </div>
+    <div class="text-output">
+        <label for="inp-valid">Valid</label>
+        <input type="text" id="inp-valid" readonly>
+        <label for="txt-output">Output</label>
+        <textarea id="txt-output" readonly></textarea>
     </div>
 
 

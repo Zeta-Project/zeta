@@ -1,10 +1,7 @@
 @import models.metaModel.MetaModel
 @(user: Option[SecureSocialUser], metaModels: Option[List[MetaModel]], metaModel: Option[MetaModel])
 
-@views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
-
-    <div class="container">
-
+    @views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
         <div class="row">
             <div class="lead col-md-10">
                 <p>Hello,
@@ -27,7 +24,7 @@
                     <div class="panel-body">
                     @if(metaModels.isDefined && metaModels.get.nonEmpty) {
                         <div class="list-group">
-                        @for( model <- metaModels.get) {
+                        @for(model <- metaModels.get) {
                             <a href="@controllers.webpage.routes.Webpage.diagramsOverview(model.uuid)" class="list-group-item
                                     @if(metaModel.isDefined && model.uuid == metaModel.get.uuid) {
                                 active
@@ -123,5 +120,4 @@
             }
 
         </div>
-    </div>
-}
+    }
