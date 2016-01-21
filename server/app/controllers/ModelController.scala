@@ -33,7 +33,7 @@ class ModelController @Inject() (override implicit val env: UserEnvironment) ext
   }
 
   def modelValidator() = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelValidator.render())
+    Ok(views.html.model.ModelValidator.render(Some(request.user)))
   }
 
   def modelSocket(instanceId: String, graphType: String) = WebSocket.acceptWithActor[String, String] { request => out =>

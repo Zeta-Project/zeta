@@ -9,7 +9,7 @@ import play.twirl.api.Html
 import securesocial.controllers.{ChangeInfo, RegistrationInfo, ViewTemplates}
 import util.definitions.UserEnvironment
 
-class SecuresocialViews @Inject() (env: UserEnvironment) extends ViewTemplates {
+class SecuresocialViews @Inject()(env: UserEnvironment) extends ViewTemplates {
 
   val messagesApi = play.api.i18n.Messages.Implicits.applicationMessages.messages
 
