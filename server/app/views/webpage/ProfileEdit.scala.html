@@ -1,4 +1,5 @@
 @import helper._
+@import controllers.webpage.ProfileFormData
 @(user: SecureSocialUser, profileForm: Form[ProfileFormData])(implicit messages: Messages)
 @views.html.webpage.WebpageGeneralLayout("New Diagram", Some(user)) {
     <div class="panel panel-default">
@@ -6,7 +7,7 @@
             <h2>Edit profile information</h2>
         </div>
 
-        @form(action = controllers.routes.ProfileController.saveChanges) {
+        @form(action = controllers.webpage.routes.ProfileController.saveChanges) {
             <div class="panel-body">
                 <div class="form-group">
                     @if(profileForm.hasGlobalErrors || profileForm.hasErrors) {

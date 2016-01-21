@@ -2,19 +2,18 @@ package controllers
 
 import javax.inject.Inject
 
+import models.ShortUuid
 import models.metaModel.MetaModelDatabase
 import models.model.ModelWsActor
-import models.{SecureSocialUser, ShortUuid}
 import play.api.Logger
 import play.api.Play.current
 import play.api.mvc.WebSocket
-import securesocial.core.RuntimeEnvironment
 import util.definitions.UserEnvironment
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class ModelController @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class ModelController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   val log = Logger(this getClass() getName())
 
@@ -24,7 +23,7 @@ class ModelController @Inject() (override implicit val env: UserEnvironment) ext
       Redirect(routes.ModelController.modelEditor(metaModelUuid, ShortUuid.uuid))
     } else {
       log.error("attempting to create an editor with unknown uuid")
-      Redirect(controllers.webpage.routes.Webpage.index())
+      Redirect(controllers.webpage.routes.WebpageController.index())
     }
   }
 

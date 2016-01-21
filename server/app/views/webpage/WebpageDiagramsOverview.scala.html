@@ -25,7 +25,7 @@
                     @if(metaModels.isDefined && metaModels.get.nonEmpty) {
                         <div class="list-group">
                         @for(model <- metaModels.get) {
-                            <a href="@controllers.webpage.routes.Webpage.diagramsOverview(model.uuid)" class="list-group-item
+                            <a href="@controllers.webpage.routes.WebpageController.diagramsOverview(model.uuid)" class="list-group-item
                                     @if(metaModel.isDefined && model.uuid == metaModel.get.uuid) {
                                 active
                             }

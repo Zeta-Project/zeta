@@ -2,15 +2,13 @@ package controllers
 
 import javax.inject.Inject
 
-import models.SecureSocialUser
-import models.codeEditor.{CodeDocWsActor, CodeDocManagingActor}
+import models.codeEditor.{CodeDocManagingActor, CodeDocWsActor}
 import play.api.Play.current
 import play.api.mvc.WebSocket
-import securesocial.core.RuntimeEnvironment
 import util.definitions.UserEnvironment
 
 
-class CodeEditorController @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class CodeEditorController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   def codeEditor(metaModelUuid: String, dslType: String) = SecuredAction { implicit request =>
     Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.user), metaModelUuid, dslType))

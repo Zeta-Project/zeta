@@ -8,7 +8,6 @@ import models.oAuth.OAuthDataHandler
 import play.api.data.Forms._
 import play.api.data._
 import play.api.libs.json._
-import securesocial.core.RuntimeEnvironment
 
 import scala.concurrent.Future
 import scalaoauth2.provider._
@@ -18,7 +17,7 @@ import scalaoauth2.provider._
   * by SecureSocial. It is meant to be used with "local" modigen browser apps only. For anything else
   * (e.g. third party apps), OAuthController must be used instead.
   */
-class OAuthLocalController @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class OAuthLocalController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   val handler = OAuthDataHandler()
 

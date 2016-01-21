@@ -1,4 +1,4 @@
-package controllers
+package controllers.webpage
 
 import javax.inject.Inject
 
@@ -50,7 +50,7 @@ class ProfileController @Inject()(override implicit val env: UserEnvironment) ex
         ), 5 seconds)
 
         request.authenticator.updateUser(user)
-        Redirect(controllers.routes.ProfileController.overview())
+        Redirect(controllers.webpage.routes.ProfileController.overview())
       })
 
   }
