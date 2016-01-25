@@ -2,7 +2,10 @@ package controllers.restApi
 
 import javax.inject.Inject
 
+import models.metaModel.mCore.MetaModelDefinition
+import models.metaModel.mCore.MCoreReads._
 import models.metaModel.{MetaModel, MetaModelDatabase}
+import play.api.libs.json.{JsError, Json}
 import play.api.mvc.{Action, BodyParsers}
 import util.definitions.UserEnvironment
 
@@ -57,6 +60,19 @@ class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) ext
 
   def getmClass(mclassId: String) = SecuredAction { implicit request =>
     BadRequest("currently not implemented")
+  }
+
+  // just for testing purposes, creates an mcore metamodel based on incoming json
+  def mcore = Action(BodyParsers.parse.json) { request =>
+    val result = request.body.validate[MetaModelDefinition]
+    result.fold(
+      errors => {
+        BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toFlatJson(errors)))
+      },
+      mm => {
+        Ok(Json.obj("status" ->"OK", "content" -> mm.toString()))
+      }
+    )
   }
 
 }

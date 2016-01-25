@@ -24,7 +24,7 @@ GET         /metamodels/:metamodelId/mclasses                 @controllers.restA
 GET         /metamodels/mclasses/:mclassId                    @controllers.restApi.MetaModelRestApi.getmClass(mclassId: String)
 GET         /metamodels/:metamodelId/mrefs                    @controllers.restApi.MetaModelRestApi.getmRefs(metamodelId: String)
 GET         /metamodels/mrefs/:mrefId                         @controllers.restApi.MetaModelRestApi.getmRef(mrefId: String)
-
+POST        /metamodels/mcore                                 @controllers.restApi.MetaModelRestApi.mcore
 
 ### Model
 GET         /model/new/:metaModelUuid                         @controllers.ModelController.newModel(metaModelUuid: String)
