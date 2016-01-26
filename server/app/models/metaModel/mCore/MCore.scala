@@ -39,6 +39,9 @@ class MClass(
     _outputs: => Seq[MLinkDef] = outputs) =
     new MClass(name, abstractness, _superTypes, _inputs, _outputs, attributes)
 
+  def updateAttributes(_attributes: Seq[MAttribute]) =
+    new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
+
   override def toString = {
     val superNames = for (e <- superTypes) yield e.name
     val inputsNames = for (e <- inputs) yield e.mType.name
@@ -75,6 +78,9 @@ class MReference(
 
   def updateLinks(_source: => Seq[MLinkDef] = source, _target: => Seq[MLinkDef] = target) =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, _source, _target, attributes)
+
+  def updateAttributes(_attributes: Seq[MAttribute]) =
+    new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, _attributes)
 
   override def toString = {
     val sourceNames = for (e <- source) yield e.mType.name

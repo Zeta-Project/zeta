@@ -50,17 +50,40 @@ object MCoreReads {
       }
     }
 
+    def addEnums(nameMapping: Map[String, MObject]): Map[String, MObject] = {
+
+      def wireEnums(attributes: Seq[MAttribute]): Seq[MAttribute] = {
+        attributes.map { a => a.`type` match {
+          case MEnum(name, _) => a.copy(`type` = nameMapping.get(name).get.asInstanceOf[MEnum])
+          case _ => a
+        }
+        }
+      }
+
+      nameMapping.mapValues {
+        _ match {
+          case c: MClass => c.updateAttributes(wireEnums(c.attributes))
+          case r: MReference => r.updateAttributes(wireEnums(r.attributes))
+          case e: MEnum => e
+        }
+      }
+
+    }
+
     def finalize(mObjects: Seq[MObject]): JsResult[MetaModelDefinition] = {
       val nameMapping = mObjects.map(mObj => mObj.name -> mObj).toMap
       if (mObjects.size != nameMapping.size) JsError("MObjects must have unique names")
-      else JsSuccess(MetaModelDefinition(wire(nameMapping)))
+      else {
+        val mappingWithEnums = addEnums(nameMapping)
+        JsSuccess(MetaModelDefinition(wire(mappingWithEnums)))
+      }
     }
 
     def wire(mapping: Map[String, MObject]): Map[String, MObject] = {
       val builder = new {
         val finalMap: Map[String, MObject] = mapping.mapValues {
           _ match {
-            case c: MClass => c.updateLinks (
+            case c: MClass => c.updateLinks(
               wireSuperTypes(finalMap, c.superTypes),
               wireRefLinks(finalMap, c.inputs),
               wireRefLinks(finalMap, c.outputs)
