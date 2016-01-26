@@ -4,6 +4,7 @@ import javax.inject.Inject
 
 import models.metaModel.mCore.MetaModelDefinition
 import models.metaModel.mCore.MCoreReads._
+import models.metaModel.mCore.MCoreWrites._
 import models.metaModel.{MetaModel, MetaModelDatabase}
 import play.api.libs.json.{JsError, Json}
 import play.api.mvc.{Action, BodyParsers}
@@ -70,7 +71,8 @@ class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) ext
         BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toFlatJson(errors)))
       },
       mm => {
-        Ok(Json.obj("status" ->"OK", "content" -> mm.toString()))
+        //Ok(Json.obj("status" ->"OK", "content" -> Json.toJson(mm)))
+        Ok(Json.toJson(mm))
       }
     )
   }

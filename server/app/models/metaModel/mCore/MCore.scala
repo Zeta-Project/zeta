@@ -180,6 +180,8 @@ class EnumSymbol(val name: String, _attributeType: => MEnum) extends AttributeVa
   }
 
   override def hashCode: Int = 41 * (41 + name.hashCode)// + attributeType.hashCode
+
+  override def toString = s"EnumSymbol($name)"
 }
 
 object EnumSymbol {
