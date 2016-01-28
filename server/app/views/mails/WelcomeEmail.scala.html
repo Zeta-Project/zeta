@@ -1,8 +1,9 @@
 @(user: securesocial.core.BasicProfile)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment)
-    @views.html.mails.MailGeneralLayout {
-        <p>Welcome @user.firstName,</p>
-
-        <p>
-            Your new account is ready.
-            Click <a href="@env.routes.loginPageUrl">here</a> to log in</p>
-    }
+@views.html.mails.MailGeneralLayout(user.firstName) {
+    <p>
+        Your new account at MoDiGen is ready. Click the following link to log in:
+    </p>
+    <p>
+        <a href="@env.routes.loginPageUrl">@env.routes.loginPageUrl</a>
+    </p>
+}

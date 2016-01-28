@@ -1,8 +1,5 @@
 @(mailToken: String)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment)
-    @views.html.mails.MailGeneralLayout {
-        <p>Hello,</p>
-
-        <p>Please follow this
-            <a href="@env.routes.signUpUrl(mailToken)">link</a> to complete your registration.
-        </p>
-    }
+@views.html.mails.MailGeneralLayout(None) {
+    <p>Please follow this link to complete your registration at MoDiGen:</p>
+    <p><a href="@env.routes.signUpUrl(mailToken)">@env.routes.signUpUrl(mailToken)</a></p>
+}
