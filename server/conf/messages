@@ -56,12 +56,12 @@ securesocial.loginRequired=You need to log in to access that page.
 
 # Mails
 #
-mails.sendAlreadyRegisteredEmail.subject=Sign up instructions
-mails.sendSignUpEmail.subject=Sign up instructions
-mails.welcomeEmail.subject=Welcome
-mails.passwordResetEmail.subject=Password reset instructions
-mails.unknownEmail.subject=Password reset request
-mails.passwordResetOk.subject=Password change confirmation
+mails.sendAlreadyRegisteredEmail.subject=Your registration at MoDiGen
+mails.sendSignUpEmail.subject=Your registration at MoDiGen
+mails.welcomeEmail.subject=Welcome to MoDiGen!
+mails.passwordResetEmail.subject=Your password reset request at MoDiGen
+mails.unknownEmail.subject=Your password reset request at MoDiGen
+mails.passwordResetOk.subject=Your password at MoDiGen has changed
 
 #
 # Link accounts
