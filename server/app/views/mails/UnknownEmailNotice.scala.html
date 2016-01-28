@@ -1,6 +1,5 @@
 @()(implicit request: RequestHeader, lang: Lang)
-<html>
-    <body>
+    @views.html.mails.MailGeneralLayout {
         <p>Hello,</p>
 
         <p>We received a request to reset a password in our system.  The attempt has failed because we do not have
@@ -11,5 +10,4 @@
             If you never created an account with us ignore this email, otherwise if you think you have an account with us contact
             tech support for further assistance.
         </p>
-    </body>
-</html>
+    }

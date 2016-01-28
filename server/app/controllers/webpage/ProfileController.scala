@@ -55,7 +55,7 @@ class ProfileController @Inject()(override implicit val env: UserEnvironment) ex
 
   }
 
-  def profileData(user: SecureSocialUser) = {
+  private def profileData(user: SecureSocialUser) = {
     ProfileFormData(
       firstName = user.profile.firstName.getOrElse(""),
       lastName = user.profile.lastName.getOrElse(""),
