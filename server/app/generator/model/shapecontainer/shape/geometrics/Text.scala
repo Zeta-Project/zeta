@@ -1,9 +1,9 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.geometrics.Alignment._
+import generator.model.shapecontainer.shape.geometrics.Alignment.{VAlign, HAlign}
 import generator.model.shapecontainer.shape.geometrics.layouts.{TextLayoutParser, TextLayout}
 import generator.model.style.Style
-import generator.util.{Cache, GeoModel, CommonParserMethodes}
+import generator.parser.{Cache, CommonParserMethods, GeoModel}
 
 /**
  * Created by julian on 19.10.15.
@@ -28,7 +28,7 @@ abstract class TextType
   case object Multiline extends TextType
 
 
-object Text extends CommonParserMethodes{
+object Text extends CommonParserMethods{
   def apply(geoModel:GeoModel, parent:Option[GeometricModel], textType:TextType, parentStyle:Option[Style], hierarchyContainer:Cache) =
     parse(geoModel, parent, textType, parentStyle, hierarchyContainer)
   def parse(geoModel:GeoModel, parent:Option[GeometricModel], textType:TextType, parentStyle:Option[Style], hierarchyContainer:Cache):Option[Text] = {

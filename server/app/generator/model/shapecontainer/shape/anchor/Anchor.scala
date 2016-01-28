@@ -1,12 +1,12 @@
 package generator.model.shapecontainer.shape.anchor
 
-import generator.util.CommonParserMethodes
+import generator.parser.CommonParserMethods
 
 /**
  * Created by julian on 19.10.15.
  * representation of an Anchor, or its various types
  */
-object Anchor extends CommonParserMethodes{
+object Anchor extends CommonParserMethods{
 
   abstract class AnchorType
 

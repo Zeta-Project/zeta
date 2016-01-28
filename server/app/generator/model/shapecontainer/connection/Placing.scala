@@ -3,16 +3,16 @@ package generator.model.shapecontainer.connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.{Text, GeometricModel}
 import generator.model.style.Style
-import generator.util.{PlacingSketch, CommonParserMethodes}
+import generator.parser.{PlacingSketch, CommonParserMethods}
 
 /**
  * Created by julian on 20.10.15.
  * represents a PlacingDefinition
  */
-case class Placing(position_offset:Double,
-                   position_distance:Option[Int]=None,
-                   shapeCon:GeometricModel,
-                   shape:Shape){
+sealed class Placing private (val position_offset:Double,
+                   val position_distance:Option[Int]=None,
+                   val shapeCon:GeometricModel,
+                   val shape:Shape){
   /*TODO placing hat laut der grammatik eigentlich keine direkte beziehung zu einer Shape lediglich eine geomtric form, welche ein CDText sein kann ???*/
   def text = shapeCon match {
     case t:Text => Some(t)
@@ -20,7 +20,7 @@ case class Placing(position_offset:Double,
   }
 }
 
-object Placing extends CommonParserMethodes{
+object Placing extends CommonParserMethods{
   def apply(attributes:PlacingSketch, parentStyle:Option[Style], ancestorShape:Shape) = parse(attributes, parentStyle, ancestorShape)
   def parse(attributes:PlacingSketch, parentStyle:Option[Style], ancestorShape:Shape):Placing = {
     /*mapping*/
@@ -34,3 +34,5 @@ object Placing extends CommonParserMethodes{
   }
 
 }
+
+

@@ -2,10 +2,9 @@ package generator.generators.shape
 
 import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, HAlign, LEFT, RIGHT}
+import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, RIGHT, LEFT, HAlign}
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.HasStyle
-
 import scala.collection.mutable
 
 /**

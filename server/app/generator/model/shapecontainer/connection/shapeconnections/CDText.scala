@@ -1,6 +1,6 @@
 package generator.model.shapecontainer.connection.shapeconnections
 
-import generator.model.shapecontainer.shape.geometrics.Alignment.{HAlign, VAlign}
+import generator.model.shapecontainer.shape.geometrics.Alignment.{VAlign, HAlign}
 import generator.model.shapecontainer.shape.geometrics.layouts.TextLayout
 import generator.model.style.Style
 

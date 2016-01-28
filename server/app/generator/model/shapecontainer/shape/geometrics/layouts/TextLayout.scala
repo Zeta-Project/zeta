@@ -3,8 +3,8 @@ package generator.model.shapecontainer.shape.geometrics.layouts
 import generator.model.shapecontainer.shape.geometrics.Alignment
 import generator.model.shapecontainer.shape.geometrics.Alignment.{VAlign, HAlign}
 import generator.model.style.Style
-import generator.util.{Cache, GeoModel, CommonParserMethodes}
-
+import generator.parser.{Cache, GeoModel, CommonParserMethods}
+import parser._
 /**
  * Created by julian on 20.10.15.
  * representation of a textlayout and its parser
@@ -15,7 +15,7 @@ trait TextLayout extends CommonLayout {
   val vAlign: Option[VAlign]
 }
 
-object TextLayoutParser extends CommonParserMethodes{
+object TextLayoutParser extends CommonParserMethods{
   def apply(geoModel: GeoModel, parentStyle:Option[Style], hierarchyContainer:Cache): Option[TextLayout] = {
     implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes

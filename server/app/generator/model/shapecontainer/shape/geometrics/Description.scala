@@ -2,19 +2,20 @@ package generator.model.shapecontainer.shape.geometrics
 
 import generator.model.shapecontainer.shape.geometrics.Alignment.{VAlign, HAlign}
 import generator.model.style.Style
-import generator.util.{Cache, CommonParserMethodes}
+import generator.parser.{Cache, CommonParserMethods}
+import parser._
 
 /**
  * Created by julian on 03.11.15.
  * representation of a description
  */
 /*TODO description is rather useless ... missing something?*/
-class Description(override val id:String,
+sealed class Description private (override val id:String,
                   val style:Option[Style],
                   val hAlign:Option[HAlign],
                   val vAlign:Option[VAlign]) extends TextBody
 
-object Description extends CommonParserMethodes{
+object Description extends CommonParserMethods{
 
   def parse(attrs:(String, String), parentStyle:Option[Style], hierarchyContainer: Cache):Option[Description] = {
     implicit val cache = hierarchyContainer

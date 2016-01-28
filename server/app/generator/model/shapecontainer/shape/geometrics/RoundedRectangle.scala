@@ -2,13 +2,13 @@ package generator.model.shapecontainer.shape.geometrics
 
 import generator.model.shapecontainer.shape.geometrics.layouts.{RoundedRectangleLayoutParser, RoundedRectangleLayout}
 import generator.model.style.Style
-import generator.util.{Cache, GeoModel}
+import generator.parser.{Cache, GeoModel}
 
 /**
  * Created by julian on 19.10.15.
  * represents a rounded rectangle
  */
-class RoundedRectangle(parent:Option[GeometricModel] = None,
+sealed class RoundedRectangle private (parent:Option[GeometricModel] = None,
                        rrLayout:RoundedRectangleLayout,
                        parentOf:List[GeometricModel] = List[GeometricModel]()
                         ) extends GeometricModel(parent) with RoundedRectangleLayout with Wrapper{
@@ -25,7 +25,6 @@ class RoundedRectangle(parent:Option[GeometricModel] = None,
 object RoundedRectangle{
   /**
    * parses a GeoModel into an actual GeometricModel, in this case a Rectangle
- *
    * @param geoModel is the sketch to parse into a GeometricModel
    * @param parent is the parent instance that wraps the new GeometricModel
    * @param parentStyle is the style used by the parent and eventual will be merged with the geoModels style to a new style

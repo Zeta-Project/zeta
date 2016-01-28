@@ -1,13 +1,16 @@
 package generator.generators.style
 
-import generator.model.style._
-
 /**
  * Created by julian on 07.10.15.
  * the generator object for style.js
  */
 
+import generator.model.style._
+import generator.model.style.color.Transparent
+import generator.model.style.gradient.{Gradient, HORIZONTAL}
+
 object StyleGenerator {
+
 
   def filepath = "style.js"
 
@@ -26,7 +29,7 @@ object StyleGenerator {
     val (selected, multiselected, allowed, unallowed) =
       (s.selected_highlighting, s.multiselected_highlighting, s.allowed_highlighting, s.unallowed_highlighting)
     val name = s.name
-    val highlighting = ""+selected.getOrElse(multiselected.getOrElse(allowed.getOrElse(unallowed.getOrElse(""))))
+    val highlighting = ""+selected.getOrElse("")+multiselected.getOrElse("")+allowed.getOrElse("")+unallowed.getOrElse("")
     if (!highlighting.isEmpty)
       raw"""case "$name":
 
@@ -38,26 +41,26 @@ object StyleGenerator {
   }
 
   def selected(s: Style) =
-    if (s.selected_highlighting isDefined) {//TODO check if getRGBValue and getColorValue do the same things
-      raw""".free-transform { border: 2px dashed """ + s.selected_highlighting.get.getRGBValue + """; }"""
+    if (s.selected_highlighting isDefined) {
+      raw""".free-transform { border: 2px dashed  ${s.selected_highlighting.get.getRGBValue}; }"""
     } else ""
 
   def multiselected(s: Style) =
     if (s.multiselected_highlighting isDefined) {
-      raw""".selection-box { border: 2px solid """ + s.multiselected_highlighting.get.getRGBValue + """; }"""
+      raw""".selection-box { border: 2px solid ${s.multiselected_highlighting.get.getRGBValue}; }"""
     } else ""
 
-  def allowed(s: Style) =
+  def allowed(s: Style):String =
     if (s.allowed_highlighting isDefined) {
-      raw""".linking-allowed { outline: 2px solid """ + s.allowed_highlighting.get.getRGBValue + """; }"""
+      raw""".linking-allowed { outline: 2px solid ${s.allowed_highlighting.get.getRGBValue}; }"""
     } else ""
 
-  def unallowed(s: Style) =
+  def unallowed(s: Style):String =
     if (s.unallowed_highlighting isDefined) {
-      raw""".linking-unallowed { solid : 2px solid """ + s.unallowed_highlighting.get.getRGBValue + """; }"""
+      raw""".linking-unallowed { solid : 2px solid ${s.unallowed_highlighting.get.getRGBValue}; }"""
     } else ""
 
-  def footerDia: String = {
+  def footerDia: String =
     raw"""
                 default:
                   highlighting = '';
@@ -66,7 +69,6 @@ object StyleGenerator {
          return highlighting;
        }
        """
-  }
 
   def head(s: Style) =
     """
@@ -77,39 +79,38 @@ object StyleGenerator {
         switch(stylename) {
     """
 
-  def body(s: Style) {
-    raw"""
+  def body(s: Style) =
+    s"""
     /*
     This is a generated JavaScript file for the spray JointJS online editor.
-    The """ + s.name + raw""" function will be called when the shapes are created, setting style attributes.
-    """ + s.description.getOrElse("") + raw"""
+    The ${s.name} function will be called when the shapes are created, setting style attributes.
+    ${s.description.getOrElse("")}
     */
-    case """ + s.name + raw""":
+    case ${s.name}:
       style = {
       '.': { filter: Stencil.filter },
 
-      """ + createFontAttributes(s) + raw"""
+      ${createFontAttributes(s)}
 
-      """ + createRectangleAttributes(s) + raw"""
+      ${createRectangleAttributes(s)}
 
-      """ + createRoundedRectangleAttributes(s) + raw"""
+      ${createRoundedRectangleAttributes(s)}
 
-      """ + createCircleAttributes(s) + raw"""
+      ${createCircleAttributes(s)}
 
-      """ + createEllipseAttributes(s) + raw"""
+      ${createEllipseAttributes(s)}
 
-      """ + createLineAttributes(s) + raw"""
+      ${createLineAttributes(s)}
 
-      """ + createConnectionAttributes(s) + raw"""
+      ${createConnectionAttributes(s)}
 
-      """ + createPolygonAttributes(s) + raw"""
+      ${createPolygonAttributes(s)}
 
-      """ + createPolylineAttributes(s) + raw"""
+      ${createPolylineAttributes(s)}
 
-      """ + createBoundingBoxStyle + raw"""
+      $createBoundingBoxStyle
     };
     break;"""
-  }
 
   def footer = """				default:
                  						style = {};
@@ -120,176 +121,143 @@ object StyleGenerator {
                  			}
                """
 
-  def createFontAttributes(s: Style) = {
-    //TODO s.name can never be null??
-    raw"""
+  def createFontAttributes(s: Style) =
+    s"""
           /*
           Generated Text style attributes
           */
             text: {
-              """ + fontAttributes(s) + raw"""
+              ${fontAttributes(s)}
             },
     """
-  }
 
   def fontAttributes(s: Style) = {
     raw"""
-       'font-family': '""" + s.font_name.getOrElse("sans-serif") + """',
-       'font-size': '""" + s.font_size.getOrElse("11px") + """',
-       fill': '""" +
-      {
-        val c = s.font_color
-        if (c.isDefined) c.get.getRGBValue else "#000000"
-      } + """',
-       'font-weight': '""" +
-      {
-        if (s.font_bold.getOrElse(false)) "700" else "400"
-      } + """',
-        """ + {
-      if (s.font_italic.getOrElse(false))
-        raw"""'font-style': 'italic',
-            """
-      else ""
-    }
+       'font-family': '${s.font_name.getOrElse("sans-serif")}',
+       'font-size': '${s.font_size.getOrElse("11px")}',
+       fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
+       'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }',
+       ${if (s.font_italic.getOrElse(false)) raw"""'font-style': 'italic', """ else ""}
+       """
   }
 
 
-  def createRectangleAttributes(s: Style) = {
+  def createRectangleAttributes(s: Style) =
     raw"""
           /*
           Generated rectangle style attributes.
           */
           rect: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
-  def createRoundedRectangleAttributes(s: Style) = {
+  def createRoundedRectangleAttributes(s: Style) =
     raw"""
           /*
           Generated rounded rectangle style attributes.
           */
           rect: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
-
-  def createCircleAttributes(s: Style) = {
+  def createCircleAttributes(s: Style) =
     raw"""
           /*
           Generated circle style attributes.
           */
           circle: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
-  def createPolygonAttributes(s: Style) = {
+  def createPolygonAttributes(s: Style) =
     raw"""
           /*
           Generated polyline style attributes.
           */
           polygon: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
 
-  def createPolylineAttributes(s: Style) = {
+  def createPolylineAttributes(s: Style) =
     raw"""
           /*
           Generated polyline style attributes.
           */
           polyline: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
 
-  def createEllipseAttributes(s: Style) = {
+  def createEllipseAttributes(s: Style) =
     raw"""
           /*
           Generated ellipse style attributes.
           */
           ellipse: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
 
-  def createLineAttributes(s: Style):String = {
+  def createLineAttributes(s: Style):String =
     raw"""
           /*
           Generated Line style attributes.
           */
           line: {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
 
-  def createConnectionAttributes(s: Style) = {
+  def createConnectionAttributes(s: Style) =
     raw"""
           /*
           Generated connection style attributes.
           */
           '.connection': {
-            """ + commonAttributes(s) + raw"""
+            ${commonAttributes(s)}
           },
       """
-  }
 
-  def createBoundingBoxStyle = raw"""/*
-                                  Generated bounding box styles.
-                                  */
-                                  '.bounding-box':{
-                                    'stroke-width': 0,
-                                    fill: 'transparent'
-                                  }"""
+  def createBoundingBoxStyle =
+    raw"""
+          /*
+          Generated bounding box styles.
+          */
+          '.bounding-box':{
+            'stroke-width': 0,
+            fill: 'transparent'
+          }
+      """
 
-  def commonAttributes(s: Style):String = {
-    var ret = raw""""""
-    if (checkBackgroundGradientNecessary(s))
-      ret += createGradientAttributes(s.background_color.get.asInstanceOf[GradientRef],
-                                      s.gradient_orientation.get match { case HORIZONTAL => true
-                                                                         case _ => false}
-      ) + """
-
-          """
+  def commonAttributes(s: Style):String =
+    raw"""
+    ${if (checkBackgroundGradientNecessary(s))
+      createGradientAttributes(s.background_color.get.asInstanceOf[Gradient],
+        s.gradient_orientation.get match { case HORIZONTAL => true
+        case _ => false})
     else
-        ret+=
-          createBackgroundAttributes(s)+ """
-
-          """
-
-   ret+=
-     raw"""
-       """+
-     createLineAttributes(s)+
-        raw"""
-
-           """
-    ret
-  }
+        createBackgroundAttributes(s)}
+        ${createLineAttributes(s)}
+        """
 
 
-  def checkBackgroundGradientNecessary(s: Style) = if(!s.background_color.get.isInstanceOf[GradientRef]) false else true
+  def checkBackgroundGradientNecessary(s: Style) = if(!s.background_color.get.isInstanceOf[Gradient]) false else true
 
-  def createGradientAttributes(gr: GradientRef, horizontal: Boolean) = {
-    val areas = for (area <- gr.area)yield{"{ offset: '"+area.offset+"', color: '"+area.color.getRGBValue+"' },"}
+  def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
+    val areas = for (area <- gr.area)yield{s"{ offset: '${area.offset}', color: '${area.color.getRGBValue}' },"}
     var ret = """
       fill: {
         type: 'lineGradient',
         stops: [
-    """
+              """
     for(area <- areas){ret += area}
 
     if(horizontal){
@@ -310,12 +278,12 @@ object StyleGenerator {
   }
 
 
-  def createBackgroundAttributes(s: Style) = {
+  def createBackgroundAttributes(s: Style):String = {
     if (s.background_color.isDefined) {
       val bg_color = s.background_color.get
       raw"""
-          fill: '""" + bg_color.getRGBValue +raw"""',
-          'fill.opacity': """ + bg_color.createOpacityValue+raw""",
+          fill: '${bg_color.getRGBValue}',
+          'fill.opacity':${bg_color.createOpacityValue},
         """
     }
     else ""
@@ -328,24 +296,24 @@ object StyleGenerator {
       				stroke: '#000000',
       				'stroke-width': 0,
       				'stroke-dasharray': "0",
-    """
+             """
     else
       s.line_color.get match {
         case Transparent=> ret +=
-                                     """
+          """
                                         'stroke-opacity': 0,
-                                     """
+          """
         case _ => ret +=
-        """
+          """
       				stroke: '"""+s.line_color.get.getRGBValue+"""',"""
           if(s.line_width.get > 0)
             ret += """'stroke-width':"""+s.line_width.get+""","""
           if(s.line_style isDefined)
             s.line_style.get match {
               case DASH => ret +=
-                           """
+                """
                                   'stroke-dasharray': "10,10",
-                           """
+                """
               case DOT => ret +=
                 """
                                   'stroke-dasharray': "5,5",
@@ -367,12 +335,6 @@ object StyleGenerator {
     ret
   }
 
-  def gradientOrientation(s:Style)=
-    if(s.gradient_orientation isDefined)s.gradient_orientation.get match {
-    case HORIZONTAL => true
-    case _ => false
-  }
-  else false
 
   /*The rest of the methodes (refering to styleGEnerator.xtext from MoDiGenV2) is defined in the Color classes directly*/
 }

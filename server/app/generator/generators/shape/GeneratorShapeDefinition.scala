@@ -1,12 +1,11 @@
 package generator.generators.shape
 
 import java.util.UUID
-
+import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
+import scala.collection.mutable
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
-import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
-
-import scala.collection.mutable
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
 
 /**
  * Created by julian on 19.01.16.
@@ -68,8 +67,8 @@ object GeneratorShapeDefinition {
   private def generateSvgShape(g:GeometricModel, shapeName:String, parentClass:String):String = {
     g match {
       case g:Line => generateSvgShape(g.asInstanceOf[Line], shapeName, parentClass)
-      case g:Rectangle => generateSvgShape(g.asInstanceOf[Rectangle], shapeName, parentClass)
       case g:Ellipse => generateSvgShape(g.asInstanceOf[Ellipse], shapeName, parentClass)
+      case g:Rectangle => generateSvgShape(g.asInstanceOf[Rectangle], shapeName, parentClass)
       case g:Polygon => generateSvgShape(g.asInstanceOf[Polygon], shapeName, parentClass)
       case g:PolyLine => generateSvgShape(g.asInstanceOf[PolyLine], shapeName, parentClass)
       case g:RoundedRectangle => generateSvgShape(g.asInstanceOf[RoundedRectangle], shapeName, parentClass)
@@ -153,11 +152,11 @@ object GeneratorShapeDefinition {
   private def getAttributes(shape:GeometricModel, parentClass:String):String = {
     shape match {
       case l:Line => getAttributes(l.asInstanceOf[Line], parentClass)
-      case l:Rectangle => getAttributes(l.asInstanceOf[Rectangle], parentClass)
       case l:Ellipse => getAttributes(l.asInstanceOf[Ellipse], parentClass)
+      case l:Rectangle => getAttributes(l.asInstanceOf[Rectangle], parentClass)
       case l:RoundedRectangle => getAttributes(l.asInstanceOf[RoundedRectangle], parentClass)
-      case l:PolyLine => getAttributes(l.asInstanceOf[PolyLine], parentClass)
       case l:Polygon => getAttributes(l.asInstanceOf[Polygon], parentClass)
+      case l:PolyLine => getAttributes(l.asInstanceOf[PolyLine], parentClass)
       case l:Text => getAttributes(l.asInstanceOf[Text], parentClass)
     }
   }
@@ -216,8 +215,8 @@ object GeneratorShapeDefinition {
 
   private def generatePosition(shape:GeometricModel):String = {
     shape match {
-      case r:Rectangle => generatePosition(shape.asInstanceOf[Rectangle])
       case r:Ellipse => generatePosition(shape.asInstanceOf[Ellipse])
+      case r:Rectangle => generatePosition(shape.asInstanceOf[Rectangle])
       case r:RoundedRectangle => generatePosition(shape.asInstanceOf[RoundedRectangle])
       case r:Text => generatePosition(shape.asInstanceOf[Text])
     }
@@ -443,16 +442,16 @@ object GeneratorShapeDefinition {
 
 
   private def callRightReferenceX(g:GeometricModel):Int = g match {
-    case r:Rectangle => referenceX(r)
     case e:Ellipse => referenceX(e)
+    case r:Rectangle => referenceX(r)
     case p:Polygon => referenceX(p)
     case r:RoundedRectangle => referenceX(r)
     case _ => 0
   }
 
   private def callRightReferenceY(g:GeometricModel):Int = g match {
-    case r:Rectangle => referenceY(r)
     case e:Ellipse => referenceY(e)
+    case r:Rectangle => referenceY(r)
     case p:Polygon => referenceY(p)
     case r:RoundedRectangle => referenceY(r)
     case _ => 0

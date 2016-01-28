@@ -1,12 +1,12 @@
 package generator.model.shapecontainer.shape
 
-import generator.util.CommonParserMethodes
+import generator.parser.CommonParserMethods
 
 /**
  * Created by julian on 19.10.15.
  * representation of CompartmentInfo
  */
-class Compartment(
+sealed class Compartment private (
   val compartment_id:String,
   val compartment_layout:Option[CompartmentLayout] = None,
   val compartment_stretching_horizontal:Option[Boolean] = None,
@@ -16,13 +16,13 @@ class Compartment(
   val compartment_invisible:Option[Boolean] = None
 )
 
-abstract sealed class CompartmentLayout
+sealed abstract class CompartmentLayout
   case object FIXED extends CompartmentLayout
   case object VERTICAL extends CompartmentLayout
   case object HORIZONTAL extends CompartmentLayout
   case object FIT extends CompartmentLayout
 
-object CompartmentParser extends CommonParserMethodes {
+object Compartment extends CommonParserMethods {
 
   def apply(attributes: List[String]): Option[Compartment] = parse(attributes)
   def parse(attributes: List[String]): Option[Compartment] = {

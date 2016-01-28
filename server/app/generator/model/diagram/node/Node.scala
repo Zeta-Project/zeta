@@ -1,7 +1,7 @@
 package generator.model.diagram.node
 
-import generator.model.diagram.action.{Actions, ActionInclude, Action}
-import generator.model.diagram.methodes.{Methodes, OnDelete, OnUpdate, OnCreate}
+import generator.model.diagram.action.{ActionInclude, Action, Actions}
+import generator.model.diagram.methodes.{Methodes, OnCreate, OnUpdate, OnDelete}
 import generator.model.diagram.traits.{Container, Palette}
 import generator.model.style.Style
 
@@ -11,9 +11,9 @@ import generator.model.style.Style
  */
 case class Node(name:String,
                 ecoreElement:AnyRef,/*TODO this is a mock, replace with actual ecoreElement*/
-                var style:Option[Style]      = None,
+                style:Option[Style]      = None,
                                 /*node-block*/
-                shape:Option[Shape]                   = None,
+                shape:Option[DiaShape]                   = None,
                 override val palette:Option[String]   = None,
                 override val container:Option[AnyRef] = None,
                 override val onCreate:Option[OnCreate]= None,
@@ -22,6 +22,4 @@ case class Node(name:String,
                 override val actions:List[Action]     = List(),
                 override val actionIncludes: Option[ActionInclude] = None
                ) extends Palette with Container with Methodes with Actions
-
-
 

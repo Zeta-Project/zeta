@@ -8,9 +8,9 @@ package generator.generators.shape
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
+import generator.model.style.HasStyle
 
 import scala.collection.mutable
-
 object GeneratorInspectorDefinition {
 
   def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: mutable.HashMap[String, mutable.HashMap[GeometricModel, String]]) = {
@@ -19,8 +19,8 @@ object GeneratorInspectorDefinition {
     var boundHeight = 0
 
     if (shape.isInstanceOf[Shape]) {
-      boundWidth = ShapeGenerator.calculateWidth(shape)
-      boundHeight = ShapeGenerator.calculateHeight(shape)
+      //TODOboundWidth = ShapeGenerator.calculateWidth(shape)
+      //TODOboundHeight = ShapeGenerator.calculateHeight(shape)
     }
 
     if (atts != null) {

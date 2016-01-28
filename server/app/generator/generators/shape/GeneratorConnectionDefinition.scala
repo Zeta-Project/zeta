@@ -3,6 +3,7 @@ package generator.generators.shape
 import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.connection.shapeconnections._
 import generator.model.shapecontainer.connection.{Connection, Placing}
+import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 
 import scala.collection.mutable
@@ -139,9 +140,10 @@ object GeneratorConnectionDefinition {
     ];
     break;
     """
+  }.mkString
     labelCache.clear()
     labels
-  }}
+  }
 
   protected def generateLabel(placing:Placing)={
     raw"""

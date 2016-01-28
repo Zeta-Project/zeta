@@ -2,36 +2,37 @@ package generator.model.shapecontainer.connection
 
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.style.Style
-import generator.util.{Cache, PlacingSketch, CommonParserMethodes}
+import generator.parser.{Cache, PlacingSketch, CommonParserMethods}
+import parser._
+
 
 /**
  * Created by julian on 20.10.15.
  * representation of a Connection
-  *
-  * @param connection_type -> inner Connection.scala ConnectionStyle, can either be an object {FreeForm, Manhatten}
+ * @param connection_type -> inner Connection.scala ConnectionStyle, can either be an object {FreeForm, Manhatten}
  * @param style is a model.style.Style instance
  * @param placing outstanding
  * TODO
  */
-case class Connection(override val name:String,
-                 connection_type:Option[ConnectionStyle] = None,
-                 style:Option[Style] = None,
-                 placing:List[Placing] = List[Placing]()) extends ShapeContainerElement
+sealed class Connection private (override val name:String,
+                 val connection_type:Option[ConnectionStyle] = None,
+                 val style:Option[Style] = None,
+                 val placing:List[Placing] = List[Placing]()) extends ShapeContainerElement
 
-object Connection extends CommonParserMethodes{
+object Connection extends CommonParserMethods{
   val validConnectionAttributes = List("connection-type", "layout", "placing")
   /**
    * parse method
    * */
   def apply(name:String,
-            styleRef:Option[String],
+            styleRef:Option[Style],
             typ:Option[String],
             anonymousStyle:Option[String],
             placings:List[PlacingSketch],
             hierarchyContainer:Cache):Option[Connection] = {
     implicit val cache = hierarchyContainer
     /*mapping*/
-    var style:Option[Style] = if(styleRef isDefined) styleRef.get else None
+    var style:Option[Style] = styleRef
     val connection_type:Option[ConnectionStyle] = if(typ isDefined) Some(parse(connectionType, typ.get).get) else None
     if(anonymousStyle.isDefined) {
       style = Style.makeLove(cache, style, anonymousStyle)

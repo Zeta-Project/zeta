@@ -1,13 +1,10 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.util.CommonParserMethodes
+import generator.parser.CommonParserMethods
 
-/**
- * Created by julian on 19.10.15.
- */
 class Point(val x:Int, val y:Int, val curveBefore:Option[Int]=None, val curveAfter:Option[Int]=None)
 
-object PointParser extends CommonParserMethodes{
+object PointParser extends CommonParserMethods{
   def pointAttribute:Parser[Option[(String, Int)]] = ("(x|y|curveBefore|curveAfter)".r <~ "\\s*=\\s*".r) ~ ("[+-]?\\d+".r <~ ",?".r) ^^ {
     case varname ~ arg => Some((varname, arg.toInt))
     case _ => None

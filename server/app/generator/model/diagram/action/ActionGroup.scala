@@ -4,7 +4,7 @@ package generator.model.diagram.action
  * Created by julian on 24.11.15.
  * representation of GlobalActionGroup
  */
-class ActionGroup (val name:String,
+sealed class ActionGroup private (val name:String,
                    val actions:Map[String, Action]){
   require(actions.nonEmpty)
 }

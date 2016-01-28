@@ -1,6 +1,5 @@
-package generator
 
-import generator.util.{SprayParser, Cache}
+import parser.{Cache, SprayParser}
 
 object RegexTest extends App {
   val hierarchyContainer = Cache()
@@ -12,17 +11,20 @@ object RegexTest extends App {
   parser.parseRawStyle("""style BpmnDefaultStyle {
                   description = "The default style of the petrinet hierarchyContainer type."
                   transparency = 0.95
-                  background-color = green
+                  background-color = gradient fooGradient {
+                    description = "hahahahahaha"
+                    area ( color = blue, offset = 2.2)
+                    area ( color = transparent, offset = 2.2)
+                  }
                   line-color = black
                   line-style = solid
                   line-width = 1
-                  font-color = white
+                  font-color = blue
                   font-name = "Tahoma"
                   font-size = 6
                   font-bold = yes
                   font-italic = yes
                   gradient-orientation = horizontal
-                  gradient-area-offset = 10
                  }""")
 
   parser.parseRawStyle(
@@ -63,7 +65,7 @@ object RegexTest extends App {
   println("testStyle.line-color: " + testStyle.head.line_color)
 
   println("\n\nShape")
-  parser.parseRawShape("""shape EClassShape style B{
+  parser.parseRawAbstractShape("""shape EClassShape style B{
                             size-min (width=4, height=6)
                             size-max (width=10, height=11)
                             stretching (horizontal=true, vertical=false)
@@ -71,7 +73,7 @@ object RegexTest extends App {
                             text{
                               size(width=10, height=40)
                               id = Hallo
-                              textBody = "pipapo popapi pappipo"
+                              textBody = "standard text body"
                             }
                             rectangle {
                               style (line-width=2)
@@ -89,7 +91,7 @@ object RegexTest extends App {
                             anchor = center
                         }""")
 
-  parser.parseRawShape("""//Messages
+  parser.parseRawAbstractShape("""//Messages
                        shape BPMN_EventMail  style BpmnDefaultStyle{
                            ellipse style aicaramba{
                                compartment(
@@ -118,7 +120,7 @@ object RegexTest extends App {
                            }
                        }""")
 
-  parser.parseRawConnection("""connection BPMN_DataAssoziation style aicaramba{
+  parser.parseRawConnectionSketch("""connection BPMN_DataAssoziation style aicaramba{
                             placing {
                                 position (offset=1.0, distance = 1)
                                 polygon {
@@ -130,24 +132,29 @@ object RegexTest extends App {
                             }
                         }""")
 
-  parser.parseRawShape("""
+  val shapeA = parser.parseRawAbstractShape("""
       shape A style aicaramba{
         size-min (width=4, height=6)
         polygon style B{
             point (x=0, y=0)
             point (x=15, y=10)
             point (x=30, y=0)
-            style { font-color = green }
+            style { transparency = 0.5 }
+            polygon {
+                point (x=0, y=0)
+                point (x=15, y=10)
+                point (x=30, y=0)
+            }
         }
       }
     """)
 
-  parser.parseRawShape("""shape B extends A style B{
+  parser.parseRawAbstractShape("""shape B extends A style B{
         size-min (10, 10)
         stretching (true, false)
       }""")
 
-  val C = parser.parseRawShape("""shape C extends B style A{
+  val C = parser.parseRawShapeSketch("""shape C extends B style A{
            text{
              size(width=10, height=40)
              id = Hallo1

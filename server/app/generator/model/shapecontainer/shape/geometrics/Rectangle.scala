@@ -1,9 +1,9 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.{CompartmentParser, Compartment}
+import generator.model.shapecontainer.shape.{Compartment}
 import generator.model.shapecontainer.shape.geometrics.layouts.{CommonLayoutParser, RectangleEllipseLayout, CommonLayout}
 import generator.model.style.Style
-import generator.util.{Cache, GeoModel}
+import generator.parser.{Cache, GeoModel}
 
 /**
  * Created by julian on 19.10.15.
@@ -25,14 +25,13 @@ class Rectangle(parent:Option[GeometricModel] = None,
 object Rectangle{
   /**
    * parses a GeoModel into an actual GeometricModel, in this case a Rectangle
- *
    * @param geoModel is the sketch to parse into a GeometricModel
    * @param parent is the parent instance that wraps the new GeometricModel*/
   def apply(geoModel:GeoModel, parent:Option[GeometricModel] = None, parentStyle:Option[Style], diagram:Cache)= parse(geoModel, parent, parentStyle, diagram)
   def parse(geoModel:GeoModel, parent:Option[GeometricModel] = None, parentStyle:Option[Style], diagram:Cache): Option[Rectangle] = {
     /*mapping*/
     val commonLayout:Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, diagram)
-    val compartmentInfo:Option[Compartment] = CompartmentParser.parse(geoModel.attributes)
+    val compartmentInfo:Option[Compartment] = Compartment.parse(geoModel.attributes)
 
     if(commonLayout.isEmpty)
       return None
