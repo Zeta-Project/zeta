@@ -36,7 +36,8 @@ lazy val server = (project in file("server")).settings(
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.1",
     "io.argonaut" %% "argonaut" % "6.0.4",
     "org.mozilla" % "rhino" % "1.7.6",
-    "net.codingwell" %% "scala-guice" % "4.0.0"
+    "net.codingwell" %% "scala-guice" % "4.0.0",
+    "org.scala-lang" % "scala-swing" % "2.11.0-M7"
   )).enablePlugins(PlayScala).
   aggregate(clients.map(projectToRef): _*).
   dependsOn(sharedJvm)
