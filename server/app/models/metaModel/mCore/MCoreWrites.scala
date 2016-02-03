@@ -83,7 +83,7 @@ object MCoreWrites {
         "globalUnique" -> a.globalUnique,
         "localUnique" -> a.localUnique,
         "type" -> a.`type`,
-        "default" -> "",
+        "default" -> a.default,
         "constant" -> a.constant,
         "singleAssignment" -> a.singleAssignment,
         "expression" -> a.expression,
