@@ -17,7 +17,6 @@ object MCoreReads {
     def mRef(name: String) = new MReference(name, false, false, List.empty, List.empty, List.empty)
   }
 
-
   implicit val mObjectReads = new Reads[MObject] {
     override def reads(json: JsValue): JsResult[MObject] =
       json.validate(
@@ -39,10 +38,9 @@ object MCoreReads {
     old.map(m => m.copy(mType = newMap.get(m.mType.name).get.asInstanceOf[MReference]))
   }
 
+  implicit val mObjectMapReads = new Reads[Map[String, MObject]] {
 
-  implicit val metaModelReads = new Reads[MetaModelDefinition] {
-
-    override def reads(json: JsValue): JsResult[MetaModelDefinition] = {
+    override def reads(json: JsValue): JsResult[Map[String, MObject]] = {
       val mObjectsResult = json.validate[Seq[MObject]]
       mObjectsResult match {
         case JsSuccess(mObjects, _) => finalize(mObjects)
@@ -70,12 +68,12 @@ object MCoreReads {
 
     }
 
-    def finalize(mObjects: Seq[MObject]): JsResult[MetaModelDefinition] = {
+    def finalize(mObjects: Seq[MObject]): JsResult[Map[String, MObject]] = {
       val nameMapping = mObjects.map(mObj => mObj.name -> mObj).toMap
       if (mObjects.size != nameMapping.size) JsError("MObjects must have unique names")
       else {
         val mappingWithEnums = addEnums(nameMapping)
-        JsSuccess(MetaModelDefinition(wire(mappingWithEnums)))
+        JsSuccess(wire(mappingWithEnums))
       }
     }
 
@@ -100,6 +98,11 @@ object MCoreReads {
     }
 
   }
+
+  implicit val metaModelDefinitionReads: Reads[MetaModelDefinition] = (
+    (__ \ "name").read[String] and
+      (__ \ "data").read[Map[String, MObject]]
+    ) (MetaModelDefinition.apply _)
 
   val mTypeError = ValidationError("Unknown mType at top level: only MClass, MReference and MEnum allowed")
   val boundsError = ValidationError("invalid lower and/or upper bound")
@@ -148,8 +151,8 @@ object MCoreReads {
 
   implicit val mAttributeReads: Reads[MAttribute] = (
     (__ \ "name").read[String] and
-      (__ \ "uniqueGlobal").read[Boolean] and
-      (__ \ "uniqueLocal").read[Boolean] and
+      (__ \ "globalUnique").read[Boolean] and
+      (__ \ "localUnique").read[Boolean] and
       (__ \ "type").read[String].map(detectType(_)) and
       (__ \ "default").read[AttributeValue] and
       (__ \ "constant").read[Boolean] and

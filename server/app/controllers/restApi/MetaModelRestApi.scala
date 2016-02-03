@@ -2,6 +2,7 @@ package controllers.restApi
 
 import javax.inject.Inject
 
+import dao.MetaModelDao
 import models.metaModel.mCore.MetaModelDefinition
 import models.metaModel.mCore.MCoreReads._
 import models.metaModel.mCore.MCoreWrites._
@@ -64,7 +65,7 @@ class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) ext
   }
 
   // just for testing purposes, creates an mcore metamodel based on incoming json
-  def mcore = Action(BodyParsers.parse.json) { request =>
+  def insert = Action(BodyParsers.parse.json) { request =>
     val result = request.body.validate[MetaModelDefinition]
     result.fold(
       errors => {
@@ -72,9 +73,24 @@ class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) ext
       },
       mm => {
         //Ok(Json.obj("status" ->"OK", "content" -> Json.toJson(mm)))
+        MetaModelDao.saveMetaModelDefinition(mm)
         Ok(Json.toJson(mm))
       }
     )
+  }
+
+  def getJson(id: String) = Action.async { implicit request =>
+    MetaModelDao.getMetaModelDefinitionJson(id).map {
+      case Some(json) => Ok(json)
+      case None => NotFound
+    }
+  }
+
+  def get(id: String) = Action.async { implicit request =>
+    MetaModelDao.getMetaModelDefinition(id).map {
+      case Some(mmd) => Ok(mmd.toString)
+      case None => NotFound
+    }
   }
 
 }

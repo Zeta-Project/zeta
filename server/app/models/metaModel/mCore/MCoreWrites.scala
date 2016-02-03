@@ -7,7 +7,7 @@ import scala.collection.immutable._
 
 object MCoreWrites {
 
-  implicit val metaModelDefinitionWrites = new Writes[MetaModelDefinition] {
+  implicit val metaModelDefinitionWrites = new OWrites[MetaModelDefinition] {
 
     implicit val mObjectWrites = new Writes[MObject] {
       def writes(o: MObject): JsValue = {
@@ -19,8 +19,11 @@ object MCoreWrites {
       }
     }
 
-    def writes(m: MetaModelDefinition): JsValue = {
-      Json.toJson(m.mObjects.values.toList)
+    def writes(m: MetaModelDefinition): JsObject = {
+      Json.obj(
+        "name" -> m.name,
+        "data" -> Json.toJson(m.mObjects.values.toList)
+      )
     }
   }
 
@@ -43,8 +46,8 @@ object MCoreWrites {
       Json.obj(
         "mType" -> "mReference",
         "name" -> r.name,
-        "sourceDeletesTarget" -> r.sourceDeletionDeletesTarget,
-        "targetDeletesSource" -> r.targetDeletionDeletesSource,
+        "sourceDeletionDeletesTarget" -> r.sourceDeletionDeletesTarget,
+        "targetDeletionDeletesSource" -> r.targetDeletionDeletesSource,
         "source" -> r.source,
         "target" -> r.target,
         "attributes" -> r.attributes

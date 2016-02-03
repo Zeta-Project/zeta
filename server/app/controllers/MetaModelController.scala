@@ -4,8 +4,7 @@ package controllers
 import java.util.UUID
 import javax.inject.Inject
 
-import argonaut.Argonaut._
-import argonaut.DecodeJson
+
 import models.metaModel._
 import play.api.Play.current
 import play.api.libs.json.JsValue
@@ -96,11 +95,6 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
     MetaModelWsActor.props(out, metaModelUuid)
   }
 
-  /** Argonaut Conversions */
-  implicit def MetaModelDefinitionJson: DecodeJson[MetaModelDefinition] =
-    DecodeJson(c => for {
-      name <- (c --\ "Class").as[String]
 
-    } yield MetaModelDefinition(mClasses = null, mReferences = null, mEnums = null))
 
 }
