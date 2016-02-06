@@ -17,7 +17,7 @@ import scala.collection.mutable.HashMap
  */
 object ShapeGenerator {
 
-  val Default_File_Location = "~/"
+  val Default_File_Location = System.getProperty("user.home") //TODO
 
   val JOINTJS_PATH = "jointjs-gen/diagram"
   val JOINTJS_SHAPE_FILENAME = Default_File_Location + "shape.js"
