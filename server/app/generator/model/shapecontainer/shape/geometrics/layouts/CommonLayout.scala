@@ -27,7 +27,7 @@ object CommonLayoutParser extends CommonParserMethods{
     var pos:Option[(Int,Int)] =None
     var size_w:Option[Int] = None
     var size_h:Option[Int] = None
-    var styl:Option[Style] = Style.makeLove(cache, parentStyle, geoModel.style) //if geoModel.style and parentstyle are defined a childStyle is created
+    var styl:Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style) //if geoModel.style and parentstyle are defined a childStyle is created
 
     attributes.foreach {
       case x if x.matches("position.+") => pos = {
@@ -44,7 +44,7 @@ object CommonLayoutParser extends CommonParserMethods{
           size_h = Some(newSize.get._2)
         }
       case anonymousStyle:String if cache.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.makeLove(cache, styl, Some(anonymousStyle)) //generate anonymous style
+        styl = Style.generateChildStyle(cache, styl, Some(anonymousStyle)) //generate anonymous style
       case _ =>
     }
 

@@ -55,7 +55,7 @@ object Style extends CommonParserMethods {
    * @note note, that attributes are inherited by the latest bound principle: Style A extends B -> B overrides attributes of A a call like:
    *       StyleParser.makeLove(someCacheInstance, B, C, D, A) -> A's attributes have highest priority!!
    */
-  def makeLove(cache: Cache, parents:Option[Style]*):Option[Style] ={
+  def generateChildStyle(cache: Cache, parents:Option[Style]*):Option[Style] ={
     val parentStyles = parents.filter(_.isDefined)
     if(parentStyles.length == 1) return parentStyles.head
     else if(parentStyles.isEmpty) return None
@@ -75,15 +75,9 @@ object Style extends CommonParserMethods {
   def parse(name:String, parents:Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache):Style ={
 
     implicit val cache = hierarchyContainer
-    var extendedStyle:List[Style] = List[Style]()
+    val extendedStyle = parents.getOrElse(List[String]()).foldLeft(List[Style]())((styles, s_name) =>
+      if(cache.styleHierarchy.contains(s_name.trim)) s_name.trim :: styles else styles)
 
-    if(parents.nonEmpty)
-      parents.get.foreach{parent => {
-        val parentName = parent.trim
-        if(cache.styleHierarchy.contains(parentName))
-          extendedStyle = parentName :: extendedStyle
-        }
-      }/*TODO if class was not found, to be inherited tell Logger*/
     /*mapping and defaults*/
     /*fill the "mapping and defaults" with extended information or with None values if necessary*/
     /** relevant is a help-methode, which shortens the actual call to mostRelevant of ClassHierarchy by ensuring the collection-parameter

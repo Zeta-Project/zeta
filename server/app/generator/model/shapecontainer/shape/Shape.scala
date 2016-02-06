@@ -39,8 +39,7 @@ sealed class Shape private (override val name:String = "no name",
 
   /*if parentShape had GeometricModels in 'shapes'-attribute, both the lists (parents and new List of GeometricModels) need to be merged*/
   val shapes = {
-    val geometricModels = parseGeometricModels(geos, style).getOrElse(List())
-    val inherited_and_new_geometrics = {if(parentShapes isDefined) parentShapes.get else List()} ::: geometricModels
+    val inherited_and_new_geometrics = parentShapes.getOrElse(List()) ::: parseGeometricModels(geos, style)
     if(inherited_and_new_geometrics nonEmpty)Some(inherited_and_new_geometrics)else None
   }
 
@@ -89,8 +88,8 @@ sealed class Shape private (override val name:String = "no name",
 
   /**for generating shape-attribute specific content*/
   private def parseGeometricModels(geoModels:List[GeoModel], parentStyle:Option[Style]) =
-    Some(geoModels.map{_.parse(None, parentStyle)}.
-      foldLeft(List[GeometricModel]())((r, c:Option[GeometricModel])=>if(c.isDefined)r.::(c.get) else r))
+    geoModels.map{_.parse(None, parentStyle)}.
+      foldLeft(List[GeometricModel]())((list, c:Option[GeometricModel])=>if(c.isDefined) c.get :: list else list)
 
   /**recursively searches for Compartments in the geometricModels*/
   private def rCompartment(g:List[GeometricModel], compartments:List[Compartment] = List[Compartment]()):List[Compartment] = {
@@ -128,15 +127,8 @@ object Shape extends CommonParserMethods{
             hierarchyContainer:Cache):Shape = {
     implicit val cache = hierarchyContainer
 
-    val parents = if(parentShapes isDefined) parentShapes.get else List()
-    var extendedShapes:List[Shape] = List[Shape]()
-    if(parents.nonEmpty)
-      parents.foreach{parent => {
-        val parentName = parent.trim //trim just to make sure, could probably be removed
-        if(cache.shapeHierarchy.contains(parentName))
-          extendedShapes = parentName :: extendedShapes
-      }
-     }
+    val extendedShapes = parentShapes.getOrElse(List[String]()).foldLeft(List[Shape]())((shapes, s_name) =>
+      if(cache.shapeHierarchy.contains(s_name.trim)) s_name.trim :: shapes else shapes)
 
     /*mapping*/
     /** relevant is a help-methode, which shortens the actual call to mostRelevant of ClassHierarchy by ensuring the collection-parameter
@@ -162,7 +154,7 @@ object Shape extends CommonParserMethods{
       val newStyle: Option[Style] = styleArgument
       if(newStyle isDefined) {
         if(style isDefined){
-          style = Style.makeLove(cache, style, newStyle)
+          style = Style.generateChildStyle(cache, style, newStyle)
         }else
           style = newStyle
       }
@@ -221,11 +213,11 @@ object Shape extends CommonParserMethods{
     case prop:String => Some(matchBoolean(prop))
     case _ => None
   }
-  def stretching:Parser[Option[(Boolean, Boolean)]] = "\\(\\s*(horizontal=)?".r ~> argument ~ (",\\s*(vertical=)?".r ~> argument) <~ ")" ^^ {
+  def stretching:Parser[Option[(Boolean, Boolean)]] = "\\(\\s*(horizontal\\s*=\\s*)?".r ~> argument ~ (",\\s*(vertical\\s*=\\s*)?".r ~> argument) <~ ")" ^^ {
     case hor ~ ver => Some(matchBoolean(hor), matchBoolean(ver))
     case _ => None
   }
-  def width_height:Parser[Option[(Int, Int)]] = "\\(\\s*(width=)?".r ~> argument_int ~ (",\\s*(height=)?".r ~> argument_int) <~ ")" ^^ {
+  def width_height:Parser[Option[(Int, Int)]] = "\\(\\s*(width\\s*=\\s*)?".r ~> argument_int ~ (",\\s*(height\\s*=\\s*)?".r ~> argument_int) <~ ")" ^^ {
     case width ~ height => Some((width.toInt, height.toInt))
     case _ => None }
 }

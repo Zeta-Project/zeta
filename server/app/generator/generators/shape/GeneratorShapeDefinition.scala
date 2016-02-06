@@ -35,7 +35,7 @@ object GeneratorShapeDefinition {
       };
     }
 
-    joint.shapes.""" + packageName + """ = {};
+    joint.shapes.$packageName = {};
 
     """
   }

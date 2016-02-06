@@ -5,7 +5,7 @@ import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, RIGHT, LEFT, HAlign}
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.HasStyle
-import scala.collection.mutable
+import scala.collection.mutable.HashMap
 
 /**
  * Created by julian on 19.01.16.
@@ -23,9 +23,9 @@ object GeneratorShapeAndInlineStyle {
         switch(elementName) {
       """
 
-      def generateShapeStyle( shape:Shape, packageName: String, LastElement: Boolean,  attrs:mutable.HashMap[String, mutable.HashMap[GeometricModel, String]])={
+      def generateShapeStyle( shape:Shape, packageName: String, LastElement: Boolean,  attrs:HashMap[String, HashMap[GeometricModel, String]])={
         if(shape != null) {
-          var att = attrs(shape.name)
+          val att = attrs(shape.name)
           """
           case """"+shape.name+"""":
           """+

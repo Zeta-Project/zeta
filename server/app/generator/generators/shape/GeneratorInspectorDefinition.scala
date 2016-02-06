@@ -10,17 +10,17 @@ import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.HasStyle
 
-import scala.collection.mutable
+import scala.collection.mutable.HashMap
 object GeneratorInspectorDefinition {
 
-  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: mutable.HashMap[String, mutable.HashMap[GeometricModel, String]]) = {
+  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]) = {
     val atts = attrs(shape.name)
     var boundWidth = 0
     var boundHeight = 0
 
     if (shape.isInstanceOf[Shape]) {
-      //TODOboundWidth = ShapeGenerator.calculateWidth(shape)
-      //TODOboundHeight = ShapeGenerator.calculateHeight(shape)
+      boundWidth = ShapeGenerator.calculateWidth(shape)
+      boundHeight = ShapeGenerator.calculateHeight(shape)
     }
 
     if (atts != null) {
@@ -49,22 +49,18 @@ object GeneratorInspectorDefinition {
     }
   }
 
-  def head()={
-
+  def head =
     """
     var InspectorDefs = {
       // FSA
       // ---
       """
-    }
 
-    def
-    footer()={
+    def footer =
       """
       «linkAttributes»
     };
     """
-  }
 
   private def getRightAttributes(shape:GeometricModel, shapeClass:String, last:Boolean, maxWidth:Int, maxHeight:Int)= shape match {
     case r:Rectangle => getAttributes(r, shapeClass, last, maxWidth, maxHeight)

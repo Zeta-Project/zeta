@@ -12,8 +12,10 @@ import generator.parser.{Cache, GeoModel}
 
 sealed class Polygon private (parent: Option[GeometricModel] = None,
               polygonLayout: PolyLineLayout,
-              override var children: List[GeometricModel] = List[GeometricModel]()
-               ) extends PolyLine(parent, polygonLayout) with Wrapper
+              wrapping:List[GeoModel]
+               ) extends PolyLine(parent, polygonLayout) with Wrapper{
+  override val children: List[GeometricModel] = wrapping.map(_.parse(Some(this), style).get)
+}
 
 object Polygon {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle:Option[Style], hierarchyContainer:Cache)=parse(geoModel, parent, parentStyle, hierarchyContainer)
@@ -22,10 +24,6 @@ object Polygon {
     if (polygonLayout.isEmpty)
       return None
 
-    val ret = new Polygon(parent, polygonLayout.get)
-    ret.children = for (i <- geoModel.children) yield {
-      i.parse(Some(ret), ret.style).get
-    }
-    Some(ret)
+    Some(new Polygon(parent, polygonLayout.get, geoModel.children))
   }
 }

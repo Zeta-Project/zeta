@@ -12,14 +12,14 @@ import generator.parser.{Cache, GeoModel}
 class Rectangle(parent:Option[GeometricModel] = None,
                 commonLayout: CommonLayout,
                 val compartment:Option[Compartment],
-                parentOf:List[GeometricModel] = List[GeometricModel]()
+                wrapping:List[GeoModel] = List[GeoModel]()
                  ) extends GeometricModel(parent) with RectangleEllipseLayout with Wrapper{
 
   override val style:Option[Style] = commonLayout.style
   override val position:Option[(Int, Int)] = commonLayout.position
   override val size_width: Int = commonLayout.size_width
   override val size_height: Int = commonLayout.size_height
-  override var children:List[GeometricModel] = parentOf
+  override val children: List[GeometricModel] = wrapping.map(_.parse(Some(this), style).get)
 }
 
 object Rectangle{
@@ -36,8 +36,6 @@ object Rectangle{
     if(commonLayout.isEmpty)
       return None
 
-    val ret:Rectangle = new Rectangle(parent, commonLayout.get, compartmentInfo, List())
-    ret.children = for(i <- geoModel.children)yield{i.parse(Some(ret), ret.style).get}
-    Some(ret)
+    Some(new Rectangle(parent, commonLayout.get, compartmentInfo, geoModel.children))
   }
 }

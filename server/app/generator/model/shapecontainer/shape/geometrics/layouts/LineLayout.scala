@@ -21,7 +21,7 @@ object LineLayoutParser{
     /*mapping*/
     var point1:Option[Point] = None
     var point2:Option[Point] = None
-    var styl:Option[Style] = Style.makeLove(hierarchyContainer, parentStyle, geoModel.style)
+    var styl:Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
     attributes.foreach {
       case x if x.matches("point.+") =>
         if(point1.isEmpty)
@@ -30,7 +30,7 @@ object LineLayoutParser{
           point2 = PointParser(x)
         }
       case anonymousStyle:String if hierarchyContainer.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.makeLove(hierarchyContainer, styl, Some(anonymousStyle))
+        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
       case _ =>
     }
     if(point1.isDefined && point2.isDefined)

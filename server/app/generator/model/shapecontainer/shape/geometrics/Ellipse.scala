@@ -15,8 +15,8 @@ import generator.parser.{Cache, GeoModel}
 sealed class Ellipse private (parent: Option[GeometricModel] = None,
               commonLayout: CommonLayout,
               compartment:Option[Compartment],
-              parentOf: List[GeometricModel] = List[GeometricModel]()
-               ) extends Rectangle(parent, commonLayout, compartment, parentOf)
+              wrapping: List[GeoModel]
+               ) extends Rectangle(parent, commonLayout, compartment, wrapping)
 
 object Ellipse {
   /**
@@ -32,8 +32,6 @@ object Ellipse {
     if (commonLayout.isEmpty)
       return None
 
-    val ret = new Ellipse(parent, commonLayout.get, compartment)
-    ret.children = for (i <- geoModel.children) yield {i.parse(Some(ret), ret.style).get}
-    Some(ret)
+    Some(new Ellipse(parent, commonLayout.get, compartment, geoModel.children))
   }
 }

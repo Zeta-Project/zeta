@@ -21,13 +21,13 @@ object PolyLineLayoutParser{
 
     /*mapping*/
     var collectedPoints:List[Point] = List[Point]()
-    var styl:Option[Style] = Style.makeLove(hierarchyContainer, parentStyle, geoModel.style)
+    var styl:Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
     attributes.foreach{
       case x if x.matches("point.+") =>
         val newPoint = PointParser(x)
         if(newPoint.isDefined)collectedPoints = collectedPoints.::(newPoint.get)
       case anonymousStyle:String if hierarchyContainer.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.makeLove(hierarchyContainer, styl, Some(anonymousStyle))
+        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
       case _ =>
     }
     if(collectedPoints.length > 1)

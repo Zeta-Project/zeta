@@ -35,7 +35,7 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
       case parents ~ attributes => Style("Anonymous_Style"+java.util.UUID.randomUUID(), parents, attributes, cache).name
     }
   private def styles = rep(style)
-  def parseRawStyle(input: String) = parseAll(styles, trimRight(input)).get
+  def parseStyle(input: String) = parseAll(styles, trimRight(input)).get
   /*------------------------------------------------------------------------------------------*/
 
 
@@ -79,17 +79,15 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
     (descriptionAttribute?) ~
     (anchorAttribute?) <~ "}" ^^
     {case name ~ parent ~ style ~ attrs ~ geos ~ desc ~ anch =>
-      val newShapeSketch = ShapeSketch(name, parent, style, attrs, geos, desc, anch, cache)
-      cache + newShapeSketch
-      newShapeSketch
+      ShapeSketch(name, parent, style, attrs, geos, desc, anch, cache)
     }
   private def abstractShape:Parser[Shape] = shapeSketch ^^ {case sketch => sketch.toShape(None)}
 
   private def abstractShapes = rep(abstractShape)
   private def shapeSketches = rep(shapeSketch)
 
-  def parseRawAbstractShape(input:String):List[Shape] = parseAll(abstractShapes, trimRight(input)).get
-  def parseRawShapeSketch(input:String):List[ShapeSketch] = parseAll(shapeSketches, trimRight(input)).get
+  def parseAbstractShape(input:String):List[Shape] = parseAll(abstractShapes, trimRight(input)).get
+  def parseShape(input:String):List[ShapeSketch] = parseAll(shapeSketches, trimRight(input)).get
   /*------------------------------------------------------------------------------------------*/
 
 
@@ -119,8 +117,8 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
   private def connectionSketches = rep(connectionSketch)
   private def abstractConnections = rep(abstractConnection)
 
-  def parseRawConnectionSketch(input:String) = parseAll(connectionSketches, trimRight(input)).get
-  def parseRawAbstractConnection(input:String) = parseAll(abstractConnections, trimRight(input)).get
+  def parseConnection(input:String) = parseAll(connectionSketches, trimRight(input)).get
+  def parseAbstractConnection(input:String) = parseAll(abstractConnections, trimRight(input)).get
   /*------------------------------------------------------------------------------------------*/
 
 
@@ -244,7 +242,7 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
                         actions:List[Action]       = List(),
                         actionIncludes: Option[ActionInclude] = None){
     def toNode(diagramStyle:Option[Style], cache:Cache) = {
-      val corporateStyle:Option[Style] = Style.makeLove(cache, diagramStyle, style)
+      val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
       val diagramShape:Option[DiaShape] =
         if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache))
         else None
@@ -294,7 +292,7 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
                   actions:List[Action]      = List(),
                   actionIncludes:Option[ActionInclude] = None){
     def toEdge(diagramStyle:Option[Style], cache:Cache) = {
-      val corporateStyle:Option[Style] = Style.makeLove(cache, diagramStyle, style)
+      val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
       val diagramConnection:diaConnection = new diaConnection(corporateStyle, connection, cache)
       Edge(name, ecoreElement, corporateStyle, diagramConnection, from, to, palette, container, onCreate, onUpdate, onDelete, actions, actionIncludes)
     }
@@ -307,18 +305,16 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
       ("for" ~> ident) ~
       (("(" ~ "style" ~ ":" ~> ident <~ ")")?) ~
       ("{" ~> rep(actionGroup|nodeOrEdge) <~ "}") ^^ {
-        case name ~ ecoreElement ~ style ~ arguments =>
+        case name ~ mcoreElement ~ style ~ arguments =>
           val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
-          //val nodes = arguments.filter(i => i._1 == "node").map(i => i._2.asInstanceOf[Node].name -> i._2.asInstanceOf[Node]).toMap
-          //val edges = arguments.filter(i => i._1 == "edge").map(i => i._2.asInstanceOf[Edge].name -> i._2.asInstanceOf[Edge]).toMap
           val nodes = arguments.filter(i => i._1 == "node").map(i => i._2.asInstanceOf[NodeSketch].toNode(style, cache))
           val edges = arguments.filter(i => i._1 == "edge").map(i => i._2.asInstanceOf[EdgeSketch].toEdge(style, cache))
-          Diagram(name, actionGroups, nodes, edges, style, ecoreElement/*TODO convert to actual EcoreElement*/, cache)
+          Diagram(name, actionGroups, nodes, edges, style, mcoreElement/*TODO convert to actual McoreElement*/, cache)
       }
   }
 
   private def sprayDiagrams = rep(sprayDiagram)
-  def parseRawDiagram(e:String) = parseAll(sprayDiagrams, trimRight(e)).get
+  def parseDiagram(e:String) = parseAll(sprayDiagrams, trimRight(e)).get
 /*------------------------------------------------------------------------------------------*/
 
   private def trimRight(s:String) = s.replaceAll("\\/\\/.+", "").split("\n").map(s => s.trim + "\n").mkString
@@ -336,7 +332,8 @@ case class ShapeSketch(name:String,
                        descr:Option[(String, String)],
                        anch:Option[String],
                        cache: Cache){
-  def toShape(corporateStyle:Option[Style]) = Shape(name, parents, Style.makeLove(cache, corporateStyle, style), attrs, geos, descr, anch, cache)
+  cache + this
+  def toShape(corporateStyle:Option[Style]) = Shape(name, parents, Style.generateChildStyle(cache, corporateStyle, style), attrs, geos, descr, anch, cache)
 }
 
 case class PropsAndComps(ref:String, propertiesAndCompartments:Option[List[(String, (String, String))]])
@@ -370,5 +367,5 @@ case class ConnectionSketch ( name:String,
                               anoStyle:Option[String],
                               placing:List[PlacingSketch]){
   def toConnection(corporateStyle:Option[Style], cache:Cache) =
-    Connection(name, Style.makeLove(cache, corporateStyle, style), connection_type, anoStyle, placing, cache)
+    Connection(name, Style.generateChildStyle(cache, corporateStyle, style), connection_type, anoStyle, placing, cache)
 }

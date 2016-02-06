@@ -36,7 +36,7 @@ object TextLayoutParser extends CommonParserMethods{
       case x: String if x.matches("(?s)textBody.*") =>
         txt = parse(planeText, x).get
       case anonymousStyle:String if hierarchyContainer.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.makeLove(hierarchyContainer, styl, Some(anonymousStyle))
+        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
       case _ =>
     }
     Some(new TextLayout {

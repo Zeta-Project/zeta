@@ -22,7 +22,7 @@ object Description extends CommonParserMethods{
     /*mapping*/
     var hali:Option[HAlign] = None
     var vali:Option[VAlign] = None
-    var styl:Option[Style] = Style.makeLove(hierarchyContainer, parentStyle, attrs._1)
+    var styl:Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, attrs._1)
     var id:String = ""
 
     val attributes = attrs._2.split("\n")
@@ -31,7 +31,7 @@ object Description extends CommonParserMethods{
         hali = Alignment.parseHAlign("(center|right|left)".r.findFirstIn(x).get)
         vali = Alignment.parseVAlign("(top|middle|bottom)".r.findFirstIn(x).get)
       case x if x.matches("id.*") => id = parse(idAsString, x).get
-      case anonymousStyle:String if cache.styleHierarchy.contains(anonymousStyle) => styl = Style.makeLove(cache, styl, anonymousStyle)
+      case anonymousStyle:String if cache.styleHierarchy.contains(anonymousStyle) => styl = Style.generateChildStyle(cache, styl, anonymousStyle)
       case _ =>
     }
     if(id != "")
