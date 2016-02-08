@@ -5,6 +5,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json._
 
+import scala.annotation.tailrec
 import scala.collection.immutable._
 
 object MCoreReads {
@@ -72,8 +73,14 @@ object MCoreReads {
       val nameMapping = mObjects.map(mObj => mObj.name -> mObj).toMap
       if (mObjects.size != nameMapping.size) JsError("MObjects must have unique names")
       else {
-        val mappingWithEnums = addEnums(nameMapping)
-        JsSuccess(wire(mappingWithEnums))
+        val refErrors = validateRefs(nameMapping)
+        if (refErrors.isEmpty) {
+          val mappingWithEnums = addEnums(nameMapping)
+          JsSuccess(wire(mappingWithEnums))
+        }
+        else {
+          JsError(s"Meta model contains invalid references: ${refErrors.mkString(", ")}")
+        }
       }
     }
 
@@ -96,6 +103,81 @@ object MCoreReads {
       }
       builder.finalMap
     }
+
+    def validateRefs(mapping: Map[String, MObject]): List[String] = {
+      val values = mapping.values.toList
+
+      def checkSingleEnum(source: String, enum: MEnum, default: EnumSymbol): List[String] = {
+        mapping.get(enum.name) match {
+          case Some(MEnum(_, symbols)) => {
+            if (symbols.map(_.name).contains(default.name)) Nil
+            else {
+              s"$source: default value '${default.name}' is not part of enum '${enum.name}'" :: Nil
+            }
+          }
+          case _ => s"$source: enum '${enum.name}' wasn't found" :: Nil
+        }
+      }
+
+      def checkEnums(source: String, attributes: Seq[MAttribute]): List[String] = {
+        attributes.foldLeft(List[String]()) { (errors, attribute) =>
+          (attribute.`type`, attribute.default) match {
+            case (e: MEnum, s: EnumSymbol) => errors ::: checkSingleEnum(source, e, s)
+            case _ => errors
+          }
+        }
+      }
+
+      def checkSuperTypes(source: String, superTypes: Seq[MClass]): List[String] = {
+        for (
+          s <- superTypes.toList;
+          target = s.name
+          if !mapping.contains(target) || !mapping.get(target).get.isInstanceOf[MClass]
+        ) yield {
+          s"invalid super type: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
+        }
+      }
+
+      def checkLinkDefs[T](source: String, links: Seq[MLinkDef]): List[String] = {
+        for (
+          link <- links.toList;
+          target = link.mType.name
+          if !mapping.contains(target) || !mapping.get(target).get.isInstanceOf[T]
+        ) yield {
+          s"invalid MLinkDef: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
+        }
+      }
+
+      def processMReference(r: MReference): List[String] = {
+        checkLinkDefs[MClass](r.name, r.source) :::
+          checkLinkDefs[MClass](r.name, r.target) :::
+          checkEnums(r.name, r.attributes)
+      }
+
+      def processMClass(c: MClass): List[String] = {
+        checkLinkDefs[MReference](c.name, c.inputs) :::
+          checkLinkDefs[MReference](c.name, c.outputs) :::
+          checkSuperTypes(c.name, c.superTypes) :::
+          checkEnums(c.name, c.attributes)
+      }
+
+      def processMObject(mObj: MObject): List[String] = mObj match {
+        case c: MClass => processMClass(c)
+        case r: MReference => processMReference(r)
+        case _ => Nil
+      }
+
+      @tailrec
+      def walk(remaining: List[MObject], accErrors: List[String]): List[String] = {
+        remaining match {
+          case Nil => accErrors
+          case mObj :: tail => walk(tail, accErrors ::: processMObject(mObj))
+        }
+      }
+
+      walk(values, Nil)
+    }
+
 
   }
 
