@@ -1,9 +1,9 @@
 package generator.generators.spray
 
-import generator.generators.MclassMock
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
+import generators.MclassMock
 import scala.collection.mutable.HashMap
 
 /**
@@ -52,7 +52,7 @@ object ValidatorGenerator {
     ${
       val edges = edgeMap
       for (((key, value), i) <- edges.zipWithIndex) yield
-        s"""${key}: ${if (value) "true" else "false"}${if (i != edges.size) ","}"""
+        s"""$key: ${if (value) "true" else "false"}${if (i != edges.size) ","}"""
     }
     """
   }
