@@ -1,15 +1,8 @@
-@(graphType: String, id: String, userID: String, userName: String)
-@import play.api.Play.resource
-@import play.api.Play.current
+@(graphType: String, id: String, user: Option[SecureSocialUser])
+    @import play.api.Play.resource
+    @import play.api.Play.current
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html">
-    <head>
-        <meta charset="utf8"/>
-            <!--        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/> -->
-
-        <title>@(graphType) -- @(id)</title>
-
+    @views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
         <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" type="text/css" />
 
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.css")" />
@@ -21,6 +14,7 @@
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.inspector.css")" />
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.tooltip.css")" />
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.format.print.css")" />
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/wireframe.css")">
 
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/layout.css")" />
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/paper.css")" />
@@ -38,13 +32,9 @@
 
         <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/model_specific/highlighting_style.css")" />
 
-        <script src="@routes.Assets.at("common/jquery.min.js")"></script>
-
         <script src="@routes.Assets.at("modelEditor/editor/own_ext/contextMenu.js")"></script>
         <script src="@routes.Assets.at("modelEditor/editor/own_ext/share.min.js")"></script>
 
-    </head>
-    <body class="body">
         <h1>MoDiGen</h1>
         <div class="toolbar-container">
             <button id="btn-undo" class="btn" data-tooltip="Undo"><img src="@routes.Assets.at("jointjs/images/undo.png")" alt="Undo"/></button>
@@ -119,8 +109,8 @@
         <script type="text/javascript">
                 window._global_uuid = "@(id)";
                 window._global_graph_type = "@(graphType)";
-                window._global_userID = "@(userID)";
-                window._global_userName = "@(userName)";
+                window._global_userID = "@(user.get.uuid)";
+                window._global_userName = "@(user.get.profile.fullName)";
         </script>
 
 
@@ -136,6 +126,12 @@
         <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
         <script src="@routes.Assets.at("jointjs/dist/joint.shapes.org.js")"></script>
 
+        <script src="@routes.Assets.at("jointjs/dist/lodash.min.js")"></script>
+        <script src="@routes.Assets.at("jointjs/dist/backbone-min.new.js")"></script>
+        <script type="text/javascript">var backboneNew = Backbone.noConflict();</script>
+        <script src="@routes.Assets.at("jointjs/dist/backbone-min.js")"></script>
+        <script src="@routes.Assets.at("jointjs/dist/joint.new.js")"></script>
+        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
         <script src="@routes.Assets.at("jointjs/dist/joint.ui.halo.js")"></script>
         <script src="@routes.Assets.at("jointjs/dist/joint.dia.freeTransform.js")"></script>
         <script src="@routes.Assets.at("jointjs/dist/joint.ui.freeTransform.js")"></script>
@@ -154,6 +150,12 @@
         <script src="@routes.Assets.at("jointjs/dist/joint.layout.GridLayout.js")"></script>
         <script src="@routes.Assets.at("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
 
+        <script src="@routes.Assets.at("jointjs/ext/guidelines.js")"></script>
+        <script src="@routes.Assets.at("jointjs/ext/distancelines.js")"></script>
+        <script src="@routes.Assets.at("jointjs/ext/de.htwg.group.js")"></script>
+        <script src="@routes.Assets.at("jointjs/ext/extendedSelectionView.js")"></script>
+        <script src="@routes.Assets.at("jointjs/ext/extendedElementView.js")"></script>
+
         <script src="@routes.Assets.at("jointjs/lib/keyboard.js")"></script>
 
         <script src="@routes.Assets.at("modelEditor/editor/own_ext/modigen.link.js")"></script>
@@ -164,14 +166,14 @@
 
 
             <!-- Editor example files with different kinds of shapes
-        <script src=" @routes.Assets.at("modelEditor/editor/diagram/initializeStencil.js")
-            "> </script>
+        <script src="  @routes.Assets.at("modelEditor/editor/diagram/initializeStencil.js")
+        "> </script>
 
                     <script src="@routes.Assets.at("modelEditor/editor/diagram/initializeInspector.js")
-        "></script>
+            "> </script>
         -->
 
-        <!-- model specific files-->
+            <!-- model specific files-->
         @defining(graphType.toLowerCase) { graphTypeLowerCase =>
 
             @if(resource("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/link.js").isDefined) {
@@ -200,7 +202,8 @@
 
 
             <!--[if IE 9]>
-	    <script src='@routes.Assets.at("jointjs/lib/base64.js")'></script>
+	    <script src=' @routes.Assets.at("jointjs/lib/base64.js")
+        '></script>
 	    <script type="text/javascript">
 	      window.btoa = base64.encode
 	      document.onselectstart = function() { return false; };
@@ -240,6 +243,4 @@
         <script src="@routes.Assets.at("modelEditor/datavis/DataVisEditor.js")"></script>
 
             <!-- nodeCodeEditor -->
-
-    </body>
-</html>
+    }

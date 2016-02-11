@@ -28,7 +28,7 @@ class ModelController @Inject()(override implicit val env: UserEnvironment) exte
   }
 
   def modelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, request.user.uuid.toString, request.user.profile.fullName.getOrElse("")))
+    Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, Some(request.user)))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
