@@ -4,7 +4,7 @@
  * have the same distance like the active object.
  * @author Maximilian Göke
  */
-distancelines = Backbone.View.extend({
+Distancelines = Backbone.View.extend({
     options: {
         graph: void 0,
         paper: void 0,

@@ -31,28 +31,36 @@
 
 .toolbar-guidelines {
     display: inline;
+    margin-left: -5px;
     color: black;
-    width: 195px;
+    width: 150px;
     height: 34px;
-    padding: 0;
-    border-collapse: collapse;
 }
 
-.toolbar-guidelines .form-control {
+.toolbar-guidelines label {
+    font-weight: normal;
+    margin-right: 5px;
+}
+
+.toolbar-guidelines input[type=range], .toolbar-guidelines output {
     display: inline;
-    padding: 0;
+}
+
+.toolbar-distancelines {
+    display: inline;
+    margin-left: -5px;
+    color: black;
+    width: 170px;
     height: 34px;
-    border: 1px solid lightgrey;
-    border-collapse: collapse;
-    margin-top: -1px;
 }
 
-.toolbar-guidelines .options {
-    width: 120px;
+.toolbar-distancelines label {
+    font-weight: normal;
+    margin-right: 5px;
 }
 
-.toolbar-guidelines .values {
-    width: 50px;
+.toolbar-distancelines input[type=range], .toolbar-distancelines output {
+    display: inline;
 }
 
 .toolbar-container output {

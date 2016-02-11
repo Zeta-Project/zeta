@@ -3,7 +3,7 @@
  * to align the elements more accurately.
  * @author Maximilian Göke
  */
-guidelines = Backbone.View.extend({
+Guidelines = Backbone.View.extend({
 
   options: {
     paper: void 0,

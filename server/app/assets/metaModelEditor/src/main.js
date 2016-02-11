@@ -72,8 +72,8 @@ var Rappid = Backbone.Router.extend({
          * Added distanceLines and guideLines.
          * @author: Maximilian Göke
          */
-        this.guideLines = new guidelines({paper: this.paper});
-        this.distanceLines = new distancelines({graph: this.graph, paper: this.paper});
+        this.guideLines = new Guidelines({paper: this.paper});
+        this.distanceLines = new Distancelines({graph: this.graph, paper: this.paper});
 
     },
 
@@ -501,10 +501,44 @@ var Rappid = Backbone.Router.extend({
         }, this));
 
 
-        $('#input-gridsize').on('change', _.bind(function (evt) {
+        $('#input-gridsize').on('input', _.bind(function (evt) {
             var gridSize = parseInt(evt.target.value, 10);
             $('#output-gridsize').text(gridSize);
             this.setGrid(gridSize);
+        }, this));
+
+        $('#input-distancelines').on('input', _.bind(function (evt) {
+            var distance = parseInt(evt.target.value, 10);
+            $('#output-distancelines').text(distance);
+            this.distanceLines.options.distance = distance;
+        }, this));
+
+        $('#checkbox-distancelines').on('change', _.bind(function(evt) {
+            var input = $('#input-distancelines');
+            if ($('#checkbox-distancelines').is(':checked')) {
+                this.distanceLines.start();
+                input.prop("disabled", false);
+            } else {
+                this.distanceLines.stop();
+                input.prop("disabled", true);
+            }
+        }, this));
+
+        $('#input-guidelines').on('input', _.bind(function (evt) {
+            var distance = parseInt(evt.target.value, 10);
+            $('#output-guidelines').text(distance);
+            this.guideLines.options.distance = distance;
+        }, this));
+
+        $('#checkbox-guidelines').on('change', _.bind(function(evt) {
+            var input = $('#input-guidelines');
+            if ($('#checkbox-guidelines').is(':checked')) {
+                this.guideLines.start();
+                input.prop("disabled", false);
+            } else {
+                this.guideLines.stop();
+                input.prop("disabled", true);
+            }
         }, this));
 
         /*
@@ -514,40 +548,6 @@ var Rappid = Backbone.Router.extend({
         this.paper.on('scale', function (scale) {
             $('#zoom-percentage').text(Math.round(scale * 100) + '%');
         }, this);
-
-        /*
-         * Added to change between distancelines and guidelines.
-         * @author: Maximilian Göke
-         */
-        $('#guidelines-distancelines').on('change', _.bind(function (evt) {
-            // update #lines-distance and lines-active
-            var lines = getSelectedLines(this);
-            $('#lines-distance option[value=' + lines.options.distance + ']').prop('selected', true);
-            $('#lines-active').prop('checked', lines.options.active);
-            $('#lines-distance').prop('disabled', lines.options.active ? false : 'disabled');
-        }, this));
-
-        /*
-         * Added to change the glue distance from distancelines or guidelines.
-         * @author: Maximilian Göke
-         */
-        $('#lines-distance').on('change', _.bind(function (evt) {
-            getSelectedLines(this).options.distance = parseInt($($('#lines-distance option:selected')[0]).text());
-        }, this));
-
-        /*
-         * Added to activate or deactivate distancelines or guidelines.
-         * @author: Maximilian Göke
-         */
-        $('#lines-active').on('change', _.bind(function (evt) {
-            if ($('#lines-active').prop('checked')) {
-                getSelectedLines(this).start();
-                $('#lines-distance').prop('disabled', false);
-            } else {
-                getSelectedLines(this).stop();
-                $('#lines-distance').prop('disabled', 'disabled');
-            }
-        }, this));
 
         $('#btn-export-mm').on('click', _.bind(function (evt) {
             var exporter = new Exporter(this.graph);
@@ -575,19 +575,6 @@ var Rappid = Backbone.Router.extend({
             }
         }, this));
 
-        /*
-         * Added to get Object from distancelines or guidelines. It depends on
-         * the seleceted option.
-         * @author: Maximilian Göke
-         */
-        function getSelectedLines(context) {
-            if ($($('#guidelines-distancelines option:selected')[0]).val() == 'distancelines') {
-                return context.distanceLines;
-            }
-            else {
-                return context.guideLines;
-            }
-        }
     },
 
     saveMetaModel: function (metaModel, graph, metaModelName) {

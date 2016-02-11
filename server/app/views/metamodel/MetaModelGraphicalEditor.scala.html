@@ -78,32 +78,33 @@
                 <button id="btn-clear" class="btn btn-default" data-tooltip="Clear Paper">
                     <span class="glyphicon glyphicon-trash"></span>
                 </button>
-            </div>
-
-            <div class="btn-group">
                 <button id="btn-to-front" class="btn btn-default" data-tooltip="Bring current Element to Front">
                     To Front
                 </button>
                 <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
                     To Back
                 </button>
+            </div>
+
+            <div class="btn-group">
                 <div class="toolbar-gridsize btn btn-default" id="btn-gridsize" data-tooltip="Change Grid Size">
                     <label for="input-gridsize">Grid</label>
                     <input type="range" value="10" min="1" max="50" step="1" id="input-gridsize">
                     <output for="input-gridsize" id="output-gridsize">10</output>
                 </div>
-                <div class="toolbar-guidelines btn btn-default" data-tooltip="Guidelines">
-                    <select class="form-control options" name="guidelines-distancelines" id="guidelines-distancelines" title="Guidelines Distancelines">
-                        <option value="guidelines" selected>Guidelines</option>
-                        <option value="distancelines">Distancelines</option>
-                    </select>
-                    <select class="form-control values" name="lines-distance" id="lines-distance" title="Lines Distances">
-                        <option value="0">0</option>
-                        <option value="5" selected>5</option>
-                        <option value="10">10</option>
-                        <option value="15">15</option>
-                    </select>
-                    <input type="checkbox" id="lines-active" checked title="Lines Active">
+
+                <div class="toolbar-guidelines btn btn-default" id="btn-guidelines">
+                    <input type="checkbox" id="checkbox-guidelines" checked>
+                    <label for="input-guidelines">Guidelines</label>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
+                    <output for="input-guidelines" id="output-guidelines">5</output>
+                </div>
+
+                <div class="toolbar-distancelines btn btn-default" id="btn-distancelines">
+                    <input type="checkbox" id="checkbox-distancelines" checked>
+                    <label for="input-distancelines">Distancelines</label>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
+                    <output for="input-distancelines" id="output-distancelines">5</output>
                 </div>
 
             </div>
