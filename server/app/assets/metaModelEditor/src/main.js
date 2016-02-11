@@ -52,7 +52,13 @@ var Rappid = Backbone.Router.extend({
             gridSize: 10,
             perpendicularLinks: true,
             model: this.graph,
-            defaultLink: new joint.shapes.uml.Association()
+            defaultLink: new joint.shapes.uml.Association(),
+            /*
+             * Using own ElementView implementation. ExtendedElementView allows
+             * to Multiselect elements(Shift must be pressed).
+             * @author: Maximilian Göke
+             */
+            elementView: ExtendedElementView
         });
         this.paperScroller.options.paper = this.paper;
 
@@ -61,6 +67,13 @@ var Rappid = Backbone.Router.extend({
         this.paperScroller.center();
 
         this.graph.on('add', this.initializeLinkTooltips, this);
+
+        /*
+         * Added distanceLines and guideLines.
+         * @author: Maximilian Göke
+         */
+        this.guideLines = new guidelines({ paper: this.paper });
+        this.distanceLines = new distancelines({ graph: this.graph, paper: this.paper});
 
     },
 
@@ -119,12 +132,20 @@ var Rappid = Backbone.Router.extend({
 
     initializeSelection: function () {
 
+        /*
+         * Create instance of group.
+         * @author: Maximilian Göke
+         */
+        this.group = new htwgGroup();
+
         this.selection = new Backbone.Collection;
-        this.selectionView = new joint.ui.SelectionView({
-            paper: this.paper,
-            graph: this.graph,
-            model: this.selection
-        });
+
+        /*
+         * use own selectionView instead of default
+         * @author: Maximilian Göke
+         */
+        this.selectionView = new ExtendedSelectionView({paper: this.paper, graph: this.graph, model: this.selection, group: this.group});
+
 
         // Initiate selecting when the user grabs the blank area of the paper while the Shift key is pressed.
         // Otherwise, initiate paper pan.
@@ -137,20 +158,64 @@ var Rappid = Backbone.Router.extend({
             }
         }, this);
 
-        this.paper.on('cell:pointerdown', function (cellView, evt) {
+        /*
+         * Customized for new functions. Added behaviour when shift was pressed and
+         * behaviour when a group of a elemt get slected.
+         * @author: Maximilian Göke
+         */
+        this.paper.on('cell:pointerdown', function(cellView, evt) {
+            if(evt.shiftKey) {
+                try {
+                    this.halo.remove();
+                    this.freetransform.remove();
+                } catch(TypeError) {}
+                return;
+            }
             // Select an element if CTRL/Meta key is pressed while the element is clicked.
             if ((evt.ctrlKey || evt.metaKey) && !(cellView.model instanceof joint.dia.Link)) {
-                this.selectionView.createSelectionBox(cellView);
-                this.selection.add(cellView.model);
+                //remove halo and transform and create a selection box
+                if(this.selection.length == 1 && this.halo !== undefined) {
+                    this.halo.remove();
+                    this.freetransform.remove();
+                    this.selectionView.createSelectionBox(this.paper.findViewByModel(this.selection.first()));
+                }
+                // select single element or complete group
+                if(this.group.findGroupFromElement(cellView.model.get('id')) === undefined) {
+                    this.selectElement(cellView);
+                } else {
+                    this.selectCompleteGroup(cellView.model.get('id'));
+                }
+            } else {
+                // if no other element is selected as the current selected element
+                // and it's in a group select the whole group. If it's not in a group
+                // show halo and transform
+                try {
+                    this.halo.remove();
+                    this.freetransform.remove();
+                } catch(TypeError) {} finally {
+                    this.selectionView.cancelSelection();
+                    this.selectCompleteGroup(cellView.model.get('id'));
+                }
             }
         }, this);
 
-        this.selectionView.on('selection-box:pointerdown', function (evt) {
+        /*
+         * Customized for new functions. Added behaviour when a element of a group
+         * gets deseleceted.
+         * @author: Maximilian Göke
+         */
+        this.selectionView.on('selection-box:pointerdown', function(evt) {
             // Unselect an element if the CTRL/Meta key is pressed while a selected element is clicked.
             if (evt.ctrlKey || evt.metaKey) {
-                var cell = this.selection.get($(evt.target).data('model'));
-                this.selectionView.destroySelectionBox(this.paper.findViewByModel(cell));
-                this.selection.reset(this.selection.without(cell));
+                var elementID = $(evt.target).data('model');
+                var groupID = this.group.findGroupFromElement(elementID);
+
+                // deselect single element or complete group
+                if( groupID === undefined) {
+                    this.deselectElement(elementID);
+                } else {
+                    this.deselectCompleteGroup(groupID);
+                }
             }
         }, this);
 
@@ -227,6 +292,11 @@ var Rappid = Backbone.Router.extend({
         }
     },
 
+    /*
+     * Customized to create the possibility to remove freetransform or halo in
+     * an other funciton and to set halo only when no group is selected.
+     * @author:Maximilian Göke
+     */
     initializeHaloAndInspector: function () {
 
         // MEnum-inspector by default.
@@ -237,29 +307,27 @@ var Rappid = Backbone.Router.extend({
             this.createInspector(this.paper.findViewByModel(mEnum.getMEnumContainer()));
         }, this);
 
-        this.paper.on('cell:pointerup', function (cellView, evt) {
+        this.paper.on('cell:pointerup', function(cellView, evt) {
 
-            if (cellView.model instanceof joint.dia.Link || this.selection.contains(cellView.model)) {
-                return;
-            }
+
+            if(this.selection.length > 0) return;
+
+            if (cellView.model instanceof joint.dia.Link || this.selection.contains(cellView.model)) return;
 
             // In order to display halo link magnets on top of the freetransform div we have to create the
             // freetransform first. This is necessary for IE9+ where pointer-events don't work and we wouldn't
             // be able to access magnets hidden behind the div.
-            var freetransform = new joint.ui.FreeTransform({
-                graph: this.graph,
-                paper: this.paper,
-                cell: cellView.model
-            });
-            var halo = new joint.ui.Halo({graph: this.graph, paper: this.paper, cellView: cellView});
+            this.freetransform = new joint.ui.FreeTransform({ graph: this.graph, paper: this.paper, cell: cellView.model });
+            this.halo = new joint.ui.Halo({ graph: this.graph, paper: this.paper, cellView: cellView });
 
-            freetransform.render();
-            halo.render();
+            this.freetransform.render();
+            this.halo.render();
 
-            this.initializeHaloTooltips(halo);
+            this.initializeHaloTooltips(this.halo);
 
             this.createInspector(cellView);
 
+            this.selectionView.cancelSelection();
             this.selection.reset([cellView.model]);
 
         }, this);
@@ -408,18 +476,62 @@ var Rappid = Backbone.Router.extend({
 
         // toFront/toBack must be registered on mousedown. SelectionView empties the selection
         // on document mouseup which happens before the click event. @TODO fix SelectionView?
-        $('#btn-to-front').on('mousedown', _.bind(function (evt) {
-            this.selection.invoke('toFront');
-        }, this));
+        /*
+         * Changed function in binding for btn-to-front and btn-to-back
+         * This changes were needed because the call that was bind to these
+         * buttons won't work after updating jointjs.
+         * @author: Maximilian Göke
+         */
+        $('#btn-to-front').on('mousedown', _.bind(function(evt) { this.setPositionOfSelected('toFront'); }, this));
+        $('#btn-to-back').on('mousedown', _.bind(function(evt) { this.setPositionOfSelected('toBack'); }, this));
 
-        $('#btn-to-back').on('mousedown', _.bind(function (evt) {
-            this.selection.invoke('toBack');
-        }, this));
 
         $('#input-gridsize').on('change', _.bind(function (evt) {
             var gridSize = parseInt(evt.target.value, 10);
             $('#output-gridsize').text(gridSize);
             this.setGrid(gridSize);
+        }, this));
+
+        /*
+         * Added to update the zoom percentage that is displayes in the toolbar.
+         * @author: Maximilian Göke
+         */
+        this.paper.on('scale', function(scale) {
+            $('#zoom-percentage').text(Math.round(scale * 100)+'%');
+        }, this);
+
+        /*
+         * Added to change between distancelines and guidelines.
+         * @author: Maximilian Göke
+         */
+        $('#guidelines-distancelines').on('change', _.bind(function(evt) {
+            // update #lines-distance and lines-active
+            var lines = getSelectedLines(this);
+            $('#lines-distance option[value='+ lines.options.distance +']').prop('selected', true);
+            $('#lines-active').prop('checked', lines.options.active);
+            $('#lines-distance').prop('disabled', lines.options.active? false : 'disabled');
+        }, this));
+
+        /*
+         * Added to change the glue distance from distancelines or guidelines.
+         * @author: Maximilian Göke
+         */
+        $('#lines-distance').on('change', _.bind(function(evt) {
+            getSelectedLines(this).options.distance = parseInt($($('#lines-distance option:selected')[0]).text());
+        }, this));
+
+        /*
+         * Added to activate or deactivate distancelines or guidelines.
+         * @author: Maximilian Göke
+         */
+        $('#lines-active').on('change', _.bind(function(evt) {
+            if($('#lines-active').prop('checked')) {
+                getSelectedLines(this).start();
+                $('#lines-distance').prop('disabled', false);
+            } else {
+                getSelectedLines(this).stop();
+                $('#lines-distance').prop('disabled', 'disabled');
+            }
         }, this));
 
         $('#btn-export-mm').on('click', _.bind(function (evt) {
@@ -447,6 +559,20 @@ var Rappid = Backbone.Router.extend({
                 alert(errorMessage);
             }
         }, this));
+
+        /*
+         * Added to get Object from distancelines or guidelines. It depends on
+         * the seleceted option.
+         * @author: Maximilian Göke
+         */
+        function getSelectedLines(context) {
+            if($($('#guidelines-distancelines option:selected')[0]).val() == 'distancelines') {
+                return context.distanceLines;
+            }
+            else {
+                return context.guideLines;
+            }
+        }
     },
 
     saveMetaModel: function (metaModel, graph, metaModelName) {
@@ -513,7 +639,18 @@ var Rappid = Backbone.Router.extend({
             ox = ox || (this.paper.el.scrollLeft + this.paper.el.clientWidth / 2) / this.zoomLevel;
             oy = oy || (this.paper.el.scrollTop + this.paper.el.clientHeight / 2) / this.zoomLevel;
 
-            this.paper.scale(newZoomLevel, newZoomLevel, ox, oy);
+            /*
+             * Changed function call. Removed two arguments. The removed arguments
+             * are used for paperScroller.center().
+             * @author: Maximilian Göke
+             */
+            this.paper.scale(newZoomLevel, newZoomLevel);
+
+            /*
+             * Added function call. Helps to align scaled SVG.
+             * @author: Maximilian Göke
+             */
+            this.paperScroller.center(ox, oy);
 
             this.zoomLevel = newZoomLevel;
         }
@@ -571,5 +708,75 @@ var Rappid = Backbone.Router.extend({
         context.fill();
 
         return canvas[0].toDataURL('image/png');
+    },
+
+    // ---------- customization start
+    // Functions between customization start and end are created
+    // by Maximilian Göke
+    /* zooms stencil objects. */
+    zoomStencilElementsOnDrop: function() {
+        this.graph.on('add', function(cell) {
+            var type = cell.get('type');
+            switch(type) {
+                case 'wireframe.SmartPhone':
+                    cell.set('size', {width:300, height: 600});
+                    break;
+                case 'wireframe.ProgramPanel':
+                    cell.set('size', {width:276, height: 50});
+                    break;
+                case 'wireframe.Statusbar':
+                    cell.set('size', {width:276, height: 30});
+                    break;
+                default:
+                    break;
+            }
+        });
+    },
+
+    /* Selects a complete group. */
+    selectCompleteGroup: function(elementID) {
+        // find group id
+        var groupID = this.group.findGroupFromElement(elementID);
+
+        // find all elements from group and select them
+        if(groupID !== undefined) {
+            var elementIDs = this.group.getElementIDsFromGroup(groupID);
+            elementIDs.forEach(function(id) {
+                this.selectElement(this.paper.findViewByModel(this.graph.getCell(id)));
+            }, this);
+        }
+    },
+
+    /* Selects a single Element */
+    selectElement: function(view) {
+        this.selection.add(view.model);
+        this.selectionView.createSelectionBox(view);
+    },
+
+    /* Deselects a complete group */
+    deselectCompleteGroup: function(groupID) {
+        // find all elements from group and deselect them
+        var elementIDs = this.group.getElementIDsFromGroup(groupID);
+        elementIDs.forEach( function(id) {
+            this.deselectElement(id);
+        }, this);
+    },
+
+    /* Deselects a single element. */
+    deselectElement: function(elementID) {
+        var cell = this.selection.get(elementID);
+        this.selection.reset(this.selection.without(cell));
+        this.selectionView.destroySelectionBox(this.paper.findViewByModel(cell));
+    },
+
+    /* Handles the toFront/toBack functionality */
+    setPositionOfSelected: function(functionName) {
+        this.selection.each(function(cell) {
+            cell.attributes[functionName]();
+            this.halo.remove();
+            this.freetransform.remove();
+        }, this);
+
     }
+    // ---------- customization end
 });
