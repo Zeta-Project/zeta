@@ -63,7 +63,7 @@ class window.Exporter
         name: @graph.getName element
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
-        mAttributes: @graph.getAttributes element
+        attributes: @graph.getAttributes element
         inputs: @graph.getInputs element
         outputs: @graph.getOutputs element
 
@@ -77,7 +77,7 @@ class window.Exporter
         name: @graph.getName reference
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
         targetDeletionDeletesSource: @graph.getTargetDeletionDeletesSource reference
-        mAttributes: @graph.getAttributes reference
+        attributes: @graph.getAttributes reference
         source: @graph.getSources reference
         target: @graph.getTargets reference
 

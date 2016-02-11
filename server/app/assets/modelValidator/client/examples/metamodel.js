@@ -1,221 +1,244 @@
-var exampleMetaModel = {
-    "Male": {
-        "mType": "mClass",
-        "name": "Male",
-        "abstract": false,
-        "superTypes": [
+var exampleMetaModel = [
+    {
+        "mType" : "mReference",
+        "name" : "isWife",
+        "sourceDeletionDeletesTarget" : false,
+        "targetDeletionDeletesSource" : false,
+        "source" : [
+            {
+                "type" : "Female",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "target" : [
+            {
+                "type" : "Male",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "attributes" : []
+    },
+    {
+        "mType" : "mEnum",
+        "name" : "healthInsurance",
+        "symbols" : [
+            "private",
+            "national",
+            "none"
+        ]
+    },
+    {
+        "mType" : "mClass",
+        "name" : "Person",
+        "abstract" : true,
+        "superTypes" : [],
+        "inputs" : [
+            {
+                "type" : "isFather",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            },
+            {
+                "type" : "isMother",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "outputs" : [],
+        "attributes" : [
+            {
+                "name" : "FirstName",
+                "globalUnique" : false,
+                "localUnique" : false,
+                "type" : "String",
+                "default" : "Hans",
+                "constant" : false,
+                "singleAssignment" : false,
+                "expression" : "",
+                "ordered" : false,
+                "transient" : false,
+                "upperBound" : 1,
+                "lowerBound" : 1
+            },
+            {
+                "name" : "Geburtstag",
+                "globalUnique" : true,
+                "localUnique" : true,
+                "type" : "String",
+                "default" : "",
+                "constant" : false,
+                "singleAssignment" : false,
+                "expression" : "",
+                "ordered" : false,
+                "transient" : false,
+                "upperBound" : 1,
+                "lowerBound" : 1
+            },
+            {
+                "name" : "Steuernummer",
+                "globalUnique" : true,
+                "localUnique" : true,
+                "type" : "String",
+                "default" : "",
+                "constant" : false,
+                "singleAssignment" : false,
+                "expression" : "",
+                "ordered" : false,
+                "transient" : false,
+                "upperBound" : -1,
+                "lowerBound" : 1
+            },
+            {
+                "name" : "Krankenversicherungs",
+                "globalUnique" : false,
+                "localUnique" : false,
+                "type" : "healthInsurance",
+                "default" : "none",
+                "constant" : false,
+                "singleAssignment" : false,
+                "expression" : "",
+                "ordered" : false,
+                "transient" : false,
+                "upperBound" : 1,
+                "lowerBound" : 1
+            }
+        ]
+    },
+    {
+        "mType" : "mReference",
+        "name" : "isMother",
+        "sourceDeletionDeletesTarget" : false,
+        "targetDeletionDeletesSource" : false,
+        "source" : [
+            {
+                "type" : "Female",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "target" : [
+            {
+                "type" : "Person",
+                "upperBound" : -1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
+            }
+        ],
+        "attributes" : []
+    },
+    {
+        "mType" : "mClass",
+        "name" : "Female",
+        "abstract" : false,
+        "superTypes" : [
             "Person"
         ],
-        "mAttributes": {},
-        "inputs": [
+        "inputs" : [
             {
-                "type": "isWife",
-                "upperBound": 1,
-                "lowerBound": 0,
-                "deleteIfLower": false
+                "type" : "isHusband",
+                "upperBound" : 1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
             }
         ],
-        "outputs": [
+        "outputs" : [
             {
-                "type": "isHusband",
-                "upperBound": 1,
-                "lowerBound": 0,
-                "deleteIfLower": false
+                "type" : "isWife",
+                "upperBound" : 1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
             },
             {
-                "type": "isFather",
-                "upperBound": -1,
-                "lowerBound": 0,
-                "deleteIfLower": false
-            }
-        ]
-    },
-    "Person": {
-        "mType": "mClass",
-        "name": "Person",
-        "abstract": true,
-        "superTypes": [],
-        "mAttributes": {
-            "FirstName": {
-                "name": "FirstName",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "default": "",
-                "type": "String",
-                "expression": "",
-                "uniqueLocal": false,
-                "uniqueGlobal": false,
-                "constant": false,
-                "ordered": false,
-                "transient": false,
-                "singleAssignment": false
-            },
-            "Geburtstag": {
-                "name": "Geburtstag",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "default": "",
-                "type": "String",
-                "expression": "",
-                "uniqueLocal": false,
-                "uniqueGlobal": false,
-                "constant": false,
-                "ordered": false,
-                "transient": false,
-                "singleAssignment": false
-            },
-            "Steuernummer": {
-                "name": "Steuernummer",
-                "upperBound": -1,
-                "lowerBound": 1,
-                "default": "",
-                "type": "String",
-                "expression": "",
-                "uniqueLocal": true,
-                "uniqueGlobal": true,
-                "constant": false,
-                "ordered": false,
-                "transient": false,
-                "singleAssignment": false
-            }
-        },
-        "inputs": [
-            {
-                "type": "isFather",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
-            },
-            {
-                "type": "isMother",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
+                "type" : "isMother",
+                "upperBound" : -1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
             }
         ],
-        "outputs": []
+        "attributes" : []
     },
-    "Female": {
-        "mType": "mClass",
-        "name": "Female",
-        "abstract": false,
-        "superTypes": [
+    {
+        "mType" : "mReference",
+        "name" : "isFather",
+        "sourceDeletionDeletesTarget" : false,
+        "targetDeletionDeletesSource" : false,
+        "source" : [
+            {
+                "type" : "Male",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "target" : [
+            {
+                "type" : "Person",
+                "upperBound" : -1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
+            }
+        ],
+        "attributes" : []
+    },
+    {
+        "mType" : "mReference",
+        "name" : "isHusband",
+        "sourceDeletionDeletesTarget" : false,
+        "targetDeletionDeletesSource" : false,
+        "source" : [
+            {
+                "type" : "Male",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "target" : [
+            {
+                "type" : "Female",
+                "upperBound" : 1,
+                "lowerBound" : 1,
+                "deleteIfLower" : false
+            }
+        ],
+        "attributes" : []
+    },
+    {
+        "mType" : "mClass",
+        "name" : "Male",
+        "abstract" : false,
+        "superTypes" : [
             "Person"
         ],
-        "mAttributes": {},
-        "inputs": [
+        "inputs" : [
             {
-                "type": "isHusband",
-                "upperBound": 1,
-                "lowerBound": 0,
-                "deleteIfLower": false
+                "type" : "isWife",
+                "upperBound" : 1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
             }
         ],
-        "outputs": [
+        "outputs" : [
             {
-                "type": "isWife",
-                "upperBound": 1,
-                "lowerBound": 0,
-                "deleteIfLower": false
+                "type" : "isHusband",
+                "upperBound" : 1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
             },
             {
-                "type": "isMother",
-                "upperBound": -1,
-                "lowerBound": 0,
-                "deleteIfLower": false
-            }
-        ]
-    },
-    "isHusband": {
-        "mType": "mRef",
-        "name": "isHusband",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
-        "mAttributes": {},
-        "source": [
-            {
-                "type": "Male",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
+                "type" : "isFather",
+                "upperBound" : -1,
+                "lowerBound" : 0,
+                "deleteIfLower" : false
             }
         ],
-        "target": [
-            {
-                "type": "Female",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
-            }
-        ]
-    },
-    "isWife": {
-        "mType": "mRef",
-        "name": "isWife",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
-        "mAttributes": {},
-        "source": [
-            {
-                "type": "Female",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
-            }
-        ],
-        "target": [
-            {
-                "type": "Male",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
-            }
-        ]
-    },
-    "isFather": {
-        "mType": "mRef",
-        "name": "isFather",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
-        "mAttributes": {},
-        "source": [
-            {
-                "type": "Male",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
-            }
-        ],
-        "target": [
-            {
-                "type": "Person",
-                "upperBound": -1,
-                "lowerBound": 0,
-                "deleteIfLower": false
-            }
-        ]
-    },
-    "isMother": {
-        "mType": "mRef",
-        "name": "isMother",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
-        "mAttributes": {},
-        "source": [
-            {
-                "type": "Female",
-                "upperBound": 1,
-                "lowerBound": 1,
-                "deleteIfLower": false
-            }
-        ],
-        "target": [
-            {
-                "type": "Person",
-                "upperBound": -1,
-                "lowerBound": 0,
-                "deleteIfLower": false
-            }
-        ]
+        "attributes" : []
     }
-};
+];
