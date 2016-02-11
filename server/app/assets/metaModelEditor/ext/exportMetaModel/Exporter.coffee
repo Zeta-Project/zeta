@@ -45,7 +45,7 @@ class window.Exporter
 
   # Builds the metaModel JSON object and returns it.
   createMetaModel: () ->
-    metaModel = {}
+    metaModel = []
 
     @addClasses metaModel
     @addReferences metaModel
@@ -58,7 +58,7 @@ class window.Exporter
   addClasses: (metaModel) ->
     for element in @graph.getElements()
 
-      metaModel[@graph.getName element] =
+      metaModel.push
         mType: Constants.CLASS
         name: @graph.getName element
         abstract: @graph.isAbstract element
@@ -72,7 +72,7 @@ class window.Exporter
   addReferences: (metaModel) ->
     for reference in @graph.getReferences()
 
-      metaModel[@graph.getName reference] =
+      metaModel.push
         mType: Constants.REFERENCE
         name: @graph.getName reference
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
@@ -86,7 +86,7 @@ class window.Exporter
   addEnums: (metaModel) ->
     for thisMEnum in mEnum.getMEnums()
 
-      metaModel[thisMEnum.name] =
+      metaModel.push
         mType: Constants.ENUM
         name: thisMEnum.name
         type: thisMEnum.type
