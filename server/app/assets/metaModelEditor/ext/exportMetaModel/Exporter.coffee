@@ -84,6 +84,7 @@ class window.Exporter
 
   # Iterates over the values of the mEnumContainer and adds them to the metaModel object.
   addEnums: (metaModel) ->
+    #TODO: on a saved and re-opened instance, menums are not set
     for thisMEnum in mEnum.getMEnums()
       metaModel.push
         mType: Constants.ENUM
