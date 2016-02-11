@@ -88,7 +88,6 @@ class window.Exporter
       metaModel.push
         mType: Constants.ENUM
         name: thisMEnum.name
-        type: thisMEnum.type
-        values: mEnum.getValues thisMEnum.name
+        symbols: thisMEnum.symbols
 
 
