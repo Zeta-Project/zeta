@@ -35,8 +35,8 @@
 #selected-view {
   position: absolute;
   border: 2px solid #F39C12;
-  margin-left: -6px;
-  margin-top: -6px;
+  /*margin-left: -6px;
+  margin-top: -6px;*/
   padding-right: 11px;
   padding-bottom: 11px;
 }

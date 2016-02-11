@@ -72,8 +72,8 @@ var Rappid = Backbone.Router.extend({
          * Added distanceLines and guideLines.
          * @author: Maximilian Göke
          */
-        this.guideLines = new guidelines({ paper: this.paper });
-        this.distanceLines = new distancelines({ graph: this.graph, paper: this.paper});
+        this.guideLines = new guidelines({paper: this.paper});
+        this.distanceLines = new distancelines({graph: this.graph, paper: this.paper});
 
     },
 
@@ -136,7 +136,7 @@ var Rappid = Backbone.Router.extend({
          * Create instance of group.
          * @author: Maximilian Göke
          */
-        this.group = new htwgGroup();
+        this.group = new HtwgGroup();
 
         this.selection = new Backbone.Collection;
 
@@ -144,7 +144,12 @@ var Rappid = Backbone.Router.extend({
          * use own selectionView instead of default
          * @author: Maximilian Göke
          */
-        this.selectionView = new ExtendedSelectionView({paper: this.paper, graph: this.graph, model: this.selection, group: this.group});
+        this.selectionView = new ExtendedSelectionView({
+            paper: this.paper,
+            graph: this.graph,
+            model: this.selection,
+            group: this.group
+        });
 
 
         // Initiate selecting when the user grabs the blank area of the paper while the Shift key is pressed.
@@ -163,24 +168,25 @@ var Rappid = Backbone.Router.extend({
          * behaviour when a group of a elemt get slected.
          * @author: Maximilian Göke
          */
-        this.paper.on('cell:pointerdown', function(cellView, evt) {
-            if(evt.shiftKey) {
+        this.paper.on('cell:pointerdown', function (cellView, evt) {
+            if (evt.shiftKey) {
                 try {
                     this.halo.remove();
                     this.freetransform.remove();
-                } catch(TypeError) {}
+                } catch (TypeError) {
+                }
                 return;
             }
             // Select an element if CTRL/Meta key is pressed while the element is clicked.
             if ((evt.ctrlKey || evt.metaKey) && !(cellView.model instanceof joint.dia.Link)) {
                 //remove halo and transform and create a selection box
-                if(this.selection.length == 1 && this.halo !== undefined) {
+                if (this.selection.length == 1 && this.halo !== undefined) {
                     this.halo.remove();
                     this.freetransform.remove();
                     this.selectionView.createSelectionBox(this.paper.findViewByModel(this.selection.first()));
                 }
                 // select single element or complete group
-                if(this.group.findGroupFromElement(cellView.model.get('id')) === undefined) {
+                if (this.group.findGroupFromElement(cellView.model.get('id')) === undefined) {
                     this.selectElement(cellView);
                 } else {
                     this.selectCompleteGroup(cellView.model.get('id'));
@@ -192,7 +198,8 @@ var Rappid = Backbone.Router.extend({
                 try {
                     this.halo.remove();
                     this.freetransform.remove();
-                } catch(TypeError) {} finally {
+                } catch (TypeError) {
+                } finally {
                     this.selectionView.cancelSelection();
                     this.selectCompleteGroup(cellView.model.get('id'));
                 }
@@ -204,14 +211,14 @@ var Rappid = Backbone.Router.extend({
          * gets deseleceted.
          * @author: Maximilian Göke
          */
-        this.selectionView.on('selection-box:pointerdown', function(evt) {
+        this.selectionView.on('selection-box:pointerdown', function (evt) {
             // Unselect an element if the CTRL/Meta key is pressed while a selected element is clicked.
             if (evt.ctrlKey || evt.metaKey) {
                 var elementID = $(evt.target).data('model');
                 var groupID = this.group.findGroupFromElement(elementID);
 
                 // deselect single element or complete group
-                if( groupID === undefined) {
+                if (groupID === undefined) {
                     this.deselectElement(elementID);
                 } else {
                     this.deselectCompleteGroup(groupID);
@@ -307,18 +314,22 @@ var Rappid = Backbone.Router.extend({
             this.createInspector(this.paper.findViewByModel(mEnum.getMEnumContainer()));
         }, this);
 
-        this.paper.on('cell:pointerup', function(cellView, evt) {
+        this.paper.on('cell:pointerup', function (cellView, evt) {
 
 
-            if(this.selection.length > 0) return;
+            if (this.selection.length > 0) return;
 
             if (cellView.model instanceof joint.dia.Link || this.selection.contains(cellView.model)) return;
 
             // In order to display halo link magnets on top of the freetransform div we have to create the
             // freetransform first. This is necessary for IE9+ where pointer-events don't work and we wouldn't
             // be able to access magnets hidden behind the div.
-            this.freetransform = new joint.ui.FreeTransform({ graph: this.graph, paper: this.paper, cell: cellView.model });
-            this.halo = new joint.ui.Halo({ graph: this.graph, paper: this.paper, cellView: cellView });
+            this.freetransform = new joint.ui.FreeTransform({
+                graph: this.graph,
+                paper: this.paper,
+                cell: cellView.model
+            });
+            this.halo = new joint.ui.Halo({graph: this.graph, paper: this.paper, cellView: cellView});
 
             this.freetransform.render();
             this.halo.render();
@@ -482,8 +493,12 @@ var Rappid = Backbone.Router.extend({
          * buttons won't work after updating jointjs.
          * @author: Maximilian Göke
          */
-        $('#btn-to-front').on('mousedown', _.bind(function(evt) { this.setPositionOfSelected('toFront'); }, this));
-        $('#btn-to-back').on('mousedown', _.bind(function(evt) { this.setPositionOfSelected('toBack'); }, this));
+        $('#btn-to-front').on('mousedown', _.bind(function (evt) {
+            this.setPositionOfSelected('toFront');
+        }, this));
+        $('#btn-to-back').on('mousedown', _.bind(function (evt) {
+            this.setPositionOfSelected('toBack');
+        }, this));
 
 
         $('#input-gridsize').on('change', _.bind(function (evt) {
@@ -496,27 +511,27 @@ var Rappid = Backbone.Router.extend({
          * Added to update the zoom percentage that is displayes in the toolbar.
          * @author: Maximilian Göke
          */
-        this.paper.on('scale', function(scale) {
-            $('#zoom-percentage').text(Math.round(scale * 100)+'%');
+        this.paper.on('scale', function (scale) {
+            $('#zoom-percentage').text(Math.round(scale * 100) + '%');
         }, this);
 
         /*
          * Added to change between distancelines and guidelines.
          * @author: Maximilian Göke
          */
-        $('#guidelines-distancelines').on('change', _.bind(function(evt) {
+        $('#guidelines-distancelines').on('change', _.bind(function (evt) {
             // update #lines-distance and lines-active
             var lines = getSelectedLines(this);
-            $('#lines-distance option[value='+ lines.options.distance +']').prop('selected', true);
+            $('#lines-distance option[value=' + lines.options.distance + ']').prop('selected', true);
             $('#lines-active').prop('checked', lines.options.active);
-            $('#lines-distance').prop('disabled', lines.options.active? false : 'disabled');
+            $('#lines-distance').prop('disabled', lines.options.active ? false : 'disabled');
         }, this));
 
         /*
          * Added to change the glue distance from distancelines or guidelines.
          * @author: Maximilian Göke
          */
-        $('#lines-distance').on('change', _.bind(function(evt) {
+        $('#lines-distance').on('change', _.bind(function (evt) {
             getSelectedLines(this).options.distance = parseInt($($('#lines-distance option:selected')[0]).text());
         }, this));
 
@@ -524,8 +539,8 @@ var Rappid = Backbone.Router.extend({
          * Added to activate or deactivate distancelines or guidelines.
          * @author: Maximilian Göke
          */
-        $('#lines-active').on('change', _.bind(function(evt) {
-            if($('#lines-active').prop('checked')) {
+        $('#lines-active').on('change', _.bind(function (evt) {
+            if ($('#lines-active').prop('checked')) {
                 getSelectedLines(this).start();
                 $('#lines-distance').prop('disabled', false);
             } else {
@@ -566,7 +581,7 @@ var Rappid = Backbone.Router.extend({
          * @author: Maximilian Göke
          */
         function getSelectedLines(context) {
-            if($($('#guidelines-distancelines option:selected')[0]).val() == 'distancelines') {
+            if ($($('#guidelines-distancelines option:selected')[0]).val() == 'distancelines') {
                 return context.distanceLines;
             }
             else {
@@ -714,18 +729,18 @@ var Rappid = Backbone.Router.extend({
     // Functions between customization start and end are created
     // by Maximilian Göke
     /* zooms stencil objects. */
-    zoomStencilElementsOnDrop: function() {
-        this.graph.on('add', function(cell) {
+    zoomStencilElementsOnDrop: function () {
+        this.graph.on('add', function (cell) {
             var type = cell.get('type');
-            switch(type) {
+            switch (type) {
                 case 'wireframe.SmartPhone':
-                    cell.set('size', {width:300, height: 600});
+                    cell.set('size', {width: 300, height: 600});
                     break;
                 case 'wireframe.ProgramPanel':
-                    cell.set('size', {width:276, height: 50});
+                    cell.set('size', {width: 276, height: 50});
                     break;
                 case 'wireframe.Statusbar':
-                    cell.set('size', {width:276, height: 30});
+                    cell.set('size', {width: 276, height: 30});
                     break;
                 default:
                     break;
@@ -734,44 +749,44 @@ var Rappid = Backbone.Router.extend({
     },
 
     /* Selects a complete group. */
-    selectCompleteGroup: function(elementID) {
+    selectCompleteGroup: function (elementID) {
         // find group id
         var groupID = this.group.findGroupFromElement(elementID);
 
         // find all elements from group and select them
-        if(groupID !== undefined) {
+        if (groupID !== undefined) {
             var elementIDs = this.group.getElementIDsFromGroup(groupID);
-            elementIDs.forEach(function(id) {
+            elementIDs.forEach(function (id) {
                 this.selectElement(this.paper.findViewByModel(this.graph.getCell(id)));
             }, this);
         }
     },
 
     /* Selects a single Element */
-    selectElement: function(view) {
+    selectElement: function (view) {
         this.selection.add(view.model);
         this.selectionView.createSelectionBox(view);
     },
 
     /* Deselects a complete group */
-    deselectCompleteGroup: function(groupID) {
+    deselectCompleteGroup: function (groupID) {
         // find all elements from group and deselect them
         var elementIDs = this.group.getElementIDsFromGroup(groupID);
-        elementIDs.forEach( function(id) {
+        elementIDs.forEach(function (id) {
             this.deselectElement(id);
         }, this);
     },
 
     /* Deselects a single element. */
-    deselectElement: function(elementID) {
+    deselectElement: function (elementID) {
         var cell = this.selection.get(elementID);
         this.selection.reset(this.selection.without(cell));
         this.selectionView.destroySelectionBox(this.paper.findViewByModel(cell));
     },
 
     /* Handles the toFront/toBack functionality */
-    setPositionOfSelected: function(functionName) {
-        this.selection.each(function(cell) {
+    setPositionOfSelected: function (functionName) {
+        this.selection.each(function (cell) {
             cell.attributes[functionName]();
             this.halo.remove();
             this.freetransform.remove();

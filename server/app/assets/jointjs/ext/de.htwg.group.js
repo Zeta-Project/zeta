@@ -7,12 +7,12 @@
 
 
 /* Constructor */
-function htwgGroup() {
+function HtwgGroup() {
   this.groupedElements = {};
   this.groups = {};
 }
 
-htwgGroup.prototype = {
+HtwgGroup.prototype = {
 
   /* Finds group from element which has the highest level */
   findGroupFromElement: function(elementID) {

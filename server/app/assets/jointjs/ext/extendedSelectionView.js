@@ -154,7 +154,6 @@ ExtendedSelectionView = joint.ui.SelectionView.extend({
                 var top = parseInt(this.$el.css('top'), 10);
 
                 this.$el.css({
-
                     left: dx < 0 ? this._offsetX + dx : left,
                     top: dy < 0 ? this._offsetY + dy : top,
                     width: Math.abs(dx),
@@ -163,7 +162,6 @@ ExtendedSelectionView = joint.ui.SelectionView.extend({
                 break;
 
             case 'translating':
-
                 var snappedClientCoords = this.options.paper.snapToGrid(g.point(evt.clientX, evt.clientY));
                 var snappedClientX = snappedClientCoords.x;
                 var snappedClientY = snappedClientCoords.y;
