@@ -18,13 +18,14 @@ object MetamodelGraphDiff {
    * @return Ein neues MetaModelData-Objekt mit korrigiertem Graph.
    */
   def fixMetaModel(metaModelData: MetaModelData): MetaModelData = {
-    val metaModel = Json.parse(metaModelData.data).as[JsObject]
+    val metaModel = Json.parse(metaModelData.data).as[Seq[JsObject]]
     var graph = Json.parse(metaModelData.graph).as[JsObject]
 
     def fixAttributes() = {
 
-      metaModel.keys.foreach { elementKey =>
-        graphOnlyAttributes(elementKey).foreach(attribute => graph = removeFromGraph(elementKey, attribute))
+      metaModel.foreach { element =>
+        val elementKey = (element \ "name").as[String]
+        graphOnlyAttributes((element \ "name").as[String]).foreach(attribute => graph = removeFromGraph(elementKey, attribute))
         metaModelOnlyAttributes(elementKey).foreach(attribute => graph = addToGraph(elementKey, attribute))
         changedAttributes(elementKey).foreach { a =>
           graph = removeFromGraph(elementKey, a._1)
@@ -54,7 +55,7 @@ object MetamodelGraphDiff {
 
       def graphCell(elementKey: String): Option[JsObject] = graphCells.find(cell => (cell \ "name").as[String] == elementKey)
 
-      def metaModelCell(elementKey: String): Option[JsObject] = (metaModel \ elementKey).asOpt[JsObject]
+      def metaModelCell(elementKey: String): Option[JsObject] = metaModel.find(element => (element \ "name").as[String] == elementKey)
 
       def metaModelAttributes(elementKey: String): Set[JsObject] = {
         metaModelCell(elementKey) match {
