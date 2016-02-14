@@ -2,7 +2,7 @@ package controllers.webpage
 
 import javax.inject.Inject
 
-import models.metaModel.{MetaModel, MetaModelDatabase}
+import models.metaModel.{MetaModel2, MetaModelDatabase}
 import play.api.Logger
 import util.definitions.UserEnvironment
 
@@ -19,7 +19,7 @@ class WebpageController @Inject()(override implicit val env: UserEnvironment) ex
 
   def diagramsOverview(uuid: String) = SecuredAction { implicit request =>
     val metaModels = Await.result(MetaModelDatabase.modelsOfUser(request.user.uuid.toString), 30 seconds)
-    var metaModel: Option[MetaModel] = None
+    var metaModel: Option[MetaModel2] = None
 
     if (uuid != null) {
       if (Await.result(MetaModelDatabase.modelExists(uuid), 30 seconds)) {

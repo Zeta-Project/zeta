@@ -3,94 +3,113 @@ package controllers.restApi
 import javax.inject.Inject
 
 import dao.MetaModelDao
-import models.metaModel.mCore.MetaModelDefinition
-import models.metaModel.mCore.MCoreReads._
-import models.metaModel.mCore.MCoreWrites._
-import models.metaModel.{MetaModel, MetaModelDatabase}
+import models.metaModel._
+import models.metaModel.MetaModel._
 import play.api.libs.json.{JsError, Json}
 import play.api.mvc.{Action, BodyParsers}
 import util.definitions.UserEnvironment
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
 
 class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
-  private def getModel(modelId: String): Option[MetaModel] =
-    Await.result(MetaModelDatabase.loadModel(modelId), Duration.create(5, "seconds"))
-
-  def getmClasses(modelId: String) = SecuredAction { implicit request =>
-    getModel(modelId) match {
-      case Some(model) =>
-        /* Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
-           .classes.keys.mkString("", ", ", ""))*/
-        Ok("")
-      case _ => BadRequest("Model For Id Does Not Exist!")
-    }
-  }
-
-  def getmRefs(modelId: String) = SecuredAction { implicit request =>
-    getModel(modelId) match {
-      case Some(model) =>
-        /*Ok(MetamodelBuilder().fromJson(Json.parse(model.model).asInstanceOf[JsObject])
-          .references.keys.mkString("", ", ", ""))*/
-        Ok("")
-      case _ => BadRequest("Model For Id Does Not Exist!")
-    }
-  }
-
-
-  def getMetaModel(metamodelId: String) = Action(BodyParsers.parse.json) { request =>
-    Ok("ok")
-    /*
-    request.body.asJson.map { json =>
-      json.validate[Test].map {
-        case (name, age) => Ok("Hello " + name + ", you're " + age)
-      }.recoverTotal {
-        e => BadRequest("Detected error:" + JsError.toFlatJson(e))
-      }
-    }.getOrElse {
-      BadRequest("Expecting Json data")
-    }
-    */
-  }
-
-  def getmRef(mrefId: String) = SecuredAction { implicit request =>
-    BadRequest("currently not implemented")
-  }
-
-  def getmClass(mclassId: String) = SecuredAction { implicit request =>
-    BadRequest("currently not implemented")
-  }
-
-  // just for testing purposes, creates an mcore metamodel based on incoming json
   def insert = Action(BodyParsers.parse.json) { request =>
-    val result = request.body.validate[MetaModelDefinition]
+    val result = request.body.validate[MetaModel]
     result.fold(
       errors => {
-        BadRequest(Json.obj("status" ->"KO", "message" -> JsError.toFlatJson(errors)))
+        BadRequest(JsError.toFlatJson(errors))
       },
-      mm => {
-        //Ok(Json.obj("status" ->"OK", "content" -> Json.toJson(mm)))
-        MetaModelDao.saveMetaModelDefinition(mm)
-        Ok(Json.toJson(mm))
+      metaModel => {
+        MetaModelDao.insert(metaModel)
+        Created
       }
     )
   }
 
-  def getJson(id: String) = Action.async { implicit request =>
-    MetaModelDao.getMetaModelDefinitionJson(id).map {
+  // inserts whole metamodel structure (mcore, dsls..) just by receiving mcore without dsls, not a fan of this..
+  def alternativeInsert = Action(BodyParsers.parse.json) { request =>
+    val result = request.body.validate[Definition]
+    result.fold(
+      errors => {
+        BadRequest(JsError.toFlatJson(errors))
+      },
+      definition => {
+        val metaModel = MetaModel(None, "", definition, Style(""), Shape(""), Diagram(""))
+        MetaModelDao.insert(metaModel)
+        Created
+      }
+    )
+  }
+
+  def getMetaModel(id: String) = Action.async { implicit request =>
+    MetaModelDao.get(id).map {
+      case Some(metaModel) => Ok(Json.toJson(metaModel))
+      case None => NotFound
+    }
+  }
+
+  // "coast-to-coast"
+  def getMetaModelAsJson(id: String) = Action.async { implicit request =>
+    MetaModelDao.getAsJson(id).map {
       case Some(json) => Ok(json)
       case None => NotFound
     }
   }
 
-  def get(id: String) = Action.async { implicit request =>
-    MetaModelDao.getMetaModelDefinition(id).map {
-      case Some(mmd) => Ok(mmd.toString)
+  def getMetaModelDefinition(id: String) = Action.async { implicit request =>
+    MetaModelDao.getDefinition(id).map {
+      case Some(definition) => Ok(Json.toJson(definition))
       case None => NotFound
     }
   }
+
+  def getStyle(id: String) = Action.async { implicit request =>
+    MetaModelDao.getStyle(id).map {
+      case Some(style) => Ok(Json.toJson(style))
+      case None => NotFound
+    }
+  }
+
+  def getShape(id: String) = Action.async { implicit request =>
+    MetaModelDao.getShape(id).map {
+      case Some(shape) => Ok(Json.toJson(shape))
+      case None => NotFound
+    }
+  }
+
+  def getDiagram(id: String) = Action.async { implicit request =>
+    MetaModelDao.getDiagram(id).map {
+      case Some(diagram) => Ok(Json.toJson(diagram))
+      case None => NotFound
+    }
+  }
+
+  def getMClasses(id: String) = Action.async { implicit request =>
+    MetaModelDao.getMClasses(id).map {
+      case Some(definition) => Ok(Json.toJson(definition))
+      case None => NotFound
+    }
+  }
+
+  def getMReferences(id: String) = Action.async { implicit request =>
+    MetaModelDao.getMReferences(id).map {
+      case Some(definition) => Ok(Json.toJson(definition))
+      case None => NotFound
+    }
+  }
+
+  def getMClass(id: String, name: String) = Action.async { implicit request =>
+    MetaModelDao.getMClass(id, name).map {
+      case Some(definition) => Ok(Json.toJson(definition))
+      case None => NotFound
+    }
+  }
+
+  def getMReference(id: String, name: String) = Action.async { implicit request =>
+    MetaModelDao.getMReference(id, name).map {
+      case Some(definition) => Ok(Json.toJson(definition))
+      case None => NotFound
+    }
+  }
+
 
 }

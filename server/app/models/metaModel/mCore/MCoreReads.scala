@@ -181,11 +181,6 @@ object MCoreReads {
 
   }
 
-  implicit val metaModelDefinitionReads: Reads[MetaModelDefinition] = (
-    (__ \ "name").read[String] and
-      (__ \ "data").read[Map[String, MObject]]
-    ) (MetaModelDefinition.apply _)
-
   val mTypeError = ValidationError("Unknown mType at top level: only MClass, MReference and MEnum allowed")
   val boundsError = ValidationError("invalid lower and/or upper bound")
   val typeDefaultError = ValidationError("type definition and default value don't match")

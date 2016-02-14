@@ -1,65 +1,68 @@
 ### Webpage
-GET         /                                                 @controllers.webpage.WebpageController.index
-GET         /overview                                         @controllers.webpage.WebpageController.diagramsOverview(uuid: String = null)
-GET         /overview/:uuid                                   @controllers.webpage.WebpageController.diagramsOverview(uuid: String)
+GET         /                                                                 @controllers.webpage.WebpageController.index
+GET         /overview                                                         @controllers.webpage.WebpageController.diagramsOverview(uuid: String = null)
+GET         /overview/:uuid                                                   @controllers.webpage.WebpageController.diagramsOverview(uuid: String)
 
 
 ### Profile management
-GET         /profile                                          @controllers.webpage.ProfileController.overview
-GET         /profile/edit                                     @controllers.webpage.ProfileController.edit
-POST        /profile/edit                                     @controllers.webpage.ProfileController.saveChanges
+GET         /profile                                                          @controllers.webpage.ProfileController.overview
+GET         /profile/edit                                                     @controllers.webpage.ProfileController.edit
+POST        /profile/edit                                                     @controllers.webpage.ProfileController.saveChanges
 
 
 ### Metamodel
-GET         /metamodel/new                                    @controllers.MetaModelController.newMetaModel
-GET         /metamodel/editor/:metaModelUuid                  @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
-POST        /metamodel/save                                   @controllers.MetaModelController.saveMetaModel
-GET         /metamodel/delete/:metaModelUuid                  @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
-GET         /metamodel/socket/:metaModelUuid                  @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
+GET         /metamodel/new                                                    @controllers.MetaModelController.newMetaModel
+GET         /metamodel/editor/:metaModelUuid                                  @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
+POST        /metamodel/save                                                   @controllers.MetaModelController.saveMetaModel
+GET         /metamodel/delete/:metaModelUuid                                  @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
+GET         /metamodel/socket/:metaModelUuid                                  @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
 
 
 ### MetaModel REST API
-GET         /metamodels/:metamodelId                          @controllers.restApi.MetaModelRestApi.getMetaModel(metamodelId: String)
-GET         /metamodels/:metamodelId/mclasses                 @controllers.restApi.MetaModelRestApi.getmClasses(metamodelId: String)
-GET         /metamodels/mclasses/:mclassId                    @controllers.restApi.MetaModelRestApi.getmClass(mclassId: String)
-GET         /metamodels/:metamodelId/mrefs                    @controllers.restApi.MetaModelRestApi.getmRefs(metamodelId: String)
-GET         /metamodels/mrefs/:mrefId                         @controllers.restApi.MetaModelRestApi.getmRef(mrefId: String)
-POST        /metamodels/mcore                                 @controllers.restApi.MetaModelRestApi.insert
-GET         /metamodels/mcore/json/:id                        @controllers.restApi.MetaModelRestApi.getJson(id)
-GET         /metamodels/mcore/model/:id                       @controllers.restApi.MetaModelRestApi.get(id)
+POST        /metamodels                                                       @controllers.restApi.MetaModelRestApi.insert
+GET         /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.getMetaModel(metaModelId: String)
+POST        /metamodels_                                                      @controllers.restApi.MetaModelRestApi.alternativeInsert
+GET         /metamodels/:metaModelId/mcore                                    @controllers.restApi.MetaModelRestApi.getMetaModelDefinition(metaModelId: String)
+GET         /metamodels/:metaModelId/mcore/mclasses                           @controllers.restApi.MetaModelRestApi.getMClasses(metaModelId: String)
+GET         /metamodels/:metaModelId/mcore/mreferences                        @controllers.restApi.MetaModelRestApi.getMReferences(metaModelId: String)
+GET         /metamodels/:metaModelId/mcore/mclasses/:mClassName               @controllers.restApi.MetaModelRestApi.getMClass(metaModelId: String, mClassName: String)
+GET         /metamodels/:metaModelId/mcore/mreferences/:mReferenceName        @controllers.restApi.MetaModelRestApi.getMReference(metaModelId: String, mReferenceName: String)
+GET         /metamodels/:metaModelId/style                                    @controllers.restApi.MetaModelRestApi.getStyle(metaModelId: String)
+GET         /metamodels/:metaModelId/shape                                    @controllers.restApi.MetaModelRestApi.getShape(metaModelId: String)
+GET         /metamodels/:metaModelId/diagram                                  @controllers.restApi.MetaModelRestApi.getDiagram(metaModelId: String)
 
 ### Model
-GET         /model/new/:metaModelUuid                         @controllers.ModelController.newModel(metaModelUuid: String)
-GET         /model/editor/:metaModelUuid/:modelUuid           @controllers.ModelController.modelEditor(metaModelUuid: String, modelUuid: String)
-GET         /model/socket/:graphType/:instanceId              @controllers.ModelController.modelSocket(instanceId:String, graphType:String)
-GET         /model/validator                                  @controllers.ModelController.modelValidator
+GET         /model/new/:metaModelUuid                                         @controllers.ModelController.newModel(metaModelUuid: String)
+GET         /model/editor/:metaModelUuid/:modelUuid                           @controllers.ModelController.modelEditor(metaModelUuid: String, modelUuid: String)
+GET         /model/socket/:graphType/:instanceId                              @controllers.ModelController.modelSocket(instanceId:String, graphType:String)
+GET         /model/validator                                                  @controllers.ModelController.modelValidator
 
 
 ### Model REST API
-GET         /models/:modelId                                  @controllers.restApi.ModelRestApi.getModel(modelId: String)
-GET         /models/:modelId/nodes                            @controllers.restApi.ModelRestApi.getNodes(modelId: String)
-GET         /models/:modelId/nodes/:nodeId                    @controllers.restApi.ModelRestApi.getNode(modelId: String, nodeId: String)
-GET         /models/:modelId/edges                            @controllers.restApi.ModelRestApi.getEdges(modelId: String)
-GET         /models/:modelId/edges/:edgeId                    @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeId: String)
+GET         /models/:modelId                                                  @controllers.restApi.ModelRestApi.getModel(modelId: String)
+GET         /models/:modelId/nodes                                            @controllers.restApi.ModelRestApi.getNodes(modelId: String)
+GET         /models/:modelId/nodes/:nodeId                                    @controllers.restApi.ModelRestApi.getNode(modelId: String, nodeId: String)
+GET         /models/:modelId/edges                                            @controllers.restApi.ModelRestApi.getEdges(modelId: String)
+GET         /models/:modelId/edges/:edgeId                                    @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeId: String)
 
 
 ### Code Editor
-GET         /codeeditor/editor/:metaModelUuid/:dslType        @controllers.CodeEditorController.codeEditor(metaModelUuid: String, dslType: String)
-GET         /codeeditor/socket/:metaModelUuid/:dslType        @controllers.CodeEditorController.codeSocket(metaModelUuid: String, dslType: String)
+GET         /codeeditor/editor/:metaModelUuid/:dslType                        @controllers.CodeEditorController.codeEditor(metaModelUuid: String, dslType: String)
+GET         /codeeditor/socket/:metaModelUuid/:dslType                        @controllers.CodeEditorController.codeSocket(metaModelUuid: String, dslType: String)
 
 
 ### oAuth 2
-POST        /oauth/accessToken                                @controllers.oAuth.OAuthController.accessToken
-POST        /oauth/accessTokenLocal                           @controllers.oAuth.OAuthLocalController.accessToken
+POST        /oauth/accessToken                                                @controllers.oAuth.OAuthController.accessToken
+POST        /oauth/accessTokenLocal                                           @controllers.oAuth.OAuthLocalController.accessToken
 # temp. route for testing purposes
-GET         /oauth/info                                       @controllers.oAuth.OAuthController.info
-GET         /oauth/setup                                      @controllers.oAuth.OAuthController.setup
+GET         /oauth/info                                                       @controllers.oAuth.OAuthController.info
+GET         /oauth/setup                                                      @controllers.oAuth.OAuthController.setup
 
 
 ### Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                                     controllers.Assets.at(path="/public", file)
+GET         /assets/*file                                                     controllers.Assets.at(path="/public", file)
 
 
 ### include securesocial routes
-->          /auth                                             securesocial.Routes
+->          /auth                                                             securesocial.Routes
 

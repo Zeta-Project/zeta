@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 /** Represents a metamodel */
 
-case class MetaModel(uuid: String, userUuid: String, metaModel: MetaModelData, style: MetaModelStyle, shape: MetaModelShape, diagram: MetaModelDiagram)
+case class MetaModel2(uuid: String, userUuid: String, metaModel: MetaModelData, style: MetaModelStyle, shape: MetaModelShape, diagram: MetaModelDiagram)
 
 case class MetaModelData(name: String, data: String, graph: String)
 
@@ -23,7 +23,7 @@ case class MetaModelShape(code: String = "")
 
 case class MetaModelDiagram(code: String = "")
 
-trait MObject {
+trait MObject2 {
   def name: String
 }
 
@@ -40,17 +40,17 @@ object Types extends Enumeration {
   val Int, String, Double, Boolean, MEnums = Value
 }
 
-case class MetaModelDefinition(mClasses: List[MClass], mReferences: List[MReference], mEnums: List[MEnums])
+case class MetaModelDefinition(mClasses: List[MClass2], mReferences: List[MReference2], mEnums: List[MEnums2])
 
-case class MClass(name: String, abstractness: Boolean, superTypes: List[MClass], inputs: List[MLinkDef], outputs: List[MLinkDef], attributes: List[MAttributes]) extends MObject with MSum
+case class MClass2(name: String, abstractness: Boolean, superTypes: List[MClass2], inputs: List[MLinkDef2], outputs: List[MLinkDef2], attributes: List[MAttributes2]) extends MObject2 with MSum
 
-case class MReference(name: String, sourceDeletionDeletesTarget: Boolean, targetDeletionDeletesSource: Boolean, source: List[MLinkDef], target: List[MLinkDef]) extends MObject with MSum
+case class MReference2(name: String, sourceDeletionDeletesTarget: Boolean, targetDeletionDeletesSource: Boolean, source: List[MLinkDef2], target: List[MLinkDef2]) extends MObject2 with MSum
 
-case class MAttributes(name: String, globalUnique: Boolean, localUnique: Boolean, default: Types, constant: Boolean, singleAssignment: Boolean, expression: String, mtype: Types, ordered: Boolean, transient: Boolean, upperBound: Int, lowerBound: Int) extends MObject with MBounds
+case class MAttributes2(name: String, globalUnique: Boolean, localUnique: Boolean, default: Types, constant: Boolean, singleAssignment: Boolean, expression: String, mtype: Types, ordered: Boolean, transient: Boolean, upperBound: Int, lowerBound: Int) extends MObject2 with MBounds
 
-case class MLinkDef(mtype: MSum, deleteIfLower: Boolean, upperBound: Int, lowerBound: Int) extends MBounds
+case class MLinkDef2(mtype: MSum, deleteIfLower: Boolean, upperBound: Int, lowerBound: Int) extends MBounds
 
-case class MEnums(name: String, values: List[Types]) extends MObject
+case class MEnums2(name: String, values: List[Types]) extends MObject2
 
 object MetaModelDatabase {
   val log = Logger(this getClass() getName())
@@ -66,18 +66,18 @@ object MetaModelDatabase {
   ctx.registerClassLoader(Play.classloader(Play.current))
 
   /** upserts the metamodel in the database */
-  def saveModel(model: MetaModel) = Future(
+  def saveModel(model: MetaModel2) = Future(
     coll.update(
       MongoDBObject("uuid" -> model.uuid),
-      grater[MetaModel].asDBObject(model),
+      grater[MetaModel2].asDBObject(model),
       upsert = true,
       concern = WriteConcern.Acknowledged)
   )
 
   /** loads Model with uuid */
-  def loadModel(uuid: String): Future[Option[MetaModel]] = Future {
+  def loadModel(uuid: String): Future[Option[MetaModel2]] = Future {
     coll.find(MongoDBObject("uuid" -> uuid)).next() match {
-      case x: DBObject => Some(grater[MetaModel].asObject(new MongoDBObject(x)))
+      case x: DBObject => Some(grater[MetaModel2].asObject(new MongoDBObject(x)))
       case _ => None
     }
   }
@@ -90,10 +90,10 @@ object MetaModelDatabase {
   }
 
   /** returns all models created by [[models.SecureSocialUser]] with uuid ==  userUuid */
-  def modelsOfUser(userUuid: String): Future[List[MetaModel]] = Future {
+  def modelsOfUser(userUuid: String): Future[List[MetaModel2]] = Future {
     coll
       .find(MongoDBObject("userUuid" -> userUuid))
-      .map(x => grater[MetaModel].asObject(new MongoDBObject(x))).toList
+      .map(x => grater[MetaModel2].asObject(new MongoDBObject(x))).toList
   }
 
   def deleteModel(uuid: String) = Future {

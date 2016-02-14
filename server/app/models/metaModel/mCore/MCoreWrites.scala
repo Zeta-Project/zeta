@@ -7,23 +7,14 @@ import scala.collection.immutable._
 
 object MCoreWrites {
 
-  implicit val metaModelDefinitionWrites = new OWrites[MetaModelDefinition] {
-
-    implicit val mObjectWrites = new Writes[MObject] {
-      def writes(o: MObject): JsValue = {
-        o match {
-          case m: MClass => Json.toJson(m)(mClassWrites)
-          case m: MReference => Json.toJson(m)(mReferenceWrites)
-          case m: MEnum => Json.toJson(m)(mEnumWrites)
-        }
+  implicit val mObjectWrites = new Writes[MObject] {
+    def writes(o: MObject): JsValue = {
+      o match {
+        case m: MClass => Json.toJson(m)(mClassWrites)
+        case m: MReference => Json.toJson(m)(mReferenceWrites)
+        case m: MEnum => Json.toJson(m)(mEnumWrites)
+        case m: MAttribute => Json.toJson(m)(mAttributeWrites)
       }
-    }
-
-    def writes(m: MetaModelDefinition): JsObject = {
-      Json.obj(
-        "name" -> m.name,
-        "data" -> Json.toJson(m.mObjects.values.toList)
-      )
     }
   }
 

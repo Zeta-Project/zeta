@@ -6,12 +6,6 @@ trait ClassOrRef {
   val name: String
 }
 
-case class MetaModelDefinition(name: String, mObjects: Map[String, MObject]) {
-  //  lazy val mClasses = mObjects.collect { case c: MClass => c }
-  //  lazy val mReferences = mObjects.collect { case r: MReference => r }
-  //  lazy val mEnums = mObjects.collect { case e: MEnum => e }
-}
-
 trait MObject {
   val name: String
 }

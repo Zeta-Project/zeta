@@ -28,7 +28,7 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
   }
 
   def metaModelEditor(metaModelUuid: String) = SecuredAction { implicit request =>
-    var metaModel: Option[MetaModel] = None
+    var metaModel: Option[MetaModel2] = None
     if (Await.result(MetaModelDatabase.modelExists(metaModelUuid), 30 seconds)) {
       val tmpMetaModel = Await.result(MetaModelDatabase.loadModel(metaModelUuid), 30 seconds)
       if (tmpMetaModel.get.userUuid == request.user.uuid.toString) {
@@ -57,7 +57,7 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
               MetaModelDatabase.updateMetaModelData(uuidStr, metaModelData)
             } else {
               // Create a new Meta Model
-              MetaModelDatabase.saveModel(new MetaModel(
+              MetaModelDatabase.saveModel(new MetaModel2(
                 uuid = uuidStr,
                 userUuid = request.user.uuid.toString,
                 metaModel = metaModelData,
