@@ -1,10 +1,10 @@
 package controllers.restApi
 
 import javax.inject.Inject
-
-import dao.MetaModelDao
+import dao.metaModel.MetaModelDaoImpl
 import models.metaModel._
 import models.metaModel.MetaModel._
+import models.metaModel.mCore.{MReference, MClass}
 import play.api.libs.json.{JsError, Json}
 import play.api.mvc.{Action, BodyParsers}
 import util.definitions.UserEnvironment
@@ -19,7 +19,7 @@ class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) ext
         BadRequest(JsError.toFlatJson(errors))
       },
       metaModel => {
-        MetaModelDao.insert(metaModel)
+        MetaModelDaoImpl.save(metaModel)
         Created
       }
     )
@@ -34,79 +34,101 @@ class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) ext
       },
       definition => {
         val metaModel = MetaModel(None, "", definition, Style(""), Shape(""), Diagram(""))
-        MetaModelDao.insert(metaModel)
+        MetaModelDaoImpl.save(metaModel)
         Created
       }
     )
   }
 
+  def deleteMetaModel(id: String) = Action.async { implicit request =>
+    MetaModelDaoImpl.deleteById(id).map { res =>
+      Ok(Json.toJson(res))
+    }
+  }
+
   def getMetaModel(id: String) = Action.async { implicit request =>
-    MetaModelDao.get(id).map {
+    MetaModelDaoImpl.findById(id).map {
       case Some(metaModel) => Ok(Json.toJson(metaModel))
       case None => NotFound
     }
   }
 
   // "coast-to-coast"
-  def getMetaModelAsJson(id: String) = Action.async { implicit request =>
-    MetaModelDao.getAsJson(id).map {
-      case Some(json) => Ok(json)
-      case None => NotFound
-    }
-  }
+  //  def getMetaModelAsJson(id: String) = Action.async { implicit request =>
+  //    MetaModelDaoImpl.getAsJson(id).map {
+  //      case Some(json) => Ok(json)
+  //      case None => NotFound
+  //    }
+  //  }
 
   def getMetaModelDefinition(id: String) = Action.async { implicit request =>
-    MetaModelDao.getDefinition(id).map {
-      case Some(definition) => Ok(Json.toJson(definition))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => Ok(Json.toJson(metaModel.definition))
       case None => NotFound
     }
   }
 
   def getStyle(id: String) = Action.async { implicit request =>
-    MetaModelDao.getStyle(id).map {
-      case Some(style) => Ok(Json.toJson(style))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => Ok(Json.toJson(metaModel.style))
       case None => NotFound
     }
   }
 
   def getShape(id: String) = Action.async { implicit request =>
-    MetaModelDao.getShape(id).map {
-      case Some(shape) => Ok(Json.toJson(shape))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => Ok(Json.toJson(metaModel.shape))
       case None => NotFound
     }
   }
 
   def getDiagram(id: String) = Action.async { implicit request =>
-    MetaModelDao.getDiagram(id).map {
-      case Some(diagram) => Ok(Json.toJson(diagram))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => Ok(Json.toJson(metaModel.diagram))
       case None => NotFound
     }
   }
 
   def getMClasses(id: String) = Action.async { implicit request =>
-    MetaModelDao.getMClasses(id).map {
-      case Some(definition) => Ok(Json.toJson(definition))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => {
+        val d = metaModel.definition
+        val classesDef = d.copy(mObjects = d.mObjects.filter(t => t._2.isInstanceOf[MClass]))
+        Ok(Json.toJson(classesDef))
+      }
       case None => NotFound
     }
   }
 
   def getMReferences(id: String) = Action.async { implicit request =>
-    MetaModelDao.getMReferences(id).map {
-      case Some(definition) => Ok(Json.toJson(definition))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => {
+        val d = metaModel.definition
+        val refsDef = d.copy(mObjects = d.mObjects.filter(t => t._2.isInstanceOf[MReference]))
+        Ok(Json.toJson(refsDef))
+      }
       case None => NotFound
     }
   }
 
   def getMClass(id: String, name: String) = Action.async { implicit request =>
-    MetaModelDao.getMClass(id, name).map {
-      case Some(definition) => Ok(Json.toJson(definition))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => {
+        val d = metaModel.definition
+        val classDef = d.copy(mObjects = d.mObjects.filter(p => p._1 == name && p._2.isInstanceOf[MClass]))
+        Ok(Json.toJson(classDef))
+      }
       case None => NotFound
     }
   }
 
   def getMReference(id: String, name: String) = Action.async { implicit request =>
-    MetaModelDao.getMReference(id, name).map {
-      case Some(definition) => Ok(Json.toJson(definition))
+    MetaModelDaoImpl.findById(id).map {
+      case Some(metaModel) => {
+        val d = metaModel.definition
+        val refDef = d.copy(mObjects = d.mObjects.filter(p => p._1 == name && p._2.isInstanceOf[MReference]))
+        Ok(Json.toJson(refDef))
+      }
       case None => NotFound
     }
   }
