@@ -19,7 +19,9 @@ GET           /metamodel/socket/:metaModelUuid                                  
 
 
 ### MetaModel REST API
+GET           /metamodels                                                       @controllers.restApi.MetaModelRestApi.showForUser
 POST          /metamodels                                                       @controllers.restApi.MetaModelRestApi.insert
+PUT           /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.update(metaModelId: String)
 GET           /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.getMetaModel(metaModelId: String)
 DELETE        /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.deleteMetaModel(metaModelId: String)
 POST          /metamodels_                                                      @controllers.restApi.MetaModelRestApi.alternativeInsert

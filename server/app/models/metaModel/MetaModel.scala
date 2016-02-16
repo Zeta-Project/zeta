@@ -70,5 +70,10 @@ object MetaModel {
   implicit val metaModelWrites = Json.writes[MetaModel]
 }
 
+case class MetaModelShortInfo(id: String, name: String)
+object MetaModelShortInfo {
+  implicit val shortInfoWrites = Json.writes[MetaModelShortInfo]
+}
+
 
 

@@ -15,6 +15,8 @@ import scala.concurrent.Future
 
 
 trait MetaModelDao extends GenericMongoDao[MetaModel] with ReactiveMongoHelper {
+  def findIdsByUser(userId: String): Future[Seq[MetaModelShortInfo]]
+
   // "Coast to Coast" (read-only)
 }
 
@@ -24,6 +26,15 @@ object MetaModelDaoImpl extends MetaModelDao {
   def metaModels = collection("mmd_new")
 
   val idProjection = Json.obj("_id" -> 0)
+
+  override def findIdsByUser(userId: String): Future[Seq[MetaModelShortInfo]] = {
+    val query = Json.obj("userId" -> userId)
+    metaModels.find(query).cursor[MetaModel].collect[List]().map {
+      _.map { s =>
+        MetaModelShortInfo(s.id.get, s.definition.name)
+      }
+    }
+  }
 
   override def findById(id: String): Future[Option[MetaModel]] = {
     findOne(Json.obj("id" -> id))
@@ -43,12 +54,17 @@ object MetaModelDaoImpl extends MetaModelDao {
     }
   }
 
-  override def save(entity: MetaModel): Future[Result] = {
-    val modifier = Json.obj("$set" -> entity)
-    metaModels.update(Json.obj("id" -> entity.id), modifier, upsert = true).map {
-      res => wrapUpdateResult(res)
+  override def insert(entity: MetaModel): Future[Result] = {
+    metaModels.insert(entity).map {
+      res => wrapWriteResult(res)
     }
   }
 
+  override def update(entity: MetaModel): Future[Result] = {
+    val modifier = Json.obj("$set" -> entity)
+    metaModels.update(Json.obj("id" -> entity.id), modifier).map {
+      res => wrapUpdateResult(res)
+    }
+  }
 
 }

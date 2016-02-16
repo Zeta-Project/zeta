@@ -13,7 +13,8 @@ trait GenericMongoDao[T] {
   def findOne(query: JsObject): Future[Option[T]]
   def find(query: JsObject): Future[Seq[T]]
   def deleteById(id: String): Future[Result]
-  def save(entity: T): Future[Result]
+  def insert(entity: T): Future[Result]
+  def update(entity: T): Future[Result]
 }
 
 trait ReactiveMongoHelper {
