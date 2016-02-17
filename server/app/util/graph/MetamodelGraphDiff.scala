@@ -1,6 +1,6 @@
 package util.graph
 
-import models.metaModel.MetaModelData
+import models.metaModel.MetaModelData_2
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 import scala.collection.Set
@@ -17,7 +17,7 @@ object MetamodelGraphDiff {
    * @param metaModelData MetaModelData-Objekt, welches Graph und Data enthaelt.
    * @return Ein neues MetaModelData-Objekt mit korrigiertem Graph.
    */
-  def fixMetaModel(metaModelData: MetaModelData): MetaModelData = {
+  def fixMetaModel(metaModelData: MetaModelData_2): MetaModelData_2 = {
     val metaModel = Json.parse(metaModelData.data).as[JsObject]
     var graph = Json.parse(metaModelData.graph).as[JsObject]
 

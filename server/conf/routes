@@ -16,16 +16,18 @@ GET           /metamodel/editor/:metaModelUuid                                  
 POST          /metamodel/save                                                   @controllers.MetaModelController.saveMetaModel
 GET           /metamodel/delete/:metaModelUuid                                  @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
 GET           /metamodel/socket/:metaModelUuid                                  @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
-
+# temporary
+GET           /metamodel/dummy                                                  @controllers.MetaModelController.dummyInsert
 
 ### MetaModel REST API
 GET           /metamodels                                                       @controllers.restApi.MetaModelRestApi.showForUser
 POST          /metamodels                                                       @controllers.restApi.MetaModelRestApi.insert
 PUT           /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.update(metaModelId: String)
-GET           /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.getMetaModel(metaModelId: String)
-DELETE        /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.deleteMetaModel(metaModelId: String)
+GET           /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.get(metaModelId: String)
+DELETE        /metamodels/:metaModelId                                          @controllers.restApi.MetaModelRestApi.delete(metaModelId: String)
 POST          /metamodels_                                                      @controllers.restApi.MetaModelRestApi.alternativeInsert
-GET           /metamodels/:metaModelId/mcore                                    @controllers.restApi.MetaModelRestApi.getMetaModelDefinition(metaModelId: String)
+GET           /metamodels/:metaModelId/mcore                                    @controllers.restApi.MetaModelRestApi.getDefinition(metaModelId: String)
+PUT           /metamodels/:metaModelId/mcore                                    @controllers.restApi.MetaModelRestApi.updateDefinition(metaModelId: String)
 GET           /metamodels/:metaModelId/mcore/mclasses                           @controllers.restApi.MetaModelRestApi.getMClasses(metaModelId: String)
 GET           /metamodels/:metaModelId/mcore/mreferences                        @controllers.restApi.MetaModelRestApi.getMReferences(metaModelId: String)
 GET           /metamodels/:metaModelId/mcore/mclasses/:mClassName               @controllers.restApi.MetaModelRestApi.getMClass(metaModelId: String, mClassName: String)
@@ -33,6 +35,8 @@ GET           /metamodels/:metaModelId/mcore/mreferences/:mReferenceName        
 GET           /metamodels/:metaModelId/style                                    @controllers.restApi.MetaModelRestApi.getStyle(metaModelId: String)
 GET           /metamodels/:metaModelId/shape                                    @controllers.restApi.MetaModelRestApi.getShape(metaModelId: String)
 GET           /metamodels/:metaModelId/diagram                                  @controllers.restApi.MetaModelRestApi.getDiagram(metaModelId: String)
+
+
 
 ### Model
 GET           /model/new/:metaModelUuid                                         @controllers.ModelController.newModel(metaModelUuid: String)

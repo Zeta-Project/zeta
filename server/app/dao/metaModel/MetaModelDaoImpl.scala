@@ -1,6 +1,6 @@
 package dao.metaModel
 
-import dao.{Result, GenericMongoDao, ReactiveMongoHelper}
+import dao.{DbWriteResult, DbWriteResult$, GenericMongoDao, ReactiveMongoHelper}
 import models.metaModel._
 import models.metaModel.mCore.{MClass, MReference}
 import play.api.Play.current
@@ -16,6 +16,8 @@ import scala.concurrent.Future
 
 trait MetaModelDao extends GenericMongoDao[MetaModel] with ReactiveMongoHelper {
   def findIdsByUser(userId: String): Future[Seq[MetaModelShortInfo]]
+
+  def hasAccess(id: String, userId: String): Future[Option[Boolean]]
 
   // "Coast to Coast" (read-only)
 }
@@ -48,22 +50,35 @@ object MetaModelDaoImpl extends MetaModelDao {
     metaModels.find(query).cursor[MetaModel].collect[List]()
   }
 
-  override def deleteById(id: String): Future[Result] = {
+  override def deleteById(id: String): Future[DbWriteResult] = {
     metaModels.remove(Json.obj("id" -> id)).map {
       res => wrapWriteResult(res)
     }
   }
 
-  override def insert(entity: MetaModel): Future[Result] = {
+  override def insert(entity: MetaModel): Future[DbWriteResult] = {
     metaModels.insert(entity).map {
       res => wrapWriteResult(res)
     }
   }
 
-  override def update(entity: MetaModel): Future[Result] = {
+  override def update(entity: MetaModel): Future[DbWriteResult] = {
     val modifier = Json.obj("$set" -> entity)
     metaModels.update(Json.obj("id" -> entity.id), modifier).map {
       res => wrapUpdateResult(res)
+    }
+  }
+
+  override def update(selector: JsObject, modifier: JsObject): Future[DbWriteResult] = {
+    metaModels.update(selector, modifier).map {
+      res => wrapUpdateResult(res)
+    }
+  }
+
+  override def hasAccess(id: String, userId: String): Future[Option[Boolean]] = {
+    findOne(Json.obj("id" -> id)).map {
+      case Some(m) => Some(m.userId == userId)
+      case _ => None
     }
   }
 

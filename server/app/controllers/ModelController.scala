@@ -3,7 +3,7 @@ package controllers
 import javax.inject.Inject
 
 import models.ShortUuid
-import models.metaModel.MetaModelDatabase
+import models.metaModel.MetaModelDatabase_2
 import models.model.ModelWsActor
 import play.api.Logger
 import play.api.Play.current
@@ -19,7 +19,7 @@ class ModelController @Inject()(override implicit val env: UserEnvironment) exte
 
   def newModel(metaModelUuid: String) = SecuredAction { implicit request =>
     log.debug("Calling newModel(" + metaModelUuid + ")")
-    if (Await.result(MetaModelDatabase.modelExists(metaModelUuid), 30 seconds)) {
+    if (Await.result(MetaModelDatabase_2.modelExists(metaModelUuid), 30 seconds)) {
       Redirect(routes.ModelController.modelEditor(metaModelUuid, ShortUuid.uuid))
     } else {
       log.error("attempting to create an editor with unknown uuid")

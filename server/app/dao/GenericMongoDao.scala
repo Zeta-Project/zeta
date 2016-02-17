@@ -12,9 +12,10 @@ trait GenericMongoDao[T] {
   def findById(id: String): Future[Option[T]]
   def findOne(query: JsObject): Future[Option[T]]
   def find(query: JsObject): Future[Seq[T]]
-  def deleteById(id: String): Future[Result]
-  def insert(entity: T): Future[Result]
-  def update(entity: T): Future[Result]
+  def deleteById(id: String): Future[DbWriteResult]
+  def insert(entity: T): Future[DbWriteResult]
+  def update(entity: T): Future[DbWriteResult]
+  def update(selector: JsObject, modifier: JsObject): Future[DbWriteResult]
 }
 
 trait ReactiveMongoHelper {
@@ -25,21 +26,21 @@ trait ReactiveMongoHelper {
     reactiveMongoApi.db.collection[JSONCollection](name)
 
   def wrapUpdateResult(updateWriteResult: UpdateWriteResult) = {
-    Result(
+    DbWriteResult(
       updateWriteResult.ok,
       updateWriteResult.errmsg
     )
   }
 
   def wrapWriteResult(writeResult: WriteResult) = {
-    Result(
+    DbWriteResult(
       writeResult.ok,
       writeResult.errmsg
     )
   }
 }
 
-case class Result(ok: Boolean, errorMessage: Option[String])
-object Result {
-  implicit val resultWrites = Json.writes[Result]
+case class DbWriteResult(ok: Boolean, errorMessage: Option[String])
+object DbWriteResult {
+  implicit val resultWrites = Json.writes[DbWriteResult]
 }
