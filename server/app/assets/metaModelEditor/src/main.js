@@ -486,7 +486,8 @@ var Rappid = Backbone.Router.extend({
     },
 
     initializeMEnum: function () {
-        if (!this.graph.getCell('menum_container')) {
+        mEnum.init(this.graph);
+        if (!this.graph.getCell(mEnum.MENUM_CONTAINER_ID)) {
             this.graph.addCell(mEnum.getMEnumContainer());
         }
     },

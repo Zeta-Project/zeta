@@ -1,7 +1,8 @@
 var mEnum = (function () {
     'use strict';
 
-    var _mEnumContainer;
+    var _graph;
+    var MENUM_CONTAINER_ID = 'menum_container';
 
     var init;
     var getMEnumContainer;
@@ -9,46 +10,47 @@ var mEnum = (function () {
     var getMEnums;
     var getMEnum;
 
-    init = function init (mEnumContainer) {
-        _mEnumContainer = mEnumContainer;
+    init = function init(graph) {
+        _graph = graph;
     };
 
-    getMEnumContainer = function getMEnumContainer () {
-        if (!_mEnumContainer) {
-            _mEnumContainer = new joint.dia.Element({
-                size : {
-                    width : 0,
-                    height : 0
+    getMEnumContainer = function getMEnumContainer() {
+        var mEnumContainer = _graph.getCell(MENUM_CONTAINER_ID);
+        if (!mEnumContainer) {
+            mEnumContainer = new joint.dia.Element({
+                size: {
+                    width: 0,
+                    height: 0
                 },
-                position : {
-                    x : 0,
-                    y : 0
+                position: {
+                    x: 0,
+                    y: 0
                 },
-                id : 'menum_container',
-                type : 'mcore.Enum',
-                markup : '<g />',
-                name : 'mEnumContainer',
-                'm_enum' : []
+                id: MENUM_CONTAINER_ID,
+                type: 'mcore.Enum',
+                markup: '<g />',
+                name: 'mEnumContainer',
+                'm_enum': []
             });
         }
-        return _mEnumContainer;
+        return mEnumContainer;
     };
 
-    getMEnumNames = function getMEnumNames () {
+    getMEnumNames = function getMEnumNames() {
         var types = [];
-        if (_mEnumContainer.attributes['m_enum']) {
-            _.each(_mEnumContainer.attributes['m_enum'], function (mEnum) {
+        if (getMEnumContainer().attributes['m_enum']) {
+            _.each(getMEnumContainer().attributes['m_enum'], function (mEnum) {
                 types.push(mEnum.name);
             });
         }
         return types;
     };
 
-    getMEnums = function getMEnums () {
-        return _mEnumContainer.attributes['m_enum'];
+    getMEnums = function getMEnums() {
+        return getMEnumContainer().attributes['m_enum'];
     };
 
-    getMEnum = function getMEnum (mEnumName) {
+    getMEnum = function getMEnum(mEnumName) {
         var retEnum = {};
 
         _.each(getMEnums(), function (mEnum) {
@@ -64,11 +66,12 @@ var mEnum = (function () {
     };
 
     return {
-        init : init,
-        getMEnumContainer : getMEnumContainer,
-        getMEnumNames : getMEnumNames,
-        getMEnums : getMEnums,
-        getMEnum : getMEnum
+        MENUM_CONTAINER_ID : MENUM_CONTAINER_ID,
+        init: init,
+        getMEnumContainer: getMEnumContainer,
+        getMEnumNames: getMEnumNames,
+        getMEnums: getMEnums,
+        getMEnum: getMEnum
     };
 
 })();
