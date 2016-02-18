@@ -1,16 +1,10 @@
-/*! Rappid - the diagramming toolkit
-
-Copyright (c) 2014 client IO
-
- 2014-04-14 
+/*! JointJS v0.9.5 - JavaScript diagramming library  2015-09-10 
 
 
-This Source Code Form is subject to the terms of the Rappid Academic License
-, v. 1.0. If a copy of the Rappid License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/rappid_academic_v1.txt
- or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
-
-
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -30,6 +24,17 @@ Important note: Presentation attributes have a lower precedence over CSS style r
    -moz-user-select: none;
    user-select: none;
 }
+
+/*
+1. IE can't handle paths without the `d` attribute for bounding box calculation
+2. IE can't even handle 'd' attribute as a css selector (e.g path[d]) so the following rule will
+   break the links rendering.
+
+path:not([d]) {
+    display: none;
+}
+
+*/
 
 /* .magnet is an element that can be either source or a target of a link */
 /*
@@ -158,15 +163,15 @@ Vertex markers are `<circle>` elements that appear at connection vertex position
 
 /* <circle> element inside .marker-vertex-group <g> element */
 .marker-vertex {
-   fill: #2ecc71;
+   fill: #1ABC9C;
 }
 .marker-vertex:hover {
-   fill: #333;
+   fill: #34495E;
    stroke: none;
 }
 
 .marker-arrowhead {
-   fill: #2ecc71;
+   fill: #1ABC9C;
 }
 .marker-arrowhead:hover {
    fill: #F39C12;
@@ -192,61 +197,45 @@ Vertex markers are `<circle>` elements that appear at connection vertex position
    opacity: 1;
 }
 
-/*
-
 /* Cell highlighting - e.g a cell underneath the dragged link get highlighted.
    See joint.dia.cell.js highlight(); */
+.highlighted {
+    opacity: 0.7;
+}
 
-/* For some reason, CSS `outline` property does not work on `<text>` elements. */
+/* For some reason, CSS `outline` property
+   does not work on `<text>` elements. */
 text.highlighted {
     fill: #FF0000;
 }
 
-.highlighted {
-    outline: 2px solid #FF0000; /* `outline` doesn't work in Firefox, Opera and IE9+. The only engine supporting outlines on SVG elements is Webkit.  */
-    opacity: 0.7 \9; /* It targets only IE9. */
+/* `outline` doesn't work in Firefox, Opera and IE9+.
+   The only engine supporting outlines on SVG elements is Webkit. */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    .highlighted {
+        outline: 2px solid #FF0000;
+        opacity: initial;
+    }
 }
 
 /*
-use '@-moz-document url-prefix()' to target all versions if Firefox and nothing else.
-See `https://developer.mozilla.org/en-US/docs/Web/CSS/@document`.
-*/
-@-moz-document url-prefix() {
-    .highlighted { opacity: 0.7; } /* only for FF */
-}
-
-/*
-`-o-prefocus` is a pseudo-class that allows styles to be targeted for Opera only.
-See `http://www.opera.com/docs/specs/presto2.12/css/o-vendor/`.
-*/
-doesnotexist:-o-prefocus, .highlighted {
-    opacity: 0.7;
-}
-
-/*
-
 Example of custom changes (in pure CSS only!):
 
 Do not show marker vertices at all:  .marker-vertices { display: none; }
 Do not allow adding new vertices: .connection-wrap { pointer-events: none; }
-
 */
 
 /* foreignObject inside the elements (i.e joint.shapes.basic.TextBlock) */
+.element .fobj {
+    overflow: hidden;
+}
 .element .fobj body {
     background-color: transparent;
-    margin: 0;
+    margin: 0px;
 }
 .element .fobj div {
     text-align: center;
     vertical-align: middle;
     display: table-cell;
-    padding: 0 5px 0 5px;
-}
-
-/* BPMN Annotaion IE dasharray fix - don't show it at all */
-@media screen and (min-width:0\0) {
-    .element.Annotation rect {
-        stroke: none;
-    }
+    padding: 0px 5px 0px 5px;
 }
