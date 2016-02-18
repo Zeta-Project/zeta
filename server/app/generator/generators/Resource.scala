@@ -3,6 +3,7 @@ package generators
 import java.net.URI
 import java.nio.file.Path
 
+import generator.parser.Cache
 import parser.Cache
 
 /**

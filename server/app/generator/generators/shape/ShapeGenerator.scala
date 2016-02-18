@@ -1,13 +1,12 @@
 package generator.generators.shape
 
 
-import java.net.URI
 import java.nio.file._
 
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
-import generator.parser.Cache
+import generators.{ProjectPropertiesMock, Resource}
 
 import scala.collection.mutable.HashMap
 
@@ -180,28 +179,3 @@ object ShapeGenerator {
     //}
     //}
 }
-  
-trait Resource {
-  val path:Path
-  val cache:Cache
-
-  def getPath:Path
-  def getURI:URI
-  
-}
-
-class Resource_Mock(file:String, c: Cache) extends Resource{
-  override val path = Paths.get(file)
-  override val cache = c
-
-  override def getPath:Path = path
-  override def getURI:URI = path.toUri
-}
-
-object ProjectPropertiesMock{
-  private var modelPath:Option[URI] = None
-  val SHAPES_FILE_EXTENSION = "mock.mock"
-
-  def setModelUri(uri:URI) = modelPath = Some(uri)
-}
-

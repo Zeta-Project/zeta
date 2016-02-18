@@ -254,7 +254,7 @@ object GeneratorShapeDefinition {
     """
   }
 
-  protected def calculateWidth(shapeDef:Shape) =
+  def calculateWidth(shapeDef:Shape) =
     shapeDef.shapes.getOrElse(List()).foldLeft(0)((acc, g) => g match {
       case layout: CommonLayout if layout.size_width > acc =>  layout.size_width
       case _ => acc
@@ -289,7 +289,7 @@ object GeneratorShapeDefinition {
     min
   }
 
-  protected def calculateHeight(shapeDef:Shape)={
+  def calculateHeight(shapeDef:Shape)={
     var height = 0
     shapeDef.shapes.getOrElse(List()).foreach {
       case c: CommonLayout if c.size_height > height => height = c.size_height

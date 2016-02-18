@@ -135,19 +135,19 @@ object Shape extends CommonParserMethods{
       * relevant speaks for the hierarchical context -> "A extends B, C" -> C is most relevant */
     def relevant[T](f: Shape => Option[T]) = ClassHierarchy.mostRelevant(extendedShapes) {f}
 
-    var style:Option[Style]                   = relevant {_.style}
-    var size_width_min:Option[Int]            = relevant {_.size_width_min}
-    var size_width_max:Option[Int]            = relevant {_.size_width_max}
-    var size_height_min:Option[Int]           = relevant {_.size_height_min}
-    var size_height_max:Option[Int]           = relevant {_.size_height_max}
-    var stretching_horizontal:Option[Boolean] = relevant {_.stretching_horizontal}
-    var stretching_vertical:Option[Boolean]   = relevant {_.stretching_vertical}
-    var prop:Option[Boolean]                  = relevant {_.proportional}
-    var description:Option[Description]       = relevant {_.description}
-    var anchor:Option[AnchorType]             = relevant {_.anchor}
-    val shapes:Option[List[GeometricModel]]   = relevant {_.shapes}
-    val textMap:Option[Map[String, Text]]     = relevant {_.textMap}
-    val compartmentMap:Option[Map[String, Compartment]]= relevant {_.compartmentMap}
+    var style                     = relevant {_.style}
+    var size_width_min            = relevant {_.size_width_min}
+    var size_width_max            = relevant {_.size_width_max}
+    var size_height_min           = relevant {_.size_height_min}
+    var size_height_max           = relevant {_.size_height_max}
+    var stretching_horizontal     = relevant {_.stretching_horizontal}
+    var stretching_vertical       = relevant {_.stretching_vertical}
+    var prop                      = relevant {_.proportional}
+    var description               = relevant {_.description}
+    var anchor                    = relevant {_.anchor}
+    val shapes                    = relevant {_.shapes}
+    val textMap                   = relevant {_.textMap}
+    val compartmentMap            = relevant {_.compartmentMap}
 
     /*initialize the mapping-variables with the actual parameter-values, if they exist*/
     if(styleArgument isDefined){

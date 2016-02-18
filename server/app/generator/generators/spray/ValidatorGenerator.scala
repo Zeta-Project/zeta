@@ -117,7 +117,7 @@ object ValidatorGenerator {
       type: "${edge.mcoreElement.name}",
       from: "${edge.from.name}",
       to: "${edge.to.name}",
-      style: "${getStyleForEdge(edge/*, diagram.style.dslStyle TODO getStyleForEdge doesnt use style and returns a connection not a style?!!?!?*/)}"
+      style: "${getStyleForEdge(edge)}"
     }${if(edge != diagram.edges.last)"," else ""}"""
       }
     },
@@ -197,15 +197,14 @@ object ValidatorGenerator {
   private def getCompartmentMap(node:Node, nodeList:List[Node])={
     val compartmentMap = new HashMap[String, List[String]]
     val nodeClass = node.mcoreElement
-    /*TODO why list with parentnodes? compartmentmap is inherited now. what is meant wirh compartmentMap? the "nests" in DiaShape or the compartmentmap of Shape*/
     for(parent <- nodeList){
       var validCompartments = List[String]()
       if(parent.shape isDefined){
         for((name, compartment ) <- parent.shape.get.nests /*compartments*/){
-          //TODO what is meant by nestedShape? According to Shape.xtext compartment doesnt hold a Shape
-          if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
-            validCompartments =  compartment.nestedShape.name :: validCompartments
-          }
+          //TODO can be resolved as soon as DiaShape elements are reinvented as MCore elements
+        //  if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
+        //    validCompartments =  compartment.nestedShape.name :: validCompartments
+        //  }
         }
       }
       compartmentMap.put(parent.name, validCompartments)

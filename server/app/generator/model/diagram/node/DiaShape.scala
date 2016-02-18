@@ -17,9 +17,9 @@ class DiaShape(corporateStyle:Option[Style], shape:String, propertiesAndCompartm
     /*Hier werden aus ShapeSketches endlich eigentliche Shapes!*/
     shape.toShape(corporateStyle)
   }
-  var vars = Map[String, Text]()
+  var vars = Map[String, Text]()//TODO actually MCore element and not String
   var vals = Map[String, Text]()
-  var nests = Map[String, Compartment]()
+  var nests = Map[String, Compartment]()//TODO actually MCore element and not String
     if(propertiesAndCompartments isDefined) {
       vars = propertiesAndCompartments.get.filter(i => i._1 == "var").map(_._2).map(i => i._1 -> referencedShape.textMap.get(i._2)).toMap/*TODO i._1 (at second use) needs to be resolved to an attribute but is not possible at the moment*/
       vals = propertiesAndCompartments.get.filter(i => i._1 == "val").map(_._2).map(i => i._1 -> referencedShape.textMap.get(i._2)).toMap

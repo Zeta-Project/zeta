@@ -28,15 +28,14 @@ object LinkhelperGenerator {
     };
     """
 
-  /*TODO wath over this method, probably misunderstood something... compare to LinkhelperGenerator.xtext of MoDiGen_V2!*/
   protected def generatePlacingTexts(diagram:Diagram)={
     s"""
     placingTexts:{
       ${for(e <- diagram.edges) yield
       s"""${e.name}: {
-      ${val stringProperties = e.connection.vals //TODO only vals?
+      ${val stringProperties = e.connection.vals
       for(((key, value), i) <- stringProperties.zipWithIndex) yield
-      s"""'$key': "${value.toString /* TODO value.toString.getValue()*/}"${if(i != stringProperties.size)","}"""}
+      s"""'$key': "${value.toString}"${if(i != stringProperties.size)","}"""}
     }${if(e != diagram.edges.last)","}"""
       }
     },

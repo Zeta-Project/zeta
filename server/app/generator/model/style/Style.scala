@@ -53,7 +53,7 @@ object Style extends CommonParserMethods {
    *                if only one style is given, the given style is returned -> you need two to make an actual child
    * @return an Option including a new Style or None if no parentstyles were given
    * @note note, that attributes are inherited by the latest bound principle: Style A extends B -> B overrides attributes of A a call like:
-   *       StyleParser.makeLove(someCacheInstance, B, C, D, A) -> A's attributes have highest priority!!
+   *       StyleParser.generateChildStyle(someCacheInstance, B, C, D, A) -> A's attributes have highest priority!!
    */
   def generateChildStyle(cache: Cache, parents:Option[Style]*):Option[Style] ={
     val parentStyles = parents.filter(_.isDefined)
@@ -84,22 +84,22 @@ object Style extends CommonParserMethods {
       * relevant speaks for the hierarchical context -> "A extends B, C" -> C is most relevant */
     def relevant[T](f: Style => Option[T]) = ClassHierarchy.mostRelevant(extendedStyle) {f}
 
-    var description: Option[String]                        = relevant { _.description }
-    var transparency: Option[Double]                       = relevant { _.transparency }
-    var background_color: Option[ColorOrGradient]          = relevant { _.background_color }
-    var line_color: Option[ColorWithTransparency]          = relevant { _.line_color }
-    var line_style: Option[LineStyle]                      = relevant { _.line_style }
-    var line_width: Option[Int]                            = relevant { _.line_width }
-    var font_color: Option[Color]                          = relevant { _.font_color }
-    var font_name: Option[String]                          = relevant { _.font_name }
-    var font_size: Option[Int]                             = relevant { _.font_size }
-    var font_bold: Option[Boolean]                         = relevant { _.font_bold }
-    var font_italic: Option[Boolean]                       = relevant { _.font_italic }
-    var gradient_orientation: Option[GradientAlignment]    = relevant { _.gradient_orientation }
-    var selected_highlighting: Option[ColorOrGradient]     = relevant { _.selected_highlighting }
-    var multiselected_highlighting: Option[ColorOrGradient]= relevant { _.multiselected_highlighting }
-    var allowed_highlighting: Option[ColorOrGradient]      = relevant { _.allowed_highlighting }
-    var unallowed_highlighting: Option[ColorOrGradient]    = relevant { _.unallowed_highlighting }
+    var description               = relevant { _.description }
+    var transparency              = relevant { _.transparency }
+    var background_color          = relevant { _.background_color }
+    var line_color                = relevant { _.line_color }
+    var line_style                = relevant { _.line_style }
+    var line_width                = relevant { _.line_width }
+    var font_color                = relevant { _.font_color }
+    var font_name                 = relevant { _.font_name }
+    var font_size                 = relevant { _.font_size }
+    var font_bold                 = relevant { _.font_bold }
+    var font_italic               = relevant { _.font_italic }
+    var gradient_orientation      = relevant { _.gradient_orientation }
+    var selected_highlighting     = relevant { _.selected_highlighting }
+    var multiselected_highlighting= relevant { _.multiselected_highlighting }
+    var allowed_highlighting      = relevant { _.allowed_highlighting }
+    var unallowed_highlighting    = relevant { _.unallowed_highlighting }
 
     def ifValid[T](f: => T):Option[T] = {
       var ret:Option[T] = None

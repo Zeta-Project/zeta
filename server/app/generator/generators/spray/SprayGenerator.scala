@@ -1,7 +1,7 @@
 package generator.generators.spray
 
 import java.nio.file.{Paths, Files}
-import generator.generators.{ProjectPropertiesMock, Resource}
+import generators.{ProjectPropertiesMock, Resource}
 
 /**
  * Created by julian on 07.02.16.

@@ -19,8 +19,8 @@ object GeneratorInspectorDefinition {
     var boundHeight = 0
 
     if (shape.isInstanceOf[Shape]) {
-      //TODO boundWidth = ShapeGenerator.calculateWidth(shape)
-      //TODO boundHeight = ShapeGenerator.calculateHeight(shape)
+      boundWidth = GeneratorShapeDefinition.calculateWidth(shape.asInstanceOf)
+      boundHeight = GeneratorShapeDefinition.calculateHeight(shape.asInstanceOf)
     }
 
     if (atts != null) {
