@@ -1,12 +1,12 @@
-var exampleMetaModel = {
-    "Male": {
+var exampleMetaModel = [
+    {
         "mType": "mClass",
         "name": "Male",
         "abstract": false,
         "superTypes": [
             "Person"
         ],
-        "mAttributes": {},
+        "attributes": {},
         "inputs": [
             {
                 "type": "isWife",
@@ -30,12 +30,12 @@ var exampleMetaModel = {
             }
         ]
     },
-    "Person": {
+    {
         "mType": "mClass",
         "name": "Person",
         "abstract": true,
         "superTypes": [],
-        "mAttributes": {
+        "attributes": {
             "FirstName": {
                 "name": "FirstName",
                 "upperBound": 1,
@@ -95,14 +95,14 @@ var exampleMetaModel = {
         ],
         "outputs": []
     },
-    "Female": {
+    {
         "mType": "mClass",
         "name": "Female",
         "abstract": false,
         "superTypes": [
             "Person"
         ],
-        "mAttributes": {},
+        "attributes": {},
         "inputs": [
             {
                 "type": "isHusband",
@@ -126,12 +126,12 @@ var exampleMetaModel = {
             }
         ]
     },
-    "isHusband": {
+    {
         "mType": "mRef",
         "name": "isHusband",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "mAttributes": {},
+        "attributes": {},
         "source": [
             {
                 "type": "Male",
@@ -149,12 +149,12 @@ var exampleMetaModel = {
             }
         ]
     },
-    "isWife": {
+    {
         "mType": "mRef",
         "name": "isWife",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "mAttributes": {},
+        "attributes": {},
         "source": [
             {
                 "type": "Female",
@@ -172,12 +172,12 @@ var exampleMetaModel = {
             }
         ]
     },
-    "isFather": {
+    {
         "mType": "mRef",
         "name": "isFather",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "mAttributes": {},
+        "attributes": {},
         "source": [
             {
                 "type": "Male",
@@ -195,12 +195,12 @@ var exampleMetaModel = {
             }
         ]
     },
-    "isMother": {
+    {
         "mType": "mRef",
         "name": "isMother",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "mAttributes": {},
+        "attributes": {},
         "source": [
             {
                 "type": "Female",
@@ -218,4 +218,4 @@ var exampleMetaModel = {
             }
         ]
     }
-};
+];
