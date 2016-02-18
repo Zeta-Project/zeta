@@ -3,7 +3,7 @@ package models.model
 import java.io.File
 
 import akka.actor.{Actor, ActorRef, Props}
-import models.metaModel.MetaModelDatabase
+import models.metaModel.MetaModelDatabase_2
 import models.model.DataVisActor.{MetamodelLoaded, MetamodelFailure}
 import models.model.ModelWsActor.DataVisInvalidError
 import util.MetamodelBuilder
@@ -23,7 +23,7 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
   var metamodel:Metamodel = null
   val generator = new ListenersGenerator
 
-  MetaModelDatabase.loadModel(graphType) onComplete{
+  MetaModelDatabase_2.loadModel(graphType) onComplete{
     case scala.util.Success(opt) => opt match {
       case None => self ! MetamodelFailure()
       case Some(mm) => //self ! MetamodelLoaded(mm.model)
