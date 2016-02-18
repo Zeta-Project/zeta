@@ -270,18 +270,9 @@ var inspector = (function inspector () {
             item : {
                 type : 'object',
                 properties : _.extend({
-                    type : {
-                        type : 'select',
-                        label : 'Type',
-                        options : [
-                            'String',
-                            'Integer',
-                            'Float'
-                        ]
-                    },
-                    values : {
+                    symbols : {
                         type : 'list',
-                        label : 'Values',
+                        label : 'Symbols',
                         item : {
                             type : 'text'
                         }

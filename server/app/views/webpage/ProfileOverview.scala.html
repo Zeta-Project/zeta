@@ -1,33 +1,30 @@
 @(user: SecureSocialUser)
 @views.html.webpage.WebpageGeneralLayout("New Diagram", Some(user)) {
-    <div class="container">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2>Profile Overview</h2>
-            </div>
-            <table class="table">
-                <tr>
-                    <td>First Name</td>
-                    <td>@user.profile.firstName</td>
-                </tr>
-                <tr>
-                    <td>Last Name</td>
-                    <td>@user.profile.lastName</td>
-                </tr>
-                <tr>
-                    <td>Username</td>
-                    <td>@user.profile.fullName</td>
-                </tr>
-                <tr>
-                    <td>E-Mail</td>
-                    <td>@user.profile.email</td>
-                </tr>
-            </table>
-            <div class="panel-footer">
-                <a href="@controllers.routes.ProfileController.edit" class="btn btn-primary" role="button">edit profile information</a>
-            </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2>Profile Overview</h2>
+        </div>
+        <table class="table">
+            <tr>
+                <td>First Name</td>
+                <td>@user.profile.firstName</td>
+            </tr>
+            <tr>
+                <td>Last Name</td>
+                <td>@user.profile.lastName</td>
+            </tr>
+            <tr>
+                <td>Full Name</td>
+                <td>@user.profile.fullName</td>
+            </tr>
+            <tr>
+                <td>E-Mail</td>
+                <td>@user.profile.email</td>
+            </tr>
+        </table>
+        <div class="panel-footer">
+            <a href="@controllers.webpage.routes.ProfileController.edit" class="btn btn-primary" role="button">
+                edit profile information</a>
         </div>
     </div>
-
-
 }

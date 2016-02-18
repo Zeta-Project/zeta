@@ -45,7 +45,7 @@ class window.Exporter
 
   # Builds the metaModel JSON object and returns it.
   createMetaModel: () ->
-    metaModel = {}
+    metaModel = []
 
     @addClasses metaModel
     @addReferences metaModel
@@ -58,12 +58,12 @@ class window.Exporter
   addClasses: (metaModel) ->
     for element in @graph.getElements()
 
-      metaModel[@graph.getName element] =
+      metaModel.push
         mType: Constants.CLASS
         name: @graph.getName element
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
-        mAttributes: @graph.getAttributes element
+        attributes: @graph.getAttributes element
         inputs: @graph.getInputs element
         outputs: @graph.getOutputs element
 
@@ -72,24 +72,23 @@ class window.Exporter
   addReferences: (metaModel) ->
     for reference in @graph.getReferences()
 
-      metaModel[@graph.getName reference] =
+      metaModel.push
         mType: Constants.REFERENCE
         name: @graph.getName reference
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
         targetDeletionDeletesSource: @graph.getTargetDeletionDeletesSource reference
-        mAttributes: @graph.getAttributes reference
+        attributes: @graph.getAttributes reference
         source: @graph.getSources reference
         target: @graph.getTargets reference
 
 
   # Iterates over the values of the mEnumContainer and adds them to the metaModel object.
   addEnums: (metaModel) ->
+    #TODO: on a saved and re-opened instance, menums are not set
     for thisMEnum in mEnum.getMEnums()
-
-      metaModel[thisMEnum.name] =
+      metaModel.push
         mType: Constants.ENUM
         name: thisMEnum.name
-        type: thisMEnum.type
-        values: mEnum.getValues thisMEnum.name
+        symbols: thisMEnum.symbols
 
 

@@ -1,7 +1,13 @@
 ### Webpage
-GET         /                                                 @controllers.webpage.Webpage.index
-GET         /overview                                         @controllers.webpage.Webpage.diagramsOverview(uuid: String = null)
-GET         /overview/:uuid                                   @controllers.webpage.Webpage.diagramsOverview(uuid: String)
+GET         /                                                 @controllers.webpage.WebpageController.index
+GET         /overview                                         @controllers.webpage.WebpageController.diagramsOverview(uuid: String = null)
+GET         /overview/:uuid                                   @controllers.webpage.WebpageController.diagramsOverview(uuid: String)
+
+
+### Profile management
+GET         /profile                                          @controllers.webpage.ProfileController.overview
+GET         /profile/edit                                     @controllers.webpage.ProfileController.edit
+POST        /profile/edit                                     @controllers.webpage.ProfileController.saveChanges
 
 
 ### Metamodel
@@ -47,11 +53,6 @@ POST        /oauth/accessTokenLocal                           @controllers.oAuth
 GET         /oauth/info                                       @controllers.oAuth.OAuthController.info
 GET         /oauth/setup                                      @controllers.oAuth.OAuthController.setup
 
-
-### Account management
-GET         /profile                                          @controllers.ProfileController.overview
-GET         /profile/edit                                     @controllers.ProfileController.edit
-POST        /profile/edit                                     @controllers.ProfileController.saveChanges
 
 ### Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                                     controllers.Assets.at(path="/public", file)

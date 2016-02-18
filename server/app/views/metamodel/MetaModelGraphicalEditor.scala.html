@@ -5,6 +5,12 @@
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {
 
     <script type="text/javascript">
+
+        // Hotfix for issue in the latest Chrome version, see https://github.com/clientIO/joint/issues/203
+    SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
+                return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
+            };
+
     window.loadedMetaModel = {};
     window.loadedMetaModel.uuid = "@uuid";
     window.loadedMetaModel.userUuid = "@user.get.uuid";
@@ -157,8 +163,9 @@
     <script src="@routes.Assets.at("metaModelEditor/src/stencil.js")"></script>
     <script src="@routes.Assets.at("metaModelEditor/src/main.js")"></script>
 
-    <!--[if IE 9]>
-    <script src='@routes.Assets.at("jointjs/lib/base64.js")'></script>
+        <!--[if IE 9]>
+    <script src=' @routes.Assets.at("jointjs/lib/base64.js")
+    '></script>
     <script type="text/javascript">
         window.btoa = base64.encode;
         document.onselectstart = function () {

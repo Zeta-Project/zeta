@@ -1,11 +1,12 @@
-package controllers
+package controllers.webpage
 
 import javax.inject.Inject
 
 import models.SecureSocialUser
+import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms.{email, mapping, text}
-import play.api.i18n.{I18nSupport, Messages, MessagesApi}
+import play.api.i18n.Messages.Implicits._
 import util.definitions.UserEnvironment
 
 import scala.concurrent.Await
@@ -13,8 +14,7 @@ import scala.concurrent.duration._
 
 case class ProfileFormData(firstName: String, lastName: String, fullName: String, eMail: String)
 
-class ProfileController @Inject()(override implicit val env: UserEnvironment, val messagesApi: MessagesApi)
-  extends securesocial.core.SecureSocial with I18nSupport {
+class ProfileController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
 
   val profileDataForm = Form(
@@ -27,19 +27,19 @@ class ProfileController @Inject()(override implicit val env: UserEnvironment, va
   )
 
   def overview() = SecuredAction { implicit request =>
-    Ok(views.html.webpage.ProfileOverview.render(request.user))
+    Ok(views.html.webpage.ProfileOverview(request.user))
   }
 
   def edit() = SecuredAction { implicit request =>
     val filledForm = profileDataForm.fill(profileData(request.user))
-    Ok(views.html.webpage.ProfileEdit.render(request.user, filledForm, implicitly[Messages]))
+    Ok(views.html.webpage.ProfileEdit(request.user, filledForm))
   }
 
   def saveChanges() = SecuredAction { implicit request =>
     profileDataForm.bindFromRequest.fold(
       formWithErrors => {
         val filledForm = formWithErrors.fill(profileData(request.user))
-        BadRequest(views.html.webpage.ProfileEdit.render(request.user, filledForm, implicitly[Messages]))
+        BadRequest(views.html.webpage.ProfileEdit(request.user, filledForm))
       },
       userData => {
         val user = Await.result(env.userService.updateProfile(request.user,
@@ -50,12 +50,12 @@ class ProfileController @Inject()(override implicit val env: UserEnvironment, va
         ), 5 seconds)
 
         request.authenticator.updateUser(user)
-        Redirect(controllers.routes.ProfileController.overview())
+        Redirect(controllers.webpage.routes.ProfileController.overview())
       })
 
   }
 
-  def profileData(user: SecureSocialUser) = {
+  private def profileData(user: SecureSocialUser) = {
     ProfileFormData(
       firstName = user.profile.firstName.getOrElse(""),
       lastName = user.profile.lastName.getOrElse(""),

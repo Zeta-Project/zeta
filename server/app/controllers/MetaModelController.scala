@@ -6,12 +6,10 @@ import javax.inject.Inject
 
 import argonaut.Argonaut._
 import argonaut.DecodeJson
-import models._
 import models.metaModel._
 import play.api.Play.current
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
-import securesocial.core.RuntimeEnvironment
 import util.definitions.UserEnvironment
 import util.graph.MetamodelGraphDiff
 
@@ -24,7 +22,7 @@ import scala.util.Try
   */
 
 
-class MetaModelController @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class MetaModelController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   def newMetaModel() = SecuredAction { implicit request =>
     Redirect(routes.MetaModelController.metaModelEditor(UUID.randomUUID.toString))
@@ -38,7 +36,7 @@ class MetaModelController @Inject() (override implicit val env: UserEnvironment)
         metaModel = Some(tmpMetaModel.get.copy(metaModel = MetamodelGraphDiff.fixMetaModel(tmpMetaModel.get.metaModel)))
       }
     }
-    Ok(views.html.metamodel.MetaModelGraphicalEditor.render(Some(request.user), metaModelUuid, metaModel))
+    Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, metaModel))
   }
 
   def saveMetaModel() = SecuredAction { implicit request =>
@@ -85,12 +83,12 @@ class MetaModelController @Inject() (override implicit val env: UserEnvironment)
       if (metaModel.isDefined && metaModel.get.userUuid == userUuid) {
         MetaModelDatabase.deleteModel(metaModelUuid)
 
-        Redirect(controllers.webpage.routes.Webpage.diagramsOverview(null))
+        Redirect(controllers.webpage.routes.WebpageController.diagramsOverview(null))
       } else {
-        Redirect(controllers.webpage.routes.Webpage.index())
+        Redirect(controllers.webpage.routes.WebpageController.index())
       }
     } else {
-      Redirect(controllers.webpage.routes.Webpage.index())
+      Redirect(controllers.webpage.routes.WebpageController.index())
     }
   }
 

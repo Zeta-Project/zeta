@@ -2,17 +2,15 @@ package controllers.restApi
 
 import javax.inject.Inject
 
-import models.SecureSocialUser
 import models.metaModel.{MetaModel, MetaModelDatabase}
 import play.api.mvc.{Action, BodyParsers}
-import securesocial.core.RuntimeEnvironment
 import util.definitions.UserEnvironment
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
 
-class MetaModelRestApi @Inject() (override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class MetaModelRestApi @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   private def getModel(modelId: String): Option[MetaModel] =
     Await.result(MetaModelDatabase.loadModel(modelId), Duration.create(5, "seconds"))

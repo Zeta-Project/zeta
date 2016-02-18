@@ -2,7 +2,6 @@
 
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-overview">
                 <span class="sr-only">Toggle navigation</span>
@@ -18,7 +17,6 @@
 
         <div class="collapse navbar-collapse" id="navbar-collapse-overview">
             <ul class="nav navbar-nav navbar-right">
-                    <!-- only display logout/change-password buttons if a user is logged in -->
                 @user match {
                     case Some(u) => {
                         <li class="dropdown">
@@ -28,9 +26,9 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu navbar-right" role="menu">
-                                <li><a href="@controllers.routes.ProfileController.overview">Profile</a></li>
-                                <li><a href="/auth/password">Change Password</a></li>
-                                <li><a href="/auth/logout">Logout</a></li>
+                                <li><a href="@controllers.webpage.routes.ProfileController.overview">Profile</a></li>
+                                <li><a href="@securesocial.controllers.routes.PasswordChange.page">Change Password</a></li>
+                                <li><a href="@securesocial.controllers.routes.LoginPage.logout">Logout</a></li>
                             </ul>
                         </li>
                     }

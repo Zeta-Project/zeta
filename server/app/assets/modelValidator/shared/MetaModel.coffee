@@ -9,11 +9,12 @@ class window.MetaModel
 
 
   get: (key) ->
-    if @has key then @metaModel[key] else null
+    if @has key then @metaModel.find (element) -> element.name == key else null
 
 
   has: (key) ->
-    @metaModel[key]?
+    (@metaModel.find (element) ->
+      element.name == key)?
 
 
   hasClass: (key) ->

@@ -197,7 +197,7 @@ class window.ModelValidator
 
       instanceAttributeValues = @instance.getAttribute instanceKey, attributeKey
       if !instanceAttributeValues?
-        @result.addErrorMessage "'#{mObjName}' '#{instanceKey}' has no mAttributes with key '#{attributeKey}'."
+        @result.addErrorMessage "'#{mObjName}' '#{instanceKey}' has no attributes with key '#{attributeKey}'."
         continue
 
       attributeCount = instanceAttributeValues.length

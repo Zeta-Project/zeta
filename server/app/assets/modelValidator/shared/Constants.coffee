@@ -11,7 +11,7 @@ class window.Constants
   @TYPE: 'type'
 
 
-  @ATTRIBUTES: 'mAttributes'
+  @ATTRIBUTES: 'attributes'
   @SUPER_TYPES: 'superTypes'
 
   @attr:

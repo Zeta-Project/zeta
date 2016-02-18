@@ -1,8 +1,8 @@
 package util.definitions
 
 import models.{MongoDbUserService, SecureSocialUser}
-import plugins.SecuresocialViews
-import securesocial.controllers.ViewTemplates
+import plugins.{SecuresocialMailTemplates, SecuresocialViews}
+import securesocial.controllers.{MailTemplates, ViewTemplates}
 import securesocial.core.RuntimeEnvironment
 import securesocial.core.providers.UsernamePasswordProvider
 
@@ -14,6 +14,7 @@ class UserEnvironment extends RuntimeEnvironment.Default {
   //override lazy val routes = new CustomRoutesService()
   override lazy val userService = new MongoDbUserService()
   override lazy val viewTemplates: ViewTemplates = new SecuresocialViews(this)
+  override lazy val mailTemplates: MailTemplates = new SecuresocialMailTemplates(this)
   override lazy val providers = ListMap(
     include(new UsernamePasswordProvider(userService, avatarService, viewTemplates, passwordHashers))
   )

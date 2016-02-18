@@ -21,6 +21,7 @@ class window.ExportedMetaModel
 
   setMetaModel: (metaModel) ->
     @metaModel = metaModel
+    @metaModelString = @toString()
 
 
   isValid: () ->

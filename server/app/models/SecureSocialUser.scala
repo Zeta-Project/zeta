@@ -90,7 +90,7 @@ class MongoDbUserService extends UserService[SecureSocialUser] {
 
   override def findByEmailAndProvider(email: String, providerId: String): Future[Option[BasicProfile]] = {
     Future.successful(
-      coll.findOne(MongoDBObject("profile" ->("profile.email" -> email, "profile.providerId" -> providerId))) match {
+      coll.findOne(MongoDBObject("profile.email" -> email, "profile.providerId" -> providerId)) match {
         case Some(obj) => Some(obj.profile)
         case None => None
       }
@@ -171,7 +171,6 @@ class MongoDbUserService extends UserService[SecureSocialUser] {
     coll.findOne(MongoDBObject("profile.userId" -> profile.userId, "profile.providerId" -> profile.providerId)) match {
       case None =>
         log.debug(profile.toString)
-        log.error("save mit bool")
         val created = new SecureSocialUser(UUID.randomUUID(), admin = false, profile = profile)
         coll.save(created)
         created
@@ -189,7 +188,6 @@ class MongoDbUserService extends UserService[SecureSocialUser] {
     coll.findOne(MongoDBObject("profile.userId" -> profile.userId, "profile.providerId" -> profile.providerId)) match {
       case None =>
         log.debug(profile.toString)
-        log.error("save mit bool")
         val created = new SecureSocialUser(UUID.randomUUID(), admin, profile)
         coll.save(created)
         created

@@ -8,7 +8,6 @@ var mEnum = (function () {
     var getMEnumNames;
     var getMEnums;
     var getMEnum;
-    var getValues;
 
     init = function init (mEnumContainer) {
         _mEnumContainer = mEnumContainer;
@@ -64,42 +63,11 @@ var mEnum = (function () {
         return retEnum;
     };
 
-    /**
-     * Returns the values of the enum.
-     * The value inside the object is always a string, so it needs to be parsed when specified differently.
-     *
-     * @param mEnumName
-     * @returns {Array}
-     */
-    getValues = function getValues (mEnumName) {
-        var values = [];
-        var thisEnum = getMEnum(mEnumName);
-
-        _.each(thisEnum.values, function (value) {
-
-            switch (thisEnum.type) {
-                case 'Integer':
-                    values.push(window.parseInt(value.trim()));
-                    break;
-                case 'Float':
-                    values.push(window.parseFloat(value.trim()));
-                    break;
-                default:
-                    values.push(value);
-                    break;
-            }
-
-        });
-
-        return values;
-    };
-
     return {
         init : init,
         getMEnumContainer : getMEnumContainer,
         getMEnumNames : getMEnumNames,
         getMEnums : getMEnums,
-        getValues : getValues,
         getMEnum : getMEnum
     };
 

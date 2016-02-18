@@ -1,46 +1,58 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Model Validator</title>
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelValidator/client/style.css")">
-    </head>
-    <body>
+@(user: Option[SecureSocialUser])
 
-        <h1>Validator</h1>
+@views.html.webpage.WebpageGeneralLayout("ModelValidator", user) {
+    <style>
+    textarea {
+    width: 100% ;
+    height: 150px ;
+    }
 
-        <div class="text-input">
-            <label for="txt-metaModel">Meta Model</label>
-            <textarea id="txt-metaModel"></textarea>
-        </div>
+    label {
+    display: block ;
+    }
 
-        <div class="text-input">
-            <label for="txt-instance">Instance</label>
-            <textarea id="txt-instance"></textarea>
-        </div>
+    .text-output {
+    margin-top: 20px ;
+    }
 
-        <button id="btn-validate">Validate</button>
+    .text-output > textarea {
+    color: red ;
+    }
+    </style>
 
-        <div class="text-output">
-            <label for="inp-valid">Valid</label>
-            <input type="text" id="inp-valid" readonly>
-            <label for="txt-output">Output</label>
-            <textarea id="txt-output" readonly></textarea>
-        </div>
+    <h1>Validator</h1>
 
-        <script src="@routes.Assets.at("modelValidator/client/examples/instance.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/client/examples/metamodel.js")"></script>
+    <div class="text-input">
+        <label for="txt-metaModel">Meta Model</label>
+        <textarea id="txt-metaModel"></textarea>
+    </div>
 
-        <script src="@routes.Assets.at("modelValidator/shared/Constants.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/JSONException.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/Bounds.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/Attribute.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/ValidationResult.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/Instance.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/MetaModel.js")"></script>
-        <script src="@routes.Assets.at("modelValidator/shared/ModelValidator.js")"></script>
+    <div class="text-input">
+        <label for="txt-instance">Instance</label>
+        <textarea id="txt-instance"></textarea>
+    </div>
 
-        <script src="@routes.Assets.at("modelValidator/client/example.js")"></script>
+    <button id="btn-validate">Validate</button>
 
-    </body>
-</html>
+    <div class="text-output">
+        <label for="inp-valid">Valid</label>
+        <input type="text" id="inp-valid" readonly>
+        <label for="txt-output">Output</label>
+        <textarea id="txt-output" readonly></textarea>
+    </div>
+
+
+    <script src="@routes.Assets.at("modelValidator/client/examples/instance.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/client/examples/metamodel.js")"></script>
+
+    <script src="@routes.Assets.at("modelValidator/shared/Constants.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/JSONException.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/Bounds.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/Attribute.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/ValidationResult.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/Instance.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/MetaModel.js")"></script>
+    <script src="@routes.Assets.at("modelValidator/shared/ModelValidator.js")"></script>
+
+    <script src="@routes.Assets.at("modelValidator/client/example.js")"></script>
+}

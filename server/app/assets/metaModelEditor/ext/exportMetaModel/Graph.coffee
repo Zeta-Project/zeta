@@ -7,40 +7,40 @@ class window.Graph
   constructor: (@graph) ->
 
 
-  # Returns all elements (which are real elements by MoDiGen metamodel semantics).
+# Returns all elements (which are real elements by MoDiGen metamodel semantics).
   getElements: () ->
     @graph.getElements()
     .filter (element) ->
       mCoreUtil.isElement element
 
 
-  # Returns the names of all elements.
+# Returns the names of all elements.
   getElementNames: () ->
     @getElements()
     .map (element) ->
       element.attributes.name
 
 
-  # Returns all references (which are real references by MoDiGen metamodel semantics).
+# Returns all references (which are real references by MoDiGen metamodel semantics).
   getReferences: () ->
     @graph.getLinks()
     .filter (link) ->
       mCoreUtil.isReference link
 
 
-  # Returns the names of all references.
+# Returns the names of all references.
   getReferenceNames: () ->
     @getReferences()
     .map (reference) ->
       reference.attributes.name
 
 
-  # Returns the name of the given cell.
+# Returns the name of the given cell.
   getName: (cell) ->
     cell.attributes.name
 
 
-  # Returns all element-, reference and enum-names which are assigned more than once.
+# Returns all element-, reference and enum-names which are assigned more than once.
   getDuplicateKeys: () ->
     keys = []
     duplicateKeys = []
@@ -55,7 +55,7 @@ class window.Graph
     duplicateKeys
 
 
-  # Returns all attribute keys which are assigned more than once insinde an element.
+# Returns all attribute keys which are assigned more than once insinde an element.
   getDuplicateAttributes: () ->
     duplicateAttributes = []
 
@@ -72,12 +72,12 @@ class window.Graph
     duplicateAttributes
 
 
-  # Checks whether the element is abstract.
+# Checks whether the element is abstract.
   isAbstract: (element) ->
     mCoreUtil.isAbstract element
 
 
-  # Returns all superTypes of the given element (which is defined by the generalization reference type).
+# Returns all superTypes of the given element (which is defined by the generalization reference type).
   getSuperTypes: (element) ->
     @graph.getConnectedLinks element, {outbound: true}
     .filter (link) ->
@@ -87,7 +87,7 @@ class window.Graph
       @
 
 
-  # Returns the attributes of the cell.
+# Returns the attributes of the cell.
   getAttributes: (cell) ->
     mAttributes = {}
 
@@ -100,7 +100,7 @@ class window.Graph
     mAttributes
 
 
-  # Returns all input references of the element.
+# Returns all input references of the element.
   getInputs: (element) ->
     inputs = @graph.getConnectedLinks element, {inbound: true}
     .filter (link) ->
@@ -108,7 +108,7 @@ class window.Graph
     @createLinkdef element, inputs, Constants.field.LINKDEF_INPUT
 
 
-  # Returns all output references of the element.
+# Returns all output references of the element.
   getOutputs: (element) ->
     outputs = @graph.getConnectedLinks element, {outbound: true}
     .filter (link) ->
@@ -116,24 +116,24 @@ class window.Graph
     @createLinkdef element, outputs, Constants.field.LINKDEF_OUTPUT
 
 
-  # Returns all source classes of the reference.
+# Returns all source classes of the reference.
   getSources: (reference) ->
     sources = [@graph.getCell reference.attributes.source.id]
     @createLinkdef reference, sources, Constants.field.LINKDEF_SOURCE
 
 
-  # Returns all target classes of the reference.
+# Returns all target classes of the reference.
   getTargets: (reference) ->
     targets = [@graph.getCell reference.attributes.target.id]
     @createLinkdef reference, targets, Constants.field.LINKDEF_TARGET
 
 
-  # Returns the sourceDeletionDeletesTarget value of the reference.
+# Returns the sourceDeletionDeletesTarget value of the reference.
   getSourceDeletionDeletesTarget: (reference) ->
     reference.attributes[Constants.field.SOURCE_DELETION_DELETES_TARGET] || false
 
 
-  # Returns the targetDeletionDeletesSource value of the reference.
+# Returns the targetDeletionDeletesSource value of the reference.
   getTargetDeletionDeletesSource: (reference) ->
     reference.attributes[Constants.field.TARGET_DELETION_DELETES_SOURCE] || false
 
