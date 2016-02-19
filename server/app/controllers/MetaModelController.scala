@@ -107,7 +107,7 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
       },
       metaModel => {
         val preparedMeta = metaModel.copy(
-          id = Some(java.util.UUID.randomUUID().toString),
+          id = java.util.UUID.randomUUID().toString,
           userId = request.user.uuid.toString
         )
         MetaModelDaoImpl.insert(preparedMeta).map { res =>

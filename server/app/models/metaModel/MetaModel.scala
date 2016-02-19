@@ -33,41 +33,66 @@ object Diagram {
   implicit val diagramWrites = Json.writes[Diagram]
 }
 
+case class Concept(
+  elements: Map[String, MObject],
+  uiState: String
+)
+
+object Concept {
+
+  implicit val conceptReads: Reads[Concept] = (
+      (__ \ "elements").read[Map[String, MObject]] and
+      (__ \ "uiState").read[String]
+    ) (Concept.apply _)
+
+  implicit val conceptWrites = new Writes[Concept] {
+    def writes(c: Concept): JsValue = Json.obj(
+      "elements" -> Json.toJson(c.elements.values.toList),
+      "uiState" -> c.uiState
+    )
+  }
+}
+
 case class Definition(
   name: String,
-  mObjects: Map[String, MObject],
-  graph: String
+  concept: Concept,
+  shape: Option[Shape],
+  style: Option[Style],
+  diagram: Option[Diagram]
 )
 
 object Definition {
 
   implicit val definitionReads: Reads[Definition] = (
-    (__ \ "name").read[String] and
-      (__ \ "mObjects").read[Map[String, MObject]] and
-      (__ \ "graph").read[String]
+    (__ \ "name").read[String](minLength[String](1)) and
+      (__ \ "concept").read[Concept] and
+      (__ \ "shape").readNullable[Shape] and
+      (__ \ "style").readNullable[Style] and
+      (__ \ "diagram").readNullable[Diagram]
     ) (Definition.apply _)
 
-  implicit val definitionWrites = new Writes[Definition] {
-    def writes(d: Definition): JsValue = Json.obj(
-      "name" -> d.name,
-      "mObjects" -> Json.toJson(d.mObjects.values.toList),
-      "graph" -> d.graph
-    )
-  }
+  implicit val definitionWrites = Json.writes[Definition]
 }
 
 case class MetaModel(
-  id: Option[String],
+  id: String,
   userId: String,
-  definition: Definition,
-  style: Style,
-  shape: Shape,
-  diagram: Diagram
+  definition: Definition
 )
 
 object MetaModel {
-  implicit val metaModelReads = Json.reads[MetaModel]
-  implicit val metaModelWrites = Json.writes[MetaModel]
+
+  implicit val metaModelReads: Reads[MetaModel] = (
+    (__ \ "id").read[String] and
+      (__ \ "userId").read[String] and
+      (__ \ "definition").read[Definition]
+    ) (MetaModel.apply _)
+
+  implicit val metaModelWrites: OWrites[MetaModel] = (
+    (__ \ "id").write[String] and
+      (__ \ "userId").write[String] and
+      (__ \ "definition").write[Definition]
+    ) (unlift(MetaModel.unapply))
 }
 
 case class MetaModelShortInfo(id: String, name: String)

@@ -1,16 +1,10 @@
 package dao.metaModel
 
-import dao.{DbWriteResult, DbWriteResult$, GenericMongoDao, ReactiveMongoHelper}
+import dao.{DbWriteResult, GenericMongoDao, ReactiveMongoHelper}
 import models.metaModel._
-import models.metaModel.mCore.{MClass, MReference}
-import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
-import play.modules.reactivemongo.ReactiveMongoApi
 import play.modules.reactivemongo.json._
-import play.modules.reactivemongo.json.collection._
-import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
-
 import scala.concurrent.Future
 
 
@@ -18,6 +12,8 @@ trait MetaModelDao extends GenericMongoDao[MetaModel] with ReactiveMongoHelper {
   def findIdsByUser(userId: String): Future[Seq[MetaModelShortInfo]]
 
   def hasAccess(id: String, userId: String): Future[Option[Boolean]]
+
+  def updateDefinition(metaModelId: String, definition: Definition): Future[DbWriteResult]
 
   // "Coast to Coast" (read-only)
 }
@@ -33,7 +29,7 @@ object MetaModelDaoImpl extends MetaModelDao {
     val query = Json.obj("userId" -> userId)
     metaModels.find(query).cursor[MetaModel].collect[List]().map {
       _.map { s =>
-        MetaModelShortInfo(s.id.get, s.definition.name)
+        MetaModelShortInfo(s.id, s.definition.name)
       }
     }
   }
@@ -58,7 +54,10 @@ object MetaModelDaoImpl extends MetaModelDao {
 
   override def insert(entity: MetaModel): Future[DbWriteResult] = {
     metaModels.insert(entity).map {
-      res => wrapWriteResult(res)
+      res => {
+        val r = wrapWriteResult(res)
+        if(r.ok) r.copy(insertId = Some(entity.id)) else r
+      }
     }
   }
 
@@ -73,6 +72,12 @@ object MetaModelDaoImpl extends MetaModelDao {
     metaModels.update(selector, modifier).map {
       res => wrapUpdateResult(res)
     }
+  }
+
+  override def updateDefinition(metaModelId: String, definition: Definition): Future[DbWriteResult] = {
+    val selector = Json.obj("id" -> metaModelId)
+    val modifier = Json.obj("$set" -> Json.obj("definition" -> definition))
+    update(selector, modifier)
   }
 
   override def hasAccess(id: String, userId: String): Future[Option[Boolean]] = {
