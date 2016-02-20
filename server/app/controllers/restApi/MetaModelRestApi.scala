@@ -1,9 +1,11 @@
 package controllers.restApi
 
+import java.time.Instant
+
 import dao.{DbWriteResult}
 import dao.metaModel.MetaModelDaoImpl
 import models.metaModel._
-import models.metaModel.MetaModel._
+import models.metaModel.MetaModelEntity._
 import models.metaModel.mCore.{MReference, MClass}
 import models.oAuth.OAuthDataHandler
 import play.api.libs.json.{JsError, Json}
@@ -24,17 +26,17 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
     }
   }
 
-  // inserts whole metamodel structure just by receiving definition
+  // inserts whole metamodel structure
   def insert = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
-      val in = request.body.validate[Definition]
+      val in = request.body.validate[MetaModelEntity](MetaModelEntity.strippedReads)
       in.fold(
         errors => {
           Future.successful(BadRequest(JsError.toFlatJson(errors)))
         },
-        definition => {
-          val metaModel = initMetaModel(userId, definition)
-          MetaModelDaoImpl.insert(metaModel).map { res =>
+        tempEntity => {
+          val entity = MetaModelEntity.initialize(userId, tempEntity.definition)
+          MetaModelDaoImpl.insert(entity).map { res =>
             Created(Json.toJson(res))
           }
         }
@@ -42,22 +44,16 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
     }
   }
 
-  private def initMetaModel(userId: String, definition: Definition) = MetaModel(
-    java.util.UUID.randomUUID().toString,
-    userId,
-    definition
-  )
-
   def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
-      val in = request.body.validate[Definition]
+      val in = request.body.validate[MetaModelEntity](MetaModelEntity.strippedReads)
       in.fold(
         errors => {
           Future.successful(BadRequest(JsError.toFlatJson(errors)))
         },
-        definition => {
+        entity => {
           protectedWrite(id, {
-            MetaModelDaoImpl.updateDefinition(id, definition)
+            MetaModelDaoImpl.updateDefinition(id, entity.definition)
           })
         }
       )
@@ -74,13 +70,13 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
 
   def get(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => Ok(Json.toJson(m.definition)))
+      protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m)(MetaModelEntity.strippedWrites)))
     }
   }
 
   def getConcept(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => Ok(Json.toJson(m.definition.concept)))
+      protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m.definition.concept)))
     }
   }
 
@@ -104,25 +100,25 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
 
   def getStyle(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => Ok(Json.toJson(m.definition.style)))
+      protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m.definition.style)))
     }
   }
 
   def getShape(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => Ok(Json.toJson(m.definition.shape)))
+      protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m.definition.shape)))
     }
   }
 
   def getDiagram(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => Ok(Json.toJson(m.definition.diagram)))
+      protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m.definition.diagram)))
     }
   }
 
   def getMClasses(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => {
+      protectedRead(id, (m: MetaModelEntity) => {
         val d = m.definition.concept
         val classesDef = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[MClass]))
         Ok(Json.toJson(classesDef))
@@ -132,7 +128,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
 
   def getMReferences(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => {
+      protectedRead(id, (m: MetaModelEntity) => {
         val d = m.definition.concept
         val refsDef = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[MReference]))
         Ok(Json.toJson(refsDef))
@@ -142,7 +138,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
 
   def getMClass(id: String, name: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => {
+      protectedRead(id, (m: MetaModelEntity) => {
         val d = m.definition.concept
         val classDef = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[MClass]))
         Ok(Json.toJson(classDef))
@@ -152,7 +148,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
 
   def getMReference(id: String, name: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModel) => {
+      protectedRead(id, (m: MetaModelEntity) => {
         val d = m.definition.concept
         val refDef = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[MReference]))
         Ok(Json.toJson(refDef))
@@ -164,7 +160,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
     authorize(OAuthDataHandler()) { authInfo => block(authInfo.user.uuid.toString) }
   }
 
-  def protectedRead(id: String, trans: MetaModel => Result)(implicit userId: String): Future[Result] = {
+  def protectedRead(id: String, trans: MetaModelEntity => Result)(implicit userId: String): Future[Result] = {
     MetaModelDaoImpl.findById(id).map {
       case Some(meta) => if (userId == meta.userId) {
         trans(meta)
