@@ -1,5 +1,7 @@
 package dao.metaModel
 
+import java.time.Instant
+
 import dao.{DbWriteResult, GenericMongoDao, ReactiveMongoHelper}
 import models.metaModel._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -67,14 +69,14 @@ object MetaModelDaoImpl extends MetaModelDao {
   }
 
   override def update(selector: JsObject, modifier: JsObject): Future[DbWriteResult] = {
-    metaModels.update(selector, addUpdateTime(modifier)).map {
+    metaModels.update(selector, modifier).map {
       res => wrapUpdateResult(res)
     }
   }
 
   override def updateDefinition(metaModelId: String, definition: MetaModel): Future[DbWriteResult] = {
     val selector = Json.obj("id" -> metaModelId)
-    val modifier = Json.obj("$set" -> Json.obj("definition" -> definition))
+    val modifier = Json.obj("$set" -> Json.obj("definition" -> definition, "updated" -> Instant.now))
     update(selector, modifier)
   }
 
@@ -85,8 +87,5 @@ object MetaModelDaoImpl extends MetaModelDao {
     }
   }
 
-  private def addUpdateTime(update: JsObject) = {
-    Json.obj("$currentDate" -> Json.obj("updated" -> true)) ++ update
-  }
 
 }

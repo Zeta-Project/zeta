@@ -90,7 +90,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
         concept => {
           protectedWrite(id, {
             val selector = Json.obj("id" -> id)
-            val modifier = Json.obj("$set" -> Json.obj("definition.concept" -> concept))
+            val modifier = Json.obj("$set" -> Json.obj("definition.concept" -> concept, "updated" -> Instant.now))
             MetaModelDaoImpl.update(selector, modifier)
           })
         }
