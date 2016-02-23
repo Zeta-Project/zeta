@@ -18,7 +18,7 @@ object MetamodelGraphDiff {
    * @return Ein neues MetaModelData-Objekt mit korrigiertem Graph.
    */
   def fixMetaModel(metaModelData: MetaModelData_2): MetaModelData_2 = {
-    val metaModel = Json.parse(metaModelData.data).as[JsObject]
+    val metaModel = Json.parse(metaModelData.data).as[Seq[JsObject]]
     var graph = Json.parse(metaModelData.graph).as[JsObject]
 
     def fixAttributes() = {
