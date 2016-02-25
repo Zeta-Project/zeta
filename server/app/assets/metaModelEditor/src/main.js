@@ -581,10 +581,12 @@ var Rappid = Backbone.Router.extend({
          * @param graph
          */
         saveMetaModel: function (metaModel, graph) {
+            var fnSave = function (accessToken, tokenRefreshed, error) {
+                if (error) {
+                    alert("Error saving meta model: " + error);
+                    return;
+                }
 
-            var self = this;
-
-            var fnSave = function (accessToken, tokenRefreshed) {
                 $.ajax({
                     type: 'PUT',
                     url: '/metamodels/' + window.loadedMetaModel.uuid + '/concept',
@@ -601,7 +603,7 @@ var Rappid = Backbone.Router.extend({
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         if (!tokenRefreshed) {
-                            self.authorized(fnSave, true);
+                            accessToken.authorized(fnSave, true);
                         } else {
                             alert("Error saving meta model: " + errorThrown);
                         }
@@ -609,59 +611,7 @@ var Rappid = Backbone.Router.extend({
                 });
             };
 
-            this.authorized(fnSave);
-        },
-
-        /**
-         * Gets the access token and calls the function fnThen with this token.
-         * @param fnThen - Function that will be called with the accessToken.
-         * @param forceRefresh - Forces a refresh of the accessToken.
-         */
-        authorized: function (fnThen, forceRefresh) {
-            var loadToken = !!forceRefresh;
-            if (!window.loadedMetaModel.authorizationToken) {
-                loadToken = true;
-            } else {
-                var timeTokenLoaded = window.loadedMetaModel.authorizationToken.timeTokenLoaded;
-                var secondsTokenExpires = window.loadedMetaModel.authorizationToken.expires - 60;
-                var timeDifference = (new Date() - timeTokenLoaded) / 1000;
-                if (timeDifference > secondsTokenExpires) {
-                    loadToken = true;
-                }
-            }
-
-            if (loadToken) {
-                this.refreshAccessToken(fnThen);
-            } else {
-                fnThen(window.loadedMetaModel.authorizationToken.token, false);
-            }
-        },
-
-        /**
-         * Reloads the accessToken and calls fhThen on success.
-         * @param fnThen - Function that will be called on success.
-         */
-        refreshAccessToken: function (fnThen) {
-            $.ajax({
-                type: 'POST',
-                url: '/oauth/accessTokenLocal',
-                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-                data: {
-                    "client_id": "modigen-browser-app1",
-                    "grant_type": "implicit"
-                },
-                success: function (data, textStatus, jqXHR) {
-                    window.loadedMetaModel.authorizationToken = {
-                        timeTokenLoaded: new Date(),
-                        expires: data["expires_in"],
-                        token: data["access_token"]
-                    };
-                    fnThen(window.loadedMetaModel.authorizationToken.token, true);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    alert("Error loading access token: " + textStatus);
-                }
-            });
+            accessToken.authorized(fnSave);
         },
 
         initializeToolbarTooltips: function () {

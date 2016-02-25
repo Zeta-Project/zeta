@@ -93,9 +93,9 @@
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <a href="@routes.MetaModelController.deleteMetaModel(metaModel.get.id)" class="btn btn-danger">
+                            <button id="btnDeleteMetaModel" class="btn btn-danger">
                                 Delete Meta Model
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -127,5 +127,37 @@
                     window.location.replace("/metamodel/new/" + name);
                 }
             });
+
+            @if(metaModel.isDefined) {
+                $("#btnDeleteMetaModel").click(function() {
+
+                    var fnDelete = function(accessToken, tokenRefreshed, error) {
+                        if (error) {
+                            alert("Could not delete meta model: " + error);
+                            return;
+                        }
+
+                        $.ajax({
+                            type : 'DELETE',
+                            url : '/metamodels/' + "@metaModel.get.id",
+                            headers : {
+                                Authorization: "Bearer " + accessToken
+                            },
+                            success : function(data, textStatus, jqXHR) {
+                                window.location.replace("/overview");
+                            },
+                            error : function(jqXHR, textStatus, errorThrown) {
+                                if (!tokenRefreshed) {
+                                    accessToken.authorized(fnDelete, true);
+                                } else {
+                                    alert("Could not delete meta model: " + textStatus);
+                                }
+                            }
+                        });
+                    };
+
+                    accessToken.authorized(fnDelete);
+                });
+            }
         </script>
     }
