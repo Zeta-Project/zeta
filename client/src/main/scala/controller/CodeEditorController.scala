@@ -54,7 +54,6 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
     def fnSave(tokenInformation: TokenInformation) : Unit = {
 
       if (tokenInformation.error.isDefined) {
-        println(s"Error: ${tokenInformation.error}")
         return
       }
 
@@ -68,11 +67,9 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
           Authorization = s"Bearer ${tokenInformation.token}"
         ),
         success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
-          println("Saved successfully")
         },
         error = { (jqXHR : JQueryXHR, textStatus: String, errorThrown : String) =>
           if (!tokenInformation.refreshed) {
-            println("Error: Force Refresh")
             authorized(fnSave, forceRefresh = true)
           } else {
              println(s"Cannot save: $errorThrown")
@@ -84,22 +81,17 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
     authorized(fnSave, forceRefresh = false)
 
-    // ws.sendMessage(SaveCode(dslType, metaModelUuid, document.str))
-
   }
 
   def authorized(fnThen: TokenInformation => Unit, forceRefresh : Boolean) = {
-    println("authorized")
 
     var refresh = forceRefresh
 
     if (accessToken == null) {
-      println("accessToken is null")
       refresh = true
     }
 
     if (refresh) {
-      println("Refresh")
       refreshAccessToken(fnThen)
     } else {
       fnThen(TokenInformation(accessToken.token, refreshed = false, None))
