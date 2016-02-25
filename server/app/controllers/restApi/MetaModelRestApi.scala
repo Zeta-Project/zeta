@@ -15,6 +15,7 @@ import scala.concurrent.Future
 
 import scalaoauth2.provider.OAuth2Provider
 
+// TODO: Reduce redundancy for some methods
 
 class MetaModelRestApi extends Controller with OAuth2Provider {
 
@@ -153,6 +154,60 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
         val refDef = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[MReference]))
         Ok(Json.toJson(refDef))
       })
+    }
+  }
+
+  def updateShape(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
+    oAuth { implicit userId =>
+      val in = request.body.validate[Shape]
+      in.fold(
+        errors => {
+          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+        },
+        shape => {
+          protectedWrite(id, {
+            val selector = Json.obj("id" -> id)
+            val modifier = Json.obj("$set" -> Json.obj("definition.shape" -> shape, "updated" -> Instant.now))
+            MetaModelDaoImpl.update(selector, modifier)
+          })
+        }
+      )
+    }
+  }
+
+  def updateStyle(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
+    oAuth { implicit userId =>
+      val in = request.body.validate[Style]
+      in.fold(
+        errors => {
+          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+        },
+        style => {
+          protectedWrite(id, {
+            val selector = Json.obj("id" -> id)
+            val modifier = Json.obj("$set" -> Json.obj("definition.style" -> style, "updated" -> Instant.now))
+            MetaModelDaoImpl.update(selector, modifier)
+          })
+        }
+      )
+    }
+  }
+
+  def updateDiagram(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
+    oAuth { implicit userId =>
+      val in = request.body.validate[Diagram]
+      in.fold(
+        errors => {
+          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+        },
+        diagram => {
+          protectedWrite(id, {
+            val selector = Json.obj("id" -> id)
+            val modifier = Json.obj("$set" -> Json.obj("definition.diagram" -> diagram, "updated" -> Instant.now))
+            MetaModelDaoImpl.update(selector, modifier)
+          })
+        }
+      )
     }
   }
 
