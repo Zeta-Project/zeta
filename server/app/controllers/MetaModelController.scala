@@ -56,26 +56,9 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
     }
   }
 
-  def deleteMetaModel(metaModelUuid: String) = SecuredAction { implicit request =>
-    val userUuid = request.user.uuid.toString
-    if (Await.result(MetaModelDatabase_2.modelExists(metaModelUuid), 30 seconds)) {
-      val metaModel = Await.result(MetaModelDatabase_2.loadModel(metaModelUuid), 30 seconds)
-      if (metaModel.isDefined && metaModel.get.userUuid == userUuid) {
-        MetaModelDatabase_2.deleteModel(metaModelUuid)
-
-        Redirect(controllers.webpage.routes.WebpageController.diagramsOverview(null))
-      } else {
-        Redirect(controllers.webpage.routes.WebpageController.index())
-      }
-    } else {
-      Redirect(controllers.webpage.routes.WebpageController.index())
-    }
-  }
-
   def metaModelSocket(metaModelUuid: String) = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
     MetaModelWsActor.props(out, metaModelUuid)
   }
-
 
   // only for development purposes, will be deleted later on
   def dummyInsert = SecuredAction.async { implicit request =>

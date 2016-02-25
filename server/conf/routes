@@ -13,7 +13,6 @@ POST          /profile/edit                                                     
 ### Metamodel
 GET           /metamodel/new/:name                                                @controllers.MetaModelController.newMetaModel(name: String)
 GET           /metamodel/editor/:metaModelUuid                                    @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
-GET           /metamodel/delete/:metaModelUuid                                    @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
 GET           /metamodel/socket/:metaModelUuid                                    @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
 # temporary
 GET           /metamodel/dummy                                                    @controllers.MetaModelController.dummyInsert
