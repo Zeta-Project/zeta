@@ -1,6 +1,6 @@
 package util.graph
 
-import models.metaModel.MetaModelData
+import models.metaModel.MetaModelData_2
 import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
 
 import scala.collection.Set
