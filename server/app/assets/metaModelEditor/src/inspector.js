@@ -114,14 +114,14 @@ var inspector = (function inspector () {
             index : 5
         },
 
-        uniqueLocal : {
+        localUnique : {
             type : 'toggle',
             label : 'Unique local',
             defaultValue : false,
             index : 6
         },
 
-        uniqueGlobal: {
+        globalUnique: {
             type : 'toggle',
             label : 'Unique global',
             defaultValue: false,

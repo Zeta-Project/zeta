@@ -89,13 +89,13 @@ class window.Graph
 
 # Returns the attributes of the cell.
   getAttributes: (cell) ->
-    mAttributes = {}
+    mAttributes = []
 
     if cell.attributes[Constants.field.ATTRIBUTES]?
       for attributes in cell.attributes[Constants.field.ATTRIBUTES]
-        mAttributes[attributes.name] = {}
+        mAttributes.push({});
         for key, value of attributes
-          mAttributes[attributes.name][key] = value
+          mAttributes[mAttributes.length - 1][key] = value
 
     mAttributes
 

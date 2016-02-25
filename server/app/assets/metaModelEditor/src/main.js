@@ -587,14 +587,18 @@ var Rappid = Backbone.Router.extend({
                     return;
                 }
 
+                var data = JSON.stringify({
+                    elements: metaModel,
+                    uiState: JSON.stringify(graph)
+                });
+
+                console.log(data);
+
                 $.ajax({
                     type: 'PUT',
                     url: '/metamodels/' + window.loadedMetaModel.uuid + '/concept',
                     contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({
-                        elements: metaModel,
-                        uiState: graph
-                    }),
+                    data: data,
                     headers: {
                         Authorization: "Bearer " + accessToken
                     },

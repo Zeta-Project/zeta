@@ -43,7 +43,7 @@ var exampleInstance = {
         }
     },
     "8e9b1093-a589-4ae4-8e1e-1b3d63a3f842": {
-        "mRef": "isFather",
+        "mReference": "isFather",
         "source": {
             "Male" : ["846bc8a2-00fc-401f-b626-0b0252516aee"]
         },
@@ -52,7 +52,7 @@ var exampleInstance = {
         }
     },
     "ee204744-6322-49d4-928e-1442e8bc70c4": {
-        "mRef": "isHusband",
+        "mReference": "isHusband",
         "source": {
             "Male" : ["846bc8a2-00fc-401f-b626-0b0252516aee"]
         },
@@ -61,7 +61,7 @@ var exampleInstance = {
         }
     },
     "d5b00503-5378-4df3-9e27-4d2b0d018750": {
-        "mRef": "isMother",
+        "mReference": "isMother",
         "source": {
             "Female" : ["a264a43b-6f97-4257-9243-baddbf745490"]
         },
@@ -70,7 +70,7 @@ var exampleInstance = {
         }
     },
     "666d4de7-e0f2-4620-8c19-d5469b40be1f": {
-        "mRef": "isWife",
+        "mReference": "isWife",
         "source": {
             "Female" : ["a264a43b-6f97-4257-9243-baddbf745490"]
         },
