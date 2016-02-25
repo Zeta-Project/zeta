@@ -29,11 +29,12 @@ GET           /metamodels/:metaModelId/concept/mclasses                         
 GET           /metamodels/:metaModelId/concept/mreferences                        @controllers.restApi.MetaModelRestApi.getMReferences(metaModelId: String)
 GET           /metamodels/:metaModelId/concept/mclasses/:mClassName               @controllers.restApi.MetaModelRestApi.getMClass(metaModelId: String, mClassName: String)
 GET           /metamodels/:metaModelId/concept/mreferences/:mReferenceName        @controllers.restApi.MetaModelRestApi.getMReference(metaModelId: String, mReferenceName: String)
-GET           /metamodels/:metaModelId/style                                      @controllers.restApi.MetaModelRestApi.getStyle(metaModelId: String)
 GET           /metamodels/:metaModelId/shape                                      @controllers.restApi.MetaModelRestApi.getShape(metaModelId: String)
+PUT           /metamodels/:metaModelId/shape                                      @controllers.restApi.MetaModelRestApi.updateShape(metaModelId: String)
+GET           /metamodels/:metaModelId/style                                      @controllers.restApi.MetaModelRestApi.getStyle(metaModelId: String)
+PUT           /metamodels/:metaModelId/style                                      @controllers.restApi.MetaModelRestApi.updateStyle(metaModelId: String)
 GET           /metamodels/:metaModelId/diagram                                    @controllers.restApi.MetaModelRestApi.getDiagram(metaModelId: String)
-
-
+PUT           /metamodels/:metaModelId/diagram                                    @controllers.restApi.MetaModelRestApi.updateDiagram(metaModelId: String)
 
 ### Model
 GET           /model/new/:metaModelUuid                                           @controllers.ModelController.newModel(metaModelUuid: String)
@@ -49,6 +50,7 @@ GET           /models/:modelId/nodes/:nodeId                                    
 GET           /models/:modelId/edges                                              @controllers.restApi.ModelRestApi.getEdges(modelId: String)
 GET           /models/:modelId/edges/:edgeId                                      @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeId: String)
 
+POST          /models/echo                                                        @controllers.restApi.ModelRestApi.echo
 
 ### Code Editor
 GET           /codeeditor/editor/:metaModelUuid/:dslType                          @controllers.CodeEditorController.codeEditor(metaModelUuid: String, dslType: String)
