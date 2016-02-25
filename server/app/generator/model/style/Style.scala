@@ -155,7 +155,7 @@ object Style extends CommonParserMethods {
    * @param name is the name of the class
    * @param className is the type (e.G. Style, Shape ...)*/
   def messageIgnored(attribute: String, name: String, className: String) = println("Styleparsing: attribute -> " +
-    attribute + " in " + className + " '" + name + "' was ignored") /*TODO replace with call to Logger*/
+    attribute + " in " + className + " '" + name + "' was ignored")
 
 
   /*neccessary for parsing*/

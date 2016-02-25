@@ -3,7 +3,8 @@ package generator.generators.spray
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import generators.MclassMock
+import generators.MClass
+import models.metaModel.mCore.MClass
 import scala.collection.mutable.HashMap
 
 /**
@@ -146,9 +147,8 @@ object ValidatorGenerator {
     }"""
   }
 
-  /*TODO ask markus what methode/field type does*/
   private def getTargetMatrix( diagram:Diagram) = {
-    val targetMatrix = new HashMap[MclassMock/*TODO MClass*/, HashMap[String, Boolean]]
+    val targetMatrix = new HashMap[MClass, HashMap[String, Boolean]]
     for(node <- diagram.nodes){
       val edgeTargetMap = getEdgeTargetMap(node, diagram.edges)
       targetMatrix.put(node.mcoreElement, edgeTargetMap)
@@ -157,7 +157,7 @@ object ValidatorGenerator {
   }
 
   private def getSourceMatrix(diagram:Diagram) ={
-    val sourceMatrix = new HashMap[MclassMock, HashMap[String, Boolean]]
+    val sourceMatrix = new HashMap[MClass, HashMap[String, Boolean]]
     for(node <- diagram.nodes){
       val edgeSourceMap = getEdgeSourceMap(node, diagram.edges)
       sourceMatrix.put(node.mcoreElement, edgeSourceMap)
@@ -178,8 +178,8 @@ object ValidatorGenerator {
     val edgeTargetMap = HashMap[String, Boolean]()
     val nodeClass = node.mcoreElement
     for(edge <- edges){
-      val targetClass = edge.to.EReferenceType
-      edgeTargetMap.put(edge.name, targetClass.isSuperTypeOf(nodeClass))
+      val targetClass = edge.to
+      edgeTargetMap.put(edge.name, nodeClass.superTypes.contains(targetClass))
     }
     edgeTargetMap
   }
@@ -188,12 +188,15 @@ object ValidatorGenerator {
     val edgeSourceMap = new HashMap[String, Boolean]
     val nodeClass = node.mcoreElement
     for(edge <- edges){
-      val sourceClass = edge.from.EReferenceType
-      edgeSourceMap.put(edge.name, sourceClass.isSuperTypeOf(nodeClass))
+      val sourceClass = edge.from
+      edgeSourceMap.put(edge.name, nodeClass.superTypes.contains(sourceClass))//TODO MCore pendant for isSuperTypeOf???
     }
     edgeSourceMap
   }
 
+  /**
+   * Since compartment definitions in shape.xtext are declared as depcrecated this method is not usable anymore*/
+  @deprecated
   private def getCompartmentMap(node:Node, nodeList:List[Node])={
     val compartmentMap = new HashMap[String, List[String]]
     val nodeClass = node.mcoreElement
@@ -201,10 +204,10 @@ object ValidatorGenerator {
       var validCompartments = List[String]()
       if(parent.shape isDefined){
         for((name, compartment ) <- parent.shape.get.nests /*compartments*/){
-          //TODO can be resolved as soon as DiaShape elements are reinvented as MCore elements
-        //  if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
-        //    validCompartments =  compartment.nestedShape.name :: validCompartments
-        //  }
+          //TODO cant be resolved since compartments have no nestedShape  - Spray.xtext says compartments are (Ereference -> Shape) mapping.... ?!?!?
+          //if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
+          //  validCompartments =  compartment.nestedShape.name :: validCompartments
+          //}
         }
       }
       compartmentMap.put(parent.name, validCompartments)

@@ -58,7 +58,7 @@ object StencilGenerator {
       ${if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined)
       s"""mcoreAttributes: [
              {
-                mcore: '${node.onCreate.get.askFor.get /*TODO actually askFor is a MReference get the name of that*/}',
+                mcore: '${node.onCreate.get.askFor.get.name}',
                 cellPath: ['attrs', '.label', 'text']
               }
             ],"""
@@ -125,7 +125,7 @@ object StencilGenerator {
   private def getNodeToPaletteMapping(diagram:Diagram):mutable.HashMap [String,ListBuffer[Node]] = {
     var mapping = new mutable.HashMap [String,ListBuffer[Node]]
     for(node <- diagram.nodes){
-      val paletteName = node.palette.getOrElse("") //TODO palette.paletteCompartment
+      val paletteName = node.palette.getOrElse("")
       if(mapping.contains(paletteName)){
         mapping(paletteName) += node
       }else{

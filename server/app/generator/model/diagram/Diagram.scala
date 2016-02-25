@@ -5,6 +5,7 @@ import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
 import generator.model.style.{Style, HasStyle}
 import generator.parser.Cache
+import models.metaModel.mCore.MClass
 
 /**
  * Created by julian on 24.11.15.
@@ -15,10 +16,10 @@ sealed class Diagram private (val name:String,
                val nodes:List[Node],
                val edges:List[Edge],
                override val style: Option[Style],
-               val metamodelElement:AnyRef) extends HasStyle
+               val metamodelElement:MClass) extends HasStyle
 
 object Diagram {
-  def apply(name:String, globActGrps:Map[String, ActionGroup], nodes:List[Node], edges:List[Edge], style:Option[Style], modelType:String, cache:Cache) = {
+  def apply(name:String, globActGrps:Map[String, ActionGroup], nodes:List[Node], edges:List[Edge], style:Option[Style], modelType:MClass, cache:Cache) = {
     new Diagram(name, globActGrps, nodes, edges, style, modelType)
   }
 }

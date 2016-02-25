@@ -4,12 +4,14 @@ import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, RIGHT, LEFT, HAlign}
 import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.layouts.TextLayout
 import generator.model.style.HasStyle
 import scala.collection.mutable.HashMap
 
 /**
  * Created by julian on 19.01.16.
  * shape and inlinestyle generator kindof useless since inlinestyles are now automatically merged with the actual styles....
+ *
  */
 
 
@@ -161,22 +163,17 @@ object GeneratorShapeAndInlineStyle {
     """
 
 
-  protected def getInlineStyle(shape:GeometricModel)={
-    val style = shape match {
-      case h:HasStyle if h.style isDefined => h.style
-      case _ => None
+  /**
+   * getInlineStyle is deprecated, since the style attributes are now implicitly mixed in the surrounding style instance*/
+  @deprecated
+  protected def getInlineStyle(shape:GeometricModel )={
+    shape match {
+      case hs:HasStyle if hs.style isDefined =>s"""
+        ${StyleGenerator.commonAttributes(hs.style.get)}
+        ${if(shape.isInstanceOf[TextLayout])StyleGenerator.fontAttributes(hs.style.get)}
+        """
+      case _ => ""
     }
-    var ret = """
-    """
-
-    if(style isDefined){
-      ret += StyleGenerator.commonAttributes(style.get)
-      if(shape.isInstanceOf[Text]){
-        ret += StyleGenerator.fontAttributes(style.get)
-      }
-    }
-    //TODO ??? «IF layout.eContainer.eClass == TextLayout»
-    ret
   }
 
   protected def getRefXValue(alignment:HAlign)={

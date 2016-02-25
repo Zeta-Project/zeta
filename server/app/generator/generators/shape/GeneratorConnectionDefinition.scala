@@ -3,8 +3,9 @@ package generator.generators.shape
 import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.connection.shapeconnections._
 import generator.model.shapecontainer.connection.{Connection, Placing}
-import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.layouts.TextLayout
+import generator.model.style.HasStyle
 
 import scala.collection.mutable
 
@@ -24,7 +25,7 @@ object GeneratorConnectionDefinition {
     """ +
       connections.map(c => "case " + c.name + ":\n" + {
       if(c.style.isDefined)
-        "style = getStyle("+c.style.get.name+");\n" //TODO && connection.style.dslStyle != null ?????? wurde in der style.xtext grammatik nie erwähnt
+        "style = getStyle("+c.style.get.name+");\n"
       else
         "style = {'.connection':{stroke: 'black'}};"
       } +
@@ -178,6 +179,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDLine ,distance:Int)={
+    /*TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style maybe the actual style attributes should be called here*/
     """
     markup: '<line />',
     attrs:{
@@ -190,6 +192,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDPolyLine ,distance:Int)={
+    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<polyline />',
     attrs:{
@@ -200,6 +203,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDRectangle, distance:Int)={
+    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<rect />',
     attrs:{
@@ -211,6 +215,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDRoundedRectangle ,distance:Int)={
+    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<rect />',
     attrs:{
@@ -224,6 +229,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDPolygon , distance:Int)={
+    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<polygon />',
     attrs:{
@@ -233,6 +239,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDEllipse , distance:Int)={
+    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<ellipse />',
     attrs:{
@@ -244,6 +251,7 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:CDText, distance:Int)={
+    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<text>«shape.body.value»</text>',
     attrs:{
@@ -345,13 +353,16 @@ object GeneratorConnectionDefinition {
     }
   }
 
-  protected def getInlineStyle(shape:Shape )={
-    val style = shape.style
-    if(style isDefined){"""
-     """ + StyleGenerator.commonAttributes(style.get) + """
-     """ + StyleGenerator.fontAttributes(style.get) + """
-     """
+  /**
+   * getInlineStyle is deprecated, since the style attributes are now implicitly mixed in the surrounding style instance*/
+  @deprecated
+  protected def getInlineStyle(shape:GeometricModel )={
+    shape match {
+      case hs:HasStyle if hs.style isDefined =>s"""
+        ${StyleGenerator.commonAttributes(hs.style.get)}
+        ${if(shape.isInstanceOf[TextLayout])StyleGenerator.fontAttributes(hs.style.get)}
+        """
+      case _ => ""
     }
-    //TODO unclear... «IF layout.eContainer.eClass == TextLayout»
   }
 }

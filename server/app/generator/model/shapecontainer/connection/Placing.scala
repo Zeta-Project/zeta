@@ -13,7 +13,6 @@ sealed class Placing private (val position_offset:Double,
                    val position_distance:Option[Int]=None,
                    val shapeCon:GeometricModel,
                    val shape:Shape){
-  /*TODO placing hat laut der grammatik eigentlich keine direkte beziehung zu einer Shape lediglich eine geomtric form, welche ein CDText sein kann ???*/
   def text = shapeCon match {
     case t:Text => Some(t)
     case _ => None

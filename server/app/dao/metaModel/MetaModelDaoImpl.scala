@@ -1,15 +1,10 @@
 package dao.metaModel
 
-import dao.{DbWriteResult, DbWriteResult$, GenericMongoDao, ReactiveMongoHelper}
+import dao.{DbWriteResult, GenericMongoDao, ReactiveMongoHelper}
 import models.metaModel._
-import models.metaModel.mCore.{MClass, MReference}
-import play.api.Play.current
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
-import play.modules.reactivemongo.ReactiveMongoApi
 import play.modules.reactivemongo.json._
-import play.modules.reactivemongo.json.collection._
-import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 
 import scala.concurrent.Future
 

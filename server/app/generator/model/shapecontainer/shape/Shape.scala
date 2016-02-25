@@ -43,7 +43,7 @@ sealed class Shape private (override val name:String = "no name",
     if(inherited_and_new_geometrics nonEmpty)Some(inherited_and_new_geometrics)else None
   }
 
-  /*if parentShape had TextOutputFields (Text) and if new TextFields(in geos) were parsed, create a new Map[String, Text]*/
+  /*if parentShape has TextOutputFields (Text) and if new TextFields(in geos) were parsed, create a new Map[String, Text]*/
   /*first check for new TextOutputs*/
   val textMap = {
     var ret = parentTextMap

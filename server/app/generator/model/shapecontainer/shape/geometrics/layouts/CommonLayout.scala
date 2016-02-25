@@ -56,7 +56,7 @@ object CommonLayoutParser extends CommonParserMethods{
         override val size_height: Int = size_h.get
         override val style: Option[Style] = styl
       })
-    else println("no size was given for Position in: " + geoModel.typ)//TODO replace with call to Logger
+    else println("no size was given for Position in: " + geoModel.typ)
    ret
   }
 }

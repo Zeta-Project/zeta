@@ -6,7 +6,7 @@ import java.nio.file._
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
-import generators.{ProjectPropertiesMock, Resource}
+import generator.parser.Cache
 
 import scala.collection.mutable.HashMap
 
@@ -16,36 +16,21 @@ import scala.collection.mutable.HashMap
  */
 object ShapeGenerator {
 
-  val Default_File_Location = System.getProperty("user.home") //TODO
 
   val JOINTJS_PATH = "jointjs-gen/diagram"
-  val JOINTJS_SHAPE_FILENAME = Default_File_Location + "shape.js"
-  val JOINTJS_INSPECTOR_FILENAME = Default_File_Location + "inspector.js"
-  val JOINTJS_CONNECTION_FILENAME = Default_File_Location + "connectionstyle.js"
-  val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = Default_File_Location + "elementAndInlineStyle.js"
+  val JOINTJS_SHAPE_FILENAME = "shape.js"
+  val JOINTJS_INSPECTOR_FILENAME = "inspector.js"
+  val JOINTJS_CONNECTION_FILENAME = "connectionstyle.js"
+  val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
 
-  def doGenerate(resource: Resource) {
-    if (!resource.getPath.endsWith(ProjectPropertiesMock.SHAPES_FILE_EXTENSION)) {
-      println("Shape generator is NOT producing JointJS code for model " + resource.getPath) //TODO replace with call to logger
-      return
-    }
-
-    println("Shape generator is producing JointJS code for model " + resource.getPath)
-    ProjectPropertiesMock.setModelUri(resource.getURI)
-
-    //super.doGenerate(resource, fsa); TODO i dont know what super(IGenerator?) does...
-    //val JavaGenFile java = genFileProvider.get()
-    //java.access = fsa
+  def doGenerate(cache:Cache, location:String) {
+    val DEFAULT_SHAPE_LOCATION = "/"+location
 
     val attrs = GeneratorShapeDefinition.attrsInspector
 
     //---------------------------------------------------------------------------------------
     // Shapes
-
-    //val jointJSShapeOutputConfName = "JointJSshapeOutputConfiguration"
-    //  fsa.addJointJSOutputConfiguration(jointJSShapeOutputConfName) TODO dont know what this xtext element does
-
-    val packageName = resource.getPath.getParent.toString
+    val packageName = DEFAULT_SHAPE_LOCATION
     var jointJSShapeContent = ""
 
 
@@ -53,13 +38,13 @@ object ShapeGenerator {
     jointJSShapeContent = GeneratorShapeDefinition.head(packageName)
 
     //Write different Shape Definitions
-    for (shapeDefinition <- resource.cache.shapeHierarchy.nodeView.values) {
+    for (shapeDefinition <- cache.shapeHierarchy.nodeView.values) {
       jointJSShapeContent += generateJointJSShape(shapeDefinition.data, packageName)
     }
 
     //Generate ShapeFile
     //fsa.generateFile(JOINTJS_SHAPE_FILENAME, jointJSShapeOutputConfName, jointJSShapeContent)
-    Files.write(Paths.get(JOINTJS_SHAPE_FILENAME), jointJSShapeContent.getBytes)
+    Files.write(Paths.get(DEFAULT_SHAPE_LOCATION+JOINTJS_SHAPE_FILENAME), jointJSShapeContent.getBytes)
 
     //---------------------------------------------------------------------------------------
     //ConnectionStyle
@@ -71,11 +56,11 @@ object ShapeGenerator {
 
     //Write connection Style file
     //jointJsConnectionContent = generatorConnectionDefinition.generate(resource.allContents.toIterable.filter(typeof(ConnectionDefinition))).toString
-    jointJsConnectionContent = GeneratorConnectionDefinition.generate(resource.cache.connections.values)
+    jointJsConnectionContent = GeneratorConnectionDefinition.generate(cache.connections.values)
 
     //Generate Connection Style file
     //  fsa.generateFile(JOINTJS_CONNECTION_FILENAME, jointJSShapeOutputConfName, jointJsConnectionContent);
-    Files.write(Paths.get(JOINTJS_CONNECTION_FILENAME), jointJsConnectionContent.getBytes)
+    Files.write(Paths.get(DEFAULT_SHAPE_LOCATION+JOINTJS_CONNECTION_FILENAME), jointJsConnectionContent.getBytes)
 
     //---------------------------------------------------------------------------------------
     // Inspector
@@ -100,8 +85,8 @@ object ShapeGenerator {
            jointJSInspectorContent = jointJSInspectorContent + java.generateJointJSInspector(shapeContainerElement, packageName, lastElement).toString()
        }
        */
-    for (shapeDefinition <- resource.cache.shapeHierarchy.nodeView.values) {
-      if (shapeDefinition == resource.cache.shapeHierarchy.nodeView.values.last) {
+    for (shapeDefinition <- cache.shapeHierarchy.nodeView.values) {
+      if (shapeDefinition == cache.shapeHierarchy.nodeView.values.last) {
         lastElement = true
       }
 
@@ -113,7 +98,7 @@ object ShapeGenerator {
 
     //  Generate InspectorFile
     //fsa.generateFile(JOINTJS_INSPECTOR_FILENAME, jointJSInspectorOutputConfName, jointJSInspectorContent)
-    Files.write(Paths.get(JOINTJS_INSPECTOR_FILENAME), jointJSInspectorContent.getBytes)
+    Files.write(Paths.get(DEFAULT_SHAPE_LOCATION+JOINTJS_INSPECTOR_FILENAME), jointJSInspectorContent.getBytes)
 
       //---------------------------------------------------------------------------------------
       // ElementAndInlineStyle
@@ -129,8 +114,8 @@ object ShapeGenerator {
       lastElement = false
 
       //Write Shape Style for different Shape Definitions
-      for(shapeDefinition <- resource.cache.shapeHierarchy.nodeView.values) {
-        if(shapeDefinition == resource.cache.shapeHierarchy.nodeView.values.last){
+      for(shapeDefinition <- cache.shapeHierarchy.nodeView.values) {
+        if(shapeDefinition == cache.shapeHierarchy.nodeView.values.last){
           lastElement = true
         }
         jointJSShapeAndInlineStyleContent += generatorShapeStyle(shapeDefinition.data, packageName, lastElement, attrs)
@@ -141,7 +126,7 @@ object ShapeGenerator {
 
       //Generate ShapeFile
     //  fsa.generateFile(JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME, jointJSShapeAndInlineStyleOutputConfName, jointJSShapeAndInlineStyleContent)
-    Files.write(Paths.get(JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME), jointJSShapeAndInlineStyleContent.getBytes)
+    Files.write(Paths.get(DEFAULT_SHAPE_LOCATION+JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME), jointJSShapeAndInlineStyleContent.getBytes)
 
     }
 

@@ -9,11 +9,10 @@ import parser._
  * Created by julian on 03.11.15.
  * representation of a description
  */
-/*TODO description is rather useless ... missing something?*/
-sealed class Description private (override val id:String,
-                  val style:Option[Style],
-                  val hAlign:Option[HAlign],
-                  val vAlign:Option[VAlign]) extends TextBody
+sealed class Description private ( override val id:String,
+                                   val style:Option[Style],
+                                   val hAlign:Option[HAlign],
+                                   val vAlign:Option[VAlign]) extends TextBody
 
 object Description extends CommonParserMethods{
 

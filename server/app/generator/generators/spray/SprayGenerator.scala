@@ -1,7 +1,8 @@
 package generator.generators.spray
 
 import java.nio.file.{Paths, Files}
-import generators.{ProjectPropertiesMock, Resource}
+import generator.model.diagram.Diagram
+import generator.parser.Cache
 
 /**
  * Created by julian on 07.02.16.
@@ -18,17 +19,9 @@ object SprayGenerator {
   /**
    * This method is a long sequence of calling all templates for the code generation
    */
-  def doGenerate(resource:Resource) {
-
-    if (!resource.getPath.endsWith(ProjectPropertiesMock.SPRAY_FILE_EXTENSION)) {
-      println("Spray generator is NOT producing JointJS code for model " + resource.getPath)
-      return
-    }
-
-    println("Spray generator is producing JointJS code for model " + resource.getPath)
-    ProjectPropertiesMock.setModelUri(resource.getURI)
-    //TODO super.doGenerate(resource, fsa) what does JvmModelGenerator (extended by SprayGenerator.xtext) do?
-    val packageName = resource.getPath.getParent.toString
+  def doGenerate(diagram: Diagram, location:String) {
+    val DEFAULT_DIAGRAM_LOCATION = "/"+location
+    val packageName = DEFAULT_DIAGRAM_LOCATION
     StencilGenerator.setPackageName(packageName)
 
     //val JavaGenFile java = genFileProvider.get()
@@ -38,11 +31,10 @@ object SprayGenerator {
     //java.access = fsa
 
     //fsa.addJointJSOutputConfiguration(jointJSSprayOutputConfName)
-    val diagram = resource.cache.diagrams.head
-    Files.write(Paths.get(JOINTJS_STENCIL_FILENAME), StencilGenerator.generate(diagram._2).getBytes)
-    Files.write(Paths.get(JOINTJS_VALIDATOR_FILENAME), ValidatorGenerator.generate(diagram._2).getBytes)
-    Files.write(Paths.get(JOINTJS_README_FILENAME), ReadmeGenerator.generate(diagram._2).getBytes)
-    Files.write(Paths.get(JOINTJS_LINKHELPER_FILENAME), LinkhelperGenerator.generate(diagram._2).getBytes)
+    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+JOINTJS_STENCIL_FILENAME), StencilGenerator.generate(diagram).getBytes)
+    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+JOINTJS_VALIDATOR_FILENAME), ValidatorGenerator.generate(diagram).getBytes)
+    //Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+JOINTJS_README_FILENAME), ReadmeGenerator.generate(diagram).getBytes)
+    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+JOINTJS_LINKHELPER_FILENAME), LinkhelperGenerator.generate(diagram).getBytes)
 
     //fsa.addJointJSOutputRootConfiguration(jointJSSprayRootOutputConfName)
     Files.write(Paths.get(JOINTJS_ZIP_ANT_FILENAME), BuildZipGenerator.generate.getBytes)

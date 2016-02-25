@@ -9,16 +9,26 @@ import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.Style
+import models.metaModel.MetaModel
+import models.metaModel.mCore.{MReference, MClass}
 import parser._
-
 
 /**
  * Created by julian on 23.10.15.
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
-class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
+class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonParserMethods {
   implicit val cache = c
   type diaConnection = generator.model.diagram.edge.Connection
+  private val metaMapMClass = metaModel.definition.mObjects.collect {
+      case (name, x) if x.isInstanceOf[MClass] => (name, x.asInstanceOf[MClass])
+    }
+  private val metaMapMReference = metaModel.definition.mObjects.collect {
+    case (name, x) if x.isInstanceOf[MReference] => (name, x.asInstanceOf[MReference])
+  }
+  require(metaMapMClass nonEmpty)
+  
+  
 
 
   /*Style-specific----------------------------------------------------------------------------*/
@@ -167,7 +177,7 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
     case arg => ("palette", arg.toString)
   }
   private def container = "container" ~ ":" ~> argument <~ ";" ^^ {
-    case arg => ("container", arg.toString)//TODO eigentlich ecore::EReference
+    case arg => ("container", arg.toString)
   }
   private def actionBlock = rep(("call"?) ~ "(?!actionGroup)action".r ~> ident) ~ rep(("call"?) ~ "actionGroup" ~> ident) ^^ {
     case actions ~ actionGroups =>
@@ -175,22 +185,21 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
       val actGrps = actionGroups.map(i => cache.actionGroups(i))
       ActionBlock(acts, actGrps)
   }
-  private def askFor = "askFor" ~ ":" ~> ident ^^ {
-    case identifier => identifier +" is a Mock, change this line!!!!"/*TODO this is only a mock, actually ecoreAttribute*/
-  }
+  private def askFor = "askFor" ~ ":" ~> ident ^^ {_.toString}
 
   private def onCreate = "onCreate" ~ "{" ~> (actionBlock?) ~ (askFor?) <~ "}" ^^ {
-    case actblock ~ askfor => ("onCreate", OnCreate(actblock, askfor))//TODO eigentlich ecore::EAttribute
+    case actblock ~ askfor => ("onCreate", (actblock, askfor))
   }
   private def onUpdate = "onUpdate" ~ "{" ~> (actionBlock?) <~ "}" ^^ {
-    case actBlock => ("onUpdate", OnUpdate(actBlock))//TODO eigentlich ecore::EAttribute
+    case actBlock => ("onUpdate", actBlock)
   }
   private def onDelete = "onDelete" ~ "{" ~> (actionBlock?) <~ "}" ^^ {
-      case actBlock => ("onDelete", OnDelete(actBlock))//TODO eigentlich ecore::EAttribute
+      case actBlock => ("onDelete", actBlock)
     }
 
-  private def shapeVALPropertie = ("val" ~> ident) ~ ("->" ~> ident) ^^ {case key ~ value => ("val", key/*TODO eigentlich ecoreAttribute*/ -> value) }
-  private def shapeVARPropertie = ("var" ~> ident) ~ ("->" ~> ident) ^^ {case key ~ value => ("var", key -> value) }
+  private def shapeVALPropertie = ("val" ~> ident) ~ ("->" ~> ident) ^^ {
+    case key ~ value => ("val", key -> value) }
+  private def shapeVARPropertie = ("var" ~ "[" ~> ident <~ "]") ~ ("->" ~> ident) ^^ {case key ~ value => ("var", key -> value) }
   private def shapeTextPropertie = shapeVALPropertie|shapeVARPropertie <~ ",?".r
   private def shapeCompartmentPropertie = ("nest" ~> ident) ~ ("->" ~> ident) <~ ",?".r ^^ {case key ~ value => ("nest",key -> value) }
   private def diagramShape:Parser[(String, PropsAndComps)] = ("shape" ~ ":" ~> ident) ~ (("(" ~> rep((shapeTextPropertie|shapeCompartmentPropertie) <~ ",?".r)<~ ")")?) ^^ {
@@ -203,50 +212,60 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
     ("for" ~> ident) ~
     (("(" ~ "style" ~ ":" ~> ident <~ ")")?) ~
     ("{" ~> rep(diagramShape|palette|container|onCreate|onUpdate|onDelete|actions) <~ "}") ^^ {
-      case name ~ ecoreElement ~ corporatestyle ~ args =>
-        //TODO ecoreElement should be resolved ... -> "for Type=[ecore:Class|QualifiedName]"
+      case name ~ mcoreElement ~ corporatestyle ~ args =>
         val corporateStyle:Option[Style] = if(corporatestyle.isDefined)corporatestyle.get else None
         var shap:Option[PropsAndComps] = None
         var pal:Option[String] = None
-        var con:Option[AnyRef] = None
-        var onCr:Option[OnCreate] = None
-        var onUp:Option[OnUpdate] = None
-        var onDe:Option[OnDelete] = None
+        var con:Option[String] = None
+        var onCr:Option[(ActionBlock, String)] = None
+        var onUp:Option[ActionBlock] = None
+        var onDe:Option[ActionBlock] = None
         var actions:List[Action] = List()
         var actionIncludes:Option[ActionInclude] = None
         args.foreach {
           case i if i._1 == "shape" => shap = Some(i._2.asInstanceOf[PropsAndComps])
           case i if i._1 == "palette" => pal = Some(i._2.asInstanceOf[String])
-          case i if i._1 == "container" => con = Some(i._2.asInstanceOf[AnyRef])
-          case i if i._1 == "onCreate" => onCr = Some(i._2.asInstanceOf[OnCreate])
-          case i if i._1 == "onUpdate" => onUp = Some(i._2.asInstanceOf[OnUpdate])
-          case i if i._1 == "onDelete" => onDe = Some(i._2.asInstanceOf[OnDelete])
+          case i if i._1 == "container" => con = Some(i._2.asInstanceOf[String])
+          case i if i._1 == "onCreate" => onCr = Some(i._2.asInstanceOf[(ActionBlock, String)])
+          case i if i._1 == "onUpdate" => onUp = Some(i._2.asInstanceOf[ActionBlock])
+          case i if i._1 == "onDelete" => onDe = Some(i._2.asInstanceOf[ActionBlock])
           case i if i._1 == "actions" =>
             actions = i._2.asInstanceOf[(ActionInclude, List[Action])]._2
             actionIncludes = Some(i._2.asInstanceOf[(ActionInclude, List[Action])]._1)
           case _ =>
         }
-        ("node", NodeSketch(name, ecoreElement, corporateStyle, shap, pal, con, onCr, onUp, onDe, actions, actionIncludes))
+        ("node", NodeSketch(name, mcoreElement, corporateStyle, shap, pal, con, onCr, onUp, onDe, actions, actionIncludes))
     }
   }
   case class NodeSketch(name:String,
-                        ecoreElement:AnyRef,/*TODO this is a mock, replace with actual ecoreElement*/
+                        mcoreElement:String,
                         style:Option[Style]      = None,
                         /*node-block*/
                         shape:Option[PropsAndComps]= None,
                         palette:Option[String]     = None,
-                        container:Option[AnyRef]   = None,
-                        onCreate:Option[OnCreate]  = None,
-                        onUpdate:Option[OnUpdate]  = None,
-                        onDelete:Option[OnDelete]  = None,
+                        container:Option[String]   = None,
+                        onCreate:Option[(ActionBlock, String)]  = None,
+                        onUpdate:Option[ActionBlock]  = None,
+                        onDelete:Option[ActionBlock]  = None,
                         actions:List[Action]       = List(),
                         actionIncludes: Option[ActionInclude] = None){
     def toNode(diagramStyle:Option[Style], cache:Cache) = {
       val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
-      val diagramShape:Option[DiaShape] =
-        if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache))
-        else None
-      Node(name, ecoreElement, corporateStyle, diagramShape, palette, container, onCreate, onUpdate, onDelete, actions, actionIncludes)
+      val mClass = metaMapMClass.get(mcoreElement)
+      if(mClass isDefined) {
+        val diagramShape:Option[DiaShape] =
+          if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaMapMReference))
+          else None
+        val onCr = if (onCreate isDefined){
+          Some(OnCreate(Some(onCreate.get._1), Some(mClass.get.attributes.filter(_.name == onCreate.get._2).head)))
+        } else None
+        val onUp = if (onUpdate isDefined) Some(OnUpdate(onUpdate)) else None
+        val onDe = if (onDelete isDefined) Some(OnDelete(onDelete)) else None
+
+        val cont =if(container isDefined) metaMapMReference.get(container.get) else None
+        Some(Node(name, mClass.get, corporateStyle, diagramShape, palette, cont, onCr, onUp, onDe, actions, actionIncludes))
+      }
+      else None
     }
   }
 
@@ -264,53 +283,87 @@ class SprayParser(c: Cache = Cache()) extends CommonParserMethods {
       (("(" ~ "style" ~ ":" ~> ident <~ ")") ?) ~
       ("{" ~> diagramConnection) ~
       ("from" ~ ":" ~> ident) ~
-      ("to" ~ ":" ~> ident) ~ (palette?) ~ (container?) ~ (onCreate?) ~ (onUpdate?) ~ (onDelete?) ~ (actions?) <~ "}" ^^ {
-      case edgeName ~ ecoreElement ~ styleOpt ~ diaCon ~ from ~ to ~ pal ~ cont ~ oncr ~ onup ~ onde ~ acts =>
+      ("to" ~ ":" ~> ident) ~
+      (rep(palette|container|onCreate|onUpdate|onDelete|actions) <~ "}") ^^ {
+      case edgeName ~ mcoreElement ~ styleOpt ~ diaCon ~ from ~ to ~ args =>
         val style: Option[Style] = if(styleOpt isDefined)styleOpt.get else None
-        val ret_palette = if(pal isDefined)Some(pal.get._2) else None
-        val ret_container = if(cont isDefined)Some(cont.get._2) else None
-        val onCr = if(oncr isDefined) Some(oncr.get._2) else None
-        val onUp = if(onup isDefined) Some(onup.get._2) else None
-        val onDe = if(onde isDefined) Some(onde.get._2) else None
-        val ret_actions = if(acts isDefined)Some(acts.get._2._2)else None
-        val ret_actionIncludes = if(acts isDefined)Some(acts.get._2._1)else None
-        ("edge", EdgeSketch(edgeName, ecoreElement, style, diaCon, from, to, ret_palette, ret_container, onCr, onUp, onDe, ret_actions.getOrElse(List()), ret_actionIncludes))
+        var pal:Option[String] = None
+        var con:Option[String] = None
+        var onCr:Option[(ActionBlock, String)] = None
+        var onUp:Option[ActionBlock] = None
+        var onDe:Option[ActionBlock] = None
+        var actions:List[Action] = List()
+        var actionIncludes:Option[ActionInclude] = None
+        args.foreach {
+          case i if i._1 == "palette" => pal = Some(i._2.asInstanceOf[String])
+          case i if i._1 == "container" => con = Some(i._2.asInstanceOf[String])
+          case i if i._1 == "onCreate" => onCr = Some(i._2.asInstanceOf[(ActionBlock, String)])
+          case i if i._1 == "onUpdate" => onUp = Some(i._2.asInstanceOf[ActionBlock])
+          case i if i._1 == "onDelete" => onDe = Some(i._2.asInstanceOf[ActionBlock])
+          case i if i._1 == "actions" =>
+            actions = i._2.asInstanceOf[(ActionInclude, List[Action])]._2
+            actionIncludes = Some(i._2.asInstanceOf[(ActionInclude, List[Action])]._1)
+          case _ =>
+        }
+        ("edge", EdgeSketch(edgeName, mcoreElement, style, diaCon, from, to, pal, con, onCr, onUp, onDe, actions, actionIncludes))
     }
   }
   case class EdgeSketch(name:String,
-                  ecoreElement:AnyRef,
+                  mcoreElement:String,
                   style: Option[Style] = None,
                   /*edge-Block*/
                   connection:PropsAndComps,
-                  from:AnyRef, //TODO from and to are actually ecoreAttributes
-                  to:AnyRef,
+                  from:String,
+                  to:String,
                   palette:Option[String] = None,
                   container:Option[String] = None,
-                  onCreate:Option[OnCreate] = None,
-                  onUpdate:Option[OnUpdate] = None,
-                  onDelete:Option[OnDelete] = None,
+                  onCreate:Option[(ActionBlock, String)] = None,
+                  onUpdate:Option[ActionBlock] = None,
+                  onDelete:Option[ActionBlock] = None,
                   actions:List[Action]      = List(),
                   actionIncludes:Option[ActionInclude] = None){
     def toEdge(diagramStyle:Option[Style], cache:Cache) = {
       val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
       val diagramConnection:diaConnection = new diaConnection(corporateStyle, connection, cache)
-      Edge(name, ecoreElement, corporateStyle, diagramConnection, from, to, palette, container, onCreate, onUpdate, onDelete, actions, actionIncludes)
+      
+      val mClass = metaMapMClass.get(mcoreElement)
+      val fromReference = metaMapMReference(from)
+      val toReference = metaMapMReference(to)
+      if(mClass.isDefined){
+        val onCr = if (onCreate isDefined) {
+          Some(OnCreate(Some(onCreate.get._1), Some(mClass.get.attributes.filter(_.name == onCreate.get._2).head)))
+        } else None
+        val onUp = if (onUpdate isDefined) Some(OnUpdate(onUpdate)) else None
+        val onDe = if (onDelete isDefined) Some(OnDelete(onDelete)) else None
+
+        val cont = if(container isDefined) metaMapMReference.get(container.get) else None
+        Some(Edge(name, mClass.get, corporateStyle, diagramConnection, fromReference, toReference, palette, cont, onCr, onUp, onDe, actions, actionIncludes))
+      }
+      else None
     }
   }
 
   private def nodeOrEdge = node|edge
 
-  private def sprayDiagram:Parser[Diagram] = {
+
+
+  private def sprayDiagram:Parser[Option[Diagram]] = {
       ("diagram" ~> ident) ~
       ("for" ~> ident) ~
       (("(" ~ "style" ~ ":" ~> ident <~ ")")?) ~
       ("{" ~> rep(actionGroup|nodeOrEdge) <~ "}") ^^ {
         case name ~ mcoreElement ~ style ~ arguments =>
           val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
-          val nodes = arguments.filter(i => i._1 == "node").map(i => i._2.asInstanceOf[NodeSketch].toNode(style, cache))
-          val edges = arguments.filter(i => i._1 == "edge").map(i => i._2.asInstanceOf[EdgeSketch].toEdge(style, cache))
-          Diagram(name, actionGroups, nodes, edges, style, mcoreElement/*TODO convert to actual McoreElement*/, cache)
-      }
+          val nodes = arguments.filter(i => i._1 == "node").map(i =>
+            i._2.asInstanceOf[NodeSketch].toNode(style, cache)).foldLeft(List[Node]()){(l, n) => if(n isDefined) n.get +: l else l}
+          val edges = arguments.filter(i => i._1 == "edge").map(i =>
+            i._2.asInstanceOf[EdgeSketch].toEdge(style, cache)).foldLeft(List[Edge]()){(l, e) => if(e isDefined) e.get +: l else l}
+          val mClass = metaMapMClass.get(mcoreElement)
+          
+         if(mClass isDefined)
+           Some(Diagram(name, actionGroups, nodes, edges, style, mClass.get, cache))
+         else None
+     }
   }
 
   private def sprayDiagrams = rep(sprayDiagram)

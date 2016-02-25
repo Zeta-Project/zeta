@@ -1,6 +1,7 @@
 package generator.model.shapecontainer.connection
 
 import generator.model.shapecontainer.ShapeContainerElement
+import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
 import generator.parser.{Cache, PlacingSketch, CommonParserMethods}
 import parser._
@@ -17,7 +18,16 @@ import parser._
 sealed class Connection private (override val name:String,
                  val connection_type:Option[ConnectionStyle] = None,
                  val style:Option[Style] = None,
-                 val placing:List[Placing] = List[Placing]()) extends ShapeContainerElement
+                 val placing:List[Placing] = List[Placing]()) extends ShapeContainerElement{
+  val textMap = {
+    val textMaps = for (p <- placing)
+      yield {
+        p.shape.textMap
+      }
+    textMaps.filter(_.isDefined).map(_.get).foldLeft(Map[String, Text]()){(ret, m) => ret ++ m}
+  }
+
+}
 
 object Connection extends CommonParserMethods{
   val validConnectionAttributes = List("connection-type", "layout", "placing")
