@@ -11,9 +11,8 @@ POST          /profile/edit                                                     
 
 
 ### Metamodel
-GET           /metamodel/new                                                      @controllers.MetaModelController.newMetaModel
+GET           /metamodel/new/:name                                                @controllers.MetaModelController.newMetaModel(name: String)
 GET           /metamodel/editor/:metaModelUuid                                    @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
-POST          /metamodel/save                                                     @controllers.MetaModelController.saveMetaModel
 GET           /metamodel/delete/:metaModelUuid                                    @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
 GET           /metamodel/socket/:metaModelUuid                                    @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
 # temporary
