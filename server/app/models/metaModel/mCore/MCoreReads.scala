@@ -18,13 +18,22 @@ object MCoreReads {
     def mRef(name: String) = new MReference(name, false, false, List.empty, List.empty, List.empty)
   }
 
+//  implicit val mObjectReads = new Reads[MObject] {
+//    override def reads(json: JsValue): JsResult[MObject] =
+//      json.validate(
+//        checkMClassReads.map(_.asInstanceOf[MObject]) orElse
+//          checkMReferenceReads.map(_.asInstanceOf[MObject]) orElse
+//          checkMEnumReads.map(_.asInstanceOf[MObject])
+//      )
+//  }
+
   implicit val mObjectReads = new Reads[MObject] {
-    override def reads(json: JsValue): JsResult[MObject] =
-      json.validate(
-        checkMClassReads.map(_.asInstanceOf[MObject]) orElse
-          checkMReferenceReads.map(_.asInstanceOf[MObject]) orElse
-          checkMEnumReads.map(_.asInstanceOf[MObject])
-      )
+    override def reads(json: JsValue): JsResult[MObject] = (json \ "mType").toOption match {
+      case Some(JsString(s)) if s == "mClass" => json.validate(mClassReads.map(_.asInstanceOf[MObject]))
+      case Some(JsString(s)) if s == "mReference" => json.validate(mReferenceReads.map(_.asInstanceOf[MObject]))
+      case Some(JsString(s)) if s == "mEnum" => json.validate(mEnumReads.map(_.asInstanceOf[MObject]))
+      case _  => JsError("Missing or unknown mType at top level, only mClass, mReference and mEnum allowed")
+    }
   }
 
   def wireSuperTypes(newMap: => Map[String, MObject], old: Seq[MClass]): Seq[MClass] = {
