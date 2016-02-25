@@ -603,7 +603,7 @@ var Rappid = Backbone.Router.extend({
                         Authorization: "Bearer " + accessToken
                     },
                     success: function (data, textStatus, jqXHR) {
-                        alert("Saved meta model: " + data);
+                        alert("Saved meta model");
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         if (!tokenRefreshed) {

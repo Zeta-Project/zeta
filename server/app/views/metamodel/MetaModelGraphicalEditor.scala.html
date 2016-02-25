@@ -14,7 +14,6 @@
     window.loadedMetaModel = {};
     window.loadedMetaModel.uuid = "@uuid";
     window.loadedMetaModel.name = "@metaModel.definition.name";
-    window.loadedMetaModel.authorizationToken = null;
     @if(metaModel.definition.concept.uiState.nonEmpty) {
     window.loadedMetaModel.loadOnStart = true;
     window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.definition.concept.uiState))));

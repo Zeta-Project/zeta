@@ -155,7 +155,9 @@ Distancelines = Backbone.View.extend({
         var cellID = cell.get('id');
         for (var direction in distances) {
             for (var element in distances[direction]) {
-                this.adjacencyList[element][this.getOpposite(direction)][cellID] = distances[direction][element];
+                if (this.adjacencyList[element]) {
+                    this.adjacencyList[element][this.getOpposite(direction)][cellID] = distances[direction][element];
+                }
             }
         }
     },
