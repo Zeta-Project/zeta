@@ -1,6 +1,6 @@
 package controller
 
-import java.util.{Calendar, Date, UUID}
+import java.util.{Date, UUID}
 
 import org.scalajs.jquery._
 import scalot._
@@ -51,7 +51,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
   def saveCode() = {
 
-    def fnSave(tokenInformation: TokenInformation) : Unit = {
+    def fnSave(tokenInformation: TokenInformation): Unit = {
 
       if (tokenInformation.error.isDefined) {
         return
@@ -62,17 +62,19 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
         url = s"/metamodels/$metaModelUuid/$dslType",
         contentType = "application/json; charset=utf-8",
         dataType = "json",
-        data = js.JSON.stringify(js.JSON.parse("{\"code\" : \"" + document.str + "\"}")),
+        data = JSON.stringify(js.Dictionary(
+          "code" -> document.str
+        )),
         headers = literal(
           Authorization = s"Bearer ${tokenInformation.token}"
         ),
         success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
         },
-        error = { (jqXHR : JQueryXHR, textStatus: String, errorThrown : String) =>
+        error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
           if (!tokenInformation.refreshed) {
             authorized(fnSave, forceRefresh = true)
           } else {
-             println(s"Cannot save: $errorThrown")
+            println(s"Cannot save: $errorThrown")
           }
         }
       ).asInstanceOf[JQueryAjaxSettings])
@@ -83,7 +85,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
   }
 
-  def authorized(fnThen: TokenInformation => Unit, forceRefresh : Boolean) = {
+  def authorized(fnThen: TokenInformation => Unit, forceRefresh: Boolean) = {
 
     var refresh = forceRefresh
 
@@ -98,7 +100,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
     }
   }
 
-  def refreshAccessToken(fnThen : TokenInformation => Unit) = {
+  def refreshAccessToken(fnThen: TokenInformation => Unit) = {
     jQuery.ajax(literal(
       `type` = "POST",
       url = "/oauth/accessTokenLocal",
@@ -110,7 +112,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
         accessToken = AccessToken(data.access_token.asInstanceOf[String], data.expires_in.asInstanceOf[Int], new Date())
         fnThen(TokenInformation(accessToken.token, refreshed = true, None))
       },
-      error = { (jqXHR : JQueryXHR, textStatus: String, errorThrown : String) =>
+      error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
         accessToken = null
         fnThen(TokenInformation("", refreshed = true, Some(errorThrown)))
       }
