@@ -7,7 +7,7 @@ var accessToken = (function accessToken() {
         token: ""
     };
 
-    var authorized = function authorized(fnThen, forceRefresh) {
+    var authorized = function authorized(callback, forceRefresh) {
 
         var refreshToken = !!forceRefresh;
 
@@ -21,14 +21,14 @@ var accessToken = (function accessToken() {
         }
 
         if (refreshToken) {
-            refreshAccessToken(fnThen);
+            refreshAccessToken(callback);
         } else {
-            fnThen(token.token, false, null);
+            callback(token.token, false, null);
         }
 
     };
 
-    var refreshAccessToken = function refreshAccessToken(fnThen) {
+    var refreshAccessToken = function refreshAccessToken(callback) {
         $.ajax({
             type: 'POST',
             url: '/oauth/accessTokenLocal',
@@ -43,10 +43,10 @@ var accessToken = (function accessToken() {
                     expires: data["expires_in"],
                     token: data["access_token"]
                 };
-                fnThen(token.token, true, null);
+                callback(token.token, true, null);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                fnThen("", true, errorThrown);
+                callback("", true, errorThrown);
             }
         });
     };
