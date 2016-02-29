@@ -1,70 +1,72 @@
 package util.graph
 
-import models.metaModel.MetaModelData_2
-import play.api.libs.json.{JsArray, JsObject, JsValue, Json}
-
-import scala.collection.Set
+import models.metaModel.Concept
+import models.metaModel.mCore._
+import play.api.libs.json._
 
 object MetamodelGraphDiff {
 
-  /**
-   * Die Funktion prueft, ob der Graph zum Metamodell noch konsistent ist. Dies kann dann notwendig sein, wenn von
-   * ausserhalb, bspw. ueber die REST-Schnittstelle zum Metamodell, das Metamodell veraendert wurden
-   * ohne den Graph dazu anzupassen.
-   * Aenderungen sind nur an den Attributen zugelassen; die Funktion kann den Graph korrigieren, wenn Attribute aus
-   * dem Metamodell entfernt, zum Metamodell hinzugefuegt oder Attribute im Metamodell veraendert wurden.
-   *
-   * @param metaModelData MetaModelData-Objekt, welches Graph und Data enthaelt.
-   * @return Ein neues MetaModelData-Objekt mit korrigiertem Graph.
-   */
-  def fixMetaModel(metaModelData: MetaModelData_2): MetaModelData_2 = {
-    val metaModel = Json.parse(metaModelData.data).as[Seq[JsObject]]
-    var graph = Json.parse(metaModelData.graph).as[JsObject]
+  def fixGraph(concept: Concept): Concept = {
+
+    val metaModel = concept.elements
+    var graph = Json.parse(concept.uiState).as[JsObject]
 
     def fixAttributes() = {
 
-      metaModel.foreach { element =>
-        val elementKey = (element \ "name").as[String]
-        graphOnlyAttributes((element \ "name").as[String]).foreach(attribute => graph = removeFromGraph(elementKey, attribute))
-        metaModelOnlyAttributes(elementKey).foreach(attribute => graph = addToGraph(elementKey, attribute))
-        changedAttributes(elementKey).foreach { a =>
-          graph = removeFromGraph(elementKey, a._1)
-          graph = addToGraph(elementKey, a._2)
+      metaModel.values.foreach { element =>
+        val elementKey = element.name
+
+        graphOnlyAttributes(elementKey).foreach(attribute => removeFromGraph(elementKey, attribute))
+        metaModelOnlyAttributes(elementKey).foreach(attribute => addToGraph(elementKey, attribute))
+        changedAttributes(elementKey).foreach { attribute =>
+          removeFromGraph(elementKey, attribute)
+          addToGraph(elementKey, attribute)
         }
       }
 
-      def removeFromGraph(elementKey: String, attribute: JsObject): JsObject = {
-        val newAttributes = JsArray((graphAttributes(elementKey) - attribute).toSeq)
-        val newGraph = replaceAttributes(elementKey, newAttributes)
-        newGraph
+      def graphOnlyAttributes(elementKey: String): Set[MAttribute] = {
+        val diff = metaModelAttributeNames(elementKey) -- graphAttributeNames(elementKey)
+        val attributes = diff.map(attrName => graphAttributes(elementKey).filter(attr => graphAttributeName(attr) == attrName).head)
+        attributes.map(toMAttribute)
       }
 
-      def addToGraph(elementKey: String, attribute: JsObject) = {
-        val newAttributes = JsArray((graphAttributes(elementKey) + attribute).toSeq)
-        val newGraph = replaceAttributes(elementKey, newAttributes)
-        newGraph
+      def metaModelOnlyAttributes(elementKey: String): Set[MAttribute] = {
+        val diff = metaModelAttributeNames(elementKey) -- graphAttributeNames(elementKey)
+        diff.map(attrName => metaModelAttributes(elementKey).filter(attr => attr.name == attrName).head)
       }
 
-      def replaceAttributes(elementKey: String, newAttributes: JsArray): JsObject = {
-        val newCell = JsObject((graphCell(elementKey).get.as[Map[String, JsValue]] - "m_attributes" + ("m_attributes" -> newAttributes)).toSeq)
-        val newCells = JsArray((graphCells - graphCell(elementKey).get + newCell).toSeq)
-        JsObject((graph.as[Map[String, JsValue]] - "cells" + ("cells" -> newCells)).toSeq)
+      def changedAttributes(elementKey: String): Set[MAttribute] = {
+        var changedAttrs = Set[MAttribute]()
+        metaModelAttributes(elementKey).foreach { metaModelAttribute =>
+          val graphAttribute = graphAttributes(elementKey).find(attr => graphAttributeName(attr) == metaModelAttribute.name)
+          graphAttribute match {
+            case Some(attribute) =>
+              val graphMAttribute = toMAttribute(attribute)
+              if (metaModelAttribute != graphMAttribute) {
+                changedAttrs = changedAttrs + metaModelAttribute
+              }
+            case None => ;
+          }
+        }
+
+        changedAttrs
       }
 
-      def graphCells: Set[JsObject] = (graph \ "cells").as[Set[JsObject]]
+      def metaModelAttributeNames(elementKey: String): Set[String] = {
+        metaModelAttributes(elementKey).map(_.name)
+      }
 
-      def graphCell(elementKey: String): Option[JsObject] = graphCells.find(cell => (cell \ "name").as[String] == elementKey)
+      def graphAttributeNames(elementKey: String): Set[String] = {
+        graphAttributes(elementKey).map(attribute => (attribute \ "name").as[String])
+      }
 
-      def metaModelCell(elementKey: String): Option[JsObject] = metaModel.find(element => (element \ "name").as[String] == elementKey)
-
-      def metaModelAttributes(elementKey: String): Set[JsObject] = {
-        metaModelCell(elementKey) match {
-          case Some(cell) =>
-            val mAttributes = (cell \ "attributes").asOpt[JsObject]
-            mAttributes match {
-              case Some(attributes) => attributes.values.map(_.as[JsObject]).toSet
-              case None => Set.empty
-            }
+      def metaModelAttributes(elementKey: String): Set[MAttribute] = {
+        metaModel.get(elementKey) match {
+          case Some(element) => element match {
+            case mClass: MClass => mClass.attributes.toSet
+            case mReference: MReference => mReference.attributes.toSet
+            case _ => Set.empty
+          }
           case None => Set.empty
         }
       }
@@ -73,55 +75,93 @@ object MetamodelGraphDiff {
         graphCell(elementKey) match {
           case Some(cell) =>
             (cell \ "m_attributes").asOpt[JsArray] match {
-              case Some(attribute) => attribute.as[Set[JsObject]]
+              case Some(attributes) => attributes.as[Set[JsObject]]
               case None => Set.empty
             }
-          case None => Set.empty
+          case _ => Set.empty
         }
       }
 
-      def graphAttributeNames(elementKey: String): Set[String] = graphAttributes(elementKey).map(attributeName)
+      def graphCell(elementKey: String): Option[JsObject] = graphCells.find(cell => (cell \ "name").as[String] == elementKey)
 
-      def metaModelAttributeNames(elementKey: String): Set[String] = metaModelAttributes(elementKey).map(attributeName)
+      def graphCells: Set[JsObject] = (graph \ "cells").as[Set[JsObject]]
 
-      def attributeName(attribute: JsObject): String = (attribute \ "name").as[String]
+      def graphAttributeName(attribute: JsObject): String = (attribute \ "name").as[String]
 
-      def metaModelOnlyAttributes(elementKey: String): Set[JsObject] = {
-        val diff = metaModelAttributeNames(elementKey) -- graphAttributeNames(elementKey)
-        diff.map(attrName => metaModelAttributes(elementKey).filter(attr => attributeName(attr) == attrName).head)
-      }
+      def toMAttribute(attribute: JsObject) = MAttribute(
+        name = (attribute \ "name").as[String],
+        globalUnique = (attribute \ "globalUnique").as[Boolean],
+        localUnique = (attribute \ "localUnique").as[Boolean],
+        `type` = MCoreReads.detectType((attribute \ "type").as[String]),
+        default = MCoreReads.detectType((attribute \ "type").as[String]) match {
+          case ScalarType.String => ScalarValue.MString((attribute \ "default").as[String])
+          case ScalarType.Bool => ScalarValue.MBool((attribute \ "default").as[Boolean])
+          case ScalarType.Double => ScalarValue.MDouble((attribute \ "default").as[Double])
+          case ScalarType.Int => ScalarValue.MInt((attribute \ "default").as[Int])
+          case MEnum(_, _) => ScalarValue.MString((attribute \ "default").as[String])
+        },
+        constant = (attribute \ "constant").as[Boolean],
+        singleAssignment = (attribute \ "singleAssignment").as[Boolean],
+        expression = (attribute \ "expression").as[String],
+        ordered = (attribute \ "ordered").as[Boolean],
+        transient = (attribute \ "transient").as[Boolean],
+        upperBound = (attribute \ "upperBound").as[Int],
+        lowerBound = (attribute \ "lowerBound").as[Int]
+      )
 
-      def graphOnlyAttributes(elementKey: String): Set[JsObject] = {
-        val diff = graphAttributeNames(elementKey) -- metaModelAttributeNames(elementKey)
-        diff.map(attrName => graphAttributes(elementKey).filter(attr => attributeName(attr) == attrName).head)
-      }
+      def toJsonAttribute(attribute : MAttribute) : JsObject = {
+        val `type` = JsString(attribute.`type` match {
+          case ScalarType.String => "String"
+          case ScalarType.Bool => "Boolean"
+          case ScalarType.Int => "Integer"
+          case ScalarType.Double => "Double"
+          case _ => ""
+        })
 
-      /*
-       * Das Tupel enthaelt die folgenden zwei Objekte:
-       * ._1 Das Attribut-Objekt des Graphs
-       * ._2 Das Attribut-Objekt des Metamodells
-       */
-      def changedAttributes(elementKey: String): Set[(JsObject, JsObject)] = {
-        var changedAttrs = Set[(JsObject, JsObject)]()
-        metaModelAttributes(elementKey).foreach { metaModelAttribute =>
-          val graphAttribute = graphAttributes(elementKey).find(attr => attributeName(attr) == attributeName(metaModelAttribute))
-          graphAttribute match {
-            case Some(attribute) =>
-              if (metaModelAttribute != attribute) {
-                val attrs = (attribute, metaModelAttribute)
-                changedAttrs = changedAttrs + attrs
-              }
-            case None => ;
-          }
-
+        val default = attribute.default match {
+          case ScalarValue.MString(value) => JsString(value)
+          case ScalarValue.MBool(value) => JsBoolean(value)
+          case ScalarValue.MInt(value) => JsNumber(value)
+          case ScalarValue.MDouble(value) => JsNumber(value)
         }
-        changedAttrs
+
+        JsObject(Seq(
+          "name" -> JsString(attribute.name),
+          "globalUnique" -> JsBoolean(attribute.globalUnique),
+          "localUnique" -> JsBoolean(attribute.localUnique),
+          "type" ->  `type`,
+          "default" -> default,
+          "constant" -> JsBoolean(attribute.constant),
+          "singleAssignment" -> JsBoolean(attribute.singleAssignment),
+          "expression" -> JsString(attribute.expression),
+          "ordered" -> JsBoolean(attribute.ordered),
+          "transient" -> JsBoolean(attribute.transient),
+          "upperBound" -> JsNumber(attribute.upperBound),
+          "lowerBound" -> JsNumber(attribute.lowerBound)
+        ))
       }
 
+      def removeFromGraph(elementKey: String, attribute: MAttribute): Unit = {
+        val graphAttribute = graphAttributes(elementKey).find(attr => (attr \ "name").as[String] == attribute.name).get
+        val newAttributes = JsArray((graphAttributes(elementKey) - graphAttribute).toSeq)
+        replaceAttributes(elementKey, newAttributes)
+      }
+
+      def addToGraph(elementKey: String, attribute: MAttribute): Unit = {
+        val newAttributes = JsArray((graphAttributes(elementKey) + toJsonAttribute(attribute)).toSeq)
+        replaceAttributes(elementKey, newAttributes)
+      }
+
+      def replaceAttributes(elementKey : String, newAttributes : JsArray) : Unit = {
+        val newCell = JsObject((graphCell(elementKey).get.as[Map[String, JsValue]] - "m_attributes" + ("m_attributes" -> newAttributes)).toSeq)
+        val newCells = JsArray((graphCells - graphCell(elementKey).get + newCell).toSeq)
+        graph = JsObject((graph.as[Map[String, JsValue]] - "cells" + ("cells" -> newCells)).toSeq)
+      }
     }
 
     fixAttributes()
-    metaModelData.copy(graph = graph.toString())
-
+    concept.copy(uiState = graph.toString)
   }
+
+
 }

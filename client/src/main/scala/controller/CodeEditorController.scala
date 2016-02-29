@@ -1,6 +1,6 @@
 package controller
 
-import java.util.{Date, UUID}
+import java.util.UUID
 
 import controller.AccessToken.TokenInformation
 import org.scalajs.jquery._

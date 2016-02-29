@@ -1,10 +1,8 @@
 package controllers
 
 
-import java.util.UUID
 import javax.inject.Inject
 
-import dao.DbWriteResult
 import dao.metaModel.MetaModelDaoImpl
 import models.metaModel._
 import models.metaModel.mCore.MObject
@@ -16,7 +14,6 @@ import util.graph.MetamodelGraphDiff
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.util.Try
 
 /**
   * Created by mgt on 17.10.15.
@@ -46,8 +43,14 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
     if (hasAccess.isDefined && hasAccess.get) {
       val metaModelEntity = Await.result(MetaModelDaoImpl.findById(metaModelUuid), 30 seconds)
       if (metaModelEntity.isDefined) {
-        // TODO: Fix Graph with MetaModelGraphDiff
-        Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, metaModelEntity.get))
+
+        // Fix Graph with MetaModelGraphDiff
+        val oldMetaModelEntity = metaModelEntity.get
+        val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.definition.concept)
+        val fixedDefinition = oldMetaModelEntity.definition.copy(concept = fixedConcept)
+        val fixedMetaModelEntity = oldMetaModelEntity.copy(definition = fixedDefinition)
+
+        Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, fixedMetaModelEntity))
       } else {
         BadRequest("Could not find meta model")
       }
