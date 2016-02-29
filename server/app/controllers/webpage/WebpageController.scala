@@ -3,7 +3,7 @@ package controllers.webpage
 import javax.inject.Inject
 
 import dao.metaModel.MetaModelDaoImpl
-import models.metaModel.{MetaModelEntity, MetaModel_2, MetaModelDatabase_2}
+import models.metaModel.MetaModelEntity
 import play.api.Logger
 import util.definitions.UserEnvironment
 

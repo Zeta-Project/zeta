@@ -9,6 +9,7 @@ object MetamodelGraphDiff {
   def fixGraph(concept: Concept): Concept = {
 
     val metaModel = concept.elements
+    if (concept.uiState.isEmpty) return concept
     var graph = Json.parse(concept.uiState).as[JsObject]
 
     def fixAttributes() = {
@@ -145,11 +146,13 @@ object MetamodelGraphDiff {
         val graphAttribute = graphAttributes(elementKey).find(attr => (attr \ "name").as[String] == attribute.name).get
         val newAttributes = JsArray((graphAttributes(elementKey) - graphAttribute).toSeq)
         replaceAttributes(elementKey, newAttributes)
+        println(s"Removed attribute ${attribute.name}")
       }
 
       def addToGraph(elementKey: String, attribute: MAttribute): Unit = {
         val newAttributes = JsArray((graphAttributes(elementKey) + toJsonAttribute(attribute)).toSeq)
         replaceAttributes(elementKey, newAttributes)
+        println(s"Added attribute ${attribute.name}")
       }
 
       def replaceAttributes(elementKey : String, newAttributes : JsArray) : Unit = {
