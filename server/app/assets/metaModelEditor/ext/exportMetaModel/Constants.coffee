@@ -3,7 +3,7 @@
 ###
 class window.Constants
   @CLASS: 'mClass'
-  @REFERENCE: 'mRef'
+  @REFERENCE: 'mReference'
   @ENUM: 'mEnum'
 
   @field:

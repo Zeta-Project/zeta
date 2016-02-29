@@ -2,7 +2,7 @@ class window.Constants
 
   @M_TYPE: 'mType'
   @M_CLASS: 'mClass'
-  @M_REFERENCE: 'mRef'
+  @M_REFERENCE: 'mReference'
 
   @INPUTS: 'inputs'
   @OUTPUTS: 'outputs'
@@ -18,8 +18,8 @@ class window.Constants
     LOWER_BOUND: 'lowerBound'
     UPPER_BOUND: 'upperBound'
     NAME: 'name'
-    UNIQUE_GLOBAL: 'uniqueGlobal'
-    UNIQUE_LOCAL: 'uniqueLocal'
+    UNIQUE_GLOBAL: 'globalUnique'
+    UNIQUE_LOCAL: 'localUnique'
     DEFAULT: 'default',
     SINGLE_ASSIGNMENT: 'singleAssignment',
     EXPRESSION: 'expression'

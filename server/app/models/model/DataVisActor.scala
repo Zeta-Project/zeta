@@ -3,33 +3,31 @@ package models.model
 import java.io.File
 
 import akka.actor.{Actor, ActorRef, Props}
-import models.metaModel.MetaModelDatabase_2
-import models.model.DataVisActor.{MetamodelLoaded, MetamodelFailure}
+import models.model.DataVisActor.{MetamodelFailure, MetamodelLoaded}
 import models.model.ModelWsActor.DataVisInvalidError
+import play.api.Logger
+import play.api.libs.json.{JsObject, Json}
+import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
 import util.MetamodelBuilder
 import util.datavis.domain.Conditional
 import util.datavis.generator.ListenersGenerator
 import util.datavis.parser.DataVisParsers
 import util.datavis.validator.ConstrainedDataVisValidator
 import util.domain.{Metamodel, ObjectWithAttributes}
-import play.api.Logger
-import play.api.libs.json.{JsObject, Json}
-import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends Actor with DataVisParsers{
   val log = Logger(this getClass() getName())
   var metamodel:Metamodel = null
   val generator = new ListenersGenerator
 
-  MetaModelDatabase_2.loadModel(graphType) onComplete{
+  // TODO: Connect model instance to new REST API
+  /* MetaModelDatabase_2.loadModel(graphType) onComplete{
     case scala.util.Success(opt) => opt match {
       case None => self ! MetamodelFailure()
       case Some(mm) => //self ! MetamodelLoaded(mm.model)
     }
     case scala.util.Failure(t) => self ! MetamodelFailure
-  }
+  } */
 
   override def receive = {
     case msg:DataVisCodeMessage => handleDataVisCode(msg)

@@ -28,19 +28,21 @@ trait ReactiveMongoHelper {
   def wrapUpdateResult(updateWriteResult: UpdateWriteResult) = {
     DbWriteResult(
       updateWriteResult.ok,
-      updateWriteResult.errmsg
+      updateWriteResult.errmsg,
+      None
     )
   }
 
   def wrapWriteResult(writeResult: WriteResult) = {
     DbWriteResult(
       writeResult.ok,
-      writeResult.errmsg
+      writeResult.errmsg,
+      None
     )
   }
 }
 
-case class DbWriteResult(ok: Boolean, errorMessage: Option[String])
+case class DbWriteResult(ok: Boolean, errorMessage: Option[String], insertId: Option[String])
 object DbWriteResult {
   implicit val resultWrites = Json.writes[DbWriteResult]
 }

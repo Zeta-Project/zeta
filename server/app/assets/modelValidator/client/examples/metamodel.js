@@ -6,7 +6,7 @@ var exampleMetaModel = [
         "superTypes": [
             "Person"
         ],
-        "attributes": {},
+        "attributes": [],
         "inputs": [
             {
                 "type": "isWife",
@@ -35,50 +35,50 @@ var exampleMetaModel = [
         "name": "Person",
         "abstract": true,
         "superTypes": [],
-        "attributes": {
-            "FirstName": {
+        "attributes": [
+            {
                 "name": "FirstName",
                 "upperBound": 1,
                 "lowerBound": 1,
                 "default": "",
                 "type": "String",
                 "expression": "",
-                "uniqueLocal": false,
-                "uniqueGlobal": false,
+                "localUnique": false,
+                "globalUnique": false,
                 "constant": false,
                 "ordered": false,
                 "transient": false,
                 "singleAssignment": false
             },
-            "Geburtstag": {
+            {
                 "name": "Geburtstag",
                 "upperBound": 1,
                 "lowerBound": 1,
                 "default": "",
                 "type": "String",
                 "expression": "",
-                "uniqueLocal": false,
-                "uniqueGlobal": false,
+                "localUnique": false,
+                "globalUnique": false,
                 "constant": false,
                 "ordered": false,
                 "transient": false,
                 "singleAssignment": false
             },
-            "Steuernummer": {
+            {
                 "name": "Steuernummer",
                 "upperBound": -1,
                 "lowerBound": 1,
                 "default": "",
                 "type": "String",
                 "expression": "",
-                "uniqueLocal": true,
-                "uniqueGlobal": true,
+                "localUnique": true,
+                "globalUnique": true,
                 "constant": false,
                 "ordered": false,
                 "transient": false,
                 "singleAssignment": false
             }
-        },
+        ],
         "inputs": [
             {
                 "type": "isFather",
@@ -102,7 +102,7 @@ var exampleMetaModel = [
         "superTypes": [
             "Person"
         ],
-        "attributes": {},
+        "attributes": [],
         "inputs": [
             {
                 "type": "isHusband",
@@ -127,11 +127,11 @@ var exampleMetaModel = [
         ]
     },
     {
-        "mType": "mRef",
+        "mType": "mReference",
         "name": "isHusband",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "attributes": {},
+        "attributes": [],
         "source": [
             {
                 "type": "Male",
@@ -150,11 +150,11 @@ var exampleMetaModel = [
         ]
     },
     {
-        "mType": "mRef",
+        "mType": "mReference",
         "name": "isWife",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "attributes": {},
+        "attributes": [],
         "source": [
             {
                 "type": "Female",
@@ -173,11 +173,11 @@ var exampleMetaModel = [
         ]
     },
     {
-        "mType": "mRef",
+        "mType": "mReference",
         "name": "isFather",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "attributes": {},
+        "attributes": [],
         "source": [
             {
                 "type": "Male",
@@ -196,11 +196,11 @@ var exampleMetaModel = [
         ]
     },
     {
-        "mType": "mRef",
+        "mType": "mReference",
         "name": "isMother",
         "sourceDeletionDeletesTarget": false,
         "targetDeletionDeletesSource": false,
-        "attributes": {},
+        "attributes": [],
         "source": [
             {
                 "type": "Female",

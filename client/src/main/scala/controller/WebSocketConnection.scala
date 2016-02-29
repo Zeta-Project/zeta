@@ -16,7 +16,7 @@ case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/codeeditor/soc
   ws.onclose = (e: CloseEvent) => console.log(s"Closed WS for Reason: ${e.reason}")
 
   def onOpen(e: Event) = {
-    console.log("Opened Websocket: ", e.toString)
+    console.log("Opened Websocket: ", e.`type`)
   }
 
   def onMessage(msg: MessageEvent) = {
