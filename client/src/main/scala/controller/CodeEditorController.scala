@@ -13,7 +13,7 @@ import scala.scalajs.js.JSON
 
 case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
-  case class AccessToken(token: String, expires: Int, dateLoaded: Date)
+  case class AccessToken(token: String, expires: Int, timestampLoaded: Long)
 
   case class TokenInformation(token: String, refreshed: Boolean, error: Option[String])
 
@@ -91,6 +91,12 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
     if (accessToken == null) {
       refresh = true
+    } else {
+      val currentTime = new Date().getTime
+      val difference = (currentTime - accessToken.timestampLoaded) / 1000
+      if (difference > accessToken.expires - 10) { // refresh if token expires in less than 10 seconds
+        refresh = true
+      }
     }
 
     if (refresh) {
@@ -109,7 +115,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
         grant_type = "implicit"
       ),
       success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
-        accessToken = AccessToken(data.access_token.asInstanceOf[String], data.expires_in.asInstanceOf[Int], new Date())
+        accessToken = AccessToken(data.access_token.asInstanceOf[String], data.expires_in.asInstanceOf[Int], new Date().getTime)
         fnThen(TokenInformation(accessToken.token, refreshed = true, None))
       },
       error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
