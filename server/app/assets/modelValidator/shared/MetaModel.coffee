@@ -90,8 +90,8 @@ class window.MetaModel
 
 
   getAttribute: (objectKey, attributeKey) ->
-    if @hasAttributes(objectKey) && @getDirectAttributes(objectKey)[attributeKey]?
-      return new Attribute @getDirectAttributes(objectKey)[attributeKey]
+    if @hasAttributes(objectKey) && (@getDirectAttributes(objectKey).find (attribute) -> attribute.name == attributeKey)?
+      return new Attribute @getDirectAttributes(objectKey).find (attribute) -> attribute.name == attributeKey
 
     inheritedAttributes = []
     if @hasSuperTypes objectKey

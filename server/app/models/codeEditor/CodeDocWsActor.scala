@@ -4,7 +4,6 @@ import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import akka.contrib.pattern.DistributedPubSubExtension
 import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe}
 import akka.event.Logging
-import models.metaModel.MetaModelDatabase_2
 import play.api.Play.current
 import play.api.libs.concurrent.Akka
 import scalot.Server
@@ -61,8 +60,6 @@ class CodeDocManagingActor extends Actor {
           CodeDocumentDb.deleteDocWithId(msg.id)
           mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
 
-        case msg: SaveCode => MetaModelDatabase_2.updateCode(msg.dslType, msg.metaModelUuid, msg.code)
-
         case _ => ;
       }
   }
@@ -118,10 +115,6 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
 
         case msg: DocDeleted =>
           log.debug("WS: Got DocDeleted")
-          docManager ! msg
-
-        case msg: SaveCode =>
-          log.debug("WS: Save Code")
           docManager ! msg
 
         case _ => log.error("Discarding message, probably sent by myself")
