@@ -3,7 +3,6 @@ package generator.generators.spray
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import generators.MClass
 import models.metaModel.mCore.MClass
 import scala.collection.mutable.HashMap
 

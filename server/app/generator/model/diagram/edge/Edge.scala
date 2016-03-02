@@ -4,7 +4,6 @@ import generator.model.diagram.action.{ActionInclude, Action, Actions}
 import generator.model.diagram.methodes.{OnDelete, OnUpdate, OnCreate, Methodes}
 import generator.model.diagram.traits.{Container, Palette}
 import generator.model.style.Style
-import generators.{MreferenceMock, MclassMock}
 import models.metaModel.mCore.{MReference, MClass}
 
 /**
