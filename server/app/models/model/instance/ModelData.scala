@@ -2,7 +2,7 @@ package models.model.instance
 
 import models.metaModel.mCore.{MReference, MClass, AttributeValue}
 
-case class ModelData(name: String, data: Map[String, ModelElement])
+case class ModelData(name: String, elements: Map[String, ModelElement])
 
 trait ModelElement {
   val id: String
@@ -48,6 +48,16 @@ class Edge(
 ) extends ModelElement {
   lazy val source = _source
   lazy val target = _target
+}
+
+object Edge {
+  def apply2(
+    id: String,
+    `type`: MReference,
+    source: Seq[Node],
+    target: Seq[Node],
+    attributes: Seq[Attribute]
+  ) = new Edge(id, `type`, source, target, attributes)
 }
 
 case class Attribute(

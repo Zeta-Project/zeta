@@ -1,15 +1,13 @@
 package models.metaModel
 
 import models.metaModel.mCore.MObject
-
 import models.metaModel.mCore.MCoreWrites._
 import models.metaModel.mCore.MCoreReads._
-
+import play.api.data.validation.ValidationError
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.Writes._
-
 import scala.collection.immutable._
 
 case class Style(code: String)
@@ -33,47 +31,41 @@ object Diagram {
   implicit val diagramWrites = Json.writes[Diagram]
 }
 
-case class Definition(
-  name: String,
-  mObjects: Map[String, MObject],
-  graph: String
+case class Concept(
+  elements: Map[String, MObject],
+  uiState: String
 )
 
-object Definition {
+object Concept {
 
-  implicit val definitionReads: Reads[Definition] = (
-    (__ \ "name").read[String] and
-      (__ \ "mObjects").read[Map[String, MObject]] and
-      (__ \ "graph").read[String]
-    ) (Definition.apply _)
+  implicit val conceptReads: Reads[Concept] = (
+    (__ \ "elements").read[Map[String, MObject]] and
+      (__ \ "uiState").read[String]
+    ) (Concept.apply _)
 
-  implicit val definitionWrites = new Writes[Definition] {
-    def writes(d: Definition): JsValue = Json.obj(
-      "name" -> d.name,
-      "mObjects" -> Json.toJson(d.mObjects.values.toList),
-      "graph" -> d.graph
+  implicit val conceptWrites = new Writes[Concept] {
+    def writes(c: Concept): JsValue = Json.obj(
+      "elements" -> Json.toJson(c.elements.values.toList),
+      "uiState" -> c.uiState
     )
   }
 }
 
 case class MetaModel(
-  id: Option[String],
-  userId: String,
-  definition: Definition,
-  style: Style,
-  shape: Shape,
-  diagram: Diagram
+  name: String,
+  concept: Concept,
+  shape: Option[Shape],
+  style: Option[Style],
+  diagram: Option[Diagram]
 )
 
 object MetaModel {
-  implicit val metaModelReads = Json.reads[MetaModel]
-  implicit val metaModelWrites = Json.writes[MetaModel]
+
+  implicit val definitionReads = Json.reads[MetaModel].filter(
+    ValidationError("Name must not be empty")
+  ) {
+    m => m.name.length > 0
+  }
+
+  implicit val definitionWrites = Json.writes[MetaModel]
 }
-
-case class MetaModelShortInfo(id: String, name: String)
-object MetaModelShortInfo {
-  implicit val shortInfoWrites = Json.writes[MetaModelShortInfo]
-}
-
-
-
