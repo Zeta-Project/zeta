@@ -324,7 +324,7 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
                   actionIncludes:Option[ActionInclude] = None){
     def toEdge(diagramStyle:Option[Style], cache:Cache) = {
       val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
-      val diagramConnection:diaConnection = new diaConnection(corporateStyle, connection, cache)
+      val diagramConnection:diaConnection = new diaConnection(corporateStyle, connection, cache, metaMapMClass(mcoreElement))
       
       val mClass = metaMapMClass.get(mcoreElement)
       val fromReference = metaMapMReference(from)
