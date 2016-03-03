@@ -4,7 +4,7 @@ import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
  * Created by julian on 03.11.15.
- * commonly used parsing methodes
+ * commonly used parsing methods
  */
 trait CommonParserMethods extends JavaTokenParsers{
   /*basic stuff*/
