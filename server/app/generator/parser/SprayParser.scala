@@ -20,10 +20,10 @@ import parser._
 class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonParserMethods {
   implicit val cache = c
   type diaConnection = generator.model.diagram.edge.Connection
-  private val metaMapMClass = metaModel.definition.mObjects.collect {
+  private val metaMapMClass = metaModel.concept.elements.collect{
       case (name, x) if x.isInstanceOf[MClass] => (name, x.asInstanceOf[MClass])
     }
-  private val metaMapMReference = metaModel.definition.mObjects.collect {
+  private val metaMapMReference = metaModel.concept.elements.collect {
     case (name, x) if x.isInstanceOf[MReference] => (name, x.asInstanceOf[MReference])
   }
   require(metaMapMClass nonEmpty)
