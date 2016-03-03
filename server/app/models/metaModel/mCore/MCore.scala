@@ -1,5 +1,6 @@
 package models.metaModel.mCore
 
+import scala.annotation.tailrec
 import scala.collection.immutable._
 
 trait ClassOrRef {
@@ -42,6 +43,42 @@ class MClass(
     val outputsNames = for (e <- outputs) yield e.mType.name
     s"MClass($name, $abstractness, $superNames, $inputsNames, $outputsNames, $attributes)"
   }
+
+  lazy val typeHierarchy: Seq[MClass] = getSuperHierarchy(Seq(this), this.superTypes)
+
+  private def getSuperHierarchy(acc: Seq[MClass], inspect: Seq[MClass]): Seq[MClass] = {
+    inspect.foldLeft(acc) { (a, m) =>
+      if (a.exists(_.name == m.name)) a
+      else {
+        getSuperHierarchy(m +: acc, m.superTypes)
+      }
+    }
+  }.reverse
+
+  def typeHasInput(inputName: String) = typeHierarchy.exists(
+    cls => cls.inputs.exists(link => link.mType.name == inputName)
+  )
+
+  def typeHasOutput(outputName: String) = typeHierarchy.exists(
+    cls => cls.outputs.exists(link => link.mType.name == outputName)
+  )
+
+  def typeHasSuperType(superName: String) = typeHierarchy.exists(
+    cls => cls.name == superName
+  )
+
+  def findMAttribute(attributeName: String) = {
+    @tailrec
+    def find(remaining: List[MClass]): Option[MAttribute] = remaining match {
+      case Nil => None
+      case head :: tail => {
+        val attribute = head.attributes.find(_.name == attributeName)
+        if(attribute.isDefined) attribute else find(tail)
+      }
+    }
+    find(typeHierarchy.toList)
+  }
+
 }
 
 object MClass {
@@ -173,7 +210,7 @@ class EnumSymbol(val name: String, _attributeType: => MEnum) extends AttributeVa
     case _ => false
   }
 
-  override def hashCode: Int = 41 * (41 + name.hashCode)// + attributeType.hashCode
+  override def hashCode: Int = 41 * (41 + name.hashCode) // + attributeType.hashCode
 
   override def toString = s"EnumSymbol($name)"
 }

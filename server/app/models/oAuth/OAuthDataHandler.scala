@@ -32,7 +32,7 @@ class OAuthDataHandler extends DataHandler[SecureSocialUser] {
     Future.successful(toAccessToken(accessToken))
   }
 
-  private val accessTokenExpireSeconds = 3600
+  private val accessTokenExpireSeconds = 60 * 60 * 4
 
   private def toAccessToken(accessToken: OAuthAccessToken) = {
     AccessToken(

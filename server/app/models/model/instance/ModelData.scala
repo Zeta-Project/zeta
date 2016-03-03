@@ -1,22 +1,47 @@
 package models.model.instance
 
 import models.metaModel.mCore.{MReference, MClass, AttributeValue}
+import play.api.libs.json.{JsValue, Writes, Json}
+import models.model.instance.ModelWrites._
+
+import scala.collection.immutable._
 
 case class ModelData(name: String, elements: Map[String, ModelElement])
+object ModelData {
+  implicit val writes = new Writes[ModelData] {
+    def writes(d: ModelData): JsValue = Json.obj(
+      "name" -> d.name,
+      "elements" -> d.elements.values
+    )
+  }
+}
 
 trait ModelElement {
   val id: String
 }
 
+sealed trait Link
+
+case class ToEdges(`type`: MReference, edges: Seq[Edge]) extends Link
+
+case class ToNodes(`type`: MClass, nodes: Seq[Node]) extends Link
+
 class Node(
   val id: String,
   val `type`: MClass,
-  _outputs: => Seq[Edge],
-  _inputs: => Seq[Edge],
+  _outputs: => Seq[ToEdges],
+  _inputs: => Seq[ToEdges],
   val attributes: Seq[Attribute]
 ) extends ModelElement {
   lazy val outputs = _outputs
   lazy val inputs = _inputs
+
+  override def toString = {
+    s"Node($id, ${`type`.name}, $outputs, $inputs, $attributes)"
+  }
+
+  def updateLinks(_outputs: => Seq[ToEdges], _inputs: => Seq[ToEdges]) =
+    new Node(id, `type`, _outputs, _inputs, attributes)
 }
 
 object Node {
@@ -24,16 +49,16 @@ object Node {
   def apply(
     id: String,
     `type`: MClass,
-    _outputs: => Seq[Edge],
-    _inputs: => Seq[Edge],
+    _outputs: => Seq[ToEdges],
+    _inputs: => Seq[ToEdges],
     attributes: Seq[Attribute]
   ) = new Node(id, `type`, _outputs, _inputs, attributes)
 
   def apply2(
     id: String,
     `type`: MClass,
-    outputs: Seq[Edge],
-    inputs: Seq[Edge],
+    outputs: Seq[ToEdges],
+    inputs: Seq[ToEdges],
     attributes: Seq[Attribute]
   ) = new Node(id, `type`, outputs, inputs, attributes)
 
@@ -42,20 +67,27 @@ object Node {
 class Edge(
   val id: String,
   val `type`: MReference,
-  _source: => Seq[Node],
-  _target: => Seq[Node],
+  _source: => Seq[ToNodes],
+  _target: => Seq[ToNodes],
   val attributes: Seq[Attribute]
 ) extends ModelElement {
   lazy val source = _source
   lazy val target = _target
+
+  override def toString = {
+    s"Node($id, ${`type`.name}, $source, $target, $attributes)"
+  }
+
+  def updateLinks(_source: => Seq[ToNodes], _target: => Seq[ToNodes]) =
+    new Edge(id, `type`, _source, _target, attributes)
 }
 
 object Edge {
   def apply2(
     id: String,
     `type`: MReference,
-    source: Seq[Node],
-    target: Seq[Node],
+    source: Seq[ToNodes],
+    target: Seq[ToNodes],
     attributes: Seq[Attribute]
   ) = new Edge(id, `type`, source, target, attributes)
 }
