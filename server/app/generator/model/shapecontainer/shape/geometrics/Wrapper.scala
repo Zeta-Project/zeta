@@ -5,5 +5,5 @@ package generator.model.shapecontainer.shape.geometrics
  * represents the collection a GeometricModel can have, including n other Geometric Models which should lay inside the parent-Model
  */
 trait Wrapper {
-  var children:List[GeometricModel]
+  val children:List[GeometricModel]
 }
