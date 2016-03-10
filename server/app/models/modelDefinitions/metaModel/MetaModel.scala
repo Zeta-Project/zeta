@@ -1,18 +1,18 @@
-package models.metaModel
+package models.modelDefinitions.metaModel
 
-import models.metaModel.mCore.{MEnum, MReference, MClass, MObject}
-import play.api.libs.json._
+import models.modelDefinitions.metaModel.elements._
+import models.modelDefinitions.metaModel.elements.MCoreReads._
+import models.modelDefinitions.metaModel.elements.MCoreWrites._
+
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Reads._
 import play.api.libs.json.Writes._
+import play.api.libs.json._
+
 import scala.collection.immutable._
-import models.metaModel.mCore.MCoreWrites._
-import models.metaModel.mCore.MCoreReads._
 
-
-import scala.collection.immutable.Map
-
-case class Concept(
+case class MetaModel(
+  name: String,
   elements: Map[String, MObject],
   uiState: String
 ) {
@@ -60,15 +60,17 @@ case class Concept(
   }
 }
 
-object Concept {
+object MetaModel {
 
-  implicit val conceptReads: Reads[Concept] = (
+  implicit val reads: Reads[MetaModel] = (
+    (__ \ "name").read[String] and
     (__ \ "elements").read[Map[String, MObject]] and
       (__ \ "uiState").read[String]
-    ) (Concept.apply _)
+    ) (MetaModel.apply _)
 
-  implicit val conceptWrites = new Writes[Concept] {
-    def writes(c: Concept): JsValue = Json.obj(
+  implicit val writes = new Writes[MetaModel] {
+    def writes(c: MetaModel): JsValue = Json.obj(
+      "name" -> c.name,
       "elements" -> Json.toJson(c.elements.values.toList),
       "uiState" -> c.uiState
     )

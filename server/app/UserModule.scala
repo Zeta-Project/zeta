@@ -13,6 +13,7 @@ class UserModule extends AbstractModule with ScalaModule {
 
     val environment = new UserEnvironment()
     bind(new TypeLiteral[RuntimeEnvironment] {}).toInstance(environment)
+    
 
   }
 }

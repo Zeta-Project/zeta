@@ -1,10 +1,11 @@
-package models.model.instance
+package models.modelDefinitions.model.elements
 
-import models.metaModel.MetaModel
-import models.metaModel.mCore._
+import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.elements._
 import play.api.data.validation.ValidationError
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
+
 import scala.collection.immutable._
 
 // TODO: this is WIP
@@ -15,16 +16,14 @@ object ModelReads {
 
   def emtpyEdge(id: String) = new Edge(id, MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]()), Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
 
+
+
+
+
   private trait InvalidLink {
     val message: String
   }
 
-  def metaModelDefinitionReads(implicit meta: MetaModel): Reads[ModelData] = {
-    val mapReads = elementMapReads(meta)
-    ((__ \ "name").read[String] and
-      (__ \ "elements").read[Map[String, ModelElement]](mapReads)
-      ) (ModelData.apply _)
-  }
 
   def elementMapReads(implicit meta: MetaModel) = new Reads[Map[String, ModelElement]] {
     implicit val elementReads = modelElementReads(meta)
@@ -33,7 +32,7 @@ object ModelReads {
       json.validate[Seq[ModelElement]] match {
         case JsSuccess(elements, _) => {
           val map = elements.map(e => e.id -> e).toMap
-          if(map.size == elements.size) JsSuccess(map) else JsError("elements must have unique names")
+          if(map.size == elements.size) finalize(map) else JsError("elements must have unique names")
         }
         case JsError(e) => JsError(e)
       }
@@ -95,15 +94,10 @@ object ModelReads {
   val invalidToEdgesError2 = ValidationError("edge reference has invalid type 2")
   val invalidToNodesError2 = ValidationError("node reference has invalid type 2")
 
-  def attributeSeqReads(implicit meta: MetaModel) = new Reads[Seq[Attribute]] {
-    def reads(json: JsValue) = {
-      JsSuccess(Seq[Attribute]())
-    }
-  }
 
   private def extractEdges(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToEdges] = {
     m.map { case (k, v) =>
-      val t = meta.concept.elements(k).asInstanceOf[MReference]
+      val t = meta.elements(k).asInstanceOf[MReference]
       val e = v.map(emtpyEdge)
       ToEdges(t, e)
     }
@@ -112,15 +106,15 @@ object ModelReads {
   def nodeReads(implicit meta: MetaModel): Reads[Node] = (
     (__ \ "id").read[String] and
       (__ \ "mClass").read[String].filter(unknownMClassError) {
-        s => meta.concept.containsMClass(s)
+        s => meta.containsMClass(s)
       }.map {
-        s => meta.concept.getMClass(s).get
+        s => meta.getMClass(s).get
       } and
       (__ \ "outputs").read[Map[String, Seq[String]]].filter(invalidToEdgesError) {
-        e => e.keys.forall(s => meta.concept.containsMReference(s))
+        e => e.keys.forall(s => meta.containsMReference(s))
       }.map(extractEdges) and
       (__ \ "inputs").read[Map[String, Seq[String]]].filter(invalidToEdgesError) {
-        e => e.keys.forall(s => meta.concept.containsMReference(s))
+        e => e.keys.forall(s => meta.containsMReference(s))
       }.map(extractEdges) and
       (__ \ "attributes").read(Seq[Attribute]())
     ) (Node.apply2 _).filter(invalidToEdgesError2) { n =>
@@ -130,7 +124,7 @@ object ModelReads {
 
   private def extractNodes(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToNodes] = {
     m.map { case (k, v) =>
-      val t = meta.concept.elements(k).asInstanceOf[MClass]
+      val t = meta.elements(k).asInstanceOf[MClass]
       val n = v.map(emtpyNode)
       ToNodes(t, n)
     }
@@ -139,15 +133,15 @@ object ModelReads {
   def edgeReads(implicit meta: MetaModel): Reads[Edge] = (
     (__ \ "id").read[String] and
       (__ \ "mReference").read[String].filter(unknownMReferenceError) {
-        s => meta.concept.containsMReference(s)
+        s => meta.containsMReference(s)
       }.map {
-        s => meta.concept.getMReference(s).get
+        s => meta.getMReference(s).get
       } and
       (__ \ "source").read[Map[String, Seq[String]]].filter(invalidToNodesError) {
-        n => n.keys.forall(s => meta.concept.containsMClass(s))
+        n => n.keys.forall(s => meta.containsMClass(s))
       }.map(extractNodes) and
       (__ \ "target").read[Map[String, Seq[String]]].filter(invalidToNodesError) {
-        n => n.keys.forall(s => meta.concept.containsMClass(s))
+        n => n.keys.forall(s => meta.containsMClass(s))
       }.map(extractNodes) and
       (__ \ "attributes").read(Seq[Attribute]())
     ) (Edge.apply2 _).filter(invalidToNodesError2) { n =>

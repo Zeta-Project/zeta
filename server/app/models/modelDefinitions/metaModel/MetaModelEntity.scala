@@ -1,7 +1,8 @@
-package models.metaModel
+package models.modelDefinitions.metaModel
 
 import java.time.Instant
 
+import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
@@ -10,30 +11,41 @@ case class MetaModelEntity(
   userId: String,
   created: Instant,
   updated: Instant,
-  definition: MetaModel
-)
+  metaModel: MetaModel,
+  dsl: Dsl
+) {
 
-object MetaModelEntity {
-
-  def initialize(userId: String, metaModel: MetaModel) = {
+  def asNew(userId: String) = {
     val now = Instant.now
-    MetaModelEntity(
-      java.util.UUID.randomUUID().toString,
-      userId,
-      now,
-      now,
-      metaModel
+    copy(
+      id = java.util.UUID.randomUUID().toString,
+      userId = userId,
+      created = now,
+      updated = now
     )
   }
 
-  implicit val metaModelReads = Json.reads[MetaModelEntity]
+  def asUpdate(id: String, userId: String) = {
+    copy(
+      id = id,
+      userId = userId,
+      updated = Instant.now
+    )
+  }
 
-  implicit val metaModelWrites: OWrites[MetaModelEntity] = (
+}
+
+object MetaModelEntity {
+
+  implicit val reads = Json.reads[MetaModelEntity]
+
+  implicit val writes: OWrites[MetaModelEntity] = (
     (__ \ "id").write[String] and
       (__ \ "userId").write[String] and
       (__ \ "created").write[Instant] and
       (__ \ "updated").write[Instant] and
-      (__ \ "definition").write[MetaModel]
+      (__ \ "metaModel").write[MetaModel] and
+      (__ \ "dsl").write[Dsl]
     ) (unlift(MetaModelEntity.unapply))
 
 
@@ -42,7 +54,8 @@ object MetaModelEntity {
       Reads.pure("") and
       Reads.pure(Instant.now()) and
       Reads.pure(Instant.now()) and
-      (__ \ "definition").read[MetaModel]
+      (__ \ "metaModel").read[MetaModel] and
+      Reads.pure(Dsl())
     ) (MetaModelEntity.apply _)
 
   val strippedWrites = new Writes[MetaModelEntity] {
@@ -50,7 +63,8 @@ object MetaModelEntity {
       "id" -> m.id,
       "created" -> m.created,
       "updated" -> m.updated,
-      "definition" -> m.definition
+      "metaModel" -> m.metaModel,
+      "dsl" -> m.dsl
     )
   }
 }
@@ -60,3 +74,5 @@ case class MetaModelShortInfo(id: String, name: String, created: Instant, update
 object MetaModelShortInfo {
   implicit val shortInfoWrites = Json.writes[MetaModelShortInfo]
 }
+
+

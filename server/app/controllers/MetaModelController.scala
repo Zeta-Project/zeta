@@ -5,8 +5,9 @@ import java.util.UUID
 import javax.inject.Inject
 
 
-import dao.metaModel.MetaModelDaoImpl
+import dao.metaModel.MetaModelDao
 import models.metaModel._
+import models.modelDefinitions.metaModel.MetaModelEntity
 import play.api.Play.current
 import play.api.libs.json.{JsError, Json, JsValue}
 import play.api.mvc.{Action, WebSocket}
@@ -106,8 +107,8 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
         Future.successful(BadRequest(JsError.toFlatJson(errors)))
       },
       tempEntity => {
-        val entity = MetaModelEntity.initialize(request.user.uuid.toString, tempEntity.definition)
-        MetaModelDaoImpl.insert(entity).map { res =>
+        val entity = tempEntity.asNew(request.user.uuid.toString)
+        MetaModelDao.insert(entity).map { res =>
           Created(Json.toJson(res))
         }
       }

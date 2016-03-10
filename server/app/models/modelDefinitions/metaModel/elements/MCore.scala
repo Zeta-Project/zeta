@@ -1,4 +1,4 @@
-package models.metaModel.mCore
+package models.modelDefinitions.metaModel.elements
 
 import scala.annotation.tailrec
 import scala.collection.immutable._

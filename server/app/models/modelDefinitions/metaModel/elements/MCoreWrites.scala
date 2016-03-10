@@ -1,6 +1,6 @@
-package models.metaModel.mCore
+package models.modelDefinitions.metaModel.elements
 
-import models.metaModel.mCore.ScalarValue.{MString, MInt, MDouble, MBool}
+import models.modelDefinitions.metaModel.elements.ScalarValue.{MString, MInt, MDouble, MBool}
 import play.api.libs.json._
 
 import scala.collection.immutable._

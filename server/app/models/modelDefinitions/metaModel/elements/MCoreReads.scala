@@ -1,4 +1,4 @@
-package models.metaModel.mCore
+package models.modelDefinitions.metaModel.elements
 
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._

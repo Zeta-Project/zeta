@@ -1,20 +1,8 @@
-package models.model.instance
+package models.modelDefinitions.model.elements
 
-import models.metaModel.mCore.{MReference, MClass, AttributeValue}
-import play.api.libs.json.{JsValue, Writes, Json}
-import models.model.instance.ModelWrites._
+import models.modelDefinitions.metaModel.elements.{AttributeValue, MClass, MReference}
 
-import scala.collection.immutable._
-
-case class ModelData(name: String, elements: Map[String, ModelElement])
-object ModelData {
-  implicit val writes = new Writes[ModelData] {
-    def writes(d: ModelData): JsValue = Json.obj(
-      "name" -> d.name,
-      "elements" -> d.elements.values
-    )
-  }
-}
+import scala.collection.immutable.Seq
 
 trait ModelElement {
   val id: String
@@ -96,6 +84,3 @@ case class Attribute(
   name: String,
   value: Seq[AttributeValue]
 )
-
-
-
