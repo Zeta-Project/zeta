@@ -13,13 +13,14 @@ import play.api.libs.json._
 
 import scala.collection.immutable._
 
-case class Model(name: String, elements: Map[String, ModelElement], uiState: String)
+case class Model(name: String, metaModel: MetaModel, elements: Map[String, ModelElement], uiState: String)
 
 object Model {
 
   def reads(implicit meta: MetaModel): Reads[Model] = {
     val mapReads = ModelReads.elementMapReads(meta)
     ((__ \ "name").read[String] and
+      Reads.pure(meta) and
       (__ \ "elements").read[Map[String, ModelElement]](mapReads) and
       (__ \ "uiState").read[String]
       ) (Model.apply _)

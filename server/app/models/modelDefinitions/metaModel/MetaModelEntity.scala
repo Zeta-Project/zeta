@@ -72,7 +72,15 @@ object MetaModelEntity {
 case class MetaModelShortInfo(id: String, name: String, created: Instant, updated: Instant)
 
 object MetaModelShortInfo {
-  implicit val shortInfoWrites = Json.writes[MetaModelShortInfo]
+
+  implicit val reads: Reads[MetaModelShortInfo] = (
+    (__ \ "id").read[String] and
+      (__ \ "metaModel" \ "name").read[String] and
+      (__ \ "created").read[Instant] and
+      (__ \ "updated").read[Instant]
+    )(MetaModelShortInfo.apply _)
+
+  implicit val writes = Json.writes[MetaModelShortInfo]
 }
 
 

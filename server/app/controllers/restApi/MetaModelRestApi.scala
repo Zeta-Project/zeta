@@ -1,8 +1,9 @@
 package controllers.restApi
 
 import java.time.Instant
+import javax.inject.Inject
 
-import dao.DbWriteResult
+import dao.{ModelsWriteResult, DbWriteResult}
 import dao.metaModel._
 import models.modelDefinitions.metaModel.elements.MCoreWrites._
 import models.modelDefinitions.metaModel._
@@ -16,19 +17,15 @@ import scala.concurrent.Future
 
 import scalaoauth2.provider.OAuth2Provider
 
-import dao.metaModel.ModelsWriteResult._
+import ModelsWriteResult._
 
 // TODO: Reduce redundancy for some methods
 
-class MetaModelRestApi extends Controller with OAuth2Provider {
-
-  val mmdao: ZetaMetaModelDao = MetaModelDao
-
-
+class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Controller with OAuth2Provider {
 
   def showForUser = Action.async { implicit request =>
     oAuth { userId =>
-      mmdao.findMetaModelsByUser(userId).map { res =>
+      metaModelDao.findMetaModelsByUser(userId).map { res =>
         Ok(Json.toJson(res))
       }
     }
@@ -44,7 +41,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
         },
         tempEntity => {
           val entity = tempEntity.asNew(userId)
-          mmdao.insert(entity).map { res =>
+          metaModelDao.insert(entity).map { res =>
             Created(Json.toJson(res))
           }
         }
@@ -62,7 +59,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
         tempEntity => {
           val entity = tempEntity.asUpdate(id, userId)
           protectedWrite(id, {
-            mmdao.update(entity)
+            metaModelDao.update(entity)
           })
         }
       )
@@ -72,7 +69,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
   def delete(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedWrite(id, {
-        mmdao.deleteById(id)
+        metaModelDao.deleteById(id)
       })
     }
   }
@@ -100,7 +97,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
           protectedWrite(id, {
             val selector = Json.obj("id" -> id)
             val modifier = Json.obj("$set" -> Json.obj("metaModel" -> metaModel, "updated" -> Instant.now))
-            mmdao.update(selector, modifier)
+            metaModelDao.update(selector, modifier)
           })
         }
       )
@@ -182,7 +179,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
           protectedWrite(id, {
             val selector = Json.obj("id" -> id)
             val modifier = Json.obj("$set" -> Json.obj("dsl.shape" -> shape, "updated" -> Instant.now))
-            mmdao.update(selector, modifier)
+            metaModelDao.update(selector, modifier)
           })
         }
       )
@@ -200,7 +197,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
           protectedWrite(id, {
             val selector = Json.obj("id" -> id)
             val modifier = Json.obj("$set" -> Json.obj("dsl.style" -> style, "updated" -> Instant.now))
-            mmdao.update(selector, modifier)
+            metaModelDao.update(selector, modifier)
           })
         }
       )
@@ -218,7 +215,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
           protectedWrite(id, {
             val selector = Json.obj("id" -> id)
             val modifier = Json.obj("$set" -> Json.obj("dsl.diagram" -> diagram, "updated" -> Instant.now))
-            mmdao.update(selector, modifier)
+            metaModelDao.update(selector, modifier)
           })
         }
       )
@@ -230,7 +227,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
   }
 
   def protectedRead(id: String, trans: MetaModelEntity => Result)(implicit userId: String): Future[Result] = {
-    mmdao.findById(id).map {
+    metaModelDao.findById(id).map {
       case Some(meta) => if (userId == meta.userId) {
         trans(meta)
       } else {
@@ -241,7 +238,7 @@ class MetaModelRestApi extends Controller with OAuth2Provider {
   }
 
   private def protectedWrite(id: String, write: => Future[DbWriteResult[String]])(implicit userId: String): Future[Result] = {
-    mmdao.hasAccess(id, userId).flatMap {
+    metaModelDao.hasAccess(id, userId).flatMap {
       case Some(b) => {
         if (b) {
           write.map { res => Ok(Json.toJson(res)) }

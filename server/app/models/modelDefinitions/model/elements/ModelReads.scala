@@ -55,8 +55,8 @@ object ModelReads {
         val finalMap: Map[String, ModelElement] = mapping.mapValues {
           _ match {
             case n: Node => n.updateLinks(
-              wireEdges(finalMap, n.inputs),
-              wireEdges(finalMap, n.outputs)
+              wireEdges(finalMap, n.outputs),
+              wireEdges(finalMap, n.inputs)
             )
             case e: Edge => e.updateLinks(
               wireNodes(finalMap, e.source),

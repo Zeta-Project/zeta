@@ -15,7 +15,7 @@ trait ZetaMetaModelDao extends GenericDocumentDao[MetaModelEntity, String] {
   def findMetaModelsByUser(userId: String): Future[Seq[MetaModelShortInfo]]
 }
 
-object MetaModelDao extends ZetaMetaModelDao with ReactiveMongoHelper[String] {
+class MetaModelDao extends ZetaMetaModelDao with ReactiveMongoHelper[String] {
 
   // yes, should be a def
   def metaModels = collection("mmd_new")
@@ -70,18 +70,14 @@ object MetaModelDao extends ZetaMetaModelDao with ReactiveMongoHelper[String] {
 
   def updateMetaModel(metaModelId: String, metaModel: MetaModel): Future[ModelsWriteResult] = {
     val selector = Json.obj("id" -> metaModelId)
-    val modifier = Json.obj("$set" -> Json.obj("definition" -> metaModel, "updated" -> Instant.now))
+    val modifier = Json.obj("$set" -> Json.obj("metaModel" -> metaModel, "updated" -> Instant.now))
     update(selector, modifier)
   }
 
 
   override def findMetaModelsByUser(userId: String): Future[Seq[MetaModelShortInfo]] = {
     val query = Json.obj("userId" -> userId)
-    metaModels.find(query).cursor[MetaModelEntity].collect[List]().map {
-      _.map { s =>
-        MetaModelShortInfo(s.id, s.metaModel.name, s.created, s.updated)
-      }
-    }
+    metaModels.find(query).cursor[MetaModelShortInfo].collect[List]()
   }
 
   override def hasAccess(id: String, userId: String): Future[Option[Boolean]] = {

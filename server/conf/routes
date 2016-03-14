@@ -16,8 +16,7 @@ GET           /metamodel/editor/:metaModelUuid                                  
 POST          /metamodel/save                                                        @controllers.MetaModelController.saveMetaModel
 GET           /metamodel/delete/:metaModelUuid                                       @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
 GET           /metamodel/socket/:metaModelUuid                                       @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
-# temporary
-GET           /metamodel/dummy                                                       @controllers.MetaModelController.dummyInsert
+
 
 ### MetaModel REST API
 GET           /metamodels                                                            @controllers.restApi.MetaModelRestApi.showForUser
@@ -40,15 +39,17 @@ PUT           /metamodels/:metaModelId/diagram                                  
 
 
 ### Model REST API
-#GET           /models/:modelId                                                    @controllers.restApi.ModelRestApi.getModel(modelId: String)
-#GET           /models/:modelId/nodes                                              @controllers.restApi.ModelRestApi.getNodes(modelId: String)
-#GET           /models/:modelId/nodes/:nodeId                                      @controllers.restApi.ModelRestApi.getNode(modelId: String, nodeId: String)
-#GET           /models/:modelId/edges                                              @controllers.restApi.ModelRestApi.getEdges(modelId: String)
-#GET           /models/:modelId/edges/:edgeId                                      @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeId: String)
-
-POST          /models/echo                                                           @controllers.restApi.ModelRestApi.echo
-
-
+GET           /models                                                                @controllers.restApi.ModelRestApi.showForUser
+POST          /models                                                                @controllers.restApi.ModelRestApi.insert
+PUT           /models/:modelId                                                       @controllers.restApi.ModelRestApi.update(modelId: String)
+GET           /models/:modelId                                                       @controllers.restApi.ModelRestApi.get(modelId: String)
+GET           /models/:modelId/definition                                            @controllers.restApi.ModelRestApi.getModelDefinition(modelId: String)
+PUT           /models/:modelId/definition                                            @controllers.restApi.ModelRestApi.updateModel(modelId: String)
+GET           /models/:modelId/definition/nodes                                      @controllers.restApi.ModelRestApi.getNodes(modelId: String)
+GET           /models/:modelId/definition/nodes/:nodeName                            @controllers.restApi.ModelRestApi.getNode(modelId: String, nodeName: String)
+GET           /models/:modelId/definition/edges                                      @controllers.restApi.ModelRestApi.getEdges(modelId: String)
+GET           /models/:modelId/definition/edges/:edgeName                            @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeName: String)
+DELETE        /models/:modelId                                                       @controllers.restApi.ModelRestApi.delete(modelId: String)
 
 ### Model
 GET           /model/new/:metaModelUuid                                              @controllers.ModelController.newModel(metaModelUuid: String)

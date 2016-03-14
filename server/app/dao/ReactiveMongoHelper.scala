@@ -1,11 +1,10 @@
-package dao.metaModel
+package dao
 
-import dao.DbWriteResult
 import play.api.Play._
-import play.api.libs.json.{Writes, Json}
+import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoApi
 import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.api.commands.{WriteResult, UpdateWriteResult}
+import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 
 trait ReactiveMongoHelper[P] {
 
@@ -39,7 +38,3 @@ case class ModelsWriteResult(
   errorMessage: Option[String],
   insertId: Option[String]
 ) extends dao.DbWriteResult[String]
-
-object ModelsWriteResult {
-  implicit val resultWrites = Json.writes[ModelsWriteResult]
-}
