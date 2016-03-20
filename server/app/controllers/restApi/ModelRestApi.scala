@@ -6,6 +6,7 @@ import javax.inject.Inject
 import dao.metaModel._
 import dao.model.ZetaModelDao
 import dao.{ModelsWriteResult, DbWriteResult}
+import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.elements.{Edge, Node}
 import models.modelDefinitions.model.{ModelEntity, Model}
 import models.oAuth.OAuthDataHandler
@@ -26,7 +27,12 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
   def showForUser = Action.async { implicit request =>
     oAuth { userId =>
       modelDao.findModelsByUser(userId).map { res =>
-        Ok(Json.toJson(res))
+        val out = res.map{info => info.copy(links = Some(Seq(
+          HLink.get("self", routes.ModelRestApi.get(info.id).absoluteURL),
+          HLink.get("meta_model", routes.MetaModelRestApi.get(info.metaModelId).absoluteURL),
+          HLink.delete("remove", routes.ModelRestApi.get(info.id).absoluteURL)
+        )))}
+        Ok(Json.toJson(out))
       }
     }
   }
@@ -93,7 +99,14 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
 
   def get(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => Ok(Json.toJson(m)(ModelEntity.strippedWrites)))
+      protectedRead(id, (m: ModelEntity) => {
+        val out = m.copy(links = Some(Seq(
+          HLink.put("update", routes.ModelRestApi.get(m.id).absoluteURL),
+          HLink.get("meta_model", routes.MetaModelRestApi.get(m.metaModelId).absoluteURL),
+          HLink.delete("remove", routes.ModelRestApi.get(m.id).absoluteURL)
+        )))
+        Ok(Json.toJson(out)(ModelEntity.strippedWrites))
+      })
     }
   }
 

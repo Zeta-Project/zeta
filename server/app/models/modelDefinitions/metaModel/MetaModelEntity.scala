@@ -2,6 +2,7 @@ package models.modelDefinitions.metaModel
 
 import java.time.Instant
 
+import models.modelDefinitions.helper.HLink
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -12,7 +13,8 @@ case class MetaModelEntity(
   created: Instant,
   updated: Instant,
   metaModel: MetaModel,
-  dsl: Dsl
+  dsl: Dsl,
+  links: Option[Seq[HLink]] = None
 ) {
 
   def asNew(userId: String) = {
@@ -45,7 +47,8 @@ object MetaModelEntity {
       (__ \ "created").write[Instant] and
       (__ \ "updated").write[Instant] and
       (__ \ "metaModel").write[MetaModel] and
-      (__ \ "dsl").write[Dsl]
+      (__ \ "dsl").write[Dsl] and
+      (__ \ "links").writeNullable[Seq[HLink]]
     ) (unlift(MetaModelEntity.unapply))
 
 
@@ -55,7 +58,8 @@ object MetaModelEntity {
       Reads.pure(Instant.now()) and
       Reads.pure(Instant.now()) and
       (__ \ "metaModel").read[MetaModel] and
-      Reads.pure(Dsl())
+      Reads.pure(Dsl()) and
+      Reads.pure(None)
     ) (MetaModelEntity.apply _)
 
   val strippedWrites = new Writes[MetaModelEntity] {
@@ -64,12 +68,19 @@ object MetaModelEntity {
       "created" -> m.created,
       "updated" -> m.updated,
       "metaModel" -> m.metaModel,
-      "dsl" -> m.dsl
+      "dsl" -> m.dsl,
+      "links" -> m.links
     )
   }
 }
 
-case class MetaModelShortInfo(id: String, name: String, created: Instant, updated: Instant)
+case class MetaModelShortInfo(
+  id: String,
+  name: String,
+  created: Instant,
+  updated: Instant,
+  links: Option[Seq[HLink]] = None
+)
 
 object MetaModelShortInfo {
 
@@ -77,7 +88,8 @@ object MetaModelShortInfo {
     (__ \ "id").read[String] and
       (__ \ "metaModel" \ "name").read[String] and
       (__ \ "created").read[Instant] and
-      (__ \ "updated").read[Instant]
+      (__ \ "updated").read[Instant] and
+      (__ \ "links").readNullable[Seq[HLink]]
     )(MetaModelShortInfo.apply _)
 
   implicit val writes = Json.writes[MetaModelShortInfo]

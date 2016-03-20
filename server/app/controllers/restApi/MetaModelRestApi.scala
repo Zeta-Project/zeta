@@ -5,6 +5,7 @@ import javax.inject.Inject
 
 import dao.{ModelsWriteResult, DbWriteResult}
 import dao.metaModel._
+import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.elements.MCoreWrites._
 import models.modelDefinitions.metaModel._
 import MetaModelEntity._
@@ -26,7 +27,11 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
   def showForUser = Action.async { implicit request =>
     oAuth { userId =>
       metaModelDao.findMetaModelsByUser(userId).map { res =>
-        Ok(Json.toJson(res))
+        val out = res.map{info => info.copy(links = Some(Seq(
+          HLink.get("self", routes.MetaModelRestApi.get(info.id).absoluteURL),
+          HLink.delete("remove", routes.MetaModelRestApi.get(info.id).absoluteURL)
+        )))}
+        Ok(Json.toJson(out))
       }
     }
   }
@@ -76,7 +81,13 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
 
   def get(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
-      protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m)(MetaModelEntity.strippedWrites)))
+      protectedRead(id, (m: MetaModelEntity) => {
+        val out = m.copy(links = Some(Seq(
+          HLink.put("update", routes.MetaModelRestApi.get(m.id).absoluteURL),
+          HLink.delete("remove", routes.MetaModelRestApi.get(m.id).absoluteURL)
+        )))
+        Ok(Json.toJson(out)(MetaModelEntity.strippedWrites))
+      })
     }
   }
 

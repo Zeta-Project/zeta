@@ -2,6 +2,7 @@ package models.modelDefinitions.model
 
 import java.time.Instant
 
+import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.{MetaModelEntity, Dsl, MetaModel}
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
@@ -13,7 +14,8 @@ case class ModelEntity(
   userId: String,
   created: Instant,
   updated: Instant,
-  model: Model
+  model: Model,
+  links: Option[Seq[HLink]] = None
 ){
 
   def asNew(userId: String, metaModelId: String) = {
@@ -44,7 +46,8 @@ object ModelEntity {
       (__ \ "userId").read[String] and
       (__ \ "created").read[Instant] and
       (__ \ "updated").read[Instant] and
-      (__ \ "model").read[Model](Model.reads(metaModel))
+      (__ \ "model").read[Model](Model.reads(metaModel)) and
+      (__ \ "links").readNullable[Seq[HLink]]
     ) (ModelEntity.apply _)
 
   implicit val writes: OWrites[ModelEntity] = (
@@ -53,7 +56,8 @@ object ModelEntity {
       (__ \ "userId").write[String] and
       (__ \ "created").write[Instant] and
       (__ \ "updated").write[Instant] and
-      (__ \ "model").write[Model]
+      (__ \ "model").write[Model] and
+      (__ \ "links").writeNullable[Seq[HLink]]
     ) (unlift(ModelEntity.unapply))
 
 
@@ -63,7 +67,8 @@ object ModelEntity {
       Reads.pure("") and
       Reads.pure(Instant.now()) and
       Reads.pure(Instant.now()) and
-      (__ \ "model").read[Model](Model.reads(metaModel))
+      (__ \ "model").read[Model](Model.reads(metaModel)) and
+      Reads.pure(None)
     ) (ModelEntity.apply _)
 
   val strippedWrites = new Writes[ModelEntity] {
@@ -72,12 +77,20 @@ object ModelEntity {
       "metaModelId" -> m.metaModelId,
       "created" -> m.created,
       "updated" -> m.updated,
-      "model" -> m.model
+      "model" -> m.model,
+      "links" -> m.links
     )
   }
 }
 
-case class ModelShortInfo(id: String, metaModelId: String, name: String, created: Instant, updated: Instant)
+case class ModelShortInfo(
+  id: String,
+  metaModelId: String,
+  name: String,
+  created: Instant,
+  updated: Instant,
+  links: Option[Seq[HLink]] = None
+)
 
 object ModelShortInfo {
 
@@ -86,7 +99,8 @@ object ModelShortInfo {
       (__ \ "metaModelId").read[String] and
       (__ \ "model" \ "name").read[String] and
       (__ \ "created").read[Instant] and
-      (__ \ "updated").read[Instant]
+      (__ \ "updated").read[Instant] and
+      (__ \ "links").readNullable[Seq[HLink]]
     )(ModelShortInfo.apply _)
 
   implicit val writes = Json.writes[ModelShortInfo]
