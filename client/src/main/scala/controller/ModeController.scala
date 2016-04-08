@@ -6,7 +6,7 @@ object ModeController {
     Map[String, scalajs.js.Any](
       "diagram" -> TestLanguage.langForModel(modelId),
       "shape" -> TestLanguage.langForModel(modelId),
-      "style" -> TestLanguage.langForModel(modelId)
+      "style" -> StyleLanguage.langForModel(modelId)
     )
   }
 }
