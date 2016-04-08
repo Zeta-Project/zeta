@@ -1,5 +1,7 @@
 package controller
 
+import java.net.InetAddress
+
 import org.scalajs.dom
 import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket, console}
 import shared.CodeEditorMessage
@@ -9,7 +11,10 @@ import upickle.default._
 case class WebSocketConnection(uri: String = "ws://127.0.0.1:9000/codeeditor/socket", controller: CodeEditorController, metaModelUuid: String, dslType: String) {
 
   /** Set up WebSocket connection */
-  val ws = new dom.WebSocket(uri + "/" + metaModelUuid + "/" + dslType)
+  val localhost = InetAddress.getLocalHost
+  val localIpAddress = localhost.getHostAddress
+  val uri_new = "ws://"+localIpAddress+":9000/codeeditor/socket"
+  val ws = new dom.WebSocket(uri_new + "/" + metaModelUuid + "/" + dslType)
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
   ws.onopen = (e: Event) => onOpen(e)
   ws.onerror = (e: ErrorEvent) => console.error(s"Websocket Error! ${e.message}")
