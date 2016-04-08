@@ -4,6 +4,10 @@ import play.api.libs.json._
 
 import scala.collection.immutable._
 
+/**
+  * Writes[T] for Model structures
+  */
+
 object ModelWrites {
 
   implicit val mObjectWrites = new Writes[ModelElement] {

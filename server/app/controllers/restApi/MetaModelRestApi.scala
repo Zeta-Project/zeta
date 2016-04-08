@@ -2,8 +2,7 @@ package controllers.restApi
 
 import java.time.Instant
 import javax.inject.Inject
-
-import dao.{ModelsWriteResult, DbWriteResult}
+import dao.DbWriteResult
 import dao.metaModel._
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.elements.MCoreWrites._
@@ -15,28 +14,30 @@ import play.api.libs.json.{JsError, Json}
 import play.api.mvc._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import scalaoauth2.provider.OAuth2Provider
 
-import ModelsWriteResult._
-
-// TODO: Reduce redundancy for some methods
-
+/**
+  * RESTful API for metamodel definitions
+  *
+  * @param metaModelDao the metamodel DAO (usually injected)
+  */
 class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Controller with OAuth2Provider {
 
+  /** Lists all metamodels for the requesting user, provides HATEOAS links */
   def showForUser = Action.async { implicit request =>
     oAuth { userId =>
       metaModelDao.findMetaModelsByUser(userId).map { res =>
-        val out = res.map{info => info.copy(links = Some(Seq(
+        val out = res.map { info => info.copy(links = Some(Seq(
           HLink.get("self", routes.MetaModelRestApi.get(info.id).absoluteURL),
           HLink.delete("remove", routes.MetaModelRestApi.get(info.id).absoluteURL)
-        )))}
+        )))
+        }
         Ok(Json.toJson(out))
       }
     }
   }
 
-  // inserts whole metamodel structure
+  /** inserts whole metamodel structure (metamodel itself, dsls...) */
   def insert = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       val in = request.body.validate[MetaModelEntity](MetaModelEntity.strippedReads)
@@ -54,6 +55,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** updates whole metamodel structure (metamodel itself, dsls...) */
   def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       val in = request.body.validate[MetaModelEntity](MetaModelEntity.strippedReads)
@@ -71,6 +73,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** deletes whole metamodel incl. dsl definitions */
   def delete(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedWrite(id, {
@@ -79,6 +82,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns whole metamodels incl. dsl definitions and HATEOAS links */
   def get(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -91,12 +95,14 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns pure metamodel without dsl definitions */
   def getMetaModelDefinition(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => Ok(Json.toJson(m.metaModel)))
     }
   }
 
+  /** updates pure metamodel without dsl definitions */
   def updateMetaModelDefinition(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       val in = request.body.validate[MetaModel]
@@ -115,6 +121,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns all MClasses of a specific metamodel as Json Array */
   def getMClasses(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -125,6 +132,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns all MReferences of a specific metamodel as Json Array */
   def getMReferences(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -135,6 +143,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns specific MClass of a specific metamodel as Json Object */
   def getMClass(id: String, name: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -145,6 +154,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns specific MReference of a specific metamodel as Json Object */
   def getMReference(id: String, name: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -155,6 +165,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns style definition */
   def getStyle(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -163,6 +174,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns shape definition */
   def getShape(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -171,6 +183,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** returns diagram definition */
   def getDiagram(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: MetaModelEntity) => {
@@ -179,6 +192,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** updates shape definition */
   def updateShape(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       val in = request.body.validate[Shape]
@@ -197,6 +211,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** updates style definition */
   def updateStyle(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       val in = request.body.validate[Style]
@@ -215,6 +230,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** updates diagram definition */
   def updateDiagram(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       val in = request.body.validate[Diagram]
@@ -233,10 +249,12 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** A helper method for less verbose oauth auth check */
   def oAuth[A](block: String => Future[Result])(implicit request: Request[A]) = {
     authorize(OAuthDataHandler()) { authInfo => block(authInfo.user.uuid.toString) }
   }
 
+  /** A helper method for less verbose reads from the database */
   def protectedRead(id: String, trans: MetaModelEntity => Result)(implicit userId: String): Future[Result] = {
     metaModelDao.findById(id).map {
       case Some(meta) => if (userId == meta.userId) {
@@ -248,6 +266,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
     }
   }
 
+  /** A helper method for less verbose writes to the database */
   private def protectedWrite(id: String, write: => Future[DbWriteResult[String]])(implicit userId: String): Future[Result] = {
     metaModelDao.hasAccess(id, userId).flatMap {
       case Some(b) => {
@@ -260,7 +279,4 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       case None => Future.successful(NotFound)
     }
   }
-
-
-
 }

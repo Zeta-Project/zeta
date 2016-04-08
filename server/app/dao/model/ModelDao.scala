@@ -4,19 +4,24 @@ import java.time.Instant
 import javax.inject.Inject
 
 import dao.metaModel.ZetaMetaModelDao
-import dao.{ModelsWriteResult, ReactiveMongoHelper, DbWriteResult, GenericDocumentDao}
+import dao.{ModelsWriteResult, ReactiveMongoHelper, GenericDocumentDao}
 import models.modelDefinitions.model.{ModelShortInfo, ModelEntity}
 import play.modules.reactivemongo.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json._
 import scala.concurrent.Future
 
+/**
+  * The model DAO trait which is used in the project
+  */
 trait ZetaModelDao extends GenericDocumentDao[ModelEntity, String] {
   def hasAccess(metaModelId: String, userId: String): Future[Option[Boolean]]
-
   def findModelsByUser(userId: String): Future[Seq[ModelShortInfo]]
 }
 
+/**
+  * Concrete model DAO implementation
+  */
 class ModelDao @Inject()(metaModelDao: ZetaMetaModelDao) extends ZetaModelDao with ReactiveMongoHelper[String] {
 
   // yes, should be a def
@@ -88,8 +93,7 @@ class ModelDao @Inject()(metaModelDao: ZetaMetaModelDao) extends ZetaModelDao wi
       optEntity <- optMetaModelEntity
     ) yield {
       optEntity.flatMap(me => optJsVal.map(v => {
-        val x = v.validate[ModelEntity](ModelEntity.reads(me.id, me.metaModel))
-        x.get
+        v.validate[ModelEntity](ModelEntity.reads(me.id, me.metaModel)).get
       }))
     }
   }

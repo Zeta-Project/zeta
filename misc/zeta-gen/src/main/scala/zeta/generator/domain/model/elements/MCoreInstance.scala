@@ -1,49 +1,19 @@
-package models.modelDefinitions.model.elements
+package zeta.generator.domain.model.elements
 
-import models.modelDefinitions.metaModel.elements.{AttributeValue, MClass, MReference}
-import scala.collection.immutable.Seq
+import zeta.generator.domain.metaModel.elements.{AttributeValue, MReference, MClass}
 
+import scala.collection.immutable._
 
-/**
-  * Immutable domain model for representing models
-  * Node -> MClass type instances, Edge -> MReference type instances
-  */
-
-
-/**
-  * the topmost trait
-  */
 trait ModelElement {
   val id: String
 }
 
-/**
-  * a type that glues nodes and edges together
-  */
 sealed trait Link
 
-/**
-  * represents outgoing edges of a node
-  * @param `type` the MReference instance that represents the type of the references
-  * @param edges the linked edges
-  */
 case class ToEdges(`type`: MReference, edges: Seq[Edge]) extends Link
 
-/**
-  * represents nodes in reach of an edge
-  * @param `type` the MClass instance that represents the type of the nodes
-  * @param nodes
-  */
 case class ToNodes(`type`: MClass, nodes: Seq[Node]) extends Link
 
-/**
-  * Represents an MClass type instance
-  * @param id the id of the node
-  * @param `type` the MClass instance that represents the node's type
-  * @param _outputs the outgoing edges
-  * @param _inputs the incoming edges
-  * @param attributes the attributes of the node
-  */
 class Node(
   val id: String,
   val `type`: MClass,
@@ -58,7 +28,6 @@ class Node(
     s"Node($id, ${`type`.name}, $outputs, $inputs, $attributes)"
   }
 
-  // convenience method for updating links
   def updateLinks(_outputs: => Seq[ToEdges], _inputs: => Seq[ToEdges]) =
     new Node(id, `type`, _outputs, _inputs, attributes)
 }
@@ -83,14 +52,6 @@ object Node {
 
 }
 
-/**
-  * Represents an MReference type instance
-  * @param id the id of the edge
-  * @param `type` the MReference instance that represents the edge's type
-  * @param _source the nodes that are the origin of relationships
-  * @param _target the nodes that can be reached
-  * @param attributes
-  */
 class Edge(
   val id: String,
   val `type`: MReference,
@@ -105,7 +66,6 @@ class Edge(
     s"Node($id, ${`type`.name}, $source, $target, $attributes)"
   }
 
-  // convenience method for updating links
   def updateLinks(_source: => Seq[ToNodes], _target: => Seq[ToNodes]) =
     new Edge(id, `type`, _source, _target, attributes)
 }

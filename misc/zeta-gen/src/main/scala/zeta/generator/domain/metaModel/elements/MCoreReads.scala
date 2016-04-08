@@ -1,4 +1,4 @@
-package models.modelDefinitions.metaModel.elements
+package zeta.generator.domain.metaModel.elements
 
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
@@ -7,12 +7,6 @@ import play.api.libs.json._
 
 import scala.annotation.tailrec
 import scala.collection.immutable._
-
-
-/**
-  * Reads[T] for all MCore structures (bottom of file)
-  * Contains also the necessary logic for graph initialization
-  */
 
 object MCoreReads {
 
@@ -180,11 +174,8 @@ object MCoreReads {
           case mObj :: tail => walk(tail, accErrors ::: processMObject(mObj))
         }
       }
-
       walk(values, Nil)
     }
-
-
   }
 
   val mTypeError = ValidationError("Unknown mType at top level: only MClass, MReference and MEnum allowed")
@@ -293,5 +284,4 @@ object MCoreReads {
     }
     builder.finalEnum
   }
-
 }

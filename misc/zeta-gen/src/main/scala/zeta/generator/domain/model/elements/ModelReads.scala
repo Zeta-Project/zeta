@@ -1,17 +1,12 @@
-package models.modelDefinitions.model.elements
+package zeta.generator.domain.model.elements
 
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements._
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
+import zeta.generator.domain.metaModel.MetaModel
+import zeta.generator.domain.metaModel.elements.{MClass, MReference, MLinkDef, MAttribute}
 
 import scala.collection.immutable._
-
-/**
-  * Reads[T] for Model structures (bottom of file)
-  * Contains also the necessary logic for graph initialization
-  */
 
 object ModelReads {
 
@@ -19,11 +14,9 @@ object ModelReads {
 
   def emtpyEdge(id: String) = new Edge(id, MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]()), Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
 
-
   private trait InvalidLink {
     val message: String
   }
-
 
   def elementMapReads(implicit meta: MetaModel) = new Reads[Map[String, ModelElement]] {
     implicit val elementReads = modelElementReads(meta)
@@ -152,3 +145,4 @@ object ModelReads {
 
 
 }
+

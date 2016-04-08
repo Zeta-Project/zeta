@@ -1,8 +1,6 @@
 package dao.metaModel
 
 import java.time.Instant
-
-
 import dao._
 import models.modelDefinitions.metaModel.{MetaModelShortInfo, MetaModelEntity, MetaModel}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -10,11 +8,17 @@ import play.api.libs.json._
 import play.modules.reactivemongo.json._
 import scala.concurrent.Future
 
+/**
+  * The metamodel DAO trait which is used in the project
+  */
 trait ZetaMetaModelDao extends GenericDocumentDao[MetaModelEntity, String] {
   def hasAccess(metaModelId: String, userId: String): Future[Option[Boolean]]
   def findMetaModelsByUser(userId: String): Future[Seq[MetaModelShortInfo]]
 }
 
+/**
+  * Concrete metamodel DAO implementation
+  */
 class MetaModelDao extends ZetaMetaModelDao with ReactiveMongoHelper[String] {
 
   // yes, should be a def

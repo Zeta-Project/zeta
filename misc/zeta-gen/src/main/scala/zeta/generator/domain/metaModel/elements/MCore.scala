@@ -1,41 +1,21 @@
-package models.modelDefinitions.metaModel.elements
+package zeta.generator.domain.metaModel.elements
 
 import scala.annotation.tailrec
 import scala.collection.immutable._
 
-/**
-  * Immutable domain model for the MCore (meta)metamodel
-  */
-
-/** a helper type to combine classes and refs */
 trait ClassOrRef {
   val name: String
 }
 
-/**
-  * the MObject trait
-  */
 trait MObject {
   val name: String
 }
 
-/**
-  * the MBounds trait
-  */
 trait MBounds {
   val upperBound: Int
   val lowerBound: Int
 }
 
-/**
-  * The MClass implementation
-  * @param name the name of the MClass instance
-  * @param abstractness defines if the MClass is abstract
-  * @param _superTypes the supertypes of the MClass (by-Name)
-  * @param _inputs the incoming MReferences (by-Name)
-  * @param _outputs the outgoing MReferences (by-Name)
-  * @param attributes the attributes of the MClass
-  */
 class MClass(
   val name: String,
   val abstractness: Boolean,
@@ -48,24 +28,12 @@ class MClass(
   lazy val inputs = _inputs
   lazy val outputs = _outputs
 
-  /**
-    * convenience method for updating relationships
-     * @param _superTypes possible update of supertypes
-    * @param _inputs possible update of inputs
-    * @param _outputs possible update of outputs
-    * @return the new MClass
-    */
   def updateLinks(
     _superTypes: => Seq[MClass] = superTypes,
     _inputs: => Seq[MLinkDef] = inputs,
     _outputs: => Seq[MLinkDef] = outputs) =
     new MClass(name, abstractness, _superTypes, _inputs, _outputs, attributes)
 
-  /**
-    * convenience method for updating attributes
-    * @param _attributes the updated attributes
-    * @return the new MClass
-    */
   def updateAttributes(_attributes: Seq[MAttribute]) =
     new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
 
@@ -76,17 +44,8 @@ class MClass(
     s"MClass($name, $abstractness, $superNames, $inputsNames, $outputsNames, $attributes)"
   }
 
-  /**
-    * represents the supertype hierarchy of this particular MClass
-    */
   lazy val typeHierarchy: Seq[MClass] = getSuperHierarchy(Seq(this), this.superTypes)
 
-  /**
-    * Determines the supertype hierarchy of this particular MClass
-    * @param acc accumulated value of recursion
-    * @param inspect the next MClass to check
-    * @return MClasses that take part in the supertype hierarchy
-    */
   private def getSuperHierarchy(acc: Seq[MClass], inspect: Seq[MClass]): Seq[MClass] = {
     inspect.foldLeft(acc) { (a, m) =>
       if (a.exists(_.name == m.name)) a
@@ -96,38 +55,18 @@ class MClass(
     }
   }.reverse
 
-  /**
-    * Checks if certain input relationship is allowed, also based on supertypes
-    * @param inputName the name of the incoming relationship
-    * @return true if the relationship is defined within the type hierarchy
-    */
   def typeHasInput(inputName: String) = typeHierarchy.exists(
     cls => cls.inputs.exists(link => link.mType.name == inputName)
   )
 
-  /**
-    * Checks if certain output relationship is allowed, also based on supertypes
-    * @param outputName the name of the outgoing relationship
-    * @return true if the relationship is defined within the type hierarchy
-    */
   def typeHasOutput(outputName: String) = typeHierarchy.exists(
     cls => cls.outputs.exists(link => link.mType.name == outputName)
   )
 
-  /**
-    * Checks if MClass has a certain supertype
-    * @param superName the name of the supertype in question
-    * @return true if the given name belongs to a supertype
-    */
   def typeHasSuperType(superName: String) = typeHierarchy.exists(
     cls => cls.name == superName
   )
 
-  /**
-    * Finds an MAttribute within supertypes
-    * @param attributeName the name of the attribute to find
-    * @return the MAttribute, if present
-    */
   def findMAttribute(attributeName: String) = {
     @tailrec
     def find(remaining: List[MClass]): Option[MAttribute] = remaining match {
@@ -142,7 +81,6 @@ class MClass(
 
 }
 
-/** Companion / Extractor */
 object MClass {
 
   def apply(
@@ -158,15 +96,6 @@ object MClass {
     Some((m.name, m.abstractness, m.superTypes, m.inputs, m.outputs, m.attributes))
 }
 
-/**
-  * The MReference implementation
-  * @param name the name of the MReference instance
-  * @param sourceDeletionDeletesTarget whether source deletion leads to removal of target
-  * @param targetDeletionDeletesSource whether target deletion leads to removal of source
-  * @param _source the incoming MClass relationships
-  * @param _target the outgoing MClass relationships
-  * @param attributes the attributes of the MReference
-  */
 class MReference(
   val name: String,
   val sourceDeletionDeletesTarget: Boolean,
@@ -178,16 +107,9 @@ class MReference(
   lazy val source = _source
   lazy val target = _target
 
-  /**
-    * convenience method for updating relationships
-    * @param _source possible update for source
-    * @param _target possible update for target
-    * @return the new MReference
-    */
   def updateLinks(_source: => Seq[MLinkDef] = source, _target: => Seq[MLinkDef] = target) =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, _source, _target, attributes)
 
-  /** convenience method for updating attributes */
   def updateAttributes(_attributes: Seq[MAttribute]) =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, _attributes)
 
@@ -198,7 +120,6 @@ class MReference(
   }
 }
 
-/** Companion / Extractor */
 object MReference {
 
   def apply(
@@ -214,21 +135,6 @@ object MReference {
     Some((m.name, m.sourceDeletionDeletesTarget, m.targetDeletionDeletesSource, m.source, m.target, m.attributes))
 }
 
-/**
-  * The MAttribute implementation
-  * @param name the name of the MAttribute instance
-  * @param globalUnique globalUnique flag
-  * @param localUnique localUnique flag
-  * @param `type` the attribute type
-  * @param default the attribute's default value
-  * @param constant constant flag
-  * @param singleAssignment single assignment flag
-  * @param expression a composed expression
-  * @param ordered ordered flag
-  * @param transient transient flag
-  * @param upperBound the upper bound
-  * @param lowerBound the lower bound
-  */
 case class MAttribute(
   name: String,
   globalUnique: Boolean,
@@ -244,7 +150,6 @@ case class MAttribute(
   lowerBound: Int
 ) extends MObject with MBounds
 
-/** MLinkDef implementation */
 case class MLinkDef(
   mType: ClassOrRef,
   upperBound: Int,
@@ -252,21 +157,49 @@ case class MLinkDef(
   deleteIfLower: Boolean
 ) extends MBounds
 
-/**
-  * The MEnum implementation
-  * @param name the name of the MENum instance
-  * @param values the symbols
-  */
+// type system for attribute types
+
+sealed trait AttributeType
+
+sealed trait AttributeValue
+
+object ScalarType {
+
+  case object String extends AttributeType
+
+  case object Bool extends AttributeType
+
+  case object Int extends AttributeType
+
+  case object Double extends AttributeType
+
+}
+
 case class MEnum(
   name: String,
   values: Seq[EnumSymbol]
 ) extends MObject with AttributeType
 
-/**
-  * An Enum Symbol
-  * @param name name of the symbol
-  * @param _attributeType backreference to the MEnum instance
-  */
+object ScalarValue {
+
+  case class MString(value: String) extends AttributeValue {
+    val attributeType = ScalarType.String
+  }
+
+  case class MBool(value: Boolean) extends AttributeValue {
+    val attributeType = ScalarType.Bool
+  }
+
+  case class MInt(value: Int) extends AttributeValue {
+    val attributeType = ScalarType.Int
+  }
+
+  case class MDouble(value: Double) extends AttributeValue {
+    val attributeType = ScalarType.Double
+  }
+
+}
+
 class EnumSymbol(val name: String, _attributeType: => MEnum) extends AttributeValue {
 
   lazy val attributeType = _attributeType
@@ -286,37 +219,4 @@ object EnumSymbol {
   def apply(name: String, attributeType: MEnum) = new EnumSymbol(name, attributeType)
 
   def unapply(e: EnumSymbol): Option[(String, MEnum)] = Some((e.name, e.attributeType))
-}
-
-sealed trait AttributeType
-
-sealed trait AttributeValue
-
-/** Marker objects */
-object ScalarType {
-  case object String extends AttributeType
-  case object Bool extends AttributeType
-  case object Int extends AttributeType
-  case object Double extends AttributeType
-}
-
-/** available types */
-object ScalarValue {
-
-  case class MString(value: String) extends AttributeValue {
-    val attributeType = ScalarType.String
-  }
-
-  case class MBool(value: Boolean) extends AttributeValue {
-    val attributeType = ScalarType.Bool
-  }
-
-  case class MInt(value: Int) extends AttributeValue {
-    val attributeType = ScalarType.Int
-  }
-
-  case class MDouble(value: Double) extends AttributeValue {
-    val attributeType = ScalarType.Double
-  }
-
 }

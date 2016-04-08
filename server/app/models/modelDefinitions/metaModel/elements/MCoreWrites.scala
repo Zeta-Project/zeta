@@ -3,7 +3,9 @@ package models.modelDefinitions.metaModel.elements
 import models.modelDefinitions.metaModel.elements.ScalarValue.{MString, MInt, MDouble, MBool}
 import play.api.libs.json._
 
-import scala.collection.immutable._
+/**
+  * Writes[T] for all MCore structures
+  */
 
 object MCoreWrites {
 

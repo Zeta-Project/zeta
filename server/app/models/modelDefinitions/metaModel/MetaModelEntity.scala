@@ -3,10 +3,19 @@ package models.modelDefinitions.metaModel
 import java.time.Instant
 
 import models.modelDefinitions.helper.HLink
-import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+/**
+  * The container that is used to persist metamodel definitions, contains additional metadata
+  * @param id the id of the metamodel
+  * @param userId the user that created the metamodel
+  * @param created time of creation
+  * @param updated time of last update
+  * @param metaModel the actual metamodel
+  * @param dsl possible dsl definitions
+  * @param links optional attribute for HATEOAS links, only used when serving to clients
+  */
 case class MetaModelEntity(
   id: String,
   userId: String,
@@ -16,7 +25,7 @@ case class MetaModelEntity(
   dsl: Dsl,
   links: Option[Seq[HLink]] = None
 ) {
-
+  // sets initial data for insert
   def asNew(userId: String) = {
     val now = Instant.now
     copy(
@@ -26,7 +35,7 @@ case class MetaModelEntity(
       updated = now
     )
   }
-
+  // overrides unchanging data for update
   def asUpdate(id: String, userId: String) = {
     copy(
       id = id,
@@ -51,7 +60,7 @@ object MetaModelEntity {
       (__ \ "links").writeNullable[Seq[HLink]]
     ) (unlift(MetaModelEntity.unapply))
 
-
+  /** stripped reads/writes are used when communicating with clients */
   val strippedReads: Reads[MetaModelEntity] = (
     Reads.pure("") and
       Reads.pure("") and
@@ -74,6 +83,14 @@ object MetaModelEntity {
   }
 }
 
+/**
+  * Represents concise information on a metamodel, used for REST-API overview uri
+  * @param id the id of the metamodel
+  * @param name the name of the metamodel
+  * @param created the time of creation
+  * @param updated the time of the last update
+  * @param links optional attribute for HATEOAS links, only used when serving to clients
+  */
 case class MetaModelShortInfo(
   id: String,
   name: String,

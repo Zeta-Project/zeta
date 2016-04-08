@@ -2,42 +2,44 @@ package controllers.restApi
 
 import java.time.Instant
 import javax.inject.Inject
-
 import dao.metaModel._
 import dao.model.ZetaModelDao
-import dao.{ModelsWriteResult, DbWriteResult}
+import dao.DbWriteResult
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.elements.{Edge, Node}
 import models.modelDefinitions.model.{ModelEntity, Model}
 import models.oAuth.OAuthDataHandler
 import play.api.libs.json._
 import play.api.mvc._
-
-import ModelsWriteResult._
-
 import models.modelDefinitions.model.elements.ModelWrites._
-
 import scala.concurrent.Future
 import scalaoauth2.provider.OAuth2Provider
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
-
+/**
+  * RESTful API for model definitions
+  *
+  * @param metaModelDao the metamodel DAO (usually injected)
+  * @param modelDao the model DAO (usually injected)
+  */
 class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModelDao) extends Controller with OAuth2Provider {
 
+  /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser = Action.async { implicit request =>
     oAuth { userId =>
       modelDao.findModelsByUser(userId).map { res =>
-        val out = res.map{info => info.copy(links = Some(Seq(
+        val out = res.map { info => info.copy(links = Some(Seq(
           HLink.get("self", routes.ModelRestApi.get(info.id).absoluteURL),
           HLink.get("meta_model", routes.MetaModelRestApi.get(info.metaModelId).absoluteURL),
           HLink.delete("remove", routes.ModelRestApi.get(info.id).absoluteURL)
-        )))}
+        )))
+        }
         Ok(Json.toJson(out))
       }
     }
   }
 
-  // inserts whole metamodel structure
+  /** inserts whole model structure */
   def insert = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       (request.body \ "metaModelId").validate[String].fold(
@@ -47,6 +49,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** helper method for model insert */
   private def validateAndInsert(jsModel: JsValue, userId: String, metaModelId: String): Future[Result] = {
     metaModelDao.findById(metaModelId) flatMap {
       case Some(metaModelEntity) if metaModelEntity.userId == userId => {
@@ -63,6 +66,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** updates whole model structure */
   def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       modelDao.findById(id).flatMap {
@@ -78,12 +82,13 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** updates model definition only */
   def updateModel(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       modelDao.findById(id).flatMap {
         case Some(modelEntity) if modelEntity.userId == userId => {
           request.body.validate[Model](Model.reads(modelEntity.model.metaModel)) match {
-            case JsSuccess(model, _) =>{
+            case JsSuccess(model, _) => {
               val selector = Json.obj("id" -> id)
               val modifier = Json.obj("$set" -> Json.obj("model" -> model, "updated" -> Instant.now))
               modelDao.update(selector, modifier).map(res => Ok(Json.toJson(res)))
@@ -97,6 +102,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** returns whole model structure incl. HATEOS links */
   def get(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: ModelEntity) => {
@@ -110,12 +116,14 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** returns model definition only */
   def getModelDefinition(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: ModelEntity) => Ok(Json.toJson(m.model)))
     }
   }
 
+  /** returns all nodes of a model as json array */
   def getNodes(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: ModelEntity) => {
@@ -126,6 +134,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** returns specific node of a specific model as json object */
   def getNode(id: String, name: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: ModelEntity) => {
@@ -136,6 +145,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** returns all edges of a model as json array */
   def getEdges(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: ModelEntity) => {
@@ -146,6 +156,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** returns specific edge of a specific model as json object */
   def getEdge(id: String, name: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedRead(id, (m: ModelEntity) => {
@@ -156,6 +167,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** deletes a whole model */
   def delete(id: String) = Action.async { implicit request =>
     oAuth { implicit userId =>
       protectedWrite(id, {
@@ -164,12 +176,12 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
-
-
+  /** A helper method for less verbose oauth auth check */
   def oAuth[A](block: String => Future[Result])(implicit request: Request[A]) = {
     authorize(OAuthDataHandler()) { authInfo => block(authInfo.user.uuid.toString) }
   }
 
+  /** A helper method for less verbose reads from the database */
   def protectedRead(id: String, trans: ModelEntity => Result)(implicit userId: String): Future[Result] = {
     modelDao.findById(id).map {
       case Some(model) => if (userId == model.userId) {
@@ -181,6 +193,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
     }
   }
 
+  /** A helper method for less verbose writes to the database */
   private def protectedWrite(id: String, write: => Future[DbWriteResult[String]])(implicit userId: String): Future[Result] = {
     modelDao.hasAccess(id, userId).flatMap {
       case Some(b) => {
@@ -193,6 +206,5 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
       case None => Future.successful(NotFound)
     }
   }
-
 
 }

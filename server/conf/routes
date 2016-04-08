@@ -9,15 +9,6 @@ GET           /profile                                                          
 GET           /profile/edit                                                          @controllers.webpage.ProfileController.edit
 POST          /profile/edit                                                          @controllers.webpage.ProfileController.saveChanges
 
-
-### Metamodel
-GET           /metamodel/new                                                         @controllers.MetaModelController.newMetaModel
-GET           /metamodel/editor/:metaModelUuid                                       @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
-POST          /metamodel/save                                                        @controllers.MetaModelController.saveMetaModel
-GET           /metamodel/delete/:metaModelUuid                                       @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
-GET           /metamodel/socket/:metaModelUuid                                       @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
-
-
 ### MetaModel REST API
 GET           /metamodels                                                            @controllers.restApi.MetaModelRestApi.showForUser
 POST          /metamodels                                                            @controllers.restApi.MetaModelRestApi.insert
@@ -37,7 +28,6 @@ PUT           /metamodels/:metaModelId/style                                    
 GET           /metamodels/:metaModelId/diagram                                       @controllers.restApi.MetaModelRestApi.getDiagram(metaModelId: String)
 PUT           /metamodels/:metaModelId/diagram                                       @controllers.restApi.MetaModelRestApi.updateDiagram(metaModelId: String)
 
-
 ### Model REST API
 GET           /models                                                                @controllers.restApi.ModelRestApi.showForUser
 POST          /models                                                                @controllers.restApi.ModelRestApi.insert
@@ -51,14 +41,19 @@ GET           /models/:modelId/definition/edges                                 
 GET           /models/:modelId/definition/edges/:edgeName                            @controllers.restApi.ModelRestApi.getEdge(modelId: String, edgeName: String)
 DELETE        /models/:modelId                                                       @controllers.restApi.ModelRestApi.delete(modelId: String)
 
+### Metamodel
+GET           /metamodel/new                                                         @controllers.MetaModelController.newMetaModel
+GET           /metamodel/editor/:metaModelUuid                                       @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
+POST          /metamodel/save                                                        @controllers.MetaModelController.saveMetaModel
+GET           /metamodel/delete/:metaModelUuid                                       @controllers.MetaModelController.deleteMetaModel(metaModelUuid: String)
+GET           /metamodel/socket/:metaModelUuid                                       @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
+
+
 ### Model
 GET           /model/new/:metaModelUuid                                              @controllers.ModelController.newModel(metaModelUuid: String)
 GET           /model/editor/:metaModelUuid/:modelUuid                                @controllers.ModelController.modelEditor(metaModelUuid: String, modelUuid: String)
 GET           /model/socket/:graphType/:instanceId                                   @controllers.ModelController.modelSocket(instanceId:String, graphType:String)
 GET           /model/validator                                                       @controllers.ModelController.modelValidator
-
-
-
 
 ### Code Editor
 GET           /codeeditor/editor/:metaModelUuid/:dslType                             @controllers.CodeEditorController.codeEditor(metaModelUuid: String, dslType: String)
@@ -68,8 +63,7 @@ GET           /codeeditor/socket/:metaModelUuid/:dslType                        
 ### oAuth 2
 POST          /oauth/accessToken                                                     @controllers.oAuth.OAuthController.accessToken
 POST          /oauth/accessTokenLocal                                                @controllers.oAuth.OAuthLocalController.accessToken
-# temp. route for testing purposes
-GET           /oauth/info                                                            @controllers.oAuth.OAuthController.info
+# temp. route for setup/developing purposes
 GET           /oauth/setup                                                           @controllers.oAuth.OAuthController.setup
 
 

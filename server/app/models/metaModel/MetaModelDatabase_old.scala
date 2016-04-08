@@ -9,6 +9,7 @@ import play.api.{Logger, Play}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+// DEPRECATED/old and soon to be removed
 
 /** Represents a metamodel */
 

@@ -1,11 +1,14 @@
 package dao
 
 import play.api.Play._
-import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoApi
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 
+/**
+  * A mixin trait that helps with MongoDB
+  * @tparam P the type of the primary key
+  */
 trait ReactiveMongoHelper[P] {
 
   lazy val reactiveMongoApi = current.injector.instanceOf[ReactiveMongoApi]
@@ -13,6 +16,7 @@ trait ReactiveMongoHelper[P] {
   def collection(name: String): JSONCollection =
     reactiveMongoApi.db.collection[JSONCollection](name)
 
+  /** wraps MongoDB result in custom result */
   def wrapUpdateResult(updateWriteResult: UpdateWriteResult) = {
     ModelsWriteResult(
       updateWriteResult.ok,
@@ -22,6 +26,7 @@ trait ReactiveMongoHelper[P] {
     )
   }
 
+  /** wraps MongoDB result in custom result */
   def wrapWriteResult(writeResult: WriteResult, id: Option[String]) = {
     ModelsWriteResult(
       writeResult.ok,
@@ -32,6 +37,7 @@ trait ReactiveMongoHelper[P] {
   }
 }
 
+/** Just an implementation of DbWriteResult[A] */
 case class ModelsWriteResult(
   ok: Boolean,
   affected: Int,

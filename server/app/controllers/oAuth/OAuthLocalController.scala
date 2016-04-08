@@ -49,9 +49,9 @@ class OAuthLocalController @Inject()(override implicit val env: UserEnvironment)
   }
 
   private def issueAccessToken(
-                                handler: AuthorizationHandler[SecureSocialUser],
-                                authInfo: AuthInfo[SecureSocialUser]
-                              ): Future[JsObject] = {
+    handler: AuthorizationHandler[SecureSocialUser],
+    authInfo: AuthInfo[SecureSocialUser]
+  ): Future[JsObject] = {
     handler.getStoredAccessToken(authInfo).flatMap {
       case Some(token) if token.isExpired => token.refreshToken.map {
         handler.refreshAccessToken(authInfo, _)
