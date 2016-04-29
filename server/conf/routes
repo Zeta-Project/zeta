@@ -15,6 +15,7 @@ GET           /metamodel/new/:name                                              
 GET           /metamodel/editor/:metaModelUuid                                    @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
 GET           /metamodel/socket/:metaModelUuid                                    @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
 # temporary
+GET           /generator/:metaModelUuid                                           @controllers.GeneratorController.generate(metaModelUuid: String)
 GET           /metamodel/dummy                                                    @controllers.MetaModelController.dummyInsert
 
 ### MetaModel REST API
