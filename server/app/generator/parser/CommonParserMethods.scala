@@ -28,7 +28,6 @@ trait CommonParserMethods extends JavaTokenParsers{
   def attributePair: Parser[(String, String)] = variable ~ arguments ^^ { case v ~ a => (v, a) }
 
   /*special cases - grammar is nasty.. */
-  def compartmentinfo:Parser[String] = "(" ~ rep(compartmentinfo_attribute) ~ ")" ^^ { case c1 ~ list ~ c2 => c1+"\n"+list.map(i => i+"\n").mkString+c2 }
   def compartmentinfo_attribute:Parser[String] = compartmentinfo_attribute_layout | compartmentinfo_attribute_stretching | compartmentinfo_attribute_spacing | compartmentinfo_attribute_margin | compartmentinfo_attribute_invisible | compartmentinfo_attribute_id
   def compartmentinfo_attribute_layout:Parser[String] = "layout\\s*=\\s*(fixed|vertical|horizontal|fit)".r ^^ {_.toString}
   def compartmentinfo_attribute_stretching:Parser[String] = "stretching\\s*\\(\\s*horizontal\\s*=\\s*(yes|y|true|no|n|false)\\s*,\\s*vertical\\s*=\\s*(yes|y|true|no|n|false)\\)".r ^^ {_.toString}
@@ -38,7 +37,7 @@ trait CommonParserMethods extends JavaTokenParsers{
   def compartmentinfo_attribute_id:Parser[String] = "id\\s*=\\s*.+".r ^^ {_.toString}
 
   /*Some explicit usages*/
-  def split_compartment = "compartment\\s*[\\{\\(]".r ~> rep(compartmentinfo_attribute) <~ "[\\)\\}]".r ^^ {
+  def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ {
     case list => list
   }
   def position:Parser[Option[(Int, Int)]] = "[Pp]osition\\s*\\(\\s*(x=)?".r ~> argument ~ ((",\\s*(y=)?".r ~> argument) <~")") ^^ {

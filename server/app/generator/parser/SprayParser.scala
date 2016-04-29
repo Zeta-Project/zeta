@@ -54,7 +54,7 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
 
   /*GeometricModel-specific-------------------------------------------------------------------*/
   private def geoVariable:Parser[String] = "(position|size|point|curve|align|id|textBody|compartment)".r ^^ {_.toString}
-  private def geoAttribute = geoVariable ~ (arguments | compartmentinfo) ^^ {case v ~ a => v+a}
+  private def geoAttribute = geoVariable ~ arguments ^^ {case v ~ a => v+a}
   private def geoIdentifier:Parser[String] = "(ellipse|line|polygon|polyline|rectangle|rounded-rectangle|text|wrapped-text)".r ^^ {_.toString}
 
   /**parses a geoModel. first ident is the GeometricModels name, second ident is an optional reference to a style*/
