@@ -2,7 +2,7 @@
 
 .toolbar-container {
     position: absolute;
-    top: 70px;
+    top: 50px;
     left: 0;
     right: 0;
     height: 38px;
@@ -15,7 +15,7 @@
 .stencil-container {
     position: absolute;
     left: 0;
-    top: 107px; /* toolbar height */
+    top: 87px; /* toolbar height */
     bottom: 0; /* statusbar height */
     width: 240px;
     margin: 0;
@@ -23,7 +23,7 @@
 
 .inspector-container {
     position: absolute;
-    top: 107px; /* toolbar height - 1 */
+    top: 87px; /* toolbar height - 1 */
     right: 0;
     bottom: 0; /* statusbar height */
     width: 240px;
@@ -31,7 +31,7 @@
 
 .paper-container {
     position: absolute;
-    top: 108px; /* toolbar height - 1*/
+    top: 87px; /* toolbar height - 1*/
     left: 241px; /* stencil width + 1 */
     right: 241px; /* inspector width  + 1*/
     bottom: 0; /* statusbar height */

@@ -4,12 +4,16 @@
     width: 100%;
 }
 
+.inspector .panel {
+    margin-bottom: 0px;
+}
+
 .inspector .btn-list-del {
     margin-right: 5px;
 }
 
 .inspector-container-inner {
-    padding: 5px;
+    padding: 0px;
 }
 
 .inspector .group {
