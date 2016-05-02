@@ -85,26 +85,31 @@
         </div>
 
         <div class="btn-group">
-            <div class="toolbar-gridsize btn btn-default" id="btn-gridsize" data-tooltip="Change Grid Size">
+            <div class="toolbar-gridsize btn btn-default" id="btn-gridsize">
                 <label for="input-gridsize">Grid</label>
-                <input type="range" value="10" min="5" max="50" step="5" id="input-gridsize">
-                <output for="input-gridsize" id="output-gridsize">10</output>
+                <div class="toolbar-hover-control">
+                    <input type="range" value="10" min="5" max="50" step="5" id="input-gridsize">
+                    <output for="input-gridsize" id="output-gridsize">10</output>
+                </div>
             </div>
 
             <div class="toolbar-guidelines btn btn-default" id="btn-guidelines">
-                <input type="checkbox" id="checkbox-guidelines" checked>
                 <label for="input-guidelines">Guidelines</label>
-                <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
-                <output for="input-guidelines" id="output-guidelines">5</output>
+                <div class="toolbar-hover-control">
+                    <input type="checkbox" id="checkbox-guidelines" checked>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
+                    <output for="input-guidelines" id="output-guidelines">5</output>
+                </div>
             </div>
 
             <div class="toolbar-distancelines btn btn-default" id="btn-distancelines">
-                <input type="checkbox" id="checkbox-distancelines" checked>
                 <label for="input-distancelines">Distancelines</label>
-                <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
-                <output for="input-distancelines" id="output-distancelines">5</output>
+                <div class="toolbar-hover-control">
+                    <input type="checkbox" id="checkbox-distancelines" checked>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
+                    <output for="input-distancelines" id="output-distancelines">5</output>
+                </div>
             </div>
-
         </div>
 
     </div>
