@@ -49,6 +49,8 @@
     border-left-color: #2c3e50;
 }
 
+
+
 .link-tools .tool-options {
     display: block;
 }
@@ -81,6 +83,12 @@
 
 .inspector label {
     font-weight: normal;
+    display: inline;
+}
+
+.inspector .toggle {
+    display: inline;
+    float: right;
 }
 
 @media screen and (min-width: 0\0
