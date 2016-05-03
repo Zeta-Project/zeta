@@ -31,7 +31,7 @@
 
 .paper-container {
     position: absolute;
-    top: 87px; /* toolbar height - 1*/
+    top: 88px; /* toolbar height - 1*/
     left: 241px; /* stencil width + 1 */
     right: 241px; /* inspector width  + 1*/
     bottom: 0; /* statusbar height */
@@ -81,4 +81,8 @@
 
 .stencil-toggle-icon-wrapper {
     float: right;
+}
+
+.panel-default {
+    border-radius: 0;
 }

@@ -51,10 +51,6 @@
     pointer-events: none;
 }
 
-.stencil .group .elements {
-    margin-left: -17px;
-}
-
 .stencil-toggle-container {
     left: 0;
 }

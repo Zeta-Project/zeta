@@ -10,6 +10,11 @@
 
 .inspector .btn-list-del {
     margin-right: 5px;
+    float: right;
+}
+
+.inspector .btn-xs {
+    border-radius: 15px;
 }
 
 .inspector-container-inner {
@@ -78,10 +83,23 @@
     margin: 0;
 }
 
-.inspector .field, .inspector .list-item {
+.inspector .list-item {
     padding: 4px;
-    margin: 2px;
+    margin: 0px -5px 0px -5px;
 }
+
+.inspector .field {
+    padding: 4px;
+}
+.inspector .field, .inspector .list-item:first-of-type {
+    margin-top: 4px;
+}
+
+.inspector .field, .inspector .list-item .btn-default {
+    border: 0px;
+}
+
+
 
 .inspector label {
     font-weight: normal;
