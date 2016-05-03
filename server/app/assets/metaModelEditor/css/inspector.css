@@ -49,7 +49,9 @@
     border-left-color: #2c3e50;
 }
 
-
+.inspector .field {
+    margin: 0;
+}
 
 .link-tools .tool-options {
     display: block;
@@ -89,6 +91,22 @@
 .inspector .toggle {
     display: inline;
     float: right;
+}
+
+.inspector-toggle-container {
+    right: 0;
+}
+
+.inspector-container-hidden {
+    width: 40px;
+}
+
+.inspector-container-hidden div {
+    display: none;
+}
+
+.inspector-toggle-icon-wrapper {
+    float: left;
 }
 
 @media screen and (min-width: 0\0

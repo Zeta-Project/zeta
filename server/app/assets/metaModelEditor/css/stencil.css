@@ -55,6 +55,18 @@
     margin-left: -17px;
 }
 
+.stencil-toggle-container {
+    left: 0;
+}
+
+.stencil-container-hidden {
+    width: 40px;
+}
+
+.stencil-container-hidden div {
+    display: none;
+}
+
 /* Hide some nodes of elements in stencil. */
 .stencil .elements .element.basic.Image text,
 .stencil .elements .element.devs.Atomic .inPorts text,

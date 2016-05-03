@@ -338,3 +338,11 @@ var inspector = (function inspector () {
         getDefs : getDefs
     };
 })();
+
+$(".inspector-toggle-icon-wrapper").on("click", function() {
+    $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
+    $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-left");
+    $(".paper-container").toggleClass("paper-container-inspector-hidden");
+    $(".inspector-container").toggleClass("inspector-container-hidden");
+    $(".inspector-toggle-container").toggleClass("toggle-container-hidden");
+});
