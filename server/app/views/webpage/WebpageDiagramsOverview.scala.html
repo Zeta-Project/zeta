@@ -176,7 +176,7 @@
                                 Authorization: "Bearer " + accessToken
                             },
                             success : function(data, textStatus, jqXHR) {
-                                window.location.replace("/overview");
+                                alert(textStatus);
                             },
                             error : function(jqXHR, textStatus, errorThrown) {
                                 if (!tokenRefreshed) {
