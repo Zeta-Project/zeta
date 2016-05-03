@@ -8,11 +8,24 @@ package generator.generators.style
 import generator.model.style._
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.{Gradient, HORIZONTAL}
+import java.nio.file.{Paths, Files}
+import play.api.Play.current
+
+
 
 object StyleGenerator {
 
 
-  def filepath = "style.js"
+  def filename = "style.js"
+
+  def doGenerate(styles: List[Style], outputLocation: String) = {
+    var output = head
+    for (style <- styles) output += compile(style)
+    output += footer + headDia
+    for (style <- styles) output += compileDia(style)
+    output += footerDia
+    Files.write(Paths.get(outputLocation + filename), output.getBytes)
+  }
 
   def compile(s: Style) = body(s)
 
@@ -70,7 +83,7 @@ object StyleGenerator {
        }
        """
 
-  def head(s: Style) =
+  def head =
     """
        function getStyle(stylename) {
 
@@ -135,7 +148,7 @@ object StyleGenerator {
     raw"""
        'font-family': '${s.font_name.getOrElse("sans-serif")}',
        'font-size': '${s.font_size.getOrElse("11px")}',
-       fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
+       'fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
        'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }',
        ${if (s.font_italic.getOrElse(false)) raw"""'font-style': 'italic', """ else ""}
        """
@@ -244,8 +257,7 @@ object StyleGenerator {
         s.gradient_orientation.get match { case HORIZONTAL => true
         case _ => false})
     else
-        createBackgroundAttributes(s)}
-        ${createLineAttributes(s)}
+        createBackgroundAttributes(s)},
         """
 
 

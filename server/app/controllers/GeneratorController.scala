@@ -5,11 +5,17 @@ import javax.inject.Inject
 import dao.metaModel.MetaModelDaoImpl
 import util.definitions.UserEnvironment
 import generator.parser.{Cache, SprayParser}
+import generator.generators.spray.SprayGenerator
+import generator.generators.style.StyleGenerator
+import generator.generators.shape.ShapeGenerator
+import play.api.Play.current
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
 
 class GeneratorController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+
+  private val generatorOutputLocation = current.path.toString + "/app/generator/output/"
 
   def generate(metaModelUuid: String) = SecuredAction { implicit request =>
 
@@ -20,8 +26,15 @@ class GeneratorController @Inject()(override implicit val env: UserEnvironment) 
       val parser = new SprayParser(hierarchyContainer, result.get.definition)
 
       val styles = parser.parseStyle(result.get.definition.style.get.code)
-      val shapes = parser.parseAbstractShape(result.get.definition.shape.get.code)
-      val diagram = parser.parseDiagram(result.get.definition.diagram.get.code)
+      StyleGenerator.doGenerate(styles, generatorOutputLocation )
+
+      //val shapes = parser.parseAbstractShape(result.get.definition.shape.get.code)
+      //for (shape <- shapes) println(ShapeGenerator.doGenerate(hierarchyContainer, current.path.toString+"\\"))
+
+      /*
+      val diagrams = parser.parseDiagram(result.get.definition.diagram.get.code+"\\")
+      for (diagram <- diagrams) SprayGenerator.doGenerate(diagram.get, current.path.toString+"\\")
+      */
 
       Ok("Generation successful")
     } else {
