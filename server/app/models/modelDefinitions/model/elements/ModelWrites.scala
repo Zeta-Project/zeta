@@ -4,6 +4,8 @@ import play.api.libs.json._
 
 import scala.collection.immutable._
 
+import models.modelDefinitions.metaModel.elements.MCoreWrites._
+
 /**
   * Writes[T] for Model structures
   */
@@ -25,8 +27,8 @@ object ModelWrites {
         "id" -> n.id,
         "mClass" -> n.`type`.name,
         "outputs" -> transformEdges(n.outputs),
-        "inputs" -> transformEdges(n.inputs)
-        //"attributes" -> n.attributes
+        "inputs" -> transformEdges(n.inputs),
+        "attributes" -> transformAttributes(n.attributes)
       )
     }
   }
@@ -37,9 +39,16 @@ object ModelWrites {
         "id" -> e.id,
         "mReference" -> e.`type`.name,
         "source" -> transformNodes(e.source),
-        "target" -> transformNodes(e.target)
+        "target" -> transformNodes(e.target),
+        "attributes" -> transformAttributes(e.attributes)
       )
     }
+  }
+
+  def transformAttributes(atts: Seq[Attribute]) = {
+    val elems = atts.map(
+      a => a.name -> Json.toJsFieldJsValueWrapper(a.value))
+    Json.obj(elems: _*)
   }
 
   def transformEdges(edges: Seq[ToEdges]) = {

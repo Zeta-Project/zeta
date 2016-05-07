@@ -124,6 +124,12 @@ class MClass(
   )
 
   /**
+    * Returns all effective (inherited) MAttributes of this MClass
+    * @return the MAttributes
+    */
+  def getTypeMAttributes: Seq[MAttribute] = typeHierarchy.flatMap(_.attributes)
+
+  /**
     * Finds an MAttribute within supertypes
     * @param attributeName the name of the attribute to find
     * @return the MAttribute, if present
