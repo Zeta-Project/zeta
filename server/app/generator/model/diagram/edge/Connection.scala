@@ -1,15 +1,15 @@
 package generator.model.diagram.edge
 
 import generator.model.style.Style
-import generator.parser.{ConnectionSketch, Cache, PropsAndComps}
-import models.metaModel.mCore.MClass
+import generator.parser.{Cache, ConnectionSketch, PropsAndComps}
+import models.metaModel.mCore.{MClass, MReference}
 import parser._
 
 /**
  * Created by julian on 11.12.15.
  * representation of diagram connection
  */
-class Connection(corporateStyle:Option[Style], propsAndComps: PropsAndComps, c:Cache, mc:MClass){
+class Connection(corporateStyle:Option[Style], propsAndComps: PropsAndComps, c:Cache, mc:MReference){
   implicit val cache = c
   val referencedConnection:Option[generator.model.shapecontainer.connection.Connection] = {
     val connectionSketch:ConnectionSketch = propsAndComps.ref

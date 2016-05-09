@@ -3,8 +3,9 @@ package generator.model.diagram.node
 import generator.model.shapecontainer.shape.Compartment
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-import generator.parser.{ShapeSketch, Cache}
-import models.metaModel.mCore.{MReference, MClass, MAttribute}
+import generator.parser.{Cache, ShapeSketch}
+import models.metaModel.MetaModel
+import models.metaModel.mCore.{MAttribute, MClass, MReference}
 import parser._
 
 /**
@@ -12,7 +13,7 @@ import parser._
  * diagrams shape definition
  */
 class DiaShape(corporateStyle:Option[Style], shape:String,
-               propertiesAndCompartments:Option[List[(String, (String, String))]], c:Cache, mc:MClass, mRmap:Map[String, MReference]){
+               propertiesAndCompartments:Option[List[(String, (String, String))]], c:Cache, mc:MClass, metaModel: MetaModel){
   implicit val cache = c
   val referencedShape:generator.model.shapecontainer.shape.Shape = {
     val shapesketch:ShapeSketch = shape
@@ -30,6 +31,8 @@ class DiaShape(corporateStyle:Option[Style], shape:String,
       vals = propertiesAndCompartments.get.filter(i => i._1 == "val").map(_._2).map(i => i._1 -> referencedShape.textMap.get(i._2)).toMap
 
       nests = propertiesAndCompartments.get.filter(i => i._1 == "nest").map(_._2).map(i =>
-        mRmap(i._1) -> referencedShape.compartmentMap.get(i._2)).toMap
+        metaModel.concept.elements.find{
+          case (name, x) if x.isInstanceOf[MReference] & name == i._2 => true
+        }.asInstanceOf[Option[(String, MReference)]].get._2 -> referencedShape.compartmentMap.get(i._2)).toMap
   }
 }
