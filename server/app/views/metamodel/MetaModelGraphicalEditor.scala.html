@@ -18,6 +18,7 @@
     window.loadedMetaModel.loadOnStart = true;
     window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.definition.concept.uiState))));
     }
+    $('#metamodel-name').text("Metamodel: "+window.loadedMetaModel.name);
     </script>
 
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.css")">

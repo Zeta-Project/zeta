@@ -86,3 +86,10 @@
 .panel-default {
     border-radius: 0;
 }
+
+#metamodel-name {
+    position: absolute;
+    width: 100%;
+    top: 20px;
+    text-align: center;
+}

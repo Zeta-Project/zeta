@@ -14,7 +14,9 @@
 }
 
 .inspector .btn-xs {
-    border-radius: 15px;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
 }
 
 .inspector-container-inner {
