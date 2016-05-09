@@ -14,6 +14,8 @@ import scala.concurrent.Future
 trait MetaModelDao extends GenericMongoDao[MetaModelEntity] with ReactiveMongoHelper {
   def findIdsByUser(userId: String): Future[Seq[MetaModelShortInfo]]
 
+  def findByName(name: String): Future[Option[MetaModelEntity]]
+
   def hasAccess(id: String, userId: String): Future[Option[Boolean]]
 
   def updateDefinition(metaModelId: String, definition: MetaModel): Future[DbWriteResult]
@@ -37,6 +39,10 @@ object MetaModelDaoImpl extends MetaModelDao {
 
   override def findById(id: String): Future[Option[MetaModelEntity]] = {
     findOne(Json.obj("id" -> id))
+  }
+
+  override def findByName(name: String): Future[Option[MetaModelEntity]] = {
+    findOne(Json.obj("definition.name" -> name))
   }
 
   override def findOne(query: JsObject): Future[Option[MetaModelEntity]] = {
