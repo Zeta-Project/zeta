@@ -9,8 +9,6 @@ import generator.model.style._
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.{Gradient, HORIZONTAL}
 import java.nio.file.{Paths, Files}
-import play.api.Play.current
-
 
 
 object StyleGenerator {
@@ -99,28 +97,18 @@ object StyleGenerator {
     The ${s.name} function will be called when the shapes are created, setting style attributes.
     ${s.description.getOrElse("")}
     */
-    case ${s.name}:
+    case '${s.name}':
       style = {
       '.': { filter: Stencil.filter },
-
       ${createFontAttributes(s)}
-
       ${createRectangleAttributes(s)}
-
       ${createRoundedRectangleAttributes(s)}
-
       ${createCircleAttributes(s)}
-
       ${createEllipseAttributes(s)}
-
       ${createLineAttributes(s)}
-
       ${createConnectionAttributes(s)}
-
       ${createPolygonAttributes(s)}
-
       ${createPolylineAttributes(s)}
-
       $createBoundingBoxStyle
     };
     break;"""
@@ -150,7 +138,7 @@ object StyleGenerator {
        'font-size': '${s.font_size.getOrElse("11px")}',
        'fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
        'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }',
-       ${if (s.font_italic.getOrElse(false)) raw"""'font-style': 'italic', """ else ""}
+       ${if (s.font_italic.getOrElse(false)) raw"""'font-style': 'italic' """ else ""}
        """
   }
 
@@ -257,14 +245,15 @@ object StyleGenerator {
         s.gradient_orientation.get match { case HORIZONTAL => true
         case _ => false})
     else
-        createBackgroundAttributes(s)},
+        createBackgroundAttributes(s)}
+        ${createLineAttributesFromLayout(s)}
         """
 
 
-  def checkBackgroundGradientNecessary(s: Style) = if(!s.background_color.get.isInstanceOf[Gradient]) false else true
+  def checkBackgroundGradientNecessary(s: Style) = if(s.background_color.isDefined && s.background_color.get.isInstanceOf[Gradient]) true else false
 
   def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
-    val areas = for (area <- gr.area)yield{s"{ offset: '${area.offset}', color: '${area.color.getRGBValue}' },"}
+    val areas = for (area <- gr.area)yield{s"{ offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}' },"}
     var ret = """
       fill: {
         type: 'lineGradient',
@@ -318,29 +307,29 @@ object StyleGenerator {
         case _ => ret +=
           """
       				stroke: '"""+s.line_color.get.getRGBValue+"""',"""
-          if(s.line_width.get > 0)
+          if(s.line_width.isDefined)
             ret += """'stroke-width':"""+s.line_width.get+""","""
           if(s.line_style isDefined)
             s.line_style.get match {
               case DASH => ret +=
                 """
-                                  'stroke-dasharray': "10,10",
+                                  'stroke-dasharray': "10,10"
                 """
               case DOT => ret +=
                 """
-                                  'stroke-dasharray': "5,5",
+                                  'stroke-dasharray': "5,5
                 """
               case DASHDOT => ret +=
                 """
-                                  'stroke-dasharray': "10,5,5,5",
+                                  'stroke-dasharray': "10,5,5,5"
                 """
               case DASHDOTDOT => ret +=
                 """
-                                  'stroke-dasharray': "10,5,5,5,5,5",
+                                  'stroke-dasharray': "10,5,5,5,5,5"
                 """
               case _ => ret +=
                 """
-                                  'stroke-dasharray': "0",
+                                  'stroke-dasharray': "0"
                 """
             }
       }
