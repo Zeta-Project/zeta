@@ -4,7 +4,7 @@ import javax.inject.Inject
 
 import dao.metaModel.MetaModelDaoImpl
 import util.definitions.UserEnvironment
-import generator.parser.{Cache, SprayParser}
+import generator.parser.{Cache, ShapeSketch, SprayParser}
 import generator.generators.spray.SprayGenerator
 import generator.generators.style.StyleGenerator
 import generator.generators.shape.ShapeGenerator
@@ -27,8 +27,8 @@ class GeneratorController @Inject()(override implicit val env: UserEnvironment) 
       val styles = parser.parseStyle(result.get.definition.style.get.code)
       StyleGenerator.doGenerate(styles, generatorOutputLocation )
 
-      val shapes = parser.parseAbstractShape(result.get.definition.shape.get.code)
-      for (shape <- shapes) println(ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation))
+      parser.parseAbstractShape(result.get.definition.shape.get.code)
+      ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation)
 
       //val diagrams = parser.parseDiagram(result.get.definition.diagram.get.code)
       //for (diagram <- diagrams) SprayGenerator.doGenerate(diagram.get, current.path.toString+"\\")

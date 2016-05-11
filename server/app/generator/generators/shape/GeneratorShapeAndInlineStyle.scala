@@ -26,7 +26,7 @@ object GeneratorShapeAndInlineStyle {
       """
 
       def generateShapeStyle( shape:Shape, packageName: String, LastElement: Boolean,  attrs:HashMap[String, HashMap[GeometricModel, String]])={
-        if(shape != null) {
+        if(shape != null && attrs.keys.exists(_ == shape.name)) {
           val att = attrs(shape.name)
           """
           case """"+shape.name+"""":

@@ -61,7 +61,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def generateSvgMarkup(shape:Shape ) = {
-    """ '<g class="rotatable"><g class="scalable"><rect class="bounding-box" />"""+ {for(s <- shape.shapes.getOrElse(List())) yield {generateSvgShape(s, shape.name, "scalable") + "</g></g>'"}}
+    """ '<g class="rotatable"><g class="scalable"><rect class="bounding-box" />"""+ {for(s <- shape.shapes.getOrElse(List())) yield {generateSvgShape(s, shape.name, "scalable")}}.mkString("")+"</g></g>'"
   }
 
   private def generateSvgShape(g:GeometricModel, shapeName:String, parentClass:String):String = {
@@ -116,7 +116,7 @@ object GeneratorShapeDefinition {
     val className = UUID.randomUUID
     val shapeValue = shape.textBody
     buildAttrs(shape, rootShapeName, className.toString, parentClass)
-    s"""<text class="$className $shapeValue" />"""
+    s"""<text class="$className">$shapeValue</text>"""
   }
 
 
@@ -209,8 +209,7 @@ object GeneratorShapeDefinition {
     "\n"+generatePosition(shape) +
     "'width': " + shape.size_width + ",\n" +
     "'height': " + shape.size_height + ",\n" +
-    """text: """" + shape.textBody + """" //Is overwritten in stencil, but needed here for scaling
-    """
+    "text:  "+ shape.textBody + " //Is overwritten in stencil, but needed here for scaling"
   }
 
   private def generatePosition(shape:GeometricModel):String = {
@@ -223,16 +222,17 @@ object GeneratorShapeDefinition {
   }
 
   protected def generatePosition(shape:Rectangle)={
-    val (x, y) = (shape.position.get._1, shape.position.get._2)
-    s"""k
+    val (x, y) = shape.position.getOrElse((0,0))
+    s"""
     x: $x,
     y: $y,
     """
   }
 
   protected def generatePosition(shape:Ellipse)={
-    val (x, y) = (shape.position.get._1, shape.position.get._2)
-    s"""k
+    val point = shape.position.getOrElse((0,0))
+    val (x, y) = (point._1, point._2)
+    s"""
     cx: $x,
     cy: $y,
     """
@@ -240,15 +240,16 @@ object GeneratorShapeDefinition {
 
   protected def generatePosition( shape:RoundedRectangle)={
     val (x, y) = (shape.position.get._1, shape.position.get._2)
-    s"""k
+    s"""
     x: $x,
     y: $y,
     """
   }
 
   protected def generatePosition(shape:Text )={
-    val (x, y) = (shape.position.get._1, shape.position.get._2)
-    s"""k
+    val point = shape.position.getOrElse((0,0))
+    val (x, y) = point
+    s"""
     x: $x,
     y: $y,
     """

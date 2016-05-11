@@ -24,13 +24,13 @@ object ShapeGenerator {
   val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
 
   def doGenerate(cache:Cache, location:String) {
-    val DEFAULT_SHAPE_LOCATION = "/"+location
+    val DEFAULT_SHAPE_LOCATION = location
 
     val attrs = GeneratorShapeDefinition.attrsInspector
 
     //---------------------------------------------------------------------------------------
     // Shapes
-    val packageName = DEFAULT_SHAPE_LOCATION
+    val packageName = "Test"
     var jointJSShapeContent = ""
 
 
@@ -89,12 +89,11 @@ object ShapeGenerator {
       if (shapeDefinition == cache.shapeHierarchy.nodeView.values.last) {
         lastElement = true
       }
-
       jointJSInspectorContent += generateJointJSInspector(shapeDefinition.data, packageName, lastElement, attrs)
     }
 
-      //Write Footer of Inspector File
-      jointJSInspectorContent += GeneratorInspectorDefinition.footer
+    //Write Footer of Inspector File
+    jointJSInspectorContent += GeneratorInspectorDefinition.footer
 
     //  Generate InspectorFile
     //fsa.generateFile(JOINTJS_INSPECTOR_FILENAME, jointJSInspectorOutputConfName, jointJSInspectorContent)
