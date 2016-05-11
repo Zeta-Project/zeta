@@ -137,8 +137,8 @@ object StyleGenerator {
        'font-family': '${s.font_name.getOrElse("sans-serif")}',
        'font-size': '${s.font_size.getOrElse("11px")}',
        'fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
-       'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }',
-       ${if (s.font_italic.getOrElse(false)) raw"""'font-style': 'italic' """ else ""}
+       'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }'
+       ${if (s.font_italic.getOrElse(false)) raw""",'font-style': 'italic' """ else ""}
        """
   }
 
@@ -253,13 +253,14 @@ object StyleGenerator {
   def checkBackgroundGradientNecessary(s: Style) = if(s.background_color.isDefined && s.background_color.get.isInstanceOf[Gradient]) true else false
 
   def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
-    val areas = for (area <- gr.area)yield{s"{ offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}' },"}
+    val areas = for (area <- gr.area)yield{s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"}
     var ret = """
       fill: {
         type: 'lineGradient',
         stops: [
               """
-    for(area <- areas){ret += area}
+
+    ret += areas.mkString("{", "\n}, {", "}")
 
     if(horizontal){
       ret += "]"
@@ -306,30 +307,30 @@ object StyleGenerator {
           """
         case _ => ret +=
           """
-      				stroke: '"""+s.line_color.get.getRGBValue+"""',"""
+      				stroke: '"""+s.line_color.get.getRGBValue+"""'"""
           if(s.line_width.isDefined)
-            ret += """'stroke-width':"""+s.line_width.get+""","""
+            ret += """,'stroke-width':"""+s.line_width.get
           if(s.line_style isDefined)
             s.line_style.get match {
               case DASH => ret +=
                 """
-                                  'stroke-dasharray': "10,10"
+                                  ,'stroke-dasharray': "10,10"
                 """
               case DOT => ret +=
                 """
-                                  'stroke-dasharray': "5,5
+                                  ,'stroke-dasharray': "5,5
                 """
               case DASHDOT => ret +=
                 """
-                                  'stroke-dasharray': "10,5,5,5"
+                                  ,'stroke-dasharray': "10,5,5,5"
                 """
               case DASHDOTDOT => ret +=
                 """
-                                  'stroke-dasharray': "10,5,5,5,5,5"
+                                  ,'stroke-dasharray': "10,5,5,5,5,5"
                 """
               case _ => ret +=
                 """
-                                  'stroke-dasharray': "0"
+                                  ,'stroke-dasharray': "0"
                 """
             }
       }
