@@ -20,8 +20,8 @@ object SprayGenerator {
    * This method is a long sequence of calling all templates for the code generation
    */
   def doGenerate(diagram: Diagram, location:String) {
-    val DEFAULT_DIAGRAM_LOCATION = "/"+location
-    val packageName = DEFAULT_DIAGRAM_LOCATION
+    val DEFAULT_DIAGRAM_LOCATION = location
+    val packageName = "Test"
     StencilGenerator.setPackageName(packageName)
 
     //val JavaGenFile java = genFileProvider.get()
