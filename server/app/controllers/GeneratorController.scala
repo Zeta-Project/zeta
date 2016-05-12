@@ -22,7 +22,7 @@ class GeneratorController @Inject()(override implicit val env: UserEnvironment) 
     val result = Await.result(MetaModelDaoImpl.findById(metaModelUuid), 30 seconds)
     if (result.isDefined && result.get.definition.concept.elements.nonEmpty) {
       val hierarchyContainer = Cache()
-      val parser = new SprayParser(hierarchyContainer)
+      val parser = new SprayParser(hierarchyContainer, result.get.definition)
 
       val styles = parser.parseStyle(result.get.definition.style.get.code)
       StyleGenerator.doGenerate(styles, generatorOutputLocation )
@@ -30,8 +30,8 @@ class GeneratorController @Inject()(override implicit val env: UserEnvironment) 
       parser.parseAbstractShape(result.get.definition.shape.get.code)
       ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation)
 
-      //val diagrams = parser.parseDiagram(result.get.definition.diagram.get.code)
-      //for (diagram <- diagrams) SprayGenerator.doGenerate(diagram.get, current.path.toString+"\\")
+      val diagrams = parser.parseDiagram(result.get.definition.diagram.get.code)
+      SprayGenerator.doGenerate(diagrams.head.get, generatorOutputLocation)
 
 
       Ok("Generation successful")
