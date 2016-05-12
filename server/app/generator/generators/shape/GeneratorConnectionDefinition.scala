@@ -25,7 +25,7 @@ object GeneratorConnectionDefinition {
     """ +
       connections.map(c => "case '" + c.name + "':\n" + {
       if(c.style.isDefined)
-        "style = getStyle("+c.style.get.name+");\n"
+        "style = getStyle('"+c.style.get.name+"');\n"
       else
         "style = {'.connection':{stroke: 'black'}};"
       } +
@@ -80,7 +80,7 @@ object GeneratorConnectionDefinition {
     //Get inline style
     var inline = {
       '.connection, .marker-target, .marker-source':{
-        """ + StyleGenerator.commonAttributes(connection.style.get) + """
+        """ + StyleGenerator.commonAttributes(connection.style.get) + """,
         """ + StyleGenerator.fontAttributes(connection.style.get) + """
       }
     };
