@@ -73,7 +73,7 @@ object StencilGenerator {
     Stencil.shapes = {
       ${{for(((key, value), i) <- mapping.zipWithIndex) yield
       s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
-       """}.mkString}
+       """}.mkString(",")}
     };
     """
   }
@@ -98,9 +98,6 @@ object StencilGenerator {
       s"""//Get Style of Element
       ${getVarName(node.name)}.attr(getStyle("${getStyleForNode(node).get.name}"));"""
       }
-      //Get Style of Shape and Inline Style
-      ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
-
       //Fill in text fields
       ${{for((key, value) <- node.shape.get.vals) yield
       s"""${getVarName(node.name)}.attr({'.$key':{text: '$value'}});"""
@@ -137,7 +134,7 @@ object StencilGenerator {
     ret.substring(0, 1).toLowerCase + ret.substring(1)
   }
 
-  private def getClassName( name:String)= name.replaceAll("\\W", "").capitalize
+  private def getClassName( name:String)= name.replaceAll("\\W", "")
 
   private def getShapeName( node:Node)={
     val diaShape = node.shape

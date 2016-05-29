@@ -175,25 +175,28 @@ object GeneratorShapeDefinition {
   }
 
   protected def getAttributes(shape:Rectangle, parentClass: String) = {
-    generatePosition(shape) +
-    "'width': " +  shape.size_width + ",\n"
-    "'height': "+ shape.size_height + "\n"
+    s"""
+    ${generatePosition(shape)}
+    width: ${shape.size_width},
+    height: ${shape.size_height}
+    """
   }
 
   protected def getAttributes(shape:Ellipse,  parentClass:String) = {
     generatePosition(shape) +
-    "rx: " + shape.size_width / 2 +",\n"
+    "rx: " + shape.size_width / 2 +",\n" +
     "ry: " + shape.size_height / 2 + "\n"
   }
 
   protected def getAttributes(shape:Polygon,  parentClass:String) = {
     """
+    points: """"+ shape.points.map{ p => getX(p, shape) + ","+ getY(p,shape) + " "}.mkString +""""
     """
   }
 
   protected def getAttributes(shape:PolyLine, parentClass:String) = {
     """
-    points: """"+ shape.points.map{ p => getX(p, shape) + ", " + getY(p, shape)}.mkString + """
+    points: """"+ shape.points.map{ p => getX(p, shape) + "," + getY(p, shape) + " "}.mkString + """"
     """
   }
 
@@ -255,11 +258,15 @@ object GeneratorShapeDefinition {
     """
   }
 
-  def calculateWidth(shapeDef:Shape) =
-    shapeDef.shapes.getOrElse(List()).foldLeft(0)((acc, g) => g match {
-      case layout: CommonLayout if layout.size_width > acc =>  layout.size_width
-      case _ => acc
-    })
+  def calculateWidth(shapeDef:Shape) = {
+    // TODO: Fix width calculation
+    var width = 100
+    shapeDef.shapes.getOrElse(List()).foreach {
+      case c: CommonLayout if c.size_height > width => width = c.size_height
+      case _ =>
+    }
+    width
+  }
 
   protected def getWidth(shape:Line )={maxX(List(shape.points._1, shape.points._2))}
   protected def getWidth(shape:Rectangle )={shape.x + shape.size_width}
@@ -291,7 +298,8 @@ object GeneratorShapeDefinition {
   }
 
   def calculateHeight(shapeDef:Shape)={
-    var height = 0
+    // TODO: Fix height calculation
+    var height = 100
     shapeDef.shapes.getOrElse(List()).foreach {
       case c: CommonLayout if c.size_height > height => height = c.size_height
       case _ =>
