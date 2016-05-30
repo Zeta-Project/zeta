@@ -4,21 +4,17 @@ import javax.inject.Inject
 
 import dao.metaModel.MetaModelDaoImpl
 import util.definitions.UserEnvironment
-import generator.parser.{Cache, ShapeSketch, SprayParser}
+import generator.parser.{Cache, SprayParser}
 import generator.generators.spray.SprayGenerator
 import generator.generators.style.StyleGenerator
 import generator.generators.shape.ShapeGenerator
-import generator.model.style.Style
 import play.api.Play.current
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import java.nio.file.{Files, Paths}
 
-import generator.model.shapecontainer.shape.Shape
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 class GeneratorController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
@@ -33,14 +29,13 @@ class GeneratorController @Inject()(override implicit val env: UserEnvironment) 
       val hierarchyContainer = Cache()
       val parser = new SprayParser(hierarchyContainer, result.get.definition)
 
-      val styles = parser.parseStyle(result.get.definition.style.get.code)
-      StyleGenerator.doGenerate(styles, generatorOutputLocation)
-
-      val shapes = parser.parseAbstractShape(result.get.definition.shape.get.code)
-      ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation)
-
+      parser.parseStyle(result.get.definition.style.get.code)
+      parser.parseAbstractShape(result.get.definition.shape.get.code)
       val diagrams = parser.parseDiagram(result.get.definition.diagram.get.code)
+
+      ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation)
       SprayGenerator.doGenerate(diagrams.head.get, generatorOutputLocation)
+      StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
 
       Ok("Generation successful")
     } else {
