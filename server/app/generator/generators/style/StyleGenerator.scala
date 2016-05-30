@@ -135,7 +135,7 @@ object StyleGenerator {
   def fontAttributes(s: Style) = {
     raw"""
        'font-family': '${s.font_name.getOrElse("sans-serif")}',
-       'font-size': '${s.font_size.getOrElse("11px")}',
+       'font-size': '${s.font_size.getOrElse("11")}',
        'fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
        'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }'
        ${if (s.font_italic.getOrElse(false)) raw""",'font-style': 'italic' """ else ""}
@@ -256,7 +256,7 @@ object StyleGenerator {
     val areas = for (area <- gr.area)yield{s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"}
     var ret = """
       fill: {
-        type: 'lineGradient',
+        type: 'linearGradient',
         stops: [
               """
 
