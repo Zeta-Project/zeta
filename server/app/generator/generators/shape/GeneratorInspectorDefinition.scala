@@ -106,7 +106,7 @@ object GeneratorInspectorDefinition {
     '."""+shapeClass+ """': inp({
       x: {group: 'Text Geometry', index: 1, max:"""+(maxWidth - shape.size_width) + """, label: 'x Position Text'},
       y: {group: 'Text Geometry', index: 2, max:"""+(maxHeight - shape.size_height)+ """, label: 'y Position Text'}
-    })
+    }),
     """
   }
 
