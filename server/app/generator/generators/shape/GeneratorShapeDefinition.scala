@@ -243,25 +243,23 @@ object GeneratorShapeDefinition {
   protected def generatePosition(shape: Rectangle) = {
     val (x, y) = shape.position.getOrElse((0, 0))
     s"""
-    x: $x,
-    y: $y,
+       x: ${getX(shape)},
+       y: ${getY(shape)},
     """
   }
 
   protected def generatePosition(shape: Ellipse) = {
-    val point = shape.position.getOrElse((0, 0))
-    val (x, y) = (point._1, point._2)
     s"""
-    cx: $x,
-    cy: $y,
+    cx: ${getCx(shape)},
+    cy: ${getCy(shape)},
     """
   }
 
   protected def generatePosition(shape: RoundedRectangle) = {
     val (x, y) = (shape.position.get._1, shape.position.get._2)
     s"""
-    x: $x,
-    y: $y,
+    x: ${getX(shape)},
+    y: ${getY(shape)},
     """
   }
 
@@ -269,8 +267,8 @@ object GeneratorShapeDefinition {
     val point = shape.position.getOrElse((0, 0))
     val (x, y) = point
     s"""
-    x: $x,
-    y: $y,
+    x: ${getX(shape)},
+    y: ${getY(shape)},
     """
   }
 
@@ -441,49 +439,49 @@ object GeneratorShapeDefinition {
 
   protected def getX(shape: Rectangle) = {
     if (shape.parent isEmpty) {
-      shape.x
+      shape.position.getOrElse((0, 0))._1
     } else {
-      shape.x + callRightReferenceX(shape.parent.get)
+      shape.position.getOrElse((0, 0))._1 + callRightReferenceX(shape.parent.get)
     }
   }
 
   protected def getY(shape: Rectangle) = {
     if (shape.parent isEmpty) {
-      shape.y
+      shape.position.getOrElse((0, 0))._2
     } else {
-      shape.y + callRightReferenceY(shape.parent.get)
+      shape.position.getOrElse((0, 0))._2 + callRightReferenceY(shape.parent.get)
     }
   }
 
   protected def getX(shape: RoundedRectangle) = {
     if (shape.parent isEmpty) {
-      shape.x
+      shape.position.getOrElse((0, 0))._1
     } else {
-      shape.x + callRightReferenceX(shape.parent.get)
+      shape.position.getOrElse((0, 0))._1 + callRightReferenceX(shape.parent.get)
     }
   }
 
   protected def getY(shape: RoundedRectangle) = {
     if (shape.parent isEmpty) {
-      shape.y
+      shape.position.getOrElse((0, 0))._2
     } else {
-      shape.y + callRightReferenceY(shape.parent.get)
+      shape.position.getOrElse((0, 0))._2 + callRightReferenceY(shape.parent.get)
     }
   }
 
   protected def getX(shape: Text) = {
     if (shape.parent isEmpty) {
-      shape.x
+      shape.position.getOrElse((0, 0))._1
     } else {
-      shape.x + callRightReferenceX(shape.parent.get)
+      shape.position.getOrElse((0, 0))._1 + callRightReferenceX(shape.parent.get)
     }
   }
 
   protected def getY(shape: Text) = {
     if (shape.parent isEmpty) {
-      shape.y
+      shape.position.getOrElse((0,0))._2
     } else {
-      shape.y + callRightReferenceY(shape.parent.get)
+      shape.position.getOrElse((0,0))._2 + callRightReferenceY(shape.parent.get)
     }
   }
 
@@ -522,17 +520,17 @@ object GeneratorShapeDefinition {
 
   protected def referenceX(shape: Rectangle): Int = {
     if (shape.parent isEmpty) {
-      shape.x
+      shape.position.getOrElse((0,0))._1
     } else {
-      shape.x + callRightReferenceX(shape.parent.get)
+      shape.position.getOrElse((0,0))._1 + callRightReferenceX(shape.parent.get)
     }
   }
 
   protected def referenceX(shape: Ellipse) = {
     if (shape.parent isEmpty) {
-      shape.x
+      shape.position.getOrElse((0,0))._1
     } else {
-      shape.x + callRightReferenceX(shape.parent.get)
+      shape.position.getOrElse((0,0))._1 + callRightReferenceX(shape.parent.get)
     }
   }
 
@@ -546,25 +544,25 @@ object GeneratorShapeDefinition {
 
   protected def referenceX(shape: RoundedRectangle) = {
     if (shape.parent isEmpty) {
-      shape.x
+      shape.position.getOrElse((0,0))._1
     } else {
-      shape.x + callRightReferenceX(shape.parent.get)
+      shape.position.getOrElse((0,0))._1 + callRightReferenceX(shape.parent.get)
     }
   }
 
   protected def referenceY(shape: Rectangle) = {
     if (shape.parent isEmpty) {
-      shape.y
+      shape.position.getOrElse((0,0))._2
     } else {
-      shape.y + callRightReferenceY(shape.parent.get)
+      shape.position.getOrElse((0,0))._2 + callRightReferenceY(shape.parent.get)
     }
   }
 
   protected def referenceY(shape: Ellipse) = {
     if (shape.parent isEmpty) {
-      shape.y
+      shape.position.getOrElse((0,0))._2
     } else {
-      shape.y + callRightReferenceY(shape.parent.get)
+      shape.position.getOrElse((0,0))._2 + callRightReferenceY(shape.parent.get)
     }
   }
 
