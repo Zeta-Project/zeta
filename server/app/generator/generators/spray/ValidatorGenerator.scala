@@ -11,6 +11,7 @@ import scala.collection.mutable.HashMap
  */
 object ValidatorGenerator {
   def generate( diagram:Diagram)= {
+    // TODO: fix ${generateCompartmentMatrix(diagram)}
     s"""
     $generateHead
     var validator = {
@@ -19,8 +20,6 @@ object ValidatorGenerator {
       ${generateSourceMatrix(diagram)}
 
       ${generateEdgeData(diagram)}
-
-      ${generateCompartmentMatrix(diagram)}
 
       $generateAccessMethods
     };
@@ -39,35 +38,36 @@ object ValidatorGenerator {
     val clazzes = targetMatrix
     s"""
     targetMatrix: {
-      ${for(((key, value), i) <- clazzes.zipWithIndex) yield
-        s"""${key.name}: {
+      ${{for(((key, value), i) <- clazzes.zipWithIndex) yield
+        s"""${key}: {
       ${generateEdgeMap(value)}
-    }${if(i != clazzes.size)","}"""}
-    },
+    }"""}.mkString(",")
+    }},
     """
   }
 
   def generateEdgeMap(edgeMap:HashMap[String, Boolean]) = {
+    val edges = edgeMap
     s"""
     ${
-      val edges = edgeMap
-      for (((key, value), i) <- edges.zipWithIndex) yield
-        s"""$key: ${if (value) "true" else "false"}${if (i != edges.size) ","}"""
+      (for (((key, value), i) <- edges.zipWithIndex) yield
+        s"""$key: ${if (value) "true" else "false"}
+
+         """.stripMargin).mkString(",")
     }
     """
   }
 
   def generateSourceMatrix(diagram:Diagram) = {
+    val sourceMatrix = getSourceMatrix(diagram)
+    val s = for(((key, value), i) <- sourceMatrix.zipWithIndex) yield
+      s"""${key}: {
+        ${generateEdgeMap(value)}
+      }"""
+
     s"""
     sourceMatrix: {
-      ${
-      val sourceMatrix = getSourceMatrix(diagram)
-      val clazzes = sourceMatrix
-      for(((key, value), i) <- clazzes.zipWithIndex) yield
-        s"""${key.name}: {
-        ${generateEdgeMap(value)}
-        }${if(i != clazzes.size)","}"""
-      }
+      ${s.mkString(",")}
     },
     """
   }
@@ -112,14 +112,14 @@ object ValidatorGenerator {
   def generateEdgeData( diagram:Diagram) = {
     s"""
     edgeData: {
-      ${for(edge <- diagram.edges) yield
+      ${{for(edge <- diagram.edges) yield
       s"""${edge.name}: {
       type: "${edge.mcoreElement.name}",
       from: "${edge.from.name}",
       to: "${edge.to.name}",
       style: "${getStyleForEdge(edge)}"
     }${if(edge != diagram.edges.last)"," else ""}"""
-      }
+      }.mkString}
     },
     """
   }
@@ -147,19 +147,19 @@ object ValidatorGenerator {
   }
 
   private def getTargetMatrix( diagram:Diagram) = {
-    val targetMatrix = new HashMap[MClass, HashMap[String, Boolean]]
+    val targetMatrix = new HashMap[String, HashMap[String, Boolean]]
     for(node <- diagram.nodes){
       val edgeTargetMap = getEdgeTargetMap(node, diagram.edges)
-      targetMatrix.put(node.mcoreElement, edgeTargetMap)
+      targetMatrix.put(node.shape.get.referencedShape.name, edgeTargetMap)
     }
    targetMatrix
   }
 
   private def getSourceMatrix(diagram:Diagram) ={
-    val sourceMatrix = new HashMap[MClass, HashMap[String, Boolean]]
+    val sourceMatrix = new HashMap[String, HashMap[String, Boolean]]
     for(node <- diagram.nodes){
       val edgeSourceMap = getEdgeSourceMap(node, diagram.edges)
-      sourceMatrix.put(node.mcoreElement, edgeSourceMap)
+      sourceMatrix.put(node.shape.get.referencedShape.name, edgeSourceMap)
     }
     sourceMatrix
   }
@@ -178,7 +178,8 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for(edge <- edges){
       val targetClass = edge.to
-      edgeTargetMap.put(edge.name, nodeClass.superTypes.contains(targetClass))
+      // TODO: check if supertype is valid target, then node is also a valid target
+      edgeTargetMap.put(edge.name, nodeClass.name == targetClass.name)
     }
     edgeTargetMap
   }
@@ -188,7 +189,8 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for(edge <- edges){
       val sourceClass = edge.from
-      edgeSourceMap.put(edge.name, nodeClass.superTypes.contains(sourceClass))//TODO MCore pendant for isSuperTypeOf???
+      //TODO: check if supertype is valid source, then node is also a valid source
+      edgeSourceMap.put(edge.name, nodeClass.name == sourceClass.name)
     }
     edgeSourceMap
   }
