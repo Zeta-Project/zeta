@@ -2,7 +2,6 @@ package generator.generators.spray
 
 import java.nio.file.{Paths, Files}
 import generator.model.diagram.Diagram
-import generator.parser.Cache
 
 /**
  * Created by julian on 07.02.16.
@@ -10,10 +9,6 @@ import generator.parser.Cache
 object SprayGenerator {
   private val JOINTJS_STENCIL_FILENAME		= "stencil.js"
   private val JOINTJS_VALIDATOR_FILENAME	= "validator.js"
-  private val JOINTJS_PATH 					= "jointjs-gen/diagram"
-  private val JOINTJS_PATH_ROOT				= "jointjs-gen"
-  private val JOINTJS_ZIP_ANT_FILENAME		= "buildZip.xml"
-  private val JOINTJS_README_FILENAME		= "Readme.xml"
   private val JOINTJS_LINKHELPER_FILENAME	= "linkhelper.js"
 
   /**
@@ -21,7 +16,7 @@ object SprayGenerator {
    */
   def doGenerate(diagram: Diagram, location:String) {
     val DEFAULT_DIAGRAM_LOCATION = location
-    val packageName = "Test"
+    val packageName = "modigen"
     StencilGenerator.setPackageName(packageName)
 
     Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+JOINTJS_STENCIL_FILENAME), StencilGenerator.generate(diagram).getBytes)

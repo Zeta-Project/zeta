@@ -30,7 +30,7 @@ object ShapeGenerator {
 
     //---------------------------------------------------------------------------------------
     // Shapes
-    val packageName = "Test"
+    val packageName = "modigen"
     var jointJSShapeContent = ""
 
     //Write Head of ShapeFile
