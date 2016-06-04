@@ -134,6 +134,7 @@ object StyleGenerator {
 
   def fontAttributes(s: Style) = {
     raw"""
+       'dominant-baseline': "text-before-edge",
        'font-family': '${s.font_name.getOrElse("sans-serif")}',
        'font-size': '${s.font_size.getOrElse("11")}',
        'fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
