@@ -98,6 +98,8 @@ object StencilGenerator {
       s"""//Get Style of Element
       ${getVarName(node.name)}.attr(getStyle("${getStyleForNode(node).get.name}"));"""
       }
+      //Get Style of Shape and Inline Style
+      ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
       //Fill in text fields
       ${{for((key, value) <- node.shape.get.vals) yield
       s"""${getVarName(node.name)}.attr({'.$key':{text: '$value'}});"""

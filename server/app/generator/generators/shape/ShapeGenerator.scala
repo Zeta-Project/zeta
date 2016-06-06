@@ -109,7 +109,7 @@ object ShapeGenerator {
     GeneratorShapeDefinition.generate(shape, packageName)
   }
 
-  def generatorShapeStyle(shape: Shape, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]) {
+  def generatorShapeStyle(shape: Shape, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]):String  = {
     GeneratorShapeAndInlineStyle.generateShapeStyle(shape, packageName, lastElement, attrs)
   }
 
