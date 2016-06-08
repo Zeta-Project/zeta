@@ -286,7 +286,7 @@ object StyleGenerator {
       val bg_color = s.background_color.get
       raw"""
           fill: '${bg_color.getRGBValue}',
-          'fill.opacity':${bg_color.createOpacityValue},
+          'fill-opacity':${bg_color.createOpacityValue},
         """
     }
     else ""
