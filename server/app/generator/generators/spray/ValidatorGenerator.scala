@@ -178,8 +178,8 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for(edge <- edges){
       val targetClass = edge.to
-      // TODO: check if supertype is valid target, then node is also a valid target
-      edgeTargetMap.put(edge.name, nodeClass.name == targetClass.name)
+      val superTypeIsValidTarget = nodeClass.superTypes.find(mc => mc.name == targetClass.name).isDefined
+      edgeTargetMap.put(edge.name, nodeClass.name == targetClass.name || superTypeIsValidTarget)
     }
     edgeTargetMap
   }
@@ -189,8 +189,8 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for(edge <- edges){
       val sourceClass = edge.from
-      //TODO: check if supertype is valid source, then node is also a valid source
-      edgeSourceMap.put(edge.name, nodeClass.name == sourceClass.name)
+      val superTypeIsValidSource = nodeClass.superTypes.find(mc => mc.name == sourceClass.name).isDefined
+      edgeSourceMap.put(edge.name, nodeClass.name == sourceClass.name || superTypeIsValidSource)
     }
     edgeSourceMap
   }
