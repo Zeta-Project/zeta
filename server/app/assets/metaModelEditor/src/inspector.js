@@ -73,7 +73,7 @@ var inspector = (function inspector () {
             type : 'number',
             label : 'Upper bound',
             min : -1,
-            defaultValue : 1,
+            defaultValue : -1,
             index : 1
         },
 
@@ -81,7 +81,7 @@ var inspector = (function inspector () {
             type : 'number',
             label : 'Lower bound',
             min : -1,
-            defaultValue : 1,
+            defaultValue : 0,
             index : 2
         }
     };
