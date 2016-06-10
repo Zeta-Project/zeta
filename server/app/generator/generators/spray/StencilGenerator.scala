@@ -61,7 +61,8 @@ object StencilGenerator {
           ""
         }
       }
-      mcoreName: '${node.name}'
+      mcoreName: '${node.name}',
+      mClass: '${node.mcoreElement.name}'
     });
     """
       }}.mkString
