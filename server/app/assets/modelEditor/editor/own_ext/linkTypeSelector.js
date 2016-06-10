@@ -9,8 +9,14 @@ var linkTypeSelector = (function linkTypeSelector () {
     var _menu = null;
     var _focusedElement = null;
     var _graph = null;
+    var _paper = null;
     var _linkID = null;
     var _canSetLink = false;
+
+    var _inputs = {};
+    var _outputs = {};
+
+    var _removedLinks = [];
 
     var init;
     var createMenu;
@@ -21,14 +27,19 @@ var linkTypeSelector = (function linkTypeSelector () {
     var lostFocus;
     var canSetLink;
     var replaceLink;
+    var registerListeners;
+    var handleAddedCell;
+    var handleRemovedCell;
 
     /**
      * Has to be called once before using the other methods!
      *
      * @param graph
      */
-    init = function init (graph) {
+    init = function init (graph, paper) {
         _graph = graph;
+        _paper = paper;
+        registerListeners();
     };
 
     /**
@@ -136,7 +147,7 @@ var linkTypeSelector = (function linkTypeSelector () {
 
             // event target === link target
             eventSourceID = link.attributes.source.id;
-            eventSourceType = _graph.getCell(eventSourceID).attributes.type.split(".")[1];;
+            eventSourceType = _graph.getCell(eventSourceID).attributes.type.split(".")[1];
 
         } else if (link.attributes.target.id) {
 
@@ -216,51 +227,91 @@ var linkTypeSelector = (function linkTypeSelector () {
 
     replaceLink = function replaceLink (link) {
 
-        
-
-        console.log("replace link");
-
-        var edgeData = validator.getEdgeData(link.attributes.subtype);
-
         var cell = _graph.getCell(_linkID);
-        cell.attributes.attrs = getConnectionStyle(edgeData.style);
-        cell.attributes.placings = getPlacings(edgeData.style);
-        cell.attributes.ecoreName = edgeData.type;
-        cell.attributes.styleSet = true;
-        cell.attributes.sourceAttribute = edgeData.from;
-        cell.attributes.targetAttribute = edgeData.to;
-        
-        //link.remove();
+        var edgeData = validator.getEdgeData(link.attributes.subtype);
+        var edgeType = edgeData.type;
+        var targetId = link.attributes.target.id;
+        var sourceId = link.attributes.source.id;
 
-        /*linkClass = joint.shapes.modigen[subtype];
+        if (!_inputs.hasOwnProperty(targetId)) _inputs[targetId] = {};
+        if (!_outputs.hasOwnProperty(sourceId)) _outputs[sourceId] = {};
+        if (!_inputs[targetId].hasOwnProperty(edgeType)) _inputs[targetId][edgeType] = 0;
+        if (!_outputs[sourceId].hasOwnProperty(edgeType)) _outputs[sourceId][edgeType] = 0;
 
-        if (typeof linkClass !== 'function') {
-            console.error('Link type ' + subtype + ' is not valid!');
-            return null;
+        var maxInputs = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
+        var maxOutputs = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
+
+
+        if(maxOutputs === _outputs[sourceId][edgeType] && _outputs[sourceId][edgeType] != -1
+            || maxInputs ===_inputs[targetId][edgeType] && _inputs[targetId][edgeType] != -1) {
+            cell.remove();
+            return cell;
+        } else {
+            _inputs[targetId][edgeType] += 1;
+            _outputs[sourceId][edgeType] += 1;
         }
 
-        newLink = new linkClass({
-            source : {id : sourceID},
-            target : {id : targetID}
-        });
 
-        newLink.attributes.subtype = subtype;
+        var clone = cell.clone();
 
-        _graph.addCell(newLink);
+        clone.attributes.attrs = getConnectionStyle(edgeData.style);
+        clone.attributes.placings = getPlacings(edgeData.style);
+        clone.attributes.ecoreName = edgeData.type;
+        clone.attributes.styleSet = true;
+        clone.attributes.sourceAttribute = edgeData.from;
+        clone.attributes.targetAttribute = edgeData.to;
 
-        /*
-        if (mCoreUtil.isReference(newLink)) {
-            newLink.label(0, {
-                position : 0.5,
-                attrs : {
-                    text : {
-                        text : newLink.attributes.name
-                    }
-                }
-            });
-        }*/
-        destroyMenu;
+        // add cloned link to graph, because changed attributes otherwise wont be directly reflected in the view
+
+        cell.remove();
+        _graph.addCell(clone);
+        destroyMenu();
         return cell;
+    };
+
+    registerListeners = function() {
+        _graph.on('add', handleAddedCell);
+        _graph.on('remove', handleRemovedCell);
+    };
+
+    handleAddedCell = function(cell) {
+        var inputs = [];
+        var outputs = [];
+        var inputMatrix = validator.inputMatrix[cell.attributes.mClass];
+        var outputMatrix = validator.outputMatrix[cell.attributes.mClass];
+
+        for(var key in inputMatrix) {
+            if (Object.prototype.hasOwnProperty.call(inputMatrix, key)) {
+                if (inputMatrix[key].lowerBound > 0) {
+                    inputs.push({'mReferenceName': key, 'lowerBound': inputMatrix[key].lowerBound });
+                }
+            }
+        }
+
+        for(var key in outputMatrix) {
+            if (Object.prototype.hasOwnProperty.call(outputMatrix, key)) {
+                if (outputMatrix[key].lowerBound > 0) {
+                    outputs.push({'mReferenceName': key, 'lowerBound': outputMatrix[key].lowerBound });
+                }
+            }
+        }
+
+        if(inputs.length != 0 || outputs.length != 0) {
+            V(_paper.findViewByModel(cell).el).addClass('invalid-edges');
+        }
+    };
+
+    handleRemovedCell = function(cell) {
+
+        // check if style is set, otherwise the removed dummy link will influence the counters
+        if(cell.isLink() && cell.attributes.styleSet) {
+            var edgeType = validator.getEdgeData(cell.attributes.subtype).type;
+            var sourceId = cell.attributes.source.id;
+            var targetId = cell.attributes.target.id;
+            _outputs[sourceId][edgeType] -= 1;
+            _inputs[targetId][edgeType] -= 1;
+        }
+
     };
 
     /**

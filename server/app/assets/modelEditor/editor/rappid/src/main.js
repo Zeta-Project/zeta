@@ -40,9 +40,10 @@ var Rappid = Backbone.Router.extend({
         }
         window.globalPaper = this.paper;
         window.globalGraph = this.graph;
+        
 
         // Custom code
-        linkTypeSelector.init(this.graph);
+        linkTypeSelector.init(this.graph, this.paper);
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
@@ -51,7 +52,6 @@ var Rappid = Backbone.Router.extend({
         this.graph = new joint.dia.Graph;
 
         this.paperScroller = new joint.ui.PaperScroller({ autoResizePaper: true });
-        console.log('initialize paper with default link')
         this.paper = new joint.dia.Paper({
             el: this.paperScroller.el,
             width: 5000,
@@ -61,7 +61,6 @@ var Rappid = Backbone.Router.extend({
             model: this.graph,
             defaultLink: new joint.shapes.modigen.MLink({
                 attrs: {
-                    'ajoooo' : "ajoo",
                     // @TODO: scale(0) fails in Firefox
                     '.marker-source': {d: 'M 10 0 L 0 5 L 10 10 z', transform: 'scale(0.001)'},
                     '.marker-target': {d: 'M 10 0 L 0 5 L 10 10 z'}, transform: 'rotate(45)',
