@@ -62,6 +62,9 @@
 .stencil-container-hidden div {
     display: none;
 }
+.stencil .panel {
+    margin: 0;
+}
 
 /* Hide some nodes of elements in stencil. */
 .stencil .elements .element.basic.Image text,

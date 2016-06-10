@@ -101,7 +101,9 @@
     border: 0px;
 }
 
-
+.inspector output {
+    display: inline;
+}
 
 .inspector label {
     font-weight: normal;
