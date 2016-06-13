@@ -151,21 +151,21 @@ joint.shapes.modigen = {
             var vertices = this.model.get('vertices');
             //If no vertices are present, orient towards the target point
             if(!vertices || vertices.length < 1){
-               return this._targetPoint;
+               return this.targetPoint;
             }
 
             for(var idx=0; idx < vertices.length; idx++){
 
                 //Last vertex: Check if target point is the reference
                 if(idx == vertices.length - 1){
-                    if(this.isReference(vertices[idx], this._targetPoint, coordinates)){
-                        return this._targetPoint;
+                    if(this.isReference(vertices[idx], this.targetPoint, coordinates)){
+                        return this.targetPoint;
                     }
                 }
 
                 //First vertex, orientation needs to factor in source point
                 if(idx == 0) {
-                    if (this.isReference(this._sourcePoint, vertices[0], coordinates)) {
+                    if (this.isReference(this.sourcePoint, vertices[0], coordinates)) {
                         return vertices[0];
                     }
                 }else{
@@ -174,9 +174,8 @@ joint.shapes.modigen = {
                     }
                 }
             }
-
             //No reference point found. This actually shouldn't happen. Ever.
-            return this._sourcePoint; //Fallback.
+            return this.sourcePoint; //Fallback.
         },
 
         /**
