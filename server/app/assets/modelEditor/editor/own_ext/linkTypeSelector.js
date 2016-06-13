@@ -30,6 +30,7 @@ var linkTypeSelector = (function linkTypeSelector () {
     var registerListeners;
     var handleAddedCell;
     var handleRemovedCell;
+    var checkIfLowerBoundUnderStepped;
 
     /**
      * Has to be called once before using the other methods!
@@ -232,14 +233,16 @@ var linkTypeSelector = (function linkTypeSelector () {
         var edgeType = edgeData.type;
         var targetId = link.attributes.target.id;
         var sourceId = link.attributes.source.id;
+        var maxInputs;
+        var maxOutputs;
 
         if (!_inputs.hasOwnProperty(targetId)) _inputs[targetId] = {};
         if (!_outputs.hasOwnProperty(sourceId)) _outputs[sourceId] = {};
         if (!_inputs[targetId].hasOwnProperty(edgeType)) _inputs[targetId][edgeType] = 0;
         if (!_outputs[sourceId].hasOwnProperty(edgeType)) _outputs[sourceId][edgeType] = 0;
 
-        var maxInputs = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
-        var maxOutputs = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
+        maxInputs = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
+        maxOutputs = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
 
 
         if(maxOutputs === _outputs[sourceId][edgeType] && _outputs[sourceId][edgeType] != -1
@@ -251,6 +254,13 @@ var linkTypeSelector = (function linkTypeSelector () {
             _outputs[sourceId][edgeType] += 1;
         }
 
+        if( validator.outputMatrix[edgeData.from][edgeData.type].lowerBound <=  _outputs[sourceId][edgeType]) {
+            V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
+        }
+
+        if( validator.inputMatrix[edgeData.to][edgeData.type].lowerBound <=  _inputs[targetId][edgeType]) {
+            V(_paper.findViewByModel(targetId).el).removeClass('invalid-edges');
+        }
 
         var clone = cell.clone();
 
@@ -280,18 +290,19 @@ var linkTypeSelector = (function linkTypeSelector () {
         var inputMatrix = validator.inputMatrix[cell.attributes.mClass];
         var outputMatrix = validator.outputMatrix[cell.attributes.mClass];
 
-        for(var key in inputMatrix) {
-            if (Object.prototype.hasOwnProperty.call(inputMatrix, key)) {
-                if (inputMatrix[key].lowerBound > 0) {
-                    inputs.push({'mReferenceName': key, 'lowerBound': inputMatrix[key].lowerBound });
+
+        for(var inEdge in inputMatrix) {
+            if (Object.prototype.hasOwnProperty.call(inputMatrix, inEdge)) {
+                if (inputMatrix[inEdge].lowerBound > 0) {
+                    inputs.push({'mReferenceName': inEdge, 'lowerBound': inputMatrix[inEdge].lowerBound });
                 }
             }
         }
 
-        for(var key in outputMatrix) {
-            if (Object.prototype.hasOwnProperty.call(outputMatrix, key)) {
-                if (outputMatrix[key].lowerBound > 0) {
-                    outputs.push({'mReferenceName': key, 'lowerBound': outputMatrix[key].lowerBound });
+        for(var outEdge in outputMatrix) {
+            if (Object.prototype.hasOwnProperty.call(outputMatrix, outEdge)) {
+                if (outputMatrix[outEdge].lowerBound > 0) {
+                    outputs.push({'mReferenceName': outEdge, 'lowerBound': outputMatrix[outEdge].lowerBound });
                 }
             }
         }
@@ -302,7 +313,6 @@ var linkTypeSelector = (function linkTypeSelector () {
     };
 
     handleRemovedCell = function(cell) {
-
         // check if style is set, otherwise the removed dummy link will influence the counters
         if(cell.isLink() && cell.attributes.styleSet) {
             var edgeType = validator.getEdgeData(cell.attributes.subtype).type;
@@ -310,8 +320,44 @@ var linkTypeSelector = (function linkTypeSelector () {
             var targetId = cell.attributes.target.id;
             _outputs[sourceId][edgeType] -= 1;
             _inputs[targetId][edgeType] -= 1;
+            checkIfLowerBoundUnderStepped(cell);
         }
 
+    };
+
+    checkIfLowerBoundUnderStepped = function(link) {
+        var removedEdgeType = validator.getEdgeData(link.attributes.subtype).type;
+        var elements = _graph.getElements();
+        for(var i = 0; i < elements.length; i++) {
+            var ele = elements[i];
+            var minIn;
+            var minOut;
+           //getLowerBounds for each edgeType
+            var minInputs = validator.inputMatrix[ele.attributes.mClass];
+            var minOutputs = validator.outputMatrix[ele.attributes.mClass];
+            //check if this element has lower bound
+            var currentOuts = 0;
+            var currentIns =  0;
+            if (_inputs.hasOwnProperty(ele.id) && _inputs[ele.id].hasOwnProperty(removedEdgeType)) {
+                currentIns = _inputs[ele.id][removedEdgeType];
+            }
+            if (_outputs.hasOwnProperty(ele.id) && _outputs[ele.id].hasOwnProperty(removedEdgeType)) {
+                currentOuts = _outputs[ele.id][removedEdgeType];
+            }
+
+            if(minInputs)  {
+                minIn = minInputs[removedEdgeType].lowerBound;
+                if(currentIns < minIn) {
+                    V(_paper.findViewByModel(ele).el).addClass('invalid-edges');
+                }
+            }
+            if(minOutputs) {
+                minOut = minOutputs[removedEdgeType].lowerBound;
+                if(currentOuts < minOut) {
+                    V(_paper.findViewByModel(ele).el).addClass('invalid-edges');
+                }
+            }
+        }
     };
 
     /**
