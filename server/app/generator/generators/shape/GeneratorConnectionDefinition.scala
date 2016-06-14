@@ -98,7 +98,7 @@ object GeneratorConnectionDefinition {
     for(p <- placings) {
       p.position_offset match {
         case 0.0 => ret += raw"""style['.marker-source'] = { $generateMarkerSourceCorrection ${generateMarker(p)}};"""
-        case 1.0 => ret += raw"""style['.marker-target'] = { ${generateMarker(p)} };"""; isTargetMarkerSet = true
+        case 1.0 => ret += raw"""style['.marker-target'] = { ${generateMirroredMarker(p)} };"""; isTargetMarkerSet = true
         case _   => cachePlacing(connection.name, p)
       }
       if(!isTargetMarkerSet) {
@@ -123,7 +123,7 @@ object GeneratorConnectionDefinition {
           ];
           break;
         """
-      }.mkString(",")
+      }.mkString
       placingsCache.clear()
     }
     placings
@@ -266,6 +266,37 @@ object GeneratorConnectionDefinition {
     """
   }
 
+  protected def generateMirroredMarker(placing:Placing ) = {
+    /*
+     PolyLine and Polygon need to be mirrored against the y-axis because target
+     marker gets rotated by 180 degree
+    */
+    val svgPathData = placing.shapeCon match {
+      case p: Polygon => generateMirroredPolygon(placing.shapeCon.asInstanceOf[Polygon])
+      case pl: PolyLine => generaMirroredPolyLine(placing.shapeCon.asInstanceOf[PolyLine])
+      case _ => generateRightSvgPathData(placing.shapeCon)
+    }
+
+    s"""
+    ${generateRightStyleCorrection(placing.shapeCon)}
+    d: '$svgPathData'
+    """
+  }
+
+  private def generaMirroredPolyLine(shape: PolyLine) = {
+    val mirroredPoints = shape.points.map(p => new Point((p.x * -1), p.y))
+    val head = mirroredPoints.head
+    val tail = mirroredPoints.tail
+    """M """ + head.x+" "+head.y + " " + tail.map(point => "L "+point.x+" "+point.y).mkString
+  }
+
+  private def generateMirroredPolygon(shape:Polygon) = {
+    val mirroredPoints = shape.points.map(p => new Point((p.x * -1) , p.y))
+    val head = mirroredPoints.head
+    val tail = mirroredPoints.tail
+    "M "+head.x+" "+head.y+" "+ tail.map(p => "L "+p.x +" "+p.y).mkString + "z"
+  }
+
   private def generateRightSvgPathData(g:GeometricModel):String = {
     g match {
      case l: Line => generateSvgPathData(l)
@@ -286,7 +317,7 @@ object GeneratorConnectionDefinition {
   protected def generateSvgPathData(shape:PolyLine)={
     val head = shape.points.head
     val tail = shape.points.tail
-    """M """ + head.x+" "+head.y + " " + tail.map(point => "L "+point.x+" "+point.y)
+    """M """ + head.x+" "+head.y + " " + tail.map(point => "L "+point.x+" "+point.y).mkString
   }
 
   protected def generateSvgPathData(shape:Rectangle )={
