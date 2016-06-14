@@ -2,3 +2,20 @@
    /* Grid background image */
    background: white url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQYV2NkYGAwBuKzQIwXMBJSAJMfVUidcAQAnUQBC6jEGBUAAAAASUVORK5CYII=');
 }
+
+.paper-container .labels > .label > text > tspan{
+   font-size: 14px;
+   font-weight: 700;
+   dominant-baseline: central;
+   color: red;
+}
+
+.paper-container .labels > .label > rect {
+   stroke-width: 0;
+}
+
+.paper-container .link-tool > .tool-options > circle {
+   fill: black;
+   fill-opacity: 1;
+   stroke-width: 0;
+}
