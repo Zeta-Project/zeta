@@ -13,6 +13,8 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.freeTransform.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.selectionView.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.paperScroller.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.tooltip.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.halo.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.format.print.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/wireframe.css")">
 
@@ -106,14 +108,30 @@
         </div>
     </div>
 
-    <div class="stencil-container"></div>
+    <div class="stencil-container panel panel-default">
+    </div>
+    <div class="toggle-container stencil-toggle-container">
+        <span class="stencil-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-left"></span>
+    </div>
+
     <div class="paper-container"></div>
-    <div class="inspector-container"></div>
+
+    <div class="inspector-container panel panel-default">
+        <div class="inspector-container-inner panel-body"></div>
+    </div>
+    <div class="toggle-container inspector-toggle-container">
+        <span class="inspector-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-right"></span>
+    </div>
+
+    <!--
     <div class="statusbar-container">
-        <span class="rt-colab"></span></div>
+        <span class="rt-colab"></span>
+    </div>
+    -->
 
 
         <!-- Share button - from  https://github.com/carrot/share-button -->
+    <!--
     <div class="share-button-container"><div class="share-button"></div></div>
     <script>
             var share = new Share('.share-button', {
@@ -129,6 +147,7 @@
                 }
             });
     </script>
+    -->
 
     <div id="user-tags"></div>
     <div id="contextMenuContainer"></div>
@@ -243,6 +262,7 @@
     <script src="@routes.Assets.at("modelEditor/editor/own_ext/chat.js")"></script>
 
         <!-- nodeCodeEditor -->
+    <!--
     <div class="nodeCodeEditor-cover"></div>
 
     <aside class="nodeCodeEditor-popup">
@@ -251,13 +271,13 @@
         <div class="editor-content">
             <div id="datavis"></div>
         </div>
-            <!-- <div id="node-info"></div> -->
+            <div id="node-info"></div>
         <span id="datavis-error">There is an error in your code</span>
         <ul id="validation-errors"></ul>
         <button type="button" onclick="dataVisEditor.save()" id="saveDatavis">Save</button>
         <img id="close-button" src="@routes.Assets.at("jointjs/images/grey_close_x.png")" onclick="nodeCodeEditor.deactivate();" style="position : absolute ; right : 0.2em ; top : 0.2em ; width : 1.2em ; height : 1.2em ;">
 
-    </aside>
+    </aside> -->
 
     <script>
             var dataVisMode = AceGrammar.getMode(dataVisGrammar);

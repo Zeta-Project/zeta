@@ -29,6 +29,7 @@ var Rappid = Backbone.Router.extend({
         this.initializeClipboard();
         this.initializeCommandManager();
         this.initializeToolbar();
+        this.initializeToggleSidePanels();
         // Intentionally commented out. See the `initializeValidator()` method for reasons.
         // Uncomment for demo purposes.
         // this.initializeValidator();
@@ -583,5 +584,21 @@ var Rappid = Backbone.Router.extend({
 
         var roomUrl = location.href.replace(location.hash, '') + '#' + room;
         $('.statusbar-container .rt-colab').html('Send this link to a friend to <b>collaborate in real-time</b>: <a href="' + roomUrl + '" target="_blank">' + roomUrl + '</a>');
+    },
+
+    initializeToggleSidePanels: function() {
+        $(".stencil-toggle-icon-wrapper").on("click", function() {
+            $(".stencil-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
+            $(".paper-container").toggleClass("paper-container-stencil-hidden");
+            $(".stencil-container").toggleClass("stencil-container-hidden");
+            $(".stencil-toggle-container").toggleClass("toggle-container-hidden");
+        });
+        $(".inspector-toggle-icon-wrapper").on("click", function() {
+            $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
+            $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-left");
+            $(".paper-container").toggleClass("paper-container-inspector-hidden");
+            $(".inspector-container").toggleClass("inspector-container-hidden");
+            $(".inspector-toggle-container").toggleClass("toggle-container-hidden");
+        });
     }
 });

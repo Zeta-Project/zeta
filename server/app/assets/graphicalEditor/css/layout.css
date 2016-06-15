@@ -19,6 +19,7 @@
     bottom: 30px; /* statusbar height */
     width: 240px;
     margin: 0;
+    overflow-y: scroll;
 }
 
 .inspector-container {
