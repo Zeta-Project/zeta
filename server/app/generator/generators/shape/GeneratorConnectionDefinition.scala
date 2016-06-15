@@ -96,9 +96,16 @@ object GeneratorConnectionDefinition {
     var isTargetMarkerSet = false; //Check, whether a target marker is set, because JointJS will show an arrow if none is set
     var ret = ""
     for(p <- placings) {
+
       p.position_offset match {
-        case 0.0 => ret += raw"""style['.marker-source'] = { $generateMarkerSourceCorrection ${generateMarker(p)}};"""
-        case 1.0 => ret += raw"""style['.marker-target'] = { ${generateMirroredMarker(p)} };"""; isTargetMarkerSet = true
+        case 0.0 => ret +=
+          raw"""
+            style['.marker-source'] = {
+            ${generateStyle(p.shapeCon)},
+            $generateMarkerSourceCorrection
+            ${generateMarker(p)}};
+          """
+        case 1.0 => ret += raw"""style['.marker-target'] = { ${generateMirroredMarker(p)}, ${generateStyle(p.shapeCon)} };"""; isTargetMarkerSet = true
         case _   => cachePlacing(connection.name, p)
       }
       if(!isTargetMarkerSet) {
@@ -111,6 +118,24 @@ object GeneratorConnectionDefinition {
     ret
   }
 
+  protected def generateStyle(geometricModel: GeometricModel): String = {
+      geometricModel match {
+        case hs: HasStyle =>
+          if(hs.style.isDefined) {
+            println(geometricModel.isInstanceOf[Ellipse])
+            println(hs.style.get.background_color)
+            s"""
+              ${StyleGenerator.commonAttributes(hs.style.get)},
+              text: {
+              ${StyleGenerator.fontAttributes(hs.style.get)}
+              }
+            """
+          } else {
+            ""
+          }
+
+      }
+  }
 
   protected def generateCachedPlacings()= {
     var placings = ""
@@ -184,7 +209,8 @@ object GeneratorConnectionDefinition {
       x1: """+ shape.points._1.x + """,
       y1: """+ shape.points._1.y + """,
       x2: """+ shape.points._2.x + """,
-      y2: """+ shape.points._2.y + """
+      y2: """+ shape.points._2.y + s""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
@@ -195,7 +221,8 @@ object GeneratorConnectionDefinition {
     markup: '<polyline />',
     attrs:{
       """ + generateStyleCorrections + """
-      points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}) + raw"""
+      points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}) + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
@@ -207,7 +234,8 @@ object GeneratorConnectionDefinition {
     attrs:{
       height: """ + shape.size_height + """,
       width: """ + shape.size_width + """,
-      y: """ + (distance - shape.size_height/2) + raw"""
+      y: """ + (distance - shape.size_height/2) + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
@@ -221,7 +249,8 @@ object GeneratorConnectionDefinition {
       width: """+shape.size_width + """,
       rx: """ + shape.curve_width + """,
       ry: """ + shape.curve_height + """,
-      y: """ + (distance - shape.size_height/2) + raw"""
+      y: """ + (distance - shape.size_height/2) + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
@@ -231,7 +260,8 @@ object GeneratorConnectionDefinition {
     """
     markup: '<polygon />',
     attrs:{
-      points: """" + shape.points.map(point => point.x +","+ point.y + {if(point != shape.points.last)" " else "\""}).mkString + raw"""
+      points: """" + shape.points.map(point => point.x +","+ point.y + {if(point != shape.points.last)" " else "\""}).mkString + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
@@ -243,8 +273,9 @@ object GeneratorConnectionDefinition {
     attrs:{
       rx: """ + shape.size_width/2 + """,
       ry: """ + shape.size_height/2 + """,
-      cy: """ + distance + raw"""
-    }
+      cy: """ + distance + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)},
+      }
     """
   }
 
@@ -261,7 +292,6 @@ object GeneratorConnectionDefinition {
 
   protected def generateMarker(placing:Placing )={
     """
-    """ + generateRightStyleCorrection(placing.shapeCon) + """
     d: '""" + generateRightSvgPathData(placing.shapeCon) + """'
     """
   }
@@ -278,7 +308,6 @@ object GeneratorConnectionDefinition {
     }
 
     s"""
-    ${generateRightStyleCorrection(placing.shapeCon)}
     d: '$svgPathData'
     """
   }
