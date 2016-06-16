@@ -221,7 +221,7 @@ object GeneratorConnectionDefinition {
     markup: '<polyline />',
     attrs:{
       """ + generateStyleCorrections + """
-      points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}) + raw""",
+      points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}).mkString("") + raw""",
       ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
