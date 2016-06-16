@@ -122,8 +122,6 @@ object GeneratorConnectionDefinition {
       geometricModel match {
         case hs: HasStyle =>
           if(hs.style.isDefined) {
-            println(geometricModel.isInstanceOf[Ellipse])
-            println(hs.style.get.background_color)
             s"""
               ${StyleGenerator.commonAttributes(hs.style.get)},
               text: {
