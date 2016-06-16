@@ -30,7 +30,7 @@ class GeneratorController @Inject()(override implicit val env: UserEnvironment) 
       val parser = new SprayParser(hierarchyContainer, result.get.definition)
 
       parser.parseStyle(result.get.definition.style.get.code)
-      parser.parseAbstractShape(result.get.definition.shape.get.code)
+      parser.parseShape(result.get.definition.shape.get.code)
       val diagrams = parser.parseDiagram(result.get.definition.diagram.get.code)
 
       ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation)
