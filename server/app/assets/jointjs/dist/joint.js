@@ -6382,6 +6382,14 @@ joint.dia.LinkView = joint.dia.CellView.extend({
                 distance = (distance < 0) ? connectionLength + distance : distance;
                 distance = (distance > 1) ? distance : connectionLength * distance;
 
+                // Fix for failing getPointAtLength, this is fixed in newer joint.js versions
+                // see https://github.com/clientIO/joint/pull/183
+                // ---- Custom code
+                if(_.isNaN(distance)) {
+                    distance = connectionLength / 2;
+                }
+                // ---- Custom code end
+
                 var labelCoordinates = connectionElement.getPointAtLength(distance);
 
                 if (_.isObject(offset)) {
