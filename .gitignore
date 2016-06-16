@@ -13,4 +13,5 @@ tmp
 /RUNNING_PID
 /.settings
 *.iml
+server/app/assets/modelEditor/editor/model_specific
     

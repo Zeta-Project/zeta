@@ -35,48 +35,46 @@ object StencilGenerator {
 
 
   def generateStencilGroups(diagram:Diagram) = {
-    var i = 0
-    var group = ""
+    var i = 1
     val groupSet = getNodeToPaletteMapping(diagram).keySet
-    s"""
-    Stencil.groups = {
-      ${
-      for (groupName <- groupSet) yield {
-        group = groupName
-        getVarName(group)
-      }
-    }: {index: ${i = i + 1}, label: '$group' }${if (group != groupSet.last) s","}
-    };
-    """
+    var groups = List[String]()
+    for(groupName <- groupSet) {
+      groups ::= getVarName(groupName) + s""": {index: $i, label: '$groupName' }"""
+      i+=1
+    }
+    "Stencil.groups = {"+groups.mkString(",")+"};"
   }
 
 
   def generateShapes( diagram:Diagram)={
-    s"""
-    ${ for (node <- diagram.nodes) yield {s"""
+
+    {for (node <- diagram.nodes) yield {s"""
         var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
-      ${if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined)
-      s"""mcoreAttributes: [
-             {
-                mcore: '${node.onCreate.get.askFor.get.name}',
-                cellPath: ['attrs', '.label', 'text']
-              }
-            ],"""
+      ${if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
+          s"""mcoreAttributes: [
+                 {
+                    mcore: '${node.onCreate.get.askFor.get.name}',
+                    cellPath: ['attrs', '.label', 'text']
+                  }
+                ],"""
+        } else {
+          ""
+        }
       }
-      mcoreName: '${node.name}'
+      mcoreName: '${node.name}',
+      mClass: '${node.mcoreElement.name}'
     });
     """
-      }
-    }"""
+      }}.mkString
   }
 
 
   def generateGroupsToStencilMapping(mapping:mutable.HashMap[String,ListBuffer[Node]])={
     s"""
     Stencil.shapes = {
-      ${for(((key, value), i) <- mapping.zipWithIndex) yield
+      ${{for(((key, value), i) <- mapping.zipWithIndex) yield
       s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
-       """}
+       """}.mkString(",")}
     };
     """
   }
@@ -84,30 +82,29 @@ object StencilGenerator {
   def generateShapesToGroupMapping( group:String, nodes:ListBuffer[Node] , isLast: Boolean) = {
     s"""
     ${getVarName(group)}: [
-      ${for(node <- nodes) yield
+      ${{for(node <- nodes) yield
         s"""${getVarName(node.name) + {if(node != nodes.last)","else ""}}
-         """}
-    ]${if(!isLast)","}
+         """}.mkString}
+      ]
     """
   }
 
   def generateDocumentReadyFunction( diagram:Diagram) ={
     """
     $(document).ready(function() {"""+s"""
-      ${for(node <- diagram.nodes) yield
+      ${{for(node <- diagram.nodes) yield
       s"""//Get Style of Diagram
       ${getVarName(node.name)}.attr(getStyle("${diagram.style.get.name}"));
       ${if(getStyleForNode(node) isDefined)
       s"""//Get Style of Element
-      ${getVarName(node.name)}.attr(getStyle("${getStyleForNode(node)}"));"""
+      ${getVarName(node.name)}.attr(getStyle("${getStyleForNode(node).get.name}"));"""
       }
       //Get Style of Shape and Inline Style
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
-
       //Fill in text fields
-      ${for((key, value) <- node.shape.get.vals) yield
+      ${{for((key, value) <- node.shape.get.vals) yield
       s"""${getVarName(node.name)}.attr({'.$key':{text: '$value'}});"""
-      }"""}
+      }.mkString}"""}.mkString}
       ${if(diagram.style isDefined)s"""
           var style = document.createElement('style');
           style.id = 'highlighting-style';
@@ -140,7 +137,7 @@ object StencilGenerator {
     ret.substring(0, 1).toLowerCase + ret.substring(1)
   }
 
-  private def getClassName( name:String)= name.replaceAll("\\W", "").capitalize
+  private def getClassName( name:String)= name.replaceAll("\\W", "")
 
   private def getShapeName( node:Node)={
     val diaShape = node.shape

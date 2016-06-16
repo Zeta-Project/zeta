@@ -13,19 +13,21 @@ import generator.model.style.HasStyle
 import scala.collection.mutable.HashMap
 object GeneratorInspectorDefinition {
 
-  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]) = {
-    val atts = attrs(shape.name)
+  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]):String = {
     var boundWidth = 0
     var boundHeight = 0
+    var ret = ""
 
     if (shape.isInstanceOf[Shape]) {
-      boundWidth = GeneratorShapeDefinition.calculateWidth(shape.asInstanceOf)
-      boundHeight = GeneratorShapeDefinition.calculateHeight(shape.asInstanceOf)
+      boundWidth = GeneratorShapeDefinition.calculateWidth(shape.asInstanceOf[Shape])
+      boundHeight = GeneratorShapeDefinition.calculateHeight(shape.asInstanceOf[Shape])
     }
 
-    if (atts != null) {
+    if (attrs.keys.exists(_ == shape.name)) {
+      val atts = attrs(shape.name)
       val attsize = atts.size
       var counter = 1
+      ret =
       """
       '""" + packageName + "." + shape.name + """':{
         inputs: _.extend({
@@ -47,6 +49,7 @@ object GeneratorInspectorDefinition {
       },
       """
     }
+    ret
   }
 
   def head =
@@ -56,9 +59,9 @@ object GeneratorInspectorDefinition {
       // ---
       """
 
-    def footer =
-      """
-      «linkAttributes»
+  def footer =
+    s"""
+    $getLinkAttributes
     };
     """
 
@@ -103,7 +106,7 @@ object GeneratorInspectorDefinition {
     '."""+shapeClass+ """': inp({
       x: {group: 'Text Geometry', index: 1, max:"""+(maxWidth - shape.size_width) + """, label: 'x Position Text'},
       y: {group: 'Text Geometry', index: 2, max:"""+(maxHeight - shape.size_height)+ """, label: 'y Position Text'}
-    })«IF !last»,«ENDIF»
+    }),
     """
   }
 

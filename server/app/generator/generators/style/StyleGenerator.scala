@@ -8,11 +8,22 @@ package generator.generators.style
 import generator.model.style._
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.{Gradient, HORIZONTAL}
+import java.nio.file.{Paths, Files}
+
 
 object StyleGenerator {
 
 
-  def filepath = "style.js"
+  def filename = "style.js"
+
+  def doGenerate(styles: List[Style], outputLocation: String) = {
+    var output = head
+    for (style <- styles) output += compile(style)
+    output += footer + headDia
+    for (style <- styles) output += compileDia(style)
+    output += footerDia
+    Files.write(Paths.get(outputLocation + filename), output.getBytes)
+  }
 
   def compile(s: Style) = body(s)
 
@@ -70,7 +81,7 @@ object StyleGenerator {
        }
        """
 
-  def head(s: Style) =
+  def head =
     """
        function getStyle(stylename) {
 
@@ -86,28 +97,18 @@ object StyleGenerator {
     The ${s.name} function will be called when the shapes are created, setting style attributes.
     ${s.description.getOrElse("")}
     */
-    case ${s.name}:
+    case '${s.name}':
       style = {
       '.': { filter: Stencil.filter },
-
       ${createFontAttributes(s)}
-
       ${createRectangleAttributes(s)}
-
       ${createRoundedRectangleAttributes(s)}
-
       ${createCircleAttributes(s)}
-
       ${createEllipseAttributes(s)}
-
       ${createLineAttributes(s)}
-
       ${createConnectionAttributes(s)}
-
       ${createPolygonAttributes(s)}
-
       ${createPolylineAttributes(s)}
-
       $createBoundingBoxStyle
     };
     break;"""
@@ -133,11 +134,12 @@ object StyleGenerator {
 
   def fontAttributes(s: Style) = {
     raw"""
+       'dominant-baseline': "text-before-edge",
        'font-family': '${s.font_name.getOrElse("sans-serif")}',
-       'font-size': '${s.font_size.getOrElse("11px")}',
-       fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" } ',
-       'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }',
-       ${if (s.font_italic.getOrElse(false)) raw"""'font-style': 'italic', """ else ""}
+       'font-size': '${s.font_size.getOrElse("11")}',
+       'fill': '${ val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000" }',
+       'font-weight': ' ${ if (s.font_bold.getOrElse(false)) "700" else "400" }'
+       ${if (s.font_italic.getOrElse(false)) raw""",'font-style': 'italic' """ else ""}
        """
   }
 
@@ -245,20 +247,21 @@ object StyleGenerator {
         case _ => false})
     else
         createBackgroundAttributes(s)}
-        ${createLineAttributes(s)}
+        ${createLineAttributesFromLayout(s)}
         """
 
 
-  def checkBackgroundGradientNecessary(s: Style) = if(!s.background_color.get.isInstanceOf[Gradient]) false else true
+  def checkBackgroundGradientNecessary(s: Style) = if(s.background_color.isDefined && s.background_color.get.isInstanceOf[Gradient]) true else false
 
   def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
-    val areas = for (area <- gr.area)yield{s"{ offset: '${area.offset}', color: '${area.color.getRGBValue}' },"}
+    val areas = for (area <- gr.area)yield{s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"}
     var ret = """
       fill: {
-        type: 'lineGradient',
+        type: 'linearGradient',
         stops: [
               """
-    for(area <- areas){ret += area}
+
+    ret += areas.mkString("{", "\n}, {", "}")
 
     if(horizontal){
       ret += "]"
@@ -283,7 +286,7 @@ object StyleGenerator {
       val bg_color = s.background_color.get
       raw"""
           fill: '${bg_color.getRGBValue}',
-          'fill.opacity':${bg_color.createOpacityValue},
+          'fill-opacity':${bg_color.createOpacityValue},
         """
     }
     else ""
@@ -305,30 +308,30 @@ object StyleGenerator {
           """
         case _ => ret +=
           """
-      				stroke: '"""+s.line_color.get.getRGBValue+"""',"""
-          if(s.line_width.get > 0)
-            ret += """'stroke-width':"""+s.line_width.get+""","""
+      				stroke: '"""+s.line_color.get.getRGBValue+"""'"""
+          if(s.line_width.isDefined)
+            ret += """,'stroke-width':"""+s.line_width.get
           if(s.line_style isDefined)
             s.line_style.get match {
               case DASH => ret +=
                 """
-                                  'stroke-dasharray': "10,10",
+                                  ,'stroke-dasharray': "10,10"
                 """
               case DOT => ret +=
                 """
-                                  'stroke-dasharray': "5,5",
+                                  ,'stroke-dasharray': "5,5
                 """
               case DASHDOT => ret +=
                 """
-                                  'stroke-dasharray': "10,5,5,5",
+                                  ,'stroke-dasharray': "10,5,5,5"
                 """
               case DASHDOTDOT => ret +=
                 """
-                                  'stroke-dasharray': "10,5,5,5,5,5",
+                                  ,'stroke-dasharray': "10,5,5,5,5,5"
                 """
               case _ => ret +=
                 """
-                                  'stroke-dasharray': "0",
+                                  ,'stroke-dasharray': "0"
                 """
             }
       }

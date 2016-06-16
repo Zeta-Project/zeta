@@ -1,8 +1,8 @@
 package generator.parser
 
-import generator.model.diagram.action.{ActionGroup, ActionInclude, Action}
+import generator.model.diagram.action.{Action, ActionGroup, ActionInclude}
 import generator.model.diagram.edge.Edge
-import generator.model.diagram.methodes.{ActionBlock, OnDelete, OnCreate, OnUpdate}
+import generator.model.diagram.methodes.{ActionBlock, OnCreate, OnDelete, OnUpdate}
 import generator.model.diagram.node.{DiaShape, Node}
 import generator.model.diagram.Diagram
 import generator.model.shapecontainer.connection.Connection
@@ -10,8 +10,9 @@ import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.Style
 import models.metaModel.MetaModel
-import models.metaModel.mCore.{MReference, MClass}
+import models.metaModel.mCore.{MClass, MReference}
 import parser._
+
 
 /**
  * Created by julian on 23.10.15.
@@ -20,15 +21,14 @@ import parser._
 class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonParserMethods {
   implicit val cache = c
   type diaConnection = generator.model.diagram.edge.Connection
+
   private val metaMapMClass = metaModel.concept.elements.collect{
-      case (name, x) if x.isInstanceOf[MClass] => (name, x.asInstanceOf[MClass])
-    }
+    case (name, x) if x.isInstanceOf[MClass] => (name, x.asInstanceOf[MClass])
+  }
   private val metaMapMReference = metaModel.concept.elements.collect {
     case (name, x) if x.isInstanceOf[MReference] => (name, x.asInstanceOf[MReference])
   }
   require(metaMapMClass nonEmpty)
-  
-  
 
 
   /*Style-specific----------------------------------------------------------------------------*/
@@ -93,11 +93,11 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
     }
   private def abstractShape:Parser[Shape] = shapeSketch ^^ {case sketch => sketch.toShape(None)}
 
-  private def abstractShapes = rep(abstractShape)
-  private def shapeSketches = rep(shapeSketch)
+  private def abstractShapes = rep(abstractShape | abstractConnection)
+  private def shapeSketches = rep(shapeSketch | connectionSketch)
 
-  def parseAbstractShape(input:String):List[Shape] = parseAll(abstractShapes, trimRight(input)).get
-  def parseShape(input:String):List[ShapeSketch] = parseAll(shapeSketches, trimRight(input)).get
+  def parseAbstractShape(input:String):List[AnyRef] = parseAll(abstractShapes, trimRight(input)).get
+  def parseShape(input:String):List[AnyRef] = parseAll(shapeSketches, trimRight(input)).get
   /*------------------------------------------------------------------------------------------*/
 
 
@@ -226,13 +226,14 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
           case i if i._1 == "shape" => shap = Some(i._2.asInstanceOf[PropsAndComps])
           case i if i._1 == "palette" => pal = Some(i._2.asInstanceOf[String])
           case i if i._1 == "container" => con = Some(i._2.asInstanceOf[String])
-          case i if i._1 == "onCreate" => onCr = Some(i._2.asInstanceOf[(ActionBlock, String)])
-          case i if i._1 == "onUpdate" => onUp = Some(i._2.asInstanceOf[ActionBlock])
-          case i if i._1 == "onDelete" => onDe = Some(i._2.asInstanceOf[ActionBlock])
+          case i if i._1 == "onCreate" =>
+            val tmp = i._2.asInstanceOf[(Option[ActionBlock], Option[String])]
+            onCr = Some(tmp._1.get, tmp._2.get)
+          case i if i._1 == "onUpdate" =>onUp = i._2.asInstanceOf[Option[ActionBlock]]
+          case i if i._1 == "onDelete" => onDe = i._2.asInstanceOf[Option[ActionBlock]]
           case i if i._1 == "actions" =>
             actions = i._2.asInstanceOf[(ActionInclude, List[Action])]._2
             actionIncludes = Some(i._2.asInstanceOf[(ActionInclude, List[Action])]._1)
-          case _ =>
         }
         ("node", NodeSketch(name, mcoreElement, corporateStyle, shap, pal, con, onCr, onUp, onDe, actions, actionIncludes))
     }
@@ -252,20 +253,18 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
     def toNode(diagramStyle:Option[Style], cache:Cache) = {
       val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
       val mClass = metaMapMClass.get(mcoreElement)
-      if(mClass isDefined) {
         val diagramShape:Option[DiaShape] =
-          if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaMapMReference))
+          if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaModel))
           else None
         val onCr = if (onCreate isDefined){
-          Some(OnCreate(Some(onCreate.get._1), Some(mClass.get.attributes.filter(_.name == onCreate.get._2).head)))
+          Some(OnCreate(Some(onCreate.get._1), mClass.get.attributes.find(_.name == onCreate.get._2)))
         } else None
         val onUp = if (onUpdate isDefined) Some(OnUpdate(onUpdate)) else None
         val onDe = if (onDelete isDefined) Some(OnDelete(onDelete)) else None
 
-        val cont =if(container isDefined) metaMapMReference.get(container.get) else None
-        Some(Node(name, mClass.get, corporateStyle, diagramShape, palette, cont, onCr, onUp, onDe, actions, actionIncludes))
-      }
-      else None
+        val cont = if(container isDefined) metaMapMReference.get(container.get) else None
+        Some(Node(name, mClass.get, corporateStyle, diagramShape, palette,
+          cont, onCr, onUp, onDe, actions, actionIncludes))
     }
   }
 
@@ -298,8 +297,8 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
           case i if i._1 == "palette" => pal = Some(i._2.asInstanceOf[String])
           case i if i._1 == "container" => con = Some(i._2.asInstanceOf[String])
           case i if i._1 == "onCreate" => onCr = Some(i._2.asInstanceOf[(ActionBlock, String)])
-          case i if i._1 == "onUpdate" => onUp = Some(i._2.asInstanceOf[ActionBlock])
-          case i if i._1 == "onDelete" => onDe = Some(i._2.asInstanceOf[ActionBlock])
+          case i if i._1 == "onUpdate" => onUp = i._2.asInstanceOf[Option[ActionBlock]]
+          case i if i._1 == "onDelete" => onDe = i._2.asInstanceOf[Option[ActionBlock]]
           case i if i._1 == "actions" =>
             actions = i._2.asInstanceOf[(ActionInclude, List[Action])]._2
             actionIncludes = Some(i._2.asInstanceOf[(ActionInclude, List[Action])]._1)
@@ -309,37 +308,35 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
     }
   }
   case class EdgeSketch(name:String,
-                  mcoreElement:String,
-                  style: Option[Style] = None,
-                  /*edge-Block*/
-                  connection:PropsAndComps,
-                  from:String,
-                  to:String,
-                  palette:Option[String] = None,
-                  container:Option[String] = None,
-                  onCreate:Option[(ActionBlock, String)] = None,
-                  onUpdate:Option[ActionBlock] = None,
-                  onDelete:Option[ActionBlock] = None,
-                  actions:List[Action]      = List(),
-                  actionIncludes:Option[ActionInclude] = None){
+                        mReferenceName:String,
+                        style: Option[Style] = None,
+                        /*edge-Block*/
+                        connection:PropsAndComps,
+                        from:String,
+                        to:String,
+                        palette:Option[String] = None,
+                        container:Option[String] = None,
+                        onCreate:Option[(ActionBlock, String)] = None,
+                        onUpdate:Option[ActionBlock] = None,
+                        onDelete:Option[ActionBlock] = None,
+                        actions:List[Action]      = List(),
+                        actionIncludes:Option[ActionInclude] = None){
     def toEdge(diagramStyle:Option[Style], cache:Cache) = {
       val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
-      val diagramConnection:diaConnection = new diaConnection(corporateStyle, connection, cache, metaMapMClass(mcoreElement))
-      
-      val mClass = metaMapMClass.get(mcoreElement)
-      val fromReference = metaMapMReference(from)
-      val toReference = metaMapMReference(to)
-      if(mClass.isDefined){
+      val diagramConnection:diaConnection = new diaConnection(corporateStyle, connection, cache, metaMapMReference(mReferenceName))
+
+      val mReference = metaMapMReference.get(mReferenceName)
+      val fromClass = metaMapMClass.get(from)
+      val toClass = metaMapMClass.get(to)
+
         val onCr = if (onCreate isDefined) {
-          Some(OnCreate(Some(onCreate.get._1), Some(mClass.get.attributes.filter(_.name == onCreate.get._2).head)))
+          Some(OnCreate(Some(onCreate.get._1), mReference.get.attributes.find(_.name == onCreate.get._2)))
         } else None
         val onUp = if (onUpdate isDefined) Some(OnUpdate(onUpdate)) else None
         val onDe = if (onDelete isDefined) Some(OnDelete(onDelete)) else None
 
         val cont = if(container isDefined) metaMapMReference.get(container.get) else None
-        Some(Edge(name, mClass.get, corporateStyle, diagramConnection, fromReference, toReference, palette, cont, onCr, onUp, onDe, actions, actionIncludes))
-      }
-      else None
+        Some(Edge(name, mReference.get, corporateStyle, diagramConnection, fromClass.get, toClass.get, palette, cont, onCr, onUp, onDe, actions, actionIncludes))
     }
   }
 
@@ -352,18 +349,19 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
       ("for" ~> ident) ~
       (("(" ~ "style" ~ ":" ~> ident <~ ")")?) ~
       ("{" ~> rep(actionGroup|nodeOrEdge) <~ "}") ^^ {
-        case name ~ mcoreElement ~ style ~ arguments =>
+        case name ~ metaModelName ~ style ~ arguments =>
           val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
           val nodes = arguments.filter(i => i._1 == "node").map(i =>
             i._2.asInstanceOf[NodeSketch].toNode(style, cache)).foldLeft(List[Node]()){(l, n) => if(n isDefined) n.get +: l else l}
           val edges = arguments.filter(i => i._1 == "edge").map(i =>
             i._2.asInstanceOf[EdgeSketch].toEdge(style, cache)).foldLeft(List[Edge]()){(l, e) => if(e isDefined) e.get +: l else l}
-          val mClass = metaMapMClass.get(mcoreElement)
-          
-         if(mClass isDefined)
-           Some(Diagram(name, actionGroups, nodes, edges, style, mClass.get, cache))
-         else None
-     }
+          if(metaModel.name == metaModelName) {
+            Some(Diagram(name, actionGroups, nodes, edges, style, metaModel, cache))
+          } else {
+            None
+          }
+        case c => println(c.toString()); Some(Diagram("test", Map(), List(), List(), None, null, cache))
+      }
   }
 
   private def sprayDiagrams = rep(sprayDiagram)

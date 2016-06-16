@@ -11,12 +11,12 @@ import models.metaModel.mCore.{MReference, MClass}
  * representation of an Edge
  */
 case class Edge(name:String,
-                mcoreElement:MClass,
+                mcoreElement:MReference,
                 var style: Option[Style] = None,
                             /*edge-Block*/
                 connection:Connection,
-                from:MReference,
-                to:MReference,
+                from:MClass,
+                to:MClass,
                 override val palette:Option[String] = None,
                 override val container:Option[MReference] = None,
                 override val onCreate:Option[OnCreate] = None,

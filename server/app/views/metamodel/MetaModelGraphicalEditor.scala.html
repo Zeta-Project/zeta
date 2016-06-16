@@ -18,6 +18,7 @@
     window.loadedMetaModel.loadOnStart = true;
     window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.definition.concept.uiState))));
     }
+    $('#metamodel-name').text("Metamodel: "+window.loadedMetaModel.name);
     </script>
 
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.css")">
@@ -27,16 +28,16 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.format.print.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/wireframe.css")">
 
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/layout.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/paper.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/inspector.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/stencil.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/halo.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/selection.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/toolbar.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/freetransform.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/style.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("metaModelEditor/css/linkTypeSelector.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/layout.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/paper.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/inspector.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/stencil.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/halo.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/selection.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/toolbar.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/freetransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/style.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/linkTypeSelector.css")">
 
     <div class="toolbar-container panel panel-default">
         <div class="btn-group">
@@ -85,44 +86,50 @@
         </div>
 
         <div class="btn-group">
-            <div class="toolbar-gridsize btn btn-default" id="btn-gridsize" data-tooltip="Change Grid Size">
+            <div class="toolbar-gridsize btn btn-default" id="btn-gridsize">
                 <label for="input-gridsize">Grid</label>
-                <input type="range" value="10" min="5" max="50" step="5" id="input-gridsize">
-                <output for="input-gridsize" id="output-gridsize">10</output>
+                <div class="toolbar-hover-control">
+                    <input type="range" value="10" min="5" max="50" step="5" id="input-gridsize">
+                    <output for="input-gridsize" id="output-gridsize">10</output>
+                </div>
             </div>
 
             <div class="toolbar-guidelines btn btn-default" id="btn-guidelines">
-                <input type="checkbox" id="checkbox-guidelines" checked>
                 <label for="input-guidelines">Guidelines</label>
-                <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
-                <output for="input-guidelines" id="output-guidelines">5</output>
+                <div class="toolbar-hover-control">
+                    <input type="checkbox" id="checkbox-guidelines" checked>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
+                    <output for="input-guidelines" id="output-guidelines">5</output>
+                </div>
             </div>
 
             <div class="toolbar-distancelines btn btn-default" id="btn-distancelines">
-                <input type="checkbox" id="checkbox-distancelines" checked>
                 <label for="input-distancelines">Distancelines</label>
-                <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
-                <output for="input-distancelines" id="output-distancelines">5</output>
+                <div class="toolbar-hover-control">
+                    <input type="checkbox" id="checkbox-distancelines" checked>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
+                    <output for="input-distancelines" id="output-distancelines">5</output>
+                </div>
             </div>
-
         </div>
 
     </div>
 
     <div class="stencil-container panel panel-default">
-        <div class="panel-heading">
-            <strong>Stencil</strong>
-        </div>
+    </div>
+    <div class="toggle-container stencil-toggle-container">
+        <span class="stencil-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-left"></span>
     </div>
 
     <div class="paper-container"></div>
 
     <div class="inspector-container panel panel-default">
-        <div class="panel-heading">
-            <strong>Inspector</strong>
-        </div>
         <div class="inspector-container-inner panel-body"></div>
     </div>
+    <div class="toggle-container inspector-toggle-container">
+        <span class="inspector-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-right"></span>
+    </div>
+
 
     <div id="contextMenuContainer"></div>
 

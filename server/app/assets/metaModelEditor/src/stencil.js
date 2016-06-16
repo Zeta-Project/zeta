@@ -26,3 +26,10 @@ Stencil.shapes = {
         })
     ]
 };
+
+$(".stencil-toggle-icon-wrapper").on("click", function() {
+    $(".stencil-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
+    $(".paper-container").toggleClass("paper-container-stencil-hidden");
+    $(".stencil-container").toggleClass("stencil-container-hidden");
+    $(".stencil-toggle-container").toggleClass("toggle-container-hidden");
+});

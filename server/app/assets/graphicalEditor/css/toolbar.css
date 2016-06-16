@@ -1,6 +1,5 @@
 .toolbar-container {
     width: 100%;
-    text-align: center;
 }
 
 .toolbar-container button:focus {
@@ -16,7 +15,6 @@
     display: inline;
     margin-left: -5px;
     color: black;
-    width: 100px;
     height: 34px;
 }
 
@@ -33,7 +31,6 @@
     display: inline;
     margin-left: -5px;
     color: black;
-    width: 150px;
     height: 34px;
 }
 
@@ -50,7 +47,6 @@
     display: inline;
     margin-left: -5px;
     color: black;
-    width: 170px;
     height: 34px;
 }
 
@@ -68,10 +64,36 @@
 }
 
 .toolbar-container input[type="range"] {
-    width: 25px;
+    width: 150px;
     vertical-align: middle;
     cursor: pointer;
+    margin: 5px;
 }
+
+.toolbar-hover-control {
+    display: none;
+    width: 200px;
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    position: absolute;
+    top: 33px;
+    left: -1px;
+    z-index: 1;
+}
+
+.toolbar-gridsize:hover > .toolbar-hover-control {
+    display: block;
+}
+
+.toolbar-distancelines:hover > .toolbar-hover-control {
+    display: block;
+}
+
+.toolbar-guidelines:hover > .toolbar-hover-control {
+    display: block;
+}
+
 
 @media screen and (min-width: 0\0
 ) {

@@ -1,12 +1,13 @@
 package generator.generators.spray
 
 import generator.model.diagram.Diagram
+import generator.model.diagram.edge.Edge
 
 /**
- * Created by julian on 10.02.16.
- */
+  * Created by julian on 10.02.16.
+  */
 object LinkhelperGenerator {
-  def generate(diagram:Diagram)={
+  def generate(diagram: Diagram) = {
     s"""
     $generateHead
     ${generateLinkhelper(diagram)}
@@ -20,7 +21,7 @@ object LinkhelperGenerator {
     */
     """
 
-  protected def generateLinkhelper(diagram:Diagram)=
+  protected def generateLinkhelper(diagram: Diagram) =
     s"""
     var linkhelper = {
       ${generatePlacingTexts(diagram)}
@@ -28,19 +29,23 @@ object LinkhelperGenerator {
     };
     """
 
-  protected def generatePlacingTexts(diagram:Diagram)={
+  protected def generatePlacingTexts(diagram: Diagram) = {
+    val edges = for (e <- diagram.edges) yield
+      s"""${e.name}: {
+      ${generateStringProperties(e).mkString(",")}
+      }"""
+
     s"""
     placingTexts:{
-      ${for(e <- diagram.edges) yield
-      s"""${e.name}: {
-      ${val stringProperties = e.connection.vals
-      for(((key, value), i) <- stringProperties.zipWithIndex) yield
-      s"""'$key': "${value.toString}"${if(i != stringProperties.size)","}"""}
-    }${if(e != diagram.edges.last)","}"""
-      }
+      ${edges.mkString(",")}
     },
-
     """
+  }
+
+  protected def generateStringProperties(edge: Edge) = {
+    val stringProperties = edge.connection.vals
+    for (((key, value), i) <- stringProperties.zipWithIndex) yield
+      s"""'$key': "${value.get.toString}"""
   }
 
   protected def generateHelperMethods =

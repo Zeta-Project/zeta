@@ -73,7 +73,7 @@ var inspector = (function inspector () {
             type : 'number',
             label : 'Upper bound',
             min : -1,
-            defaultValue : 1,
+            defaultValue : -1,
             index : 1
         },
 
@@ -81,7 +81,7 @@ var inspector = (function inspector () {
             type : 'number',
             label : 'Lower bound',
             min : -1,
-            defaultValue : 1,
+            defaultValue : 0,
             index : 2
         }
     };
@@ -338,3 +338,11 @@ var inspector = (function inspector () {
         getDefs : getDefs
     };
 })();
+
+$(".inspector-toggle-icon-wrapper").on("click", function() {
+    $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
+    $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-left");
+    $(".paper-container").toggleClass("paper-container-inspector-hidden");
+    $(".inspector-container").toggleClass("inspector-container-hidden");
+    $(".inspector-toggle-container").toggleClass("toggle-container-hidden");
+});

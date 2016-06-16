@@ -15,7 +15,7 @@ class WebpageController @Inject()(override implicit val env: UserEnvironment) ex
   val log = Logger(this getClass() getName())
 
   def index() = SecuredAction { implicit request =>
-    Ok(views.html.webpage.WebpageIndex(Some(request.user)))
+    Redirect("/overview")
   }
 
   def diagramsOverview(uuid: String) = SecuredAction { implicit request =>

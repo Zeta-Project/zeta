@@ -1,246 +1,291 @@
-@(graphType: String, id: String, user: Option[SecureSocialUser])
-    @import play.api.Play.resource
-    @import play.api.Play.current
+@(metaModelUUID: String, id: String, user: Option[SecureSocialUser])
+@import play.api.Play.resource
+@import play.api.Play.current
 
-    @views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
-        <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700" rel="stylesheet" type="text/css" />
+@views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
+    <script>
+            SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
+                        return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
+                    };
+    </script>
 
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.stencil.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.halo.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.freeTransform.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.selectionView.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.paperScroller.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.inspector.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.tooltip.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.format.print.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/wireframe.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.freeTransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.selectionView.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.paperScroller.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.tooltip.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.halo.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.format.print.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/wireframe.css")">
 
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/layout.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/paper.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/inspector.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/stencil.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/halo.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/selection.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/toolbar.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/statusbar.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/freetransform.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/style.css")" />
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/layout.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/paper.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/inspector.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/stencil.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/halo.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/selection.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/toolbar.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/freetransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/style.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/linkTypeSelector.css")">
 
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/chat.css")" />
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/contextMenu.css")" />
+    <script src="@routes.Assets.at("modelEditor/editor/own_ext/linkTypeSelector.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/own_ext/share.min.js")"></script>
 
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/model_specific/highlighting_style.css")" />
+    <div class="toolbar-container panel panel-default">
 
-        <script src="@routes.Assets.at("modelEditor/editor/own_ext/contextMenu.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/editor/own_ext/share.min.js")"></script>
-
-        <h1>MoDiGen</h1>
-        <div class="toolbar-container">
-            <button id="btn-undo" class="btn" data-tooltip="Undo"><img src="@routes.Assets.at("jointjs/images/undo.png")" alt="Undo"/></button>
-            <button id="btn-redo" class="btn" data-tooltip="Redo"><img src="@routes.Assets.at("jointjs/images/redo.png")" alt="Redo"/></button>
-            <button id="btn-clear" class="btn" data-tooltip="Clear Paper"><img src="@routes.Assets.at("jointjs/images/clear.png")" alt="Clear"/></button>
-            <button id="btn-svg" class="btn" data-tooltip="Open as SVG in a New Window">open as SVG</button>
-            <button id="btn-png" class="btn" data-tooltip="Open as PNG in a New Window">open as PNG</button>
-            <button id="btn-code-editor" rel="leanModal" class="btn" data-tooltip="Open the code editor for this diagram" href="#code-overlay">
-                open Code</button>
-
-            <button id="btn-print" class="btn" data-tooltip="Open a Print Dialog"><img src="@routes.Assets.at("jointjs/images/print.png")" alt="Print"/></button>
-            <button id="btn-zoom-in" class="btn" data-tooltip="Zoom In"><img src="@routes.Assets.at("jointjs/images/zoomin.png")" alt="Zoom in"/></button>
-            <button id="btn-zoom-out" class="btn" data-tooltip="Zoom Out"><img src="@routes.Assets.at("jointjs/images/zoomout.png")" alt="Zoom out"/></button>
-            <button id="btn-fullscreen" class="btn" data-tooltip="Toggle Fullscreen Mode"><img src="@routes.Assets.at("jointjs/images/fullscreen.png")" alt="Fullscreen"/></button>
-            <button id="btn-to-front" class="btn" data-tooltip="Bring Object to Front">to front</button>
-            <button id="btn-to-back" class="btn" data-tooltip="Send Object to Back">to back</button>
-
-            <button id="btn-layout" class="btn" data-tooltip="Auto-layout Graph">layout</button>
-
-
-            <label data-tooltip="Change Grid Size">Grid size:</label>
-            <input type="range" value="10" min="1" max="50" step="1" id="input-gridsize" />
-            <output id="output-gridsize">10</output>
-
-            <button class="btn pull-right" align="right"><a href="/">Diagram Overview</a></button>
+        <div class="btn-group">
+            <button id="btn-export-mm" class="btn btn-default" data-tooltip="Export current Model as JSON">
+                <span class="glyphicon glyphicon-floppy-save"></span>
+            </button>
+            <button id="btn-print" class="btn btn-default" data-tooltip="Open Print Dialog for current Model">
+                <span class="glyphicon glyphicon-print"></span>
+            </button>
+            <button id="btn-svg" class="btn btn-default" data-tooltip="Open current Model as SVG in a new Window">
+                SVG
+            </button>
+            <button id="btn-png" class="btn btn-default" data-tooltip="Open current Model as PNG in a new Window">
+                PNG
+            </button>
         </div>
 
-        <div class="stencil-container">
-            <label>Stencil</label>
-            <button class="btn-expand" title="Expand all">+</button>
-            <button class="btn-collapse" title="Collapse all">-</button>
+        <div class="btn-group">
+            <button id="btn-zoom-in" class="btn btn-default" data-tooltip="Zoom In">
+                <span class="glyphicon glyphicon-zoom-in"></span>
+            </button>
+            <button id="btn-zoom-out" class="btn btn-default" data-tooltip="Zoom Out">
+                <span class="glyphicon glyphicon-zoom-out"></span>
+            </button>
+            <button id="btn-fullscreen" class="btn btn-default" data-tooltip="Toggle Fullscreen Mode">
+                <span class="glyphicon glyphicon-fullscreen"></span>
+            </button>
         </div>
-        <div class="paper-container"></div>
-        <div class="inspector-container"></div>
-        <div class="statusbar-container">
-            <span class="rt-colab"></span></div>
 
+        <div class="btn-group">
+            <button id="btn-undo" class="btn btn-default" data-tooltip="Undo last Operation">
+                <span class="glyphicon glyphicon-share-alt icon-flipped"></span>
+            </button>
+            <button id="btn-redo" class="btn btn-default" data-tooltip="Redo">
+                <span class="glyphicon glyphicon-share-alt"></span>
+            </button>
+            <button id="btn-clear" class="btn btn-default" data-tooltip="Clear Paper">
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>
+            <button id="btn-to-front" class="btn btn-default" data-tooltip="Bring current Element to Front">
+                To Front
+            </button>
+            <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
+                To Back
+            </button>
+        </div>
 
-            <!-- Share button - from  https://github.com/carrot/share-button -->
-        <div class="share-button-container"><div class="share-button"></div></div>
-        <script>
-                var share = new Share('.share-button',{
-                    title:"Spray Online Diagram",
-                    description:"Check out my new diagram:",
-
-                    networks: {
-                        email: {
-                            enabled: true,
-                            title:  "Spray Online Diagram",
-                            description:    "Check out me new diagram: "+window.location.href
-                        }
-                    }
-                });
-        </script>
-
-        <div id="user-tags"></div>
-        <div id="contextMenuContainer"></div>
-        <div class="chat-container">
-            <div class="chat-toggle-container" id="chat-toggle-container">
-                <div id="chat-users"><font>Online:</font></div>
-                <div id="chat-messages"></div>
-                <div class="chat-input">
-                    <input type="text" id="chat-input-textfield" onkeypress="chat.keyPressed(event)"></input>
+        <div class="btn-group">
+            <div class="toolbar-gridsize btn btn-default" id="btn-gridsize">
+                <label for="input-gridsize">Grid</label>
+                <div class="toolbar-hover-control">
+                    <input type="range" value="10" min="5" max="50" step="5" id="input-gridsize">
+                    <output for="input-gridsize" id="output-gridsize">10</output>
                 </div>
             </div>
-            <div class="show-hide-chat">
-                <div id="notification-bubble">0</div>
-                <a href="#" id="show-hide-chat-link" onclick="return chat.toggleChatVisibility();">Toggle Chat</a>
+
+            <div class="toolbar-guidelines btn btn-default" id="btn-guidelines">
+                <label for="input-guidelines">Guidelines</label>
+                <div class="toolbar-hover-control">
+                    <input type="checkbox" id="checkbox-guidelines" checked>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
+                    <output for="input-guidelines" id="output-guidelines">5</output>
+                </div>
+            </div>
+
+            <div class="toolbar-distancelines btn btn-default" id="btn-distancelines">
+                <label for="input-distancelines">Distancelines</label>
+                <div class="toolbar-hover-control">
+                    <input type="checkbox" id="checkbox-distancelines" checked>
+                    <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
+                    <output for="input-distancelines" id="output-distancelines">5</output>
+                </div>
             </div>
         </div>
+    </div>
 
-        <script type="text/javascript">
-                window._global_uuid = "@(id)";
-                window._global_graph_type = "@(graphType)";
-                window._global_userID = "@(user.get.uuid)";
-                window._global_userName = "@(user.get.profile.fullName)";
-        </script>
+    <div class="stencil-container panel panel-default">
+    </div>
+    <div class="toggle-container stencil-toggle-container">
+        <span class="stencil-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-left"></span>
+    </div>
 
+    <div class="paper-container"></div>
 
-        <script src="@routes.Assets.at("modelEditor/WebSocketClient.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/editor/own_ext/userTags.js")"></script>
+    <div class="inspector-container panel panel-default">
+        <div class="inspector-container-inner panel-body"></div>
+    </div>
+    <div class="toggle-container inspector-toggle-container">
+        <span class="inspector-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-right"></span>
+    </div>
 
-        <script src="@routes.Assets.at("jointjs/dist/joint.js")"></script>
-
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.devs.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.fsa.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.pn.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.erd.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.org.js")"></script>
-
-        <script src="@routes.Assets.at("jointjs/dist/lodash.min.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/backbone-min.new.js")"></script>
-        <script type="text/javascript">var backboneNew = Backbone.noConflict();</script>
-        <script src="@routes.Assets.at("jointjs/dist/backbone-min.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.halo.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.dia.freeTransform.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.freeTransform.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.inspector.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.selectionView.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.clipboard.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.stencil.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.paperScroller.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.ui.tooltip.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.format.svg.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.format.raster.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.format.print.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.dia.command.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.dia.validator.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.layout.ForceDirected.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.layout.GridLayout.js")"></script>
-        <script src="@routes.Assets.at("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
-
-        <script src="@routes.Assets.at("jointjs/ext/guidelines.js")"></script>
-        <script src="@routes.Assets.at("jointjs/ext/distancelines.js")"></script>
-        <script src="@routes.Assets.at("jointjs/ext/de.htwg.group.js")"></script>
-        <script src="@routes.Assets.at("jointjs/ext/extendedSelectionView.js")"></script>
-        <script src="@routes.Assets.at("jointjs/ext/extendedElementView.js")"></script>
-
-        <script src="@routes.Assets.at("jointjs/lib/keyboard.js")"></script>
-
-        <script src="@routes.Assets.at("modelEditor/editor/own_ext/modigen.link.js")"></script>
-
-        <script src="@routes.Assets.at("modelEditor/editor/rappid/src/inspector.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/editor/rappid/src/stencil.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/editor/rappid/src/main.js")"></script>
+    <!--
+    <div class="statusbar-container">
+        <span class="rt-colab"></span>
+    </div>
+    -->
 
 
-            <!-- Editor example files with different kinds of shapes
-        <script src="  @routes.Assets.at("modelEditor/editor/diagram/initializeStencil.js")
-        "> </script>
+        <!-- Share button - from  https://github.com/carrot/share-button -->
+    <!--
+    <div class="share-button-container"><div class="share-button"></div></div>
+    <script>
+            var share = new Share('.share-button', {
+                title: "Spray Online Diagram",
+                description: "Check out my new diagram:",
 
-                    <script src="@routes.Assets.at("modelEditor/editor/diagram/initializeInspector.js")
-            "> </script>
-        -->
+                networks: {
+                    email: {
+                        enabled: true,
+                        title: "Spray Online Diagram",
+                        description: "Check out me new diagram: " + window.location.href
+                    }
+                }
+            });
+    </script>
+    -->
 
-            <!-- model specific files-->
-        @defining(graphType.toLowerCase) { graphTypeLowerCase =>
+    <div id="user-tags"></div>
+    <div id="contextMenuContainer"></div>
+    <div class="chat-container">
+        <div class="chat-toggle-container" id="chat-toggle-container">
+            <div id="chat-users"><font>Online:</font></div>
+            <div id="chat-messages"></div>
+            <div class="chat-input">
+                <input type="text" id="chat-input-textfield" onkeypress="chat.keyPressed(event)"></input>
+            </div>
+        </div>
+        <div class="show-hide-chat">
+            <div id="notification-bubble">0</div>
+            <a href="#" id="show-hide-chat-link" onclick="return chat.toggleChatVisibility();">Toggle Chat</a>
+        </div>
+    </div>
 
-            @if(resource("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/link.js").isDefined) {
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/link.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/inspector.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/style.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/shape.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/stencil.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/validator.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/connectionstyle.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/elementAndInlineStyle.js")"></script>
-                <script src="@routes.Assets.at("modelEditor/editor/modelSpecific/" + graphTypeLowerCase + "/linkhelper.js")"></script>
-            }
-        }
-
-            <!-- Node Code Editor -->
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/model_specific/nodeCodeEditor.css")" />
-        <script src="@routes.Assets.at("codeEditor/ace/ace.js")"></script>
-        <script src="@routes.Assets.at("codeEditor/ace-grammar/classy.js")"></script>
-        <script src="@routes.Assets.at("codeEditor/ace-grammar/regexanalyzer.js")"></script>
-        <script src="@routes.Assets.at("codeEditor/ace-grammar/ace_grammar.js")"></script>
-        <script src="@routes.Assets.at("codeEditor/ace/ext-language_tools.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/datavis/DataVisGrammar.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/datavis/DataVisUI.js")"></script>
-        <script src="@routes.Assets.at("modelEditor/datavis/DataVisClient.js")"></script>
+    <script type="text/javascript">
+            window._global_uuid = "@(id)";
+            window._global_graph_type = "@(metaModelUUID)";
+            window._global_userID = "@(user.get.uuid)";
+            window._global_userName = "@(user.get.profile.fullName)";
+    </script>
 
 
-            <!--[if IE 9]>
-	    <script src=' @routes.Assets.at("jointjs/lib/base64.js")
-        '></script>
+    <script src="@routes.Assets.at("modelEditor/WebSocketClient.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/own_ext/userTags.js")"></script>
+
+    <script src="@routes.Assets.at("jointjs/dist/lodash.min.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/backbone-min.new.js")"></script>
+    <script type="text/javascript">var backboneNew = Backbone.noConflict();</script>
+    <script src="@routes.Assets.at("jointjs/dist/backbone-min.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.halo.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.dia.freeTransform.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.freeTransform.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.inspector.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.selectionView.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.clipboard.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.stencil.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.paperScroller.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.ui.tooltip.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.format.svg.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.format.raster.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.format.print.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.dia.command.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.dia.validator.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.layout.ForceDirected.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.layout.GridLayout.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
+
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.devs.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.fsa.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.pn.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.erd.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
+    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.org.js")"></script>
+
+    <script src="@routes.Assets.at("jointjs/ext/guidelines.js")"></script>
+    <script src="@routes.Assets.at("jointjs/ext/distancelines.js")"></script>
+    <script src="@routes.Assets.at("jointjs/ext/de.htwg.group.js")"></script>
+    <script src="@routes.Assets.at("jointjs/ext/extendedSelectionView.js")"></script>
+    <script src="@routes.Assets.at("jointjs/ext/extendedElementView.js")"></script>
+
+    <script src="@routes.Assets.at("jointjs/lib/keyboard.js")"></script>
+
+
+    <script src="@routes.Assets.at("modelEditor/editor/rappid/src/inspector.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/rappid/src/stencil.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/rappid/src/main.js")"></script>
+
+        <!-- model specific files-->
+
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/inspector.js") "> </script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/style.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/shape.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/stencil.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/connectionstyle.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/linkhelper.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/validator.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/model_specific/" + metaModelUUID + "/elementAndInlineStyle.js")"></script>
+
+
+    <script src="@routes.Assets.at("modelEditor/editor/own_ext/modigen.link.js")"></script>
+
+    <!-- Node Code Editor -->
+    <!--<link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/model_specific/nodeCodeEditor.css")" />-->
+    <script src="@routes.Assets.at("codeEditor/ace/ace.js")"></script>
+    <script src="@routes.Assets.at("codeEditor/ace-grammar/classy.js")"></script>
+    <script src="@routes.Assets.at("codeEditor/ace-grammar/regexanalyzer.js")"></script>
+    <script src="@routes.Assets.at("codeEditor/ace-grammar/ace_grammar.js")"></script>
+    <script src="@routes.Assets.at("codeEditor/ace/ext-language_tools.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/datavis/DataVisGrammar.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/datavis/DataVisUI.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/datavis/DataVisClient.js")"></script>
+
+
+    <!--[if IE 9]>
+	    <script src='@routes.Assets.at("jointjs/lib/base64.js")'></script>
 	    <script type="text/javascript">
 	      window.btoa = base64.encode
 	      document.onselectstart = function() { return false; };
 	    </script>
-        <![endif]-->
-        <script>
-                var app = new Rappid;
-                Backbone.history.start();
-        </script>
+    <![endif]-->
+    <script>
+            var app = new Rappid();
+            Backbone.history.start();
+    </script>
 
 
-        <script src="@routes.Assets.at("modelEditor/editor/own_ext/chat.js")"></script>
+    <script src="@routes.Assets.at("modelEditor/editor/own_ext/chat.js")"></script>
 
-            <!-- nodeCodeEditor -->
-        <div class="nodeCodeEditor-cover"></div>
+        <!-- nodeCodeEditor -->
+    <!--
+    <div class="nodeCodeEditor-cover"></div>
 
-        <aside class="nodeCodeEditor-popup">
-            <h2>Data Visualiser Editor</h2>
+    <aside class="nodeCodeEditor-popup">
+        <h2>Data Visualiser Editor</h2>
 
-            <div class="editor-content">
-                <div id="datavis"></div>
-            </div>
-                <!-- <div id="node-info"></div> -->
-            <span id="datavis-error">There is an error in your code</span>
-            <ul id="validation-errors"></ul>
-            <button type="button" onclick="dataVisEditor.save()" id="saveDatavis">Save</button>
-            <img id="close-button" src="@routes.Assets.at("jointjs/images/grey_close_x.png")" onclick="nodeCodeEditor.deactivate();" style="position: absolute ; right: 0.2em ; top: 0.2em ; width: 1.2em ; height: 1.2em ;">
+        <div class="editor-content">
+            <div id="datavis"></div>
+        </div>
+            <div id="node-info"></div>
+        <span id="datavis-error">There is an error in your code</span>
+        <ul id="validation-errors"></ul>
+        <button type="button" onclick="dataVisEditor.save()" id="saveDatavis">Save</button>
+        <img id="close-button" src="@routes.Assets.at("jointjs/images/grey_close_x.png")" onclick="nodeCodeEditor.deactivate();" style="position : absolute ; right : 0.2em ; top : 0.2em ; width : 1.2em ; height : 1.2em ;">
 
-        </aside>
+    </aside> -->
 
-        <script>
-                var dataVisMode = AceGrammar.getMode(dataVisGrammar);
-                var dataVisAce = ace.edit("datavis");
-                dataVisAce.getSession().setMode(dataVisMode);
-                dataVisAce.setOptions({enableBasicAutocompletion: true, enableLiveAutocompletion: true});
-        </script>
-        <script src="@routes.Assets.at("modelEditor/datavis/DataVisEditor.js")"></script>
+    <script>
+            var dataVisMode = AceGrammar.getMode(dataVisGrammar);
+            var dataVisAce = ace.edit("datavis");
+            dataVisAce.getSession().setMode(dataVisMode);
+            dataVisAce.setOptions({enableBasicAutocompletion: true, enableLiveAutocompletion: true});
+    </script>
+    <script src="@routes.Assets.at("modelEditor/datavis/DataVisEditor.js")"></script>
 
-            <!-- nodeCodeEditor -->
-    }
+        <!-- nodeCodeEditor -->
+}

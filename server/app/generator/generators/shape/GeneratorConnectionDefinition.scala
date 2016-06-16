@@ -23,16 +23,16 @@ object GeneratorConnectionDefinition {
       var style;
       switch(stylename){
     """ +
-      connections.map(c => "case " + c.name + ":\n" + {
+      connections.map(c => "case '" + c.name + "':\n" + {
       if(c.style.isDefined)
-        "style = getStyle("+c.style.get.name+");\n"
+        "style = getStyle('"+c.style.get.name+"');\n"
       else
         "style = {'.connection':{stroke: 'black'}};"
       } +
       generateInlineStyle(c) +
       handlePlacings(c) +
       "break;\n").mkString +
-      """default:"
+      """default:
           style = {};
           break;
       }
@@ -76,11 +76,11 @@ object GeneratorConnectionDefinition {
 
   protected def generateInlineStyle(connection:Connection)={
     if(connection.style isDefined)
-    """if(connection.placing)
+    """
     //Get inline style
     var inline = {
       '.connection, .marker-target, .marker-source':{
-        """ + StyleGenerator.commonAttributes(connection.style.get) + """
+        """ + StyleGenerator.commonAttributes(connection.style.get) + """,
         """ + StyleGenerator.fontAttributes(connection.style.get) + """
       }
     };
@@ -94,40 +94,61 @@ object GeneratorConnectionDefinition {
   protected def handlePlacings(connection:Connection )={
     val placings = connection.placing
     var isTargetMarkerSet = false; //Check, whether a target marker is set, because JointJS will show an arrow if none is set
-    placings.map(p =>
-      {if(p.position_offset == 0.0){
-        """style['.marker-source'] = {
-        """ + generateMarkerSourceCorrection() + """
-                                                 """ + generateMarker(p) + """
-          };
-       """
-      }else if(p.position_offset == 1.0){
-        """style['.marker-target'] = {
-        """ + generateMarker(p) + """
-            };
-        """ + {isTargetMarkerSet = true;""}
-      }else {
-        ""+cachePlacing(connection.name, p)
-      }} + "\n" ).mkString +
-    {if(!isTargetMarkerSet){
-      """style['.marker-target'] = {
-            d: 'M 0 0' //override JointJS default arrow
-         };
-      """
-    }}
+    var ret = ""
+    for(p <- placings) {
+
+      p.position_offset match {
+        case 0.0 => ret +=
+          raw"""
+            style['.marker-source'] = {
+            ${generateStyle(p.shapeCon)},
+            $generateMarkerSourceCorrection
+            ${generateMarker(p)}};
+          """
+        case 1.0 => ret += raw"""style['.marker-target'] = { ${generateMirroredMarker(p)}, ${generateStyle(p.shapeCon)} };"""; isTargetMarkerSet = true
+        case _   => cachePlacing(connection.name, p)
+      }
+      if(!isTargetMarkerSet) {
+        ret += """style['.marker-target'] = {
+                    d: 'M 0 0' //override JointJS default arrow
+                  };
+              """
+      }
+    }
+    ret
   }
 
-  protected def generateCachedPlacings()={
-    val placings =
-    placingsCache.map{case (k, v) => "case \""+k+"""":
-      placings = [
-      """ + v.map(p => generatePlacing(p) + {if(p != v.last)"," else ""}) + """
+  protected def generateStyle(geometricModel: GeometricModel): String = {
+      geometricModel match {
+        case hs: HasStyle =>
+          if(hs.style.isDefined) {
+            s"""
+              ${StyleGenerator.commonAttributes(hs.style.get)},
+              text: {
+              ${StyleGenerator.fontAttributes(hs.style.get)}
+              }
+            """
+          } else {
+            ""
+          }
+
+      }
+  }
+
+  protected def generateCachedPlacings()= {
+    var placings = ""
+    if (placingsCache.nonEmpty) {
+      placings = placingsCache.map { case (k, v) =>
+        s"""
+          case "$k":
+            placings = [
+            ${v.map(p => generatePlacing(p)).mkString(",")}
+          ];
+          break;
+        """
+      }.mkString
+      placingsCache.clear()
     }
-    ];
-    break;
-    """
-    }
-    placingsCache.clear()
     placings
   }
 
@@ -169,16 +190,16 @@ object GeneratorConnectionDefinition {
 
 
   private def generateRightPlacingShape(g:GeometricModel, distance:Int):String = g match{
-    case l:Line => generatePlacingShape(l.asInstanceOf[CDLine], distance)
-    case pl:PolyLine => generatePlacingShape(pl.asInstanceOf[CDPolyLine], distance)
-    case r:Rectangle => generatePlacingShape(r.asInstanceOf[CDRectangle], distance)
-    case rr:RoundedRectangle => generatePlacingShape(rr.asInstanceOf[CDRoundedRectangle], distance)
-    case p:Polygon => generatePlacingShape(p.asInstanceOf[CDPolygon], distance)
-    case e:Ellipse => generatePlacingShape(e.asInstanceOf[CDEllipse], distance)
-    case t:Text => generatePlacingShape(t.asInstanceOf[CDText], distance)
+    case l:Line => generatePlacingShape(l, distance)
+    case e:Ellipse => generatePlacingShape(e, distance)
+    case p:Polygon => generatePlacingShape(p, distance)
+    case pl:PolyLine => generatePlacingShape(pl, distance)
+    case r:Rectangle => generatePlacingShape(r, distance)
+    case rr:RoundedRectangle => generatePlacingShape(rr, distance)
+    case t:Text => generatePlacingShape(t, distance)
   }
 
-  protected def generatePlacingShape(shape:CDLine ,distance:Int)={
+  protected def generatePlacingShape(shape:Line ,distance:Int)={
     /*TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style maybe the actual style attributes should be called here*/
     """
     markup: '<line />',
@@ -186,35 +207,38 @@ object GeneratorConnectionDefinition {
       x1: """+ shape.points._1.x + """,
       y1: """+ shape.points._1.y + """,
       x2: """+ shape.points._2.x + """,
-      y2: """+ shape.points._2.y + """
+      y2: """+ shape.points._2.y + s""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
 
-  protected def generatePlacingShape(shape:CDPolyLine ,distance:Int)={
+  protected def generatePlacingShape(shape:PolyLine ,distance:Int)={
     //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<polyline />',
     attrs:{
-      """ + generateStyleCorrections(shape) + """
-      points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else ""}) + raw"""
+      """ + generateStyleCorrections + """
+      points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}).mkString("") + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
 
-  protected def generatePlacingShape(shape:CDRectangle, distance:Int)={
+  protected def generatePlacingShape(shape:Rectangle, distance:Int)={
     //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<rect />',
     attrs:{
       height: """ + shape.size_height + """,
       width: """ + shape.size_width + """,
-      y: """ + (distance - shape.size_height/2) + raw"""
+      y: """ + (distance - shape.size_height/2) + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
 
-  protected def generatePlacingShape(shape:CDRoundedRectangle ,distance:Int)={
+  protected def generatePlacingShape(shape:RoundedRectangle ,distance:Int)={
     //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<rect />',
@@ -223,34 +247,37 @@ object GeneratorConnectionDefinition {
       width: """+shape.size_width + """,
       rx: """ + shape.curve_width + """,
       ry: """ + shape.curve_height + """,
-      y: """ + (distance - shape.size_height/2) + raw"""
+      y: """ + (distance - shape.size_height/2) + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
 
-  protected def generatePlacingShape(shape:CDPolygon , distance:Int)={
+  protected def generatePlacingShape(shape:Polygon , distance:Int)={
     //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<polygon />',
     attrs:{
-      points: """" + shape.points.map(point => point.x +", "+ point.y + {if(point != shape.points.last)" " else ""}).mkString + raw"""
+      points: """" + shape.points.map(point => point.x +","+ point.y + {if(point != shape.points.last)" " else "\""}).mkString + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
     }
     """
   }
 
-  protected def generatePlacingShape(shape:CDEllipse , distance:Int)={
+  protected def generatePlacingShape(shape:Ellipse , distance:Int)={
     //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<ellipse />',
     attrs:{
       rx: """ + shape.size_width/2 + """,
       ry: """ + shape.size_height/2 + """,
-      cy: """ + distance + raw"""
-    }
+      cy: """ + distance + raw""",
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)},
+      }
     """
   }
 
-  protected def generatePlacingShape(shape:CDText, distance:Int)={
+  protected def generatePlacingShape(shape:Text, distance:Int)={
     //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<text>«shape.body.value»</text>',
@@ -263,64 +290,95 @@ object GeneratorConnectionDefinition {
 
   protected def generateMarker(placing:Placing )={
     """
-    """ + generateRightStyleCorrection(placing.shapeCon) + """
     d: '""" + generateRightSvgPathData(placing.shapeCon) + """'
     """
   }
 
-  private def generateRightSvgPathData(g:GeometricModel):String = g match {
-    case l:Line => generateSvgPathData(l.asInstanceOf[CDLine])
-    case p:PolyLine => generateSvgPathData(p.asInstanceOf[CDPolyLine])
-    case r:Rectangle => generateSvgPathData(r.asInstanceOf[CDRectangle])
-    case rr:RoundedRectangle => generateSvgPathData(rr.asInstanceOf[CDRoundedRectangle])
-    case p:Polygon => generateSvgPathData(p.asInstanceOf[CDPolygon])
-    case e:Ellipse => generateSvgPathData(e.asInstanceOf[CDEllipse])
-    case t:Text => generateSvgPathData(t.asInstanceOf[CDText])
+  protected def generateMirroredMarker(placing:Placing ) = {
+    /*
+     PolyLine and Polygon need to be mirrored against the y-axis because target
+     marker gets rotated by 180 degree
+    */
+    val svgPathData = placing.shapeCon match {
+      case p: Polygon => generateMirroredPolygon(placing.shapeCon.asInstanceOf[Polygon])
+      case pl: PolyLine => generaMirroredPolyLine(placing.shapeCon.asInstanceOf[PolyLine])
+      case _ => generateRightSvgPathData(placing.shapeCon)
+    }
+
+    s"""
+    d: '$svgPathData'
+    """
   }
 
-  protected def generateSvgPathData(shape:CDLine)={
+  private def generaMirroredPolyLine(shape: PolyLine) = {
+    val mirroredPoints = shape.points.map(p => new Point((p.x * -1), p.y))
+    val head = mirroredPoints.head
+    val tail = mirroredPoints.tail
+    """M """ + head.x+" "+head.y + " " + tail.map(point => "L "+point.x+" "+point.y).mkString
+  }
+
+  private def generateMirroredPolygon(shape:Polygon) = {
+    val mirroredPoints = shape.points.map(p => new Point((p.x * -1) , p.y))
+    val head = mirroredPoints.head
+    val tail = mirroredPoints.tail
+    "M "+head.x+" "+head.y+" "+ tail.map(p => "L "+p.x +" "+p.y).mkString + "z"
+  }
+
+  private def generateRightSvgPathData(g:GeometricModel):String = {
+    g match {
+     case l: Line => generateSvgPathData(l)
+     case p: Polygon => generateSvgPathData(p)
+     case pl: PolyLine =>  generateSvgPathData(pl)
+     case e: Ellipse => generateSvgPathData(e)
+     case r: Rectangle => generateSvgPathData(r)
+     case rr: RoundedRectangle => generateSvgPathData(rr)
+     case t: Text => generateSvgPathData(t)
+    }
+  }
+
+  protected def generateSvgPathData(shape:Line)={
     val points = shape.points
     """M """ + points._1.x + " " + points._1.y + " L " + points._2.x + " " + points._2.y
   }
 
-  protected def generateSvgPathData(shape:CDPolyLine)={
+  protected def generateSvgPathData(shape:PolyLine)={
     val head = shape.points.head
     val tail = shape.points.tail
-    """M """ + head.x+" "+head.y + " " + tail.map(point => "L "+point.x+" "+point.y)
+    """M """ + head.x+" "+head.y + " " + tail.map(point => "L "+point.x+" "+point.y).mkString
   }
 
-  protected def generateSvgPathData(shape:CDRectangle )={
+  protected def generateSvgPathData(shape:Rectangle )={
     """M """+shape.x +" " +shape.y + "l " + shape.size_width + " 0 l 0 "+shape.size_height +" l -"+shape.size_width+" 0 z"
   }
 
-  protected def generateSvgPathData(shape:CDRoundedRectangle )={
+  protected def generateSvgPathData(shape:RoundedRectangle )={
     "M "+shape.x +" "+ shape.curve_width +" "+shape.y +" "+ shape.curve_height +" l " + (shape.size_width - 2*shape.curve_width) + "l 0 a " + shape.curve_width +" "+ shape.curve_height +" 0 0 1 " +shape.curve_width + " "+shape.curve_height+"l 0 " + (shape.size_height - 2*shape.curve_height)+ " a "+shape.curve_width+" "+shape.curve_height+" 0 0 1 -" +shape.curve_width+" "+shape.curve_height+" l -"+(shape.size_width - 2*shape.curve_width) +" 0 a "+shape.curve_width+" "+shape.curve_height+" 0 0 1 -"+shape.curve_width+" -"+shape.curve_height+" l 0 -"+(shape.size_height - 2*shape.curve_height)+" a "+shape.curve_width+" "+shape.curve_height+" 0 0 1 "+shape.curve_width+" -"+shape.curve_height
   }
 
-  protected def generateSvgPathData(shape:CDPolygon )={
+  protected def generateSvgPathData(shape:Polygon )={
     val head = shape.points.head
     val tail = shape.points.tail
     "M "+head.x+" "+head.y+" "+ tail.map(p => "L "+p.x +" "+p.y).mkString + "z"
   }
 
-  protected def generateSvgPathData(shape:CDEllipse )={
+  protected def generateSvgPathData(shape:Ellipse )={
     val rx = shape.size_width / 2
     val ry = shape.size_height / 2
    "M "+shape.x+" "+shape.y+" a  " + rx+" "+ry+" 0 0 1 "+rx+" -"+ry+" a  "+rx+" "+ry+" 0 0 1 "+rx+" "+ry+" a  "+rx+" "+ry+" 0 0 1 -"+rx+" "+ry+" a  "+rx+" "+ry+" 0 0 1 -"+rx+" -"+ry
   }
 
-  protected def generateSvgPathData(shape:CDText )={
+  protected def generateSvgPathData(shape:Text )={
     """"""
   }
 
 
   private def generateRightStyleCorrection(g:Any):String = g match{
-    case pl:PolyLine => generateStyleCorrections(pl.asInstanceOf[CDPolyLine])
+    case pl:PolyLine => generateStyleCorrections
     case s:ShapeConnection => generateStyleCorrections(s)
     case _ => ""
   }
 
-  protected def generateStyleCorrections/*(shape:CDPolyLine )*/={
+  protected def generateStyleCorrections = {
     """
     fill: 'transparent', //JointJS uses fill attribute to fill in all markers
     """

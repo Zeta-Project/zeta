@@ -517,9 +517,11 @@ var Rappid = Backbone.Router.extend({
                 var input = $('#input-distancelines');
                 if ($('#checkbox-distancelines').is(':checked')) {
                     this.distanceLines.start();
+                    $('#btn-distancelines').addClass('active');
                     input.prop("disabled", false);
                 } else {
                     this.distanceLines.stop();
+                    $('#btn-distancelines').removeClass('active');
                     input.prop("disabled", true);
                 }
             }, this));
@@ -535,9 +537,11 @@ var Rappid = Backbone.Router.extend({
                 if ($('#checkbox-guidelines').is(':checked')) {
                     this.guideLines.start();
                     input.prop("disabled", false);
+                    $('#btn-guidelines').addClass('active');
                 } else {
                     this.guideLines.stop();
                     input.prop("disabled", true);
+                    $('#btn-guidelines').removeClass('active');
                 }
             }, this));
 

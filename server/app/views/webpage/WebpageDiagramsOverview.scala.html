@@ -96,6 +96,9 @@
                             <button id="btnDeleteMetaModel" class="btn btn-danger">
                                 Delete Meta Model
                             </button>
+                            <button id="btnGenerator" class="btn">
+                                Start Generator
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -157,6 +160,35 @@
                     };
 
                     accessToken.authorized(fnDelete);
+                });
+
+                $("#btnGenerator").click(function() {
+                    var fnStartGenerator = function(accessToken, tokenRefreshed, error) {
+                        if (error) {
+                            alert("Could not start generator " + error);
+                            return;
+                        }
+
+                        $.ajax({
+                            type : 'GET',
+                            url : '/generator/' + "@metaModel.get.id",
+                            headers : {
+                                Authorization: "Bearer " + accessToken
+                            },
+                            success : function(data, textStatus, jqXHR) {
+                                alert(textStatus);
+                            },
+                            error : function(jqXHR, textStatus, errorThrown) {
+                                if (!tokenRefreshed) {
+                                    accessToken.authorized(fnStartGenerator, true);
+                                } else {
+                                    alert("Could not start generator " + jqXHR.statusText);
+                                }
+                            }
+                        });
+                    };
+
+                    accessToken.authorized(fnStartGenerator);
                 });
             }
         </script>

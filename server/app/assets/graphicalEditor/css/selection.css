@@ -3,3 +3,8 @@
    padding-right: 5px;
    padding-bottom: 5px;
 }
+
+.invalid-edges {
+    outline: 1px dashed red;
+    outline-offset: 5px;
+}

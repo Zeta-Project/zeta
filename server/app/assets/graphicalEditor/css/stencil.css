@@ -10,7 +10,7 @@
 }
 
 .stencil {
-    padding: 5px;
+    padding: 0px;
 }
 
 .stencil .group {
@@ -51,8 +51,19 @@
     pointer-events: none;
 }
 
-.stencil .group .elements {
-    margin-left: -17px;
+.stencil-toggle-container {
+    left: 0;
+}
+
+.stencil-container-hidden {
+    width: 40px;
+}
+
+.stencil-container-hidden div {
+    display: none;
+}
+.stencil .panel {
+    margin: 0;
 }
 
 /* Hide some nodes of elements in stencil. */
