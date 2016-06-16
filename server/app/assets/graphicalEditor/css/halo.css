@@ -161,7 +161,7 @@
 }
 
 .halo .box {
-    display: none; /* don't want that info box under every element
+    display: block;
     position: absolute;
     top: 100%;
     margin-top: 30px;
@@ -173,7 +173,8 @@
     line-height: 14px;
     background-color: #2ecc71;
     border-radius: 6px;
-    padding: 6px; */
+    padding: 6px;
+    width: 200px;
 }
 
 .halo.small .box {
