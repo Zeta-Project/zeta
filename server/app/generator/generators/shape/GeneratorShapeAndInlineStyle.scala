@@ -4,11 +4,11 @@ import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, HAlign, LEFT, RIGHT}
 import generator.model.shapecontainer.shape.geometrics._
-import generator.model.shapecontainer.shape.geometrics.layouts.{CommonLayout, TextLayout}
+import generator.model.shapecontainer.shape.geometrics.layouts.{TextLayout}
 import generator.model.style.HasStyle
 
 import scala.collection.mutable
-import scala.collection.mutable.{HashMap, ListBuffer}
+import scala.collection.mutable.{HashMap}
 
 /**
   * Created by julian on 19.01.16.
@@ -68,8 +68,8 @@ object GeneratorShapeAndInlineStyle {
       case e: Ellipse => getShape(e, shapeClass)
       case r: Rectangle => getShape(r, shapeClass)
       case t: Text => getShape(t, shapeClass)
-      case pl: PolyLine => getShape(pl, shapeClass)
       case p: Polygon => getShape(p, shapeClass)
+      case pl: PolyLine => getShape(pl, shapeClass)
     }
   }
 
