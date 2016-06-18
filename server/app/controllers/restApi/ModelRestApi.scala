@@ -1,71 +1,209 @@
 package controllers.restApi
 
-import dao.metaModel.MetaModelDaoImpl
-import models.model.ModelData
-import models.model.instance.ModelReads
+import java.time.Instant
+import javax.inject.Inject
+import dao.metaModel._
+import dao.model.ZetaModelDao
+import dao.DbWriteResult
+import models.modelDefinitions.helper.HLink
+import models.modelDefinitions.model.elements.{Edge, Node}
+import models.modelDefinitions.model.{ModelEntity, Model}
 import models.oAuth.OAuthDataHandler
-import play.api.libs.json.JsError
-import play.api.mvc.{BodyParsers, Action, Controller, Result}
-
+import play.api.libs.json._
+import play.api.mvc._
+import models.modelDefinitions.model.elements.ModelWrites._
 import scala.concurrent.Future
 import scalaoauth2.provider.OAuth2Provider
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
+/**
+  * RESTful API for model definitions
+  *
+  * @param metaModelDao the metamodel DAO (usually injected)
+  * @param modelDao the model DAO (usually injected)
+  */
+class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModelDao) extends Controller with OAuth2Provider {
 
-class ModelRestApi extends Controller with OAuth2Provider {
-
-  def echo = Action.async(BodyParsers.parse.json) { implicit request =>
-    authorize(OAuthDataHandler()) { authInfo =>
-      val metaModelId = "30345d76-6b13-4efb-bb4a-2658a62a9f76"
-      MetaModelDaoImpl.findById(metaModelId).map {
-        case Some(m) => {
-          val modelReads = ModelReads.metaModelDefinitionReads(m.definition)
-          val in = request.body.validate(modelReads)
-          in.fold(
-            errors => { BadRequest(JsError.toFlatJson(errors)) },
-            model => { Ok(model.toString)}
-          )
-
+  /** Lists all models for the requesting user, provides HATEOAS links */
+  def showForUser = Action.async { implicit request =>
+    oAuth { userId =>
+      modelDao.findModelsByUser(userId).map { res =>
+        val out = res.map { info => info.copy(links = Some(Seq(
+          HLink.get("self", routes.ModelRestApi.get(info.id).absoluteURL),
+          HLink.get("meta_model", routes.MetaModelRestApi.get(info.metaModelId).absoluteURL),
+          HLink.delete("remove", routes.ModelRestApi.get(info.id).absoluteURL)
+        )))
         }
-        case None => BadRequest("No fitting metamodel found")
+        Ok(Json.toJson(out))
       }
     }
   }
 
-  def getModel(modelId: String) = Action.async { implicit request =>
-    authorize(OAuthDataHandler()) { authInfo =>
-      serve(ModelData.findById(modelId))
+  /** inserts whole model structure */
+  def insert = Action.async(BodyParsers.parse.json) { implicit request =>
+    oAuth { implicit userId =>
+      (request.body \ "metaModelId").validate[String].fold(
+        error => Future.successful(BadRequest(JsError.toFlatJson(error))),
+        metaModelId => validateAndInsert(request.body, userId, metaModelId)
+      )
     }
   }
 
-  def getNodes(modelId: String) = Action.async { implicit request =>
-    authorize(OAuthDataHandler()) { authInfo =>
-      serve(ModelData.getNodes(modelId))
+  /** helper method for model insert */
+  private def validateAndInsert(jsModel: JsValue, userId: String, metaModelId: String): Future[Result] = {
+    metaModelDao.findById(metaModelId) flatMap {
+      case Some(metaModelEntity) if metaModelEntity.userId == userId => {
+        jsModel.validate[ModelEntity](ModelEntity.strippedReads(metaModelId, metaModelEntity.metaModel)) match {
+          case JsSuccess(entity, _) => {
+            val modelEntity = entity.asNew(userId, metaModelId)
+            modelDao.insert(modelEntity).map(res => Created(Json.toJson(res)))
+          }
+          case e: JsError => Future.successful(BadRequest(JsError.toFlatJson(e)))
+        }
+      }
+      case None => Future.successful(NotFound(s"Metamodel with id $metaModelId was not found"))
+      case _ => Future.successful(Unauthorized)
     }
   }
 
-  def getEdges(modelId: String) = Action.async { implicit request =>
-    authorize(OAuthDataHandler()) { authInfo =>
-      serve(ModelData.getEdges(modelId))
+  /** updates whole model structure */
+  def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
+    oAuth { implicit userId =>
+      modelDao.findById(id).flatMap {
+        case Some(modelEntity) if modelEntity.userId == userId => {
+          request.body.validate[ModelEntity](ModelEntity.strippedReads(modelEntity.metaModelId, modelEntity.model.metaModel)) match {
+            case JsSuccess(entity, _) => modelDao.update(entity.asUpdate(modelEntity.id)).map(res => Ok(Json.toJson(res)))
+            case e: JsError => Future.successful(BadRequest(JsError.toFlatJson(e)))
+          }
+        }
+        case None => Future.successful(NotFound)
+        case _ => Future.successful(Unauthorized)
+      }
     }
   }
 
-  def getNode(modelId: String, nodeId: String) = Action.async { implicit request =>
-    authorize(OAuthDataHandler()) { authInfo =>
-      serve(ModelData.getNode(modelId, nodeId))
+  /** updates model definition only */
+  def updateModel(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
+    oAuth { implicit userId =>
+      modelDao.findById(id).flatMap {
+        case Some(modelEntity) if modelEntity.userId == userId => {
+          request.body.validate[Model](Model.reads(modelEntity.model.metaModel)) match {
+            case JsSuccess(model, _) => {
+              val selector = Json.obj("id" -> id)
+              val modifier = Json.obj("$set" -> Json.obj("model" -> model, "updated" -> Instant.now))
+              modelDao.update(selector, modifier).map(res => Ok(Json.toJson(res)))
+            }
+            case e: JsError => Future.successful(BadRequest(JsError.toFlatJson(e)))
+          }
+        }
+        case None => Future.successful(NotFound)
+        case _ => Future.successful(Unauthorized)
+      }
     }
   }
 
-  def getEdge(modelId: String, edgeId: String) = Action.async { implicit request =>
-    authorize(OAuthDataHandler()) { authInfo =>
-      serve(ModelData.getEdge(modelId, edgeId))
+  /** returns whole model structure incl. HATEOS links */
+  def get(id: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedRead(id, (m: ModelEntity) => {
+        val out = m.copy(links = Some(Seq(
+          HLink.put("update", routes.ModelRestApi.get(m.id).absoluteURL),
+          HLink.get("meta_model", routes.MetaModelRestApi.get(m.metaModelId).absoluteURL),
+          HLink.delete("remove", routes.ModelRestApi.get(m.id).absoluteURL)
+        )))
+        Ok(Json.toJson(out)(ModelEntity.strippedWrites))
+      })
     }
   }
 
-  private def serve(model: Future[Option[ModelData]]): Future[Result] = {
-    model.map {
-      case Some(m) => Ok(m.modelDataJson)
-      case _ => NotFound
+  /** returns model definition only */
+  def getModelDefinition(id: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedRead(id, (m: ModelEntity) => Ok(Json.toJson(m.model)))
+    }
+  }
+
+  /** returns all nodes of a model as json array */
+  def getNodes(id: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedRead(id, (m: ModelEntity) => {
+        val d = m.model
+        val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
+        Ok(Json.toJson(reduced.elements.values))
+      })
+    }
+  }
+
+  /** returns specific node of a specific model as json object */
+  def getNode(id: String, name: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedRead(id, (m: ModelEntity) => {
+        val d = m.model
+        val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
+        reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      })
+    }
+  }
+
+  /** returns all edges of a model as json array */
+  def getEdges(id: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedRead(id, (m: ModelEntity) => {
+        val d = m.model
+        val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
+        Ok(Json.toJson(reduced.elements.values))
+      })
+    }
+  }
+
+  /** returns specific edge of a specific model as json object */
+  def getEdge(id: String, name: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedRead(id, (m: ModelEntity) => {
+        val d = m.model
+        val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
+        reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      })
+    }
+  }
+
+  /** deletes a whole model */
+  def delete(id: String) = Action.async { implicit request =>
+    oAuth { implicit userId =>
+      protectedWrite(id, {
+        modelDao.deleteById(id)
+      })
+    }
+  }
+
+  /** A helper method for less verbose oauth auth check */
+  def oAuth[A](block: String => Future[Result])(implicit request: Request[A]) = {
+    authorize(OAuthDataHandler()) { authInfo => block(authInfo.user.uuid.toString) }
+  }
+
+  /** A helper method for less verbose reads from the database */
+  def protectedRead(id: String, trans: ModelEntity => Result)(implicit userId: String): Future[Result] = {
+    modelDao.findById(id).map {
+      case Some(model) => if (userId == model.userId) {
+        trans(model)
+      } else {
+        Unauthorized
+      }
+      case None => NotFound
+    }
+  }
+
+  /** A helper method for less verbose writes to the database */
+  private def protectedWrite(id: String, write: => Future[DbWriteResult[String]])(implicit userId: String): Future[Result] = {
+    modelDao.hasAccess(id, userId).flatMap {
+      case Some(b) => {
+        if (b) {
+          write.map { res => Ok(Json.toJson(res)) }
+        } else {
+          Future.successful(Unauthorized)
+        }
+      }
+      case None => Future.successful(NotFound)
     }
   }
 

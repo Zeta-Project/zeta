@@ -8,8 +8,12 @@ import play.api.mvc.{Action, Controller}
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 import scalaoauth2.provider._
 
+/**
+  * Main endpoint for OAuth access token acquisition
+  */
 class OAuthController extends Controller with OAuth2Provider {
 
+  // a helper Writes[T] for converting auth info to json
   implicit val authInfoWrites = new Writes[AuthInfo[SecureSocialUser]] {
     def writes(authInfo: AuthInfo[SecureSocialUser]) = {
       Json.obj(
@@ -23,16 +27,12 @@ class OAuthController extends Controller with OAuth2Provider {
     }
   }
 
+  // provides access tokens
   def accessToken = Action.async { implicit request =>
     issueAccessToken(OAuthDataHandler())
   }
 
-  // for debugging purposes
-  def info = AuthorizedAction(OAuthDataHandler()) { request =>
-    Ok(Json.toJson(request.authInfo))
-  }
-
-  // for debugging purposes
+  // for development/setup purposes
   def setup = Action {
     OAuthSetup.resetMongo()
     Ok("reset")

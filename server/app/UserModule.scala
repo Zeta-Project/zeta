@@ -1,19 +1,18 @@
-import com.google.inject.{ TypeLiteral, Scopes, AbstractModule }
-import models.oAuth.OAuthDataHandler
-import models.{SecureSocialUser, MongoDbUserService}
+import com.google.inject.{ TypeLiteral, AbstractModule }
+import dao.metaModel.{ZetaMetaModelDao, MetaModelDao}
+import dao.model.{ZetaModelDao, ModelDao}
 import net.codingwell.scalaguice.ScalaModule
-import securesocial.core.services.UserService
-import securesocial.core.{ BasicProfile, RuntimeEnvironment }
+import securesocial.core.RuntimeEnvironment
 import util.definitions.UserEnvironment
-
-import scalaoauth2.provider.DataHandler
 
 class UserModule extends AbstractModule with ScalaModule {
   override def configure() {
-
+    // SecureSocial
     val environment = new UserEnvironment()
     bind(new TypeLiteral[RuntimeEnvironment] {}).toInstance(environment)
-
+    // DAO-Classes
+    bind[ZetaMetaModelDao].to[MetaModelDao].asEagerSingleton()
+    bind[ZetaModelDao].to[ModelDao].asEagerSingleton()
   }
 }
 

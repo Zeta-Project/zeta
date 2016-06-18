@@ -1,4 +1,4 @@
-package models.metaModel.mCore
+package zeta.generator.domain.metaModel.elements
 
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
@@ -17,15 +17,6 @@ object MCoreReads {
 
     def mRef(name: String) = new MReference(name, false, false, List.empty, List.empty, List.empty)
   }
-
-//  implicit val mObjectReads = new Reads[MObject] {
-//    override def reads(json: JsValue): JsResult[MObject] =
-//      json.validate(
-//        checkMClassReads.map(_.asInstanceOf[MObject]) orElse
-//          checkMReferenceReads.map(_.asInstanceOf[MObject]) orElse
-//          checkMEnumReads.map(_.asInstanceOf[MObject])
-//      )
-//  }
 
   implicit val mObjectReads = new Reads[MObject] {
     override def reads(json: JsValue): JsResult[MObject] = (json \ "mType").toOption match {
@@ -183,11 +174,8 @@ object MCoreReads {
           case mObj :: tail => walk(tail, accErrors ::: processMObject(mObj))
         }
       }
-
       walk(values, Nil)
     }
-
-
   }
 
   val mTypeError = ValidationError("Unknown mType at top level: only MClass, MReference and MEnum allowed")
@@ -296,6 +284,4 @@ object MCoreReads {
     }
     builder.finalEnum
   }
-
-
 }
