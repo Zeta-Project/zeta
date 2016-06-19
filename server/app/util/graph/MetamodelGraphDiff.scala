@@ -1,20 +1,21 @@
 package util.graph
 
-import models.metaModel.Concept
-import models.metaModel.mCore._
+
+import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.elements._
 import play.api.libs.json._
 
 object MetamodelGraphDiff {
 
-  def fixGraph(concept: Concept): Concept = {
+  def fixGraph(metaModel: MetaModel): MetaModel = {
 
-    val metaModel = concept.elements
-    if (concept.uiState.isEmpty) return concept
-    var graph = Json.parse(concept.uiState).as[JsObject]
+    val elements = metaModel.elements
+    if (metaModel.uiState.isEmpty) return metaModel
+    var graph = Json.parse(metaModel.uiState).as[JsObject]
 
     def fixAttributes() = {
 
-      metaModel.values.foreach { element =>
+      elements.values.foreach { element =>
         val elementKey = element.name
 
         graphOnlyAttributes(elementKey).foreach(attribute => removeFromGraph(elementKey, attribute))
@@ -62,7 +63,7 @@ object MetamodelGraphDiff {
       }
 
       def metaModelAttributes(elementKey: String): Set[MAttribute] = {
-        metaModel.get(elementKey) match {
+        elements.get(elementKey) match {
           case Some(element) => element match {
             case mClass: MClass => mClass.attributes.toSet
             case mReference: MReference => mReference.attributes.toSet
@@ -163,7 +164,7 @@ object MetamodelGraphDiff {
     }
 
     fixAttributes()
-    concept.copy(uiState = graph.toString)
+    metaModel.copy(uiState = graph.toString)
   }
 
 

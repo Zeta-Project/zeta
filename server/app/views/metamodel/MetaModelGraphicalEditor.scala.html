@@ -1,5 +1,5 @@
 @import play.api.libs.json.Json
-@import models.metaModel.MetaModelEntity
+@import models.modelDefinitions.metaModel.MetaModelEntity
 @(user: Option[SecureSocialUser], uuid: String, metaModel: MetaModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {
@@ -13,10 +13,10 @@
 
     window.loadedMetaModel = {};
     window.loadedMetaModel.uuid = "@uuid";
-    window.loadedMetaModel.name = "@metaModel.definition.name";
-    @if(metaModel.definition.concept.uiState.nonEmpty) {
+    window.loadedMetaModel.name = "@metaModel.metaModel.name";
+    @if(metaModel.metaModel.uiState.nonEmpty) {
     window.loadedMetaModel.loadOnStart = true;
-    window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.definition.concept.uiState))));
+    window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.uiState))));
     }
     $('#metamodel-name').text("Metamodel: "+window.loadedMetaModel.name);
     </script>

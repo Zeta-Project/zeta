@@ -3,7 +3,7 @@ package generator.generators.spray
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import models.metaModel.mCore.{MClass, MLinkDef}
+import models.modelDefinitions.metaModel.elements.{MLinkDef, MClass}
 
 import scala.collection.mutable.{HashMap, ListBuffer}
 
@@ -40,7 +40,7 @@ object ValidatorGenerator {
   def generateInOutMatrix(diagram: Diagram) = {
     var inputMatrix = new ListBuffer[String]
     var outputMatrix = new ListBuffer[String]
-    diagram.metamodel.concept.elements.foreach { e =>
+    diagram.metamodel.metaModel.elements.foreach { e =>
       e._2 match {
         case mc: MClass =>
           if (mc.inputs.nonEmpty) {

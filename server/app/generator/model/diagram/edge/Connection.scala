@@ -2,7 +2,7 @@ package generator.model.diagram.edge
 
 import generator.model.style.Style
 import generator.parser.{Cache, ConnectionSketch, PropsAndComps}
-import models.metaModel.mCore.{MClass, MReference}
+import models.modelDefinitions.metaModel.elements.MReference
 import parser._
 
 /**

@@ -4,7 +4,8 @@ import generator.model.diagram.action.{ActionInclude, Action, Actions}
 import generator.model.diagram.methodes.{OnDelete, OnUpdate, OnCreate, Methodes}
 import generator.model.diagram.traits.{Container, Palette}
 import generator.model.style.Style
-import models.metaModel.mCore.{MReference, MClass}
+import models.modelDefinitions.metaModel.elements.{MClass, MReference}
+
 
 /**
  * Created by julian on 30.11.15.

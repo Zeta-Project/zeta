@@ -2,15 +2,15 @@ package controllers.webpage
 
 import javax.inject.Inject
 
-import dao.metaModel.MetaModelDaoImpl
-import models.metaModel.MetaModelEntity
+import dao.metaModel.ZetaMetaModelDao
+import models.modelDefinitions.metaModel.MetaModelEntity
 import play.api.Logger
 import util.definitions.UserEnvironment
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class WebpageController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class WebpageController @Inject()(metaModelDao: ZetaMetaModelDao, override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   val log = Logger(this getClass() getName())
 
@@ -20,14 +20,14 @@ class WebpageController @Inject()(override implicit val env: UserEnvironment) ex
 
   def diagramsOverview(uuid: String) = SecuredAction { implicit request =>
 
-    val metaModels = Await.result(MetaModelDaoImpl.findIdsByUser(request.user.uuid.toString), 30 seconds)
+    val metaModels = Await.result(metaModelDao.findMetaModelsByUser(request.user.uuid.toString), 30 seconds)
 
     var metaModel: Option[MetaModelEntity] = None
 
     if (uuid != null) {
-      val hasAccess = Await.result(MetaModelDaoImpl.hasAccess(uuid, request.user.uuid.toString), 30 seconds)
+      val hasAccess = Await.result(metaModelDao.hasAccess(uuid, request.user.uuid.toString), 30 seconds)
       if (hasAccess.isDefined && hasAccess.get) {
-        metaModel = Await.result(MetaModelDaoImpl.findById(uuid), 30 seconds)
+        metaModel = Await.result(metaModelDao.findById(uuid), 30 seconds)
       }
     }
 

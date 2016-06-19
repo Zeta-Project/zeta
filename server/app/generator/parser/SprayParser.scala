@@ -9,8 +9,8 @@ import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.Style
-import models.metaModel.MetaModel
-import models.metaModel.mCore.{MClass, MReference}
+import models.modelDefinitions.metaModel.MetaModelEntity
+import models.modelDefinitions.metaModel.elements.{MReference, MClass}
 import parser._
 
 
@@ -18,14 +18,14 @@ import parser._
  * Created by julian on 23.10.15.
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
-class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonParserMethods {
+class SprayParser(c: Cache = Cache(), val metaModelE:MetaModelEntity) extends CommonParserMethods {
   implicit val cache = c
   type diaConnection = generator.model.diagram.edge.Connection
 
-  private val metaMapMClass = metaModel.concept.elements.collect{
+  private val metaMapMClass = metaModelE.metaModel.elements.collect{
     case (name, x) if x.isInstanceOf[MClass] => (name, x.asInstanceOf[MClass])
   }
-  private val metaMapMReference = metaModel.concept.elements.collect {
+  private val metaMapMReference = metaModelE.metaModel.elements.collect {
     case (name, x) if x.isInstanceOf[MReference] => (name, x.asInstanceOf[MReference])
   }
   require(metaMapMClass nonEmpty)
@@ -254,7 +254,7 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
       val corporateStyle:Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
       val mClass = metaMapMClass.get(mcoreElement)
         val diagramShape:Option[DiaShape] =
-          if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaModel))
+          if(shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaModelE))
           else None
         val onCr = if (onCreate isDefined){
           Some(OnCreate(Some(onCreate.get._1), mClass.get.attributes.find(_.name == onCreate.get._2)))
@@ -355,8 +355,8 @@ class SprayParser(c: Cache = Cache(), val metaModel:MetaModel) extends CommonPar
             i._2.asInstanceOf[NodeSketch].toNode(style, cache)).foldLeft(List[Node]()){(l, n) => if(n isDefined) n.get +: l else l}
           val edges = arguments.filter(i => i._1 == "edge").map(i =>
             i._2.asInstanceOf[EdgeSketch].toEdge(style, cache)).foldLeft(List[Edge]()){(l, e) => if(e isDefined) e.get +: l else l}
-          if(metaModel.name == metaModelName) {
-            Some(Diagram(name, actionGroups, nodes, edges, style, metaModel, cache))
+          if(metaModelE.metaModel.name == metaModelName) {
+            Some(Diagram(name, actionGroups, nodes, edges, style, metaModelE, cache))
           } else {
             None
           }

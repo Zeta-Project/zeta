@@ -1,6 +1,7 @@
 package generator.model.diagram.methodes
 
-import models.metaModel.mCore.MAttribute
+import models.modelDefinitions.metaModel.elements.MAttribute
+
 
 /**
  * Created by julian on 08.12.15.

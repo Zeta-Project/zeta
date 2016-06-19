@@ -1,4 +1,5 @@
-@import models.metaModel.{MetaModelEntity, MetaModelShortInfo}
+@import models.modelDefinitions.metaModel.{MetaModelEntity, MetaModelShortInfo}
+
 @(user: Option[SecureSocialUser], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity])
 
     @views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
@@ -46,7 +47,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <strong>Edit Meta Model <em>@metaModel.get.definition.name</em></strong>
+                            <strong>Edit Meta Model <em>@metaModel.get.metaModel.name</em></strong>
                         </div>
                         <div class="panel-body text-center">
                             <div class="row">
@@ -108,7 +109,7 @@
                 <div class="col-md-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <strong>Model Instances for Meta Model <em>@metaModel.get.definition.name</em></strong>
+                            <strong>Model Instances for Meta Model <em>@metaModel.get.metaModel.name</em></strong>
                         </div>
                         <div class="panel-body">
                             There are no model instances.

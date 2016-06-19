@@ -1,11 +1,13 @@
 package controllers
 
 
+import java.time.Instant
 import javax.inject.Inject
 
-import dao.metaModel.MetaModelDaoImpl
+import dao.metaModel.{ZetaMetaModelDao}
 import models.metaModel._
-import models.metaModel.mCore.MObject
+import models.modelDefinitions.metaModel.{Dsl, MetaModel, MetaModelEntity}
+import models.modelDefinitions.metaModel.elements.MObject
 import play.api.Play.current
 import play.api.libs.json.{JsError, JsValue, Json}
 import play.api.mvc.WebSocket
@@ -20,16 +22,15 @@ import scala.concurrent.{Await, Future}
   */
 
 
-class MetaModelController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class MetaModelController @Inject()(metaModelDao: ZetaMetaModelDao, override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
 
   def newMetaModel(name: String) = SecuredAction { implicit request =>
     if (name.isEmpty) {
       BadRequest("Name must not be empty")
     } else {
-      val concept = Concept(elements = Map.empty[String, MObject], uiState = "")
-      val metaModel = MetaModel(name = name, concept = concept, shape = None, style = None, diagram = None)
-      val entity = MetaModelEntity.initialize(request.user.uuid.toString, metaModel)
-      val result = Await.result(MetaModelDaoImpl.insert(entity), 30 seconds)
+      val metaModel = MetaModel(name = name, elements = Map.empty[String, MObject], uiState = "")
+      val entity = MetaModelEntity("", "", Instant.now(), Instant.now(),metaModel, Dsl(None,None,None)).asNew(request.user.uuid.toString)
+      val result = Await.result(metaModelDao.insert(entity), 30 seconds)
       if (result.ok) {
         Redirect(routes.MetaModelController.metaModelEditor(result.insertId.get))
       } else {
@@ -39,16 +40,16 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
   }
 
   def metaModelEditor(metaModelUuid: String) = SecuredAction { implicit request =>
-    val hasAccess = Await.result(MetaModelDaoImpl.hasAccess(metaModelUuid, request.user.uuid.toString), 30 seconds)
+    val hasAccess = Await.result(metaModelDao.hasAccess(metaModelUuid, request.user.uuid.toString), 30 seconds)
     if (hasAccess.isDefined && hasAccess.get) {
-      val metaModelEntity = Await.result(MetaModelDaoImpl.findById(metaModelUuid), 30 seconds)
+      val metaModelEntity = Await.result(metaModelDao.findById(metaModelUuid), 30 seconds)
       if (metaModelEntity.isDefined) {
 
         // Fix Graph with MetaModelGraphDiff
         val oldMetaModelEntity = metaModelEntity.get
-        val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.definition.concept)
-        val fixedDefinition = oldMetaModelEntity.definition.copy(concept = fixedConcept)
-        val fixedMetaModelEntity = oldMetaModelEntity.copy(definition = fixedDefinition)
+        val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.metaModel)
+        //val fixedDefinition = oldMetaModelEntity.metaModel.copy(concept = fixedConcept)
+        val fixedMetaModelEntity = oldMetaModelEntity.copy(metaModel = fixedConcept)
 
         Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, fixedMetaModelEntity))
       } else {
@@ -64,22 +65,6 @@ class MetaModelController @Inject()(override implicit val env: UserEnvironment) 
   }
 
 
-  // TODO: only for development purposes, will be deleted later on
-  def dummyInsert = SecuredAction.async { implicit request =>
-    val json = "{\"definition\":{\"name\":\"Persons\",\"concept\":{\"elements\":[{\"mType\":\"mReference\",\"name\":\"isWife\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":[{\"type\":\"Female\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"target\":[{\"type\":\"Male\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"attributes\":[]},{\"mType\":\"mEnum\",\"name\":\"healthInsurance\",\"symbols\":[\"private\",\"national\",\"none\"]},{\"mType\":\"mClass\",\"name\":\"Person\",\"abstract\":true,\"superTypes\":[],\"inputs\":[{\"type\":\"isFather\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false},{\"type\":\"isMother\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"outputs\":[],\"attributes\":[{\"name\":\"FirstName\",\"globalUnique\":false,\"localUnique\":false,\"type\":\"String\",\"default\":\"Hans\",\"constant\":false,\"singleAssignment\":false,\"expression\":\"\",\"ordered\":false,\"transient\":false,\"upperBound\":1,\"lowerBound\":1},{\"name\":\"Geburtstag\",\"globalUnique\":true,\"localUnique\":true,\"type\":\"String\",\"default\":\"\",\"constant\":false,\"singleAssignment\":false,\"expression\":\"\",\"ordered\":false,\"transient\":false,\"upperBound\":1,\"lowerBound\":1},{\"name\":\"Steuernummer\",\"globalUnique\":true,\"localUnique\":true,\"type\":\"String\",\"default\":\"\",\"constant\":false,\"singleAssignment\":false,\"expression\":\"\",\"ordered\":false,\"transient\":false,\"upperBound\":-1,\"lowerBound\":1},{\"name\":\"Krankenversicherungs\",\"globalUnique\":false,\"localUnique\":false,\"type\":\"healthInsurance\",\"default\":\"none\",\"constant\":false,\"singleAssignment\":false,\"expression\":\"\",\"ordered\":false,\"transient\":false,\"upperBound\":1,\"lowerBound\":1}]},{\"mType\":\"mReference\",\"name\":\"isMother\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":[{\"type\":\"Female\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"target\":[{\"type\":\"Person\",\"upperBound\":-1,\"lowerBound\":0,\"deleteIfLower\":false}],\"attributes\":[]},{\"mType\":\"mClass\",\"name\":\"Female\",\"abstract\":false,\"superTypes\":[\"Person\"],\"inputs\":[{\"type\":\"isHusband\",\"upperBound\":1,\"lowerBound\":0,\"deleteIfLower\":false}],\"outputs\":[{\"type\":\"isWife\",\"upperBound\":1,\"lowerBound\":0,\"deleteIfLower\":false},{\"type\":\"isMother\",\"upperBound\":-1,\"lowerBound\":0,\"deleteIfLower\":false}],\"attributes\":[]},{\"mType\":\"mReference\",\"name\":\"isFather\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":[{\"type\":\"Male\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"target\":[{\"type\":\"Person\",\"upperBound\":-1,\"lowerBound\":0,\"deleteIfLower\":false}],\"attributes\":[]},{\"mType\":\"mReference\",\"name\":\"isHusband\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":[{\"type\":\"Male\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"target\":[{\"type\":\"Female\",\"upperBound\":1,\"lowerBound\":1,\"deleteIfLower\":false}],\"attributes\":[]},{\"mType\":\"mClass\",\"name\":\"Male\",\"abstract\":false,\"superTypes\":[\"Person\"],\"inputs\":[{\"type\":\"isWife\",\"upperBound\":1,\"lowerBound\":0,\"deleteIfLower\":false}],\"outputs\":[{\"type\":\"isHusband\",\"upperBound\":1,\"lowerBound\":0,\"deleteIfLower\":false},{\"type\":\"isFather\",\"upperBound\":-1,\"lowerBound\":0,\"deleteIfLower\":false}],\"attributes\":[]}],\"uiState\":\"\"},\"style\":{\"code\":\"\"},\"shape\":{\"code\":\"\"},\"diagram\":{\"code\":\"\"}}}"
-    val in = Json.parse(json).validate[MetaModelEntity](MetaModelEntity.strippedReads)
-    in.fold(
-      errors => {
-        Future.successful(BadRequest(JsError.toFlatJson(errors)))
-      },
-      tempEntity => {
-        val entity = MetaModelEntity.initialize(request.user.uuid.toString, tempEntity.definition)
-        MetaModelDaoImpl.insert(entity).map { res =>
-          Created(Json.toJson(res))
-        }
-      }
-    )
-  }
 
 
 
