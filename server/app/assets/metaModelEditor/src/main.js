@@ -592,6 +592,7 @@ var Rappid = Backbone.Router.extend({
                 }
 
                 var data = JSON.stringify({
+                    name: 'changed name (bug)',
                     elements: metaModel,
                     uiState: JSON.stringify(graph)
                 });
@@ -600,7 +601,7 @@ var Rappid = Backbone.Router.extend({
 
                 $.ajax({
                     type: 'PUT',
-                    url: '/metamodels/' + window.loadedMetaModel.uuid + '/concept',
+                    url: '/metamodels/' + window.loadedMetaModel.uuid + '/definition',
                     contentType: "application/json; charset=utf-8",
                     data: data,
                     headers: {
