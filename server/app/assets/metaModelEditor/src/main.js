@@ -592,7 +592,7 @@ var Rappid = Backbone.Router.extend({
                 }
 
                 var data = JSON.stringify({
-                    name: 'changed name (bug)',
+                    name: window.loadedMetaModel.name,
                     elements: metaModel,
                     uiState: JSON.stringify(graph)
                 });
