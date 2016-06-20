@@ -1,6 +1,7 @@
 @import models.modelDefinitions.metaModel.{MetaModelEntity, MetaModelShortInfo}
+@import models.modelDefinitions.model.{ModelShortInfo}
 
-@(user: Option[SecureSocialUser], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity])
+@(user: Option[SecureSocialUser], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
 
     @views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
         <div class="row">
@@ -111,12 +112,21 @@
                         <div class="panel-heading">
                             <strong>Model Instances for Meta Model <em>@metaModel.get.metaModel.name</em></strong>
                         </div>
-                        <div class="panel-body">
-                            There are no model instances.
-                        </div>
+                        @if(modelInstances.isEmpty) {
+                            <div class="panel-body">
+                                There are no model instances.
+                            </div>
+                        }
+                        @for(model <- modelInstances) {
+                            <a href="@controllers.routes.ModelController.modelEditor(metaModel.get.id, model.id)" class="list-group-item model-instance-item">
+                                @model.name
+                                <div data-model-id="@model.id" class="deleteModelInstance glyphicon glyphicon-trash"></div>
+                            </a>
+                        }
                         <div class="panel-footer">
-                            <a href="@controllers.routes.ModelController.newModel(metaModel.get.id)" class="btn btn-default">
-                                New Model Instance</a>
+                            <div id="btnCreateModelInstance" class="btn btn-default">
+                                New Model Instance
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -190,6 +200,83 @@
                     };
 
                     accessToken.authorized(fnStartGenerator);
+                });
+
+                $("#btnCreateModelInstance").click(function() {
+                    var name = prompt("Enter Model Instance name");
+                    var id = "@metaModel.get.id";
+                    var data = {
+                        "metaModelId": id,
+                        "model": {
+                            elements: [],
+                            name: name,
+                            uiState: ""
+                        }
+                    };
+
+                    var createModelInstance = function(accessToken, tokenRefreshed, error) {
+                        if (error) {
+                            alert("Could not create new Model Instance " + error);
+                            return;
+                        }
+
+                        $.ajax({
+                            type : 'POST',
+                            url : '/models',
+                            headers : {
+                                Authorization: "Bearer " + accessToken,
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            dataType:"json",
+                            data: JSON.stringify(data),
+                            success : function(data, textStatus, jqXHR) {
+                                window.location.replace("/overview/"+"@metaModel.get.id");
+                            },
+                            error : function(jqXHR, textStatus, errorThrown) {
+                                if (!tokenRefreshed) {
+                                    accessToken.authorized(createModelInstance, true);
+                                } else {
+                                    alert("failed creating model instance: " + textStatus);
+                                }
+                            }
+                        });
+                    };
+
+                    accessToken.authorized(createModelInstance);
+                });
+
+                $(".deleteModelInstance").click(function() {
+                    //prevent default otherwise href to modelEditor
+                    event.preventDefault();
+
+                    var modelId = this.dataset.modelId;
+                    var fnDeleteModelInstance = function(accessToken, tokenRefreshed, error) {
+                        if (error) {
+                            alert("Could not delete model Instance " + error);
+                            return;
+                        }
+
+                        $.ajax({
+                            type : 'DELETE',
+                            url : '/models/'+modelId,
+                            headers : {
+                                Authorization: "Bearer " + accessToken
+                            },
+                            success : function(data, textStatus, jqXHR) {
+                                    window.location.replace("/overview/"+"@metaModel.get.id");
+                            },
+                            error : function(jqXHR, textStatus, errorThrown) {
+                                if (!tokenRefreshed) {
+                                    accessToken.authorized(fnDeleteModelInstance, true);
+                                } else {
+                                    alert("failed deleting model instance: " + textStatus);
+                                }
+                            }
+                        });
+                    };
+
+                    accessToken.authorized(fnDeleteModelInstance);
                 });
             }
         </script>
