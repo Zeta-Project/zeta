@@ -1,6 +1,6 @@
-@(metaModelUUID: String, id: String, user: Option[SecureSocialUser])
-@import play.api.Play.resource
-@import play.api.Play.current
+@import models.modelDefinitions.model.ModelEntity
+@import play.api.libs.json.Json
+@(metaModelUUID: String, id: String, user: Option[SecureSocialUser], model: ModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
     <script>
@@ -35,7 +35,7 @@
     <div class="toolbar-container panel panel-default">
 
         <div class="btn-group">
-            <button id="btn-export-mm" class="btn btn-default" data-tooltip="Export current Model as JSON">
+            <button id="btn-export-model" class="btn btn-default" data-tooltip="Export current Model as JSON">
                 <span class="glyphicon glyphicon-floppy-save"></span>
             </button>
             <button id="btn-print" class="btn btn-default" data-tooltip="Open Print Dialog for current Model">
@@ -170,6 +170,11 @@
             window._global_graph_type = "@(metaModelUUID)";
             window._global_userID = "@(user.get.uuid)";
             window._global_userName = "@(user.get.profile.fullName)";
+            window._global_model_name = "@(model.model.name)";
+            @if(model.model.uiState.nonEmpty) {
+            window._global_loadOnStart = true;
+            window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(model.model.uiState))));
+            }
     </script>
 
 

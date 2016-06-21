@@ -21,7 +21,6 @@ var Rappid = Backbone.Router.extend({
     initializeEditor: function() {
 
         this.inspectorClosedGroups = {};
-
         this.initializePaper();
         this.initializeStencil();
         this.initializeSelection();
@@ -39,12 +38,20 @@ var Rappid = Backbone.Router.extend({
         if (this.options.channelUrl) {
             this.initializeChannel(this.options.channelUrl);
         }
+        this.initializeGraph();
+
         window.globalPaper = this.paper;
         window.globalGraph = this.graph;
         
 
         // Custom code
         linkTypeSelector.init(this.graph, this.paper);
+    },
+
+    initializeGraph: function() {
+        if (window._global_loadOnStart === true) {
+            this.graph.fromJSON(_.extend({}, window._global_graph));
+        }
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
@@ -431,7 +438,8 @@ var Rappid = Backbone.Router.extend({
     initializeToolbar: function() {
 
         this.initializeToolbarTooltips();
-        
+
+        $('#btn-export-model').on('click', _.bind(this.exportModel, this));
         $('#btn-undo').on('click', _.bind(this.commandManager.undo, this.commandManager));
         $('#btn-redo').on('click', _.bind(this.commandManager.redo, this.commandManager));
         $('#btn-clear').on('click', _.bind(this.graph.clear, this.graph));
@@ -584,6 +592,45 @@ var Rappid = Backbone.Router.extend({
 
         var roomUrl = location.href.replace(location.hash, '') + '#' + room;
         $('.statusbar-container .rt-colab').html('Send this link to a friend to <b>collaborate in real-time</b>: <a href="' + roomUrl + '" target="_blank">' + roomUrl + '</a>');
+    },
+
+    exportModel: function() {
+        var uiState = JSON.stringify(this.graph.toJSON());
+        var fnSave = function (accessToken, tokenRefreshed, error) {
+            if (error) {
+                alert("Error saving model: " + error);
+                return;
+            }
+
+            var data = JSON.stringify({
+                name: window._global_model_name,
+                elements: [],
+                uiState: uiState
+            });
+
+            $.ajax({
+                type: 'PUT',
+                url: '/models/' + window._global_uuid + "/definition",
+                contentType: "application/json; charset=utf-8",
+                data: data,
+                headers: {
+                    Authorization: "Bearer " + accessToken
+                },
+                success: function (data, textStatus, jqXHR) {
+                    alert("Saved model");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (!tokenRefreshed) {
+                        accessToken.authorized(fnSave, true);
+                    } else {
+                        alert("Error saving meta model: " + errorThrown);
+                    }
+                }
+            });
+        };
+
+         accessToken.authorized(fnSave);
+         
     },
 
     initializeToggleSidePanels: function() {

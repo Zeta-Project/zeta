@@ -2,13 +2,17 @@ package controllers
 
 import javax.inject.Inject
 
+import dao.model.ZetaModelDao
 import models.model.ModelWsActor
+import models.modelDefinitions.model.ModelEntity
 import play.api.Logger
 import play.api.Play.current
 import play.api.mvc.WebSocket
 import util.definitions.UserEnvironment
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
-class ModelController @Inject()(override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+class ModelController @Inject()(override implicit val env: UserEnvironment, modelDao: ZetaModelDao) extends securesocial.core.SecureSocial {
 
   val log = Logger(this getClass() getName())
 
@@ -24,7 +28,9 @@ class ModelController @Inject()(override implicit val env: UserEnvironment) exte
   }
 
   def modelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, Some(request.user)))
+    val model = Await.result(modelDao.findById(modelUuid), 30 seconds)
+    if(!model.isDefined) BadRequest("no model available for this modelid")
+    Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, Some(request.user), model.get))
   }
 
   def modelValidator() = SecuredAction { implicit request =>
