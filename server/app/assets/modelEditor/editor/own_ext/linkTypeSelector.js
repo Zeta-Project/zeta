@@ -266,7 +266,7 @@ var linkTypeSelector = (function linkTypeSelector () {
 
         clone.attributes.attrs = getConnectionStyle(edgeData.style);
         clone.attributes.placings = getPlacings(edgeData.style);
-        clone.attributes.ecoreName = edgeData.type;
+        clone.attributes.mReference = edgeData.type;
         clone.attributes.styleSet = true;
         clone.attributes.sourceAttribute = edgeData.from;
         clone.attributes.targetAttribute = edgeData.to;
