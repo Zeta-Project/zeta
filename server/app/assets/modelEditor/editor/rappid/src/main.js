@@ -595,6 +595,7 @@ var Rappid = Backbone.Router.extend({
     },
 
     exportModel: function() {
+        var elements = this.buildElements();
         var uiState = JSON.stringify(this.graph.toJSON());
         var fnSave = function (accessToken, tokenRefreshed, error) {
             if (error) {
@@ -604,7 +605,7 @@ var Rappid = Backbone.Router.extend({
 
             var data = JSON.stringify({
                 name: window._global_model_name,
-                elements: [],
+                elements: elements,
                 uiState: uiState
             });
 
@@ -631,6 +632,59 @@ var Rappid = Backbone.Router.extend({
 
          accessToken.authorized(fnSave);
          
+    },
+
+
+
+    // TODO: add attributes to elements
+    buildElements: function() {
+        var elements = [];
+        var graph = this.graph;
+        graph.getElements().forEach(function(ele) {
+            var element = {
+                id: ele.id,
+                mClass: ele.attributes.mClass,
+                outputs: {},
+                inputs: {},
+                attributes: {}
+                
+            };
+            graph.getConnectedLinks(ele, {outbound: true}).forEach(function(link) {
+                if(element.outputs.hasOwnProperty(link.attributes.mReference)) {
+                    element.outputs[link.attributes.mReference].push(link.attributes.id);
+                } else {
+                    element.outputs[link.attributes.mReference] = [link.attributes.id];
+                }
+
+            });
+
+            graph.getConnectedLinks(ele, {inbound: true}).forEach(function(link) {
+                if(element.inputs.hasOwnProperty(link.attributes.mReference)) {
+                    element.inputs[link.attributes.mReference].push(link.attributes.id);
+                } else {
+                    element.inputs[link.attributes.mReference] = [link.attributes.id];
+                }
+            });
+            elements.push(element);
+        });
+
+        graph.getLinks().forEach(function(link) {
+            var element = {
+                id: link.id,
+                mReference: link.attributes.mReference,
+                source: {},
+                target: {},
+                attributes: {}
+            };
+            // In the Metamodel a connection can have multiple sources/targets
+            // but in joint.js this is not possible
+            element.source[link.attributes.sourceAttribute] = [link.attributes.source.id];
+            element.target[link.attributes.targetAttribute] = [link.attributes.target.id];
+            elements.push(element);
+
+        });
+        console.log(elements);
+        return elements;
     },
 
     initializeToggleSidePanels: function() {
