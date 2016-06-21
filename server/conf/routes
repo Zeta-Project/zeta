@@ -68,6 +68,7 @@ GET           /oauth/setup                                                      
 
 ### Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                                          controllers.Assets.at(path="/public", file)
+GET           /model_specific/*file                                                  @controllers.DynamicFileController.serveFile(file)
 
 
 ### include securesocial routes
