@@ -23,7 +23,8 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
 
     val result = Await.result(metaModelDao.findById(metaModelUuid), 30 seconds)
     if (result.isDefined && result.get.metaModel.elements.nonEmpty) {
-      val generatorOutputLocation = current.path.toString + "/app/assets/modelEditor/editor/model_specific/" + metaModelUuid + "/"
+      val generatorOutputLocation = System.getenv("PWD") + "/server/public/model_specific/" + metaModelUuid + "/"
+      println(generatorOutputLocation)
       Files.createDirectories(Paths.get(generatorOutputLocation))
 
       val hierarchyContainer = Cache()
