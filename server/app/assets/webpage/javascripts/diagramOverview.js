@@ -1,13 +1,45 @@
 $(document).ready(function () {
-    $("#btnNewMetaModel").click(function () {
+    $("#btnCreateMetaModel").click(function () {
+
         var name = window.prompt("Enter a name for your meta model");
-        if (name) {
-            window.location.replace("/metamodel/new/" + name);
-        }
+        var data = JSON.stringify({
+            "metaModel": {
+                "name": name,
+                "elements": [],
+                "uiState": ""
+            }
+        });
+        var fnCreateMetaModel = function (accessToken, tokenRefreshed, error) {
+            if (error) {
+                alert("Could not create meta model: " + error);
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '/metamodels',
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                    'Content-Type': 'application/json'
+                },
+                data: data,
+                success: function (data, textStatus, jqXHR) {
+                    window.location.replace("/overview/"+data.insertId);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    if (!tokenRefreshed) {
+                        accessToken.authorized(fnDelete, true);
+                    } else {
+                        alert("Could not create meta model: " + textStatus);
+                    }
+                }
+            });
+        };
+
+        accessToken.authorized(fnCreateMetaModel);
     });
 
     $("#btnDeleteMetaModel").click(function () {
-        console.log(window.metaModelId);
         var fnDelete = function (accessToken, tokenRefreshed, error) {
             if (error) {
                 alert("Could not delete meta model: " + error);
