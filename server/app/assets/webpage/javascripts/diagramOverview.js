@@ -82,13 +82,13 @@ $(document).ready(function () {
                     Authorization: "Bearer " + accessToken
                 },
                 success: function (data, textStatus, jqXHR) {
-                    alert(textStatus);
+                    alert(data);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (!tokenRefreshed) {
                         accessToken.authorized(fnStartGenerator, true);
                     } else {
-                        alert("Could not start generator " + jqXHR.statusText);
+                        alert(jqXHR.responseText);
                     }
                 }
             });
