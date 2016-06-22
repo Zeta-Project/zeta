@@ -3,281 +3,139 @@
 
 @(user: Option[SecureSocialUser], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
 
-    @views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
-        <div class="row">
-            <div class="lead col-md-10">
-                <p>Hello,
-                    @user match {
-                        case Some(u) => {
-                            @u.profile.fullName
-                            !}
-                        case _ => { Guest! }
+@views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
+    @if(metaModel.isDefined) {
+        <script>
+                window.metaModelId = "@metaModel.get.id";
+        </script>
+    }
+    <script src="@routes.Assets.at("webpage/javascripts/diagramOverview.js")"></script>
+    <div class="row">
+        <div class="lead col-md-10">
+            <p>Hello,
+                @user match {
+                    case Some(u) => {
+                        @u.profile.fullName
+                        !}
+                    case _ => { Guest! }
+            }
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <strong>Your Meta Models</strong>
+                </div>
+                <div class="panel-body">
+                @if(metaModels.nonEmpty) {
+                    <div class="list-group">
+                    @for(model <- metaModels) {
+                        <a href="@controllers.webpage.routes.WebpageController.diagramsOverview(model.id)" class="list-group-item
+                                    @if(metaModel.isDefined && model.id == metaModel.get.id) {
+                            active
+                        }
+                        ">@model.name</a>
+                    }
+                    </div>
+                } else {
+                    There are no meta models.
                 }
-                </p>
+                </div>
+                <div class="panel-footer">
+                    <button id="btnNewMetaModel" class="btn btn-default">New Meta Model</button>
+                </div>
             </div>
         </div>
 
-        <div class="row">
+        @if(metaModel.isDefined) {
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <strong>Your Meta Models</strong>
+                        <strong>Edit Meta Model <em>@metaModel.get.metaModel.name</em></strong>
                     </div>
-                    <div class="panel-body">
-                    @if(metaModels.nonEmpty) {
-                        <div class="list-group">
-                        @for(model <- metaModels) {
-                            <a href="@controllers.webpage.routes.WebpageController.diagramsOverview(model.id)" class="list-group-item
-                                    @if(metaModel.isDefined && model.id == metaModel.get.id) {
-                                active
-                            }
-                            ">@model.name</a>
-                        }
+                    <div class="panel-body text-center">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "style")">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <strong>Style</strong>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "shape")">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <strong>Shape</strong>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
                         </div>
-                    } else {
-                        There are no meta models.
-                    }
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "diagram")">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <strong>Diagram</strong>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="@routes.MetaModelController.metaModelEditor(metaModel.get.id)">
+                                    <div class="panel panel-default">
+                                        <div class="panel-body">
+                                            <strong>Meta Model Editor</strong>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-footer">
-                        <button id="btnNewMetaModel" class="btn btn-default">New Meta Model</button>
+                        <button id="btnDeleteMetaModel" class="btn btn-danger">
+                            Delete Meta Model
+                        </button>
+                        <button id="btnGenerator" class="btn">
+                            Start Generator
+                        </button>
                     </div>
                 </div>
             </div>
+        }
 
-            @if(metaModel.isDefined) {
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <strong>Edit Meta Model <em>@metaModel.get.metaModel.name</em></strong>
+        @if(metaModel.isDefined) {
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Model Instances for Meta Model <em>@metaModel.get.metaModel.name</em></strong>
+                    </div>
+                    @if(modelInstances.isEmpty) {
+                        <div class="panel-body">
+                            There are no model instances.
                         </div>
-                        <div class="panel-body text-center">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "style")">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Style</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="col-md-6">
-                                    <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "shape")">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Shape</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "diagram")">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Diagram</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <a href="@routes.MetaModelController.metaModelEditor(metaModel.get.id)">
-                                        <div class="panel panel-default">
-                                            <div class="panel-body">
-                                                <strong>Meta Model Editor</strong>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-footer">
-                            <button id="btnDeleteMetaModel" class="btn btn-danger">
-                                Delete Meta Model
-                            </button>
-                            <button id="btnGenerator" class="btn">
-                                Start Generator
-                            </button>
+                    }
+                    @for(model <- modelInstances) {
+                        <a href="@controllers.routes.ModelController.modelEditor(metaModel.get.id, model.id)" class="list-group-item model-instance-item">
+                            @model.name
+                        <div data-model-id="@model.id" class="deleteModelInstance glyphicon glyphicon-trash"></div>
+                        </a>
+                    }
+                    <div class="panel-footer">
+                        <div id="btnCreateModelInstance" class="btn btn-default">
+                            New Model Instance
                         </div>
                     </div>
                 </div>
-            }
-
-            @if(metaModel.isDefined) {
-                <div class="col-md-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <strong>Model Instances for Meta Model <em>@metaModel.get.metaModel.name</em></strong>
-                        </div>
-                        @if(modelInstances.isEmpty) {
-                            <div class="panel-body">
-                                There are no model instances.
-                            </div>
-                        }
-                        @for(model <- modelInstances) {
-                            <a href="@controllers.routes.ModelController.modelEditor(metaModel.get.id, model.id)" class="list-group-item model-instance-item">
-                                @model.name
-                                <div data-model-id="@model.id" class="deleteModelInstance glyphicon glyphicon-trash"></div>
-                            </a>
-                        }
-                        <div class="panel-footer">
-                            <div id="btnCreateModelInstance" class="btn btn-default">
-                                New Model Instance
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-        </div>
-
-        <script type="text/javascript">
-            $("#btnNewMetaModel").click(function() {
-                var name = window.prompt("Enter a name for your meta model");
-                if (name) {
-                    window.location.replace("/metamodel/new/" + name);
-                }
-            });
-
-            @if(metaModel.isDefined) {
-                $("#btnDeleteMetaModel").click(function() {
-
-                    var fnDelete = function(accessToken, tokenRefreshed, error) {
-                        if (error) {
-                            alert("Could not delete meta model: " + error);
-                            return;
-                        }
-
-                        $.ajax({
-                            type : 'DELETE',
-                            url : '/metamodels/' + "@metaModel.get.id",
-                            headers : {
-                                Authorization: "Bearer " + accessToken
-                            },
-                            success : function(data, textStatus, jqXHR) {
-                                window.location.replace("/overview");
-                            },
-                            error : function(jqXHR, textStatus, errorThrown) {
-                                if (!tokenRefreshed) {
-                                    accessToken.authorized(fnDelete, true);
-                                } else {
-                                    alert("Could not delete meta model: " + textStatus);
-                                }
-                            }
-                        });
-                    };
-
-                    accessToken.authorized(fnDelete);
-                });
-
-                $("#btnGenerator").click(function() {
-                    var fnStartGenerator = function(accessToken, tokenRefreshed, error) {
-                        if (error) {
-                            alert("Could not start generator " + error);
-                            return;
-                        }
-
-                        $.ajax({
-                            type : 'GET',
-                            url : '/generator/' + "@metaModel.get.id",
-                            headers : {
-                                Authorization: "Bearer " + accessToken
-                            },
-                            success : function(data, textStatus, jqXHR) {
-                                alert(textStatus);
-                            },
-                            error : function(jqXHR, textStatus, errorThrown) {
-                                if (!tokenRefreshed) {
-                                    accessToken.authorized(fnStartGenerator, true);
-                                } else {
-                                    alert("Could not start generator " + jqXHR.statusText);
-                                }
-                            }
-                        });
-                    };
-
-                    accessToken.authorized(fnStartGenerator);
-                });
-
-                $("#btnCreateModelInstance").click(function() {
-                    var name = prompt("Enter Model Instance name");
-                    var id = "@metaModel.get.id";
-                    var data = {
-                        "metaModelId": id,
-                        "model": {
-                            elements: [],
-                            name: name,
-                            uiState: ""
-                        }
-                    };
-
-                    var createModelInstance = function(accessToken, tokenRefreshed, error) {
-                        if (error) {
-                            alert("Could not create new Model Instance " + error);
-                            return;
-                        }
-
-                        $.ajax({
-                            type : 'POST',
-                            url : '/models',
-                            headers : {
-                                Authorization: "Bearer " + accessToken,
-                                Accept: 'application/json',
-                                'Content-Type': 'application/json'
-                            },
-                            dataType:"json",
-                            data: JSON.stringify(data),
-                            success : function(data, textStatus, jqXHR) {
-                                window.location.replace("/overview/"+"@metaModel.get.id");
-                            },
-                            error : function(jqXHR, textStatus, errorThrown) {
-                                if (!tokenRefreshed) {
-                                    accessToken.authorized(createModelInstance, true);
-                                } else {
-                                    alert("failed creating model instance: " + textStatus);
-                                }
-                            }
-                        });
-                    };
-
-                    accessToken.authorized(createModelInstance);
-                });
-
-                $(".deleteModelInstance").click(function() {
-                    //prevent default otherwise href to modelEditor
-                    event.preventDefault();
-
-                    var modelId = this.dataset.modelId;
-                    var fnDeleteModelInstance = function(accessToken, tokenRefreshed, error) {
-                        if (error) {
-                            alert("Could not delete model Instance " + error);
-                            return;
-                        }
-
-                        $.ajax({
-                            type : 'DELETE',
-                            url : '/models/'+modelId,
-                            headers : {
-                                Authorization: "Bearer " + accessToken
-                            },
-                            success : function(data, textStatus, jqXHR) {
-                                    window.location.replace("/overview/"+"@metaModel.get.id");
-                            },
-                            error : function(jqXHR, textStatus, errorThrown) {
-                                if (!tokenRefreshed) {
-                                    accessToken.authorized(fnDeleteModelInstance, true);
-                                } else {
-                                    alert("failed deleting model instance: " + textStatus);
-                                }
-                            }
-                        });
-                    };
-
-                    accessToken.authorized(fnDeleteModelInstance);
-                });
-            }
-        </script>
-    }
+            </div>
+        }
+    </div>
+}
