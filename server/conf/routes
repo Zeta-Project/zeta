@@ -10,12 +10,10 @@ GET           /profile/edit                                                     
 POST          /profile/edit                                                          @controllers.webpage.ProfileController.saveChanges
 
 # metamodel editor
-GET           /metamodel/new/:name                                                   @controllers.MetaModelController.newMetaModel(name: String)
 GET           /metamodel/editor/:metaModelUuid                                       @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
 GET           /metamodel/socket/:metaModelUuid                                       @controllers.MetaModelController.metaModelSocket(metaModelUuid: String)
 
 ### model editor
-GET           /model/new/:metaModelUuid                                              @controllers.ModelController.newModel(metaModelUuid: String)
 GET           /model/editor/:metaModelUuid/:modelUuid                                @controllers.ModelController.modelEditor(metaModelUuid: String, modelUuid: String)
 GET           /model/socket/:graphType/:instanceId                                   @controllers.ModelController.modelSocket(instanceId:String, graphType:String)
 GET           /model/validator                                                       @controllers.ModelController.modelValidator
