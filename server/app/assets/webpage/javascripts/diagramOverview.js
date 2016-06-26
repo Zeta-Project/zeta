@@ -3,7 +3,9 @@ $(document).ready(function () {
 
     $("#btnCreateMetaModel").click(function () {
 
-        var name = window.prompt("Enter a name for your meta model");
+        var name = $("#newMetamodelName").val();
+        if(name === "") return;
+
         var data = JSON.stringify({
             "metaModel": {
                 "name": name,
@@ -41,7 +43,11 @@ $(document).ready(function () {
         accessToken.authorized(fnCreateMetaModel);
     });
 
-    $("#btnDeleteMetaModel").click(function () {
+    $(".delete-project").click(function () {
+
+        event.preventDefault();
+        var metamodelId = this.dataset.metamodelId;
+
         var fnDelete = function (accessToken, tokenRefreshed, error) {
             if (error) {
                 alert("Could not delete meta model: " + error);
@@ -100,7 +106,8 @@ $(document).ready(function () {
     });
 
     $("#btnCreateModelInstance").click(function () {
-        var name = prompt("Enter Model Instance name");
+        var name = $("#newModelName").val();
+        if(name === "") return;
         var id = window.metaModelId;
         var data = {
             "metaModelId": id,
@@ -143,7 +150,7 @@ $(document).ready(function () {
         accessToken.authorized(createModelInstance);
     });
 
-    $(".deleteModelInstance").click(function () {
+    $(".delete-model-instance").click(function () {
         //prevent default otherwise href to modelEditor
         event.preventDefault();
 

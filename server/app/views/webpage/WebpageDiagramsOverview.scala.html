@@ -10,42 +10,41 @@
         </script>
     }
     <script src="@routes.Assets.at("webpage/javascripts/diagramOverview.js")"></script>
-    <div class="row">
-        <div class="lead col-md-10">
-            <p>Hello,
-                @user match {
-                    case Some(u) => {
-                        @u.profile.fullName
-                        !}
-                    case _ => { Guest! }
-            }
-            </p>
-        </div>
-    </div>
 
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <strong>Your Meta Models</strong>
+                    <strong>Projects</strong>
                 </div>
                 <div class="panel-body">
                 @if(metaModels.nonEmpty) {
                     <div class="list-group">
-                    @for(model <- metaModels) {
-                        <a href="@controllers.webpage.routes.WebpageController.diagramsOverview(model.id)" class="list-group-item
-                                    @if(metaModel.isDefined && model.id == metaModel.get.id) {
+                    @for(metamodel <- metaModels) {
+                        <a href="@controllers.webpage.routes.WebpageController.diagramsOverview(metamodel.id)" class="list-group-item list-item-container
+                                    @if(metaModel.isDefined && metamodel.id == metaModel.get.id) {
                             active
                         }
-                        ">@model.name</a>
+                        ">
+                            <div data-metamodel-id="@metamodel.id" class="delete-list-item delete-project glyphicon glyphicon-trash"></div>
+                            @metamodel.name
+                        </a>
                     }
                     </div>
                 } else {
-                    There are no meta models.
+                    There are no projects.
                 }
                 </div>
                 <div class="panel-footer">
-                    <button id="btnCreateMetaModel" class="btn btn-default">New Meta Model</button>
+                    <form>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="newMetamodelName" placeholder="New Metamodel name">
+                            <span class="input-group-btn">
+                                <button type=button id="btnCreateMetaModel" class="btn btn-default">
+                                <span class="glyphicon glyphicon-plus glyphicon-plus-sign" aria-hidden=true></span>                            </button>
+                            </span>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -104,9 +103,6 @@
                         </div>
                     </div>
                     <div class="panel-footer">
-                        <button id="btnDeleteMetaModel" class="btn btn-danger">
-                            Delete Meta Model
-                        </button>
                         <button id="btnGenerator" class="btn">
                             Start Generator
                         </button>
@@ -119,7 +115,7 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <strong>Model Instances for Meta Model <em>@metaModel.get.metaModel.name</em></strong>
+                        <strong>Model Instances</strong>
                     </div>
                     @if(modelInstances.isEmpty) {
                         <div class="panel-body">
@@ -127,15 +123,21 @@
                         </div>
                     }
                     @for(model <- modelInstances) {
-                        <a href="@controllers.routes.ModelController.modelEditor(metaModel.get.id, model.id)" class="list-group-item model-instance-item">
+                        <a href="@controllers.routes.ModelController.modelEditor(metaModel.get.id, model.id)" class="list-group-item list-item-container">
                             @model.name
-                        <div data-model-id="@model.id" class="deleteModelInstance glyphicon glyphicon-trash"></div>
+                        <div data-model-id="@model.id" class="delete-list-item delete-model-instance glyphicon glyphicon-trash"></div>
                         </a>
                     }
                     <div class="panel-footer">
-                        <div id="btnCreateModelInstance" class="btn btn-default">
-                            New Model Instance
-                        </div>
+                        <form>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="newModelName" placeholder="New model name">
+                                <span class="input-group-btn">
+                                    <button type=button id="btnCreateModelInstance" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-plus glyphicon-plus-sign" aria-hidden=true></span>                            </button>
+                                </span>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

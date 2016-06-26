@@ -92,7 +92,7 @@ paper-button::shadow #ripple {
     color: #2a56c6;
 }
 
-.deleteModelInstance {
+.delete-list-item {
     float: right;
     z-index: 2;
     display: none;
@@ -100,7 +100,7 @@ paper-button::shadow #ripple {
     position: relative;
 }
 
-.model-instance-item:hover > .deleteModelInstance {
+.list-item-container:hover > .delete-list-item {
     display: block;
 }
 
