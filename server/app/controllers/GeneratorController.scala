@@ -42,11 +42,11 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
       }
 
       try {
-        ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation)
+        ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
         SprayGenerator.doGenerate(diagram.get, generatorOutputLocation)
         StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
       } catch {
-        case _ :Throwable => error = "There occurred an error during generation"
+        case a :Throwable => error = "There occurred an error during generation"
       }
 
       if(error.nonEmpty) BadRequest(error) else Ok("Generation successful")

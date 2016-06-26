@@ -3,6 +3,7 @@ package generator.generators.shape
 
 import java.nio.file._
 
+import generator.model.diagram.node.Node
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
@@ -23,7 +24,7 @@ object ShapeGenerator {
   val JOINTJS_CONNECTION_FILENAME = "connectionstyle.js"
   val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
 
-  def doGenerate(cache: Cache, location: String) {
+  def doGenerate(cache: Cache, location: String, nodes: List[Node]) {
     val DEFAULT_SHAPE_LOCATION = location
 
     val attrs = GeneratorShapeDefinition.attrsInspector
@@ -69,7 +70,8 @@ object ShapeGenerator {
       if (shapeDefinition == cache.shapeHierarchy.nodeView.values.last) {
         lastElement = true
       }
-      jointJSInspectorContent += generateJointJSInspector(shapeDefinition.data, packageName, lastElement, attrs)
+      val node = nodes.find(n => n.shape.get.referencedShape.name == shapeDefinition.data.name)
+      jointJSInspectorContent += generateJointJSInspector(shapeDefinition.data, packageName, lastElement, attrs,node )
     }
 
     //Write Footer of Inspector File
@@ -113,8 +115,8 @@ object ShapeGenerator {
     GeneratorShapeAndInlineStyle.generateShapeStyle(shape, packageName, lastElement, attrs)
   }
 
-  def generateJointJSInspector(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]) = {
-    GeneratorInspectorDefinition.generate(shape, packageName, lastElement, attrs)
+  def generateJointJSInspector(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]], node: Option[Node]) = {
+    GeneratorInspectorDefinition.generate(shape, packageName, lastElement, attrs, node)
   }
 
 }
