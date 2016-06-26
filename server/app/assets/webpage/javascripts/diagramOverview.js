@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+
     $("#btnCreateMetaModel").click(function () {
 
         var name = window.prompt("Enter a name for your meta model");

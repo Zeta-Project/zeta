@@ -52,7 +52,10 @@
 
         @if(metaModel.isDefined) {
             <div class="col-md-4">
-                <div class="panel panel-default">
+                <div class="panel panel-default overlay-container">
+                    @if(modelInstances.nonEmpty) {
+                        <div class="overlay" data-toggle="tooltip" title="Locked because there are model instances"></div>
+                    }
                     <div class="panel-heading">
                         <strong>Edit Meta Model <em>@metaModel.get.metaModel.name</em></strong>
                     </div>

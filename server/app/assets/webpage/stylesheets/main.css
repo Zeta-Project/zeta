@@ -103,3 +103,17 @@ paper-button::shadow #ripple {
 .model-instance-item:hover > .deleteModelInstance {
     display: block;
 }
+
+.overlay-container {
+    position: relative;
+}
+
+.overlay {
+    z-index: 10;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    opacity: 0.2;
+    display: block;
+    position: absolute;
+}
