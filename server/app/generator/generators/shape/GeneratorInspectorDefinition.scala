@@ -9,11 +9,14 @@ import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.HasStyle
+import generator.model.diagram.node.Node
+import models.modelDefinitions.metaModel.elements.{MAttribute, ScalarType, ScalarValue}
 
 import scala.collection.mutable.HashMap
+
 object GeneratorInspectorDefinition {
 
-  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]):String = {
+  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]], node: Option[Node]):String = {
     var boundWidth = 0
     var boundHeight = 0
     var ret = ""
@@ -42,8 +45,8 @@ object GeneratorInspectorDefinition {
       }
           }.
         mkString +
-        """
-          }
+        s"""
+          },${if(node.isDefined) generateMClassAttributeInputs(node.get) else ""}
         }, CommonInspectorInputs),
         groups: CommonInspectorGroups
       },
@@ -66,11 +69,10 @@ object GeneratorInspectorDefinition {
     """
 
   private def getRightAttributes(shape:GeometricModel, shapeClass:String, last:Boolean, maxWidth:Int, maxHeight:Int)= shape match {
+    case e:Ellipse => getAttributes(e, shapeClass, last, maxWidth, maxHeight)
     case r:Rectangle => getAttributes(r, shapeClass, last, maxWidth, maxHeight)
     case t:Text => getAttributes(t, shapeClass, last, maxWidth, maxHeight)
-    case t:Text => getAttributes(t, shapeClass, last, maxWidth, maxHeight)
     case l:Line => getAttributes(l, shapeClass, last, maxWidth, maxHeight)
-    case e:Ellipse => getAttributes(e, shapeClass, last, maxWidth, maxHeight)
     case p:Polygon => getAttributes(p, shapeClass, last, maxWidth, maxHeight)
     case pl:PolyLine => getAttributes(pl, shapeClass, last, maxWidth, maxHeight)
     case rr:RoundedRectangle => getAttributes(rr, shapeClass, last, maxWidth, maxHeight)
@@ -124,13 +126,13 @@ object GeneratorInspectorDefinition {
   def getAttributes( shape:Ellipse, shapeClass: String, last: Boolean , maxWidth:Int, maxHeight:Int)={
     """
     'ellipse"""+ {if(hasStyle(shape))"."+ shapeClass} +raw"""' : inp({
-      fill: { group: 'Presentation', index: 1, label:'Background-Color Ellipse' },
-      'fill-opacity': {group: 'Presentation', index: 2, label: 'Opacity Ellipse'},
-      stroke: {group: 'Presentation', index: 3, label: 'Line-Color Rectangle'},
-      'stroke-width': { group: 'Presentation', index: 4, min: 0, max: 30, defaultValue: 1, label: 'Stroke Width Ellipse' },
-      'stroke-dasharray': { group: 'Presentation', index: 5, label: 'Stroke Dash Ellipse' }
+      fill: { group: 'Presentation Ellipse', index: 1, label:'Background-Color Ellipse' },
+      'fill-opacity': {group: 'Presentation Ellipse', index: 2, label: 'Opacity Ellipse'},
+      stroke: {group: 'Presentation Ellipse', index: 3, label: 'Line-Color Ellipse'},
+      'stroke-width': { group: 'Presentation Ellipse', index: 4, min: 0, max: 30, defaultValue: 1, label: 'Stroke Width Ellipse' },
+      'stroke-dasharray': { group: 'Presentation Ellipse', index: 5, label: 'Stroke Dash Ellipse' }
     }),
-    '."""+shapeClass+""": inp({
+    '."""+shapeClass+"""': inp({
       cx: {group: 'Geometry Ellipse', index: 1, min: """+(shape.size_width/ 2)+ """, max:"""+(maxWidth - shape.size_width/2)+ """},
       cy: {group: 'Geometry Ellipse', index: 2, min:"""+shape.size_height/2+""", max:"""+(maxHeight - shape.size_height/2)+ """},
       rx: {group: 'Geometry Ellipse', index: 3, max:"""+ (maxWidth/2)+ """},
@@ -142,18 +144,18 @@ object GeneratorInspectorDefinition {
   ={
     """
     'polygon"""+{if ( hasStyle(shape))"."+shapeClass}+ """' : inp({
-      fill: { group: 'Presentation', index: 1, label:'Background-Color Polygon' },
-      'fill-opacity': {group: 'Presentation', index: 2, label: 'Opacity Polygon'},
-      stroke: {group: 'Presentation', index: 3, label: 'Line-Color Rectangle'},
-      'stroke-width': { group: 'Presentation', index: 4, min: 0, max: 30, defaultValue: 1,label: 'Stroke Width Polygon' },
-      'stroke-dasharray': { group: 'Presentation', index: 5, label: 'Stroke Dash Polygon' }
+      fill: { group: 'Presentation Polygon', index: 1, label:'Background-Color Polygon' },
+      'fill-opacity': {group: 'Presentation Polygon', index: 2, label: 'Opacity Polygon'},
+      stroke: {group: 'Presentation Polygon', index: 3, label: 'Line-Color Polygon'},
+      'stroke-width': { group: 'Presentation Polygon', index: 4, min: 0, max: 30, defaultValue: 1,label: 'Stroke Width Polygon' },
+      'stroke-dasharray': { group: 'Presentation Polygon', index: 5, label: 'Stroke Dash Polygon' }
     })"""+{if(!last)"," else ""}
   }
 
   def getAttributes( shape:PolyLine,  shapeClass:String, last: Boolean, maxWidth:Int, maxHeight:Int)= { """
     'polyline"""+{ if(hasStyle(shape))"."+ shapeClass}+
     """' : inp({
-      fill: { group: 'Presentation', index: 1, label:'Background-Color Polyline' },
+      fill: { group: 'Presentation Polyline', index: 1, label:'Background-Color Polyline' },
     })"""+{ if ( !last)"," else ""}
   }
 
@@ -162,7 +164,7 @@ object GeneratorInspectorDefinition {
     'rect"""+{if(hasStyle(shape)) "."+ shapeClass}+ """' : inp({
       fill: { group: 'Presentation Rounded Rectangle', index: 1 },
       'fill-opacity': {group: 'Presentation Rounded Rectangle', index: 2, label: 'Opacity Rounded Rectangle'},
-      stroke: {group: 'Presentation Rounded Rectangle', index: 3, label: 'Line-Color Rectangle'},
+      stroke: {group: 'Presentation Rounded Rectangle', index: 3, label: 'Line-Color Rounded Rectangle'},
       'stroke-width': { group: 'Presentation Rounded Rectangle', index: 4, min: 0, max: 30, defaultValue: 1, label: 'Stroke Width Rounded Rectangle' },
       'stroke-dasharray': { group: 'Presentation Rounded Rectangle', index: 5, label: 'Stroke Dash Rounded Rectangle' },
     }),
@@ -209,37 +211,40 @@ object GeneratorInspectorDefinition {
     case s:HasStyle if s.style.isDefined => true
     case _ => false
   }
-    /* FOLLOWING METHODS ARE NOT NEEDED ANYMORE - INLINESTYLE AND NORMAL STYLE ARE MERGED AUTOMATICALLY AT PARSING
-  protected def hasShapeOrInlineStyle(shape:Shape)={
-    shape.style != null && shape.style.dslStyle != null || shape.hasInlineStyle
+  def generateMClassAttributeInputs(node: Node)= {
+    val attributes = node.mcoreElement.attributes
+    val ret = for((attr,i) <- attributes.zipWithIndex) yield
+      attr.`type` match {
+        case ScalarType.String => generateStringAttribute(attr, i)
+        case ScalarType.Bool => generateBooleanAttribute(attr, i)
+        case ScalarType.Int =>
+        case ScalarType.Double =>
+        case _ =>
+      }
+
+    ret.mkString(",")
   }
 
-  protected def dispatch hasInlineStyle(Line shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
+  def generateStringAttribute(attr: MAttribute, i: Int) = {
+    s"""
+        '${attr.name}': {
+          type: 'text',
+          defaultValue: '${attr.default.asInstanceOf[ScalarValue.MString].value}',
+          group: 'data',
+          index: $i
+        }
+     """
   }
 
-  protected def dispatch hasInlineStyle(Polyline shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
+  def generateBooleanAttribute(attr: MAttribute, i: Int) = {
+    s"""
+       '${attr.name}': {
+          type: 'toggle',
+          defaultValue: ${attr.default.asInstanceOf[ScalarValue.MBool].value},
+          group: 'data',
+          index: $i
+       }
+     """
   }
 
-  protected def dispatch hasInlineStyle(Polygon shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
-  }
-
-  protected def dispatch hasInlineStyle(Rectangle shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
-  }
-
-  protected def dispatch hasInlineStyle(RoundedRectangle shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
-  }
-
-  protected def dispatch hasInlineStyle(Ellipse shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
-  }
-
-  protected def dispatch hasInlineStyle(Text shape){
-    return shape.layout !=null && shape.layout.layout != null && shape.layout.layout.layout != null
-  }
-  */
 }
