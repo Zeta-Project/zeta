@@ -56,7 +56,7 @@ $(document).ready(function () {
 
             $.ajax({
                 type: 'DELETE',
-                url: '/metamodels/' + window.metaModelId,
+                url: '/metamodels/' + metamodelId,
                 headers: {
                     Authorization: "Bearer " + accessToken
                 },
