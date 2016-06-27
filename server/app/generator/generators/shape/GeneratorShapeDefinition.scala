@@ -126,8 +126,9 @@ object GeneratorShapeDefinition {
   protected def generateSvgShape(shape: Text, rootShapeName: String, parentClass: String): String = {
     val className = UUID.randomUUID
     val shapeValue = shape.textBody
+    val shapeClass = shapeValue.substring(1, shapeValue.length -1)
     buildAttrs(shape, rootShapeName, className.toString, parentClass)
-    s"""<text class="$className">$shapeValue</text>"""
+    s"""<text class="$className" > </text>"""
   }
 
 
@@ -145,7 +146,7 @@ object GeneratorShapeDefinition {
   protected def buildAttrs(shape: GeometricModel, shapeName: String, className: String, parentClass: String) = {
     val attributes =
       s"""
-    '.$className':{
+    '${if (shape.isInstanceOf[Text]) "text" else ""}.$className':{
       """ + getAttributes(shape, parentClass) + "\n}"
 
     if (attrs.contains(shapeName)) {

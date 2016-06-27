@@ -95,19 +95,18 @@ object GeneratorInspectorDefinition {
 
   }
 
-  def
-  getAttributes( shape:Text, shapeClass:String, last: Boolean, maxWidth:Int, maxHeight:Int)={
+  def getAttributes( shape:Text, shapeClass:String, last: Boolean, maxWidth:Int, maxHeight:Int)={
     """
-    '.""" + shape.textBody+ """': inp({text: { group: 'text', index: 1 }}),
     'text"""+{if(hasStyle(shape)) "."+shapeClass}+ """' : inp({
-      'font-size': { group: 'text', index: 2 },
-      'font-family': { group: 'text', index: 3 },
-      'font-weight': { group: 'text', index: 4 },
-      fill: { group: 'text', index: 6, label:'Text Color' },
+      text: { group: 'Text', index: 1 },
+      x: {group: 'Text Geometry', index: 1, max:""" + (maxWidth - shape.size_width) + """, label: 'x Position Text'},
+      y: {group: 'Text Geometry', index: 2, max:""" + (maxHeight - shape.size_height) +""", label: 'y Position Text'}
     }),
     '."""+shapeClass+ """': inp({
-      x: {group: 'Text Geometry', index: 1, max:"""+(maxWidth - shape.size_width) + """, label: 'x Position Text'},
-      y: {group: 'Text Geometry', index: 2, max:"""+(maxHeight - shape.size_height)+ """, label: 'y Position Text'}
+      'font-size': { group: 'Text Style', index: 2 },
+      'font-family': { group: 'Text Style', index: 3 },
+      'font-weight': { group: 'Text Style', index: 4 },
+      fill: { group: 'Text Style', index: 6, label:'Text Color' },
     }),
     """
   }
