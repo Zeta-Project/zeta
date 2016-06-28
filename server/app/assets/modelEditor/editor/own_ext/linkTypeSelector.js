@@ -311,7 +311,7 @@ var linkTypeSelector = (function linkTypeSelector () {
         var maxInputs = validator.inputMatrix[targetMClass][edgeType].upperBound;
         var maxOutputs = validator.outputMatrix[sourceMClass][edgeType].upperBound;
         var ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
-        var outgoingSourceCount = getConnectionCount(link.attributes.source.id, {outbound: true});
+        var outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
         var minInUnderstepped = false;
         var minOutUnderstepped = false;
 
