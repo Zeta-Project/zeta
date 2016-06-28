@@ -161,19 +161,19 @@ object GeneratorInspectorDefinition {
   def getAttributes(shape: RoundedRectangle, shapeClass: String, last: Boolean, maxWidth:Int, maxHeight:Int)={
     """
     'rect"""+{if(hasStyle(shape)) "."+ shapeClass}+ """' : inp({
-      fill: { group: 'Presentation Rounded Rectangle', index: 1 },
-      'fill-opacity': {group: 'Presentation Rounded Rectangle', index: 2, label: 'Opacity Rounded Rectangle'},
-      stroke: {group: 'Presentation Rounded Rectangle', index: 3, label: 'Line-Color Rounded Rectangle'},
-      'stroke-width': { group: 'Presentation Rounded Rectangle', index: 4, min: 0, max: 30, defaultValue: 1, label: 'Stroke Width Rounded Rectangle' },
-      'stroke-dasharray': { group: 'Presentation Rounded Rectangle', index: 5, label: 'Stroke Dash Rounded Rectangle' },
+      fill: { group: 'Presentation R-Rectangle', index: 1 },
+      'fill-opacity': {group: 'Presentation R-Rectangle', index: 2, label: 'Opacity Rounded Rectangle'},
+      stroke: {group: 'Presentation R-Rectangle', index: 3, label: 'Line-Color Rounded Rectangle'},
+      'stroke-width': { group: 'Presentation R-Rectangle', index: 4, min: 0, max: 30, defaultValue: 1, label: 'Stroke Width Rounded Rectangle' },
+      'stroke-dasharray': { group: 'Presentation R-Rectangle', index: 5, label: 'Stroke Dash Rounded Rectangle' },
     }),
-    '."""+shapeClass+""": inp({
-      rx: { group: 'Geometry Rounded Rectangle', index: 6, max:"""+(shape.size_width/2)+ """, label: 'Curve X' },
-      ry: { group: 'Geometry Rounded Rectangle', index: 7, max:"""+(shape.size_height/2)+ """, label: 'Curve Y' },
-      x: {group: 'Geometry Rounded Rectangle', index: 1, max:""" + (maxWidth - shape.size_width)+ """, label: 'x Position Rounded Rectangle'},
-      y: {group: 'Geometry Rounded Rectangle', index: 2, max:"""+(maxHeight - shape.size_height)+ """, label: 'y Position Rounded Rectangle'},
-      height: {group: 'Geometry Rounded Rectangle', index: 3, max:"""+maxHeight+ """, label: 'Height Rounded Rectangle'},
-      width: {group: 'Geometry Rounded Rectangle', index: 3, max:"""+maxWidth+""", label: 'Width Rounded Rectangle'}
+    '."""+shapeClass+"""': inp({
+      rx: { group: 'Geometry R-Rectangle', index: 6, max:"""+(shape.size_width/2)+ """, label: 'Curve X' },
+      ry: { group: 'Geometry R-Rectangle', index: 7, max:"""+(shape.size_height/2)+ """, label: 'Curve Y' },
+      x: {group: 'Geometry R-Rectangle', index: 1, max:""" + (maxWidth - shape.size_width)+ """, label: 'x Position Rounded Rectangle'},
+      y: {group: 'Geometry R-Rectangle', index: 2, max:"""+(maxHeight - shape.size_height)+ """, label: 'y Position Rounded Rectangle'},
+      height: {group: 'Geometry R-Rectangle', index: 3, max:"""+maxHeight+ """, label: 'Height Rounded Rectangle'},
+      width: {group: 'Geometry R-Rectangle', index: 3, max:"""+maxWidth+""", label: 'Width Rounded Rectangle'}
     })"""+{if(!last)"," else ""}
   }
 
