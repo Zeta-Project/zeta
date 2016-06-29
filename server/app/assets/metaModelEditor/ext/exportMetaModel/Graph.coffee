@@ -90,13 +90,20 @@ class window.Graph
 # Returns the attributes of the cell.
   getAttributes: (cell) ->
     mAttributes = []
-
     if cell.attributes[Constants.field.ATTRIBUTES]?
       for attributes in cell.attributes[Constants.field.ATTRIBUTES]
         mAttributes.push({});
         for key, value of attributes
-          mAttributes[mAttributes.length - 1][key] = value
-
+          if key == 'default'
+            switch attributes.type
+              when 'Bool'
+                mAttributes[mAttributes.length - 1][key] = value == 'true'
+              when 'Int'
+                mAttributes[mAttributes.length - 1][key] = parseInt(value)
+              when 'Double'
+                mAttributes[mAttributes.length - 1][key] = parseFloat(value)
+              else mAttributes[mAttributes.length - 1][key] = value
+          else mAttributes[mAttributes.length - 1][key] = value
     mAttributes
 
 
