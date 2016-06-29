@@ -98,10 +98,10 @@ var inspector = (function inspector () {
             type : 'select',
             label : 'Type',
             options : [
-                'Integer',
-                'Float',
+                'Bool',
+                'Int',
                 'String',
-                'Boolean'
+                'Double'
             ],
             defaultValue : 'String',
             index : 4
