@@ -1,10 +1,9 @@
-$(document).ready(function () {
-    $('[data-toggle="tooltip"]').tooltip();
+(function ($) {
+    'use strict';
+    var createProject = function () {
 
-    $("#btnCreateMetaModel").click(function () {
-
-        var name = $("#newMetamodelName").val();
-        if(name === "") return;
+        var name = $("#inputProjectName").val();
+        if (name === "") return;
 
         var data = JSON.stringify({
             "metaModel": {
@@ -13,7 +12,7 @@ $(document).ready(function () {
                 "uiState": ""
             }
         });
-        var fnCreateMetaModel = function (accessToken, tokenRefreshed, error) {
+        var fnCreateProject = function (accessToken, tokenRefreshed, error) {
             if (error) {
                 alert("Could not create meta model: " + error);
                 return;
@@ -28,11 +27,11 @@ $(document).ready(function () {
                 },
                 data: data,
                 success: function (data, textStatus, jqXHR) {
-                    window.location.replace("/overview/"+data.insertId);
+                    window.location.replace("/overview/" + data.insertId);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (!tokenRefreshed) {
-                        accessToken.authorized(fnDelete, true);
+                        accessToken.authorized(fnCreateProject, true);
                     } else {
                         alert("Could not create meta model: " + textStatus);
                     }
@@ -40,74 +39,12 @@ $(document).ready(function () {
             });
         };
 
-        accessToken.authorized(fnCreateMetaModel);
-    });
+        accessToken.authorized(fnCreateProject);
+    };
 
-    $(".delete-project").click(function () {
-
-        event.preventDefault();
-        var metamodelId = this.dataset.metamodelId;
-
-        var fnDelete = function (accessToken, tokenRefreshed, error) {
-            if (error) {
-                alert("Could not delete meta model: " + error);
-                return;
-            }
-
-            $.ajax({
-                type: 'DELETE',
-                url: '/metamodels/' + metamodelId,
-                headers: {
-                    Authorization: "Bearer " + accessToken
-                },
-                success: function (data, textStatus, jqXHR) {
-                    window.location.replace("/overview");
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    if (!tokenRefreshed) {
-                        accessToken.authorized(fnDelete, true);
-                    } else {
-                        alert("Could not delete meta model: " + textStatus);
-                    }
-                }
-            });
-        };
-
-        accessToken.authorized(fnDelete);
-    });
-
-    $("#btnGenerator").click(function () {
-        var fnStartGenerator = function (accessToken, tokenRefreshed, error) {
-            if (error) {
-                alert("Could not start generator " + error);
-                return;
-            }
-
-            $.ajax({
-                type: 'GET',
-                url: '/generator/' + window.metaModelId,
-                headers: {
-                    Authorization: "Bearer " + accessToken
-                },
-                success: function (data, textStatus, jqXHR) {
-                    alert(data);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    if (!tokenRefreshed) {
-                        accessToken.authorized(fnStartGenerator, true);
-                    } else {
-                        alert(jqXHR.responseText);
-                    }
-                }
-            });
-        };
-
-        accessToken.authorized(fnStartGenerator);
-    });
-
-    $("#btnCreateModelInstance").click(function () {
-        var name = $("#newModelName").val();
-        if(name === "") return;
+    var createModelInstance = function () {
+        var name = $("#inputModelName").val();
+        if (name === "") return;
         var id = window.metaModelId;
         var data = {
             "metaModelId": id,
@@ -118,7 +55,7 @@ $(document).ready(function () {
             }
         };
 
-        var createModelInstance = function (accessToken, tokenRefreshed, error) {
+        var fnCreateModelInstance = function (accessToken, tokenRefreshed, error) {
             if (error) {
                 alert("Could not create new Model Instance " + error);
                 return;
@@ -139,7 +76,7 @@ $(document).ready(function () {
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (!tokenRefreshed) {
-                        accessToken.authorized(createModelInstance, true);
+                        accessToken.authorized(fnCreateModelInstance, true);
                     } else {
                         alert("failed creating model instance: " + textStatus);
                     }
@@ -147,26 +84,10 @@ $(document).ready(function () {
             });
         };
 
-        accessToken.authorized(createModelInstance);
-    });
+        accessToken.authorized(fnCreateModelInstance);
+    };
 
-    $(".delete-model-instance").click(function () {
-        //prevent default otherwise href to modelEditor
-        event.preventDefault();
-        var modelId = this.dataset.modelId;
-        deleteModelInstance(modelId);
-    });
-
-    $("#btnDeleteAllModelInstances").click(function() {
-        $("#model-instance-container").children().map(function() {
-            if($(this).is('a')) {
-                var modelId = $(this).children(":first").data("model-id");
-                deleteModelInstance(modelId);
-            }
-        })
-    });
-
-    deleteModelInstance = function(modelId) {
+    var deleteModelInstance = function (modelId) {
         var fnDeleteModelInstance = function (accessToken, tokenRefreshed, error) {
             if (error) {
                 alert("Could not delete model Instance " + error);
@@ -192,4 +113,108 @@ $(document).ready(function () {
         };
         accessToken.authorized(fnDeleteModelInstance);
     };
-});
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        $("#btnCreateMetaModel").click(createProject);
+
+        $("#inputProjectName").keypress(function (e) {
+            if (e.which == 13) {
+                createProject();
+                return false;
+            }
+        });
+
+        $(".delete-project").click(function () {
+
+            event.preventDefault();
+            var metamodelId = this.dataset.metamodelId;
+
+            var fnDelete = function (accessToken, tokenRefreshed, error) {
+                if (error) {
+                    alert("Could not delete meta model: " + error);
+                    return;
+                }
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/metamodels/' + metamodelId,
+                    headers: {
+                        Authorization: "Bearer " + accessToken
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                        window.location.replace("/overview");
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (!tokenRefreshed) {
+                            accessToken.authorized(fnDelete, true);
+                        } else {
+                            alert("Could not delete meta model: " + textStatus);
+                        }
+                    }
+                });
+            };
+
+            accessToken.authorized(fnDelete);
+        });
+
+        $("#btnGenerator").click(function () {
+            var fnStartGenerator = function (accessToken, tokenRefreshed, error) {
+                if (error) {
+                    alert("Could not start generator " + error);
+                    return;
+                }
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/generator/' + window.metaModelId,
+                    headers: {
+                        Authorization: "Bearer " + accessToken
+                    },
+                    success: function (data, textStatus, jqXHR) {
+                        alert(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        if (!tokenRefreshed) {
+                            accessToken.authorized(fnStartGenerator, true);
+                        } else {
+                            alert(jqXHR.responseText);
+                        }
+                    }
+                });
+            };
+
+            accessToken.authorized(fnStartGenerator);
+        });
+        
+
+        $("#inputModelName").keypress(function (e) {
+            if (e.which == 13) {
+                createModelInstance();
+                return false;
+            }
+        });
+
+        $("#btnCreateModelInstance").click(createModelInstance);
+
+        $(".delete-model-instance").click(function () {
+            //prevent default otherwise href to modelEditor
+            event.preventDefault();
+            var modelId = this.dataset.modelId;
+            deleteModelInstance(modelId);
+        });
+
+        $("#btnDeleteAllModelInstances").click(function () {
+            $("#model-instance-container").children().map(function () {
+                if ($(this).is('a')) {
+                    var modelId = $(this).children(":first").data("model-id");
+                    deleteModelInstance(modelId);
+                }
+            })
+        });
+
+    });
+}(jQuery) )
+
+
