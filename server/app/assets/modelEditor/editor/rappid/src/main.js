@@ -634,12 +634,26 @@ var Rappid = Backbone.Router.extend({
          
     },
 
-
-
-    // TODO: add attributes to elements
+    
     buildElements: function() {
         var elements = [];
         var graph = this.graph;
+        var getAttributeValue = function(value, type) {
+            var ret = value;
+            switch(type) {
+                case 'Bool':
+                    ret = value.toLowerCase() === 'true';
+                    break;
+                case 'Int':
+                    ret = parseInt(value);
+                    break;
+                case 'Double':
+                    ret = parseFloat(value);
+                    break;
+            }
+            return ret;
+        };
+        
         graph.getElements().forEach(function(ele) {
             var element = {
                 id: ele.id,
@@ -647,15 +661,35 @@ var Rappid = Backbone.Router.extend({
                 outputs: {},
                 inputs: {},
                 attributes: {}
-                
             };
+
+            if(ele.attributes.hasOwnProperty('mClassAttributes')) {
+                ele.attributes.mClassAttributes.forEach(function (attr) {
+
+                    var attrInfo = ele.attributes.mClassAttributeInfo.find(function(info) {
+                        return info.name === attr.type;
+                    });
+                    var value = getAttributeValue(attr.value, attrInfo.type);
+                    if (element.attributes.hasOwnProperty(attr.type)) {
+                        element.attributes[attr.type].push(value);
+                    } else {
+                        element.attributes[attr.type] = [value];
+                    }
+                });
+            }
+
+            ele.attributes.mClassAttributeInfo.forEach(function(info) {
+                if(!element.attributes.hasOwnProperty(info.name)) {
+                    element.attributes[name.name] = [];
+                }
+            });
+
             graph.getConnectedLinks(ele, {outbound: true}).forEach(function(link) {
                 if(element.outputs.hasOwnProperty(link.attributes.mReference)) {
                     element.outputs[link.attributes.mReference].push(link.attributes.id);
                 } else {
                     element.outputs[link.attributes.mReference] = [link.attributes.id];
                 }
-
             });
 
             graph.getConnectedLinks(ele, {inbound: true}).forEach(function(link) {
@@ -683,9 +717,9 @@ var Rappid = Backbone.Router.extend({
             elements.push(element);
 
         });
-        console.log(elements);
         return elements;
     },
+
 
     initializeToggleSidePanels: function() {
         $(".stencil-toggle-icon-wrapper").on("click", function() {

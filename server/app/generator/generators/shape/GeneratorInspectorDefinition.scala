@@ -34,8 +34,8 @@ object GeneratorInspectorDefinition {
         inputs: _.extend({
           attrs: {
             ${atts.keySet.map { k => {getRightAttributes(k, atts(k), boundWidth, boundHeight)}}.mkString(",")}
-          }
-          ${if (node.isDefined) generateMClassAttributeInputs(node.get) else ""}
+          },
+          ${if (node.isDefined && node.get.mcoreElement.attributes.nonEmpty) generateMClassAttributeInputs(node.get) else ""}
         }, CommonInspectorInputs),
         groups: CommonInspectorGroups
       },
@@ -205,39 +205,34 @@ object GeneratorInspectorDefinition {
   }
 
   def generateMClassAttributeInputs(node: Node) = {
-    val attributes = node.mcoreElement.attributes
-    val ret = for ((attr, i) <- attributes.zipWithIndex) yield
-      attr.`type` match {
-        case ScalarType.String => generateStringAttribute(attr, i)
-        case ScalarType.Bool => generateBooleanAttribute(attr, i)
-        case ScalarType.Int =>
-        case ScalarType.Double =>
-        case _ =>
-      }
-
-    ret.mkString(",",",","")
-  }
-
-  def generateStringAttribute(attr: MAttribute, i: Int) = {
-    s"""
-        '${attr.name}': {
-          type: 'text',
-          defaultValue: '${attr.default.asInstanceOf[ScalarValue.MString].value}',
-          group: 'data',
-          index: $i
+    val attributeNames = node.mcoreElement.attributes.map(a => "'"+a.name+"'")
+    val ret = s"""
+      mClassAttributes: {
+        type: 'list',
+        group: 'data',
+        item: {
+          type : 'object',
+          label : 'Link definitions',
+          properties : {
+            type : {
+            type : 'select',
+            label : 'Type',
+            options : [
+              ${attributeNames.mkString(",")}
+            ],
+            defaultValue : ${attributeNames.toList.head},
+            index : 1
+          },
+          value : {
+            type : 'text',
+            label: 'Value'
+          }
         }
-     """
-  }
 
-  def generateBooleanAttribute(attr: MAttribute, i: Int) = {
-    s"""
-       '${attr.name}': {
-          type: 'toggle',
-          defaultValue: ${attr.default.asInstanceOf[ScalarValue.MBool].value},
-          group: 'data',
-          index: $i
-       }
-     """
+      }
+    }
+    """
+    ret
   }
 
 }
