@@ -153,14 +153,25 @@ $(document).ready(function () {
     $(".delete-model-instance").click(function () {
         //prevent default otherwise href to modelEditor
         event.preventDefault();
-
         var modelId = this.dataset.modelId;
+        deleteModelInstance(modelId);
+    });
+
+    $("#btnDeleteAllModelInstances").click(function() {
+        $("#model-instance-container").children().map(function() {
+            if($(this).is('a')) {
+                var modelId = $(this).children(":first").data("model-id");
+                deleteModelInstance(modelId);
+            }
+        })
+    });
+
+    deleteModelInstance = function(modelId) {
         var fnDeleteModelInstance = function (accessToken, tokenRefreshed, error) {
             if (error) {
                 alert("Could not delete model Instance " + error);
                 return;
             }
-
             $.ajax({
                 type: 'DELETE',
                 url: '/models/' + modelId,
@@ -179,7 +190,6 @@ $(document).ready(function () {
                 }
             });
         };
-
         accessToken.authorized(fnDeleteModelInstance);
-    });
+    };
 });
