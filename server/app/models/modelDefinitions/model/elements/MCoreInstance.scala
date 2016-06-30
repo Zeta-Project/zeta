@@ -18,6 +18,13 @@ trait ModelElement {
 }
 
 /**
+  * a mixin that offers the attributes field
+  */
+sealed trait HasAttributes {
+  val attributes: Seq[Attribute]
+}
+
+/**
   * a type that glues nodes and edges together
   */
 sealed trait Link
@@ -50,7 +57,7 @@ class Node(
   _outputs: => Seq[ToEdges],
   _inputs: => Seq[ToEdges],
   val attributes: Seq[Attribute]
-) extends ModelElement {
+) extends ModelElement with HasAttributes {
   lazy val outputs = _outputs
   lazy val inputs = _inputs
 
@@ -97,7 +104,7 @@ class Edge(
   _source: => Seq[ToNodes],
   _target: => Seq[ToNodes],
   val attributes: Seq[Attribute]
-) extends ModelElement {
+) extends ModelElement with HasAttributes {
   lazy val source = _source
   lazy val target = _target
 

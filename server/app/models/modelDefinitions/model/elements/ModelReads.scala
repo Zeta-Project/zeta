@@ -95,6 +95,8 @@ object ModelReads {
   val invalidToEdgesError2 = ValidationError("edge reference has invalid type 2")
   val invalidToNodesError2 = ValidationError("node reference has invalid type 2")
 
+  val attributeDuplicateError = ValidationError("object may contain the same attribute only once")
+
 
   private def extractEdges(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToEdges] = {
     m.map { case (k, v) =>
@@ -130,7 +132,6 @@ object ModelReads {
       })
   }
 
-
   def nodeReads(implicit meta: MetaModel): Reads[Node] = (
     (__ \ "id").read[String] and
       (__ \ "mClass").read[String].filter(unknownMClassError) {
@@ -147,10 +148,34 @@ object ModelReads {
       (__ \ "mClass").read[String].flatMap(name => (__ \ "attributes").read[List[Attribute]](attributesReads {
         meta.getMClass(name).map(c => c.getTypeMAttributes).getOrElse(Seq[MAttribute]())
       }))
-    ) (Node.apply2 _).filter(invalidToEdgesError2) { n =>
+    ) (Node.apply2 _).filter(invalidToEdgesError2) {
+    validateNodeLinks
+  }.filter(attributeDuplicateError) {
+    ensureUniqueAttributes
+  }
+    //.filter(ValidationError("")) {
+    //ensureBoundedAttributes
+  //}
+
+  private def validateNodeLinks(n: Node) = {
     n.inputs.forall(e => n.`type`.typeHasInput(e.`type`.name)) &&
       n.outputs.forall(e => n.`type`.typeHasOutput(e.`type`.name))
   }
+
+  private def validateEdgeLinks(e: Edge) = {
+    e.source.forall(n => e.`type`.source.exists(l => n.`type`.typeHasSuperType(l.mType.name))) &&
+      e.target.forall(n => e.`type`.target.exists(l => n.`type`.typeHasSuperType(l.mType.name)))
+  }
+
+  private def ensureUniqueAttributes(value: HasAttributes) = {
+    value.attributes.map(_.name.toLowerCase).toSet.size == value.attributes.size
+  }
+
+//  private def ensureBoundedAttributes(value: HasAttributes) = {
+//    value.attributes.foldLeft(true) { (acc, att) =>
+//      true
+//    }
+//  }
 
   private def extractNodes(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToNodes] = {
     m.map { case (k, v) =>
@@ -174,10 +199,10 @@ object ModelReads {
         n => n.keys.forall(s => meta.containsMClass(s))
       }.map(extractNodes) and
       (__ \ "attributes").read(Seq[Attribute]())
-    ) (Edge.apply2 _).filter(invalidToNodesError2) { n =>
-    n.source.forall(e => n.`type`.source.exists(l => e.`type`.typeHasSuperType(l.mType.name))) &&
-      n.target.forall(e => n.`type`.target.exists(l => e.`type`.typeHasSuperType(l.mType.name)))
-
+    ) (Edge.apply2 _).filter(invalidToNodesError2) {
+    validateEdgeLinks
+  }.filter(attributeDuplicateError) {
+    ensureUniqueAttributes
   }
 
 

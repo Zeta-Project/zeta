@@ -1,5 +1,9 @@
 package controller
 
+import scala.scalajs.js
+import scala.scalajs.js.Dynamic.literal
+import org.scalajs.jquery._
+
 
 case class ModelLoader(modelId: String) {
 
@@ -12,12 +16,12 @@ case class ModelLoader(modelId: String) {
      * See CodeEditorController.saveCode() for an usage example.
      */
 
-    /*val res = jQuery.ajax(literal(
+    val res = jQuery.ajax(literal(
       url = s"/metamodels/$modelId/mclasses",
       `type` = "GET",
       async = false).asInstanceOf[JQueryAjaxSettings]
     )
-    res.selectDynamic("responseText").toString.split(", ").toJSArray*/
+    res.selectDynamic("responseText").toString.split(", ").toJSArray
     Array[String]("TestMClass1", "TestMClass2", "TestMClass3").toJSArray
   }
 
@@ -30,12 +34,12 @@ case class ModelLoader(modelId: String) {
      * See CodeEditorController.saveCode() for an usage example.
      */
 
-    /*val res = jQuery.ajax(literal(
+    val res = jQuery.ajax(literal(
       url = s"/metamodels/$modelId/mrefs",
       `type` = "GET",
       async = false).asInstanceOf[JQueryAjaxSettings]
     )
-    res.selectDynamic("responseText").toString.split(", ").toJSArray*/
+    res.selectDynamic("responseText").toString.split(", ").toJSArray
     Array[String]("TestMRef1", "TestMRef2", "TestMRef3").toJSArray
   }
 }
