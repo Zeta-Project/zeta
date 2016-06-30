@@ -68,9 +68,23 @@ object StencilGenerator {
            { name: '${attr.name}', type: '${attr.`type`}'}
          """
         ).mkString(",")}]
+        ${generateSizeProperties(node)}
     });
     """
       }}.mkString
+  }
+
+  def generateSizeProperties(node: Node):String = {
+    if(!node.shape.isDefined) return ""
+    val shape = node.shape.get.referencedShape
+    s"""
+       ${if (shape.size_height_max.isDefined && shape.size_width_max.isDefined) {
+        s""",'size-max': {height: ${shape.size_height_max.get}, width: ${shape.size_width_max.get}}"""}
+        else{""}}
+        ${if (shape.size_height_min.isDefined && shape.size_width_min.isDefined) {
+          s""",'size-min': {height: ${shape.size_height_min.get}, width: ${shape.size_width_min.get}}"""}
+        else{""}}
+     """
   }
 
 

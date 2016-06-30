@@ -14,8 +14,8 @@ trait CommonLayout extends Layout{
   val size_height:Int
 
   /*unsafe getter!*/
-  def x = position.get._1
-  def y = position.get._2
+  def x = position.getOrElse(0,0)._1
+  def y = position.getOrElse(0,0)._2
 }
 
 object CommonLayoutParser extends CommonParserMethods{

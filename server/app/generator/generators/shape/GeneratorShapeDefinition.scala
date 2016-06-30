@@ -49,8 +49,9 @@ object GeneratorShapeDefinition {
         defaults: joint.util.deepSupplement({
         type: '""" + packageName + "." + shape.name +
       """',
-        size: {width: """ + calculateWidth(shape) + ", height: " + calculateHeight(shape) +
-      """},
+        'init-size': {width: """ + calculateWidth(shape) + ", height: " + calculateHeight(shape) +
+      s"""},
+        size: {${getStencilSize(shape)}},
         attrs: {
           'rect.bounding-box':{
           height: """ + calculateHeight(shape) +
@@ -65,6 +66,26 @@ object GeneratorShapeDefinition {
     });
 
     """
+  }
+
+  protected def getStencilSize(shape: Shape): String = {
+    val height = calculateHeight(shape).asInstanceOf[Double]
+    val width = calculateWidth(shape).asInstanceOf[Double]
+    var newHeight = 0.0
+    var newWidth = 0.0
+    if(height <= 80 && width <= 80) {
+      newHeight = height
+      newWidth = width
+    }else if (height > width) {
+      newHeight = 80
+      newWidth = width / (height/80.0)
+    } else {
+      newWidth = 80
+      newHeight = height / (width/80.0)
+    }
+    s"""
+      width: ${newWidth.asInstanceOf[Int]}, height: ${newHeight.asInstanceOf[Int]}
+     """
   }
 
   protected def generateSvgMarkup(shape: Shape) = {
@@ -277,12 +298,13 @@ object GeneratorShapeDefinition {
     var width = 0
     shapeDef.shapes.getOrElse(List()).foreach { s =>
       val geoWidth = s match {
-        case l: CommonLayout => l.size_width
-        case l: Line => getHeight(l)
-        case l: RoundedRectangle => getHeight(l)
-        case l: Polygon => getHeight(l)
-        case l: PolyLine => getHeight(l)
-        case l: Text => getHeight(l)
+        case l: Ellipse => getWidth(l)
+        case l :Rectangle => getWidth(l)
+        case l: Line => getWidth(l)
+        case l: RoundedRectangle => getWidth(l)
+        case l: Polygon => getWidth(l)
+        case l: PolyLine => getWidth(l)
+        case l: Text => getWidth(l)
       }
       width = Math.max(geoWidth, width)
     }
@@ -342,12 +364,13 @@ object GeneratorShapeDefinition {
     var height = 0
     shapeDef.shapes.getOrElse(List()).foreach { s =>
       val geoWidth = s match {
-        case l: CommonLayout => l.size_width
-        case l: Line => getWidth(l)
-        case l: RoundedRectangle => getWidth(l)
-        case l: Polygon => getWidth(l)
-        case l: PolyLine => getWidth(l)
-        case l: Text => getWidth(l)
+        case l: Ellipse => getHeight(l)
+        case l: Rectangle => getHeight(l)
+        case l: Line => getHeight(l)
+        case l: RoundedRectangle => getHeight(l)
+        case l: Polygon => getHeight(l)
+        case l: PolyLine => getHeight(l)
+        case l: Text => getHeight(l)
       }
       height = Math.max(geoWidth, height)
     }
