@@ -39,10 +39,10 @@ var Rappid = Backbone.Router.extend({
             this.initializeChannel(this.options.channelUrl);
         }
         this.initializeGraph();
+        sizeManager.init(this.graph);
 
         window.globalPaper = this.paper;
         window.globalGraph = this.graph;
-        
 
         // Custom code
         linkTypeSelector.init(this.graph, this.paper);
@@ -125,8 +125,8 @@ var Rappid = Backbone.Router.extend({
             joint.layout.GridLayout.layout(this.stencil.getGraph(name), {
                 columnWidth: this.stencil.options.width / 2 - 10,
                 columns: 2,
-                rowHeight: 80,
-                resizeToFit: true,
+                rowHeight: 90,
+                resizeToFit: false,
                 dy: 10,
                 dx: 10
             });
