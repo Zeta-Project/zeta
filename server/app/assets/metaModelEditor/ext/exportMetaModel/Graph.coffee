@@ -88,6 +88,9 @@ class window.Graph
 
 
 # Returns the attributes of the cell.
+# Default value is parsed from String because the inspector can't display the correct input
+# based on the selected type, because the type is in a List
+# See: http://stackoverflow.com/questions/37742721/display-field-based-on-another-in-jointjs
   getAttributes: (cell) ->
     mAttributes = []
     if cell.attributes[Constants.field.ATTRIBUTES]?
@@ -99,13 +102,19 @@ class window.Graph
               when 'Bool'
                 mAttributes[mAttributes.length - 1][key] = value == 'true'
               when 'Int'
+                if !this.isNumeric(value)
+                  value = 0
                 mAttributes[mAttributes.length - 1][key] = parseInt(value)
               when 'Double'
+                if !this.isNumeric(value)
+                  value = 0.0
                 mAttributes[mAttributes.length - 1][key] = parseFloat(value)
               else mAttributes[mAttributes.length - 1][key] = value
           else mAttributes[mAttributes.length - 1][key] = value
     mAttributes
 
+  isNumeric: (n) ->
+    !isNaN(parseFloat(n)) && isFinite(n);
 
 # Returns all input references of the element.
   getInputs: (element) ->
