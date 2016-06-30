@@ -41,30 +41,25 @@ object GeneratorShapeDefinition {
   }
 
   def generate(shape: Shape, packageName: String) = {
-    """
-    joint.shapes.""" + packageName + "." + shape.name +
-      """ = joint.shapes.basic.Generic.extend({
-      markup: """ + generateSvgMarkup(shape) +
-      """,
+    s"""
+    joint.shapes.$packageName.${shape.name} = joint.shapes.basic.Generic.extend({
+      markup: ${generateSvgMarkup(shape)},
         defaults: joint.util.deepSupplement({
-        type: '""" + packageName + "." + shape.name +
-      """',
-        'init-size': {width: """ + calculateWidth(shape) + ", height: " + calculateHeight(shape) +
-      s"""},
+        type: '$packageName.${shape.name}',
+        'init-size': {
+          width: ${calculateWidth(shape)},
+          height: ${calculateHeight(shape)}},
         size: {${getStencilSize(shape)}},
+        resize:{${getResizingPolicies(shape)}},
         attrs: {
           'rect.bounding-box':{
-          height: """ + calculateHeight(shape) +
-      """,
-          width: """ + calculateWidth(shape) +
-      """
-        },
-      """ + generateAttrs(shape.name) +
-      raw"""
+            height: ${calculateHeight(shape)},
+            width: ${calculateWidth(shape)}
+          },
+        ${generateAttrs(shape.name)}
         }
       }, joint.dia.Element.prototype.defaults)
     });
-
     """
   }
 
@@ -85,6 +80,14 @@ object GeneratorShapeDefinition {
     }
     s"""
       width: ${newWidth.asInstanceOf[Int]}, height: ${newHeight.asInstanceOf[Int]}
+     """
+  }
+
+  protected def getResizingPolicies(shape: Shape) = {
+    s"""
+       horizontal: ${shape.stretching_horizontal.getOrElse("true")},
+       vertical: ${shape.stretching_vertical.getOrElse("true")},
+       proportional: ${shape.proportional.getOrElse("true")}
      """
   }
 
