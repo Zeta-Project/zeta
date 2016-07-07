@@ -1,9 +1,11 @@
 package generator.generators.shape
 
 import java.util.UUID
+
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
+
 import scala.collection.mutable
-import generator.model.shapecontainer.shape.Shape
+import generator.model.shapecontainer.shape.{Compartment, Shape}
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
 
@@ -14,6 +16,8 @@ import generator.model.shapecontainer.shape.geometrics.GeometricModel
 object GeneratorShapeDefinition {
   val attrs = mutable.HashMap[String, mutable.MutableList[String]]()
   val attrsInspector = mutable.HashMap[String, mutable.HashMap[GeometricModel, String]]()
+  private val compartmentMap = mutable.HashMap[String, mutable.ListBuffer[(String, Compartment)]]()
+
 
   def head(packageName: String) = {
     raw"""
@@ -57,7 +61,8 @@ object GeneratorShapeDefinition {
             width: ${calculateWidth(shape)}
           },
         ${generateAttrs(shape.name)}
-        }
+        },
+        compartments: [${generateCompartmentProperties(shape.name).mkString(",")}]
       }, joint.dia.Element.prototype.defaults)
     });
     """
@@ -168,6 +173,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def buildAttrs(shape: GeometricModel, shapeName: String, className: String, parentClass: String) = {
+    buildCompartmentClassMap(shapeName, shape, className)
     val attributes =
       s"""
     '${if (shape.isInstanceOf[Text]) "text" else ""}.$className':{
@@ -186,6 +192,35 @@ object GeneratorShapeDefinition {
       attrsInspector.put(shapeName, att)
     }
 
+  }
+
+  protected def buildCompartmentClassMap(shapeName: String, shape: GeometricModel, className: String) = {
+    shape match {
+      case e: Ellipse => if(e.compartment.isDefined) addToCompartmentMap(shapeName,(className ,e.compartment.get))
+      case r: Rectangle => if(r.compartment.isDefined) addToCompartmentMap(shapeName,(className ,r.compartment.get))
+      case _ =>
+    }
+  }
+
+  protected def addToCompartmentMap(shapeName: String, tuple: (String, Compartment)) = {
+    if(compartmentMap.keySet.exists(_ == shapeName)) {
+      compartmentMap(shapeName) += tuple
+    } else {
+      compartmentMap(shapeName) = mutable.ListBuffer[(String, Compartment)](tuple)
+    }
+  }
+
+  protected def generateCompartmentProperties(shapeName: String) = {
+    if(compartmentMap.keySet.exists(_ == shapeName))compartmentMap(shapeName) map {
+      case (className, comp) =>
+        s"""
+          {
+            className: "$className",
+            id: "${comp.compartment_id}"
+          }
+         """
+      case _ => ""
+    } else List()
   }
 
   private def getAttributes(shape: GeometricModel, parentClass: String): String = {
