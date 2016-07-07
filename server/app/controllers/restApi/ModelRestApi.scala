@@ -43,7 +43,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
   def insert = Action.async(BodyParsers.parse.json) { implicit request =>
     oAuth { implicit userId =>
       (request.body \ "metaModelId").validate[String].fold(
-        error => Future.successful(BadRequest(JsError.toFlatJson(error))),
+        error => Future.successful(BadRequest(JsError.toJson(error))),
         metaModelId => validateAndInsert(request.body, userId, metaModelId)
       )
     }
@@ -58,7 +58,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
             val modelEntity = entity.asNew(userId, metaModelId)
             modelDao.insert(modelEntity).map(res => Created(Json.toJson(res)))
           }
-          case e: JsError => Future.successful(BadRequest(JsError.toFlatJson(e)))
+          case e: JsError => Future.successful(BadRequest(JsError.toJson(e)))
         }
       }
       case None => Future.successful(NotFound(s"Metamodel with id $metaModelId was not found"))
@@ -73,7 +73,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
         case Some(modelEntity) if modelEntity.userId == userId => {
           request.body.validate[ModelEntity](ModelEntity.strippedReads(modelEntity.metaModelId, modelEntity.model.metaModel)) match {
             case JsSuccess(entity, _) => modelDao.update(entity.asUpdate(modelEntity.id)).map(res => Ok(Json.toJson(res)))
-            case e: JsError => Future.successful(BadRequest(JsError.toFlatJson(e)))
+            case e: JsError => Future.successful(BadRequest(JsError.toJson(e)))
           }
         }
         case None => Future.successful(NotFound)
@@ -93,7 +93,7 @@ class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModel
               val modifier = Json.obj("$set" -> Json.obj("model" -> model, "updated" -> Instant.now))
               modelDao.update(selector, modifier).map(res => Ok(Json.toJson(res)))
             }
-            case e: JsError => Future.successful(BadRequest(JsError.toFlatJson(e)))
+            case e: JsError => Future.successful(BadRequest(JsError.toJson(e)))
           }
         }
         case None => Future.successful(NotFound)

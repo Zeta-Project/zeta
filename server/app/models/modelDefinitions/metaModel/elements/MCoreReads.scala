@@ -16,7 +16,7 @@ import scala.collection.immutable._
 
 object MCoreReads {
 
-  case class Dummy(name: String) extends ClassOrRef
+  case class PlaceHolder(name: String) extends ClassOrRef
 
   val empty = new {
     def mClass(name: String) = new MClass(name, false, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
@@ -138,31 +138,35 @@ object MCoreReads {
         for (
           s <- superTypes.toList;
           target = s.name
-          if !mapping.contains(target) || !mapping.get(target).get.isInstanceOf[MClass]
+          if !mapping.contains(target) || !mapping(target).isInstanceOf[MClass]
         ) yield {
           s"invalid super type: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
         }
       }
 
-      def checkLinkDefs[T](source: String, links: Seq[MLinkDef]): List[String] = {
+      def checkLinkDefs(source: String, links: Seq[MLinkDef], typeCheck: MObject => Boolean): List[String] = {
         for (
           link <- links.toList;
           target = link.mType.name
-          if !mapping.contains(target) || !mapping.get(target).get.isInstanceOf[T]
+          if !mapping.contains(target) || !typeCheck(mapping(target))
         ) yield {
           s"invalid MLinkDef: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
         }
       }
 
+      def classCheck(m: MObject) = m.isInstanceOf[MClass]
+
+      def refCheck(m: MObject) = m.isInstanceOf[MReference]
+
       def processMReference(r: MReference): List[String] = {
-        checkLinkDefs[MClass](r.name, r.source) :::
-          checkLinkDefs[MClass](r.name, r.target) :::
+        checkLinkDefs(r.name, r.source, classCheck) :::
+          checkLinkDefs(r.name, r.target, classCheck) :::
           checkEnums(r.name, r.attributes)
       }
 
       def processMClass(c: MClass): List[String] = {
-        checkLinkDefs[MReference](c.name, c.inputs) :::
-          checkLinkDefs[MReference](c.name, c.outputs) :::
+        checkLinkDefs(c.name, c.inputs, refCheck) :::
+          checkLinkDefs(c.name, c.outputs, refCheck) :::
           checkSuperTypes(c.name, c.superTypes) :::
           checkEnums(c.name, c.attributes)
       }
@@ -183,8 +187,6 @@ object MCoreReads {
 
       walk(values, Nil)
     }
-
-
   }
 
   val mTypeError = ValidationError("Unknown mType at top level: only MClass, MReference and MEnum allowed")
@@ -207,7 +209,7 @@ object MCoreReads {
   val checkMEnumReads: Reads[MEnum] = mTypeRead("mEnum").flatMap(_ => mEnumReads)
 
   implicit val linkDefReads: Reads[MLinkDef] = (
-    (__ \ "type").read[String].map(Dummy(_)) and
+    (__ \ "type").read[String].map(PlaceHolder) and
       (__ \ "upperBound").read[Int](min(-1)) and
       (__ \ "lowerBound").read[Int](min(0)) and
       (__ \ "deleteIfLower").read[Boolean]
@@ -236,7 +238,7 @@ object MCoreReads {
     (__ \ "name").read[String] and
       (__ \ "globalUnique").read[Boolean] and
       (__ \ "localUnique").read[Boolean] and
-      (__ \ "type").read[String].map(detectType(_)) and
+      (__ \ "type").read[String].map(detectType) and
       (__ \ "default").read[AttributeValue] and
       (__ \ "constant").read[Boolean] and
       (__ \ "singleAssignment").read[Boolean] and
@@ -267,7 +269,7 @@ object MCoreReads {
   implicit val mClassReads: Reads[MClass] = (
     (__ \ "name").read[String](minLength[String](1)) and
       (__ \ "abstract").read[Boolean] and
-      (__ \ "superTypes").read[Seq[String]].map(_.map(empty.mClass(_))) and
+      (__ \ "superTypes").read[Seq[String]].map(_.map(empty.mClass)) and
       (__ \ "inputs").read[Seq[MLinkDef]] and
       (__ \ "outputs").read[Seq[MLinkDef]] and
       (__ \ "attributes").read[Seq[MAttribute]]

@@ -29,7 +29,7 @@ class ModelDao @Inject()(metaModelDao: ZetaMetaModelDao) extends ZetaModelDao wi
 
   override def findModelsByUser(userId: String): Future[Seq[ModelShortInfo]] = {
     val query = Json.obj("userId" -> userId)
-    models.find(query).cursor[ModelShortInfo].collect[List]()
+    models.find(query).cursor[ModelShortInfo]().collect[List]()
   }
 
   override def update(selector: JsObject, modifier: JsObject): Future[ModelsWriteResult] = {
@@ -41,7 +41,7 @@ class ModelDao @Inject()(metaModelDao: ZetaMetaModelDao) extends ZetaModelDao wi
   override def find(query: JsObject): Future[Seq[ModelEntity]] = ???
 
   override def find(query: JsObject, projection: JsObject): Future[Seq[JsValue]] = {
-    models.find(query).cursor[JsValue].collect[List]()
+    models.find(query).cursor[JsValue]().collect[List]()
   }
 
   override def update(entity: ModelEntity): Future[ModelsWriteResult] = {

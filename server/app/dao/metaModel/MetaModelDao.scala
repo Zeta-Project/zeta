@@ -59,11 +59,11 @@ class MetaModelDao extends ZetaMetaModelDao with ReactiveMongoHelper[String] {
   }
 
   override def find(query: JsObject): Future[Seq[MetaModelEntity]] = {
-    metaModels.find(query).cursor[MetaModelEntity].collect[List]()
+    metaModels.find(query).cursor[MetaModelEntity]().collect[List]()
   }
 
   override def find(query: JsObject, projection: JsObject): Future[Seq[JsValue]] = {
-    metaModels.find(query).cursor[JsValue].collect[List]()
+    metaModels.find(query).cursor[JsValue]().collect[List]()
   }
 
   override def update(selector: JsObject, modifier: JsObject): Future[ModelsWriteResult] = {
@@ -81,7 +81,7 @@ class MetaModelDao extends ZetaMetaModelDao with ReactiveMongoHelper[String] {
 
   override def findMetaModelsByUser(userId: String): Future[Seq[MetaModelShortInfo]] = {
     val query = Json.obj("userId" -> userId)
-    metaModels.find(query).cursor[MetaModelShortInfo].collect[List]()
+    metaModels.find(query).cursor[MetaModelShortInfo]().collect[List]()
   }
 
   override def hasAccess(id: String, userId: String): Future[Option[Boolean]] = {

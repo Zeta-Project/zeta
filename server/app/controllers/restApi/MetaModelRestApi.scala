@@ -43,7 +43,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       val in = request.body.validate[MetaModelEntity](MetaModelEntity.strippedReads)
       in.fold(
         errors => {
-          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+          Future.successful(BadRequest(JsError.toJson(errors)))
         },
         tempEntity => {
           val entity = tempEntity.asNew(userId)
@@ -61,7 +61,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       val in = request.body.validate[MetaModelEntity](MetaModelEntity.strippedReads)
       in.fold(
         errors => {
-          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+          Future.successful(BadRequest(JsError.toJson(errors)))
         },
         tempEntity => {
           val entity = tempEntity.asUpdate(id, userId)
@@ -108,7 +108,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       val in = request.body.validate[MetaModel]
       in.fold(
         errors => {
-          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+          Future.successful(BadRequest(JsError.toJson(errors)))
         },
         metaModel => {
           protectedWrite(id, {
@@ -198,7 +198,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       val in = request.body.validate[Shape]
       in.fold(
         errors => {
-          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+          Future.successful(BadRequest(JsError.toJson(errors)))
         },
         shape => {
           protectedWrite(id, {
@@ -217,7 +217,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       val in = request.body.validate[Style]
       in.fold(
         errors => {
-          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+          Future.successful(BadRequest(JsError.toJson(errors)))
         },
         style => {
           protectedWrite(id, {
@@ -236,7 +236,7 @@ class MetaModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao) extends Control
       val in = request.body.validate[Diagram]
       in.fold(
         errors => {
-          Future.successful(BadRequest(JsError.toFlatJson(errors)))
+          Future.successful(BadRequest(JsError.toJson(errors)))
         },
         diagram => {
           protectedWrite(id, {
