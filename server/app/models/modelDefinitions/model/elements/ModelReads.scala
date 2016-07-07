@@ -7,6 +7,7 @@ import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
+import scala.annotation.tailrec
 import scala.collection.immutable._
 
 /**
@@ -40,7 +41,9 @@ object ModelReads {
     }
 
     def finalize(map: Map[String, ModelElement]): JsResult[Map[String, ModelElement]] = {
-      JsSuccess(wire(map))
+      val refErrors = validateRefs(map)
+      if (refErrors.isEmpty) JsSuccess(wire(map))
+      else JsError(s"Model contains invalid references: ${refErrors.mkString(", ")}")
     }
 
     def wireNodes(newMap: => Map[String, ModelElement], old: Seq[ToNodes]): Seq[ToNodes] = {
@@ -69,6 +72,59 @@ object ModelReads {
       builder.finalMap
     }
   }
+
+  def validateRefs(mapping: Map[String, ModelElement]): List[String] = {
+    val values = mapping.values.toList
+
+    def checkEdgeLinks(source: String, links: Seq[ToEdges]): List[String] = {
+      for (
+        toEdges <- links.toList;
+        edge <- toEdges.edges;
+        target = edge.id
+        if !mapping.contains(target) || !mapping(target).isInstanceOf[Edge]
+      ) yield {
+        s"invalid link to edge: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
+      }
+    }
+
+    def checkNodeLinks(source: String, links: Seq[ToNodes]): List[String] = {
+      for (
+        toNodes <- links.toList;
+        node <- toNodes.nodes;
+        target = node.id
+        if !mapping.contains(target) || !mapping(target).isInstanceOf[Node]
+      ) yield {
+        s"invalid link to node: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
+      }
+    }
+
+    def processEdge(e: Edge): List[String] = {
+      checkNodeLinks(e.id, e.source) :::
+        checkNodeLinks(e.id, e.target)
+    }
+
+    def processNode(n: Node): List[String] = {
+      checkEdgeLinks(n.id, n.inputs) :::
+        checkEdgeLinks(n.id, n.outputs)
+    }
+
+    def processElement(mObj: ModelElement): List[String] = mObj match {
+      case n: Node => processNode(n)
+      case e: Edge => processEdge(e)
+      case _ => Nil
+    }
+
+    @tailrec
+    def walk(remaining: List[ModelElement], accErrors: List[String]): List[String] = {
+      remaining match {
+        case Nil => accErrors
+        case mObj :: tail => walk(tail, accErrors ::: processElement(mObj))
+      }
+    }
+
+    walk(values, Nil)
+  }
+
 
 
   def modelElementReads(implicit meta: MetaModel) = new Reads[ModelElement] {
