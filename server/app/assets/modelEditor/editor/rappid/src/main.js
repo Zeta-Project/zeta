@@ -40,6 +40,7 @@ var Rappid = Backbone.Router.extend({
         }
         this.initializeGraph();
         sizeManager.init(this.graph);
+        compartmentManager.init(this.graph, this.paper);
 
         window.globalPaper = this.paper;
         window.globalGraph = this.graph;
