@@ -16,15 +16,11 @@ object StencilGenerator {
   def generate( diagram:Diagram)=
     s"""
     $generateHeader
-
     ${generateStencilGroups(diagram)}
-
     ${generateShapes(diagram)}
     ${generateGroupsToStencilMapping(getNodeToPaletteMapping(diagram))}
-
     ${generateDocumentReadyFunction(diagram)}
     """
-
 
   def generateHeader =
     """
@@ -112,12 +108,7 @@ object StencilGenerator {
     """
     $(document).ready(function() {"""+s"""
       ${{for(node <- diagram.nodes) yield
-      s"""//Get Style of Diagram
-      ${getVarName(node.name)}.attr(getStyle("${diagram.style.get.name}"));
-      ${if(getStyleForNode(node) isDefined)
-      s"""//Get Style of Element
-      ${getVarName(node.name)}.attr(getStyle("${getStyleForNode(node).get.name}"));"""
-      }
+      s"""
       //Get Style of Shape and Inline Style
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
       //Fill in text fields
@@ -166,18 +157,5 @@ object StencilGenerator {
       throw new NoSuchElementException("No Shape defined for node "+node.name)
     }
   }
-
-  private def getStyleForNode(node:Node)= node.style
-
-  private def getShape(node:Node):Shape = {
-    val diaShape = node.shape
-    var retShape = diaShape.getOrElse(None)
-    if(diaShape isDefined){
-      diaShape.get.referencedShape
-    }else{
-      throw new NoSuchElementException("No Shape defined for node "+node.name)
-    }
-  }
-
 }
 
