@@ -73,3 +73,8 @@
 .stencil .elements .element.pn.Transition text {
     display: none;
 }
+
+.bounding-box {
+    stroke-width: 0;
+    fill: transparent
+}
