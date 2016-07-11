@@ -79,7 +79,7 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['line.""" + shapeClass +"""'] = getStyle('""" + shape.style.get.name +"""').line;"""
+      ret += """style['line.""" + shapeClass +"""'] = getStyle('""" + shape.style.get.name +"""');"""
     }
 
     ret
@@ -90,7 +90,7 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['ellipse.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """').ellipse;"""
+      ret += """style['ellipse.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
     ret
   }
@@ -101,7 +101,7 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['rect.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """').rect;"""
+      ret += """style['rect.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
     ret
   }
@@ -111,7 +111,7 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['rect.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """').rect;"""
+      ret += """style['rect.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
     ret
   }
@@ -132,7 +132,7 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['polyline.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """').polyline;"""
+      ret += """style['polyline.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
     ret
   }
@@ -142,7 +142,7 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['polygon.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """').polygon;"""
+      ret += """style['polygon.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
     ret
   }
