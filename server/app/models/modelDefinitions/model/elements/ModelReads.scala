@@ -126,7 +126,6 @@ object ModelReads {
   }
 
 
-
   def modelElementReads(implicit meta: MetaModel) = new Reads[ModelElement] {
 
     def hasKey(name: String, json: JsValue) = (json \ name).toOption.isDefined
@@ -182,10 +181,21 @@ object ModelReads {
       case (Right(_), (JsError(e), idx)) => Left(locate(e, idx))
       case (Left(e), (_: JsSuccess[_], _)) => Left(e)
       case (Left(e1), (JsError(e2), idx)) => Left(e1 ++ locate(e2, idx))
+    }.fold(JsError.apply, { res =>
+      JsSuccess(res.toList)
+    })
+  }.filter(ValidationError("Attribute bounds check failed")) { attributes =>
+    attributes.forall { a =>
+      mAttributes.exists { ma =>
+        ma.name == a.name && checkAttributeMult(a, ma)
+      }
     }
-      .fold(JsError.apply, { res =>
-        JsSuccess(res.toList)
-      })
+  }
+
+  def checkAttributeMult(a: Attribute, ma: MAttribute): Boolean = {
+    val lowerBound = a.value.size >= ma.lowerBound
+    val upperBound = a.value.size <= ma.upperBound || ma.upperBound == -1
+    lowerBound && upperBound
   }
 
   def nodeReads(implicit meta: MetaModel): Reads[Node] = (
@@ -209,8 +219,9 @@ object ModelReads {
   }.filter(attributeDuplicateError) {
     ensureUniqueAttributes
   }
-    //.filter(ValidationError("")) {
-    //ensureBoundedAttributes
+
+  //.filter(ValidationError("")) {
+  //ensureBoundedAttributes
   //}
 
   private def validateNodeLinks(n: Node) = {
@@ -227,11 +238,11 @@ object ModelReads {
     value.attributes.map(_.name.toLowerCase).toSet.size == value.attributes.size
   }
 
-//  private def ensureBoundedAttributes(value: HasAttributes) = {
-//    value.attributes.foldLeft(true) { (acc, att) =>
-//      true
-//    }
-//  }
+  //  private def ensureBoundedAttributes(value: HasAttributes) = {
+  //    value.attributes.foldLeft(true) { (acc, att) =>
+  //      true
+  //    }
+  //  }
 
   private def extractNodes(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToNodes] = {
     m.map { case (k, v) =>
