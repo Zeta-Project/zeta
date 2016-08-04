@@ -31,12 +31,12 @@ class MetaModelController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
       if (metaModelEntity.isDefined) {
 
         // Fix Graph with MetaModelGraphDiff
-        val oldMetaModelEntity = metaModelEntity.get
-        val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.metaModel)
+        //val oldMetaModelEntity = metaModelEntity.get
+        //val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.metaModel)
         //val fixedDefinition = oldMetaModelEntity.metaModel.copy(concept = fixedConcept)
-        val fixedMetaModelEntity = oldMetaModelEntity.copy(metaModel = fixedConcept)
+        //val fixedMetaModelEntity = oldMetaModelEntity.copy(metaModel = fixedConcept)
 
-        Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, fixedMetaModelEntity))
+        Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, metaModelEntity.get))
       } else {
         BadRequest("Could not find meta model")
       }

@@ -26,97 +26,28 @@ object ShapeGenerator {
 
   def doGenerate(cache: Cache, location: String, nodes: List[Node]) {
     val DEFAULT_SHAPE_LOCATION = location
-
     val attrs = GeneratorShapeDefinition.attrsInspector
+    val packageName = "zeta"
+    val shapes = cache.shapeHierarchy.nodeView.values.map(s=> s.data)
 
-    //---------------------------------------------------------------------------------------
     // Shapes
-    val packageName = "modigen"
-    var jointJSShapeContent = ""
-
-    //Write Head of ShapeFile
-    jointJSShapeContent = GeneratorShapeDefinition.head(packageName)
-
-    //Write different Shape Definitions
-    for (shapeDefinition <- cache.shapeHierarchy.nodeView.values) {
-      jointJSShapeContent += generateJointJSShape(shapeDefinition.data, packageName)
-    }
-
-    //Generate ShapeFile
+    val jointJSShapeContent = GeneratorShapeDefinition.generate(shapes, packageName)
     Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + JOINTJS_SHAPE_FILENAME), jointJSShapeContent.getBytes)
 
-    //---------------------------------------------------------------------------------------
     //ConnectionStyle
-    var jointJsConnectionContent = ""
-
-    //Write connection Style file
-    jointJsConnectionContent = GeneratorConnectionDefinition.generate(cache.connections.values)
-
-    //Generate Connection Style file
+    val jointJsConnectionContent = GeneratorConnectionDefinition.generate(cache.connections.values)
     Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + JOINTJS_CONNECTION_FILENAME), jointJsConnectionContent.getBytes)
 
-    //---------------------------------------------------------------------------------------
     // Inspector
-
-    var jointJSInspectorContent = ""
-
-    //Write Head of Inspector File
-    jointJSInspectorContent = GeneratorInspectorDefinition.head
-
-    //Write different Inspector Definitions
-    var lastElement = false
-
-    for (shapeDefinition <- cache.shapeHierarchy.nodeView.values) {
-      if (shapeDefinition == cache.shapeHierarchy.nodeView.values.last) {
-        lastElement = true
-      }
-      val node = nodes.find(n => n.shape.get.referencedShape.name == shapeDefinition.data.name)
-      jointJSInspectorContent += generateJointJSInspector(shapeDefinition.data, packageName, lastElement, attrs,node )
-    }
-
-    //Write Footer of Inspector File
-    jointJSInspectorContent += GeneratorInspectorDefinition.footer
+    val jointJSInspectorContent = GeneratorInspectorDefinition.generate(shapes, packageName, attrs, nodes)
 
     //  Generate InspectorFile
-    //fsa.generateFile(JOINTJS_INSPECTOR_FILENAME, jointJSInspectorOutputConfName, jointJSInspectorContent)
     Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + JOINTJS_INSPECTOR_FILENAME), jointJSInspectorContent.getBytes)
 
-    //---------------------------------------------------------------------------------------
     // ElementAndInlineStyle
-
-    var jointJSShapeAndInlineStyleContent = ""
-
-    //  //Write Head of Shape Style
-    jointJSShapeAndInlineStyleContent = GeneratorShapeAndInlineStyle.shapeStyleHead
-
-    lastElement = false
-
-    //Write Shape Style for different Shape Definitions
-    for (shapeDefinition <- cache.shapeHierarchy.nodeView.values) {
-      if (shapeDefinition == cache.shapeHierarchy.nodeView.values.last) {
-        lastElement = true
-      }
-      jointJSShapeAndInlineStyleContent += generatorShapeStyle(shapeDefinition.data, packageName, lastElement, attrs)
-    }
-
-    //Write Footer of Shape Style
-    jointJSShapeAndInlineStyleContent += GeneratorShapeAndInlineStyle.shapeStyleFooter
-
-    //Generate ShapeFile
+    val jointJSShapeAndInlineStyleContent = GeneratorShapeAndInlineStyle.generate(shapes,packageName, attrs)
     Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME), jointJSShapeAndInlineStyleContent.getBytes)
 
-  }
-
-  def generateJointJSShape(shape: Shape, packageName: String) = {
-    GeneratorShapeDefinition.generate(shape, packageName)
-  }
-
-  def generatorShapeStyle(shape: Shape, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]):String  = {
-    GeneratorShapeAndInlineStyle.generateShapeStyle(shape, packageName, lastElement, attrs)
-  }
-
-  def generateJointJSInspector(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]], node: Option[Node]) = {
-    GeneratorInspectorDefinition.generate(shape, packageName, lastElement, attrs, node)
   }
 
 }

@@ -1,4 +1,4 @@
-joint.shapes.modigen.MLink = joint.dia.Link.extend({
+joint.shapes.zeta.MLink = joint.dia.Link.extend({
     //Override default markup to add placing
     markup: [
         '<path class="connection" stroke="black"/>',
@@ -20,11 +20,11 @@ joint.shapes.modigen.MLink = joint.dia.Link.extend({
 
     //Set type
     defaults: joint.util.deepSupplement({
-        type: 'modigen.MLink'
+        type: 'zeta.MLink'
     }, joint.dia.Link.prototype.defaults)
 });
 
-joint.shapes.modigen.MLinkView = joint.dia.LinkView.extend({
+joint.shapes.zeta.MLinkView = joint.dia.LinkView.extend({
     //We cache the placings for the update function
     _placingCache: {},
 

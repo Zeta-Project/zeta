@@ -1,4 +1,4 @@
-package generator.generators.spray
+package generator.generators.diagram
 
 import generator.model.diagram.Diagram
 import generator.model.diagram.node.Node

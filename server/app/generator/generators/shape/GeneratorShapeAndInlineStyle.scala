@@ -1,11 +1,8 @@
 package generator.generators.shape
 
-import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, HAlign, LEFT, RIGHT}
 import generator.model.shapecontainer.shape.geometrics._
-import generator.model.shapecontainer.shape.geometrics.layouts.{TextLayout}
-import generator.model.style.HasStyle
 
 import scala.collection.mutable
 import scala.collection.mutable.{HashMap}
@@ -19,16 +16,23 @@ import scala.collection.mutable.{HashMap}
 
 object GeneratorShapeAndInlineStyle {
 
-  def shapeStyleHead =
-    """
-        function getShapeStyle(elementName) {
-
+  def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel,String]]) = {
+    s"""
+      function getShapeStyle(elementName) {
         var style = {};
-
         switch(elementName) {
-    """
+          ${shapes.map(shape => generateShapeStyle(shape, packageName, attrs)).mkString}
+          default:
+            style = {};
+            break;
 
-  def generateShapeStyle(shape: Shape, packageName: String, LastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]]): String = {
+      }
+      return style;
+    }
+     """
+  }
+
+  def generateShapeStyle(shape: Shape, packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]]): String = {
 
     if (shape != null && attrs.keys.exists(_ == shape.name)) {
       val att = attrs(shape.name)
@@ -145,32 +149,6 @@ object GeneratorShapeAndInlineStyle {
       ret += """style['polygon.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
     ret
-  }
-
-  def shapeStyleFooter =
-    """
-        default:
-          style = {};
-        break;
-
-      }
-      return style;
-    }
-
-    """
-
-
-  /**
-    * getInlineStyle is deprecated, since the style attributes are now implicitly mixed in the surrounding style instance*/
-  @deprecated
-  protected def getInlineStyle(shape: GeometricModel) = {
-    shape match {
-      case hs: HasStyle if hs.style isDefined => s"""
-        ${StyleGenerator.commonAttributes(hs.style.get)}
-        ${if (shape.isInstanceOf[TextLayout]) StyleGenerator.fontAttributes(hs.style.get)}
-        """
-      case _ => ""
-    }
   }
 
   protected def getRefXValue(alignment: HAlign) = {

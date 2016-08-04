@@ -5,7 +5,7 @@ import javax.inject.Inject
 import dao.metaModel.ZetaMetaModelDao
 import util.definitions.UserEnvironment
 import generator.parser.{Cache, SprayParser}
-import generator.generators.spray.SprayGenerator
+import generator.generators.diagram.DiagramGenerator
 import generator.generators.style.StyleGenerator
 import generator.generators.shape.ShapeGenerator
 import play.api.Play.current
@@ -31,28 +31,29 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
       val hierarchyContainer = Cache()
       val parser = new SprayParser(hierarchyContainer, result.get)
       var diagram: Option[Diagram] = None
-      var error = ""
+      var error: Option[String] = None
 
       try {
         parser.parseStyle(result.get.dsl.style.get.code)
         parser.parseShape(result.get.dsl.shape.get.code)
         diagram = parser.parseDiagram(result.get.dsl.diagram.get.code).head
       } catch {
-        case _ :Throwable => error = "There occurred an error during parsing"
+        case _ :Throwable => error = Some("There occurred an error during parsing")
+      }
+      if(error.isDefined) {
+        try {
+          StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
+          ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
+          DiagramGenerator.doGenerate(diagram.get, generatorOutputLocation)
+        } catch {
+          case a: Throwable => error = Some("There occurred an error during generation")
+        }
       }
 
-      try {
-        ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
-        SprayGenerator.doGenerate(diagram.get, generatorOutputLocation)
-        StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
-      } catch {
-        case a :Throwable => error = "There occurred an error during generation"
-      }
-
-      if(error.nonEmpty) BadRequest(error) else Ok("Generation successful")
+      if(error.isDefined) BadRequest(error.get) else Ok("Generation successful")
 
     } else {
-      NotFound("Metamodel with id: "+metaModelUuid+"was not found")
+      NotFound("Metamodel with id: "+metaModelUuid+" was not found")
     }
   }
 }

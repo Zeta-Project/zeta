@@ -1,4 +1,4 @@
-package generator.generators.spray
+package generator.generators.diagram
 
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
@@ -55,7 +55,6 @@ object LinkhelperGenerator {
       if(text === undefined){
         text = "";
       }
-
       return text;
     }
     """

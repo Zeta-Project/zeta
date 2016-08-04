@@ -2,8 +2,6 @@ package generator.generators.shape
 
 import java.util.UUID
 
-import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
-
 import scala.collection.mutable
 import generator.model.shapecontainer.shape.{Compartment, Shape}
 import generator.model.shapecontainer.shape.geometrics._
@@ -44,7 +42,14 @@ object GeneratorShapeDefinition {
     """
   }
 
-  def generate(shape: Shape, packageName: String) = {
+  def generate(shapes: Iterable[Shape], packageName: String) = {
+    s"""
+       ${head(packageName)}
+       ${shapes.map(shape => generateShape(shape, packageName)).mkString("")}
+     """
+  }
+
+  def generateShape(shape: Shape, packageName: String) = {
     s"""
     joint.shapes.$packageName.${shape.name} = joint.shapes.basic.Generic.extend({
       markup: ${generateSvgMarkup(shape)},

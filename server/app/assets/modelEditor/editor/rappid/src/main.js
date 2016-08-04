@@ -68,7 +68,7 @@ var Rappid = Backbone.Router.extend({
             gridSize: 10,
             perpendicularLinks: true,
             model: this.graph,
-            defaultLink: new joint.shapes.modigen.MLink({
+            defaultLink: new joint.shapes.zeta.MLink({
                 attrs: {
                     // @TODO: scale(0) fails in Firefox
                     '.marker-source': {d: 'M 10 0 L 0 5 L 10 10 z', transform: 'scale(0.001)'},

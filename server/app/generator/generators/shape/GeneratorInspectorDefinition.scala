@@ -16,9 +16,19 @@ import scala.collection.mutable.HashMap
 
 object GeneratorInspectorDefinition {
 
-  def generate(shape: ShapeContainerElement, packageName: String, lastElement: Boolean, attrs: HashMap[String, HashMap[GeometricModel, String]], node: Option[Node]): String = {
+  def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]], nodes: List[Node]): String = {
+    s"""
+      var InspectorDefs = {
+        ${shapes.map(shape => generateDefinition(shape, packageName, attrs, nodes)).mkString}
+        $getLinkAttributes
+      };
+     """
+  }
+
+  def generateDefinition(shape: ShapeContainerElement, packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]], nodes: List[Node]): String = {
     var boundWidth = 0
     var boundHeight = 0
+    val node = nodes.find(n => n.shape.get.referencedShape.name == shape.name)
     var ret = ""
 
     if (shape.isInstanceOf[Shape]) {
@@ -47,14 +57,11 @@ object GeneratorInspectorDefinition {
   def head =
     """
     var InspectorDefs = {
-      // FSA
-      // ---
     """
 
   def footer =
     s"""
-    $getLinkAttributes
-    };
+
     """
 
   private def getRightAttributes(shape: GeometricModel, shapeClass: String, maxWidth: Int, maxHeight: Int) = shape match {
@@ -103,7 +110,7 @@ object GeneratorInspectorDefinition {
 
   def getAttributes(shape: Line, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
-    'line ${if (hasStyle(shape)) "." + shapeClass}: inp({
+    'line${if (hasStyle(shape)) "." + shapeClass}': inp({
       stroke: { group: 'Presentation', index: 2, label: 'Line-Color' },
       'stroke-width': { group: 'Presentation', index: 3, min: 0, max: 30, defaultValue: 1, label: ' Stroke Width Line' },
       'stroke-dasharray': { group: 'Presentation', index: 4, label: 'Stroke Dash Line' }
