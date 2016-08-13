@@ -62,11 +62,14 @@ var linkTypeSelector = (function linkTypeSelector () {
                 menu += name;
                 menu += '</li>';
             });
+            V(_paper.findViewByModel(_focusedElement).el).addClass('linking-allowed');
+
 
         } else {
             menu += '<li class="list-group-item">';
             menu += 'These elements are not linkable!';
             menu += '</li>';
+            V(_paper.findViewByModel(_focusedElement).el).addClass('linking-unallowed');
             canSetLink(false);
         }
 
@@ -100,6 +103,8 @@ var linkTypeSelector = (function linkTypeSelector () {
         });
 
         $('body').mouseup(function () {
+            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
+            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
             destroyMenu();
         });
 
@@ -172,7 +177,10 @@ var linkTypeSelector = (function linkTypeSelector () {
         if (element.hasClass('contextItem') || element.hasClass('menuItem') || element.hasClass('menuTable')) {
             return;
         }
-
+        if(_focusedElement) {
+            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
+            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+        }
         _focusedElement = null;
         destroyMenu();
     };
@@ -234,12 +242,13 @@ var linkTypeSelector = (function linkTypeSelector () {
         var targetMaxReached = false;
         var sourceMaxReached = false;
 
-        link.prop('placings',getPlacings(edgeData.style));
+        link.prop('placings', getPlacings(edgeData.style));
         link.prop('sourceAttribute', edgeData.from);
         link.prop('targetAttribute', edgeData.to);
         // edge type needs to be set before getting connection count
         // otherwise current link is ignored
         link.prop('mReference', edgeType);
+        link.prop('labels', getLabels(edgeData.style));
 
         var ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
         var outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
@@ -302,6 +311,7 @@ var linkTypeSelector = (function linkTypeSelector () {
 
     handleRemovedCell = function(link) {
         // check if style is set, otherwise the removed dummy link will influence the counters
+        // this also ignores all Elements
         if(!link.attributes.styleSet) return;
         var edgeType = validator.getEdgeData(link.attributes.subtype).type;
         var sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
