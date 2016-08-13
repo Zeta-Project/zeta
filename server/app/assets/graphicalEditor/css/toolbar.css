@@ -94,6 +94,11 @@
     display: block;
 }
 
+.level-icon {
+    width: 14px;
+    height: 14px;
+}
+
 
 @media screen and (min-width: 0\0
 ) {

@@ -88,15 +88,8 @@ var Rappid = Backbone.Router.extend({
 
         this.graph.on('add', this.initializeLinkTooltips, this);
 
-        // Uncomment for zoom by scrolling:
-        /*
-        $('.paper-scroller').on('mousewheel DOMMouseScroll', _.bind(function(evt) {
-            evt.preventDefault();
-            var delta = Math.max(-1, Math.min(1, (evt.originalEvent.wheelDelta || -evt.originalEvent.detail)));
-            delta = delta/100;
-            this.zoom((this.zoomLevel || 1) + delta, evt.clientX, evt.clientY);
-        }, this));
-        */
+        this.guideLines = new Guidelines({paper: this.paper});
+        this.distanceLines = new Distancelines({graph: this.graph, paper: this.paper});
     },
 
     initializeLinkTooltips: function(cell) {
@@ -270,12 +263,12 @@ var Rappid = Backbone.Router.extend({
             // freetransform first. This is necessary for IE9+ where pointer-events don't work and we wouldn't
             // be able to access magnets hidden behind the div.
             var freetransform = new joint.ui.FreeTransform({ graph: this.graph, paper: this.paper, cell: cellView.model });
-            var halo = new joint.ui.Halo({ graph: this.graph, paper: this.paper, cellView: cellView });
+            this.halo = new joint.ui.Halo({ graph: this.graph, paper: this.paper, cellView: cellView });
 
             freetransform.render();
-            halo.render();
+            this.halo.render();
 
-            this.initializeHaloTooltips(halo);
+            this.initializeHaloTooltips(this.halo);
 
             this.createInspector(cellView);
 
@@ -455,8 +448,12 @@ var Rappid = Backbone.Router.extend({
 
         // toFront/toBack must be registered on mousedown. SelectionView empties the selection
         // on document mouseup which happens before the click event. @TODO fix SelectionView?
-        $('#btn-to-front').on('mousedown', _.bind(function(evt) { this.selection.invoke('toFront'); }, this));
-        $('#btn-to-back').on('mousedown', _.bind(function(evt) { this.selection.invoke('toBack'); }, this));
+        $('#btn-to-front').on('mousedown', _.bind(function (evt) {
+            this.setPositionOfSelected('toFront');
+        }, this));
+        $('#btn-to-back').on('mousedown', _.bind(function (evt) {
+            this.setPositionOfSelected('toBack');
+        }, this));
 
         $('#btn-layout').on('click', _.bind(this.layoutDirectedGraph, this));
         
@@ -464,6 +461,44 @@ var Rappid = Backbone.Router.extend({
             var gridSize = parseInt(evt.target.value, 10);
             $('#output-gridsize').text(gridSize);
             this.setGrid(gridSize);
+        }, this));
+
+        $('#input-distancelines').on('input', _.bind(function (evt) {
+            var distance = parseInt(evt.target.value, 10);
+            $('#output-distancelines').text(distance);
+            this.distanceLines.options.distance = distance;
+        }, this));
+
+        $('#checkbox-distancelines').on('change', _.bind(function (evt) {
+            var input = $('#input-distancelines');
+            if ($('#checkbox-distancelines').is(':checked')) {
+                this.distanceLines.start();
+                $('#btn-distancelines').addClass('active');
+                input.prop("disabled", false);
+            } else {
+                this.distanceLines.stop();
+                $('#btn-distancelines').removeClass('active');
+                input.prop("disabled", true);
+            }
+        }, this));
+
+        $('#input-guidelines').on('input', _.bind(function (evt) {
+            var distance = parseInt(evt.target.value, 10);
+            $('#output-guidelines').text(distance);
+            this.guideLines.options.distance = distance;
+        }, this));
+
+        $('#checkbox-guidelines').on('change', _.bind(function (evt) {
+            var input = $('#input-guidelines');
+            if ($('#checkbox-guidelines').is(':checked')) {
+                this.guideLines.start();
+                input.prop("disabled", false);
+                $('#btn-guidelines').addClass('active');
+            } else {
+                this.guideLines.stop();
+                input.prop("disabled", true);
+                $('#btn-guidelines').removeClass('active');
+            }
         }, this));
     },
 
@@ -481,7 +516,7 @@ var Rappid = Backbone.Router.extend({
     },
 
     openAsPNG: function() {
-        
+
         var windowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes';
         var windowName = _.uniqueId('png_output');
         var imageWindow = window.open('', windowName, windowFeatures);
@@ -611,5 +646,14 @@ var Rappid = Backbone.Router.extend({
             $(".inspector-container").toggleClass("inspector-container-hidden");
             $(".inspector-toggle-container").toggleClass("toggle-container-hidden");
         });
+    },
+
+    /* Handles the toFront/toBack functionality */
+    setPositionOfSelected: function (functionName) {
+        this.selection.each(function (cell) {
+            cell.attributes[functionName]();
+            this.halo.remove();
+            this.freetransform.remove();
+        }, this);
     }
 });
