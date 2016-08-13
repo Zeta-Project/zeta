@@ -117,3 +117,22 @@ paper-button::shadow #ripple {
     display: block;
     position: absolute;
 }
+
+#edit-project .panel {
+    margin-bottom: 0;
+}
+
+#edit-project .col-md-6 {
+    padding: 0;
+}
+.no-margin {
+    margin: 0;
+}
+
+#edit-project .panel-body:hover {
+    background-color: #337ab7;
+    color: #fff;
+}
+.alert {
+    margin-top: 10px;
+}

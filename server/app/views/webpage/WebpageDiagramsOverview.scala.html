@@ -17,9 +17,9 @@
                 <div class="panel-heading">
                     <strong>Projects</strong>
                 </div>
-                <div class="panel-body">
+                <div>
                 @if(metaModels.nonEmpty) {
-                    <div class="list-group">
+                    <div>
                     @for(metamodel <- metaModels) {
                         <a href="@controllers.webpage.routes.WebpageController.diagramsOverview(metamodel.id)" class="list-group-item list-item-container
                                     @if(metaModel.isDefined && metamodel.id == metaModel.get.id) {
@@ -38,7 +38,7 @@
                 <div class="panel-footer">
                     <form>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="inputProjectName" placeholder="New project name">
+                            <input type="text" class="form-control" id="inputProjectName" placeholder="New project name" autocomplete="off">
                             <span class="input-group-btn">
                                 <button type=button id="btnCreateMetaModel" class="btn btn-default" data-toggle="tooltip" title="Create project">
                                     <span class="glyphicon glyphicon-plus glyphicon-plus-sign" aria-hidden=true></span>
@@ -51,7 +51,7 @@
         </div>
 
         @if(metaModel.isDefined) {
-            <div class="col-md-4">
+            <div id="edit-project" class="col-md-4">
                 <div class="panel panel-default overlay-container">
                     @if(modelInstances.nonEmpty) {
                         <div class="overlay" data-toggle="tooltip" title="Locked because there are model instances"></div>
@@ -59,8 +59,8 @@
                     <div class="panel-heading">
                         <strong>Edit project <em>@metaModel.get.metaModel.name</em></strong>
                     </div>
-                    <div class="panel-body text-center">
-                        <div class="row">
+                    <div class="text-center">
+                        <div class="row no-margin" >
                             <div class="col-md-6">
                                 <a href="@routes.CodeEditorController.codeEditor(metaModel.get.id, "style")">
                                     <div class="panel panel-default">
@@ -109,7 +109,18 @@
                         </button>
                     </div>
                 </div>
+                <div id="error-panel" class="alert alert-danger alert-dismissible collapse" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div></div>
+                </div>
+                <div id="success-panel" class="alert alert-success alert-dismissible collapse" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div>
+                    </div>
+                </div>
             </div>
+
+
         }
 
         @if(metaModel.isDefined) {
@@ -132,7 +143,7 @@
                     <div class="panel-footer">
                         <form>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="inputModelName" placeholder="New model name">
+                                <input type="text" class="form-control" id="inputModelName" placeholder="New model name" autocomplete="off">
                                 <span class="input-group-btn">
                                     <button type=button id="btnCreateModelInstance" class="btn btn-default" data-toggle="tooltip" title="Create model instace">
                                         <span class="glyphicon glyphicon-plus glyphicon-plus-sign" aria-hidden=true></span>
@@ -148,4 +159,5 @@
             </div>
         }
     </div>
+
 }
