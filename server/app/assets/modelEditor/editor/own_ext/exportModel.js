@@ -77,7 +77,7 @@ var modelExporter = (function modelExporter () {
 
             ele.attributes.mClassAttributeInfo.forEach(function(info) {
                 if(!element.attributes.hasOwnProperty(info.name)) {
-                    element.attributes[name.name] = [];
+                    element.attributes[info.name] = [];
                 }
             });
 
@@ -112,7 +112,6 @@ var modelExporter = (function modelExporter () {
             element.source[link.attributes.sourceAttribute] = [link.attributes.source.id];
             element.target[link.attributes.targetAttribute] = [link.attributes.target.id];
             elements.push(element);
-
         });
         return elements;
     };
@@ -124,10 +123,10 @@ var modelExporter = (function modelExporter () {
                 ret = value.toLowerCase() === 'true';
                 break;
             case 'Int':
-                ret = parseInt(value);
+                $.isNumeric(value) ? ret = parseInt(value) : ret = 0;
                 break;
             case 'Double':
-                ret = parseFloat(value);
+                $.isNumeric(value) ? ret = parseFloat(ret) : ret = 0.0;
                 break;
         }
         return ret;
