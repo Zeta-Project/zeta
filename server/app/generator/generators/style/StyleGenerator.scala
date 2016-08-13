@@ -66,12 +66,9 @@ object StyleGenerator {
   }
 
   def generateDiagramHighlightingCases(s: Style) = {
-    val (selected, multiselected, allowed, unallowed) =
-      (s.selected_highlighting, s.multiselected_highlighting, s.allowed_highlighting, s.unallowed_highlighting)
-    val name = s.name
-    val highlighting = "" + selected.getOrElse("") + multiselected.getOrElse("") + allowed.getOrElse("") + unallowed.getOrElse("")
+    val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty)
-      raw"""case "$name":
+      raw"""case "${s.name}":
 
               var highlighting = '$highlighting';
 
@@ -80,24 +77,24 @@ object StyleGenerator {
     else ""
   }
 
-  def selected(s: Style) =
+  def getSelected(s: Style) =
     if (s.selected_highlighting isDefined) {
-      raw""".free-transform { border: 2px dashed  ${s.selected_highlighting.get.getRGBValue}; }"""
+      raw""".paper-container .free-transform { border: 1px dashed  ${s.selected_highlighting.get.getRGBValue}; }"""
     } else ""
 
-  def multiselected(s: Style) =
+  def getMultiselected(s: Style) =
     if (s.multiselected_highlighting isDefined) {
-      raw""".selection-box { border: 2px solid ${s.multiselected_highlighting.get.getRGBValue}; }"""
+      raw""".paper-container .selection-box { border: 1px solid ${s.multiselected_highlighting.get.getRGBValue}; }"""
     } else ""
 
-  def allowed(s: Style): String =
+  def getAllowed(s: Style): String =
     if (s.allowed_highlighting isDefined) {
-      raw""".linking-allowed { outline: 2px solid ${s.allowed_highlighting.get.getRGBValue}; }"""
+      raw""".paper-container .linking-allowed { outline: 2px solid ${s.allowed_highlighting.get.getRGBValue}; }"""
     } else ""
 
-  def unallowed(s: Style): String =
+  def getUnallowed(s: Style): String =
     if (s.unallowed_highlighting isDefined) {
-      raw""".linking-unallowed { solid : 2px solid ${s.unallowed_highlighting.get.getRGBValue}; }"""
+      raw""".paper-container .linking-unallowed { outline: 2px solid ${s.unallowed_highlighting.get.getRGBValue}; }"""
     } else ""
 
 
@@ -123,7 +120,6 @@ object StyleGenerator {
   }
 
   def commonAttributes(s: Style): String = {
-    println(s.gradient_orientation)
     raw"""
       ${if (checkBackgroundGradientNecessary(s))
           createGradientAttributes(s.background_color.get.asInstanceOf[Gradient],
@@ -142,7 +138,6 @@ object StyleGenerator {
   def checkBackgroundGradientNecessary(s: Style) = if (s.background_color.isDefined && s.background_color.get.isInstanceOf[Gradient]) true else false
 
   def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
-    println(horizontal)
       s"""
       fill: {
         type: 'linearGradient',
