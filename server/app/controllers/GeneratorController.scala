@@ -38,15 +38,15 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
         parser.parseShape(result.get.dsl.shape.get.code)
         diagram = parser.parseDiagram(result.get.dsl.diagram.get.code).head
       } catch {
-        case _ :Throwable => error = Some("There occurred an error during parsing")
+        case e :Throwable => error = Some("There occurred an error during parsing")
       }
-      if(error.isDefined) {
+      if(error.isEmpty) {
         try {
           StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
           ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
           DiagramGenerator.doGenerate(diagram.get, generatorOutputLocation)
         } catch {
-          case a: Throwable => error = Some("There occurred an error during generation")
+          case e :Throwable => error = Some("There occurred an error during generation");
         }
       }
 
