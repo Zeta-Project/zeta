@@ -5,14 +5,20 @@ var modelExporter = (function modelExporter () {
     var _buildElements;
     var _getAttributeValue;
     var _graph;
+    var _showExportSuccess;
+    var _showExportFailure;
 
     exportModel = function(graph) {
+        $("[data-hide]").on("click", function(){
+            $("." + $(this).attr("data-hide")).hide();
+        });
+        
         _graph = graph;
         var elements = _buildElements();
         var uiState = JSON.stringify(_graph.toJSON());
-        var fnSave = function (accessToken, tokenRefreshed, error) {
+        var fnSave = function (accessTokenString, tokenRefreshed, error) {
             if (error) {
-                alert("Error saving model: " + error);
+                _showExportFailure("Failure, there occurred an error during saving!");
                 return;
             }
 
@@ -28,16 +34,16 @@ var modelExporter = (function modelExporter () {
                 contentType: "application/json; charset=utf-8",
                 data: data,
                 headers: {
-                    Authorization: "Bearer " + accessToken
+                    Authorization: "Bearer " + accessTokenString
                 },
                 success: function (data, textStatus, jqXHR) {
-                    alert("Saved model");
+                    _showExportSuccess();
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     if (!tokenRefreshed) {
                         accessToken.authorized(fnSave, true);
                     } else {
-                        alert("Error saving meta model: " + errorThrown);
+                        _showExportFailure("Failure, there occurred an error during saving!");
                     }
                 }
             });
@@ -130,6 +136,26 @@ var modelExporter = (function modelExporter () {
                 break;
         }
         return ret;
+    };
+
+    _showExportSuccess = function() {
+        $("#success-panel").fadeOut('slow', function() {
+            $("#error-panel").fadeOut('slow', function() {
+                $("#success-panel").show();
+                $("#success-panel").find("div").text("Success, model saved!");
+                $("#success-panel").fadeIn('slow');
+            });
+        });
+    };
+    
+    _showExportFailure = function(reason) {
+        $("#success-panel").fadeOut('slow', function() {
+            $("#error-panel").fadeOut('slow', function() {
+                $("#error-panel").show();
+                $("#error-panel").find("div").text(reason);
+                $("#error-panel").fadeIn('slow');
+            });
+        });
     };
 
     return {

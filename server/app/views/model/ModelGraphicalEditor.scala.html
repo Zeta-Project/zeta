@@ -23,6 +23,7 @@
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/inspector.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/stencil.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/halo.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/rappid/halo.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/selection.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/toolbar.css")">
     <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/freetransform.css")">
@@ -117,7 +118,17 @@
         <span class="stencil-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-left"></span>
     </div>
 
-    <div class="paper-container"></div>
+    <div class="paper-container">
+        <div id="error-panel" class="alert alert-danger alert-dismissible export-result-alert collapse" role="alert">
+            <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div></div>
+        </div>
+        <div id="success-panel" class="alert alert-success alert-dismissible export-result-alert collapse" role="alert">
+            <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <div>
+            </div>
+        </div>
+    </div>
 
     <div class="inspector-container panel panel-default">
         <div class="inspector-container-inner panel-body"></div>
@@ -235,6 +246,7 @@
 
     <!-- Node Code Editor -->
     <!--<link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/model_specific/nodeCodeEditor.css")" />-->
+    <!--
     <script src="@routes.Assets.at("codeEditor/ace/ace.js")"></script>
     <script src="@routes.Assets.at("codeEditor/ace-grammar/classy.js")"></script>
     <script src="@routes.Assets.at("codeEditor/ace-grammar/regexanalyzer.js")"></script>
@@ -243,6 +255,7 @@
     <script src="@routes.Assets.at("modelEditor/datavis/DataVisGrammar.js")"></script>
     <script src="@routes.Assets.at("modelEditor/datavis/DataVisUI.js")"></script>
     <script src="@routes.Assets.at("modelEditor/datavis/DataVisClient.js")"></script>
+    -->
 
 
     <!--[if IE 9]>
