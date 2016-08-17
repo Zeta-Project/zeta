@@ -19,3 +19,11 @@
    fill-opacity: 1;
    stroke-width: 0;
 }
+
+.export-result-alert {
+   z-index: 100;
+   width: 300px;
+   margin: 0 5px 5px 3px;
+   bottom: 15px;
+   position: absolute;
+}
