@@ -46,6 +46,7 @@ var Rappid = Backbone.Router.extend({
         window.globalGraph = this.graph;
 
         // Custom code
+        $("#metamodel-name").text("Model name: "+window._global_model_name);
         linkTypeSelector.init(this.graph, this.paper);
     },
 
@@ -532,12 +533,13 @@ var Rappid = Backbone.Router.extend({
 
         if (newZoomLevel > 0.2 && newZoomLevel < 20) {
 
-	    ox = ox || (this.paper.el.scrollLeft + this.paper.el.clientWidth / 2) / this.zoomLevel;
-	    oy = oy || (this.paper.el.scrollTop + this.paper.el.clientHeight / 2) / this.zoomLevel;
+	        ox = ox || (this.paper.el.scrollLeft + this.paper.el.clientWidth / 2) / this.zoomLevel;
+	        oy = oy || (this.paper.el.scrollTop + this.paper.el.clientHeight / 2) / this.zoomLevel;
 
-	    this.paper.scale(newZoomLevel, newZoomLevel, ox, oy);
+	        this.paper.scale(newZoomLevel, newZoomLevel);
+            this.paperScroller.center(ox, oy);
 
-	    this.zoomLevel = newZoomLevel;
+            this.zoomLevel = newZoomLevel;
         }
     },
 
