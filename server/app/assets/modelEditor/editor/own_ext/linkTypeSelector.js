@@ -253,7 +253,7 @@ var linkTypeSelector = (function linkTypeSelector () {
         var ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
         var outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
 
-        if(maxInputs != 1 && ingoingTargetCount > maxInputs) {
+        if(maxInputs != -1 && ingoingTargetCount > maxInputs) {
             targetMaxReached = true;
             V(_paper.findViewByModel(targetId).el).addClass('invalid-edges');
         }
@@ -282,6 +282,7 @@ var linkTypeSelector = (function linkTypeSelector () {
     };
 
     handleAddedCell = function(cell) {
+        if(cell.isLink()) return;
         var inputs = [];
         var outputs = [];
         var inputMatrix = validator.inputMatrix[cell.attributes.mClass];
