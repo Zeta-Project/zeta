@@ -102,7 +102,7 @@ object GeneratorConnectionDefinition {
         case 0.0 => ret +=
           raw"""
             style['.marker-source'] = {
-            ${generateStyle(p.shapeCon)},
+            ${generateStyle(p.shapeCon)}
             $generateMarkerSourceCorrection
             ${generateMarker(p)}};
           """
@@ -133,7 +133,7 @@ object GeneratorConnectionDefinition {
               ${StyleGenerator.commonAttributes(hs.style.get)},
               text: {
               ${StyleGenerator.fontAttributes(hs.style.get)}
-              }
+              },
             """
           } else {
             ""
@@ -224,7 +224,7 @@ object GeneratorConnectionDefinition {
     markup: '<polyline />',
     attrs:{
       points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}).mkString("") + raw""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)},
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""},
       ${generateStyleCorrections}
     }
     """
@@ -261,7 +261,7 @@ object GeneratorConnectionDefinition {
     markup: '<polygon />',
     attrs:{
       points: """" + shape.points.map(point => point.x +","+ point.y + {if(point != shape.points.last)" " else "\""}).mkString + raw""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""}
     }
     """
   }
