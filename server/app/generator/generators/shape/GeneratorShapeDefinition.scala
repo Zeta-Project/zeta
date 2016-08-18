@@ -160,9 +160,8 @@ object GeneratorShapeDefinition {
   protected def generateSvgShape(shape: Text, rootShapeName: String, parentClass: String): String = {
     val className = UUID.randomUUID
     val shapeValue = shape.textBody
-    val shapeClass = shapeValue.substring(1, shapeValue.length -1)
     buildAttrs(shape, rootShapeName, className.toString, parentClass)
-    s"""<text class="$className" > </text>"""
+    s"""<text class="$className ${shape.id}" > </text>"""
   }
 
 
