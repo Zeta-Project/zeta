@@ -18,10 +18,11 @@ object GeneratorConnectionDefinition {
   val labelCache =  mutable.HashMap[String, mutable.MutableList[Placing]]()
 
   def generate(connections: Iterable[Connection]) = {
-    head +
-    """function getConnectionStyle(stylename){
-      var style;
-      switch(stylename){
+    s"""
+      $head
+      function getConnectionStyle(stylename){
+        var style;
+        switch(stylename){
     """ +
       connections.map(c => "case '" + c.name + "':\n" + {
       if(c.style.isDefined)
@@ -76,12 +77,12 @@ object GeneratorConnectionDefinition {
 
   protected def generateInlineStyle(connection:Connection)={
     if(connection.style isDefined)
-    """
+    s"""
     //Get inline style
     var inline = {
       '.connection, .marker-target, .marker-source':{
-        """ + StyleGenerator.commonAttributes(connection.style.get) + """,
-        """ + StyleGenerator.fontAttributes(connection.style.get) + """
+        ${StyleGenerator.commonAttributes(connection.style.get)},
+        ${StyleGenerator.fontAttributes(connection.style.get)}
       }
     };
 
@@ -105,7 +106,13 @@ object GeneratorConnectionDefinition {
             $generateMarkerSourceCorrection
             ${generateMarker(p)}};
           """
-        case 1.0 => ret += raw"""style['.marker-target'] = { ${generateMirroredMarker(p)}, ${generateStyle(p.shapeCon)} };"""; isTargetMarkerSet = true
+        case 1.0 => if(!p.shapeCon.isInstanceOf[Text]) {
+                      ret += raw"""style['.marker-target'] = { ${generateMirroredMarker(p)}, ${generateStyle(p.shapeCon)} };"""
+                    }else {
+                      cachePlacing(connection.name, p)
+                    }
+                    isTargetMarkerSet = true
+
         case _   => cachePlacing(connection.name, p)
       }
       if(!isTargetMarkerSet) {
@@ -154,14 +161,10 @@ object GeneratorConnectionDefinition {
 
   protected def generateCachedLabels()= {
     val labels = labelCache.map { case (k, v) =>
-      "case \"" + k +
-        """":
-         labels = [
-      """ + v.map(generateLabel).mkString +
-        """
-    ];
-    break;
-    """
+      s"""case "$k":
+          labels = [ ${v.map(generateLabel).mkString}];
+          break;
+      """
   }.mkString
     labelCache.clear()
     labels
@@ -170,22 +173,26 @@ object GeneratorConnectionDefinition {
   protected def generateLabel(placing:Placing)={
     raw"""
     {
-      position: """+placing.position_offset +raw""",
+      position: ${placing.position_offset},
       attrs: {
         rect: {fill: 'transparent'},
-        text: {dy: """ + placing.position_distance + """}
+        text: {
+          y: ${placing.position_distance.getOrElse(0)},
+          text: ${placing.shapeCon.asInstanceOf[Text].textBody}
+        }
       },
-      id: '""" + placing.shapeCon.asInstanceOf[CDText].textBody+raw"""'
+      id: '${placing.shapeCon.asInstanceOf[Text].id}'
     }
     """
   }
 
   protected def generatePlacing(placing:Placing )={
-    """
+    s"""
     {
-      position: """ + placing.position_offset + """,
-      """ + generateRightPlacingShape(placing.shapeCon, placing.position_distance.getOrElse(1)) + raw"""
-    }"""
+      position: ${placing.position_offset},
+      ${generateRightPlacingShape(placing.shapeCon, placing.position_distance.getOrElse(1))}
+    }
+    """
   }
 
 
@@ -200,61 +207,56 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:Line ,distance:Int)={
-    /*TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style maybe the actual style attributes should be called here*/
-    """
+    s"""
     markup: '<line />',
     attrs:{
-      x1: """+ shape.points._1.x + """,
-      y1: """+ shape.points._1.y + """,
-      x2: """+ shape.points._2.x + """,
-      y2: """+ shape.points._2.y + s""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
+      x1: ${shape.points._1.x},
+      y1: ${shape.points._1.y},
+      x2: ${shape.points._2.x},
+      y2: ${shape.points._2.y},
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""}
     }
     """
   }
 
   protected def generatePlacingShape(shape:PolyLine ,distance:Int)={
-    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<polyline />',
     attrs:{
-      """ + generateStyleCorrections + """
       points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}).mkString("") + raw""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)},
+      ${generateStyleCorrections}
     }
     """
   }
 
   protected def generatePlacingShape(shape:Rectangle, distance:Int)={
-    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
-    """
+    s"""
     markup: '<rect />',
     attrs:{
-      height: """ + shape.size_height + """,
-      width: """ + shape.size_width + """,
-      y: """ + (distance - shape.size_height/2) + raw""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
+      height: ${shape.size_height},
+      width: ${shape.size_width},
+      y: ${distance - shape.size_height/2},
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""}
     }
     """
   }
 
   protected def generatePlacingShape(shape:RoundedRectangle ,distance:Int)={
-    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
-    """
+    s"""
     markup: '<rect />',
     attrs:{
-      height: """+shape.size_height + """,
-      width: """+shape.size_width + """,
-      rx: """ + shape.curve_width + """,
-      ry: """ + shape.curve_height + """,
-      y: """ + (distance - shape.size_height/2) + raw""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)}
+      height: ${shape.size_height},
+      width: ${shape.size_width},
+      rx: ${shape.curve_width},
+      ry: ${shape.curve_height},
+      y: ${distance - shape.size_height/2},
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""}
     }
     """
   }
 
   protected def generatePlacingShape(shape:Polygon , distance:Int)={
-    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
     """
     markup: '<polygon />',
     attrs:{
@@ -265,24 +267,22 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generatePlacingShape(shape:Ellipse , distance:Int)={
-    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
-    """
+    s"""
     markup: '<ellipse />',
     attrs:{
-      rx: """ + shape.size_width/2 + """,
-      ry: """ + shape.size_height/2 + """,
-      cy: """ + distance + raw""",
-      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get)},
+      rx: ${shape.size_width/2},
+      ry: ${shape.size_height/2},
+      cy: ${distance},
+      ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""},
       }
     """
   }
 
   protected def generatePlacingShape(shape:Text, distance:Int)={
-    //TODO getInlineStyle is ignored because inlineStyle is implicitly mixed into the sourrounding style
-    """
-    markup: '<text>«shape.body.value»</text>',
+    s"""
+    markup: '<text>${shape.textBody}</text>',
     attrs:{
-      y: """ + shape.size_height/2 + """
+      y: ${shape.size_height/2}
     }
     """
   }
@@ -296,7 +296,7 @@ object GeneratorConnectionDefinition {
 
   protected def generateMirroredMarker(placing:Placing ) = {
     /*
-     PolyLine and Polygon need to be mirrored against the y-axis because target
+     PolyLine and Polygon need to be mirrored against the x and y-axis because target
      marker gets rotated by 180 degree
     */
     val svgPathData = placing.shapeCon match {
@@ -318,7 +318,7 @@ object GeneratorConnectionDefinition {
   }
 
   private def generateMirroredPolygon(shape:Polygon) = {
-    val mirroredPoints = shape.points.map(p => new Point((p.x * -1) , p.y))
+    val mirroredPoints = shape.points.map(p => new Point((p.x * -1) , (p.y * -1)))
     val head = mirroredPoints.head
     val tail = mirroredPoints.tail
     "M "+head.x+" "+head.y+" "+ tail.map(p => "L "+p.x +" "+p.y).mkString + "z"
@@ -332,7 +332,6 @@ object GeneratorConnectionDefinition {
      case e: Ellipse => generateSvgPathData(e)
      case r: Rectangle => generateSvgPathData(r)
      case rr: RoundedRectangle => generateSvgPathData(rr)
-     case t: Text => generateSvgPathData(t)
     }
   }
 
@@ -367,25 +366,10 @@ object GeneratorConnectionDefinition {
    "M "+shape.x+" "+shape.y+" a  " + rx+" "+ry+" 0 0 1 "+rx+" -"+ry+" a  "+rx+" "+ry+" 0 0 1 "+rx+" "+ry+" a  "+rx+" "+ry+" 0 0 1 -"+rx+" "+ry+" a  "+rx+" "+ry+" 0 0 1 -"+rx+" -"+ry
   }
 
-  protected def generateSvgPathData(shape:Text )={
-    """"""
-  }
-
-
-  private def generateRightStyleCorrection(g:Any):String = g match{
-    case pl:PolyLine => generateStyleCorrections
-    case s:ShapeConnection => generateStyleCorrections(s)
-    case _ => ""
-  }
-
   protected def generateStyleCorrections = {
     """
-    fill: 'transparent', //JointJS uses fill attribute to fill in all markers
+    fill: 'transparent' //JointJS uses fill attribute to fill in all markers
     """
-  }
-
-  protected def generateStyleCorrections(shape:ShapeConnection )={
-    """"""
   }
 
   protected def generateMarkerSourceCorrection()={
@@ -411,16 +395,4 @@ object GeneratorConnectionDefinition {
     }
   }
 
-  /**
-   * getInlineStyle is deprecated, since the style attributes are now implicitly mixed in the surrounding style instance*/
-  @deprecated
-  protected def getInlineStyle(shape:GeometricModel )={
-    shape match {
-      case hs:HasStyle if hs.style isDefined =>s"""
-        ${StyleGenerator.commonAttributes(hs.style.get)}
-        ${if(shape.isInstanceOf[TextLayout])StyleGenerator.fontAttributes(hs.style.get)}
-        """
-      case _ => ""
-    }
-  }
 }
