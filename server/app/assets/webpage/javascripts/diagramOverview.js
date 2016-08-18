@@ -14,7 +14,7 @@
         });
         var fnCreateProject = function (accessTokenString, tokenRefreshed, error) {
             if (error) {
-                alert("Could not create meta model: " + error);
+                if(error === 'Unauthorized') window.location.replace('/auth/login');
                 return;
             }
 
@@ -162,7 +162,7 @@
         $("#btnGenerator").click(function () {
             var fnStartGenerator = function (accessTokenString, tokenRefreshed, error) {
                 if (error) {
-                    alert("Could not start generator " + error);
+                    if(error === 'Unauthorized') window.location.replace('/auth/login');
                     return;
                 }
 
@@ -227,7 +227,11 @@
                 $("#success-panel").find("div").text(text);
                 $("#success-panel").fadeIn('slow');
             });
-        }
+        };
+
+        $("[data-hide]").on("click", function(){
+            $("." + $(this).attr("data-hide")).hide();
+        });
     });
 }(jQuery) );
 
