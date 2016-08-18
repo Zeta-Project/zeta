@@ -39,7 +39,7 @@ var compartmentManager = (function compartmentManager () {
         // When the dragged cell is dropped over another cell, let it become a child of the
         // element below.
         _paper.on('cell:pointerup', function(cellView, evt, x, y) {
-
+            if(!cellView.hasOwnProperty('getBBox')) return;
             var cell = cellView.model;
             var cellViewsBelow = _paper.findViewsFromPoint(cell.getBBox().center());
 
