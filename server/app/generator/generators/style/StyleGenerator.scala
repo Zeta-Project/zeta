@@ -170,7 +170,7 @@ object StyleGenerator {
         """
       				stroke: '#000000',
       				'stroke-width': 0,
-      				'stroke-dasharray': "0",
+      				'stroke-dasharray': "0"
         """
     else
       s.line_color.get match {
