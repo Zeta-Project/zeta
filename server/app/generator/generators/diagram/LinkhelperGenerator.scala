@@ -30,22 +30,24 @@ object LinkhelperGenerator {
     """
 
   protected def generatePlacingTexts(diagram: Diagram) = {
-    val edges = for (e <- diagram.edges) yield
-      s"""${e.name}: {
-      ${generateStringProperties(e).mkString(",")}
-      }"""
-
     s"""
     placingTexts:{
-      ${edges.mkString(",")}
+      ${
+        diagram.edges.map(e =>
+          s"""
+            ${e.name}: {
+              ${generateStringProperties(e).mkString(",")}
+          }"""
+        ).mkString(",")
+      }
     },
     """
   }
 
   protected def generateStringProperties(edge: Edge) = {
     val stringProperties = edge.connection.vals
-    for (((key, value), i) <- stringProperties.zipWithIndex) yield
-      s"""'$key': "${value.get.toString}"""
+    for ((key, value) <- stringProperties) yield
+      s"""'$key': "${value.getOrElse("").toString}""""
   }
 
   protected def generateHelperMethods =
