@@ -112,15 +112,18 @@ object StencilGenerator {
       //Get Style of Shape and Inline Style
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
       //Fill in text fields
+
       ${{for((key, value) <- node.shape.get.vals) yield
       s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
       }.mkString}"""}.mkString}
-      ${if(diagram.style isDefined)s"""
+      ${if(diagram.style isDefined) {
+      s"""
           var style = document.createElement('style');
           style.id = 'highlighting-style';
           style.type = 'text/css';
           style.innerHTML = getDiagramHighlighting("${diagram.style.get.name}");
           document.getElementsByTagName('head')[0].appendChild(style);"""
+        } else ""
       }
     });
     """
