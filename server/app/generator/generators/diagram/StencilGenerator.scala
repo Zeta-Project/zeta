@@ -113,7 +113,7 @@ object StencilGenerator {
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
       //Fill in text fields
       ${{for((key, value) <- node.shape.get.vals) yield
-      s"""${getVarName(node.name)}.attr({'.$key':{text: '$value'}});"""
+      s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
       }.mkString}"""}.mkString}
       ${if(diagram.style isDefined)s"""
           var style = document.createElement('style');
