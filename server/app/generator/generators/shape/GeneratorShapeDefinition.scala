@@ -305,7 +305,6 @@ object GeneratorShapeDefinition {
   }
 
   protected def generatePosition(shape: Rectangle) = {
-    val (x, y) = shape.position.getOrElse((0, 0))
     s"""
        x: ${getX(shape)},
        y: ${getY(shape)},
@@ -320,7 +319,6 @@ object GeneratorShapeDefinition {
   }
 
   protected def generatePosition(shape: RoundedRectangle) = {
-    val (x, y) = (shape.position.get._1, shape.position.get._2)
     s"""
     x: ${getX(shape)},
     y: ${getY(shape)},
@@ -328,8 +326,6 @@ object GeneratorShapeDefinition {
   }
 
   protected def generatePosition(shape: Text) = {
-    val point = shape.position.getOrElse((0, 0))
-    val (x, y) = point
     s"""
     x: ${getX(shape)},
     y: ${getY(shape)},
