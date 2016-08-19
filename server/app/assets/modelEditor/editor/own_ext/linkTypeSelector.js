@@ -148,17 +148,17 @@ var linkTypeSelector = (function linkTypeSelector () {
 
             // event target === link target
             eventSourceID = link.attributes.source.id;
-            eventSourceType = _graph.getCell(eventSourceID).attributes.type.split(".")[1];
+            eventSourceType = _graph.getCell(eventSourceID).attributes.nodeName;
 
         } else if (link.attributes.target.id) {
 
             // event target === link source
             eventSourceID = link.attributes.target.id;
-            eventSourceType = _graph.getCell(eventSourceID).attributes.type.split(".")[1];
+            eventSourceType = _graph.getCell(eventSourceID).attributes.nodeName;
 
         }
 
-        var eventTarget = eventTargetModel.attributes.type.split(".")[1];
+        var eventTarget = eventTargetModel.attributes.nodeName;
 
         menuList = validator.getValidEdges(eventSourceType, eventTarget);
 

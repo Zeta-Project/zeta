@@ -57,7 +57,7 @@ object StencilGenerator {
           ""
         }
       }
-      mcoreName: '${node.name}',
+      nodeName: '${node.name}',
       mClass: '${node.mcoreElement.name}',
       mClassAttributeInfo: [${node.mcoreElement.attributes.map(attr =>
         s"""
@@ -109,9 +109,7 @@ object StencilGenerator {
     $(document).ready(function() {"""+s"""
       ${{for(node <- diagram.nodes) yield
       s"""
-      //Get Style of Shape and Inline Style
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
-      //Fill in text fields
 
       ${{for((key, value) <- node.shape.get.vals) yield
       s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""

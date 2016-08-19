@@ -201,7 +201,7 @@ object ValidatorGenerator {
     val targetMatrix = new HashMap[String, HashMap[String, Boolean]]
     for (node <- diagram.nodes) {
       val edgeTargetMap = getEdgeTargetMap(node, diagram.edges)
-      targetMatrix.put(node.shape.get.referencedShape.name, edgeTargetMap)
+      targetMatrix.put(node.name, edgeTargetMap)
     }
     targetMatrix
   }
@@ -210,7 +210,7 @@ object ValidatorGenerator {
     val sourceMatrix = new HashMap[String, HashMap[String, Boolean]]
     for (node <- diagram.nodes) {
       val edgeSourceMap = getEdgeSourceMap(node, diagram.edges)
-      sourceMatrix.put(node.shape.get.referencedShape.name, edgeSourceMap)
+      sourceMatrix.put(node.name, edgeSourceMap)
     }
     sourceMatrix
   }
