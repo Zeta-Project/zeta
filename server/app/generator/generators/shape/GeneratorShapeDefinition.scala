@@ -59,6 +59,7 @@ object GeneratorShapeDefinition {
           width: ${calculateWidth(shape)},
           height: ${calculateHeight(shape)}},
         size: {${getStencilSize(shape)}},
+        ${generateSizeProperties(shape)}
         resize:{${getResizingPolicies(shape)}},
         attrs: {
           'rect.bounding-box':{
@@ -98,6 +99,17 @@ object GeneratorShapeDefinition {
        horizontal: ${shape.stretching_horizontal.getOrElse("true")},
        vertical: ${shape.stretching_vertical.getOrElse("true")},
        proportional: ${shape.proportional.getOrElse("true")}
+     """
+  }
+
+  def generateSizeProperties(shape: Shape):String = {
+    s"""
+       ${if (shape.size_height_max.isDefined && shape.size_width_max.isDefined) {
+      s"""'size-max': {height: ${shape.size_height_max.get}, width: ${shape.size_width_max.get}},"""}
+    else{""}}
+        ${if (shape.size_height_min.isDefined && shape.size_width_min.isDefined) {
+      s"""'size-min': {height: ${shape.size_height_min.get}, width: ${shape.size_width_min.get}},"""}
+    else{""}}
      """
   }
 
