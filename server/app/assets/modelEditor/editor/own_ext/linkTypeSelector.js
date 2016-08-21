@@ -222,8 +222,10 @@ var linkTypeSelector = (function linkTypeSelector () {
     };
 
     /**
-     * Once the link is drawn, its type is some default link type, so it has to be replaced with a link of the correct type.
-     *
+     * Once the link is drawn, its type is some default link type,
+     * so it has to be replaced with a link of the correct type.
+     * Also check if bounds of link source/target are violated through
+     * the added link. Highlighting is added if this is the case
      * @param {object} link - The link that has just been drawn.
      * @returns {object} The new link.
 
@@ -276,11 +278,18 @@ var linkTypeSelector = (function linkTypeSelector () {
         return cell;
     };
 
+    /**
+     * register listeners for added and removed cells
+     */
     registerListeners = function() {
         _graph.on('add', handleAddedCell);
         _graph.on('remove', handleRemovedCell);
     };
 
+    /**
+     * Checks if the elements lower bounds are violated, if this is the case a highlighting is added
+     * @param cell the newly added cell
+     */
     handleAddedCell = function(cell) {
         if(cell.isLink()) return;
         var inputs = [];
@@ -310,6 +319,11 @@ var linkTypeSelector = (function linkTypeSelector () {
         }
     };
 
+    /**
+     * Checks if bounds are violated through a removed link,
+     * highlighting is added if this is the case
+     * @param link the removed link
+     */
     handleRemovedCell = function(link) {
         // check if style is set, otherwise the removed dummy link will influence the counters
         // this also ignores all Elements
@@ -345,6 +359,13 @@ var linkTypeSelector = (function linkTypeSelector () {
 
     };
 
+    /**
+     * 
+     * @param cellId id of a cell
+     * @param edgeType type of the edge
+     * @param opt indicates whether outbound or inbound links are counted
+     * @returns {number} the connection count
+     */
     getConnectionCount = function(cellId, edgeType, opt) {
         var links = _graph.getConnectedLinks(_graph.getCell(cellId), opt);
         var count = 0;

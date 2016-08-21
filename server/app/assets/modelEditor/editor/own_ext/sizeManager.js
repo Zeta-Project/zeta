@@ -13,23 +13,31 @@ var sizeManager = (function sizeManager () {
         _registerListeners();
     };
 
+    /**
+     * register listener on all existing cells, and all newly added cells
+     */
     _registerListeners = function() {
         _graph.getCells().map(function(cell){_handleResize(cell)});
         _graph.on('add', function(cell){_handleResize(cell)});
     };
 
+    /**
+     * register listener to ensure size of cell if it changes size
+     * and set cell to its init-size
+     */
     _handleResize = function(cell) {
         cell.on('change:size', function() {
             _ensureSize(cell);
         });
         //set cell to actual size
-        console.log(cell.prop('init-size/width'));
-        console.log(cell.prop('init-size/height'));
         cell.prop('size/width', cell.prop('init-size/width'));
         cell.prop('size/height', cell.prop('init-size/height'));
         _ensureSize(cell);
     };
 
+    /**
+     * ensure the cells size does not violate size-min and size-max
+     */
     _ensureSize = function(cell) {
         if(cell.prop('size').width < cell.prop('size-min/width')) {
             cell.prop('size/width', cell.prop('size-min/width'));
