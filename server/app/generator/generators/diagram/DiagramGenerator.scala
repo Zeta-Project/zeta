@@ -4,15 +4,15 @@ import java.nio.file.{Paths, Files}
 import generator.model.diagram.Diagram
 
 /**
- * Created by julian on 07.02.16.
- */
+  * The DiagramGenerator Object
+  */
 object DiagramGenerator {
   private val JOINTJS_STENCIL_FILENAME		= "stencil.js"
   private val JOINTJS_VALIDATOR_FILENAME	= "validator.js"
   private val JOINTJS_LINKHELPER_FILENAME	= "linkhelper.js"
 
   /**
-   * This method is a long sequence of calling all templates for the code generation
+   *  generates the files stencil.js, validator.js and linkhelper.js
    */
   def doGenerate(diagram: Diagram, location:String) {
     val DEFAULT_DIAGRAM_LOCATION = location

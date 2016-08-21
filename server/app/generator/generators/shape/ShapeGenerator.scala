@@ -4,26 +4,19 @@ package generator.generators.shape
 import java.nio.file._
 
 import generator.model.diagram.node.Node
-import generator.model.shapecontainer.ShapeContainerElement
-import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics.GeometricModel
 import generator.parser.Cache
 
-import scala.collection.mutable.HashMap
-
 /**
-  * Created by julian on 19.01.16.
-  * generates a complete shape
+  * The ShapeGenerator Object
   */
 object ShapeGenerator {
 
-
-  val JOINTJS_PATH = "jointjs-gen/diagram"
   val JOINTJS_SHAPE_FILENAME = "shape.js"
   val JOINTJS_INSPECTOR_FILENAME = "inspector.js"
   val JOINTJS_CONNECTION_FILENAME = "connectionstyle.js"
   val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
 
+  /** creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js*/
   def doGenerate(cache: Cache, location: String, nodes: List[Node]) {
     val DEFAULT_SHAPE_LOCATION = location
     val attrs = GeneratorShapeDefinition.attrsInspector

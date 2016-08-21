@@ -1,23 +1,19 @@
 package generator.generators.shape
 
-/**
-  * Created by julian on 19.01.16.
-  * shape inspector generator
-  */
-
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.HasStyle
 import generator.model.diagram.node.Node
-import models.modelDefinitions.metaModel.elements.{MAttribute, ScalarType, ScalarValue}
 
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
 
+
 object GeneratorInspectorDefinition {
   var attrCounterMap = mutable.HashMap[String, Int]()
 
+  /** generates the inspector definition, with input definitions for the JointJS Shapes*/
   def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]], nodes: List[Node]): String = {
     s"""
       var InspectorDefs = {

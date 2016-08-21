@@ -2,14 +2,13 @@ package generator.generators.diagram
 
 import generator.model.diagram.Diagram
 import generator.model.diagram.node.Node
-import generator.model.shapecontainer.shape.Shape
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
- * Created by julian on 07.02.16.
- */
+  * The StencilGenerator object, responsible for the generation of the String for stencil.js
+  */
 object StencilGenerator {
   var packageName = ""
 

@@ -8,9 +8,11 @@ import models.modelDefinitions.metaModel.elements.{MLinkDef, MClass}
 import scala.collection.mutable.{HashMap, ListBuffer}
 
 /**
-  * Created by julian on 07.02.16.
+  * ValidatorGenerator is responsible for the creation of the String for validator.js
   */
 object ValidatorGenerator {
+
+  /** generates matrix for validation of link types and checking upper and lower bounds*/
   def generate(diagram: Diagram) = {
     // TODO: fix ${generateCompartmentMatrix(diagram)}
     s"""
@@ -65,7 +67,7 @@ object ValidatorGenerator {
 
   def generateInOutMatrixForMClass(inputs: Seq[MLinkDef], mcName: String): String = {
     s"""
-    ${mcName}: {
+    $mcName: {
     ${
       (for (input <- inputs) yield
         s"""${input.mType.name}: {
@@ -85,7 +87,7 @@ object ValidatorGenerator {
       ${
       {
         for (((key, value), i) <- clazzes.zipWithIndex) yield
-          s"""${key}: {
+          s"""$key: {
       ${generateEdgeMap(value)}
     }"""
       }.mkString(",")
@@ -94,13 +96,10 @@ object ValidatorGenerator {
   }
 
   def generateEdgeMap(edgeMap: HashMap[String, Boolean]) = {
-    val edges = edgeMap
     s"""
     ${
-      (for (((key, value), i) <- edges.zipWithIndex) yield
-        s"""$key: ${if (value) "true" else "false"}
-
-         """.stripMargin).mkString(",")
+      (for (((key, value), i) <- edgeMap.zipWithIndex) yield
+        s"""$key: ${if (value) "true" else "false"}""").mkString(",")
     }
     """
   }
@@ -108,7 +107,7 @@ object ValidatorGenerator {
   def generateSourceMatrix(diagram: Diagram) = {
     val sourceMatrix = getSourceMatrix(diagram)
     val s = for (((key, value), i) <- sourceMatrix.zipWithIndex) yield
-      s"""${key}: {
+      s"""$key: {
         ${generateEdgeMap(value)}
       }"""
 

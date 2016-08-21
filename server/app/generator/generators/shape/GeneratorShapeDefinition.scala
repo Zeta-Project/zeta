@@ -8,14 +8,21 @@ import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
 
 /**
-  * Created by julian on 19.01.16.
-  * The actual ShapeGenerator
+  * Generates the output String for shape.js
   */
 object GeneratorShapeDefinition {
   val attrs = mutable.HashMap[String, mutable.MutableList[String]]()
   val attrsInspector = mutable.HashMap[String, mutable.HashMap[GeometricModel, String]]()
   private val compartmentMap = mutable.HashMap[String, mutable.ListBuffer[(String, Compartment)]]()
+  private val stencilSize = 80
 
+  /** generates all JointJS shapes */
+  def generate(shapes: Iterable[Shape], packageName: String) = {
+    s"""
+       ${head(packageName)}
+       ${shapes.map(shape => generateShape(shape, packageName)).mkString("")}
+     """
+  }
 
   def head(packageName: String) = {
     raw"""
@@ -42,13 +49,7 @@ object GeneratorShapeDefinition {
     """
   }
 
-  def generate(shapes: Iterable[Shape], packageName: String) = {
-    s"""
-       ${head(packageName)}
-       ${shapes.map(shape => generateShape(shape, packageName)).mkString("")}
-     """
-  }
-
+  /** generates a JointJS shape from Shape*/
   def generateShape(shape: Shape, packageName: String) = {
     s"""
     joint.shapes.$packageName.${shape.name} = joint.shapes.basic.Generic.extend({
@@ -74,20 +75,21 @@ object GeneratorShapeDefinition {
     """
   }
 
+  /** calculates the size of the Shape in the stencil, while keeping proportions*/
   protected def getStencilSize(shape: Shape): String = {
     val height = calculateHeight(shape).asInstanceOf[Double]
     val width = calculateWidth(shape).asInstanceOf[Double]
     var newHeight = 0.0
     var newWidth = 0.0
-    if(height <= 80 && width <= 80) {
+    if(height <= stencilSize && width <= stencilSize) {
       newHeight = height
       newWidth = width
     }else if (height > width) {
-      newHeight = 80
-      newWidth = width / (height/80.0)
+      newHeight = stencilSize
+      newWidth = width / (height/stencilSize.asInstanceOf[Double])
     } else {
-      newWidth = 80
-      newHeight = height / (width/80.0)
+      newWidth = stencilSize
+      newHeight = height / (width/stencilSize.asInstanceOf[Double])
     }
     s"""
       width: ${newWidth.asInstanceOf[Int]}, height: ${newHeight.asInstanceOf[Int]}
@@ -113,6 +115,7 @@ object GeneratorShapeDefinition {
      """
   }
 
+  /** generates the markup of the JointJS shape */
   protected def generateSvgMarkup(shape: Shape) = {
     """ '<g class="rotatable"><g class="scalable"><rect class="bounding-box" />""" + {
       for (s <- shape.shapes.getOrElse(List())) yield {
@@ -171,7 +174,6 @@ object GeneratorShapeDefinition {
 
   protected def generateSvgShape(shape: Text, rootShapeName: String, parentClass: String): String = {
     val className = UUID.randomUUID
-    val shapeValue = shape.textBody
     buildAttrs(shape, rootShapeName, className.toString, parentClass)
     s"""<text class="$className ${shape.id}" > </text>"""
   }
@@ -252,15 +254,11 @@ object GeneratorShapeDefinition {
   }
 
   protected def getAttributes(shape: Line, parentClass: String): String = {
-    val shapex1 = shape.x1
-    val shapey1 = shape.y1
-    val shapex2 = shape.x2
-    val shapey2 = shape.y2
     s"""
-    x1: $shapex1,
-    y1: $shapey1,
-    x2: $shapex2,
-    y2: $shapey2
+      x1: ${shape.x1},
+      y1: ${shape.y1},
+      x2: ${shape.x2},
+      y2: ${shape.y2}
     """
   }
 
@@ -305,15 +303,6 @@ object GeneratorShapeDefinition {
       "'width': " + shape.size_width + ",\n" +
       "'height': " + shape.size_height + ",\n" +
       "text:  " + shape.textBody + " //Is overwritten in stencil, but needed here for scaling"
-  }
-
-  private def generatePosition(shape: GeometricModel): String = {
-    shape match {
-      case r: Ellipse => generatePosition(shape.asInstanceOf[Ellipse])
-      case r: Rectangle => generatePosition(shape.asInstanceOf[Rectangle])
-      case r: RoundedRectangle => generatePosition(shape.asInstanceOf[RoundedRectangle])
-      case r: Text => generatePosition(shape.asInstanceOf[Text])
-    }
   }
 
   protected def generatePosition(shape: Rectangle) = {

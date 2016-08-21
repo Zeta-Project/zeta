@@ -1,21 +1,21 @@
 package generator.generators.style
 
-/**
-  * Created by julian on 07.10.15.
-  * the generator object for style.js
-  */
-
 import generator.model.style._
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.{Gradient, HORIZONTAL}
 import java.nio.file.{Paths, Files}
 
-
+/**
+  * The StyleGenerator object, responsible for generation of style.js
+  */
 object StyleGenerator {
 
 
   def filename = "style.js"
 
+  /** Generates the Output String and writes the String
+    * to the file style.js in the outputLocation
+    */
   def doGenerate(styles: List[Style], outputLocation: String) = {
     val output =
       s"""
@@ -25,6 +25,7 @@ object StyleGenerator {
     Files.write(Paths.get(outputLocation + filename), output.getBytes)
   }
 
+  /** Generates the getStyle function */
   def generateGetStyle(styles: List[Style]): String = {
     s"""
         function getStyle(stylename) {
@@ -40,6 +41,7 @@ object StyleGenerator {
     """
   }
 
+  /** Generates a case of the switch-case in the getStyle function */
   def generateStyleCase(s: Style) =
     s"""
       case '${s.name}':
@@ -50,6 +52,7 @@ object StyleGenerator {
       break;
     """
 
+  /** generates getDiagramHighlighting function with the highlighting styles*/
   def generateGetDiagramHighlighting(styles: List[Style]): String = {
     s"""
       function getDiagramHighlighting(stylename) {
@@ -65,6 +68,7 @@ object StyleGenerator {
     """
   }
 
+  /** generates a case for the switch case of the getDiagramHilighting*/
   def generateDiagramHighlightingCases(s: Style) = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty)
@@ -79,35 +83,33 @@ object StyleGenerator {
 
   def getSelected(s: Style) =
     if (s.selected_highlighting isDefined) {
-      raw""".paper-container .free-transform { border: 1px dashed  ${s.selected_highlighting.get.getRGBValue}; }"""
+      s""".paper-container .free-transform { border: 1px dashed  ${s.selected_highlighting.get.getRGBValue}; }"""
     } else ""
 
   def getMultiselected(s: Style) =
     if (s.multiselected_highlighting isDefined) {
-      raw""".paper-container .selection-box { border: 1px solid ${s.multiselected_highlighting.get.getRGBValue}; }"""
+      s""".paper-container .selection-box { border: 1px solid ${s.multiselected_highlighting.get.getRGBValue}; }"""
     } else ""
 
   def getAllowed(s: Style): String =
     if (s.allowed_highlighting isDefined) {
-      raw""".paper-container .linking-allowed { outline: 2px solid ${s.allowed_highlighting.get.getRGBValue}; }"""
+      s""".paper-container .linking-allowed { outline: 2px solid ${s.allowed_highlighting.get.getRGBValue}; }"""
     } else ""
 
   def getUnallowed(s: Style): String =
     if (s.unallowed_highlighting isDefined) {
-      raw""".paper-container .linking-unallowed { outline: 2px solid ${s.unallowed_highlighting.get.getRGBValue}; }"""
+      s""".paper-container .linking-unallowed { outline: 2px solid ${s.unallowed_highlighting.get.getRGBValue}; }"""
     } else ""
 
-
+  /** generates all text style attributes for the style */
   def createFontAttributes(s: Style) =
     s"""
-          /*
-          Generated Text style attributes
-          */
             text: {
               ${fontAttributes(s)}
             },
     """
 
+  /** generates all text style attributes */
   def fontAttributes(s: Style) = {
     raw"""
        'dominant-baseline': "text-before-edge",
@@ -119,6 +121,7 @@ object StyleGenerator {
        """
   }
 
+  /** creates all common attributes, which are not associated with text */
   def commonAttributes(s: Style): String = {
     raw"""
       ${if (checkBackgroundGradientNecessary(s))
@@ -137,6 +140,7 @@ object StyleGenerator {
 
   def checkBackgroundGradientNecessary(s: Style) = if (s.background_color.isDefined && s.background_color.get.isInstanceOf[Gradient]) true else false
 
+  /** generates gradient background */
   def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
       s"""
       fill: {
@@ -153,6 +157,7 @@ object StyleGenerator {
       """
   }
 
+  /** generates simple one colored background */
   def createBackgroundAttributes(s: Style): String = {
     if (s.background_color.isDefined) {
       val bg_color = s.background_color.get
@@ -163,6 +168,7 @@ object StyleGenerator {
     else ""
   }
 
+  /** generates the stroke attributes */
   def createLineAttributesFromLayout(s: Style) = {
     var ret = """"""
     if (s.line_color.isEmpty)

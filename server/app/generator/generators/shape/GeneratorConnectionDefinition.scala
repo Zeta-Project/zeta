@@ -1,10 +1,8 @@
 package generator.generators.shape
 
 import generator.generators.style.StyleGenerator
-import generator.model.shapecontainer.connection.shapeconnections._
 import generator.model.shapecontainer.connection.{Connection, Placing}
 import generator.model.shapecontainer.shape.geometrics._
-import generator.model.shapecontainer.shape.geometrics.layouts.TextLayout
 import generator.model.style.HasStyle
 
 import scala.collection.mutable
@@ -23,19 +21,18 @@ object GeneratorConnectionDefinition {
       function getConnectionStyle(stylename){
         var style;
         switch(stylename){
-    """ +
-      connections.map(c => "case '" + c.name + "':\n" + {
-      if(c.style.isDefined)
-        "style = getStyle('"+c.style.get.name+"');\n"
-      else
-        "style = {'.connection':{stroke: 'black'}};"
-      } +
-      generateInlineStyle(c) +
-      handlePlacings(c) +
-      "break;\n").mkString +
-      """default:
-          style = {};
-          break;
+          ${connections.map(c => s"""case '${c.name}':
+            ${if(c.style.isDefined)
+              "style = getStyle('"+c.style.get.name+"');\n"
+            else
+              "style = {'.connection':{stroke: 'black'}};\n"
+            }
+            ${generateInlineStyle(c)}
+            ${handlePlacings(c)}
+            break;""").mkString}
+          default:
+            style = {};
+            break;
       }
 
       return style;
@@ -44,7 +41,7 @@ object GeneratorConnectionDefinition {
     function getPlacings(stylename){
       var placings;
       switch(stylename){
-        """ + generateCachedPlacings + raw"""
+          $generateCachedPlacings
         default:
           placings = [];
         break;
@@ -56,7 +53,7 @@ object GeneratorConnectionDefinition {
     function getLabels(stylename){
       var labels;
       switch(stylename){
-        """ + generateCachedLabels + raw"""
+          $generateCachedLabels
         default:
           labels = [];
         break;
@@ -67,7 +64,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def head()={
+  protected def head = {
     raw"""
     /*
      * This is a generated ShapeFile for JointJS
@@ -142,7 +139,7 @@ object GeneratorConnectionDefinition {
       }
   }
 
-  protected def generateCachedPlacings()= {
+  protected def generateCachedPlacings = {
     var placings = ""
     if (placingsCache.nonEmpty) {
       placings = placingsCache.map { case (k, v) =>
@@ -159,7 +156,7 @@ object GeneratorConnectionDefinition {
     placings
   }
 
-  protected def generateCachedLabels()= {
+  protected def generateCachedLabels = {
     val labels = labelCache.map { case (k, v) =>
       s"""case "$k":
           labels = [ ${v.map(generateLabel).mkString}];
@@ -225,7 +222,7 @@ object GeneratorConnectionDefinition {
     attrs:{
       points: """" + shape.points.map(point => point.x + ", " + point.y + {if(point != shape.points.last)", " else "\""}).mkString("") + raw""",
       ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""},
-      ${generateStyleCorrections}
+      $generateStyleCorrections
     }
     """
   }
@@ -272,7 +269,7 @@ object GeneratorConnectionDefinition {
     attrs:{
       rx: ${shape.size_width/2},
       ry: ${shape.size_height/2},
-      cy: ${distance},
+      cy: $distance,
       ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""},
       }
     """
@@ -372,7 +369,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generateMarkerSourceCorrection()={
+  protected def generateMarkerSourceCorrection = {
     """transform: 'scale(1,1)',"""
   }
 

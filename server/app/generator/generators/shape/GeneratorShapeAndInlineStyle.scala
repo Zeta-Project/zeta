@@ -1,21 +1,17 @@
 package generator.generators.shape
 
 import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics.Alignment.{CENTER, HAlign, LEFT, RIGHT}
 import generator.model.shapecontainer.shape.geometrics._
 
 import scala.collection.mutable
-import scala.collection.mutable.{HashMap}
+import scala.collection.mutable.HashMap
 
-/**
-  * Created by julian on 19.01.16.
-  * shape and inlinestyle generator kindof useless since inlinestyles are now automatically merged with the actual styles....
-  *
-  */
-
-
+/** generates output string for elementAndInlineStyle.js */
 object GeneratorShapeAndInlineStyle {
 
+  /** generates the getShapeStyle function which contains mapping
+    * between styles and markup elements of the JointJS shape
+    */
   def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel,String]]) = {
     s"""
       function getShapeStyle(elementName) {
@@ -151,12 +147,4 @@ object GeneratorShapeAndInlineStyle {
     ret
   }
 
-  protected def getRefXValue(alignment: HAlign) = {
-    alignment match {
-      case LEFT => 0.0
-      case RIGHT => 1.0
-      case CENTER => 0.5
-      case _ => 0.0
-    }
-  }
 }
