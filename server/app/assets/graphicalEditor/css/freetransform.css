@@ -91,3 +91,36 @@
 .free-transform[data-type="devs.Atomic"]  .resize[data-position="right"] {
     display: none;
 }
+
+/* resize divs are wrongly positioned so the cursors need to be fixed */
+.free-transform .resize.ne {
+    cursor: n-resize;
+}
+
+.free-transform .resize.e {
+    cursor: ne-resize;
+}
+
+.free-transform .resize.se {
+    cursor: e-resize;
+}
+
+.free-transform .resize.s {
+    cursor: se-resize;
+}
+
+.free-transform .resize.sw {
+    cursor: s-resize;
+}
+
+.free-transform .resize.w {
+    cursor: sw-resize;
+}
+
+.free-transform .resize.nw {
+    cursor: w-resize;
+}
+
+.free-transform .resize.n {
+    cursor: nw-resize;
+}
