@@ -34,6 +34,9 @@ var Rappid = Backbone.Router.extend({
 
             this.initializeToolbar();
 
+            $("[data-hide]").on("click", function(){
+                $("." + $(this).attr("data-hide")).hide();
+            });
             linkTypeSelector.init(this.graph);
             collaboration.init(this.graph);
         },
@@ -560,20 +563,14 @@ var Rappid = Backbone.Router.extend({
                 console.log(metaModel);
 
                 if (metaModel.isValid()) {
-                    var metaModelWindow = window.open("", "", "width=800,height=600");
-                    metaModelWindow.document.write('<pre>' + metaModel.toString(true) + '</pre>');
-                    metaModelWindow.document.title = 'Exported Meta Model';
-
                     // Send exported Metamodel to server
                     this.saveMetaModel(metaModel.getMetaModel(), this.graph.toJSON());
-
-
                 } else {
                     var errorMessage = "";
                     metaModel.getMessages().forEach(function (message) {
                         errorMessage += message + '\n';
                     });
-                    alert(errorMessage);
+                    this.showExportFailure(errorMessage);
                 }
             }, this));
 
@@ -585,9 +582,11 @@ var Rappid = Backbone.Router.extend({
          * @param graph
          */
         saveMetaModel: function (metaModel, graph) {
-            var fnSave = function (accessToken, tokenRefreshed, error) {
+            var showFailure = this.showExportFailure;
+            var showSuccess = this.showExportSuccess;
+            var fnSave = function (accessTokenString, tokenRefreshed, error) {
                 if (error) {
-                    alert("Error saving meta model: " + error);
+                    showFailure("Error saving meta model: " + error);
                     return;
                 }
 
@@ -605,16 +604,16 @@ var Rappid = Backbone.Router.extend({
                     contentType: "application/json; charset=utf-8",
                     data: data,
                     headers: {
-                        Authorization: "Bearer " + accessToken
+                        Authorization: "Bearer " + accessTokenString
                     },
                     success: function (data, textStatus, jqXHR) {
-                        alert("Saved meta model");
+                        showSuccess();
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
                         if (!tokenRefreshed) {
                             accessToken.authorized(fnSave, true);
                         } else {
-                            alert("Error saving meta model: " + errorThrown);
+                            showFailure("Error saving meta model: " + errorThrown);
                         }
                     }
                 });
@@ -820,6 +819,26 @@ var Rappid = Backbone.Router.extend({
                 this.freetransform.remove();
             }, this);
 
+        },
+
+        showExportSuccess: function() {
+            $("#success-panel").fadeOut('slow', function() {
+                $("#error-panel").fadeOut('slow', function() {
+                    $("#success-panel").show();
+                    $("#success-panel").find("div").text("Success, metamodel saved!");
+                    $("#success-panel").fadeIn('slow');
+                });
+            });
+        },
+
+        showExportFailure: function(reason) {
+            $("#success-panel").fadeOut('slow', function() {
+                $("#error-panel").fadeOut('slow', function() {
+                    $("#error-panel").show();
+                    $("#error-panel").find("div").text(reason);
+                    $("#error-panel").fadeIn('slow');
+                });
+            });
         }
 // ---------- customization end
     })
