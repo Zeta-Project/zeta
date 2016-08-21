@@ -27,3 +27,7 @@
    bottom: 15px;
    position: absolute;
 }
+
+.paper-container polyline {
+   fill: transparent
+}
