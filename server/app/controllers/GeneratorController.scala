@@ -8,7 +8,7 @@ import generator.parser.{Cache, SprayParser}
 import generator.generators.diagram.DiagramGenerator
 import generator.generators.style.StyleGenerator
 import generator.generators.shape.ShapeGenerator
-import play.api.Play.current
+import generator.generators.vr.shape.VrShapeGenerator
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
@@ -26,7 +26,10 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
     val result = Await.result(metaModelDao.findById(metaModelUuid), 30 seconds)
     if (result.isDefined && result.get.metaModel.elements.nonEmpty) {
       val generatorOutputLocation = System.getenv("PWD") + "/server/model_specific/" + metaModelUuid + "/"
+      val vrGeneratorOutputLocation = System.getenv("PWD") + "/server/model_specific/vr/" + metaModelUuid + "/"
+
       Files.createDirectories(Paths.get(generatorOutputLocation))
+      Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
 
       val hierarchyContainer = Cache()
       val parser = new SprayParser(hierarchyContainer, result.get)
@@ -45,6 +48,9 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
           StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
           ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
           DiagramGenerator.doGenerate(diagram.get, generatorOutputLocation)
+
+          // Generate files for the VR - Editor
+          VrShapeGenerator.doGenerate(hierarchyContainer, vrGeneratorOutputLocation, diagram.get.nodes)
         } catch {
           case e :Throwable => error = Some("There occurred an error during generation");
         }
