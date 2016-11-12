@@ -14,6 +14,7 @@ import scala.concurrent.duration._
 import scala.concurrent.Await
 import java.nio.file.{Files, Paths}
 
+import generator.generators.vr.diagram.VrDiagramGenerator
 import generator.model.diagram.Diagram
 
 
@@ -51,6 +52,7 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
 
           // Generate files for the VR - Editor
           VrShapeGenerator.doGenerate(hierarchyContainer, vrGeneratorOutputLocation, diagram.get.nodes)
+          VrDiagramGenerator.doGenerate(diagram.get, vrGeneratorOutputLocation)
         } catch {
           case e: Throwable => error = Some("There occurred an error during generation");
         }
