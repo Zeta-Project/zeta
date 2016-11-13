@@ -18,6 +18,9 @@ GET           /model/editor/:metaModelUuid/:modelUuid                           
 GET           /model/socket/:graphType/:instanceId                                   @controllers.ModelController.modelSocket(instanceId:String, graphType:String)
 GET           /model/validator                                                       @controllers.ModelController.modelValidator
 
+### vr
+GET           /model/vreditor/:metaModelUuid/:modelUuid                                @controllers.ModelController.vrModelEditor(metaModelUuid: String, modelUuid: String)
+
 # temporary
 GET           /generator/:metaModelUuid                                              @controllers.GeneratorController.generate(metaModelUuid: String)
 

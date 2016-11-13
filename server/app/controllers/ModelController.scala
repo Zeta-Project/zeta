@@ -22,6 +22,12 @@ class ModelController @Inject()(override implicit val env: UserEnvironment, mode
     Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, Some(request.user), model.get))
   }
 
+  def vrModelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
+    val model = Await.result(modelDao.findById(modelUuid), 30 seconds)
+    if(!model.isDefined) BadRequest("no model available for this modelid")
+    Ok(views.html.VrEditor(metaModelUuid))
+  }
+
   def modelValidator() = SecuredAction { implicit request =>
     Ok(views.html.model.ModelValidator(Some(request.user)))
   }

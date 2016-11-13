@@ -1,0 +1,31 @@
+@(metaModelUUID: String)
+<!--<!DOCTYPE html>-->
+<script>console.log("hallo")</script>
+<html>
+<head>
+    <title>Class Diagram</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <script src="/assets/prototyp/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="/assets/prototyp/bower_components/underscore/underscore-min.js"></script>
+
+    <link rel="import" href="/model_specific/vr/@metaModelUUID/vr-scene.html">
+
+    <style>
+        body {
+            background-color: #f0f0f0;
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<vr-scene></vr-scene>
+</body>
+</html>
