@@ -10,7 +10,7 @@ object VrGeneratorNewBehavior {
   def generate(diagram: Diagram) = {
     s"""
     <!-- Generated file -->
-    <link rel="import" href="../behaviors/vr-new.html">
+    <link rel="import" href="assets/prototyp/behaviors/vr-new.html">
 
     <script>
          window.VrBehavior = window.VrBehavior || {};
@@ -23,7 +23,12 @@ object VrGeneratorNewBehavior {
              counter += 1
              // TODO: Also generate this part!
              // classItems must be part off vr-scene.html
-             this.push('classItems', {id: 'class-' + counter, xPos: position.x, yPos: position.y, classType: text.toLowerCase()});
+             switch(text) {
+                ${diagram.nodes.map(generateCases(_)).mkString}
+                default:
+                    console.error("No valid element found! Caution generated Code.");
+                    counter -= 1;
+             }
                return counter;
              }
          }];
@@ -35,5 +40,13 @@ object VrGeneratorNewBehavior {
     var result = ""
     for(node <- nodes) {result += "\"" + node.name + "\", "}
     result.dropRight(2)
+  }
+
+  def generateCases(node:Node) = {
+    s"""
+      case "${node.name}":
+        this.push('${node.name}Items', {id: '${node.name}-' + counter, xPos: position.x, yPos: position.y, classType: text.toLowerCase()});
+        break;
+    """
   }
 }
