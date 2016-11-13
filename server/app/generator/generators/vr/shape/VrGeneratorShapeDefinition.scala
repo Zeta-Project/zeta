@@ -25,18 +25,70 @@ object VrGeneratorShapeDefinition {
 
   def generatePolymerElement(shape: Shape) = {
     s"""
+    <link rel="import" href="../bower_components/polymer/polymer.html">
+    <link rel="import" href="../behaviors/vr-three.html">
+    ${generateImports(shape.shapes.getOrElse(List()))}
+
+
     <dom-module id="vr-${shape.name}">
       <template>
         ${generateHtmlTemplate(shape.shapes.getOrElse(List()))}
       </template>
     </dom-module>
 
+
     <script>
     Polymer({
       is: "vr-${shape.name}",
+
+      behaviors: [VrBehavior.ThreeJS],
+
+      properties: {
+          xPos: {
+              type: Number,
+              value: 0
+          },
+          yPos: {
+              type: Number,
+              value: 0
+          }
+      },
+
+      ready: function() {
+          this.getThreeJS().position.setX(this.xPos);
+          this.getThreeJS().position.setY(this.yPos);
+      },
+
+      attached: function () {
+          this._getChildren().forEach(function (box) {
+              this.getThreeJS().add(box.getThreeJS());
+          }.bind(this));
+      },
+
+      _getChildren: function () {
+          // return all children except template element
+          return Polymer.dom(this.root).children.filter(function (node) {
+              return node.localName != 'template';
+          });
+      }
     });
     </script>
     """
+  }
+
+  def generateImports(geometrics: List[GeometricModel]) : String = {
+    (for(g : GeometricModel <- geometrics) yield {
+      g match {
+        case g: Line => "Line"
+        // caution: Order is important because ellipse extends rectangle
+        case g: Ellipse => s"""<link rel="import" href="./vr-ellipse.html"> ${generateImports(g.children)}"""
+        case g: Rectangle => s"""<link rel="import" href="./vr-box.html"> ${generateImports(g.children)}"""
+        case g: Polygon => "Polygon"
+        case g: PolyLine => "PolyLine"
+        case g: RoundedRectangle => "RoundedRectangle"
+        case g: Text => "Text"
+      }
+    }).mkString
   }
 
   def generateHtmlTemplate(geometrics: List[GeometricModel]) : String = {

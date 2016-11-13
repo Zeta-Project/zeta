@@ -7,20 +7,35 @@ import generator.model.diagram.node.Node
   * Created by max on 12.11.16.
   */
 object VrGeneratorScene {
+
+  // TODO: remove dropRight(4)
   def generate(diagram: Diagram) = {
     s"""
-       <script src="assets/prototyp/bower_components/threejs/build/three.min.js"></script>
-       <script src="assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
+       <!--<script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
+       <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
 
-       <link rel="import" href="assets/prototyp/bower_components/polymer/polymer.html">
-       <link rel="import" href="assets/prototyp/behaviors/vr-zoom.html">
-       <link rel="import" href="assets/prototyp/behaviors/vr-axis-control.html">
-       <link rel="import" href="vr-new-extended.html">
-       <link rel="import" href="assets/prototyp/behaviors/vr-touch.html">
-       <link rel="import" href="assets/prototyp/behaviors/vr-webvr.html">
-       <link rel="import" href="assets/prototyp/behaviors/vr-scene.html">
+       <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+       <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
+       <link rel="import" href="/assets/prototyp/behaviors/vr-axis-control.html">
+       <link rel="import" href="./vr-new-extended.html">
+       <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
+       <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
+       <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">-->
 
-       ${diagram.nodes.map(node => "<link rel=\"import\" href=\"vr-" + node.name + ".html\">\n").mkString}
+       <script src="../bower_components/threejs/build/three.min.js"></script>
+       <script src="../bower_components/threex.domevents/threex.domevents.js"></script>
+
+ <link rel="import" href="../bower_components/polymer/polymer.html">
+       <link rel="import" href="../behaviors/vr-zoom.html">
+       <link rel="import" href="../behaviors/vr-axis-control.html">
+
+ <link rel="import" href="../behaviors/vr-new-extended.html">
+       <link rel="import" href="../behaviors/vr-touch.html">
+       <link rel="import" href="../behaviors/vr-webvr.html">
+       <link rel="import" href="../behaviors/vr-scene.html">
+
+
+       ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.name.dropRight(4) + ".html\">\n").mkString}
 
        <dom-module id="vr-scene">
                  <template>
@@ -58,7 +73,7 @@ object VrGeneratorScene {
                          VrBehavior.Touch,
                          VrBehavior.Zoom,
                          VrBehavior.AxisControl,
-                         VrBehavior.NewClass,
+                         VrBehavior.NewExtended, // gets generated
                          VrBehavior.Webvr,
                          VrBehavior.Scene
                      ],
@@ -107,15 +122,15 @@ object VrGeneratorScene {
 
   def generateTemplate(node: Node) = {
     s"""
-    <template is="dom-repeat" items="{{${node.name}Items}" strip-whitespace>
-        <vr-${node.name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${node.name}>
+    <template is="dom-repeat" items="{{${node.name.dropRight(4)}Items}}" strip-whitespace>
+        <vr-${node.name.dropRight(4)} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${node.name.dropRight(4)}>
     </template>
     """
   }
 
   def generateProperties(node: Node) = {
     s"""
-    ${node.name}Items: {
+    ${node.name.dropRight(4)}Items: {
         type: Array,
         value: function() {
             return [];

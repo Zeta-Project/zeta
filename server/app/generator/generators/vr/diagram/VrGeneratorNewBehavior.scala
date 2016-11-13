@@ -7,14 +7,16 @@ import generator.model.diagram.node.Node
   * Created by max on 12.11.16.
   */
 object VrGeneratorNewBehavior {
+  // TODO: remove dropRight(4)
   def generate(diagram: Diagram) = {
     s"""
     <!-- Generated file -->
-    <link rel="import" href="assets/prototyp/behaviors/vr-new.html">
+    <!--<link rel="import" href="assets/prototyp/behaviors/vr-new.html">-->
+    <link rel="import" href="./vr-new.html">
 
     <script>
          window.VrBehavior = window.VrBehavior || {};
-         VrBehavior.NewClass = [VrBehavior.New, {
+         VrBehavior.NewExtended = [VrBehavior.New, {
              getEntries: function() {
                return [${generateEntriesArray(diagram.nodes)}];
              },
@@ -38,14 +40,14 @@ object VrGeneratorNewBehavior {
 
   def generateEntriesArray(nodes: List[Node]) = {
     var result = ""
-    for(node <- nodes) {result += "\"" + node.name + "\", "}
+    for(node <- nodes) {result += "\"" + node.name.dropRight(4) + "\", "}
     result.dropRight(2)
   }
 
   def generateCases(node:Node) = {
     s"""
-      case "${node.name}":
-        this.push('${node.name}Items', {id: '${node.name}-' + counter, xPos: position.x, yPos: position.y, classType: text.toLowerCase()});
+      case "${node.name.dropRight(4)}":
+        this.push('${node.name.dropRight(4)}Items', {id: '${node.name.dropRight(4)}-' + counter, xPos: position.x, yPos: position.y, classType: text.toLowerCase()});
         break;
     """
   }
