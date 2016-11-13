@@ -23,8 +23,8 @@ class ModelController @Inject()(override implicit val env: UserEnvironment, mode
   }
 
   def vrModelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
-    val model = Await.result(modelDao.findById(modelUuid), 30 seconds)
-    if(!model.isDefined) BadRequest("no model available for this modelid")
+//    val model = Await.result(modelDao.findById(modelUuid), 30 seconds)
+//    if(!model.isDefined) BadRequest("no model available for this modelid")
     Ok(views.html.VrEditor(metaModelUuid))
   }
 
