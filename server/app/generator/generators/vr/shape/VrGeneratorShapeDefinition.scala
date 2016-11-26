@@ -26,7 +26,7 @@ object VrGeneratorShapeDefinition {
   def generatePolymerElement(shape: Shape) = {
     s"""
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-three.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
     ${generateImports(shape.shapes.getOrElse(List()))}
 
 
@@ -42,7 +42,9 @@ object VrGeneratorShapeDefinition {
     VrElement.${shape.name.capitalize} = Polymer({
       is: "vr-${shape.name}",
 
-      behaviors: [VrBehavior.ThreeJS],
+      behaviors: [
+          VrBehavior.Highlight
+      ],
 
       properties: {
           xPos: {
