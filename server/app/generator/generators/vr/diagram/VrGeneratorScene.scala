@@ -8,7 +8,6 @@ import generator.model.diagram.node.Node
   */
 object VrGeneratorScene {
 
-  // TODO: remove dropRight(4)
   def generate(diagram: Diagram) = {
     s"""
        <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
@@ -22,7 +21,7 @@ object VrGeneratorScene {
        <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
 
-       ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.name.dropRight(4) + ".html\">\n").mkString}
+       ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
 
        <dom-module id="vr-scene">
                  <template>
@@ -108,16 +107,17 @@ object VrGeneratorScene {
   }
 
   def generateTemplate(node: Node) = {
+    val name = node.shape.get.getShape
     s"""
-    <template is="dom-repeat" items="{{${node.name.dropRight(4)}Items}}" strip-whitespace>
-        <vr-${node.name.dropRight(4)} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${node.name.dropRight(4)}>
+    <template is="dom-repeat" items="{{${name}Items}}" strip-whitespace>
+        <vr-${name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${name}>
     </template>
     """
   }
 
   def generateProperties(node: Node) = {
     s"""
-    ${node.name.dropRight(4)}Items: {
+    ${node.shape.get.getShape}Items: {
         type: Array,
         value: function() {
             return [];

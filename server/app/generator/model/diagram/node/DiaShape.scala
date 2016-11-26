@@ -35,4 +35,6 @@ class DiaShape(corporateStyle:Option[Style], shape:String,
           case (name, x) if x.isInstanceOf[MReference] & name == i._2 => true
         }.asInstanceOf[Option[(String, MReference)]].get._2 -> referencedShape.compartmentMap.get(i._2)).toMap
   }
+  // ADDED: to get the name of the shape
+  def getShape = shape
 }

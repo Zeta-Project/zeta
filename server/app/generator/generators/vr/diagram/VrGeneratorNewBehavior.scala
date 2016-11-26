@@ -1,13 +1,12 @@
 package generator.generators.vr.diagram
 
 import generator.model.diagram.Diagram
-import generator.model.diagram.node.Node
+import generator.model.diagram.node.{DiaShape, Node}
 
 /**
   * Created by max on 12.11.16.
   */
 object VrGeneratorNewBehavior {
-  // TODO: remove dropRight(4)
   def generate(diagram: Diagram) = {
     s"""
     <!-- Generated file -->
@@ -22,7 +21,6 @@ object VrGeneratorNewBehavior {
 
          pushNewElement: function(counter, position, text) {
              counter += 1
-             // TODO: Also generate this part!
              // classItems must be part off vr-scene.html
              switch(text) {
                 ${diagram.nodes.map(generateCases(_)).mkString}
@@ -39,14 +37,15 @@ object VrGeneratorNewBehavior {
 
   def generateEntriesArray(nodes: List[Node]) = {
     var result = ""
-    for(node <- nodes) {result += "\"" + node.name.dropRight(4) + "\", "}
+    for(node <- nodes) {result += "\"" + node.shape.get.getShape + "\", "}
     result.dropRight(2)
   }
 
   def generateCases(node:Node) = {
+    val name = node.shape.get.getShape
     s"""
-      case "${node.name.dropRight(4)}":
-        this.push('${node.name.dropRight(4)}Items', {id: '${node.name.dropRight(4)}-' + counter, xPos: position.x, yPos: position.y, classType: text.toLowerCase()});
+      case "${name}":
+        this.push('${name}Items', {id: '${name}-' + counter, xPos: position.x, yPos: position.y, classType: text.toLowerCase()});
         break;
     """
   }
