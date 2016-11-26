@@ -1,6 +1,5 @@
 @(metaModelUUID: String)
-<!--<!DOCTYPE html>-->
-<script>console.log("hallo")</script>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Class Diagram</title>
@@ -14,39 +13,15 @@
 
     <script src="/assets/prototyp/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <script src="/assets/prototyp/bower_components/underscore/underscore-min.js"></script>
-    <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
-    <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
 
     <!-- import generated files -->
-    <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-scene.html")">
-    <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-new-extended.html")">
-    <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-connection-verbindung.html")">
-    <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-place.html")">
-    <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-transition.html")">
+    <link rel="import" href="@("/assets/model_specific/vr/" + metaModelUUID + "/vr-new-extended.html")">
+    <link rel="import" href="@("/assets/model_specific/vr/" + metaModelUUID + "/vr-scene.html")">
+    <link rel="import" href="@("/assets/model_specific/vr/" + metaModelUUID + "/vr-connection-verbindung.html")">
+    <link rel="import" href="@("/assets/model_specific/vr/" + metaModelUUID + "/vr-place.html")">
+    <link rel="import" href="@("/assets/model_specific/vr/" + metaModelUUID + "/vr-transition.html")">
 
-    <!-- import normal files -->
-    <link rel="import" href="/assets/prototyp/behaviors/vr-three.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-axis-control.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-connection.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-new.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
-
-    <link rel="import" href="/assets/prototyp/elements/vr-box.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-ellipse.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-placing.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-point.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-polygon.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-polyline.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-text.html">
-
+    <!--<link rel="import" href="/assets/model_specific/vr/3a227b95-7f0b-45e2-8d23-9e88eee822a7/vr-scene.html")">-->
 
     <style>
         body {

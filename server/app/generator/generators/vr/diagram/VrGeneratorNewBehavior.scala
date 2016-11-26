@@ -11,8 +11,7 @@ object VrGeneratorNewBehavior {
   def generate(diagram: Diagram) = {
     s"""
     <!-- Generated file -->
-    <!--<link rel="import" href="assets/prototyp/behaviors/vr-new.html">-->
-    <link rel="import" href="./vr-new.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-new.html">
 
     <script>
          window.VrBehavior = window.VrBehavior || {};

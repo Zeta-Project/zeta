@@ -23,11 +23,11 @@ object VrGeneratorConnectionDefinition {
 
   def generatePolymerElement(conn: Connection) = {
     s"""
-    <link rel="import" href="../bower_components/polymer/polymer.html">
-    <link rel="import" href="../behaviors/vr-three.html">
-    <link rel="import" href="../behaviors/vr-connection.html">
-    <link rel="import" href="./vr-placing.html">
-    <link rel="import" href="./vr-point.html">
+    <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-connection.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+    <link rel="import" href="/assets/prototyp/elements/vr-placing.html">
+    <link rel="import" href="/assets/prototyp/elements/vr-point.html">
     ${importPlacing(conn.placing)}
 
     <dom-module id="vr-connection-${conn.name}">
@@ -42,9 +42,8 @@ object VrGeneratorConnectionDefinition {
         Polymer({
             is: "vr-connection-${conn.name}",
             behaviors: [
-                VrBehaviors.ThreeBehavior,
-                VrBehaviors.ConnectionBehavior,
-                VrBehaviors.DeleteBehavior
+                        VrBehavior.Connection,
+                        VrBehavior.Delete
             ]
         });
     </script>
@@ -54,7 +53,7 @@ object VrGeneratorConnectionDefinition {
   def importPlacing(placings: List[Placing]) = {
     val placingTypes = placings.map(_.attributes.typ)
     val imports = placingTypes.distinct
-    imports.map(imp => s"""<link rel='import' href='./vr-${imp}.html'>""").mkString
+    imports.map(imp => s"""<link rel='import' href='/assets/prototyp/elements/vr-${imp}.html'>""").mkString
   }
 
   def generatePlacing(placing: Placing) = {

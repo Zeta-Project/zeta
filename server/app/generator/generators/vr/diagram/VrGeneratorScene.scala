@@ -11,29 +11,16 @@ object VrGeneratorScene {
   // TODO: remove dropRight(4)
   def generate(diagram: Diagram) = {
     s"""
-       <!--<script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
+       <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
        <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
 
        <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-axis-control.html">
-       <link rel="import" href="./vr-new-extended.html">
+       <!-- This would be the better solution: <link rel="import" href="vr-new-extended.html"> -->
        <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">-->
-
-       <script src="../bower_components/threejs/build/three.min.js"></script>
-       <script src="../bower_components/threex.domevents/threex.domevents.js"></script>
-
- <link rel="import" href="../bower_components/polymer/polymer.html">
-       <link rel="import" href="../behaviors/vr-zoom.html">
-       <link rel="import" href="../behaviors/vr-axis-control.html">
-
- <link rel="import" href="../behaviors/vr-new-extended.html">
-       <link rel="import" href="../behaviors/vr-touch.html">
-       <link rel="import" href="../behaviors/vr-webvr.html">
-       <link rel="import" href="../behaviors/vr-scene.html">
-
+       <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
 
        ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.name.dropRight(4) + ".html\">\n").mkString}
 

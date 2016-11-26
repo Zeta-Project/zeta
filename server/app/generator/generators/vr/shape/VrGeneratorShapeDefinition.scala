@@ -25,8 +25,8 @@ object VrGeneratorShapeDefinition {
 
   def generatePolymerElement(shape: Shape) = {
     s"""
-    <link rel="import" href="../bower_components/polymer/polymer.html">
-    <link rel="import" href="../behaviors/vr-three.html">
+    <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-three.html">
     ${generateImports(shape.shapes.getOrElse(List()))}
 
 
@@ -81,8 +81,8 @@ object VrGeneratorShapeDefinition {
       g match {
         case g: Line => "Line"
         // caution: Order is important because ellipse extends rectangle
-        case g: Ellipse => s"""<link rel="import" href="./vr-ellipse.html"> ${generateImports(g.children)}"""
-        case g: Rectangle => s"""<link rel="import" href="./vr-box.html"> ${generateImports(g.children)}"""
+        case g: Ellipse => s"""<link rel="import" href="/assets/prototyp/elements/vr-ellipse.html"> ${generateImports(g.children)}"""
+        case g: Rectangle => s"""<link rel="import" href="/assets/prototyp/elements/vr-box.html"> ${generateImports(g.children)}"""
         case g: Polygon => "Polygon"
         case g: PolyLine => "PolyLine"
         case g: RoundedRectangle => "RoundedRectangle"
