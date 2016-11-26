@@ -39,7 +39,8 @@ object VrGeneratorConnectionDefinition {
     </dom-module>
 
     <script>
-        Polymer({
+        window.VrElement = window.VrElement || {};
+        VrElement.Connection${conn.name} = Polymer({
             is: "vr-connection-${conn.name}",
             behaviors: [
                         VrBehavior.Connection,

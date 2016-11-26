@@ -38,7 +38,8 @@ object VrGeneratorShapeDefinition {
 
 
     <script>
-    Polymer({
+    window.VrElement = window.VrElement || {};
+    VrElement.${shape.name.capitalize} = Polymer({
       is: "vr-${shape.name}",
 
       behaviors: [VrBehavior.ThreeJS],
