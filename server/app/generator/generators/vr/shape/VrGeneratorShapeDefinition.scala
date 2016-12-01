@@ -26,6 +26,10 @@ object VrGeneratorShapeDefinition {
   def generatePolymerElement(shape: Shape) = {
     s"""
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
     ${generateImports(shape.shapes.getOrElse(List()))}
 
@@ -43,7 +47,11 @@ object VrGeneratorShapeDefinition {
       is: "vr-${shape.name}",
 
       behaviors: [
-          VrBehavior.Highlight
+        VrBehavior.Move,
+        VrBehavior.Resize,
+        VrBehavior.Highlight,
+        VrBehavior.Delete,
+        VrBehavior.Connect
       ],
 
       properties: {
@@ -101,13 +109,13 @@ object VrGeneratorShapeDefinition {
         // caution: Order is important because ellipse extends rectangle
         case g: Ellipse => {
           val (x, y) = g.position.getOrElse((0,0))
-          s"""<vr-ellipse x="${x}" y="${y}" width="${g.size_width}" height="${g.size_width}">
+          s"""<vr-ellipse x="${x}" y="${y}" width="${g.size_width}" height="${g.size_width}" depth="10">
               ${generateHtmlTemplate(g.children)}
           </vr-ellipse>"""
         }
         case g: Rectangle => {
           val (x, y) = g.position.getOrElse((0,0))
-          s"""<vr-box x-pos="${x}" y-pos="${y}" width="${g.size_width}" height="${g.size_width}">
+          s"""<vr-box x-pos="${x}" y-pos="${y}" width="${g.size_width}" height="${g.size_width}" depth="10">
               ${generateHtmlTemplate(g.children)}
           </vr-box>"""
         }
