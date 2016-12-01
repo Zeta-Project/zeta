@@ -16,10 +16,10 @@ object VrGeneratorScene {
        <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-axis-control.html">
-       <!-- This would be the better solution: <link rel="import" href="vr-new-extended.html"> -->
        <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
+       <link rel="import" href="vr-new-extended.html">
 
        ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
 
