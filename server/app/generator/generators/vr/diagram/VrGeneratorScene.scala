@@ -19,6 +19,7 @@ object VrGeneratorScene {
        <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
        <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
+       <link rel="import" href="/assets/prototyp/behaviors/vr-load-elements.html">
        <link rel="import" href="vr-new-extended.html">
 
        ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
@@ -61,7 +62,8 @@ object VrGeneratorScene {
                          VrBehavior.AxisControl,
                          VrBehavior.NewExtended, // gets generated
                          VrBehavior.Webvr,
-                         VrBehavior.Scene
+                         VrBehavior.Scene,
+                         VrBehavior.LoadElements
                      ],
 
                properties: {
