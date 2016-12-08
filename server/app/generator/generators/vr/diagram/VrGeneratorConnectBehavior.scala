@@ -12,7 +12,7 @@ object VrGeneratorConnectBehavior {
     <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
 
     <script>
-      window.VrBehavior = window.Behavior || {};
+      window.VrBehavior = window.VrBehavior || {};
       VrBehavior.ConnectExtended = [VrBehavior.Connect, {
         connectionMap: {
           ${connections.map(createMap(_)).mkString.dropRight(1)}
@@ -26,7 +26,7 @@ object VrGeneratorConnectBehavior {
           if(type in this.connectionMap) {
             (this.connectionMap[type].bind(this))(connection);
           } else {
-            console.error("No valid element found! Caution generated Code.");
+            console.error("No valid connection found! Caution generated Code.");
           }
         }
       }];

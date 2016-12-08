@@ -51,7 +51,8 @@ object VrGeneratorShapeDefinition {
         VrBehavior.Resize,
         VrBehavior.Highlight,
         VrBehavior.Delete,
-        VrBehavior.Connect
+        VrBehavior.ConnectExtended,
+        VrBehavior.Look
       ],
 
       properties: {
