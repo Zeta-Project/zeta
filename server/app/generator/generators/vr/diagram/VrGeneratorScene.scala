@@ -10,8 +10,7 @@ import generator.model.shapecontainer.connection.{Connection}
   */
 object VrGeneratorScene {
 
-  def generate(diagram: Diagram) = {
-    val connections = diagram.edges.map(getConnection(_)).groupBy(_.name).map(_._2.head)
+  def generate(nodes: Iterable[Node], connections: Iterable[Connection]) = {
     s"""
       <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
       <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
@@ -27,7 +26,7 @@ object VrGeneratorScene {
       <link rel="import" href="vr-connect-extended.html">
 
       <!-- Import all generated elements -->
-      ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
+      ${nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
 
       <!-- Import all generated connections -->
       ${connections.map(connection => "<link rel=\"import\" href=\"./vr-connection-" + connection.name + ".html\">\n").mkString}
@@ -42,7 +41,7 @@ object VrGeneratorScene {
 
           <div id="itemsContent">
             <!-- elements -->
-            ${diagram.nodes.map(generateTemplate(_)).mkString}
+            ${nodes.map(generateTemplate(_)).mkString}
             <!-- connections -->
             ${connections.map(generateTemplate(_)).mkString}
           </div>
@@ -66,7 +65,7 @@ object VrGeneratorScene {
 
           properties: {
             // Elements
-            ${diagram.nodes.map(generateProperties(_)).mkString.dropRight(1)}
+            ${nodes.map(generateProperties(_)).mkString.dropRight(1)}
             // Connections
             ${connections.map(generateProperties(_)).mkString.dropRight(1)}
           },
@@ -126,19 +125,9 @@ object VrGeneratorScene {
 
   def generateProperties(connection: Connection) = {
     s"""
-    ${connection.name}Items: {
+    connection${connection.name.capitalize}Items: {
       type: Array,
       value: function() { return []; }
     },"""
-  }
-
-  // copied from ValidatorGenerator
-  def getConnection(edge: Edge) = {
-    val connectionReference = edge.connection.referencedConnection
-    if (connectionReference isDefined) {
-      connectionReference.get
-    } else {
-      throw new NoSuchElementException("No connection defined for edge " + edge.name)
-    }
   }
 }
