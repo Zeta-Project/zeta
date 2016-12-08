@@ -26,6 +26,7 @@ object VrGeneratorConnectionDefinition {
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-connection.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+    <link rel="import" href="/assets/prototyp/elements/vr-polyline.html">
     <link rel="import" href="/assets/prototyp/elements/vr-placing.html">
     <link rel="import" href="/assets/prototyp/elements/vr-point.html">
     ${importPlacing(conn.placing)}
