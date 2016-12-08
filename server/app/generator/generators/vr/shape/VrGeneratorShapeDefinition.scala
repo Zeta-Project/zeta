@@ -58,22 +58,6 @@ object VrGeneratorShapeDefinition {
 
       observers: [ '_resizeConnection(xPos, yPos, width, height)' ],
 
-      /*properties: {
-          xPos: {
-              type: Number,
-              value: 0
-          },
-          yPos: {
-              type: Number,
-              value: 0
-          }
-      },
-
-      ready: function() {
-          this.getThreeJS().position.setX(this.xPos);
-          this.getThreeJS().position.setY(this.yPos);
-      },*/
-
       _resizeConnection(xPos, yPos, width, height) { this.fire('vr-resize', {}); },
 
       attached: function () {
