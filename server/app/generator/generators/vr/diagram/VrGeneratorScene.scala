@@ -1,7 +1,9 @@
 package generator.generators.vr.diagram
 
 import generator.model.diagram.Diagram
+import generator.model.diagram.edge.{Edge}
 import generator.model.diagram.node.Node
+import generator.model.shapecontainer.connection.{Connection}
 
 /**
   * Created by max on 12.11.16.
@@ -9,102 +11,90 @@ import generator.model.diagram.node.Node
 object VrGeneratorScene {
 
   def generate(diagram: Diagram) = {
+    val connections = diagram.edges.map(getConnection(_)).groupBy(_.name).map(_._2.head)
     s"""
-       <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
-       <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
+      <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
+      <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
 
-       <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-axis-control.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
-       <link rel="import" href="/assets/prototyp/behaviors/vr-load-elements.html">
-       <link rel="import" href="vr-new-extended.html">
+      <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-axis-control.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-touch.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-load-elements.html">
+      <link rel="import" href="vr-new-extended.html">
+      <link rel="import" href="vr-connect-extended.html">
 
-       ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
+      <!-- Import all generated elements -->
+      ${diagram.nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
 
-       <dom-module id="vr-scene">
-                 <template>
-                     <style>
-                         button {
-                             position: fixed;
-                             top: 0;
-                             left: 0;
-                             padding: 10px;
-                             z-index: 1;
-                             background: white;
-                         }
-                     </style>
+      <!-- Import all generated connections -->
+      ${connections.map(connection => "<link rel=\"import\" href=\"./vr-connection-" + connection.name + ".html\">\n").mkString}
 
-               <button on-click="_enterVR">Enter VR (WebVR/Mobile only)</button>
+      <dom-module id="vr-scene">
+        <template>
+          <button class="top-left" on-click="_enterVR">Enter VR (WebVR/Mobile only)</button>
+          <button class="bottom-right" on-click="_resetPose">Reset Pose</button>
 
-               <content id="content" select="*"></content>
+          <!-- uneccessary? -->
+          <content id="content" select="*"></content>
 
-               <div id="classItems">
-                         <!--<template is="dom-repeat" items="{{classItems}}" strip-whitespace>
-                             <vr-class id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-class>
-                         </template>-->
-                         ${diagram.nodes.map(generateTemplate(_)).mkString}
-                     </div>
+          <div id="itemsContent">
+            <!-- elements -->
+            ${diagram.nodes.map(generateTemplate(_)).mkString}
+            <!-- connections -->
+            ${connections.map(generateTemplate(_)).mkString}
+          </div>
+        </template>
+      </dom-module>
 
-           </template>
-             </dom-module>
+      <script>
+        window.VrElement = window.VrElement || {};
+        VrElement.Scene = Polymer({
+          is: "vr-scene",
 
-       <script>
-                 window.VrElement = window.VrElement || {};
-                 VrElement.Scene = Polymer({
-                     is: "vr-scene",
+          behaviors: [
+            VrBehavior.Touch,
+            VrBehavior.Zoom,
+            VrBehavior.AxisControl,
+            VrBehavior.NewExtended, // gets generated
+            VrBehavior.Webvr,
+            VrBehavior.Scene,
+            VrBehavior.LoadElements
+          ],
 
-               behaviors: [
-                         VrBehavior.Touch,
-                         VrBehavior.Zoom,
-                         VrBehavior.AxisControl,
-                         VrBehavior.NewExtended, // gets generated
-                         VrBehavior.Webvr,
-                         VrBehavior.Scene,
-                         VrBehavior.LoadElements
-                     ],
+          properties: {
+            // Elements
+            ${diagram.nodes.map(generateProperties(_)).mkString.dropRight(1)}
+            // Connections
+            ${connections.map(generateProperties(_)).mkString.dropRight(1)}
+          },
 
-               properties: {
-                         classItems: {
-                             type: Array,
-                             value: function() {
-                                 return [];
-                             }
-                         },
-                         ${diagram.nodes.map(generateProperties(_)).mkString.dropRight(1)}
-                     },
+          ready: function () {
+            var self = this;
+            Polymer.dom(self.root).appendChild(self.renderer.domElement);
 
-               ready: function () {
-                         var self = this;
-                         Polymer.dom(self.root).appendChild(self.renderer.domElement);
+            // uneccessary?
+            Polymer.dom(self.$$.content).observeNodes(observe);
 
-                   // observe nodes that will added to this element
-                         Polymer.dom(self.$$.content).observeNodes(observe);
+            Polymer.dom(self.$$.itemsContent).observeNodes(observe);
 
-                   // TODO: maybe generate
-                         Polymer.dom(self.$$.classItems).observeNodes(observe);
+            function observe(nodes) {
+              nodes.addedNodes.forEach(function (node) {
+                if (node.getThreeJS) { self.group.add(node.getThreeJS()); }
+              });
 
-                   function observe(nodes) {
-                             nodes.addedNodes.forEach(function (node) {
-                                 if (node.getThreeJS) {
-                                     self.group.add(node.getThreeJS());
-                                 }
-                             });
+              nodes.removedNodes.forEach(function (node) {
+                if (node.getThreeJS) { self.group.remove(node.getThreeJS()); }
+              });
+            }
 
-                       nodes.removedNodes.forEach(function (node) {
-                                 if (node.getThreeJS) {
-                                     self.group.remove(node.getThreeJS());
-                                 }
-                             });
-                         }
+            self._render();
+          }
 
-                   self._render();
-                     }
-
-           });
-             </script>
+        });
+      </script>
     """
   }
 
@@ -112,7 +102,7 @@ object VrGeneratorScene {
     val name = node.shape.get.getShape
     s"""
     <template is="dom-repeat" items="{{${name}Items}}" strip-whitespace>
-        <vr-${name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${name}>
+      <vr-${name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${name}>
     </template>
     """
   }
@@ -120,10 +110,35 @@ object VrGeneratorScene {
   def generateProperties(node: Node) = {
     s"""
     ${node.shape.get.getShape}Items: {
-        type: Array,
-        value: function() {
-            return [];
-        }
+      type: Array,
+      value: function() { return []; }
     },"""
+  }
+
+  def generateTemplate(connection: Connection) = {
+    val name = connection.name
+    s"""
+    <template id="dom-repeat" items="{{${name}Items}}" strip-whitespace>
+      <vr-connection-${name} from="#{{item.from}}" to="#{{item.to}}"></vr-connection-${name}>
+    </template>
+    """
+  }
+
+  def generateProperties(connection: Connection) = {
+    s"""
+    ${connection.name}Items: {
+      type: Array,
+      value: function() { return []; }
+    },"""
+  }
+
+  // copied from ValidatorGenerator
+  def getConnection(edge: Edge) = {
+    val connectionReference = edge.connection.referencedConnection
+    if (connectionReference isDefined) {
+      connectionReference.get
+    } else {
+      throw new NoSuchElementException("No connection defined for edge " + edge.name)
+    }
   }
 }
