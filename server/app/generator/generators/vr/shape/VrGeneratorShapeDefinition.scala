@@ -29,8 +29,9 @@ object VrGeneratorShapeDefinition {
     <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
+    <link rel="import" href="vr-connect-extended.html">
     ${generateImports(shape.shapes.getOrElse(List()))}
 
 

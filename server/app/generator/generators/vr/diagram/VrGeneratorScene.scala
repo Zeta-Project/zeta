@@ -65,9 +65,9 @@ object VrGeneratorScene {
 
           properties: {
             // Elements
-            ${nodes.map(generateProperties(_)).mkString.dropRight(1)}
+            ${nodes.map(generateProperties(_)).mkString}
             // Connections
-            ${connections.map(generateProperties(_)).mkString.dropRight(1)}
+            ${connections.map(generateProperties(_)).mkString}
           },
 
           ready: function () {
