@@ -12,8 +12,10 @@ object VrGeneratorScene {
 
   def generate(nodes: Iterable[Node], connections: Iterable[Connection]) = {
     s"""
-      <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
-      <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
+	   <link rel="stylesheet" href="/assets/prototyp/style/stylesheet.css">
+
+       <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
+       <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
 
       <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
       <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
@@ -22,6 +24,7 @@ object VrGeneratorScene {
       <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
       <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
       <link rel="import" href="/assets/prototyp/behaviors/vr-load-elements.html">
+      <link rel="import" href="/assets/prototyp/behaviors/vr-save.html">
       <link rel="import" href="vr-new-extended.html">
       <link rel="import" href="vr-connect-extended.html">
 
@@ -60,7 +63,8 @@ object VrGeneratorScene {
             VrBehavior.NewExtended, // gets generated
             VrBehavior.Webvr,
             VrBehavior.Scene,
-            VrBehavior.LoadElements
+            VrBehavior.LoadElements,
+            VrBehavior.Save
           ],
 
           properties: {
