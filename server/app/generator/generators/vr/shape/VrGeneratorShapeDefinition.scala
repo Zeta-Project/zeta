@@ -60,17 +60,51 @@ object VrGeneratorShapeDefinition {
 
       _resizeConnection(xPos, yPos, width, height) { this.fire('vr-resize', {}); },
 
+      ready: function() {
+       this.getThreeJS().on('mousedown', this._onMousedown.bind(this));
+      },
+
       attached: function () {
-          this._getChildren().forEach(function (box) {
-              this.getThreeJS().add(box.getThreeJS());
-          }.bind(this));
+        this._getChildren().forEach(function (box) {
+          this.getThreeJS().add(box.getThreeJS());
+        }.bind(this));
       },
 
       _getChildren: function () {
-          // return all children except template element
-          return Polymer.dom(this.root).children.filter(function (node) {
-              return node.localName != 'template';
+        // return all children except template element
+        return Polymer.dom(this.root).children.filter(function (node) {
+          return node.localName != 'template';
+        });
+      },
+
+      _onMousedown: function() {
+        var self = this;
+
+        if (!this.gui) {
+          var Menu = function () {
+            this.width = self.width;
+            this.height = self.height;
+            this.yPos = self.yPos;
+          };
+          var text = new Menu();
+          this.gui = new dat.GUI();
+          var yPosController = this.gui.add(text, 'yPos', -200, 200);
+          var widthController = this.gui.add(text, 'width', 30, 200);
+          var heightController = this.gui.add(text, 'height', 30, 200);
+
+          yPosController.onFinishChange(function (yPos) {
+            self.yPos = yPos;
           });
+          widthController.onFinishChange(function (width) {
+            self.width = width;
+          });
+          heightController.onFinishChange(function (height) {
+            self.height = height;
+          });
+        } else {
+          this.gui.destroy();
+          this.gui = null;
+        }
       }
     });
     </script>
