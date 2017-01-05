@@ -14,8 +14,8 @@ object VrGeneratorScene {
     s"""
 	   <link rel="stylesheet" href="/assets/prototyp/style/stylesheet.css">
 
-       <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
-       <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
+      <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
+      <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>
 
       <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
       <link rel="import" href="/assets/prototyp/behaviors/vr-zoom.html">
@@ -37,7 +37,8 @@ object VrGeneratorScene {
       <dom-module id="vr-scene">
         <template>
           <button class="top-left" on-click="_enterVR">Enter VR (WebVR/Mobile only)</button>
-          <button class="bottom-right" on-click="_resetPose">Reset Pose</button>
+          <button class="top-left save" on-click="_save">Save</button>
+          <button class="bottom-right" on-click="_resetPose">Reset Pose</button
 
           <!-- uneccessary? -->
           <content id="content" select="*"></content>

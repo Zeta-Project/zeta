@@ -31,6 +31,7 @@ object VrGeneratorShapeDefinition {
     <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
     <link rel="import" href="vr-connect-extended.html">
     ${generateImports(shape.shapes.getOrElse(List()))}
 
@@ -50,17 +51,55 @@ object VrGeneratorShapeDefinition {
       behaviors: [
         VrBehavior.Move,
         VrBehavior.Resize,
-        VrBehavior.Highlight,
+        //VrBehavior.Highlight,
         VrBehavior.Delete,
         VrBehavior.ConnectExtended,
-        VrBehavior.Look
+        VrBehavior.Look,
+        VrBehavior.InnerSizing
       ],
 
       observers: [ '_resizeConnection(xPos, yPos, width, height)' ],
 
+      ready: function() {
+        // TODO: create inner sizing
+        // create(this.text1, true, {height: 25}, {height: 25}, {height: 0.2, width:1});
+
+        function create(text, center, min, max, percentage) {
+          var element = new VrElement.Box();
+          element.width = self.width;
+          element.xPos = 0;
+          element.text = text;
+          element.textCener = center;
+          Polymer.dom(self.root).appendChild(element);
+          self.registerInnerSizingElement(element, min, max, percentage);
+        }
+      },
+
+      // TODO: adjust
       _resizeConnection(xPos, yPos, width, height) { this.fire('vr-resize', {}); },
 
-      ready: function() {
+      _computeWidth: function () {
+        var dynamicTexture = new THREEx.DynamicTexture(this.width * 10, this.height * 10);
+        dynamicTexture.texture.minFilter = THREE.NearestFilter;
+        var maxWidth = 0;
+
+        TODO: Generate
+        /*calcMax(this.text1);
+        calcMax(this.text2);
+        calcMax(this.text3);*/
+        function calcMax(text) {
+          var texts = text.split(THREEx.linebreak);
+          texts.forEach(function (text) {
+            var newWidth = dynamicTexture.computeWidth(text, "64px Verdana");
+            if (newWidth > maxWidth) {
+              maxWidth = newWidth;
+            }
+          });
+        }
+        return maxWidth / 10;
+      }
+
+      /*ready: function() {
        this.getThreeJS().on('mousedown', this._onMousedown.bind(this));
       },
 
@@ -105,7 +144,7 @@ object VrGeneratorShapeDefinition {
           this.gui.destroy();
           this.gui = null;
         }
-      }
+      }*/
     });
     </script>
     """
