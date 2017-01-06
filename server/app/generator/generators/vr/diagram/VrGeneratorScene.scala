@@ -131,7 +131,7 @@ object VrGeneratorScene {
     val name = connection.name
     s"""
     <template is="dom-repeat" items="{{connection${name.capitalize}Items}}" strip-whitespace>
-      <vr-connection-${name} from="#{{item.from}}" to="#{{item.to}}"></vr-connection-${name}>
+      <vr-connection-${name} from="{{item.from}}" to="{{item.to}}"></vr-connection-${name}>
     </template>
     """
   }
