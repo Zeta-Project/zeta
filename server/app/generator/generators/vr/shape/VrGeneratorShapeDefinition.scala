@@ -3,6 +3,7 @@ package generator.generators.vr.shape
 import java.nio.file.{Files, Paths}
 
 import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import generator.model.shapecontainer.shape.{Compartment, Shape}
 
 /**
@@ -24,6 +25,10 @@ object VrGeneratorShapeDefinition {
   }
 
   def generatePolymerElement(shape: Shape) = {
+    val geometrics = shape.shapes.getOrElse(List())
+    val totalSize = (geometrics.map(g => g.asInstanceOf[CommonLayout].size_height).sum.asInstanceOf[Double],
+                     geometrics.map(g => g.asInstanceOf[CommonLayout].size_width).sum.asInstanceOf[Double])
+
     s"""
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
@@ -33,14 +38,10 @@ object VrGeneratorShapeDefinition {
     <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
     <link rel="import" href="vr-connect-extended.html">
-    ${generateImports(shape.shapes.getOrElse(List()))}
+    ${generateImports(geometrics)}
 
 
-    <dom-module id="vr-${shape.name}">
-      <template>
-        ${generateHtmlTemplate(shape.shapes.getOrElse(List()))}
-      </template>
-    </dom-module>
+    <dom-module id="vr-${shape.name}"><template></template></dom-module>
 
 
     <script>
@@ -51,7 +52,7 @@ object VrGeneratorShapeDefinition {
       behaviors: [
         VrBehavior.Move,
         VrBehavior.Resize,
-        //VrBehavior.Highlight,
+        VrBehavior.Highlight,
         VrBehavior.Delete,
         VrBehavior.ConnectExtended,
         VrBehavior.Look,
@@ -61,8 +62,15 @@ object VrGeneratorShapeDefinition {
       observers: [ '_resizeConnection(xPos, yPos, width, height)' ],
 
       ready: function() {
-        // TODO: create inner sizing
-        // create(this.text1, true, {height: 25}, {height: 25}, {height: 0.2, width:1});
+        var self = this;
+        this.highlight = true
+        this.resizeVertical = true
+        this.resizeHorizontal = true
+        this.moveHorizontal = true
+        this.moveVertical = true
+        this.height = ${totalSize._1.toInt}
+        this.width = ${totalSize._2.toInt}
+       ${createInnerSizing(geometrics, totalSize)}
 
         function create(text, center, min, max, percentage) {
           var element = new VrElement.Box();
@@ -99,52 +107,6 @@ object VrGeneratorShapeDefinition {
         return maxWidth / 10;
       }
 
-      /*ready: function() {
-       this.getThreeJS().on('mousedown', this._onMousedown.bind(this));
-      },
-
-      attached: function () {
-        this._getChildren().forEach(function (box) {
-          this.getThreeJS().add(box.getThreeJS());
-        }.bind(this));
-      },
-
-      _getChildren: function () {
-        // return all children except template element
-        return Polymer.dom(this.root).children.filter(function (node) {
-          return node.localName != 'template';
-        });
-      },
-
-      _onMousedown: function() {
-        var self = this;
-
-        if (!this.gui) {
-          var Menu = function () {
-            this.width = self.width;
-            this.height = self.height;
-            this.yPos = self.yPos;
-          };
-          var text = new Menu();
-          this.gui = new dat.GUI();
-          var yPosController = this.gui.add(text, 'yPos', -200, 200);
-          var widthController = this.gui.add(text, 'width', 30, 200);
-          var heightController = this.gui.add(text, 'height', 30, 200);
-
-          yPosController.onFinishChange(function (yPos) {
-            self.yPos = yPos;
-          });
-          widthController.onFinishChange(function (width) {
-            self.width = width;
-          });
-          heightController.onFinishChange(function (height) {
-            self.height = height;
-          });
-        } else {
-          this.gui.destroy();
-          this.gui = null;
-        }
-      }*/
     });
     </script>
     """
@@ -165,27 +127,15 @@ object VrGeneratorShapeDefinition {
     }).mkString
   }
 
-  def generateHtmlTemplate(geometrics: List[GeometricModel]) : String = {
-    (for(g : GeometricModel <- geometrics) yield {
+  def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
+    (for(g: GeometricModel <- geometrics) yield {
       g match {
-        case g: Line => "Line"
-        // caution: Order is important because ellipse extends rectangle
-        case g: Ellipse => {
-          val (x, y) = g.position.getOrElse((0,0))
-          s"""<vr-ellipse x="${x}" y="${y}" width="${g.size_width}" height="${g.size_width}" depth="10">
-              ${generateHtmlTemplate(g.children)}
-          </vr-ellipse>"""
+        case g: CommonLayout =>  {
+          val wrapper = g.asInstanceOf[Wrapper]
+          s"""create("", true, null, null, { height: ${g.size_height / totalSize._1}, width: ${g.size_width / totalSize._2}});
+             ${createInnerSizing(wrapper.children, totalSize)}
+           """
         }
-        case g: Rectangle => {
-          val (x, y) = g.position.getOrElse((0,0))
-          s"""<vr-box x-pos="${x}" y-pos="${y}" width="${g.size_width}" height="${g.size_width}" depth="10">
-              ${generateHtmlTemplate(g.children)}
-          </vr-box>"""
-        }
-        case g: Polygon => "Polygon"
-        case g: PolyLine => "PolyLine"
-        case g: RoundedRectangle => "RoundedRectangle"
-        case g: Text => "Text"
       }
     }).mkString
   }
