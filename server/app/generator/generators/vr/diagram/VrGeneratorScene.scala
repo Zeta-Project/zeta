@@ -95,8 +95,16 @@ object VrGeneratorScene {
             }
 
             self._render();
-          }
+          },
 
+          deleteShape: function(obj) {
+            var items = this._getItemsArray(obj)
+            this[items] = this[items].filter(function(e){ return e.id != obj.id; })
+          },
+
+          _getItemsArray: function(obj) {
+            ${nodes.zipWithIndex.map(shapeObjToStringMapping(_)).mkString}
+          }
         });
       </script>
     """
@@ -134,5 +142,11 @@ object VrGeneratorScene {
       type: Array,
       value: function() { return []; }
     },"""
+  }
+
+  def shapeObjToStringMapping(tuple: (Node, Int)): String = {
+    val name = tuple._1.shape.get.getShape
+    s"""${if(tuple._2 != 0) "else" else ""} if(obj instanceof VrElement.${name.capitalize}) {return "${name}Items";}
+     """
   }
 }
