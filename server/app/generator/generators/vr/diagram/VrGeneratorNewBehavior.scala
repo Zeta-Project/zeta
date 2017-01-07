@@ -1,8 +1,6 @@
 package generator.generators.vr.diagram
 
-import generator.model.diagram.Diagram
-import generator.model.diagram.node.{DiaShape, Node}
-import generator.model.shapecontainer.connection.Connection
+import generator.model.diagram.node.Node
 
 /**
   * Created by max on 12.11.16.
@@ -25,10 +23,10 @@ object VrGeneratorNewBehavior {
           return Object.keys(this.elementMap);
         },
 
-        pushNewElement: function(counter, position, type) {
+        pushNewElement: function(id, type, position, size) {
+          var scene = document.querySelector("vr-scene");
           if(type in this.elementMap) {
-            (this.elementMap[type].bind(this))(counter, position);
-            return counter + 1;
+            (this.elementMap[type].bind(this))(scene, id, position, size);
           } else {
             console.error("No valid element found! Caution generated Code.");
           }
@@ -41,12 +39,14 @@ object VrGeneratorNewBehavior {
   def createMap(node: Node) = {
     val name = node.shape.get.getShape
     s"""
-    ${name}: function(id, position) {
-      this.ConnectBehavior.scene.push('${name}Items', {
+       //TODO: get default size and not 50
+    ${name}: function(scene, id, position, size) {
+      scene.push('${name}Items', {
         id: '${name}-'+id,
         xPos: position.x,
         yPos: position.y,
-        classType: "fff"
+        width: size != null ? size.width : 50,
+        height: size != null ? size.height : 50
       });
     },"""
   }

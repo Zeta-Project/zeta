@@ -64,7 +64,7 @@ object VrGeneratorScene {
             VrBehavior.NewExtended, // gets generated
             VrBehavior.Webvr,
             VrBehavior.Scene,
-            VrBehavior.LoadElements,
+            //VrBehavior.LoadElements,
             VrBehavior.Save
           ],
 
@@ -114,7 +114,7 @@ object VrGeneratorScene {
     val name = node.shape.get.getShape
     s"""
     <template is="dom-repeat" items="{{${name}Items}}" strip-whitespace>
-      <vr-${name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" class-type="{{item.classType}}"></vr-${name}>
+      <vr-${name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" width="{{item.width}}" height="{{item.height}}"></vr-${name}>
     </template>
     """
   }
