@@ -26,8 +26,8 @@ object VrGeneratorShapeDefinition {
 
   def generatePolymerElement(shape: Shape) = {
     val geometrics = shape.shapes.getOrElse(List())
-    val totalSize = (geometrics.map(g => g.asInstanceOf[CommonLayout].size_height).sum.asInstanceOf[Double],
-                     geometrics.map(g => g.asInstanceOf[CommonLayout].size_width).sum.asInstanceOf[Double])
+    val totalSize = (geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
+                     geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double])
 
     s"""
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
