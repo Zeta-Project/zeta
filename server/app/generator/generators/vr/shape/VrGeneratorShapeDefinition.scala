@@ -72,8 +72,8 @@ object VrGeneratorShapeDefinition {
         this.width = ${totalSize._2.toInt}
        ${createInnerSizing(geometrics, totalSize)}
 
-        function create(text, center, min, max, percentage) {
-          var element = new VrElement.Box();
+        function create(element, text, center, min, max, percentage) {
+          //var element = new VrElement.Box();
           element.width = self.width;
           element.xPos = 0;
           element.text = text;
@@ -129,15 +129,28 @@ object VrGeneratorShapeDefinition {
 
   def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
     (for(g: GeometricModel <- geometrics) yield {
+      val element = getElement(g)
       g match {
-        case g: CommonLayout =>  {
-          val wrapper = g.asInstanceOf[Wrapper]
-          s"""create("", true, null, null, { height: ${g.size_height / totalSize._1}, width: ${g.size_width / totalSize._2}});
-             ${createInnerSizing(wrapper.children, totalSize)}
-           """
+        case c: CommonLayout =>  {
+          val wrapper = c.asInstanceOf[Wrapper]
+          "create(new VrElement."+ element.capitalize +"() , \"\", true, null, null, " +
+            "{ height: " + c.size_height / totalSize._1 + ", width: " + c.size_width / totalSize._2 +"});\n" +
+            createInnerSizing(wrapper.children, totalSize)
         }
       }
     }).mkString
+  }
+
+  def getElement(geometric: GeometricModel) = {
+    geometric match {
+      case g: Line => "Line"
+      case g: Ellipse => "ellipse"
+      case g: Rectangle => "box"
+      case g: Polygon => "polygon"
+      case g: PolyLine => "polyline"
+      case g: RoundedRectangle => "roundedrectangle"
+      case g: Text => "text"
+    }
   }
 
 }
