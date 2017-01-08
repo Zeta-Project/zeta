@@ -1,0 +1,54 @@
+diagram klassendiagramm1 for klassendiagramm (style:X)  {
+
+node classNode for Klasse {
+shape: klasse
+palette: Class;
+}
+
+node abClassNode for AbstractKlasse {
+shape: abstractKlasse
+palette: AbstractClass;
+}
+
+node inClassNode for InterfaceKlasse {
+shape: interface
+palette: Interface;
+}
+
+edge inheritance for Inheritance {
+connection : inheritance
+from : Klasse
+to : AbstractKlasse
+palette : Connection;
+}
+
+edge realization for Realization {
+connection : realization
+from : AbstractKlasse
+to : InterfaceKlasse
+palette : realizationConnection;
+}
+
+edge BaseClassRealization for BaseClassRealization {
+connection : realization
+from : Klasse
+to : InterfaceKlasse
+palette : realizationConnection2;
+}
+
+edge component for Component {
+connection : component
+from : Klasse
+to : Klasse
+palette : component;
+}
+
+edge aggregation for Aggregation {
+connection : aggregation
+from : Klasse
+to : Klasse
+palette : Connection;
+}
+
+
+}

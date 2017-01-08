@@ -1,0 +1,146 @@
+shape klasse style X {
+
+  rectangle {
+  size(width=200, height=50)
+  position(x=0, y=0)
+  text {
+  size(width=10, height=40)
+  id = text1
+  textBody = "Klasse"
+}
+}
+
+rectangle {
+size(width=200, height=100)
+position(x=0, y=50)
+text {
+size(width=10, height=40)
+id = text2
+textBody = "Attribute"
+}
+}
+
+rectangle {
+size(width=200, height=100)
+position(x=0, y=150)
+text {
+size(width=10, height=40)
+id = text3
+textBody = "Methoden"
+}
+}
+}
+
+shape abstractKlasse style X {
+rectangle {
+size(width=200, height=50)
+position(x=10, y=0)
+text {
+size(width=10, height=40)
+id = text11
+textBody = "<<AbstractClass>>"
+}
+}
+
+rectangle {
+size(width=200, height=100)
+position(x=10, y=50)
+text {
+size(width=10, height=40)
+id = text21
+textBody = "Attribute"
+}
+}
+
+rectangle {
+size(width=200, height=100)
+position(x=10, y=150)
+text {
+size(width=10, height=40)
+id = text31
+textBody = "Methoden"
+}
+}
+}
+
+
+shape interface style X {
+rectangle {
+size(width=200, height=50)
+position(x=10, y=0)
+text {
+size(width=10, height=40)
+id = text113
+textBody = "<<Interface>>"
+}
+}
+
+rectangle {
+size(width=200, height=100)
+position(x=10, y=50)
+text {
+size(width=10, height=40)
+id = text213
+textBody = "Attribute"
+}
+}
+
+rectangle {
+size(width=200, height=100)
+position(x=10, y=150)
+text {
+size(width=10, height=40)
+id = text313
+textBody = "Methoden"
+}
+}
+}
+
+connection inheritance style X {
+placing {
+position (offset=1.0)
+polygon {
+point (x=0, y=-10)
+point (x=0, y=10)
+point (x=10, y=0)
+}
+}
+}
+
+connection realization style Y {
+placing {
+position (offset=1.0)
+polygon {
+point (x=0, y=-10)
+point (x=0, y=10)
+point (x=10, y=0)
+style(line-style = solid)
+}
+}
+}
+
+connection component style X {
+placing {
+position (offset=1.0)
+polygon {
+point(x=0,y=0)
+point(x=-20,y=10)
+point(x=-40,y=0)
+point(x=-20,y=-10)
+style(background-color=black)
+}
+}
+}
+
+connection aggregation style X {
+placing {
+position (offset=1.0)
+polygon {
+point(x=0,y=0)
+point(x=-20,y=10)
+point(x=-40,y=0)
+point(x=-20,y=-10)
+style(background-color=white)
+}
+}
+}
