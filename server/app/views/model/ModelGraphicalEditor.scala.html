@@ -4,7 +4,7 @@
 
 @views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
     <script>
-            SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
+            SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function (toElement) {
                         return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
                     };
     </script>
@@ -69,8 +69,8 @@
     <script src="@routes.Assets.at("modelEditor/editor/src/stencil.js")"></script>
     <script src="@routes.Assets.at("modelEditor/editor/src/main.js")"></script>
 
-    <!-- model specific files-->
-    <script src="@("/model_specific/"+ metaModelUUID + "/inspector.js") "> </script>
+        <!-- model specific files-->
+    <script src="@("/model_specific/" + metaModelUUID + "/inspector.js") "> </script>
     <script src="@("/model_specific/" + metaModelUUID + "/style.js")"></script>
     <script src="@("/model_specific/" + metaModelUUID + "/shape.js")"></script>
     <script src="@("/model_specific/" + metaModelUUID + "/stencil.js")"></script>
@@ -132,6 +132,9 @@
             <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
                 <img class="level-icon" src="@routes.Assets.at("graphicalEditor/images/icon-to-back.svg")">
             </button>
+            <button id="btn-to-vr" class="btn btn-default" data-tooltip="Switch to VR-Editor">
+                <img class="vr-level-icon" src="@routes.Assets.at("graphicalEditor/images/vr.png")">
+            </button>
         </div>
 
         <div class="btn-group">
@@ -188,7 +191,7 @@
         <span class="inspector-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-right"></span>
     </div>
 
-    <!--
+        <!--
     <div class="statusbar-container">
         <span class="rt-colab"></span>
     </div>
@@ -196,7 +199,7 @@
 
 
         <!-- Share button - from  https://github.com/carrot/share-button -->
-    <!--
+        <!--
     <div class="share-button-container"><div class="share-button"></div></div>
     <script>
             var share = new Share('.share-button', {
@@ -231,21 +234,22 @@
     </div>
 
     <script type="text/javascript">
-            window._global_uuid = "@(id)";
-            window._global_graph_type = "@(metaModelUUID)";
-            window._global_userID = "@(user.get.uuid)";
-            window._global_userName = "@(user.get.profile.fullName)";
-            window._global_model_name = "@(model.model.name)";
-            @if(model.model.uiState.nonEmpty) {
-            window._global_loadOnStart = true;
-            window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(model.model.uiState))));
-            }
+    window._global_uuid = "@(id)";
+    window._global_graph_type = "@(metaModelUUID)";
+    window._global_userID = "@(user.get.uuid)";
+    window._global_userName = "@(user.get.profile.fullName)";
+    window._global_model_name = "@(model.model.name)";
+    @if(model.model.uiState.nonEmpty) {
+    window._global_loadOnStart = true;
+    window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(model.model.uiState))));
+    }
     </script>
 
-    <!-- Node Code Editor -->
-    <!--<link rel="stylesheet" type="text/css" href="@routes.Assets.at("modelEditor/editor/model_specific/nodeCodeEditor.css")" />-->
-    <!--
-    <script src="@routes.Assets.at("codeEditor/ace/ace.js")"></script>
+        <!-- Node Code Editor -->
+        <!--<link rel="stylesheet" type="text/css" href=" @routes.Assets.at("modelEditor/editor/model_specific/nodeCodeEditor.css")
+    " />-->
+        <!--
+        <script src="@routes.Assets.at("codeEditor/ace/ace.js") "></script>
     <script src="@routes.Assets.at("codeEditor/ace-grammar/classy.js")"></script>
     <script src="@routes.Assets.at("codeEditor/ace-grammar/regexanalyzer.js")"></script>
     <script src="@routes.Assets.at("codeEditor/ace-grammar/ace_grammar.js")"></script>
@@ -256,23 +260,25 @@
     -->
 
 
-    <!--[if IE 9]>
-	    <script src='@routes.Assets.at("jointjs/lib/base64.js")'></script>
+
+        <!--[if IE 9]>
+            <script src='@routes.Assets.at("jointjs/lib/base64.js") '></script>
 	    <script type="text/javascript">
 	      window.btoa = base64.encode
 	      document.onselectstart = function() { return false; };
 	    </script>
     <![endif]-->
-    <script>
-            var app = new Rappid();
-            Backbone.history.start();
-    </script>
+
+        <script>
+                var app = new Rappid();
+                Backbone.history.start();
+        </script>
 
 
     <script src="@routes.Assets.at("modelEditor/editor/own_ext/chat.js")"></script>
 
         <!-- nodeCodeEditor -->
-    <!--
+        <!--
     <div class="nodeCodeEditor-cover"></div>
 
     <aside class="nodeCodeEditor-popup">
@@ -285,7 +291,8 @@
         <span id="datavis-error">There is an error in your code</span>
         <ul id="validation-errors"></ul>
         <button type="button" onclick="dataVisEditor.save()" id="saveDatavis">Save</button>
-        <img id="close-button" src="@routes.Assets.at("jointjs/images/grey_close_x.png")" onclick="nodeCodeEditor.deactivate();" style="position : absolute ; right : 0.2em ; top : 0.2em ; width : 1.2em ; height : 1.2em ;">
+        <img id="close-button" src=" @routes.Assets.at("jointjs/images/grey_close_x.png")
+    " onclick="nodeCodeEditor.deactivate();" style="position : absolute ; right : 0.2em ; top : 0.2em ; width : 1.2em ; height : 1.2em ;">
 
     </aside>
 
