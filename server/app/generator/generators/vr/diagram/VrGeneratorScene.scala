@@ -38,6 +38,8 @@ object VrGeneratorScene {
         <template>
           <button class="top-left" on-click="_enterVR">Enter VR (WebVR/Mobile only)</button>
           <button class="top-left save" on-click="_save">Save</button>
+          <button class="top-left save editor" on-click="_switchToEditor">2D</button>
+
           <button class="bottom-right" on-click="_resetPose">Reset Pose</button
 
           <!-- uneccessary? -->
@@ -64,7 +66,7 @@ object VrGeneratorScene {
             VrBehavior.NewExtended, // gets generated
             VrBehavior.Webvr,
             VrBehavior.Scene,
-            //VrBehavior.LoadElements,
+            VrBehavior.LoadElements,
             VrBehavior.Save
           ],
 
@@ -100,6 +102,12 @@ object VrGeneratorScene {
           deleteShape: function(obj) {
             var items = this._getItemsArray(obj)
             this[items] = this[items].filter(function(e){ return e.id != obj.id; })
+          },
+
+          _switchToEditor: function () {
+            var location = window.location.href;
+            location = location.replace("vreditor", "editor");
+            window.location.href = location;
           },
 
           _getItemsArray: function(obj) {
