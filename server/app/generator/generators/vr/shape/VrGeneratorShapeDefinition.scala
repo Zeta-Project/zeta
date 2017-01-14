@@ -4,7 +4,7 @@ import java.nio.file.{Files, Paths}
 
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
-import generator.model.shapecontainer.shape.{Compartment, Shape}
+import generator.model.shapecontainer.shape.Shape
 
 /**
   * Created by max on 08.11.16.
@@ -123,6 +123,7 @@ object VrGeneratorShapeDefinition {
         case g: PolyLine => "PolyLine"
         case g: RoundedRectangle => "RoundedRectangle"
         case g: Text => "Text"
+        case _ => g
       }
     }).mkString
   }
@@ -131,12 +132,14 @@ object VrGeneratorShapeDefinition {
     (for(g: GeometricModel <- geometrics) yield {
       val element = getElement(g)
       g match {
+        case text: Text => "//text" // TODO: add routine for text
         case c: CommonLayout =>  {
           val wrapper = c.asInstanceOf[Wrapper]
-          "create(new VrElement."+ element.capitalize +"() , \"\", true, null, null, " +
-            "{ height: " + c.size_height / totalSize._1 + ", width: " + c.size_width / totalSize._2 +"});\n" +
-            createInnerSizing(wrapper.children, totalSize)
+          s"""create(new VrElement.${element.capitalize}() , "", true, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+              ${createInnerSizing(wrapper.children, totalSize)}
+          """
         }
+        case _ => g.toString()
       }
     }).mkString
   }
@@ -150,6 +153,7 @@ object VrGeneratorShapeDefinition {
       case g: PolyLine => "polyline"
       case g: RoundedRectangle => "roundedrectangle"
       case g: Text => "text"
+      case _ => geometric.toString()
     }
   }
 

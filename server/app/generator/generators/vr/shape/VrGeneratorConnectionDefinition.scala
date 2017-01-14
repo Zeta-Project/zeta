@@ -3,6 +3,10 @@ package generator.generators.vr.shape
 import java.nio.file.{Files, Paths}
 
 import generator.model.shapecontainer.connection.{Connection, Placing}
+import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
+
+import scala.util.Try
 
 
 /**
@@ -53,19 +57,22 @@ object VrGeneratorConnectionDefinition {
   }
 
   def importPlacing(placings: List[Placing]) = {
-    val placingTypes = placings.map(_.attributes.typ)
-    val imports = placingTypes.distinct
-    imports.map(imp => s"""<link rel='import' href='/assets/prototyp/elements/vr-${imp}.html'>""").mkString
+    //val placingTypes = placings.map(_.attributes.typ)
+    //val imports = placingTypes.distinct
+    //imports.map(imp => s"""<link rel='import' href='/assets/prototyp/elements/vr-${imp}.html'>""").mkString
+   "<div></div>"
   }
 
   def generatePlacing(placing: Placing) = {
     val radius = placing.position_distance.getOrElse(0)
     val angle = 0
+    val element = getElement(placing.shapeCon)
+    val common = Try(placing.shapeCon.asInstanceOf[CommonLayout])
     s"""
     <vr-placing offset="${placing.position_offset}" angle="${angle}" radius="${radius}">
-      <vr-${placing.attributes.typ}>
-        ${placing.attributes.points.map(generateVrPoint(_)).mkString}
-      </vr-${placing.attributes.typ}>
+      <vr-${element}>
+        ${if(common.isSuccess) { (generateVrPoint((common.get.x, common.get.y)))} else ""}
+      </vr-${element}>
     </vr-placing>
      """
   }
@@ -74,6 +81,19 @@ object VrGeneratorConnectionDefinition {
     val (x,y) = xy
     s"""<vr-point x='${x}' y='${y}'></vr-point>
     """
+  }
+
+  def getElement(geometric: GeometricModel) = {
+    geometric match {
+      case g: Line => "Line"
+      case g: Ellipse => "ellipse"
+      case g: Rectangle => "box"
+      case g: Polygon => "polygon"
+      case g: PolyLine => "polyline"
+      case g: RoundedRectangle => "roundedrectangle"
+      case g: Text => "text"
+      case _ => geometric.toString()
+    }
   }
 
 }
