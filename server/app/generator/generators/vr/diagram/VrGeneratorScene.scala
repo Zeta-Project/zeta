@@ -39,18 +39,7 @@ object VrGeneratorScene {
           <button class="top-left" on-click="_enterVR">Enter VR (WebVR/Mobile only)</button>
           <button class="top-left save" on-click="_save">Save</button>
           <button class="top-left save editor" on-click="_switchToEditor">2D</button>
-
-          <button class="bottom-right" on-click="_resetPose">Reset Pose</button
-
-          <!-- uneccessary? -->
-          <content id="content" select="*"></content>
-
-          <div id="itemsContent">
-            <!-- elements -->
-            ${nodes.map(generateTemplate(_)).mkString}
-            <!-- connections -->
-            ${connections.map(generateTemplate(_)).mkString}
-          </div>
+          <button class="bottom-right" on-click="_resetPose">Reset Pose</button>
         </template>
       </dom-module>
 
@@ -66,95 +55,18 @@ object VrGeneratorScene {
             VrBehavior.NewExtended, // gets generated
             VrBehavior.Webvr,
             VrBehavior.Scene,
-            VrBehavior.LoadElements,
-            VrBehavior.Save
+            //VrBehavior.LoadElements,
+            //VrBehavior.Save
           ],
-
-          properties: {
-            // Elements
-            ${nodes.map(generateProperties(_)).mkString}
-            // Connections
-            ${connections.map(generateProperties(_)).mkString}
-          },
-
-          ready: function () {
-            var self = this;
-            Polymer.dom(self.root).appendChild(self.renderer.domElement);
-
-            // uneccessary?
-            Polymer.dom(self.$$.content).observeNodes(observe);
-
-            Polymer.dom(self.$$.itemsContent).observeNodes(observe);
-
-            function observe(nodes) {
-              nodes.addedNodes.forEach(function (node) {
-                if (node.getThreeJS) { self.group.add(node.getThreeJS()); }
-              });
-
-              nodes.removedNodes.forEach(function (node) {
-                if (node.getThreeJS) { self.group.remove(node.getThreeJS()); }
-              });
-            }
-
-            self._render();
-          },
-
-          deleteShape: function(obj) {
-            var items = this._getItemsArray(obj)
-            this[items] = this[items].filter(function(e){ return e.id != obj.id; })
-          },
 
           _switchToEditor: function () {
             var location = window.location.href;
             location = location.replace("vreditor", "editor");
             window.location.href = location;
-          },
-
-          _getItemsArray: function(obj) {
-            ${nodes.zipWithIndex.map(shapeObjToStringMapping(_)).mkString}
           }
+
         });
       </script>
     """
-  }
-
-  def generateTemplate(node: Node) = {
-    val name = node.shape.get.getShape
-    s"""
-    <template is="dom-repeat" items="{{${name}Items}}" strip-whitespace>
-      <vr-${name} id="{{item.id}}" x-pos="{{item.xPos}}" y-pos="{{item.yPos}}" width="{{item.width}}" height="{{item.height}}"></vr-${name}>
-    </template>
-    """
-  }
-
-  def generateProperties(node: Node) = {
-    s"""
-    ${node.shape.get.getShape}Items: {
-      type: Array,
-      value: function() { return []; }
-    },"""
-  }
-
-  def generateTemplate(connection: Connection) = {
-    val name = connection.name
-    s"""
-    <template is="dom-repeat" items="{{connection${name.capitalize}Items}}" strip-whitespace>
-      <vr-connection-${name} from="{{item.from}}" to="{{item.to}}"></vr-connection-${name}>
-    </template>
-    """
-  }
-
-  def generateProperties(connection: Connection) = {
-    s"""
-    connection${connection.name.capitalize}Items: {
-      type: Array,
-      value: function() { return []; }
-    },"""
-  }
-
-  def shapeObjToStringMapping(tuple: (Node, Int)): String = {
-    val name = tuple._1.shape.get.getShape
-    s"""${if(tuple._2 != 0) "else" else ""} if(obj instanceof VrElement.${name.capitalize}) {return "${name}Items";}
-     """
   }
 }

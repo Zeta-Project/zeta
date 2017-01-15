@@ -10,6 +10,7 @@ object VrGeneratorConnectBehavior {
     s"""
     <!-- Generated file -->
     <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
+    <!-- TODO: add all connections -->
 
     <script>
       window.VrBehavior = window.VrBehavior || {};
@@ -24,7 +25,10 @@ object VrGeneratorConnectBehavior {
 
         pushNewConnection: function(type, connection) {
           if(type in this.connectionMap) {
-            (this.connectionMap[type].bind(this))(connection);
+            var element = this.connectionMap[type]();
+            element.from = connection.from;
+            element.to = connection.to;
+            if(this.parentNode) Polymer.dom(this.parentNode.root).appendChild(element);
           } else {
             console.error("No valid connection found! Caution generated Code.");
           }
@@ -37,7 +41,7 @@ object VrGeneratorConnectBehavior {
   def createMap(connection: Connection) = {
     s"""
     connection${connection.name.capitalize}: function(connection) {
-      this.ConnectBehavior.scene.push('connection${connection.name.capitalize}Items', connection)
+      return new VrElement.Connection${connection.name.capitalize}();
     },"""
   }
 }

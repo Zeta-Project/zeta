@@ -11,6 +11,7 @@ object VrGeneratorNewBehavior {
     s"""
     <!-- Generated file -->
     <link rel="import" href="/assets/prototyp/behaviors/vr-new.html">
+    <!-- TODO: Add all elements -->
 
     <script>
       window.VrBehavior = window.VrBehavior || {};
@@ -26,7 +27,13 @@ object VrGeneratorNewBehavior {
         pushNewElement: function(id, type, position, size) {
           var scene = document.querySelector("vr-scene");
           if(type in this.elementMap) {
-            (this.elementMap[type].bind(this))(scene, id, position, size);
+            var element = this.elementMap[type]();
+            element.id = id;
+            element.xPos = position.x;
+            element.yPos = position.y;
+            element.width = size != null ? size.width : 50;
+            element.height = size != null ? size.height : 50;
+            Polymer.dom(this.root).appendChild(element);
           } else {
             console.error("No valid element found! Caution generated Code.");
           }
@@ -39,15 +46,8 @@ object VrGeneratorNewBehavior {
   def createMap(node: Node) = {
     val name = node.shape.get.getShape
     s"""
-       //TODO: get default size and not 50
     ${name}: function(scene, id, position, size) {
-      scene.push('${name}Items', {
-        id: '${name}-'+id,
-        xPos: position.x,
-        yPos: position.y,
-        width: size != null ? size.width : 50,
-        height: size != null ? size.height : 50
-      });
+      return new VrElement.${name.capitalize}();
     },"""
   }
 }
