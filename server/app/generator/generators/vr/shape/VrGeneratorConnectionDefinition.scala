@@ -45,7 +45,7 @@ object VrGeneratorConnectionDefinition {
 
     <script>
         window.VrElement = window.VrElement || {};
-        VrElement.Connection${conn.name} = Polymer({
+        VrElement.Connection${conn.name.capitalize} = Polymer({
             is: "vr-connection-${conn.name}",
             behaviors: [
                         VrBehavior.Connection,
@@ -67,14 +67,20 @@ object VrGeneratorConnectionDefinition {
     val radius = placing.position_distance.getOrElse(0)
     val angle = 0
     val element = getElement(placing.shapeCon)
-    val common = Try(placing.shapeCon.asInstanceOf[CommonLayout])
     s"""
     <vr-placing offset="${placing.position_offset}" angle="${angle}" radius="${radius}">
       <vr-${element}>
-        ${if(common.isSuccess) { (generateVrPoint((common.get.x, common.get.y)))} else ""}
+        ${generatePoints(placing.shapeCon)}
       </vr-${element}>
     </vr-placing>
      """
+  }
+
+  def generatePoints(geometric: GeometricModel) = {
+    geometric match {
+      case g: Polygon => g.points.map(point => generateVrPoint(point.x, point.y)).mkString
+      case _ => println("mhm")
+    }
   }
 
   def generateVrPoint(xy: (Int, Int)) = {
