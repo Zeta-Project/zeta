@@ -57,10 +57,9 @@ object VrGeneratorConnectionDefinition {
   }
 
   def importPlacing(placings: List[Placing]) = {
-    //val placingTypes = placings.map(_.attributes.typ)
-    //val imports = placingTypes.distinct
-    //imports.map(imp => s"""<link rel='import' href='/assets/prototyp/elements/vr-${imp}.html'>""").mkString
-   "<div></div>"
+    val placingTypes = placings.map(placing => getElement(placing.shapeCon))
+    val imports = placingTypes.distinct
+    imports.map(imp => s"""<link rel='import' href='/assets/prototyp/elements/vr-${imp}.html'>""").mkString
   }
 
   def generatePlacing(placing: Placing) = {
@@ -85,7 +84,7 @@ object VrGeneratorConnectionDefinition {
 
   def generateVrPoint(xy: (Int, Int)) = {
     val (x,y) = xy
-    s"""<vr-point x='${x}' y='${y}'></vr-point>
+    s"""<vr-point x="${x}" y="${y}"></vr-point>
     """
   }
 

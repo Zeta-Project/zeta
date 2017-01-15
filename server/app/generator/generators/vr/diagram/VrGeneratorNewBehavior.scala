@@ -31,8 +31,8 @@ object VrGeneratorNewBehavior {
             element.id = id;
             element.xPos = position.x;
             element.yPos = position.y;
-            element.width = size != null ? size.width : 50;
-            element.height = size != null ? size.height : 50;
+            element.width = size != null ? size.width : element.width;
+            element.height = size != null ? size.height : element.height;
             Polymer.dom(this.root).appendChild(element);
           } else {
             console.error("No valid element found! Caution generated Code.");
