@@ -55,8 +55,8 @@ object VrGeneratorScene {
             VrBehavior.NewExtended, // gets generated
             VrBehavior.Webvr,
             VrBehavior.Scene,
-            //VrBehavior.LoadElements,
-            //VrBehavior.Save
+            VrBehavior.LoadElements,
+            VrBehavior.Save
           ],
 
           _switchToEditor: function () {
