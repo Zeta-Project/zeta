@@ -129,19 +129,26 @@ object VrGeneratorShapeDefinition {
   }
 
   def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
+    var textCount = 0
     (for(g: GeometricModel <- geometrics) yield {
       val element = getElement(g)
       g match {
-        case text: Text => "//text" // TODO: add routine for text
+        case text: Text => ""
         case c: CommonLayout =>  {
           val wrapper = c.asInstanceOf[Wrapper]
-          s"""create(new VrElement.${element.capitalize}() , "", true, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+          val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
+          s"""${texts.map(text => (s"""this.text${textCount} = '${text.textBody}';""", textCount += 1)).map(_._1).mkString}
+              create(new VrElement.${element.capitalize}() , ${if(hasText(wrapper)) {"this.text" + (textCount - 1)} else { "\"\""}}, true, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
               ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
         case _ => g.toString()
       }
     }).mkString
+  }
+
+  def hasText(wrapper: Wrapper) : Boolean = {
+    wrapper.children.exists(_.isInstanceOf[Text])
   }
 
   def getElement(geometric: GeometricModel) = {
