@@ -6,6 +6,8 @@ import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import generator.model.shapecontainer.shape.Shape
 
+import scala.util.Try
+
 /**
   * Created by max on 08.11.16.
   */
@@ -14,7 +16,7 @@ object VrGeneratorShapeDefinition {
     for(shape <- shapes) {generateFile(shape, packageName, location)}
   }
 
-  def generateFile(shape: Shape, packageName: String, DEFAULT_SHAPE_LOCATION: String) = {
+  private def generateFile(shape: Shape, packageName: String, DEFAULT_SHAPE_LOCATION: String) = {
     if(shape.name != "rootShape") {
       val FILENAME = "vr-" + shape.name + ".html"
 
@@ -24,7 +26,7 @@ object VrGeneratorShapeDefinition {
     }
   }
 
-  def generatePolymerElement(shape: Shape) = {
+  private def generatePolymerElement(shape: Shape) = {
     val geometrics = shape.shapes.getOrElse(List())
     val totalSize = (geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
                      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double])
@@ -83,18 +85,23 @@ object VrGeneratorShapeDefinition {
         }
       },
 
-      // TODO: adjust
-      _resizeConnection(xPos, yPos, width, height) { this.fire('vr-resize', {}); },
+      _resizeConnection(xPos, yPos, width, height ${generateTextArgs(geometrics)}) {
+        if (this.getThreeJS()) {
+          // compute width for fitting the text
+          var newWidth = this._computeWidth();
+          if (newWidth > 0) {
+            this.width = newWidth < this.maxWidth ? newWidth : this.maxWidth;
+          }
+          this.fire('vr-resize', {});
+        }
+      },
 
       _computeWidth: function () {
         var dynamicTexture = new THREEx.DynamicTexture(this.width * 10, this.height * 10);
         dynamicTexture.texture.minFilter = THREE.NearestFilter;
         var maxWidth = 0;
 
-        TODO: Generate
-        /*calcMax(this.text1);
-        calcMax(this.text2);
-        calcMax(this.text3);*/
+        //{generateCalcMax(geometrics)}
         function calcMax(text) {
           var texts = text.split(THREEx.linebreak);
           texts.forEach(function (text) {
@@ -112,7 +119,7 @@ object VrGeneratorShapeDefinition {
     """
   }
 
-  def generateImports(geometrics: List[GeometricModel]) : String = {
+  private def generateImports(geometrics: List[GeometricModel]) : String = {
     (for(g : GeometricModel <- geometrics) yield {
       g match {
         case g: Line => "Line"
@@ -128,16 +135,17 @@ object VrGeneratorShapeDefinition {
     }).mkString
   }
 
-  def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
+  private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
     var textCount = 0
-    (for(g: GeometricModel <- geometrics) yield {
+    val geos = geometrics.reverse
+    (for(g: GeometricModel <- geos) yield {
       val element = getElement(g)
       g match {
         case text: Text => ""
         case c: CommonLayout =>  {
           val wrapper = c.asInstanceOf[Wrapper]
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
-          s"""${texts.map(text => (s"""this.text${textCount} = '${text.textBody}';""", textCount += 1)).map(_._1).mkString}
+          s"""${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
               create(new VrElement.${element.capitalize}() , ${if(hasText(wrapper)) {"this.text" + (textCount - 1)} else { "\"\""}}, true, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
               ${createInnerSizing(wrapper.children, totalSize)}
           """
@@ -147,11 +155,11 @@ object VrGeneratorShapeDefinition {
     }).mkString
   }
 
-  def hasText(wrapper: Wrapper) : Boolean = {
+  private def hasText(wrapper: Wrapper) : Boolean = {
     wrapper.children.exists(_.isInstanceOf[Text])
   }
 
-  def getElement(geometric: GeometricModel) = {
+  private def getElement(geometric: GeometricModel) = {
     geometric match {
       case g: Line => "Line"
       case g: Ellipse => "ellipse"
@@ -161,6 +169,25 @@ object VrGeneratorShapeDefinition {
       case g: RoundedRectangle => "roundedrectangle"
       case g: Text => "text"
       case _ => geometric.toString()
+    }
+  }
+
+  private def generateCalcMax(goemetrics: List[GeometricModel]) = {
+    val numberOfTexts = goemetrics.map(getAllTexts(_)).sum
+    (for(i <- 0 until numberOfTexts) yield { "calcMax(this.text" + i + ");\n" }).mkString
+  }
+
+  private def generateTextArgs(geometrics: List[GeometricModel]) = {
+    val numberOfTexts = geometrics.map(getAllTexts(_)).sum
+    (for(i <- 0 until numberOfTexts) yield { " ,text" + i}).mkString
+  }
+
+  private def getAllTexts(geometric: GeometricModel) : Int = {
+    val wrapper = Try(geometric.asInstanceOf[Wrapper])
+    if(wrapper.isSuccess) {
+      wrapper.get.children.count(_.isInstanceOf[Text])
+    } else {
+      0
     }
   }
 
