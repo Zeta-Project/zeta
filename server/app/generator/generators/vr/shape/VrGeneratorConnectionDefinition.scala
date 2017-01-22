@@ -5,6 +5,7 @@ import java.nio.file.{Files, Paths}
 import generator.model.shapecontainer.connection.{Connection, Placing}
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
+import generator.model.style.DASH
 
 import scala.util.Try
 
@@ -38,7 +39,7 @@ object VrGeneratorConnectionDefinition {
     <dom-module id="vr-connection-${conn.name}">
         <template>
             <!-- Polyline is always needed -->
-            <vr-polyline id="line"></vr-polyline>
+            <vr-polyline id="line" ${if(conn.style.get.line_style.get == DASH) {"dashed"} else {""}}></vr-polyline>
             ${conn.placing.map(generatePlacing(_)).mkString}
         </template>
     </dom-module>
