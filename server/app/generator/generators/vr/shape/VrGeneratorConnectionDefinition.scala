@@ -82,7 +82,7 @@ object VrGeneratorConnectionDefinition {
 
   def generateVrPoint(xy: (Int, Int)) = {
     val (x,y) = xy
-    s"""<vr-point x="${y}" y="${-x}"></vr-point>
+    s"""<vr-point x="${y}" y="${x}"></vr-point>
     """
   }
 
