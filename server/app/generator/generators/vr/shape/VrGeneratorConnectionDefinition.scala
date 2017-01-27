@@ -4,10 +4,7 @@ import java.nio.file.{Files, Paths}
 
 import generator.model.shapecontainer.connection.{Connection, Placing}
 import generator.model.shapecontainer.shape.geometrics._
-import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import generator.model.style.DASH
-
-import scala.util.Try
 
 
 /**
@@ -85,7 +82,7 @@ object VrGeneratorConnectionDefinition {
 
   def generateVrPoint(xy: (Int, Int)) = {
     val (x,y) = xy
-    s"""<vr-point x="${x}" y="${y}"></vr-point>
+    s"""<vr-point x="${y}" y="${-x}"></vr-point>
     """
   }
 
