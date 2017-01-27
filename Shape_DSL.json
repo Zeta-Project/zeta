@@ -100,9 +100,9 @@ connection inheritance style X {
 placing {
 position (offset=1.0)
 polygon {
-point (x=0, y=-10)
-point (x=0, y=10)
-point (x=10, y=0)
+point(x=-10,y=10)
+point(x=0,y=0)
+point(x=-10,y=-10)
 }
 }
 }
@@ -111,9 +111,9 @@ connection realization style Y {
 placing {
 position (offset=1.0)
 polygon {
-point (x=0, y=-10)
-point (x=0, y=10)
-point (x=10, y=0)
+point(x=-10,y=10)
+point(x=0,y=0)
+point(x=-10,y=-10)
 style(line-style = solid)
 }
 }
@@ -124,9 +124,9 @@ placing {
 position (offset=1.0)
 polygon {
 point(x=0,y=0)
-point(x=-20,y=10)
-point(x=-40,y=0)
-point(x=-20,y=-10)
+point(x=20,y=10)
+point(x=40,y=0)
+point(x=20,y=-10)
 style(background-color=black)
 }
 }
