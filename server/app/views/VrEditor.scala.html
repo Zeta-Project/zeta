@@ -14,6 +14,11 @@
     <script src="/assets/prototyp/bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
     <script src="/assets/prototyp/bower_components/underscore/underscore-min.js"></script>
 
+    <!-- needed to adopt the style of the 2d editor -->
+    <script src="@("/model_specific/" + metaModelUUID + "/connectionstyle.js")"></script>
+    <script src="@("/model_specific/" + metaModelUUID + "/elementAndInlineStyle.js")"></script>
+    <script src="@("/model_specific/" + metaModelUUID + "/style.js")"></script>
+
     <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-scene.html")">
 
     <style>
