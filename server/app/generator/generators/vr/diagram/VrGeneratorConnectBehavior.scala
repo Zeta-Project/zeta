@@ -10,7 +10,6 @@ object VrGeneratorConnectBehavior {
     s"""
     <!-- Generated file -->
     <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
-    <!-- TODO: add all connections -->
 
     <script>
       window.VrBehavior = window.VrBehavior || {};

@@ -11,7 +11,6 @@ object VrGeneratorNewBehavior {
     s"""
     <!-- Generated file -->
     <link rel="import" href="/assets/prototyp/behaviors/vr-new.html">
-    <!-- TODO: Add all elements -->
 
     <script>
       window.VrBehavior = window.VrBehavior || {};

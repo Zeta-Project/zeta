@@ -76,6 +76,7 @@ object VrGeneratorConnectionDefinition {
   def generatePoints(geometric: GeometricModel) = {
     geometric match {
       case g: Polygon => g.points.map(point => generateVrPoint(point.x, point.y)).mkString
+      case g: PolyLine => g.points.map(point => generateVrPoint(point.x, point.y)).mkString
       case _ => println("mhm")
     }
   }

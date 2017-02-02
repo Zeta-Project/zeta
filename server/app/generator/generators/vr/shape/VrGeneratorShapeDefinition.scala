@@ -74,14 +74,14 @@ object VrGeneratorShapeDefinition {
         this.width = ${totalSize._2.toInt}
        ${createInnerSizing(geometrics, totalSize)}
 
-        function create(element, text, center, min, max, percentage) {
+        function create(element, text, center, position, min, max, percentage) {
           //var element = new VrElement.Box();
           element.width = self.width;
           element.xPos = 0;
           element.text = text;
           element.textCener = center;
           Polymer.dom(self.root).appendChild(element);
-          self.registerInnerSizingElement(element, min, max, percentage);
+          self.registerInnerSizingElement(element, position, min, max, percentage);
         }
       },
 
@@ -144,9 +144,10 @@ object VrGeneratorShapeDefinition {
         case text: Text => ""
         case c: CommonLayout =>  {
           val wrapper = c.asInstanceOf[Wrapper]
+          val position = c.position.getOrElse((0,0))
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
           s"""${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
-              create(new VrElement.${element.capitalize}() , ${if(hasText(wrapper)) {"this.text" + (textCount - 1)} else { "\"\""}}, true, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+              create(new VrElement.${element.capitalize}() , ${if(hasText(wrapper)) {"this.text" + (textCount - 1)} else { "\"\""}}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
               ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
