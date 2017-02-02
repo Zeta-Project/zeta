@@ -66,19 +66,25 @@ object VrGeneratorConnectionDefinition {
     val element = getElement(placing.shapeCon)
     s"""
     <vr-placing offset="${placing.position_offset}" angle="${angle}" radius="${radius}">
-      <vr-${element}>
-        ${generatePoints(placing.shapeCon)}
-      </vr-${element}>
+      ${generateElement(placing.shapeCon)}
     </vr-placing>
      """
   }
 
-  def generatePoints(geometric: GeometricModel) = {
+  def generateElement(geometric: GeometricModel) = {
     geometric match {
-      case g: Polygon => g.points.map(point => generateVrPoint(point.x, point.y)).mkString
-      case g: PolyLine => g.points.map(point => generateVrPoint(point.x, point.y)).mkString
-      case _ => println("mhm")
+      case g: Ellipse => s"""<vr-ellipse x-pos="${g.x}" y-pos="${g.y}" width="${g.size_width}" height="${g.size_height}"></vr-ellipse>"""
+      case g: Rectangle => s"""<vr-box x-pos="${g.x}" y-pos="${g.y}" width="${g.size_width}" height="${g.size_height}"></vr-box>"""
+      case g: Polygon => s"""<vr-polygon>${generatePoints(g.points)}</vr-polygon>"""
+      case g: PolyLine => s"""<vr-polyline>${generatePoints(g.points)}</vr-polyline>"""
+      case g: Line => s"""<vr-polyline>${generatePoints(List(g.points._1, g.points._1))}</vr-polyline>"""
+      case g: Text => s"""<vr-text x-pos="${g.x}" y-pos="${g.y}" text="${g.textBody}"></vr-text>"""
+      case _ => "//There are no rules to handle that element"
     }
+  }
+
+  def generatePoints(points: List[Point]) = {
+    points.map(point => generateVrPoint(point.x, point.y)).mkString
   }
 
   def generateVrPoint(xy: (Int, Int)) = {

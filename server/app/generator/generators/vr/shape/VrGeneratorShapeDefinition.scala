@@ -122,26 +122,25 @@ object VrGeneratorShapeDefinition {
   private def generateImports(geometrics: List[GeometricModel]) : String = {
     (for(g : GeometricModel <- geometrics) yield {
       g match {
-        case g: Line => "Line"
+        case g: Line => s"""<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">"""
         // caution: Order is important because ellipse extends rectangle
         case g: Ellipse => s"""<link rel="import" href="/assets/prototyp/elements/vr-ellipse.html"> ${generateImports(g.children)}"""
         case g: Rectangle => s"""<link rel="import" href="/assets/prototyp/elements/vr-box.html"> ${generateImports(g.children)}"""
-        case g: Polygon => "Polygon"
-        case g: PolyLine => "PolyLine"
-        case g: RoundedRectangle => "RoundedRectangle"
-        case g: Text => "Text"
-        case _ => g
+        case g: Polygon => s"""<link rel="import" href="/assets/prototyp/elements/vr-polygon.html"> ${generateImports(g.children)}"""
+        case g: PolyLine => s"""<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">"""
+        case g: RoundedRectangle => "// VR has no RoundedRectangle"
+        case g: Text => "//Text"
+        case _ => "// no matching value" + g.toString()
       }
     }).mkString
   }
 
   private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
     var textCount = 0
-    val geos = geometrics.reverse
-    (for(g: GeometricModel <- geos) yield {
+    (for(g: GeometricModel <- geometrics) yield {
       val element = getElement(g)
       g match {
-        case text: Text => ""
+        case text: Text => "" // just ignore texts at this point
         case c: CommonLayout =>  {
           val wrapper = c.asInstanceOf[Wrapper]
           val position = c.position.getOrElse((0,0))
