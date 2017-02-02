@@ -39,7 +39,7 @@ object VrGeneratorShapeDefinition {
     <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
-    <link rel="import" href="vr-connect-extended.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
     ${generateImports(geometrics)}
 
 
@@ -56,7 +56,7 @@ object VrGeneratorShapeDefinition {
         VrBehavior.Resize,
         VrBehavior.Highlight,
         VrBehavior.Delete,
-        VrBehavior.ConnectExtended,
+        VrBehavior.Connect,
         VrBehavior.Look,
         VrBehavior.InnerSizing
       ],
@@ -128,9 +128,9 @@ object VrGeneratorShapeDefinition {
         case g: Rectangle => s"""<link rel="import" href="/assets/prototyp/elements/vr-box.html"> ${generateImports(g.children)}"""
         case g: Polygon => s"""<link rel="import" href="/assets/prototyp/elements/vr-polygon.html"> ${generateImports(g.children)}"""
         case g: PolyLine => s"""<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">"""
-        case g: RoundedRectangle => "// VR has no RoundedRectangle"
-        case g: Text => "//Text"
-        case _ => "// no matching value" + g.toString()
+        case g: RoundedRectangle => "<!-- VR has no RoundedRectangle -->"
+        case g: Text => "<!-- Text -->" // not needed. Just for develop purpose
+        case _ => "<!-- no matching value -->" + g.toString()
       }
     }).mkString
   }

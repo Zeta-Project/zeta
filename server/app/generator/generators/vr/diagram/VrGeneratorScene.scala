@@ -53,6 +53,7 @@ object VrGeneratorScene {
             VrBehavior.Zoom,
             VrBehavior.AxisControl,
             VrBehavior.NewExtended, // gets generated
+            VrBehavior.ConnectExtended, // gets generated
             VrBehavior.Webvr,
             VrBehavior.Scene,
             VrBehavior.LoadElements,

@@ -20,7 +20,7 @@ object VrDiagramGenerator {
     val connections = diagram.edges.map(getConnection(_)).groupBy(_.name).map(_._2.head)
 
     Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+EXTENDED_NEW_BEHAVIOR), VrGeneratorNewBehavior.generate(nodes).getBytes)
-    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+EXTENDED_CONNECT_BEHAVIOR), VrGeneratorConnectBehavior.generate(connections).getBytes)
+    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+EXTENDED_CONNECT_BEHAVIOR), VrGeneratorConnectBehavior.generate(connections, diagram.edges).getBytes)
     Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+SCENE), VrGeneratorScene.generate(nodes, connections).getBytes)
   }
 
