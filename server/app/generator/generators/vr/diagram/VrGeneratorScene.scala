@@ -24,7 +24,7 @@ object VrGeneratorScene {
       <link rel="import" href="/assets/prototyp/behaviors/vr-webvr.html">
       <link rel="import" href="/assets/prototyp/behaviors/vr-scene.html">
       <link rel="import" href="/assets/prototyp/behaviors/vr-load-elements.html">
-      <link rel="import" href="/assets/prototyp/behaviors/vr-save.html">
+      <link rel="import" href="vr-save.html">
       <link rel="import" href="vr-new-extended.html">
       <link rel="import" href="vr-connect-extended.html">
 

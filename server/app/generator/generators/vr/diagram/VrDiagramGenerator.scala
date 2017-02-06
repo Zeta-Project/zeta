@@ -12,6 +12,7 @@ object VrDiagramGenerator {
   private val EXTENDED_NEW_BEHAVIOR	= "vr-new-extended.html"
   private val EXTENDED_CONNECT_BEHAVIOR = "vr-connect-extended.html"
   private val SCENE	= "vr-scene.html"
+  private val SAVE_BEHAVIOR = "vr-save.html"
 
   def doGenerate(diagram: Diagram, location:String) {
     val DEFAULT_DIAGRAM_LOCATION = location
@@ -22,6 +23,7 @@ object VrDiagramGenerator {
     Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+EXTENDED_NEW_BEHAVIOR), VrGeneratorNewBehavior.generate(nodes).getBytes)
     Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+EXTENDED_CONNECT_BEHAVIOR), VrGeneratorConnectBehavior.generate(connections, diagram.edges).getBytes)
     Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+SCENE), VrGeneratorScene.generate(nodes, connections).getBytes)
+    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION+SAVE_BEHAVIOR), VrGeneratorSaveBehavior.generate(nodes, connections, diagram).getBytes)
   }
 
   // copied from ValidatorGenerator

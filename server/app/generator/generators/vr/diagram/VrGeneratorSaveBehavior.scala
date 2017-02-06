@@ -1,13 +1,19 @@
 package generator.generators.vr.diagram
 
+import generator.model.diagram.Diagram
+import generator.model.diagram.edge.Edge
+import generator.model.diagram.node.Node
+import generator.model.shapecontainer.connection.Connection
+
 /**
   * Created by max on 02.02.17.
   */
 object VrGeneratorSaveBehavior {
 
-  def generate() = {
+  def generate(nodes: Iterable[Node], connections: Iterable[Connection], diagram: Diagram) = {
+    val edgeMap = diagram.edges.groupBy(connectionGroup(_))
     s"""
-    <link rel="import" href="vr-three.html">
+    <link rel="import" href="/assets/prototyp/behaviors/vr-three.html">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
     <script>
@@ -23,9 +29,7 @@ object VrGeneratorSaveBehavior {
         var modelId = href.substr(href.lastIndexOf('/') + 1, href.length);
 
         var tagType = {
-          "VR-KLASSE": "Klasse",
-          "VR-ABSTRACTKLASSE": "AbstractKlasse",
-          "VR-INTERFACE": "InterfaceKlasse"
+          ${nodes.map(generateNodeMapping(_)).mkString.dropRight(1)}
         };
 
         getToken();
@@ -79,127 +83,58 @@ object VrGeneratorSaveBehavior {
           }
 
           function _addModel(model, element) {
-                       var obj = {};
-                       obj.type = '';
-                       obj.size = {};
-                       obj.source = {};
-                       obj.target = {};
-                       obj.attrs = {};
-                       obj.embeds = '';
-                       obj.z = Math.floor(Math.random() * (31));
+            // setup obj structure
+            var obj = {};
+            obj.type = '';
+            obj.size = {};
+            obj.source = {};
+            obj.target = {};
+            obj.attrs = {};
+            obj.embeds = '';
+            obj.z = Math.floor(Math.random() * (31));
 
-                 if (element.tagName.includes('VR-CONNECTION')) {
-                           var tagFrom = document.getElementById(element.from).tagName;
-                           var tagTo = document.getElementById(element.to).tagName;
-                           obj.sourceAttribute = tagType[tagFrom];
-                           obj.targetAttribute = tagType[tagTo];
-                           obj.id = element.id;
-                           obj.source.id = element.from;
-                           obj.target.id = element.to;
-                           obj.placings = [];
-                           obj.labels = [];
-                           obj.styleSet = true;
+            if (element.tagName.includes('VR-CONNECTION')) {
+              var tagFrom = document.getElementById(element.from).tagName;
+              var tagTo = document.getElementById(element.to).tagName;
+              obj.sourceAttribute = tagType[tagFrom];
+              obj.targetAttribute = tagType[tagTo];
+              obj.id = element.id;
+              obj.source.id = element.from;
+              obj.target.id = element.to;
+              obj.placings = [];
+              obj.labels = [];
+              obj.styleSet = true;
 
-                    switch (element.tagName) {
-                               case 'VR-CONNECTION-AGGREGATION':
-                                   obj.type = 'zeta.MLink';
-                                   obj.subtype = 'aggregation';
-                                   obj.mReference = "Aggregation";
-                                   obj.attrs = getConnectionStyle(obj.subtype);
-                                   break;
-                               case 'VR-CONNECTION-INHERITANCE':
-                                   obj.type = 'zeta.MLink';
-                                   obj.subtype = 'inheritance';
-                                   obj.mReference = "Inheritance";
-                                  obj.attrs = getConnectionStyle(obj.subtype);
-                                   break;
-                               case 'VR-CONNECTION-REALIZATION':
-                                   obj.type = 'zeta.MLink';
-                                   if (tagFrom == "VR-KLASSE") {
-                                       obj.subtype = 'realization';
-                                       obj.mReference = "BaseClassRealization";
+              switch (element.tagName) {
+                ${edgeMap.map{case(key, value) => generateConnectionSwitch(key, value, nodes)}.mkString}
+              }
+            } else {
+              // class
+              obj['init-size'] = {};
+              obj.resize = {};
+              obj.compartments = [];
+              obj.position = {};
+              obj.position.x = element.xPos;
+              obj.position.y = element.yPos * -1;
+              obj.angle = 0;
+              obj.nodeName = '';
+              obj.mClass = '';
+              obj.mClassAttributeInfo = [];
+              obj.id = element.id;
+              obj.resize.horizontal = true;
+              obj.resize.vertical = true;
+              obj.resize.propotional = true;
 
-                             } else {
-                                       obj.subtype = 'realization';
-                                       obj.mReference = "Realization";
-                                   }
-                                   obj.attrs = getConnectionStyle(obj.subtype);
-                                   break;
-                               case 'VR-CONNECTION-COMPONENT':
-                                   obj.type = 'zeta.MLink';
-                                   obj.subtype = 'component';
-                                   obj.mReference = "Component";
-                                  obj.attrs = getConnectionStyle(obj.subtype);
-                                   break;
-                           }
+              obj['init-size'].width = element.width;
+              obj['init-size'].height = element.height;
+              obj.size.width = element.width;
+              obj.size.height = element.height;
 
-                 } else {
-                           // class
-                           obj['init-size'] = {};
-                           obj.resize = {};
-                           obj.compartments = [];
-                           obj.position = {};
-                           obj.position.x = element.xPos;
-                           obj.position.y = element.yPos * -1;
-                           obj.angle = 0;
-                           obj.nodeName = '';
-                           obj.mClass = '';
-                           obj.mClassAttributeInfo = [];
-                           obj.id = element.id;
-                           obj.resize.horizontal = true;
-                           obj.resize.vertical = true;
-                           obj.resize.propotional = true;
-
-                     obj['init-size'].width = element.width;
-                           obj['init-size'].height = element.height;
-                           obj.size.width = element.width;
-                           obj.size.height = element.height;
-
-                    switch (element.tagName) {
-                               case 'VR-PLACE':
-                                   obj.type = 'zeta.place';
-                                   obj.initSize.width = 60;
-                                   obj['init-size'].height = 60;
-                                   obj.size.width = 60;
-                                   obj.size.height = 60;
-                                   obj.nodeName = 'placeNode';
-                                   obj.mClass = 'Place';
-                                   obj.z = 1;
-                                   obj.attrs = getShapeStyle("place");
-                                   break;
-                               case 'VR-TRANSITION':
-                                   obj.type = 'zeta.transition';
-                                   obj['init-size'].width = 100;
-                                   obj['init-size'].height = 200;
-                                   obj.size.width = 100;
-                                   obj.size.height = 200;
-                                   obj.nodeName = 'transitionNode';
-                                   obj.mClass = 'Transition';
-                                   obj.z = 3;
-                                   obj.attrs = getShapeStyle("transition");
-                                   break;
-                               case 'VR-KLASSE':
-                                   obj.type = 'zeta.klasse';
-                                   obj.nodeName = 'classNode';
-                                   obj.mClass = 'Klasse';
-                                   obj.attrs = getShapeStyle("klasse");
-                                   break;
-                               case 'VR-ABSTRACTKLASSE':
-                                   obj.type = 'zeta.abstractKlasse';
-                                   obj.nodeName = 'abClassNode';
-                                   obj.mClass = 'AbstractKlasse';
-                                   obj.attrs = getShapeStyle("abstractKlasse");
-                                   break;
-                               case 'VR-INTERFACE':
-                                   obj.type = 'zeta.interface';
-                                   obj.nodeName = 'inClassNode';
-                                   obj.mClass = 'InterfaceKlasse';
-                                   obj.attrs = getShapeStyle("interface");
-                      break;
+              switch (element.tagName) {
+                ${nodes.map(generateShapeSwitch(_)).mkString}
+              }
             }
-          }
-
-          model.cells.push(obj);
+            model.cells.push(obj);
             return model;
           }
 
@@ -214,57 +149,27 @@ object VrGeneratorSaveBehavior {
           }
 
           function _addElemnt(allElements, element) {
-                       var newElement = {};
-                       newElement.id = element.id;
-                       newElement.attributes = {};
+            var newElement = {};
+            newElement.id = element.id;
+            newElement.attributes = {};
 
             if (element.tagName.includes('VR-CONNECTION')) {
-                          var tagFrom = document.getElementById(element.from).tagName;
-                           var tagTo = document.getElementById(element.to).tagName;
-                           newElement.source = {};
-                           newElement.target = {};
-                           newElement.source[tagType[tagFrom]] = [];
-                           newElement.source[tagType[tagFrom]][0] = element.from;
-                           newElement.target[tagType[tagTo]] = [];
-                           newElement.target[tagType[tagTo]] [0] = element.to;
-                       } else {
-                           newElement.inputs = {};
-                           newElement.outputs = {};
-                       }
+              var tagFrom = document.getElementById(element.from).tagName;
+              var tagTo = document.getElementById(element.to).tagName;
+              newElement.source = {};
+              newElement.target = {};
+              newElement.source[tagType[tagFrom]] = [];
+              newElement.source[tagType[tagFrom]][0] = element.from;
+              newElement.target[tagType[tagTo]] = [];
+              newElement.target[tagType[tagTo]] [0] = element.to;
+            } else {
+              newElement.inputs = {};
+              newElement.outputs = {};
+            }
 
-                 switch (element.tagName) {
-                          case 'VR-PLACE':
-                               newElement.mClass = 'Place';
-                               break;
-                           case 'VR-TRANSITION':
-                               newElement.mClass = 'Transition';
-                               break;
-                           case 'VR-KLASSE':
-                              newElement.mClass = 'Klasse';
-                               break;
-                           case 'VR-ABSTRACTKLASSE':
-                               newElement.mClass = 'AbstractKlasse';
-                               break;
-                           case 'VR-INTERFACE':
-                               newElement.mClass = 'InterfaceKlasse';
-                               break;
-                           case 'VR-CONNECTION-AGGREGATION':
-                               newElement.mReference = 'Aggregation';
-                               break;
-                           case 'VR-CONNECTION-INHERITANCE':
-                               newElement.mReference = 'Inheritance';
-                               break;
-                           case 'VR-CONNECTION-REALIZATION':
-                               if (tagFrom == "VR-KLASSE") {
-                                   newElement.mReference = 'BaseClassRealization';
-                               } else {
-                                   newElement.mReference = 'Realization';
-                               }
-                               break;
-                           case 'VR-CONNECTION-COMPONENT':
-                               newElement.mReference = 'Component';
-                               break;
-          }
+            switch (element.tagName) {
+              ${generateMixedSwitch(nodes, edgeMap)}
+            }
 
           allElements.elements.push(newElement);
             return allElements;
@@ -360,5 +265,95 @@ object VrGeneratorSaveBehavior {
       }]
      </script>
      """
+  }
+
+  def generateNodeMapping(node: Node) = {
+    val name = node.shape match {
+      case Some(shape) => shape.getShape
+      case _ => ""
+    }
+    s"""'VR-${name.toUpperCase()}': '${node.mcoreElement.name}',"""
+  }
+
+  def generateConnectionSwitch(name: String, edges: List[Edge], nodes: Iterable[Node]) = {
+    s"""
+    case 'VR-CONNECTION-${name.toUpperCase()}':
+      obj.type = 'zeta.MLink';
+      obj.subtype = '${name}';
+
+      obj.mReference = '${edges.head.mcoreElement.name}';
+
+      ${edges.tail.map(referenceIf(_, nodes)).mkString.drop(5)}
+
+      obj.attrs = getConnectionStyle(obj.subtype);
+      break;
+    """
+  }
+
+  def referenceIf(edge: Edge, nodes: Iterable[Node]) = {
+    s"""else if(tagFrom == 'VR-${getNodeName(edge.from.name, nodes)}') { obj.mReference = '${edge.mcoreElement.name}';}"""
+  }
+
+  def getNodeName(mclass: String, nodes: Iterable[Node]) = {
+    nodes.filter(_.mcoreElement.name == mclass).head.shape match {
+      case Some(shape) => shape.getShape.toUpperCase()
+      case _ => ""
+    }
+  }
+
+  def generateShapeSwitch(node: Node) = {
+    val name = node.shape match {
+      case Some(shape) => shape.getShape
+      case _ => ""
+    }
+    s"""
+    case 'VR-${name.toUpperCase()}':
+      obj.type = 'zeta.${name}';
+      obj.nodeName = '${node.name}';
+      obj.mClass = '${name.capitalize}';
+      obj.attrs = getShapeStyle("${name}");
+      break;
+    """
+  }
+
+  def generateMixedSwitch(nodes: Iterable[Node], edges: Map[String, List[Edge]]) = {
+    s"""
+    ${nodes.map(generateNodeMClass(_)).mkString}
+    ${edges.map{case(key, value) => generateEdgeMClass(key, value, nodes)}.mkString}
+    """
+  }
+
+  def generateNodeMClass(node: Node) = {
+    val name = node.shape match {
+      case Some(shape) => shape.getShape
+      case _ => ""
+    }
+    s"""
+    case 'VR-${name.toUpperCase()}':
+      newElement.mClass = '${node.mcoreElement.name}';
+      break;
+    """
+  }
+
+  def generateEdgeMClass(name: String, edges: List[Edge], nodes: Iterable[Node]) = {
+    s"""
+    case 'VR-CONNECTION-${name.toUpperCase()}':
+      newElement.mClass = '${edges.head.mcoreElement.name}';
+
+      ${edges.tail.map(mclassIf(_, nodes)).mkString.drop(5)}
+
+      break;
+    """
+  }
+
+  def mclassIf(edge: Edge, nodes: Iterable[Node]) = {
+    s"""else if(tagFrom == 'VR-${getNodeName(edge.from.name, nodes)}') { newElement.mClass = '${edge.mcoreElement.name}';}"""
+  }
+
+  def connectionGroup(edge: Edge) = {
+    edge.connection.referencedConnection match {
+      case Some(conn) => conn.name
+      case _ => ""
+    }
   }
 }
