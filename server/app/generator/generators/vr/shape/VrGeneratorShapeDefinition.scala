@@ -65,11 +65,13 @@ object VrGeneratorShapeDefinition {
 
       ready: function() {
         var self = this;
-        this.highlight = true
-        this.resizeVertical = true
-        this.resizeHorizontal = true
-        this.moveHorizontal = true
-        this.moveVertical = true
+        this.highlight = true;
+        this.resizeVertical = true;
+        this.resizeHorizontal = true;
+        this.moveHorizontal = true;
+        this.moveVertical = true;
+        this.minMoveHorizontal = 0;
+        this.maxMoveVertical = 0;
         this.height = ${totalSize._1.toInt}
         this.width = ${totalSize._2.toInt}
        ${createInnerSizing(geometrics, totalSize)}
