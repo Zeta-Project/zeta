@@ -338,7 +338,7 @@ object VrGeneratorSaveBehavior {
   def generateEdgeMClass(name: String, edges: List[Edge], nodes: Iterable[Node]) = {
     s"""
     case 'VR-CONNECTION-${name.toUpperCase()}':
-      newElement.mClass = '${edges.head.mcoreElement.name}';
+      newElement.mReference = '${edges.head.mcoreElement.name}';
 
       ${edges.tail.map(mclassIf(_, nodes)).mkString.drop(5)}
 
@@ -347,7 +347,7 @@ object VrGeneratorSaveBehavior {
   }
 
   def mclassIf(edge: Edge, nodes: Iterable[Node]) = {
-    s"""else if(tagFrom == 'VR-${getNodeName(edge.from.name, nodes)}') { newElement.mClass = '${edge.mcoreElement.name}';}"""
+    s"""else if(tagFrom == 'VR-${getNodeName(edge.from.name, nodes)}') { newElement.mReference = '${edge.mcoreElement.name}';}"""
   }
 
   def connectionGroup(edge: Edge) = {
