@@ -1,13 +1,40 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# backend connection
+GET         /socket/developer                controllers.BackendController.developer
+GET         /socket/generator/:id            controllers.BackendController.generator(id: String)
+GET         /socket/user/:model              controllers.BackendController.user(model: String)
+
+# Home page
+GET         /                                controllers.ApplicationController.index
+GET         /user                            controllers.ApplicationController.user
+GET         /signOut                         controllers.ApplicationController.signOut
+GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
+
+GET         /signUp                          controllers.SignUpController.view
+POST        /signUp                          controllers.SignUpController.submit
+
+GET         /signIn                          controllers.SignInController.view
+POST        /signIn                          controllers.SignInController.submit
+
+GET         /password/forgot                 controllers.ForgotPasswordController.view
+POST        /password/forgot                 controllers.ForgotPasswordController.submit
+GET         /password/reset/:token           controllers.ResetPasswordController.view(token: java.util.UUID)
+POST        /password/reset/:token           controllers.ResetPasswordController.submit(token: java.util.UUID)
+GET         /password/change                 controllers.ChangePasswordController.view
+POST        /password/change                 controllers.ChangePasswordController.submit
+
+GET         /account/email/:email            controllers.ActivateAccountController.send(email: String)
+GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: java.util.UUID)
+
+
 ### Webpage
-GET           /                                                                      @controllers.webpage.WebpageController.index
+GET            /                                                                     @controllers.webpage.WebpageController.index
 GET           /overview                                                              @controllers.webpage.WebpageController.diagramsOverview(uuid: String = null)
 GET           /overview/:uuid                                                        @controllers.webpage.WebpageController.diagramsOverview(uuid: String)
 
-
-### Profile management
-GET           /profile                                                               @controllers.webpage.ProfileController.overview
-GET           /profile/edit                                                          @controllers.webpage.ProfileController.edit
-POST          /profile/edit                                                          @controllers.webpage.ProfileController.saveChanges
 
 # metamodel editor
 GET           /metamodel/editor/:metaModelUuid                                       @controllers.MetaModelController.metaModelEditor(metaModelUuid: String)
@@ -60,18 +87,7 @@ DELETE        /models/:modelId                                                  
 GET           /codeeditor/editor/:metaModelUuid/:dslType                             @controllers.CodeEditorController.codeEditor(metaModelUuid: String, dslType: String)
 GET           /codeeditor/socket/:metaModelUuid/:dslType                             @controllers.CodeEditorController.codeSocket(metaModelUuid: String, dslType: String)
 
-
-### oAuth 2
-POST          /oauth/accessToken                                                     @controllers.oAuth.OAuthController.accessToken
-POST          /oauth/accessTokenLocal                                                @controllers.oAuth.OAuthLocalController.accessToken
-# temp. route for setup/developing purposes
-GET           /oauth/setup                                                           @controllers.oAuth.OAuthController.setup
-
-### Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                                          controllers.Assets.at(path="/public", file)
-GET           /model_specific/*file                                                  @controllers.DynamicFileController.serveFile(file)
-
-
-### include securesocial routes
-->            /auth                                                                  securesocial.Routes
-
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                    controllers.Assets.at(path="/public", file)
+GET         /webjars/*file                   controllers.WebJarAssets.at(file)
+GET         /model_specific/*file            @controllers.DynamicFileController.serveFile(file)

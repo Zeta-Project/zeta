@@ -3,8 +3,8 @@ package generator.generators.vr.diagram
 import generator.model.diagram.node.Node
 
 /**
-  * Created by max on 12.11.16.
-  */
+ * Created by max on 12.11.16.
+ */
 object VrGeneratorNewBehavior {
 
   def generate(nodes: Iterable[Node]) = {

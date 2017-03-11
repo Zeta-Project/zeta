@@ -560,8 +560,6 @@ var Rappid = Backbone.Router.extend({
                 var exporter = new Exporter(this.graph);
                 var metaModel = exporter.export();
 
-                console.log(metaModel);
-
                 if (metaModel.isValid()) {
                     // Send exported Metamodel to server
                     this.saveMetaModel(metaModel.getMetaModel(), this.graph.toJSON());
@@ -584,42 +582,28 @@ var Rappid = Backbone.Router.extend({
         saveMetaModel: function (metaModel, graph) {
             var showFailure = this.showExportFailure;
             var showSuccess = this.showExportSuccess;
-            var fnSave = function (accessTokenString, tokenRefreshed, error) {
-                if (error) {
-                    showFailure("Error saving meta model: " + error);
-                    return;
+
+            var data = JSON.stringify({
+                name: window.loadedMetaModel.name,
+                elements: metaModel,
+                uiState: JSON.stringify(graph)
+            });
+
+            console.log(data);
+
+            $.ajax({
+                type: 'PUT',
+                url: '/metamodels/' + window.loadedMetaModel.uuid + '/definition',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: data,
+                success: function (data, textStatus, jqXHR) {
+                    showSuccess();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    showFailure("Error saving meta model: " + errorThrown);
                 }
-
-                var data = JSON.stringify({
-                    name: window.loadedMetaModel.name,
-                    elements: metaModel,
-                    uiState: JSON.stringify(graph)
-                });
-
-                console.log(data);
-
-                $.ajax({
-                    type: 'PUT',
-                    url: '/metamodels/' + window.loadedMetaModel.uuid + '/definition',
-                    contentType: "application/json; charset=utf-8",
-                    data: data,
-                    headers: {
-                        Authorization: "Bearer " + accessTokenString
-                    },
-                    success: function (data, textStatus, jqXHR) {
-                        showSuccess();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        if (!tokenRefreshed) {
-                            accessToken.authorized(fnSave, true);
-                        } else {
-                            showFailure("Error saving meta model: " + errorThrown);
-                        }
-                    }
-                });
-            };
-
-            accessToken.authorized(fnSave);
+            });
         },
 
         initializeToolbarTooltips: function () {

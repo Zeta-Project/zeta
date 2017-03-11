@@ -6,8 +6,8 @@ import generator.model.diagram.node.Node
 import generator.model.shapecontainer.connection.Connection
 
 /**
-  * Created by max on 02.02.17.
-  */
+ * Created by max on 02.02.17.
+ */
 object VrGeneratorSaveBehavior {
 
   def generate(nodes: Iterable[Node], connections: Iterable[Connection], diagram: Diagram) = {
@@ -106,7 +106,7 @@ object VrGeneratorSaveBehavior {
               obj.styleSet = true;
 
               switch (element.tagName) {
-                ${edgeMap.map{case(key, value) => generateConnectionSwitch(key, value, nodes)}.mkString}
+                ${edgeMap.map { case (key, value) => generateConnectionSwitch(key, value, nodes) }.mkString}
               }
             } else {
               // class
@@ -319,7 +319,7 @@ object VrGeneratorSaveBehavior {
   def generateMixedSwitch(nodes: Iterable[Node], edges: Map[String, List[Edge]]) = {
     s"""
     ${nodes.map(generateNodeMClass(_)).mkString}
-    ${edges.map{case(key, value) => generateEdgeMClass(key, value, nodes)}.mkString}
+    ${edges.map { case (key, value) => generateEdgeMClass(key, value, nodes) }.mkString}
     """
   }
 

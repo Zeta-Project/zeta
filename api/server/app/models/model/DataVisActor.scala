@@ -2,22 +2,22 @@ package models.model
 
 import java.io.File
 
-import akka.actor.{Actor, ActorRef, Props}
-import models.model.DataVisActor.{MetamodelFailure, MetamodelLoaded}
+import akka.actor.{ Actor, ActorRef, Props }
+import models.model.DataVisActor.{ MetamodelFailure, MetamodelLoaded }
 import models.model.ModelWsActor.DataVisInvalidError
 import play.api.Logger
-import play.api.libs.json.{JsObject, Json}
-import shared.DiagramWSMessage.{DataVisCodeMessage, DataVisScopeQuery}
+import play.api.libs.json.{ JsObject, Json }
+import shared.DiagramWSMessage.{ DataVisCodeMessage, DataVisScopeQuery }
 import util.MetamodelBuilder
 import util.datavis.domain.Conditional
 import util.datavis.generator.ListenersGenerator
 import util.datavis.parser.DataVisParsers
 import util.datavis.validator.ConstrainedDataVisValidator
-import util.domain.{Metamodel, ObjectWithAttributes}
+import util.domain.{ Metamodel, ObjectWithAttributes }
 
-class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends Actor with DataVisParsers{
-  val log = Logger(this getClass() getName())
-  var metamodel:Metamodel = null
+class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) extends Actor with DataVisParsers {
+  val log = Logger(this getClass () getName ())
+  var metamodel: Metamodel = null
   val generator = new ListenersGenerator
 
   // TODO: Connect model instance to new REST API
@@ -30,14 +30,14 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
   } */
 
   override def receive = {
-    case msg:DataVisCodeMessage => handleDataVisCode(msg)
+    case msg: DataVisCodeMessage => handleDataVisCode(msg)
     case DataVisScopeQuery(mClass) => handleScopeQuery(mClass)
     case MetamodelLoaded(code) => metamodel = MetamodelBuilder().fromJson(Json.parse(code).asInstanceOf[JsObject])
     case MetamodelFailure() => log.error("Unable to lead metamodel")
     case _ => log.error("Unknown message received")
   }
 
-  private def handleDataVisCode(msg:DataVisCodeMessage) = {
+  private def handleDataVisCode(msg: DataVisCodeMessage) = {
     log.debug("DataVis Code for object " + msg.context + ": " + msg.code)
 
     metamodel.getObjectByName(msg.classname) match {
@@ -49,7 +49,7 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
     }
   }
 
-  private def handleScopeQuery(classname:String) = {
+  private def handleScopeQuery(classname: String) = {
     /*
     log.debug("Scope query for MObj" + classname)
     metamodel.getObjectByName(classname) match {
@@ -62,7 +62,7 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
     */
   }
 
-  private def  validateAndGenerateDataVisCode(mObject:ObjectWithAttributes, conditionals:List[Conditional], msg:DataVisCodeMessage) = {
+  private def validateAndGenerateDataVisCode(mObject: ObjectWithAttributes, conditionals: List[Conditional], msg: DataVisCodeMessage) = {
     val validator = new ConstrainedDataVisValidator
     if (validator.validate(conditionals, mObject))
       generateAndPublish(msg, conditionals)
@@ -70,14 +70,14 @@ class DataVisActor(socket:ActorRef, instanceId:String, graphType:String) extends
       socket ! DataVisInvalidError(validator.errors.toList, msg.context)
   }
 
-  private def generateAndPublish(msg:DataVisCodeMessage, conditionals:List[Conditional]) = {
+  private def generateAndPublish(msg: DataVisCodeMessage, conditionals: List[Conditional]) = {
     val fileName = generator.generate(instanceId, msg.context, conditionals)
-    socket ! ModelWsActor.PublishFile(msg.context,  ("/assets/" + fileName).replace(File.separator, "/"))
+    socket ! ModelWsActor.PublishFile(msg.context, ("/assets/" + fileName).replace(File.separator, "/"))
   }
 }
 
-object DataVisActor{
-  def props(socket:ActorRef, instanceId:String, graphType:String) = Props(new DataVisActor(socket, instanceId, graphType))
-  case class MetamodelLoaded(json:String)
+object DataVisActor {
+  def props(socket: ActorRef, instanceId: String, graphType: String) = Props(new DataVisActor(socket, instanceId, graphType))
+  case class MetamodelLoaded(json: String)
   case class MetamodelFailure()
 }

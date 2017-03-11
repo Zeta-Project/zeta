@@ -1,6 +1,6 @@
 var modelExporter = (function modelExporter () {
     'use strict';
-    
+
     var exportModel;
     var _buildElements;
     var _getAttributeValue;
@@ -12,45 +12,32 @@ var modelExporter = (function modelExporter () {
         $("[data-hide]").on("click", function(){
             $("." + $(this).attr("data-hide")).hide();
         });
-        
+
         _graph = graph;
         var elements = _buildElements();
         var uiState = JSON.stringify(_graph.toJSON());
-        var fnSave = function (accessTokenString, tokenRefreshed, error) {
-            if (error) {
-                _showExportFailure("Failure, there occurred an error during saving!");
-                return;
+
+        var data = JSON.stringify({
+            name: window._global_model_name,
+            elements: elements,
+            uiState: uiState
+        });
+
+        $.ajax({
+            type: 'PUT',
+            url: '/models/' + window._global_uuid + "/definition",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            data: data,
+            success: function (data, textStatus, jqXHR) {
+                _showExportSuccess();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+              _showExportFailure("Failure, there occurred an error during saving!");
             }
-
-            var data = JSON.stringify({
-                name: window._global_model_name,
-                elements: elements,
-                uiState: uiState
-            });
-
-            $.ajax({
-                type: 'PUT',
-                url: '/models/' + window._global_uuid + "/definition",
-                contentType: "application/json; charset=utf-8",
-                data: data,
-                headers: {
-                    Authorization: "Bearer " + accessTokenString
-                },
-                success: function (data, textStatus, jqXHR) {
-                    _showExportSuccess();
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    if (!tokenRefreshed) {
-                        accessToken.authorized(fnSave, true);
-                    } else {
-                        _showExportFailure("Failure, there occurred an error during saving!");
-                    }
-                }
-            });
-        };
-
-        accessToken.authorized(fnSave);
-
+        });
     };
 
 
@@ -147,7 +134,7 @@ var modelExporter = (function modelExporter () {
             });
         });
     };
-    
+
     _showExportFailure = function(reason) {
         $("#success-panel").fadeOut('slow', function() {
             $("#error-panel").fadeOut('slow', function() {

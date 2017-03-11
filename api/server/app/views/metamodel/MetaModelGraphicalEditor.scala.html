@@ -1,6 +1,6 @@
 @import play.api.libs.json.Json
-@import models.modelDefinitions.metaModel.MetaModelEntity
-@(user: Option[SecureSocialUser], uuid: String, metaModel: MetaModelEntity)
+@import models.document.MetaModelEntity
+@(user: Option[User], uuid: String, metaModel: MetaModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {
 

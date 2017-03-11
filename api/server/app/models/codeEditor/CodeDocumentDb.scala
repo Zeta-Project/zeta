@@ -4,18 +4,18 @@ import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
-import com.novus.salat.{Context, _}
-import play.api.{Logger, Play}
+import com.novus.salat.{ Context, _ }
+import play.api.{ Logger, Play }
 
 /** Represents a Serverside CodeDocument which is stored in the Database */
 case class DbCodeDocument(docId: String, dslType: String, metaModelUuid: String, doc: scalot.Server)
 
 /**
-  * Code Database Responsible for persisting and retrieving the CodeDocuments.
-  * Each CodeDocument
-  */
+ * Code Database Responsible for persisting and retrieving the CodeDocuments.
+ * Each CodeDocument
+ */
 object CodeDocumentDb {
-  val log = Logger(this getClass() getName())
+  val log = Logger(this getClass () getName ())
 
   val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.ip").get))
   val db = mongoClient(Play.current.configuration.getString("mongodb.name").get)
@@ -28,7 +28,9 @@ object CodeDocumentDb {
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
-  def saveDocument(doc: DbCodeDocument) = coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
+  def saveDocument(doc: DbCodeDocument) = {
+    coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
+  }
 
   def getDocWithId(id: String): Option[DbCodeDocument] = coll.find((x: DBObject) => x.docId == id) match {
     case Some(doc) => Some(grater[DbCodeDocument].asObject(doc))

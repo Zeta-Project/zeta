@@ -14,13 +14,13 @@ object Alignment {
   case object MIDDLE extends VAlign
   case object BOTTOM extends VAlign
 
-  def parseVAlign(line:String):Option[VAlign] =line match {
+  def parseVAlign(line: String): Option[VAlign] = line match {
     case "top" => Some(TOP)
     case "middle" => Some(MIDDLE)
     case "bottom" => Some(BOTTOM)
     case _ => None
   }
-  def parseHAlign(line:String):Option[HAlign]=line match {
+  def parseHAlign(line: String): Option[HAlign] = line match {
     case "center" => Some(CENTER)
     case "right" => Some(RIGHT)
     case "left" => Some(LEFT)

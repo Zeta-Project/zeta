@@ -9,10 +9,11 @@ import scala.collection.mutable.HashMap
 /** generates output string for elementAndInlineStyle.js */
 object GeneratorShapeAndInlineStyle {
 
-  /** generates the getShapeStyle function which contains mapping
-    * between styles and markup elements of the JointJS shape
-    */
-  def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel,String]]) = {
+  /**
+   * generates the getShapeStyle function which contains mapping
+   * between styles and markup elements of the JointJS shape
+   */
+  def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]]) = {
     s"""
       function getShapeStyle(elementName) {
         var style = {};
@@ -73,13 +74,12 @@ object GeneratorShapeAndInlineStyle {
     }
   }
 
-
   protected def getShape(shape: Line, shapeClass: String) = {
     var ret =
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['line.""" + shapeClass +"""'] = getStyle('""" + shape.style.get.name +"""');"""
+      ret += """style['line.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """');"""
     }
 
     ret
@@ -115,7 +115,6 @@ object GeneratorShapeAndInlineStyle {
     }
     ret
   }
-
 
   protected def getShape(shape: Text, shapeClass: String) = {
     var ret =

@@ -7,20 +7,20 @@ import generator.parser.CommonParserMethods
  * representation of CompartmentInfo
  */
 sealed class Compartment private (
-  val compartment_id:String,
-  val compartment_layout:Option[CompartmentLayout] = None,
-  val compartment_stretching_horizontal:Option[Boolean] = None,
-  val compartment_stretching_vertical:Option[Boolean] = None,
-  val compartment_spacing:Option[Int] = None,
-  val compartment_margin:Option[Int] = None,
-  val compartment_invisible:Option[Boolean] = None
+  val compartment_id: String,
+  val compartment_layout: Option[CompartmentLayout] = None,
+  val compartment_stretching_horizontal: Option[Boolean] = None,
+  val compartment_stretching_vertical: Option[Boolean] = None,
+  val compartment_spacing: Option[Int] = None,
+  val compartment_margin: Option[Int] = None,
+  val compartment_invisible: Option[Boolean] = None
 )
 
 sealed abstract class CompartmentLayout
-  case object FIXED extends CompartmentLayout
-  case object VERTICAL extends CompartmentLayout
-  case object HORIZONTAL extends CompartmentLayout
-  case object FIT extends CompartmentLayout
+case object FIXED extends CompartmentLayout
+case object VERTICAL extends CompartmentLayout
+case object HORIZONTAL extends CompartmentLayout
+case object FIT extends CompartmentLayout
 
 object Compartment extends CommonParserMethods {
 
@@ -43,7 +43,7 @@ object Compartment extends CommonParserMethods {
       case _ =>
     }
 
-    compartment_attributes.foreach{
+    compartment_attributes.foreach {
       case x if x.startsWith("layout") => layout = Some(parse(parse_layout, x).get)
       case x if x.startsWith("margin") => margin = Some(parse(parse_margin, x).get)
       case x if x.startsWith("spacing") => spacing = Some(parse(parse_spacing, x).get)
@@ -55,13 +55,11 @@ object Compartment extends CommonParserMethods {
       case x if x.startsWith("id") => id = Some(parse(parse_id, x).get)
     }
 
-    if(id.isDefined && layout.isDefined) {
-      Some(new Compartment (id.get, layout, stretching_horizontal, stretching_vertical, spacing, margin, invisible))
-    }
-    else
+    if (id.isDefined && layout.isDefined) {
+      Some(new Compartment(id.get, layout, stretching_horizontal, stretching_vertical, spacing, margin, invisible))
+    } else
       None
   }
-
 
   def parse_layout = "layout\\s*=\\s*".r ~> "(fixed|vertical|horizontal|fit)".r ^^ {
     case layo if layo == "fixed" => FIXED
@@ -81,6 +79,6 @@ object Compartment extends CommonParserMethods {
     case hor ~ ver => (matchBoolean(hor), matchBoolean(ver))
   }
 
-  def parse_id = "id\\s*=".r ~> ident ^^ {_.toString}
+  def parse_id = "id\\s*=".r ~> ident ^^ { _.toString }
 }
 

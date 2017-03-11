@@ -1,28 +1,25 @@
 package models.codeEditor
 
-import akka.actor.{Actor, ActorLogging, ActorRef, Props}
-import akka.contrib.pattern.DistributedPubSubExtension
-import akka.contrib.pattern.DistributedPubSubMediator.{Publish, Subscribe}
+import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.cluster.client.ClusterClient.Publish
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.event.Logging
-import play.api.Play.current
-import play.api.libs.concurrent.Akka
 import scalot.Server
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage._
 import upickle.default._
 
-
 case class MediatorMessage(msg: Any, broadcaster: ActorRef)
 
-
 /**
-  * This Actor takes care of applying the changed to the documents.
-  */
+ * This Actor takes care of applying the changed to the documents.
+ */
 class CodeDocManagingActor extends Actor {
 
   var documents: Map[String, DbCodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.docId, x)).toMap
 
-  val mediator = DistributedPubSubExtension(context.system).mediator
+  val mediator = DistributedPubSub(context.system).mediator
   val log = Logging(context.system, this)
 
   def receive = {
@@ -30,35 +27,38 @@ class CodeDocManagingActor extends Actor {
       x match {
         case TextOperation(op, docId) =>
           documents(docId).doc.receiveOperation(op) match {
-            case Some(send) =>
+            case Some(send) => {
               mediator ! Publish(
                 documents(docId).dslType,
                 MediatorMessage(TextOperation(send, docId), self)
               )
+              sender() ! MediatorMessage(TextOperation(send, docId), self)
+            }
             case _ => // Nothing to do!
           }
           CodeDocumentDb.saveDocument(documents(docId))
 
         case newDoc: DocAdded =>
-          println("Manager: Got DocAdded")
           documents = documents + (newDoc.id -> new DbCodeDocument(
             docId = newDoc.id,
             dslType = newDoc.dslType,
             metaModelUuid = newDoc.metaModelUuid,
             doc = new Server(
-              str = "",
-              title = newDoc.title,
-              docType = newDoc.docType,
-              id = newDoc.id)
+            str = "",
+            title = newDoc.title,
+            docType = newDoc.docType,
+            id = newDoc.id
+          )
           ))
-          println(s"Manager: Added, publishing to ${newDoc.dslType}")
           CodeDocumentDb.saveDocument(documents(newDoc.id))
           mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, sender()))
+          sender() ! MediatorMessage(newDoc, sender())
 
         case msg: DocDeleted =>
           documents = documents - msg.id
           CodeDocumentDb.deleteDocWithId(msg.id)
           mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
+          sender() ! MediatorMessage(msg, sender())
 
         case _ => ;
       }
@@ -66,18 +66,15 @@ class CodeDocManagingActor extends Actor {
 }
 
 object CodeDocManagingActor {
-  private val codeDocManager: ActorRef = Akka.system.actorOf(Props[CodeDocManagingActor], name = "codeDocManager")
-
-  def getCodeDocManager = codeDocManager
+  def props() = Props(new CodeDocManagingActor())
 }
 
-
 /**
-  * This Actor is responsible of the communictaion with the users browser
-  */
+ * This Actor is responsible of the communictaion with the users browser
+ */
 class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) extends Actor with ActorLogging {
 
-  val mediator = DistributedPubSubExtension(context.system).mediator
+  val mediator = DistributedPubSub(context.system).mediator
   mediator ! Subscribe(dslType, self)
 
   /** Tell the client about the existing document */
@@ -100,7 +97,6 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
       )
     )
   }
-
 
   def receive = {
     case pickled: String => try {
@@ -131,13 +127,8 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
 
     case _ => log.debug(s" ${self.toString()} - Message is not a String!")
   }
-
-  override def preStart() = {
-    println("Started Actor!")
-  }
 }
 
 object CodeDocWsActor {
   def props(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) = Props(new CodeDocWsActor(out, docManager, metaModelUuid, dslType))
 }
-

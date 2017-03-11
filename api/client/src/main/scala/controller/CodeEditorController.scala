@@ -2,11 +2,12 @@ package controller
 
 import java.util.UUID
 
-import controller.AccessToken.TokenInformation
 import org.scalajs.jquery._
 import scalot._
 import shared.CodeEditorMessage._
 import view.CodeEditorView
+import org.scalajs.dom.console
+import scalot.ClientFSM.{ Apply, NoOp }
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
@@ -16,20 +17,17 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
 
   val autoSave = true
 
-
   val view = new CodeEditorView(controller = this, metaModelUuid = metaModelUuid, dslType = dslType, autoSave = autoSave)
   val ws = new WebSocketConnection(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
   val clientId = UUID.randomUUID().toString
   var document: Client = null
 
   def docLoadedMessage(msg: DocLoaded) = {
-    println("Got DocLoadedMessage")
     document = new Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id)
     view.displayDoc(document)
   }
 
   def docNotFoundMessage(msg: DocNotFound) = {
-    println("Got DocNotFoundMessage")
     addDocument(msg.metaModelUuid, msg.dslType)
     view.displayDoc(document)
   }
@@ -53,39 +51,20 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
    * This function fnSave() is a callback function which will be called inside authorized().
    */
   def saveCode() = {
-
-    def fnSave(tokenInformation: TokenInformation): Unit = {
-
-      if (tokenInformation.error.isDefined) {
-        return
+    jQuery.ajax(literal(
+      `type` = "PUT",
+      url = s"/metamodels/$metaModelUuid/$dslType",
+      contentType = "application/json; charset=utf-8",
+      dataType = "json",
+      data = JSON.stringify(js.Dictionary(
+        "code" -> document.str
+      )),
+      success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
+      },
+      error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
+        println(s"Cannot save: $errorThrown")
       }
-
-      jQuery.ajax(literal(
-        `type` = "PUT",
-        url = s"/metamodels/$metaModelUuid/$dslType",
-        contentType = "application/json; charset=utf-8",
-        dataType = "json",
-        data = JSON.stringify(js.Dictionary(
-          "code" -> document.str
-        )),
-        headers = literal(
-          Authorization = s"Bearer ${tokenInformation.token}"
-        ),
-        success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
-        },
-        error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
-          if (!tokenInformation.refreshed) {
-            AccessToken.authorized(fnSave, forceRefresh = true)
-          } else {
-            println(s"Cannot save: $errorThrown")
-          }
-        }
-      ).asInstanceOf[JQueryAjaxSettings])
-
-    }
-
-    AccessToken.authorized(fnSave, forceRefresh = false)
-
+    ).asInstanceOf[JQueryAjaxSettings])
   }
 
   /** Apply changes to the corresponding doc */
@@ -97,18 +76,21 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
       case _ =>
     }
     res.send match {
-      case Some(send) => ws.sendMessage(TextOperation(send, op.docId))
+      case Some(send) => {
+        ws.sendMessage(TextOperation(send, op.docId))
+      }
       case _ =>
     }
   }
 
   def operationFromLocal(op: scalot.Operation, docId: String) = {
     document.applyLocal(op) match {
-      case ApplyResult(Some(send), _) =>
+      case ApplyResult(Some(send), _) => {
         ws.sendMessage(TextOperation(send, docId))
         if (autoSave) {
           saveCode()
         }
+      }
       case _ =>
     }
   }

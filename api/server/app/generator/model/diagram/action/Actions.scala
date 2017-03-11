@@ -5,6 +5,6 @@ package generator.model.diagram.action
  * Actions trait represents the grammars 'actionsBlock'
  */
 trait Actions {
-  val actionIncludes:Option[ActionInclude]
-  val actions:List[Action]
+  val actionIncludes: Option[ActionInclude]
+  val actions: List[Action]
 }

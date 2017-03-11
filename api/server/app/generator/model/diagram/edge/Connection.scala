@@ -1,7 +1,7 @@
 package generator.model.diagram.edge
 
 import generator.model.style.Style
-import generator.parser.{Cache, ConnectionSketch, PropsAndComps}
+import generator.parser.{ Cache, ConnectionSketch, PropsAndComps }
 import models.modelDefinitions.metaModel.elements.MReference
 import parser._
 
@@ -9,10 +9,10 @@ import parser._
  * Created by julian on 11.12.15.
  * representation of diagram connection
  */
-class Connection(corporateStyle:Option[Style], propsAndComps: PropsAndComps, c:Cache, mc:MReference){
+class Connection(corporateStyle: Option[Style], propsAndComps: PropsAndComps, c: Cache, mc: MReference) {
   implicit val cache = c
-  val referencedConnection:Option[generator.model.shapecontainer.connection.Connection] = {
-    val connectionSketch:ConnectionSketch = propsAndComps.ref
+  val referencedConnection: Option[generator.model.shapecontainer.connection.Connection] = {
+    val connectionSketch: ConnectionSketch = propsAndComps.ref
     connectionSketch.toConnection(corporateStyle, cache)
   }
   val propertiesAndCompartments = propsAndComps.propertiesAndCompartments

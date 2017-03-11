@@ -3,9 +3,8 @@ package generator.model.shapecontainer.connection
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-import generator.parser.{Cache, PlacingSketch, CommonParserMethods}
+import generator.parser.{ Cache, PlacingSketch, CommonParserMethods }
 import parser._
-
 
 /**
  * Created by julian on 20.10.15.
@@ -15,41 +14,44 @@ import parser._
  * @param placing outstanding
  * TODO
  */
-sealed class Connection private (override val name:String,
-                 val connection_type:Option[ConnectionStyle] = None,
-                 val style:Option[Style] = None,
-                 val placing:List[Placing] = List[Placing]()) extends ShapeContainerElement{
+sealed class Connection private (
+    override val name: String,
+    val connection_type: Option[ConnectionStyle] = None,
+    val style: Option[Style] = None,
+    val placing: List[Placing] = List[Placing]()
+) extends ShapeContainerElement {
   val textMap = {
-    val textMaps = for (p <- placing)
-      yield {
-        p.shape.textMap
-      }
-    textMaps.filter(_.isDefined).map(_.get).foldLeft(Map[String, Text]()){(ret, m) => ret ++ m}
+    val textMaps = for (p <- placing) yield {
+      p.shape.textMap
+    }
+    textMaps.filter(_.isDefined).map(_.get).foldLeft(Map[String, Text]()) { (ret, m) => ret ++ m }
   }
 
 }
 
-object Connection extends CommonParserMethods{
+object Connection extends CommonParserMethods {
   val validConnectionAttributes = List("connection-type", "layout", "placing")
   /**
    * parse method
-   * */
-  def apply(name:String,
-            styleRef:Option[Style],
-            typ:Option[String],
-            anonymousStyle:Option[String],
-            placings:List[PlacingSketch],
-            hierarchyContainer:Cache):Option[Connection] = {
+   */
+  def apply(
+    name: String,
+    styleRef: Option[Style],
+    typ: Option[String],
+    anonymousStyle: Option[String],
+    placings: List[PlacingSketch],
+    hierarchyContainer: Cache
+  ): Option[Connection] = {
     implicit val cache = hierarchyContainer
     /*mapping*/
-    var style:Option[Style] = styleRef
-    val connection_type:Option[ConnectionStyle] = if(typ isDefined) Some(parse(connectionType, typ.get).get) else None
-    if(anonymousStyle.isDefined) {
+    var style: Option[Style] = styleRef
+    val connection_type: Option[ConnectionStyle] = if (typ isDefined) Some(parse(connectionType, typ.get).get) else None
+    if (anonymousStyle.isDefined) {
       style = Style.generateChildStyle(cache, style, anonymousStyle)
     }
-    val placingList = placings.map{Placing(_, style, cache.shapeHierarchy.root.data)}
+    val placingList = placings.map { Placing(_, style, cache.shapeHierarchy.root.data) }
 
-    if(placingList isEmpty)
+    if (placingList isEmpty)
       None
     else {
       val newConnection = new Connection(name, connection_type, style, placingList)
@@ -66,5 +68,5 @@ object Connection extends CommonParserMethods{
 }
 
 abstract sealed class ConnectionStyle
-  case object FreeForm extends ConnectionStyle
-  case object Manhatten extends ConnectionStyle
+case object FreeForm extends ConnectionStyle
+case object Manhatten extends ConnectionStyle

@@ -1,4 +1,4 @@
-@(user: Option[SecureSocialUser], uuid: String, dslType: String)
+@(user: Option[User], uuid: String, dslType: String)
 
     @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
         @playscalajs.html.selectScript("client", "/assets")

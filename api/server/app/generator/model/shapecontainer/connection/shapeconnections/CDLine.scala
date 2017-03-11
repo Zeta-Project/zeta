@@ -6,8 +6,9 @@ import generator.model.style.Style
 
 /**
  * All the possible CDElements
- * */
+ */
 
-class CDLine(override val style:Option[Style]=None,
-             override val points:(Point, Point)
-              ) extends ShapeConnection with LineLayout
+class CDLine(
+  override val style: Option[Style] = None,
+  override val points: (Point, Point)
+) extends ShapeConnection with LineLayout

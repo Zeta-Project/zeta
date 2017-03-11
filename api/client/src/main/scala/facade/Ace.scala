@@ -256,9 +256,9 @@ trait IEditSession extends js.Object {
 
 @JSName("AceAjax.EditSession")
 object EditSession extends js.Object {
-/* ??? ConstructorMember(FunSignature(List(),List(FunParam(Ident(text),false,Some(TypeRef(CoreType(string),List()))), FunParam(Ident(mode),true,Some(TypeRef(TypeName(TextMode),List())))),Some(TypeRef(TypeName(IEditSession),List())))) */
-/* ??? ConstructorMember(FunSignature(List(),List(FunParam(Ident(content),false,Some(TypeRef(CoreType(string),List()))), FunParam(Ident(mode),true,Some(TypeRef(CoreType(string),List())))),Some(TypeRef(TypeName(IEditSession),List())))) */
-/* ??? ConstructorMember(FunSignature(List(),List(FunParam(Ident(text),false,Some(TypeRef(TypeName(Array),List(TypeRef(CoreType(string),List()))))), FunParam(Ident(mode),true,Some(TypeRef(CoreType(string),List())))),Some(TypeRef(TypeName(IEditSession),List())))) */
+  /* ??? ConstructorMember(FunSignature(List(),List(FunParam(Ident(text),false,Some(TypeRef(CoreType(string),List()))), FunParam(Ident(mode),true,Some(TypeRef(TypeName(TextMode),List())))),Some(TypeRef(TypeName(IEditSession),List())))) */
+  /* ??? ConstructorMember(FunSignature(List(),List(FunParam(Ident(content),false,Some(TypeRef(CoreType(string),List()))), FunParam(Ident(mode),true,Some(TypeRef(CoreType(string),List())))),Some(TypeRef(TypeName(IEditSession),List())))) */
+  /* ??? ConstructorMember(FunSignature(List(),List(FunParam(Ident(text),false,Some(TypeRef(TypeName(Array),List(TypeRef(CoreType(string),List()))))), FunParam(Ident(mode),true,Some(TypeRef(CoreType(string),List())))),Some(TypeRef(TypeName(IEditSession),List())))) */
 }
 
 @JSName("AceAjax.Editor")
@@ -275,7 +275,7 @@ class Editor protected () extends js.Object {
   var renderer: VirtualRenderer = js.native
   var keyBinding: KeyBinding = js.native
   var container: HTMLElement = js.native
-  var $blockScrolling : js.Any = js.native
+  var $blockScrolling: js.Any = js.native
   def onSelectionChange(e: js.Any): js.Dynamic = js.native
   def onChangeMode(e: js.Any = ???): js.Dynamic = js.native
   def execCommand(command: String, args: js.Any = ???): js.Dynamic = js.native
@@ -437,7 +437,7 @@ trait IRangeList extends js.Object {
 
 @JSName("AceAjax.RangeList")
 object RangeList extends js.Object {
-/* ??? ConstructorMember(FunSignature(List(),List(),Some(TypeRef(TypeName(IRangeList),List())))) */
+  /* ??? ConstructorMember(FunSignature(List(),List(),Some(TypeRef(TypeName(IRangeList),List())))) */
 }
 
 @JSName("AceAjax.Range")

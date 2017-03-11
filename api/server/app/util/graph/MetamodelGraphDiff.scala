@@ -1,6 +1,5 @@
 package util.graph
 
-
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements._
 import play.api.libs.json._
@@ -111,7 +110,7 @@ object MetamodelGraphDiff {
         lowerBound = (attribute \ "lowerBound").as[Int]
       )
 
-      def toJsonAttribute(attribute : MAttribute) : JsObject = {
+      def toJsonAttribute(attribute: MAttribute): JsObject = {
         val `type` = JsString(attribute.`type` match {
           case ScalarType.String => "String"
           case ScalarType.Bool => "Boolean"
@@ -131,7 +130,7 @@ object MetamodelGraphDiff {
           "name" -> JsString(attribute.name),
           "globalUnique" -> JsBoolean(attribute.globalUnique),
           "localUnique" -> JsBoolean(attribute.localUnique),
-          "type" ->  `type`,
+          "type" -> `type`,
           "default" -> default,
           "constant" -> JsBoolean(attribute.constant),
           "singleAssignment" -> JsBoolean(attribute.singleAssignment),
@@ -156,7 +155,7 @@ object MetamodelGraphDiff {
         println(s"Added attribute ${attribute.name}")
       }
 
-      def replaceAttributes(elementKey : String, newAttributes : JsArray) : Unit = {
+      def replaceAttributes(elementKey: String, newAttributes: JsArray): Unit = {
         val newCell = JsObject((graphCell(elementKey).get.as[Map[String, JsValue]] - "m_attributes" + ("m_attributes" -> newAttributes)).toSeq)
         val newCells = JsArray((graphCells - graphCell(elementKey).get + newCell).toSeq)
         graph = JsObject((graph.as[Map[String, JsValue]] - "cells" + ("cells" -> newCells)).toSeq)
@@ -166,6 +165,5 @@ object MetamodelGraphDiff {
     fixAttributes()
     metaModel.copy(uiState = graph.toString)
   }
-
 
 }

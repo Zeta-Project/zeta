@@ -1,4 +1,5 @@
-@(user: Option[SecureSocialUser])
+@(user: Option[User])
+@import helper._
 
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
@@ -24,13 +25,13 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 <span class="glyphicon glyphicon-lock" aria-hidden="true"> </span>
-                                <span>@u.profile.fullName</span>
+                                <span>@u.fullName</span>
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu navbar-right" role="menu">
-                                <li><a href="@controllers.webpage.routes.ProfileController.overview">Profile</a></li>
-                                <li><a href="@securesocial.controllers.routes.PasswordChange.page">Change Password</a></li>
-                                <li><a href="@securesocial.controllers.routes.LoginPage.logout">Logout</a></li>
+                               <!-- <li><a href="controllers.webpage.routes.ProfileController.overview">Profile</a></li> -->
+                                <li><a href="@routes.ChangePasswordController.view">Change Password</a></li>
+                                <li><a href="@routes.ApplicationController.signOut">Logout</a></li>
                             </ul>
                         </li>
                     }

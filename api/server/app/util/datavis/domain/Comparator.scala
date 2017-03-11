@@ -2,25 +2,25 @@ package util.datavis.domain
 
 sealed abstract class Comparator
 
-case class Equal() extends Comparator{
+case class Equal() extends Comparator {
   override def toString = "=="
 }
-case class NotEqual() extends Comparator{
+case class NotEqual() extends Comparator {
   override def toString = "!="
 }
 
-case class Less() extends Comparator{
+case class Less() extends Comparator {
   override def toString = "<"
 }
 
-case class Greater() extends Comparator{
+case class Greater() extends Comparator {
   override def toString = ">"
 }
 
-case class LessOrEqual() extends Comparator{
+case class LessOrEqual() extends Comparator {
   override def toString = "<="
 }
 
-case class GreaterOrEqual() extends Comparator{
+case class GreaterOrEqual() extends Comparator {
   override def toString = ">="
 }

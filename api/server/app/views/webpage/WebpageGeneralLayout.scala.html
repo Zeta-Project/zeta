@@ -1,4 +1,4 @@
-@(title: String, user: Option[SecureSocialUser])(content: Html)
+@(title: String, user: Option[User])(content: Html)
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +12,6 @@
         <script type="text/javascript" src="@routes.Assets.at("lib/webcomponentsjs/webcomponents.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.at("lib/bootstrap/js/bootstrap.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.at("webpage/javascripts/accessToken.js")"></script>
         <title>@title</title>
     </head>
     <body>

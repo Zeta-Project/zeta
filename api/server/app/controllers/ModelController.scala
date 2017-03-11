@@ -2,37 +2,54 @@ package controllers
 
 import javax.inject.Inject
 
-import dao.model.ZetaModelDao
+import akka.actor.ActorSystem
+import akka.stream.Materializer
+import com.mohiva.play.silhouette.api.{ HandlerResult, Silhouette }
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import models.document.{ ModelEntity, Repository }
 import models.model.ModelWsActor
-import models.modelDefinitions.model.ModelEntity
 import play.api.Logger
-import play.api.Play.current
-import play.api.mvc.WebSocket
-import util.definitions.UserEnvironment
-import scala.concurrent.duration._
-import scala.concurrent.Await
+import play.api.libs.streams.ActorFlow
+import play.api.mvc.{ AnyContentAsEmpty, Controller, Request, WebSocket }
+import utils.auth.{ DefaultEnv, RepositoryFactory }
 
-class ModelController @Inject()(override implicit val env: UserEnvironment, modelDao: ZetaModelDao) extends securesocial.core.SecureSocial {
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-  val log = Logger(this getClass() getName())
+class ModelController @Inject() (implicit mat: Materializer, system: ActorSystem, repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
-  def modelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
-    val model = Await.result(modelDao.findById(modelUuid), 30 seconds)
-    if(!model.isDefined) BadRequest("no model available for this modelid")
-    Ok(views.html.model.ModelGraphicalEditor(metaModelUuid, modelUuid, Some(request.user), model.get))
+  val log = Logger(this getClass () getName ())
+
+  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+    repositoryFactory.fromSession(request)
+
+  def modelEditor(metaModelUuid: String, modelUuid: String) = silhouette.SecuredAction.async { implicit request =>
+    repository.get[ModelEntity](modelUuid).map { model =>
+      Ok(views.html.model.ModelGraphicalEditor(model.metaModelId, modelUuid, Some(request.identity), model))
+    }.recover {
+      case e: Exception => BadRequest(e.getMessage)
+    }
   }
 
-  def vrModelEditor(metaModelUuid: String, modelUuid: String) = SecuredAction { implicit request =>
-//    val model = Await.result(modelDao.findById(modelUuid), 30 seconds)
-//    if(!model.isDefined) BadRequest("no model available for this modelid")
-    Ok(views.html.VrEditor(metaModelUuid))
+  def vrModelEditor(metaModelUuid: String, modelUuid: String) = silhouette.SecuredAction.async { implicit request =>
+    repository.get[ModelEntity](modelUuid).map { model =>
+      Ok(views.html.VrEditor(metaModelUuid))
+    }.recover {
+      case e: Exception => BadRequest(e.getMessage)
+    }
   }
 
-  def modelValidator() = SecuredAction { implicit request =>
-    Ok(views.html.model.ModelValidator(Some(request.user)))
+  def modelValidator() = silhouette.SecuredAction { implicit request =>
+    Ok(views.html.model.ModelValidator(Some(request.identity)))
   }
 
-  def modelSocket(instanceId: String, graphType: String) = WebSocket.acceptWithActor[String, String] { request => out =>
-    ModelWsActor.props(out, instanceId, graphType)
+  def modelSocket(instanceId: String, graphType: String) = WebSocket.acceptOrResult[String, String] { request =>
+    implicit val req = Request(request, AnyContentAsEmpty)
+    silhouette.SecuredRequestHandler { securedRequest =>
+      Future.successful(HandlerResult(Ok, Some(securedRequest.identity)))
+    }.map {
+      case HandlerResult(r, Some(user)) => Right(ActorFlow.actorRef(out => ModelWsActor.props(out, instanceId, graphType)))
+      case HandlerResult(r, None) => Left(r)
+    }
   }
 }

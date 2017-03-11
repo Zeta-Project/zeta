@@ -1,56 +1,51 @@
 package controllers
 
-
-import java.time.Instant
 import javax.inject.Inject
 
-import dao.metaModel.{ZetaMetaModelDao}
+import akka.actor.ActorSystem
+import akka.stream.Materializer
+import com.mohiva.play.silhouette.api.{ HandlerResult, Silhouette }
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import models.document.{ MetaModelEntity, Repository }
 import models.metaModel._
-import models.modelDefinitions.metaModel.{Dsl, MetaModel, MetaModelEntity}
-import models.modelDefinitions.metaModel.elements.MObject
-import play.api.Play.current
-import play.api.libs.json.{JsError, JsValue, Json}
-import play.api.mvc.WebSocket
-import util.definitions.UserEnvironment
-import util.graph.MetamodelGraphDiff
+import play.api.libs.json.JsValue
+import play.api.libs.streams.ActorFlow
+import play.api.mvc.{ AnyContentAsEmpty, Controller, Request, WebSocket }
+import utils.auth.{ DefaultEnv, RepositoryFactory }
 
-import scala.concurrent.duration._
-import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 /**
-  * Created by mgt on 17.10.15.
-  */
+ * Created by mgt on 17.10.15.
+ */
 
+class MetaModelController @Inject() (implicit mat: Materializer, system: ActorSystem, repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
-class MetaModelController @Inject()(metaModelDao: ZetaMetaModelDao, override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+    repositoryFactory.fromSession(request)
 
-  def metaModelEditor(metaModelUuid: String) = SecuredAction { implicit request =>
-    val hasAccess = Await.result(metaModelDao.hasAccess(metaModelUuid, request.user.uuid.toString), 30 seconds)
-    if (hasAccess.isDefined && hasAccess.get) {
-      val metaModelEntity = Await.result(metaModelDao.findById(metaModelUuid), 30 seconds)
-      if (metaModelEntity.isDefined) {
+  def metaModelEditor(metaModelUuid: String) = silhouette.SecuredAction.async { implicit request =>
+    repository.get[MetaModelEntity](metaModelUuid).map { metaModelEntity =>
+      // Fix Graph with MetaModelGraphDiff
+      //val oldMetaModelEntity = metaModelEntity.get
+      //val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.metaModel)
+      //val fixedDefinition = oldMetaModelEntity.metaModel.copy(concept = fixedConcept)
+      //val fixedMetaModelEntity = oldMetaModelEntity.copy(metaModel = fixedConcept)
 
-        // Fix Graph with MetaModelGraphDiff
-        //val oldMetaModelEntity = metaModelEntity.get
-        //val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.metaModel)
-        //val fixedDefinition = oldMetaModelEntity.metaModel.copy(concept = fixedConcept)
-        //val fixedMetaModelEntity = oldMetaModelEntity.copy(metaModel = fixedConcept)
-
-        Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.user), metaModelUuid, metaModelEntity.get))
-      } else {
-        BadRequest("Could not find meta model")
-      }
-    } else {
-      Unauthorized("Unauthorized")
+      Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.identity), metaModelUuid, metaModelEntity))
+    }.recover {
+      case e: Exception => BadRequest(e.getMessage)
     }
   }
 
-  def metaModelSocket(metaModelUuid: String) = WebSocket.acceptWithActor[JsValue, JsValue] { request => out =>
-    MetaModelWsActor.props(out, metaModelUuid)
+  def metaModelSocket(metaModelUuid: String) = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
+    implicit val req = Request(request, AnyContentAsEmpty)
+    silhouette.SecuredRequestHandler { securedRequest =>
+      Future.successful(HandlerResult(Ok, Some(securedRequest.identity)))
+    }.map {
+      case HandlerResult(r, Some(user)) => Right(ActorFlow.actorRef(out => MetaModelWsActor.props(out, metaModelUuid)))
+      case HandlerResult(r, None) => Left(r)
+    }
   }
-
-
-
-
-
 }

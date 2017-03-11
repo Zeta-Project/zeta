@@ -9,7 +9,6 @@ import generator.model.diagram.node.Node
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
 
-
 object GeneratorInspectorDefinition {
   var attrCounterMap = mutable.HashMap[String, Int]()
 
@@ -41,7 +40,7 @@ object GeneratorInspectorDefinition {
       '$packageName.${shape.name}':{
         inputs: _.extend({
           attrs: {
-            ${atts.keySet.map { k => {getRightAttributes(k, atts(k), boundWidth, boundHeight)}}.mkString(",")}
+            ${atts.keySet.map { k => { getRightAttributes(k, atts(k), boundWidth, boundHeight) } }.mkString(",")}
           },
           ${if (node.isDefined && node.get.mcoreElement.attributes.nonEmpty) generateMClassAttributeInputs(node.get) else ""}
         }, CommonInspectorInputs),
@@ -54,7 +53,7 @@ object GeneratorInspectorDefinition {
   }
 
   private def getRightAttributes(shape: GeometricModel, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
-    if(attrCounterMap.keySet.exists(_ == shape.getClass.getSimpleName))
+    if (attrCounterMap.keySet.exists(_ == shape.getClass.getSimpleName))
       attrCounterMap(shape.getClass.getSimpleName) = attrCounterMap(shape.getClass.getSimpleName) + 1
     else
       attrCounterMap(shape.getClass.getSimpleName) = 1
@@ -208,7 +207,7 @@ object GeneratorInspectorDefinition {
   }
 
   def generateMClassAttributeInputs(node: Node) = {
-    val attributeNames = node.mcoreElement.attributes.map(a => "'"+a.name+"'")
+    val attributeNames = node.mcoreElement.attributes.map(a => "'" + a.name + "'")
     val ret = s"""
       mClassAttributes: {
         type: 'list',

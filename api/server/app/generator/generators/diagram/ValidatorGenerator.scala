@@ -3,13 +3,13 @@ package generator.generators.diagram
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import models.modelDefinitions.metaModel.elements.{MLinkDef, MClass}
+import models.modelDefinitions.metaModel.elements.{ MLinkDef, MClass }
 
-import scala.collection.mutable.{HashMap, ListBuffer}
+import scala.collection.mutable.{ HashMap, ListBuffer }
 
 /**
-  * ValidatorGenerator is responsible for the creation of the String for validator.js
-  */
+ * ValidatorGenerator is responsible for the creation of the String for validator.js
+ */
 object ValidatorGenerator {
 
   /** generates matrix for validation of link types and checking upper and lower bounds*/
@@ -69,8 +69,7 @@ object ValidatorGenerator {
     s"""
     $mcName: {
     ${
-      (for (input <- inputs) yield
-        s"""${input.mType.name}: {
+      (for (input <- inputs) yield s"""${input.mType.name}: {
               upperBound: ${input.upperBound},
               lowerBound: ${input.lowerBound}}""")
         .mkString(",")
@@ -86,8 +85,7 @@ object ValidatorGenerator {
     targetMatrix: {
       ${
       {
-        for (((key, value), i) <- clazzes.zipWithIndex) yield
-          s"""$key: {
+        for (((key, value), i) <- clazzes.zipWithIndex) yield s"""$key: {
       ${generateEdgeMap(value)}
     }"""
       }.mkString(",")
@@ -98,16 +96,14 @@ object ValidatorGenerator {
   def generateEdgeMap(edgeMap: HashMap[String, Boolean]) = {
     s"""
     ${
-      (for (((key, value), i) <- edgeMap.zipWithIndex) yield
-        s"""$key: ${if (value) "true" else "false"}""").mkString(",")
+      (for (((key, value), i) <- edgeMap.zipWithIndex) yield s"""$key: ${if (value) "true" else "false"}""").mkString(",")
     }
     """
   }
 
   def generateSourceMatrix(diagram: Diagram) = {
     val sourceMatrix = getSourceMatrix(diagram)
-    val s = for (((key, value), i) <- sourceMatrix.zipWithIndex) yield
-      s"""$key: {
+    val s = for (((key, value), i) <- sourceMatrix.zipWithIndex) yield s"""$key: {
         ${generateEdgeMap(value)}
       }"""
 
@@ -117,7 +113,6 @@ object ValidatorGenerator {
     },
     """
   }
-
 
   def generateAccessMethods = {
     """
@@ -160,8 +155,7 @@ object ValidatorGenerator {
     edgeData: {
       ${
       {
-        for (edge <- diagram.edges) yield
-          s"""${edge.name}: {
+        for (edge <- diagram.edges) yield s"""${edge.name}: {
       type: "${edge.mcoreElement.name}",
       from: "${edge.from.name}",
       to: "${edge.to.name}",
@@ -178,8 +172,7 @@ object ValidatorGenerator {
     compartmentMatrix: {
       ${
       val compartmentMatrix = getCompartmentMatrix(diagram.nodes)
-      for (((key, value), i) <- compartmentMatrix.zipWithIndex) yield
-        s"""${key.name}: {
+      for (((key, value), i) <- compartmentMatrix.zipWithIndex) yield s"""${key.name}: {
       ${generateCompartmentMap(value)}
     }${if (i != compartmentMatrix.size) ","}"""
     }
@@ -191,8 +184,7 @@ object ValidatorGenerator {
     s"""
       ${
       val compartmentData = compartmentMap
-      for (((key, value), i) <- compartmentData.zipWithIndex) yield
-        s"""$key: [${for (compartment <- value) yield s""""$compartment"${if (compartment != value.last) ", "}"""}]${if (i != compartmentData.size) ", "}"""
+      for (((key, value), i) <- compartmentData.zipWithIndex) yield s"""$key: [${for (compartment <- value) yield s""""$compartment"${if (compartment != value.last) ", "}"""}]${if (i != compartmentData.size) ", "}"""
     }"""
   }
 
@@ -246,7 +238,8 @@ object ValidatorGenerator {
   }
 
   /**
-    * Since compartment definitions in shape.xtext are declared as depcrecated this method is not usable anymore*/
+   * Since compartment definitions in shape.xtext are declared as depcrecated this method is not usable anymore
+   */
   @deprecated
   private def getCompartmentMap(node: Node, nodeList: List[Node]) = {
     val compartmentMap = new HashMap[String, List[String]]

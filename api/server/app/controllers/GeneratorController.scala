@@ -2,30 +2,30 @@ package controllers
 
 import javax.inject.Inject
 
-import dao.metaModel.ZetaMetaModelDao
-import util.definitions.UserEnvironment
-import generator.parser.{Cache, SprayParser}
+import generator.parser.{ Cache, SprayParser }
 import generator.generators.diagram.DiagramGenerator
 import generator.generators.style.StyleGenerator
 import generator.generators.shape.ShapeGenerator
 import generator.generators.vr.shape.VrShapeGenerator
+import java.nio.file.{ Files, Paths }
 
-import scala.concurrent.duration._
-import scala.concurrent.Await
-import java.nio.file.{Files, Paths}
-
+import scala.concurrent.ExecutionContext.Implicits.global
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import generator.generators.vr.diagram.VrDiagramGenerator
 import generator.model.diagram.Diagram
+import models.document.{ MetaModelEntity, Repository }
+import play.api.mvc.Controller
+import utils.auth.{ DefaultEnv, RepositoryFactory }
 
+class GeneratorController @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
+  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+    repositoryFactory.fromSession(request)
 
-class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override implicit val env: UserEnvironment) extends securesocial.core.SecureSocial {
+  def generate(metaModelUuid: String) = silhouette.SecuredAction.async { implicit request =>
 
-
-  def generate(metaModelUuid: String) = SecuredAction { implicit request =>
-
-    val result = Await.result(metaModelDao.findById(metaModelUuid), 30 seconds)
-    if (result.isDefined && result.get.metaModel.elements.nonEmpty) {
+    repository.get[MetaModelEntity](metaModelUuid).map { result =>
       val generatorOutputLocation = System.getenv("PWD") + "/server/model_specific/" + metaModelUuid + "/"
       val vrGeneratorOutputLocation = System.getenv("PWD") + "/server/model_specific/vr/" + metaModelUuid + "/"
 
@@ -33,14 +33,14 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
       Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
 
       val hierarchyContainer = Cache()
-      val parser = new SprayParser(hierarchyContainer, result.get)
+      val parser = new SprayParser(hierarchyContainer, result)
       var diagram: Option[Diagram] = None
       var error: Option[String] = None
 
       try {
-        parser.parseStyle(result.get.dsl.style.get.code)
-        parser.parseShape(result.get.dsl.shape.get.code)
-        diagram = parser.parseDiagram(result.get.dsl.diagram.get.code).head
+        parser.parseStyle(result.dsl.style.get.code)
+        parser.parseShape(result.dsl.shape.get.code)
+        diagram = parser.parseDiagram(result.dsl.diagram.get.code).head
       } catch {
         case e: Throwable => error = Some("There occurred an error during parsing")
       }
@@ -57,11 +57,9 @@ class GeneratorController @Inject()(metaModelDao: ZetaMetaModelDao, override imp
           case e: Throwable => error = Some("There occurred an error during generation");
         }
       }
-
-      if(error.isDefined) BadRequest(error.get) else Ok("Generation successful")
-
-    } else {
-      NotFound("Metamodel with id: " + metaModelUuid + " was not found")
+      if (error.isDefined) BadRequest(error.get) else Ok("Generation successful")
+    }.recover {
+      case e: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
     }
   }
 }

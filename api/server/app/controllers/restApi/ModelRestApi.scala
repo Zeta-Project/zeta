@@ -1,210 +1,187 @@
 package controllers.restApi
 
-import java.time.Instant
 import javax.inject.Inject
-import dao.metaModel._
-import dao.model.ZetaModelDao
-import dao.DbWriteResult
+
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import models.User
+import models.document._
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.model.elements.{Edge, Node}
-import models.modelDefinitions.model.{ModelEntity, Model}
-import models.oAuth.OAuthDataHandler
+import models.modelDefinitions.model.elements.{ Edge, Node }
+import models.modelDefinitions.model.Model
 import play.api.libs.json._
 import play.api.mvc._
 import models.modelDefinitions.model.elements.ModelWrites._
-import scala.concurrent.Future
-import scalaoauth2.provider.OAuth2Provider
+import rx.lang.scala.Notification.{ OnError, OnNext }
+import utils.auth.{ DefaultEnv, RepositoryFactory }
+
+import scala.concurrent.{ Future, Promise }
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 /**
-  * RESTful API for model definitions
-  *
-  * @param metaModelDao the metamodel DAO (usually injected)
-  * @param modelDao the model DAO (usually injected)
-  */
-class ModelRestApi @Inject()(metaModelDao: ZetaMetaModelDao, modelDao: ZetaModelDao) extends Controller with OAuth2Provider {
+ * RESTful API for model definitions
+ */
+class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
+
+  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+    repositoryFactory.fromSession(request)
 
   /** Lists all models for the requesting user, provides HATEOAS links */
-  def showForUser = Action.async { implicit request =>
-    oAuth { userId =>
-      modelDao.findModelsByUser(userId).map { res =>
-        val out = res.map { info => info.copy(links = Some(Seq(
+  def showForUser = silhouette.SecuredAction.async { implicit request =>
+    val p = Promise[Result]
+
+    repository.query[ModelEntity](AllModels())
+      .map { info =>
+        info.copy(links = Some(Seq(
           HLink.get("self", routes.ModelRestApi.get(info.id).absoluteURL),
           HLink.get("meta_model", routes.MetaModelRestApi.get(info.metaModelId).absoluteURL),
           HLink.delete("remove", routes.ModelRestApi.get(info.id).absoluteURL)
         )))
-        }
-        Ok(Json.toJson(out))
       }
-    }
+      .toList.materialize.subscribe(n => n match {
+        case OnError(err) => p.success(BadRequest(err.getMessage))
+        case OnNext(list) => p.success(Ok(Json.toJson(list)))
+      })
+    p.future
   }
 
   /** inserts whole model structure */
-  def insert = Action.async(BodyParsers.parse.json) { implicit request =>
-    oAuth { implicit userId =>
-      (request.body \ "metaModelId").validate[String].fold(
-        error => Future.successful(BadRequest(JsError.toJson(error))),
-        metaModelId => validateAndInsert(request.body, userId, metaModelId)
-      )
-    }
-  }
+  def insert = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+    (request.body \ "metaModelId").validate[String].fold(
+      error => Future.successful(BadRequest(JsError.toJson(error))),
+      metaModelId => {
+        val in = (request.body \ "model").validate[Model]
+        in.fold(
+          errors => {
+            Future.successful(BadRequest(JsError.toJson(errors)))
+          },
+          model => {
+            val op = for {
+              mm <- repository.get[MetaModelEntity](metaModelId)
+              insert <- repository.create[ModelEntity](ModelEntity(User.getUserId(request.identity.loginInfo), model.copy(metaModel = mm.metaModel), mm))
+            } yield insert
 
-  /** helper method for model insert */
-  private def validateAndInsert(jsModel: JsValue, userId: String, metaModelId: String): Future[Result] = {
-    metaModelDao.findById(metaModelId) flatMap {
-      case Some(metaModelEntity) if metaModelEntity.userId == userId => {
-        jsModel.validate[ModelEntity](ModelEntity.strippedReads(metaModelId, metaModelEntity.metaModel)) match {
-          case JsSuccess(entity, _) => {
-            val modelEntity = entity.asNew(userId, metaModelId)
-            modelDao.insert(modelEntity).map(res => Created(Json.toJson(res)))
+            op.map { value =>
+              Ok(Json.toJson(value))
+            }.recover {
+              case e: Exception => BadRequest(e.getMessage)
+            }
           }
-          case e: JsError => Future.successful(BadRequest(JsError.toJson(e)))
-        }
+        )
       }
-      case None => Future.successful(NotFound(s"Metamodel with id $metaModelId was not found"))
-      case _ => Future.successful(Unauthorized)
-    }
+    )
   }
 
   /** updates whole model structure */
-  def update(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
-    oAuth { implicit userId =>
-      modelDao.findById(id).flatMap {
-        case Some(modelEntity) if modelEntity.userId == userId => {
-          request.body.validate[ModelEntity](ModelEntity.strippedReads(modelEntity.metaModelId, modelEntity.model.metaModel)) match {
-            case JsSuccess(entity, _) => modelDao.update(entity.asUpdate(modelEntity.id)).map(res => Ok(Json.toJson(res)))
-            case e: JsError => Future.successful(BadRequest(JsError.toJson(e)))
-          }
+  def update(id: String) = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+    val in = request.body.validate[Model]
+    in.fold(
+      errors => {
+        Future.successful(BadRequest(JsError.toJson(errors)))
+      },
+      model => {
+        val op = for {
+          saved <- repository.get[ModelEntity](id)
+          updated <- repository.update[ModelEntity](saved.copy(model = model))
+        } yield updated
+
+        op.map { value =>
+          Ok(Json.toJson(value.model))
+        }.recover {
+          case e: Exception => BadRequest(e.getMessage)
         }
-        case None => Future.successful(NotFound)
-        case _ => Future.successful(Unauthorized)
       }
-    }
+    )
   }
 
   /** updates model definition only */
-  def updateModel(id: String) = Action.async(BodyParsers.parse.json) { implicit request =>
-    oAuth { implicit userId =>
-      modelDao.findById(id).flatMap {
-        case Some(modelEntity) if modelEntity.userId == userId => {
-          request.body.validate[Model](Model.reads(modelEntity.model.metaModel)) match {
-            case JsSuccess(model, _) => {
-              val selector = Json.obj("id" -> id)
-              val modifier = Json.obj("$set" -> Json.obj("model" -> model, "updated" -> Instant.now))
-              modelDao.update(selector, modifier).map(res => Ok(Json.toJson(res)))
-            }
-            case e: JsError => Future.successful(BadRequest(JsError.toJson(e)))
+  def updateModel(id: String) = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+    val p = Promise[Result]
+    repository.get[ModelEntity](id).map { saved =>
+      Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
+        case JsSuccess(model, path) => {
+          repository.update[ModelEntity](saved.copy(model = model)).map { updated =>
+            p.success(Ok(Json.toJson(updated)))
+          }.recover {
+            case e: Exception => p.success(BadRequest(e.getMessage))
           }
         }
-        case None => Future.successful(NotFound)
-        case _ => Future.successful(Unauthorized)
+        case JsError(errors) => p.success(BadRequest(s"Failed parsing of MetaModel in Model on GET ${id}"))
       }
+    }.recover {
+      case e: Exception => p.success(BadRequest(e.getMessage))
     }
+    p.future
   }
 
   /** returns whole model structure incl. HATEOS links */
-  def get(id: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => {
-        val out = m.copy(links = Some(Seq(
-          HLink.put("update", routes.ModelRestApi.get(m.id).absoluteURL),
-          HLink.get("meta_model", routes.MetaModelRestApi.get(m.metaModelId).absoluteURL),
-          HLink.delete("remove", routes.ModelRestApi.get(m.id).absoluteURL)
-        )))
-        Ok(Json.toJson(out)(ModelEntity.strippedWrites))
-      })
-    }
+  def get(id: String) = silhouette.SecuredAction.async { implicit request =>
+    protectedRead(id, (m: ModelEntity) => {
+      val out = m.copy(links = Some(Seq(
+        HLink.put("update", routes.ModelRestApi.get(m.id).absoluteURL),
+        HLink.get("meta_model", routes.MetaModelRestApi.get(m.metaModelId).absoluteURL),
+        HLink.delete("remove", routes.ModelRestApi.get(m.id).absoluteURL)
+      )))
+      Ok(Json.toJson(out))
+    })
   }
 
   /** returns model definition only */
-  def getModelDefinition(id: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => Ok(Json.toJson(m.model)))
-    }
+  def getModelDefinition(id: String) = silhouette.SecuredAction.async { implicit request =>
+    protectedRead(id, (m: ModelEntity) => Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
-  def getNodes(id: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => {
-        val d = m.model
-        val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
-        Ok(Json.toJson(reduced.elements.values))
-      })
-    }
+  def getNodes(id: String) = silhouette.SecuredAction.async { implicit request =>
+    protectedRead(id, (m: ModelEntity) => {
+      val d = m.model
+      val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
+      Ok(Json.toJson(reduced.elements.values))
+    })
   }
 
   /** returns specific node of a specific model as json object */
-  def getNode(id: String, name: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => {
-        val d = m.model
-        val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
-        reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
-      })
-    }
+  def getNode(id: String, name: String) = silhouette.SecuredAction.async { implicit request =>
+    protectedRead(id, (m: ModelEntity) => {
+      val d = m.model
+      val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
+      reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+    })
   }
 
   /** returns all edges of a model as json array */
-  def getEdges(id: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => {
-        val d = m.model
-        val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
-        Ok(Json.toJson(reduced.elements.values))
-      })
-    }
+  def getEdges(id: String) = silhouette.SecuredAction.async { implicit request =>
+    protectedRead(id, (m: ModelEntity) => {
+      val d = m.model
+      val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
+      Ok(Json.toJson(reduced.elements.values))
+    })
   }
 
   /** returns specific edge of a specific model as json object */
-  def getEdge(id: String, name: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedRead(id, (m: ModelEntity) => {
-        val d = m.model
-        val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
-        reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
-      })
-    }
+  def getEdge(id: String, name: String) = silhouette.SecuredAction.async { implicit request =>
+    protectedRead(id, (m: ModelEntity) => {
+      val d = m.model
+      val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
+      reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+    })
   }
 
   /** deletes a whole model */
-  def delete(id: String) = Action.async { implicit request =>
-    oAuth { implicit userId =>
-      protectedWrite(id, {
-        modelDao.deleteById(id)
-      })
+  def delete(id: String) = silhouette.SecuredAction.async { implicit request =>
+    repository.delete(id).map { value =>
+      Ok("")
+    }.recover {
+      case e: Exception => BadRequest(e.getMessage)
     }
-  }
-
-  /** A helper method for less verbose oauth auth check */
-  def oAuth[A](block: String => Future[Result])(implicit request: Request[A]) = {
-    authorize(OAuthDataHandler()) { authInfo => block(authInfo.user.uuid.toString) }
   }
 
   /** A helper method for less verbose reads from the database */
-  def protectedRead(id: String, trans: ModelEntity => Result)(implicit userId: String): Future[Result] = {
-    modelDao.findById(id).map {
-      case Some(model) => if (userId == model.userId) {
-        trans(model)
-      } else {
-        Unauthorized
-      }
-      case None => NotFound
+  def protectedRead[A](id: String, trans: ModelEntity => Result)(implicit request: SecuredRequest[DefaultEnv, A]): Future[Result] = {
+    repository.get[ModelEntity](id).map { model =>
+      trans(model)
+    }.recover {
+      case e: Exception => BadRequest(e.getMessage)
     }
   }
-
-  /** A helper method for less verbose writes to the database */
-  private def protectedWrite(id: String, write: => Future[DbWriteResult[String]])(implicit userId: String): Future[Result] = {
-    modelDao.hasAccess(id, userId).flatMap {
-      case Some(b) => {
-        if (b) {
-          write.map { res => Ok(Json.toJson(res)) }
-        } else {
-          Future.successful(Unauthorized)
-        }
-      }
-      case None => Future.successful(NotFound)
-    }
-  }
-
 }

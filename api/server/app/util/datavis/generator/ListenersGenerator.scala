@@ -1,6 +1,6 @@
 package util.datavis.generator
 
-import java.io.{File, FileWriter}
+import java.io.{ File, FileWriter }
 
 import util.datavis.domain._
 
@@ -9,7 +9,7 @@ class ListenersGenerator {
   val public = "server" + File.separator + "public" + File.separator
   val path = "javascripts" + File.separator + "generated" + File.separator
 
-  def generate(diagramId:String, objectId:String, conditionals:List[Conditional]) = {
+  def generate(diagramId: String, objectId: String, conditionals: List[Conditional]) = {
     val content = generateContents(objectId, conditionals).stripMargin(' ')
     mkDir(diagramId)
     val fileName = path + diagramId + File.separator + objectId + filesuffix
@@ -19,8 +19,8 @@ class ListenersGenerator {
     writer.close()
     fileName
   }
-  
-  def generateContents(objectId: String, conditionals:List[Conditional]) = generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
+
+  def generateContents(objectId: String, conditionals: List[Conditional]) = generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
 
   def generateHead =
     """|/*
@@ -28,15 +28,15 @@ class ListenersGenerator {
       |*/
     """.stripMargin
 
-  def generateListenerObject(objectId:String) =
-  s"""
+  def generateListenerObject(objectId: String) =
+    s"""
      | dataVisListeners["$objectId"] = {};
      | _.extend(dataVisListeners["$objectId"], Backbone.Events);
    """.stripMargin
 
-  def generateListeners(objectId:String, conditional: List[Conditional]) = conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
+  def generateListeners(objectId: String, conditional: List[Conditional]) = conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
 
-  def generateListener(objectId:String, conditional: Conditional) = {
+  def generateListener(objectId: String, conditional: Conditional) = {
     val comparisonLeft = generateComparisonOperand(conditional.condition.x)
     val comparisonRight = generateComparisonOperand(conditional.condition.y)
     val comparison = conditional.condition.comparison
@@ -52,16 +52,16 @@ class ListenersGenerator {
     """.stripMargin
   }
 
-  def generateComparisonOperand(operand:Operand) = operand match{
-    case lit:Literal => lit.toString
-    case attr:MIdentifier => "cell.get('mAttributes')." + attr.toString
-    case style:StyleIdentifier => "attributes.attrs[\'" + style.selector + "\'][\'" + style.identifier + "\']"
+  def generateComparisonOperand(operand: Operand) = operand match {
+    case lit: Literal => lit.toString
+    case attr: MIdentifier => "cell.get('mAttributes')." + attr.toString
+    case style: StyleIdentifier => "attributes.attrs[\'" + style.selector + "\'][\'" + style.identifier + "\']"
   }
 
   def generateAssignment(assignment: Assignment) = assignment.target match {
-    case attr:MIdentifier => attr.toString + " = " + assignment.value + ";"
-    case style:StyleIdentifier => "cell.attr(\"" + style.selector + "/" + style.identifier + "\", " + assignment.value + ");"
+    case attr: MIdentifier => attr.toString + " = " + assignment.value + ";"
+    case style: StyleIdentifier => "cell.attr(\"" + style.selector + "/" + style.identifier + "\", " + assignment.value + ");"
   }
 
-  private def mkDir(diagramId:String) = new File(public + path + diagramId).mkdirs()
+  private def mkDir(diagramId: String) = new File(public + path + diagramId).mkdirs()
 }

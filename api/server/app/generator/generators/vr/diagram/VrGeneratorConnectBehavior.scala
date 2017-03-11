@@ -4,8 +4,8 @@ import generator.model.diagram.edge.Edge
 import generator.model.shapecontainer.connection.Connection
 
 /**
-  * Created by max on 08.12.16.
-  */
+ * Created by max on 08.12.16.
+ */
 object VrGeneratorConnectBehavior {
   def generate(connections: Iterable[Connection], edges: Iterable[Edge]) = {
     s"""

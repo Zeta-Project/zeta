@@ -1,6 +1,0 @@
-@(user: securesocial.core.BasicProfile)(implicit request: RequestHeader, lang: Lang, env: securesocial.core.RuntimeEnvironment)
-@views.html.mails.MailGeneralLayout(user.firstName) {
-    <p>You tried to sign up at MoDiGen, but you already have an account with us.</p>
-    <p>If you don't remember your password, you can reset it here:</p>
-    <p><a href="@env.routes.startResetPasswordUrl">@env.routes.startResetPasswordUrl</a></p>
-}

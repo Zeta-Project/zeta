@@ -1,39 +1,48 @@
-@(user: Option[SecureSocialUser])
+@(user: Option[models.User])
 
 @views.html.webpage.WebpageGeneralLayout("Overview", user) {
-        <div class="row">
-            <div class="lead col-xs-10 col-xs-offset-1">
-                <p>Hello,
-                    @user match {
-                        case Some(u) => {
-                            @u.profile.fullName! }
-                        case _ => { Guest! }
+    <div class="row">
+        <div class="lead col-xs-10 col-xs-offset-1">
+            <p>Hello,
+                @user match {
+                case Some(u) => {
+                @u.fullName! }
+                case _ => { Guest! }
                 }
-                </p>
-            </div>
+            </p>
         </div>
+    </div>
 
 
-        <div class="row">
-            <div class="lead col-xs-10 col-xs-offset-1">
+    <div class="row">
+        <div class="lead col-xs-10 col-xs-offset-1">
 
-                <div class="tile lead col-xs-12 col-md-4">
-                    <div class="tileBorder">
-                        <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
-                        <div class="transparentBackground"></div>
-                        <div class="linkText">Models</div>
-                        <a class="ecoreLink" href="@controllers.webpage.routes.WebpageController.diagramsOverview(null)"></a>
-                    </div>
-                </div>
-
-                <div class="tile lead col-xs-12 col-md-4">
-                    <div class="tileBorder">
-                        <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
-                        <div class="transparentBackground"></div>
-                        <div class="linkText">Model Validator</div>
-                        <a class="ecoreLink" href="@routes.ModelController.modelValidator"></a>
-                    </div>
+            <div class="tile lead col-xs-12 col-md-4">
+                <div class="tileBorder">
+                    <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
+                    <div class="transparentBackground"></div>
+                    <div class="linkText">Models</div>
+                    <a class="ecoreLink" href="@controllers.webpage.routes.WebpageController.diagramsOverview(null)"></a>
                 </div>
             </div>
+
+            <div class="tile lead col-xs-12 col-md-4">
+                <div class="tileBorder">
+                    <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
+                    <div class="transparentBackground"></div>
+                    <div class="linkText">Generators</div>
+                    <a class="ecoreLink" href="/app"></a>
+                </div>
+            </div>
+
+            <div class="tile lead col-xs-12 col-md-4">
+                <div class="tileBorder">
+                    <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
+                    <div class="transparentBackground"></div>
+                    <div class="linkText">Model Validator</div>
+                    <a class="ecoreLink" href="@routes.ModelController.modelValidator"></a>
+                </div>
+            </div>
         </div>
+    </div>
 }

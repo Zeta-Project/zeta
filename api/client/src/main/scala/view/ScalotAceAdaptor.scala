@@ -1,7 +1,7 @@
 package view
 
-import facade.{Range, Document, Delta}
-import scalot.{InsComp, DelComp, SkipComp, Operation}
+import facade.{ Range, Document, Delta }
+import scalot.{ InsComp, DelComp, SkipComp, Operation }
 
 import scala.scalajs.js
 
@@ -41,23 +41,25 @@ object ScalotAceAdaptor {
         case DelComp(len) =>
           deltas ++= Seq(
             js.Dynamic.literal(
-              action = "removeText",
-              range = js.Dynamic.literal(
-                start = idxToPos(base),
-                end = idxToPos(base + len)).asInstanceOf[Range],
-              text = doc.getValue().substring(base, len)
-            ).asInstanceOf[Delta]
+            action = "removeText",
+            range = js.Dynamic.literal(
+              start = idxToPos(base),
+              end = idxToPos(base + len)
+            ).asInstanceOf[Range],
+            text = doc.getValue().substring(base, len)
+          ).asInstanceOf[Delta]
           )
 
         case InsComp(str) =>
           deltas ++= Seq(
             js.Dynamic.literal(
-              action = "insertText",
-              range = js.Dynamic.literal(
-                start = idxToPos(base),
-                end = idxToPos(base + str.length)).asInstanceOf[Range],
-              text = str
-            ).asInstanceOf[Delta]
+            action = "insertText",
+            range = js.Dynamic.literal(
+              start = idxToPos(base),
+              end = idxToPos(base + str.length)
+            ).asInstanceOf[Range],
+            text = str
+          ).asInstanceOf[Delta]
           )
           base = base + str.length
       }

@@ -7,12 +7,12 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
-  * The StencilGenerator object, responsible for the generation of the String for stencil.js
-  */
+ * The StencilGenerator object, responsible for the generation of the String for stencil.js
+ */
 object StencilGenerator {
   var packageName = ""
 
-  def generate( diagram:Diagram)=
+  def generate(diagram: Diagram) =
     s"""
     $generateHeader
     ${generateStencilGroups(diagram)}
@@ -28,119 +28,132 @@ object StencilGenerator {
     */
     """
 
-
-  def generateStencilGroups(diagram:Diagram) = {
+  def generateStencilGroups(diagram: Diagram) = {
     var i = 1
     val groupSet = getNodeToPaletteMapping(diagram).keySet
     var groups = List[String]()
-    for(groupName <- groupSet) {
+    for (groupName <- groupSet) {
       groups ::= getVarName(groupName) + s""": {index: $i, label: '$groupName' }"""
-      i+=1
+      i += 1
     }
-    "Stencil.groups = {"+groups.mkString(",")+"};"
+    "Stencil.groups = {" + groups.mkString(",") + "};"
   }
 
+  def generateShapes(diagram: Diagram) = {
 
-  def generateShapes( diagram:Diagram)={
-
-    {for (node <- diagram.nodes) yield {s"""
+    {
+      for (node <- diagram.nodes) yield {
+        s"""
         var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
-      ${if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
-          s"""mcoreAttributes: [
+      ${
+          if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
+            s"""mcoreAttributes: [
                  {
                     mcore: '${node.onCreate.get.askFor.get.name}',
                     cellPath: ['attrs', '.label', 'text']
                   }
                 ],"""
-        } else {
-          ""
+          } else {
+            ""
+          }
         }
-      }
       nodeName: '${node.name}',
       mClass: '${node.mcoreElement.name}',
-      mClassAttributeInfo: [${node.mcoreElement.attributes.map(attr =>
-        s"""
+      mClassAttributeInfo: [${
+          node.mcoreElement.attributes.map(attr =>
+            s"""
            { name: '${attr.name}', type: '${attr.`type`}'}
-         """
-        ).mkString(",")}]
+         """).mkString(",")
+        }]
     });
     """
-      }}.mkString
+      }
+    }.mkString
   }
 
-
-  def generateGroupsToStencilMapping(mapping:mutable.HashMap[String,ListBuffer[Node]])={
+  def generateGroupsToStencilMapping(mapping: mutable.HashMap[String, ListBuffer[Node]]) = {
     s"""
     Stencil.shapes = {
-      ${{for(((key, value), i) <- mapping.zipWithIndex) yield
-      s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
-       """}.mkString(",")}
+      ${
+      {
+        for (((key, value), i) <- mapping.zipWithIndex) yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
+       """
+      }.mkString(",")
+    }
     };
     """
   }
 
-  def generateShapesToGroupMapping( group:String, nodes:ListBuffer[Node] , isLast: Boolean) = {
+  def generateShapesToGroupMapping(group: String, nodes: ListBuffer[Node], isLast: Boolean) = {
     s"""
     ${getVarName(group)}: [
-      ${{for(node <- nodes) yield
-        s"""${getVarName(node.name) + {if(node != nodes.last)","else ""}}
-         """}.mkString}
+      ${
+      {
+        for (node <- nodes) yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
+         """
+      }.mkString
+    }
       ]
     """
   }
 
-  def generateDocumentReadyFunction( diagram:Diagram) ={
+  def generateDocumentReadyFunction(diagram: Diagram) = {
     """
-    $(document).ready(function() {"""+s"""
-      ${{for(node <- diagram.nodes) yield
-      s"""
+    $(document).ready(function() {""" + s"""
+      ${
+      {
+        for (node <- diagram.nodes) yield s"""
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
 
-      ${{for((key, value) <- node.shape.get.vals) yield
-      s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
-      }.mkString}"""}.mkString}
-      ${if(diagram.style isDefined) {
-      s"""
+      ${
+          {
+            for ((key, value) <- node.shape.get.vals) yield s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
+          }.mkString
+        }"""
+      }.mkString
+    }
+      ${
+      if (diagram.style isDefined) {
+        s"""
           var style = document.createElement('style');
           style.id = 'highlighting-style';
           style.type = 'text/css';
           style.innerHTML = getDiagramHighlighting("${diagram.style.get.name}");
           document.getElementsByTagName('head')[0].appendChild(style);"""
-        } else ""
-      }
+      } else ""
+    }
     });
     """
   }
 
-  def setPackageName(packageName:String) {this.packageName = packageName}
+  def setPackageName(packageName: String) { this.packageName = packageName }
 
-
-  private def getNodeToPaletteMapping(diagram:Diagram):mutable.HashMap [String,ListBuffer[Node]] = {
-    var mapping = new mutable.HashMap [String,ListBuffer[Node]]
-    for(node <- diagram.nodes){
+  private def getNodeToPaletteMapping(diagram: Diagram): mutable.HashMap[String, ListBuffer[Node]] = {
+    var mapping = new mutable.HashMap[String, ListBuffer[Node]]
+    for (node <- diagram.nodes) {
       val paletteName = node.palette.getOrElse("")
-      if(mapping.contains(paletteName)){
+      if (mapping.contains(paletteName)) {
         mapping(paletteName) += node
-      }else{
+      } else {
         mapping += (paletteName -> (ListBuffer[Node]() += node))
       }
     }
-   mapping
+    mapping
   }
 
-  private def getVarName( name:String)= {
+  private def getVarName(name: String) = {
     val ret = name.replaceAll("\\W", "")
     ret.substring(0, 1).toLowerCase + ret.substring(1)
   }
 
-  private def getClassName( name:String)= name.replaceAll("\\W", "")
+  private def getClassName(name: String) = name.replaceAll("\\W", "")
 
-  private def getShapeName( node:Node)={
+  private def getShapeName(node: Node) = {
     val diaShape = node.shape
-    if(diaShape isDefined){
+    if (diaShape isDefined) {
       diaShape.get.referencedShape.name
-    }else{
-      throw new NoSuchElementException("No Shape defined for node "+node.name)
+    } else {
+      throw new NoSuchElementException("No Shape defined for node " + node.name)
     }
   }
 }

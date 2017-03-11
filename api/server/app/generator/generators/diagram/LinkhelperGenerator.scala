@@ -4,8 +4,8 @@ import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 
 /**
-  * Created by julian on 10.02.16.
-  */
+ * Created by julian on 10.02.16.
+ */
 object LinkhelperGenerator {
   def generate(diagram: Diagram) = {
     s"""
@@ -33,21 +33,19 @@ object LinkhelperGenerator {
     s"""
     placingTexts:{
       ${
-        diagram.edges.map(e =>
-          s"""
+      diagram.edges.map(e =>
+        s"""
             ${e.name}: {
               ${generateStringProperties(e).mkString(",")}
-          }"""
-        ).mkString(",")
-      }
+          }""").mkString(",")
+    }
     },
     """
   }
 
   protected def generateStringProperties(edge: Edge) = {
     val stringProperties = edge.connection.vals
-    for ((key, value) <- stringProperties) yield
-      s"""'$key': "${value.getOrElse("").toString}""""
+    for ((key, value) <- stringProperties) yield s"""'$key': "${value.getOrElse("").toString}""""
   }
 
   protected def generateHelperMethods =

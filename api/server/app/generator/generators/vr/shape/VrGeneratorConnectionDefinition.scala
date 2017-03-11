@@ -1,18 +1,17 @@
 package generator.generators.vr.shape
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{ Files, Paths }
 
-import generator.model.shapecontainer.connection.{Connection, Placing}
+import generator.model.shapecontainer.connection.{ Connection, Placing }
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.DASH
 
-
 /**
-  * Created by max on 26.10.16.
-  */
+ * Created by max on 26.10.16.
+ */
 object VrGeneratorConnectionDefinition {
   def generate(connections: Iterable[Connection], location: String) {
-    for(conn <- connections) {generateFile(conn, location)}
+    for (conn <- connections) { generateFile(conn, location) }
   }
 
   def generateFile(conn: Connection, DEFAULT_SHAPE_LOCATION: String) = {
@@ -36,7 +35,7 @@ object VrGeneratorConnectionDefinition {
     <dom-module id="vr-connection-${conn.name}">
         <template>
             <!-- Polyline is always needed -->
-            <vr-polyline id="line" ${if(conn.style.get.line_style.get == DASH) {"dashed"} else {""}}></vr-polyline>
+            <vr-polyline id="line" ${if (conn.style.get.line_style.get == DASH) { "dashed" } else { "" }}></vr-polyline>
             ${conn.placing.map(generatePlacing(_)).mkString}
         </template>
     </dom-module>
@@ -88,7 +87,7 @@ object VrGeneratorConnectionDefinition {
   }
 
   def generateVrPoint(xy: (Int, Int)) = {
-    val (x,y) = xy
+    val (x, y) = xy
     s"""<vr-point x="${y}" y="${x}"></vr-point>
     """
   }

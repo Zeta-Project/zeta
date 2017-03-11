@@ -1,7 +1,9 @@
-@import models.modelDefinitions.metaModel.{MetaModelEntity, MetaModelShortInfo}
-@import models.modelDefinitions.model.{ModelShortInfo}
+@import models.User
+@import models.document.MetaModelEntity
+@import models.modelDefinitions.metaModel.MetaModelShortInfo
+@import models.modelDefinitions.model.ModelShortInfo
 
-@(user: Option[SecureSocialUser], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
+@(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
 
 @views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
     @if(metaModel.isDefined) {

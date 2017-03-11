@@ -1,6 +1,6 @@
 package generator.generators.vr.shape
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{ Files, Paths }
 
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
@@ -9,15 +9,15 @@ import generator.model.shapecontainer.shape.Shape
 import scala.util.Try
 
 /**
-  * Created by max on 08.11.16.
-  */
+ * Created by max on 08.11.16.
+ */
 object VrGeneratorShapeDefinition {
   def generate(shapes: Iterable[Shape], packageName: String, location: String) = {
-    for(shape <- shapes) {generateFile(shape, packageName, location)}
+    for (shape <- shapes) { generateFile(shape, packageName, location) }
   }
 
   private def generateFile(shape: Shape, packageName: String, DEFAULT_SHAPE_LOCATION: String) = {
-    if(shape.name != "rootShape") {
+    if (shape.name != "rootShape") {
       val FILENAME = "vr-" + shape.name + ".html"
 
       val polymerElement = generatePolymerElement(shape)
@@ -28,8 +28,10 @@ object VrGeneratorShapeDefinition {
 
   private def generatePolymerElement(shape: Shape) = {
     val geometrics = shape.shapes.getOrElse(List())
-    val totalSize = (geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
-                     geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double])
+    val totalSize = (
+      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
+      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
+    )
 
     s"""
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
@@ -121,8 +123,8 @@ object VrGeneratorShapeDefinition {
     """
   }
 
-  private def generateImports(geometrics: List[GeometricModel]) : String = {
-    (for(g : GeometricModel <- geometrics) yield {
+  private def generateImports(geometrics: List[GeometricModel]): String = {
+    (for (g: GeometricModel <- geometrics) yield {
       g match {
         case g: Line => s"""<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">"""
         // caution: Order is important because ellipse extends rectangle
@@ -137,18 +139,18 @@ object VrGeneratorShapeDefinition {
     }).mkString
   }
 
-  private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)) : String = {
+  private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)): String = {
     var textCount = 0
-    (for(g: GeometricModel <- geometrics) yield {
+    (for (g: GeometricModel <- geometrics) yield {
       val element = getElement(g)
       g match {
         case text: Text => "" // just ignore texts at this point
-        case c: CommonLayout =>  {
+        case c: CommonLayout => {
           val wrapper = c.asInstanceOf[Wrapper]
-          val position = c.position.getOrElse((0,0))
+          val position = c.position.getOrElse((0, 0))
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
           s"""${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
-              create(new VrElement.${element.capitalize}() , ${if(hasText(wrapper)) {"this.text" + (textCount - 1)} else { "\"\""}}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+              create(new VrElement.${element.capitalize}() , ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
               ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
@@ -157,7 +159,7 @@ object VrGeneratorShapeDefinition {
     }).mkString
   }
 
-  private def hasText(wrapper: Wrapper) : Boolean = {
+  private def hasText(wrapper: Wrapper): Boolean = {
     wrapper.children.exists(_.isInstanceOf[Text])
   }
 
@@ -176,17 +178,17 @@ object VrGeneratorShapeDefinition {
 
   private def generateCalcMax(goemetrics: List[GeometricModel]) = {
     val numberOfTexts = goemetrics.map(getAllTexts(_)).sum
-    (for(i <- 0 until numberOfTexts) yield { "calcMax(this.text" + i + ");\n" }).mkString
+    (for (i <- 0 until numberOfTexts) yield { "calcMax(this.text" + i + ");\n" }).mkString
   }
 
   private def generateTextArgs(geometrics: List[GeometricModel]) = {
     val numberOfTexts = geometrics.map(getAllTexts(_)).sum
-    (for(i <- 0 until numberOfTexts) yield { " ,text" + i}).mkString
+    (for (i <- 0 until numberOfTexts) yield { " ,text" + i }).mkString
   }
 
-  private def getAllTexts(geometric: GeometricModel) : Int = {
+  private def getAllTexts(geometric: GeometricModel): Int = {
     val wrapper = Try(geometric.asInstanceOf[Wrapper])
-    if(wrapper.isSuccess) {
+    if (wrapper.isSuccess) {
       wrapper.get.children.count(_.isInstanceOf[Text])
     } else {
       0

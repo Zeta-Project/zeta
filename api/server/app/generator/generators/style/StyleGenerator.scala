@@ -2,20 +2,20 @@ package generator.generators.style
 
 import generator.model.style._
 import generator.model.style.color.Transparent
-import generator.model.style.gradient.{Gradient, HORIZONTAL}
-import java.nio.file.{Paths, Files}
+import generator.model.style.gradient.{ Gradient, HORIZONTAL }
+import java.nio.file.{ Paths, Files }
 
 /**
-  * The StyleGenerator object, responsible for generation of style.js
-  */
+ * The StyleGenerator object, responsible for generation of style.js
+ */
 object StyleGenerator {
-
 
   def filename = "style.js"
 
-  /** Generates the Output String and writes the String
-    * to the file style.js in the outputLocation
-    */
+  /**
+   * Generates the Output String and writes the String
+   * to the file style.js in the outputLocation
+   */
   def doGenerate(styles: List[Style], outputLocation: String) = {
     val output =
       s"""
@@ -124,15 +124,18 @@ object StyleGenerator {
   /** creates all common attributes, which are not associated with text */
   def commonAttributes(s: Style): String = {
     raw"""
-      ${if (checkBackgroundGradientNecessary(s))
-          createGradientAttributes(s.background_color.get.asInstanceOf[Gradient],
-            s.gradient_orientation.get match {
-              case HORIZONTAL => true
-              case _ => false
-            })
-        else
-          createBackgroundAttributes(s)
-      }
+      ${
+      if (checkBackgroundGradientNecessary(s))
+        createGradientAttributes(
+          s.background_color.get.asInstanceOf[Gradient],
+          s.gradient_orientation.get match {
+            case HORIZONTAL => true
+            case _ => false
+          }
+        )
+      else
+        createBackgroundAttributes(s)
+    }
       'fill-opacity':${s.transparency.getOrElse("1.0")},
       ${createLineAttributesFromLayout(s)}
     """
@@ -142,17 +145,20 @@ object StyleGenerator {
 
   /** generates gradient background */
   def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
-      s"""
+    s"""
       fill: {
         type: 'linearGradient',
         stops: [
-          ${gr.area.map(area =>
-              s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'")
-              .mkString("{", "\n}, {", "}")
-          }
+          ${
+      gr.area.map(area =>
+        s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'")
+        .mkString("{", "\n}, {", "}")
+    }
         ]
-        ${if(horizontal) "" else
-          """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""}
+        ${
+      if (horizontal) "" else
+        """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
+    }
       },
       """
   }
@@ -164,8 +170,7 @@ object StyleGenerator {
       raw"""
           fill: '${bg_color.getRGBValue}',
         """
-    }
-    else ""
+    } else ""
   }
 
   /** generates the stroke attributes */
@@ -184,10 +189,11 @@ object StyleGenerator {
           """
                                         'stroke-opacity': 0,
           """
-        case _ => ret +=
-          """
+        case _ =>
+          ret +=
+            """
       				stroke: '""" + s.line_color.get.getRGBValue +
-          """'"""
+            """'"""
           if (s.line_width.isDefined)
             ret += """,'stroke-width':""" + s.line_width.get
           if (s.line_style isDefined)

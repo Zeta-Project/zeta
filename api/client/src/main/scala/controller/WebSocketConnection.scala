@@ -1,21 +1,18 @@
 package controller
 
 import org.scalajs.dom
-import org.scalajs.dom.{CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket, console, window}
+import org.scalajs.dom.{ CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket, console, window }
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage._
 import upickle.default._
 
-case class WebSocketConnection(uri: String = "ws://80.241.217.184:9000/codeeditor/socket", controller: CodeEditorController, metaModelUuid: String, dslType: String) {
-
+case class WebSocketConnection(uri: String = s"ws://${window.location.host}/codeeditor/socket", controller: CodeEditorController, metaModelUuid: String, dslType: String) {
   /** Set up WebSocket connection */
   val ws = new dom.WebSocket(uri + "/" + metaModelUuid + "/" + dslType)
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
   ws.onopen = (e: Event) => onOpen(e)
   ws.onerror = (e: ErrorEvent) => console.error(s"Websocket Error! ${e.message}")
   ws.onclose = (e: CloseEvent) => console.log(s"Closed WS for Reason: ${e.reason}")
-
-  console.log(window.location.host)
 
   def onOpen(e: Event) = {
     console.log("Opened Websocket: ", e.`type`)

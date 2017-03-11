@@ -1,7 +1,5 @@
 package controller
 
-import controller.AccessToken.TokenInformation
-
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 import org.scalajs.jquery._
@@ -35,34 +33,31 @@ class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {
 
   @JSExport
   def fetch(): Unit = {
-    AccessToken.authorized(loadMetaModel, forceRefresh = false)
+
   }
 
-  private def loadMetaModel(tokenInformation: TokenInformation): Unit = {
+  private def loadMetaModel(): Unit = {
     jQuery.ajax(literal(
       `type` = "GET",
-      dataType = "json",
       url = s"/metamodels/$metaModelId/definition",
-      headers = literal(
-        Authorization = s"Bearer ${tokenInformation.token}"
-      ),
+      contentType = "application/json; charset=utf-8",
+      dataType = "json",
       success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
-        val m = data.asInstanceOf[MetaModelData]
-        val out = MetaModel(
-          metaModelId,
-          m.name,
-          m.elements.filter(_.mType == "mClass"),
-          m.elements.filter(_.mType == "mReference")
-        )
-        andThen(out)
-      },
+      val m = data.asInstanceOf[MetaModelData]
+      val out = MetaModel(
+        metaModelId,
+        m.name,
+        m.elements.filter(_.mType == "mClass"),
+        m.elements.filter(_.mType == "mReference")
+      )
+      andThen(out)
+    },
       error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
-        println(s"Cannot load meta model: $errorThrown")
-      }
+      println(s"Cannot load meta model: $errorThrown")
+    }
     ).asInstanceOf[JQueryAjaxSettings])
   }
 }
-
 
 case class ModelLoader(modelId: String) {
 
@@ -76,10 +71,12 @@ case class ModelLoader(modelId: String) {
      */
 
     val res = jQuery.ajax(literal(
-      url = s"/metamodels/$modelId/mclasses",
+      url = s"/metamodels/$modelId/definition/mclasses",
       `type` = "GET",
-      async = false).asInstanceOf[JQueryAjaxSettings]
-    )
+      async = false,
+      contentType = "application/json; charset=utf-8",
+      dataType = "json"
+    ).asInstanceOf[JQueryAjaxSettings])
     res.selectDynamic("responseText").toString.split(", ").toJSArray
     Array[String]("TestMClass1", "TestMClass2", "TestMClass3").toJSArray
   }
@@ -94,10 +91,12 @@ case class ModelLoader(modelId: String) {
      */
 
     val res = jQuery.ajax(literal(
-      url = s"/metamodels/$modelId/mrefs",
+      url = s"/metamodels/$modelId/definition/mreferences",
       `type` = "GET",
-      async = false).asInstanceOf[JQueryAjaxSettings]
-    )
+      async = false,
+      contentType = "application/json; charset=utf-8",
+      dataType = "json"
+    ).asInstanceOf[JQueryAjaxSettings])
     res.selectDynamic("responseText").toString.split(", ").toJSArray
     Array[String]("TestMRef1", "TestMRef2", "TestMRef3").toJSArray
   }
