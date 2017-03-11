@@ -1,0 +1,96 @@
+version: '2'
+services:
+  proxy:
+    container_name: proxy
+    build: ./proxy
+    ports:
+      - "80:80"
+    links:
+      - api
+      - webapp
+      - database
+    logging:
+      driver: none
+  couchbase-server:
+    build: ./couchbase-server
+    ports:
+      - 8091:8091
+      - 8092:8092
+      - 8093:8093
+      - 11210:11210
+    environment:
+      BUCKET: db
+      CB_USER: Administrator
+      CB_PASS: admin1234
+    volumes:
+      - /couchbase:/opt/couchbase/var
+  database:
+    build: ./sync-gateway
+    ports:
+      - 4984:4984
+      - 4985:4985
+    links:
+      - couchbase-server:couchbase-server
+  webapp:
+    container_name: webapp
+    build: ./webapp
+    volumes:
+      - ./webapp:/src
+      - node_modules:/src/node_modules
+      - bower_components:/src/bower_components
+    ports:
+      - 3000:3000
+      - 3001:3001
+      - 8080:8080
+    command: "npm run dev"
+    working_dir: /src
+    logging:
+      driver: none
+  mongodb:
+    image: mongo:3.3
+    volumes:
+      - /mongodb:/data/db
+    ports:
+      - "27017:27017"
+    logging:
+      driver: none
+  api:
+    image: modigen/api:0.1
+    environment:
+      - APPLICATION_SECRET=superSecret
+    ports:
+      - "9000:9000"
+    volumes:
+      - /model_specific:/opt/docker/server/model_specific/
+  #  logging:
+  #    driver: none
+  b1:
+    container_name: master-1
+    image: modigen/backend:0.1
+    command: --master 2551 --num 1
+  b2:
+    container_name: master-2
+    image: modigen/backend:0.1
+    links:
+      - b1
+    command: --master 2551 --seeds b1:2551 --num 2
+  workers:
+    image: modigen/backend:0.1
+    links:
+     - b1
+     - b2
+    command: --workers 30 --seeds b1:2551 b2:2551
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  developers:
+    container_name: developers
+    image: modigen/backend:0.1
+    links:
+     - b1
+     - b2
+    command: --developer 2551 --seeds b1:2551 b2:2551
+volumes:
+  node_modules:
+  bower_components:
+  database_node_modules:
+  mongodb:
