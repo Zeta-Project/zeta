@@ -1,0 +1,194 @@
+{
+  "interface": ":4984",
+  "profileInterface": "80",
+  "adminInterface": ":4985",
+  "MaxFileDescriptors": 25000,
+  "compressResponses": false,
+  "log": ["REST+"],
+  "databases": {
+    "db": {
+      "bucket": "db",
+      "server": "http://couchbase-server:8091",
+      "cache": {
+        "channel_cache_max_length": 5000,
+        "channel_cache_min_length": 5000,
+        "channel_cache_expiry": 90
+      },
+      "sync": `
+        function sync(doc, oldDoc) {
+          // helper method, which check for a required _id pattern
+          var extract = function() {
+            var ret = {};
+            var document = doc._id.split('-');
+            if (document.length < (arguments.length + 1)) {
+              throw({forbidden: 'Invalid document _id '});
+            }
+            // now check if the pattern is matching.
+            for (var i = 0; i < arguments.length; i++) {
+              if (arguments[i] == '*') {
+                break;
+              }
+              if (1 > document[i + 1].length) {
+                throw({forbidden: 'Invalid document id : ' + doc._id});
+              }
+              ret[arguments[i]] = document[i + 1];
+            }
+            return ret;
+          };
+
+          // check if Attachments stay unmodified
+          var attachmentsAreUnmodified = function() {
+            // there are no attachments
+            if (!oldDoc || !oldDoc._attachments) return;
+
+            // run through all attachments and check that they are unmodified
+            for (var i in oldDoc._attachments) {
+              if (!doc._attachments[i]) {
+                throw({forbidden: 'The attachment with the name "' + oldDoc._attachments[i] + '" was deleted.'});
+              }
+              if (doc._attachments[i].digest !== oldDoc._attachments[i].digest) {
+                throw({forbidden: 'The attachment with the name "' + oldDoc._attachments[i] + '" was modified.'});
+              }
+            }
+          };
+
+          // check if the document has at maximum the defined attachments.
+          var validAttachments = function() {
+            // no attachments? That's ok!
+            if (!doc._attachments) return;
+
+            // get the files of the _attachments object
+            var files = Object.keys(doc._attachments);
+
+            // Not correct number of attachments?
+            if (files.length > arguments.length) {
+              throw({forbidden: 'Invalid document. Document does have to many attachments.'});
+            }
+            // run through the expected files and check if they are in the attachments
+            for (var i = 0; i < arguments.length; i++) {
+              if (files.indexOf(arguments[i]) === -1) {
+                throw({forbidden: 'Invalid document. The attachment with the name "' + arguments[i] + '" was not found.'});
+              }
+            }
+          };
+
+          // document type should not change on updates
+          if (oldDoc && !doc._deleted && doc.type !== oldDoc.type) {
+            throw( { forbidden : 'Document type should not change'} );
+          }
+
+          // Attachments are only allowed for presentations and profiles.
+          var attachmentsAllowed = ['Filter', 'Generator', 'ModelEntity'];
+          if (doc._attachments && attachmentsAllowed.indexOf(doc.type) === -1) {
+            throw( { forbidden : 'No attachments are allowed for this document'} );
+          }
+
+          // check for document deletion.
+          if (oldDoc && doc._deleted) {
+            if (oldDoc.type) {
+              // set doc to oldDoc, to let extract work correct
+              doc = oldDoc;
+              // TODO
+            } else {
+              throw( { forbidden : 'Document can not be deleted.'} );
+            }
+          }
+
+          else if ('UserEntity' === doc.type) {
+            var info = extract('owner');
+            requireAccess('ch-system');
+            channel('ch-system');
+          }
+
+          else if ('PasswordInfoEntity' === doc.type) {
+            var info = extract('owner');
+            requireAccess('ch-system');
+            channel('ch-system');
+          }
+
+          else if ('Settings' === doc.type) {
+            var info = extract('owner');
+            requireAccess('ch-system');
+            channel('ch-system', 'ch-developers');
+          }
+
+          else if ('GeneratorImage' === doc.type) {
+            var info = extract('id');
+            requireAccess('ch-system');
+            channel('ch-images', 'ch-public');
+          }
+
+          else if ('MetaModelEntity' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('MetaModelRelease' === doc.type) {
+            var info = extract('owner', 'metaModel', 'version');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('ModelEntity' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('Generator' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('Filter' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            validAttachments('filter.scala');
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('EventDrivenTask' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('BondedTask' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('TimedTask' === doc.type) {
+            var info = extract('owner', 'id');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else if ('Log' === doc.type) {
+            var info = extract('owner', '*');
+            requireAccess('ch-dev-' + info.owner);
+            channel('ch-dev-' + info.owner);
+          }
+
+          else {
+            throw( { forbidden : 'Unknown document type'} );
+          }
+        }
+      `,
+      "users": {
+        "GUEST": {
+          "disabled": true,
+          "admin_channels": ["*"]
+        },
+        "system": {
+          "password": "superSecretPassword",
+          "admin_channels": ["ch-system", "*"],
+          "admin_roles": []
+        }
+      }
+    }
+  }
+}
