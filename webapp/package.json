@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "modigen",
+  "version": "1.0.0",
+  "description": "MoDiGen Webapp for Tool-Developers.",
+  "scripts": {
+    "dev": "polymer serve & gulp watch",
+    "test": "polymer test",
+    "watch": "gulp watch"
+  },
+  "devDependencies": {
+    "bower": "^1.7.9",
+    "polymer-cli": "^0.13.0",
+    "browser-sync": "^2.13.0",
+    "gulp": "^3.9.1"
+  }
+}

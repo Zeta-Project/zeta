@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../base/my-status.html">
+<link rel="import" hread="../job/job-manager.html">
+
+<dom-module id="job-cancel-button">
+  <template>
+    <style>
+      :host {
+
+      }
+    </style>
+
+  <job-manager id="backend"></job-manager>
+  <!--  <paper-button on-tap="itemTapped">Cancel</paper-button>-->
+  <paper-icon-button hidden$="{{_isHidden(generator, jobs)}}" on-tap="itemTapped" icon="myicons:stop" toggles active="{{open}}"></paper-icon-button>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'job-cancel-button',
+
+        properties: {
+          generator: String,
+          jobs: Array,
+          item: Object
+        },
+        _isHidden: function(generator, jobs) {
+          if (jobs && generator) {
+            for (var i = 0; i < jobs.length; i++) {
+              if (this.jobs[i].job && jobs[i].job.generator === generator) {
+                this.item = this.jobs[i];
+                return false;
+              }
+            }
+          }
+          this.item = null;
+          return true;
+        },
+        itemTapped: function(oEvent) {
+          this.$.backend.cancelWorkByUser(this.item.id);
+        }
+      });
+    })();
+  </script>
+</dom-module>

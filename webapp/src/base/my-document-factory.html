@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="my-document-factory">
+  <template>
+    <style></style>
+  </template>
+  <script>
+    Polymer({
+      is: 'my-document-factory',
+
+      properties: {
+        type: {
+          type: String,
+          observer: '_typeChanged'
+        },
+        doc: {
+          type: Object,
+          nofify: true,
+          readOnly: true
+        }
+      },
+
+      _typeChanged() {
+        this.next();
+      },
+
+      next() {
+        if (this.type) {
+          this._setDoc(this.get(this.type));
+        }
+      },
+
+      rand() {
+        const size = 16;
+        const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // abcdefghijklmnopqrstuvwxyz
+        let text = "";
+        for (let i = 0; i < size; i++) {
+          text += charSet.charAt(Math.floor(Math.random() * charSet.length));
+        }
+        return text;
+      },
+
+      get(type) {
+        if (type === 'Tool') {
+          return {
+            _id   : 'Tool-modigen-' + this.rand(),
+            type  : 'Tool'
+          };
+        }
+      }
+    });
+  </script>
+</dom-module>

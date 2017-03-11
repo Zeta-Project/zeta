@@ -1,0 +1,55 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../database/database-collection.html">
+
+<dom-module id="filebrowser-linked-filetree">
+  <template>
+    <database-collection id="data" docs="{{_tmpDocs}}"></database-collection>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'filebrowser-linked-filetree',
+      properties: {
+        doc: Object,
+        docs: {
+          type: Object,
+          notify: true,
+          computed: '_computeFiles(_tmpDocs)'
+        },
+        _rootFolder: String,
+        _tmpDocs: Array,
+      },
+      observers: [
+        '_prepareDocumentLoading(doc)', '_onType(type)'
+      ],
+
+      _prepareDocumentLoading(doc) {
+        // for model project get the model releases.
+        if (doc._id.indexOf('model') === 0) {
+          this._rootFolder = 'releases';
+          this.$.data.startkey = doc._id.replace('model', 'modelRelease') + '-0';
+          this.$.data.endkey = doc._id.replace('model', 'modelRelease') + '-\uffff';
+          this.$.data.generateRequest();
+        } else {
+          this._tmpDocs = [];
+          this._rootFolder = null;
+        }
+      },
+
+      _computeFiles(_tmpDocs) {
+        var sep = '~';
+        var files = {};
+        for (var i = 0; i < _tmpDocs.length; i++) {
+          if (undefined === _tmpDocs[i]._attachments) continue;
+          for (var file of Object.keys(_tmpDocs[i]._attachments)) {
+            var link = _tmpDocs[i]._id + '~' + file;
+            file = this._rootFolder + '~' + _tmpDocs[i].version + '~' + file;
+            files[file] = link;
+          }
+        }
+        return files;
+      }
+    });
+  </script>
+
+</dom-module>

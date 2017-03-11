@@ -1,0 +1,118 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="my-menu">
+  <template>
+    <style>
+      :host {
+        cursor: pointer;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none;   /* Chrome/Safari/Opera */
+        -khtml-user-select: none;    /* Konqueror */
+        -moz-user-select: none;      /* Firefox */
+        -ms-user-select: none;       /* Internet Explorer/Edge */
+        user-select: none;           /* Non-prefixed version, currently not supported by any browser */
+      }
+      .text{
+        font-weight: bold;
+        float: left;
+        margin: 0 0 0px 0px;
+      }
+      .select {
+        color: lightgrey;
+      }
+      a {
+        color: inherit; /* blue colors for links too */
+        text-decoration: inherit; /* no underline */
+      }
+      .container {
+        @apply(--layout-vertical);
+      }
+      .item {
+         margin: 15px 10px 15px 15px;
+         color: grey;
+      }
+      .selected {
+        color: blue;
+      }
+      .verticalLine {
+        border-left: thick solid #f22c5a;
+        border-bottom: thin solid lightgrey;
+        color: black;
+        font-weight: bold;
+      }
+      .nonSelected {
+        border-left: thick solid #fff;
+        border-bottom: thin solid lightgrey;
+        color: grey;
+      }
+      .item {
+        color:inherit;
+      }
+      paper-icon-button {
+        --paper-icon-button: {
+          color: grey;
+          margin: 0px 0px 5px 5px;
+          float: right;
+          width: 28px;
+          height: 28px;
+        }
+      }
+    </style>
+
+    <app-route
+        route="{{route}}"
+        pattern="/app/:page"
+        data="{{data}}">
+    </app-route>
+
+      <div class="container">
+        <template is="dom-repeat" items="[[menu]]" as="item">
+          <div class$="{{getClasses(item, data.page)}}">
+            <a href$="[[getLink(item)]]" name="[[item.name]]">
+              <div class="item">
+                <span>[[item.name]]</span>
+                <!--<paper-icon-button icon="app:chevron-down" hidden$="[[noSearch]]"></paper-icon-button>-->
+              </div>
+            </a>
+          </div>
+        </template>
+      </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-menu',
+
+      properties: {
+        base: {
+          type: String,
+          value: "/"
+        },
+        menu: Object,
+        route: Object,
+        data: Object,
+      },
+
+      getLink(item) {
+        return this.base + item.link;
+      },
+
+      getClasses(item, page) {
+        var link = this.base + item.link;
+        if (link.startsWith('/app/' + page)) {
+          return 'verticalLine';
+        } else {
+          return 'nonSelected';
+        }
+      }
+    });
+  </script>
+
+</dom-module>

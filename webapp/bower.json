@@ -1,0 +1,32 @@
+{
+  "name": "modigen",
+  "authors": [
+    "MoDiGen"
+  ],
+  "private": true,
+  "dependencies": {
+    "polymer": "polymer/polymer#^1.6.1",
+    "iron-elements": "PolymerElements/iron-elements#^1.0.10",
+    "paper-elements": "PolymerElements/paper-elements#^1.0.7",
+    "gold-elements": "PolymerElements/gold-elements#^1.0.1",
+    "neon-elements": "PolymerElements/neon-elements#^1.0.0",
+    "platinum-elements": "PolymerElements/platinum-elements#^2.0.0",
+    "google-web-components": "GoogleWebComponents/google-web-components#^1.1.0",
+    "app-elements": "PolymerElements/app-elements#^0.9.0",
+    "juicy-ace-editor": "^1.1.2",
+    "web-socket": "*",
+    "spinkit-element": "^1.0.0",
+    "json-forms": "https://github.com/brutusin/json-forms.git#master"
+  },
+  "devDependencies": {
+    "web-component-tester": "^4.0.0"
+  },
+  "resolutions": {
+    "paper-styles": "^1.1.4",
+    "pouchdb": "^6.0.4",
+    "firebase": "^3.0",
+    "polymer": "^1.6.1",
+    "iron-flex-layout": "^1.3.0",
+    "json-forms": "master"
+  }
+}

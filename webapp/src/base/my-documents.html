@@ -1,0 +1,41 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../database/database-collection.html">
+
+<dom-module id="my-documents">
+  <template>
+    <database-collection
+      id="collection"
+      auto
+      docs="{{items}}"
+      startkey="[[_startkey]]"
+      endkey="[[_endkey]]"
+      last-error="{{lastError}}">
+    </database-collection>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-documents',
+
+      properties: {
+        items: {
+          type: Array,
+          notify: true
+        },
+        type: String,
+        _startkey: String,
+        _endkey: String
+      },
+
+      observers: [
+        '_calcRangeByType(type)'
+      ],
+
+      _calcRangeByType() {
+        this._startkey = this.type + '-';
+        this._endkey = this.type + '-\uffff';
+      }
+    });
+  </script>
+
+</dom-module>

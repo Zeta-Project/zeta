@@ -1,0 +1,129 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+
+<dom-module id="database-collection">
+  <template>
+    <iron-signals on-iron-signal-database-sync="onDocumentChanged"></iron-signals>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'database-collection',
+
+        properties: {
+          auto: {
+            type: Boolean,
+            value: false
+          },
+          source: {
+            type: String,
+            value: '/db/_all_docs'
+          },
+          startkey: String,
+          endkey: String,
+          limit: Number,
+          type: String,
+          docs: {
+            type: Array,
+            notify: true,
+            value: []
+          },
+          lastError: {
+            type: String,
+            readOnly: true,
+            notify: true
+          }
+        },
+        observers: [
+          '_start(source, startkey, endkey)', '_calcRangeByType(type)'
+        ],
+
+        _calcRangeByType(type) {
+          this.startkey = type + '-0';
+          this.endkey = type + '-\uffff';
+        },
+
+        onDocumentChanged(e) {
+          var doc = e.detail;
+          var self = this;
+
+          // run through all docs and find the doc which to update.
+          for (var i = 0; i < self.docs.length; i++) {
+            if (self.docs[i]._id === doc._id) {
+              if (doc._deleted) {
+                this.fire('removed', self.docs[i]);
+                self.splice('docs', i, 1);
+              } else {
+                this.fire('updated', self.docs[i]);
+                self.set('docs.' + i, doc);
+              }
+              return true;
+            }
+          }
+          // end of all docs reached. The doc need to be inserted
+          if (doc._id >= self.startkey && doc._id <= self.endkey) {
+            self.push('docs', doc);
+            this.fire('created', doc);
+            return true;
+          }
+        },
+
+        generateRequest() {
+          var self = this;
+          var ajax = document.createElement('iron-ajax');
+          ajax.url = '/db/_all_docs';
+          ajax.contentType = 'application/json';
+          ajax.handleAs = 'json';
+          ajax.method = 'GET';
+          ajax.params = {
+            include_docs: true, // jshint ignore:line
+            startkey: self.startkey,
+            endkey: self.endkey,
+            limit: self.limit,
+            skip: self.skip
+          };
+
+          var request = ajax.generateRequest();
+          var newDocs = [];
+          request.completes.then(function(e) {
+            for (var i = 0; i < e.response.rows.length; i++) {
+              newDocs.push(e.response.rows[i].doc);
+            }
+            self.docs = newDocs;
+          }).catch(function(e) {
+            self._setLastError(e);
+          });
+        },
+
+        _start() {
+          if (this.auto) {
+            this.generateRequest();
+          }
+        },
+
+        save: function(docs) {
+          return new Promise((resolve, reject) => {
+            var ajax = document.createElement('iron-ajax');
+            ajax.url = '/db/_bulk_docs';
+            ajax.contentType = 'application/json';
+            ajax.body = {
+              docs : docs
+            };
+            ajax.handleAs = 'json';
+            ajax.method = 'POST';
+
+            var request = ajax.generateRequest();
+            request.completes.then(function(e) {
+              resolve(doc);
+            }).catch(function(e) {
+              reject(e);
+            });
+          });
+        },
+      });
+    })();
+  </script>
+</dom-module>

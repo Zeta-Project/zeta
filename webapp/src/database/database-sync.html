@@ -1,0 +1,49 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+<link rel="import" href="../../bower_components/app-pouchdb/pouchdb.html">
+
+<dom-module id="database-sync">
+  <template>
+    <iron-signals id="signal"></iron-signals>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'database-sync',
+
+        properties: {
+          source: String,
+          options: {
+            type: Object,
+            value: function() {
+              return {
+                live: true,
+                include_docs: true,
+                attachments: false,
+                since: 'now'
+              }
+            }
+          }
+        },
+
+        attached: function() {
+          var self = this;
+          self.db = new PouchDB(self.source);
+
+          self.changes = self.db.changes(self.options)
+          .on('change', function(change) {
+            self.$.signal.fire('iron-signal', {name: 'database-sync', data: change.doc});
+          }).on('complete', function(info) {
+            self.fire('complete', info);
+          }).on('error', function (err) {
+            console.log(err);
+            this.fire(err);
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>

@@ -1,0 +1,38 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="./base/my-documents-view.html">
+
+<dom-module id="app-bonded-tasks">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+
+    <my-documents-view id="view" type="BondedTask"></my-documents-view>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'app-bonded-tasks',
+
+      ready() {
+        this.$.view.primary = function(item) {
+          return item.name
+        }
+        this.$.view.secondary = function(item) {
+          return [
+            item.menu + ' - ' + item.item
+          ];
+        }
+        this.$.view.link = function(item) {
+          return '/app/log/' + item._id.replace('BondedTask', 'Log');
+        }
+      }
+    });
+  </script>
+</dom-module>

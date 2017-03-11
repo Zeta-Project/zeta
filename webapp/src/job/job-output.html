@@ -1,0 +1,112 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="job-output">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-dialog-scrollable {
+        display: block;
+        background: inherit;
+        overflow:hidden;
+        width: 800px;
+        height: 300px;
+      /* border: 1px solid grey; */
+      }
+
+      iron-list {
+        height: 300px; /* don't use % values unless the parent element is sized. */
+      }
+
+      .output {
+        margin: 0;
+        padding: 5px;
+        list-style: none;
+        color: 0000;
+        font: 0.8em 'Andale Mono', Consolas, 'Courier New';
+        line-height: 1.6em;
+        overflow-y: auto;
+        max-height: 99%;
+      }
+
+      .output li:before {
+        content: '$';
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+
+      .header {
+        width: 100%;
+        height: 20px;
+        background-color: inherit;
+      }
+
+      .output li {
+        word-wrap: break-word;
+        position: relative;
+        padding: 0 0 0 15px;
+      }
+      .info {
+        color: black;
+      }
+      .error {
+        color: red;
+      }
+    </style>
+
+    <paper-dialog id="dialog" opened="{{opened}}" no-cancel-on-outside-click>
+      <h2>Log</h2>
+      <paper-dialog-scrollable>
+        <ul class="output" id="output">
+          <iron-list id="list" items="[[log]]">
+            <template>
+              <div p style="white-space: pre;" class$="[[item.sort]]">[[item.sort]] : [[item.message]]</div>
+            </template>
+          </iron-list>
+        </ul>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss autofocus on-click="_closed">Close</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'job-output',
+
+      properties: {
+        log: {
+          type: Array,
+          notify: true,
+          observer: 'logChanged'
+        },
+        opened: {
+          type: Boolean,
+          notify: true,
+          value: false
+        }
+      },
+
+      observers: [
+        'logChanged(log.*)'
+      ],
+
+      _closed() {
+        this.splice("log", 0, this.log.length)
+      },
+
+      logChanged() {
+        this.$.list.scrollToIndex(this.log.length - 1);
+      }
+    });
+  </script>
+</dom-module>

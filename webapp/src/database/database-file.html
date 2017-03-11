@@ -1,0 +1,99 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
+
+<dom-module id="database-file">
+  <template>
+    <iron-signals on-iron-signal-database-sync="onDocumentChanged"></iron-signals>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'database-file',
+
+        properties: {
+          docId: String,
+          attachmentId: String,
+          file: {
+            type: String,
+            notify: true
+          },
+          lastError: {
+            type: String,
+            readOnly: true,
+            notify: true
+          }
+        },
+
+        observers: [
+          '_start(docId, attachmentId)'
+        ],
+
+        onDocumentChanged: function(e) {
+          if (e.detail._id === this.docId) {
+            // received a change. Changes do not include attachments.
+            // load the complete document from the database.
+            this._start(this.docId, this.attachmentId);
+          }
+        },
+
+        _start: function(docId, attachmentId) {
+          var self = this;
+          var ajax = document.createElement('iron-ajax');
+          ajax.url = '/db/' + docId + '/' + attachmentId;
+          ajax.contentType = 'text/plain';
+          ajax.handleAs = 'text';
+          ajax.method = 'GET';
+
+          var request = ajax.generateRequest();
+          request.completes.then(function(e) {
+            self.file = e.response;
+          }).catch(function(e) {
+            console.log(e);
+            self._setLastError(e);
+          });
+        },
+
+        save: function(doc, attachmentId, file, type) {
+          return new Promise(function(resolve, reject) {
+            var ajax = document.createElement('iron-ajax');
+            ajax.url = '/db/' + doc._id + '/' + attachmentId + '?rev=' + doc._rev;
+            ajax.contentType = 'text/plain';
+            ajax.body = file;
+            ajax.handleAs = 'json';
+            ajax.method = 'PUT';
+            var request = ajax.generateRequest();
+            request.completes.then(function(e) {
+              doc._rev = e.response.rev;
+              resolve(doc);
+            }).catch(function(e) {
+              reject(e);
+            });
+          });
+        },
+
+        exist: function(id) {
+          return new Promise(function(resolve, reject) {
+            var ajax = document.createElement('iron-ajax');
+            ajax.url = '/db/' + id;
+            ajax.contentType = 'application/json';
+            ajax.handleAs = 'json';
+            ajax.method = 'GET';
+            ajax.params = {
+              attachments: self.attachments
+            };
+
+            var request = ajax.generateRequest();
+            request.completes.then(function() {
+              resolve();
+            }).catch(function(e) {
+              reject(e);
+            });
+          });
+        }
+      });
+    })();
+  </script>
+</dom-module>

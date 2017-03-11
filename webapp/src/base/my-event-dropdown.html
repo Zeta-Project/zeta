@@ -1,0 +1,47 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+
+<dom-module id="my-event-dropdown">
+  <template>
+    <style>
+    :host {
+      display: block;
+    }
+    </style>
+
+    <paper-dropdown-menu label="Event" no-animations required>
+      <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{selected}}">
+        <template is="dom-repeat" items="{{items}}">
+          <paper-item value="[[item.name]]">{{item.name}}</paper-item>
+        </template>
+      </paper-listbox>
+    </paper-dropdown-menu>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-event-dropdown',
+
+      properties: {
+        selected: {
+          type: Array,
+          notify: true
+        },
+        items: {
+          type: Array,
+          value: function() {
+            return [
+              {
+                name: 'Model update'
+              }
+            ]
+          }
+        }
+      }
+    });
+  </script>
+
+</dom-module>

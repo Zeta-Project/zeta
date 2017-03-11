@@ -1,0 +1,156 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="./job/job-manager.html">
+<link rel="import" href="./base/my-status.html">
+<link rel="import" href="./base/my-documents.html">
+
+
+
+<dom-module id="app-log">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      iron-list {
+        @apply(--layout-flex);
+      }
+      .content {
+        @apply(--layout-vertical);
+        height: 100%;
+      }
+      .unselectable {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .item {
+        @apply(--layout-horizontal);
+        cursor: pointer;
+        padding: 16px 22px;
+        border-bottom: 1px solid #DDD;
+      }
+      .item:focus,
+      .item.selected:focus {
+        outline: 0;
+        background-color: #ddd;
+      }
+      .item.selected .star {
+        color: var(--paper-blue-600);
+      }
+      .avatar {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        background-color: #ddd;
+      }
+      .pad {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+        padding: 0 16px;
+      }
+      .primary {
+        font-size: 16px;
+      }
+      .secondary {
+        font-size: 14px;
+      }
+      .dim {
+        color: gray;
+      }
+      .star {
+        width: 24px;
+        height: 24px;
+      }
+      a {
+        text-decoration:none;
+        color: inherit;
+      }
+    </style>
+
+    <my-documents type="[[type]]" items="{{items}}"></my-documents>
+
+    <paper-dialog id="dialog">
+      <h2>[[_selectedTitle]]</h2>
+      <paper-dialog-scrollable>
+        <p style="white-space: pre;">[[_selectedLog]]</p>
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss autofocus>Close</paper-button>
+      </div>
+    </paper-dialog>
+
+    <div>
+      <template is="dom-repeat" items="[[items]]">
+        <div class="item">
+          <div class="pad">
+            <div class="primary" item="[[item]]" on-tap="_open">
+              [[_formattedDate(item.date)]]
+            </div>
+            <div class="secondary dim">
+              [[_getStatus(item)]]
+            </div>
+          </div>
+          <my-status status="[[item.status]]"></my-status>
+        </div>
+      </template>
+    </div>
+
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'app-log',
+        properties: {
+          items: {
+            type: Array,
+            value: []
+          },
+          route: Object,
+          type: {
+            type: String,
+            computed: '_computeType(route.*)'
+          },
+          _selectedTitle: String,
+          _selectedLog: String
+        },
+        _getStatus(item) {
+          if (item.status == 0) {
+            return "success";
+          } else if (item.status == 1) {
+            return "error";
+          } else if (item.status == 2) {
+            return "warning";
+          } else if (item.status == 143) {
+            return "interrupted";
+          } else {
+            return "error";
+          }
+        },
+        _formattedDate(date) {
+          return new Date(date).toLocaleString();
+        },
+        _computeType(route) {
+          // remove the trailing slash
+          return this.route.path.replace('/', '');
+        },
+        _open(e) {
+          var item = e.target.item;
+          this._selectedTitle = item.date;
+          this._selectedLog = item.log;
+          this.$.dialog.opened = true;
+        }
+      });
+    })();
+  </script>
+</dom-module>

@@ -1,0 +1,38 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="./base/my-documents-view.html">
+
+<dom-module id="app-event-driven-tasks">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+
+    <my-documents-view id="view" type="EventDrivenTask"></my-documents-view>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'app-event-driven-tasks',
+
+      ready() {
+        this.$.view.primary = function(item) {
+          return item.name
+        }
+        this.$.view.secondary = function(item) {
+          return [
+            'Triggered on ' + item.event
+          ];
+        }
+        this.$.view.link = function(item) {
+          return '/app/log/' + item._id.replace('EventDrivenTask', 'Log');
+        }
+      }
+    });
+  </script>
+</dom-module>
