@@ -37,7 +37,7 @@ chmod +x setup.sh
 To start all services simply run the below command.
 
 ```sh
-docker-compose up
+docker-compose up -d
 ```
 
 To stop and remove **all** docker containers.
