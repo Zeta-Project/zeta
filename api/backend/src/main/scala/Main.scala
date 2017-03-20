@@ -29,13 +29,15 @@ object Main extends App {
 }
 
 protected class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
+  val devPort: ScallopOption[Int] = opt[Int]()
+  val devSeeds: ScallopOption[List[String]] = opt[List[String]](default = Some(List()))
+  val dummyPort: ScallopOption[Int] = opt[Int]()
+  val dummySeeds: ScallopOption[List[String]] = opt[List[String]](default = Some(List()))
+  val masterNum: ScallopOption[Int] = opt[Int]()
+  val masterPort: ScallopOption[Int] = opt[Int]()
+  val masterSeeds: ScallopOption[List[String]] = opt[List[String]](default = Some(List()))
   val workers: ScallopOption[Int] = opt[Int]()
-  val master: ScallopOption[Int] = opt[Int]()
-  val num: ScallopOption[Int] = opt[Int]()
-  val developer: ScallopOption[Int] = opt[Int]()
-  val dummy: ScallopOption[Int] = opt[Int]()
-  val seeds: ScallopOption[List[String]] = opt[List[String]](default = Some(List()))
-  val test: ScallopOption[Boolean] = opt[Boolean]()
+  val workerSeeds: ScallopOption[List[String]] = opt[List[String]](default = Some(List()))
   verify()
 }
 
@@ -82,9 +84,9 @@ protected class MasterStarter extends Starter {
 
   def initiate(cmd: Commands): Unit = {
     val config = for {
-      port <- cmd.master
-      seeds <- cmd.seeds
-      num <- cmd.num
+      port <- cmd.masterPort
+      seeds <- cmd.masterSeeds
+      num <- cmd.masterNum
     } yield Config(port, seeds, num)
 
     config foreach { start }
@@ -158,7 +160,7 @@ protected class WorkersStarter extends Starter {
   def initiate(cmd: Commands): Unit = {
     val config = for {
       workers <- cmd.workers
-      seeds <- cmd.seeds
+      seeds <- cmd.workerSeeds
     } yield Config(workers, seeds)
 
     config foreach { start }
@@ -196,8 +198,8 @@ protected class DummyStarter extends Starter {
 
   def initiate(cmd: Commands): Unit = {
     val config = for {
-      port <- cmd.dummy
-      seeds <- cmd.seeds
+      port <- cmd.dummyPort
+      seeds <- cmd.dummySeeds
     } yield Config(port, seeds)
 
     config foreach { start }
@@ -232,8 +234,8 @@ protected class DeveloperStarter extends Starter {
 
   def initiate(cmd: Commands): Unit = {
     val developer = for {
-      port <- cmd.developer
-      seeds <- cmd.seeds
+      port <- cmd.devPort
+      seeds <- cmd.devSeeds
     } yield Config(port, seeds)
 
     developer foreach { start }
