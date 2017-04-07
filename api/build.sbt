@@ -31,6 +31,7 @@ lazy val server = (project in file("server")).settings(
 
   compileScalastyle      := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
   compile in Compile     := ((compile in Compile) dependsOn compileScalastyle).value,
+  wartremoverWarnings  ++= Warts.unsafe,
 
   scalaVersion := scalaV,
   routesGenerator := InjectedRoutesGenerator,
@@ -123,6 +124,7 @@ lazy val client = (project in file("client")).settings(
   scalastyleFailOnError := true,
   compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
   compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
+  wartremoverWarnings  ++= Warts.unsafe,
 
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
@@ -160,6 +162,7 @@ lazy val common = Project("common", file("common")).settings(
     scalastyleFailOnError := true,
     compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
     compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
+    wartremoverWarnings  ++= Warts.unsafe,
 
     libraryDependencies   ++= Seq(
       // silhouette
@@ -190,7 +193,7 @@ def projectT(name: String, d: sbt.File) = Project(name, d).
     Revolver.settings ++
       Seq(
         scalaVersion      := scalaV,
-        scalacOptions    ++= Seq("-encoding", "UTF-8", "-deprecation", "-feature", "-unchecked", "-Xfatal-warnings"),
+        scalacOptions    ++= Seq("-encoding", "UTF-8", "-deprecation", "-feature", "-unchecked"),
         fork in Test      := true,
         fork in run       := true,
         dockerRepository  := Some("modigen"),
@@ -198,6 +201,7 @@ def projectT(name: String, d: sbt.File) = Project(name, d).
         scalastyleFailOnError := true,
         compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
         compile in Compile:= ((compile in Compile) dependsOn compileScalastyle).value,
+        wartremoverWarnings  ++= Warts.unsafe,
 
         libraryDependencies ++= Seq(
           "com.typesafe.play"         %% "play-json"                % "2.5.7",
@@ -249,6 +253,7 @@ def image(name: String, d: sbt.File) = Project(name, d).
       scalastyleFailOnError := true,
       compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
       compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
+      wartremoverWarnings  ++= Warts.unsafe,
 
       libraryDependencies ++= Seq(
         "org.rogach"                %% "scallop"                  % "2.0.2",
