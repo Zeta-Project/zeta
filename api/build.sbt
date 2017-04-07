@@ -14,6 +14,8 @@ lazy val scalaV = "2.11.7"
 
 lazy val clients = Seq(client)
 
+lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
+
 lazy val server = (project in file("server")).settings(
   // docker settings
   dockerRepository       := Some("modigen"),
@@ -26,6 +28,9 @@ lazy val server = (project in file("server")).settings(
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
   pipelineStages := Seq(scalaJSProd, gzip),
+
+  compileScalastyle      := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+  compile in Compile     := ((compile in Compile) dependsOn compileScalastyle).value,
 
   scalaVersion := scalaV,
   routesGenerator := InjectedRoutesGenerator,
@@ -114,6 +119,11 @@ lazy val client = (project in file("client")).settings(
   persistLauncher := true,
   resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+
+  scalastyleFailOnError := true,
+  compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+  compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
+
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
   libraryDependencies ++= Seq(
@@ -146,6 +156,11 @@ lazy val common = Project("common", file("common")).settings(
     version := "0.1",
     scalaVersion := scalaV,
     resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/",
+
+    scalastyleFailOnError := true,
+    compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+    compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
+
     libraryDependencies   ++= Seq(
       // silhouette
       "com.mohiva" %% "play-silhouette" % "4.0.0",
@@ -175,10 +190,15 @@ def projectT(name: String, d: sbt.File) = Project(name, d).
     Revolver.settings ++
       Seq(
         scalaVersion      := scalaV,
-        scalacOptions    ++= Seq("-encoding", "UTF-8", "-deprecation", "-feature", "-unchecked"),
+        scalacOptions    ++= Seq("-encoding", "UTF-8", "-deprecation", "-feature", "-unchecked", "-Xfatal-warnings"),
         fork in Test      := true,
         fork in run       := true,
         dockerRepository  := Some("modigen"),
+
+        scalastyleFailOnError := true,
+        compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+        compile in Compile:= ((compile in Compile) dependsOn compileScalastyle).value,
+
         libraryDependencies ++= Seq(
           "com.typesafe.play"         %% "play-json"                % "2.5.7",
           "com.typesafe.akka"         %% "akka-actor"               % akkaVersion,
@@ -225,6 +245,11 @@ def image(name: String, d: sbt.File) = Project(name, d).
       fork in Test      := true,
       fork in run       := true,
       dockerRepository  := Some("modigen"),
+
+      scalastyleFailOnError := true,
+      compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+      compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
+
       libraryDependencies ++= Seq(
         "org.rogach"                %% "scallop"                  % "2.0.2",
         "org.scala-lang"            % "scala-reflect"             % "2.11.8",
@@ -284,3 +309,4 @@ lazy val metaModelRelease = image("metaModelRelease", file("./images/metamodel/r
     packageName in Docker  := "metamodel/release"
   )
 )
+
