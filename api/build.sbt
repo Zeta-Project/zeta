@@ -16,28 +16,10 @@ lazy val clients = Seq(client)
 
 lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
-lazy val server = (project in file("server")).settings(
-  // docker settings
-  dockerRepository       := Some("modigen"),
-  name                   := "api",
-  version                := "0.1",
-  packageName in Docker  := "api",
-  daemonUser in Docker   := "root",
-
-  scalaJSProjects := clients,
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
-  pipelineStages := Seq(scalaJSProd, gzip),
-
-  compileScalastyle      := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-  compile in Compile     := ((compile in Compile) dependsOn compileScalastyle).value,
-  wartremoverWarnings  ++= Warts.unsafe,
-
-  scalaVersion := scalaV,
-  routesGenerator := InjectedRoutesGenerator,
-  resolvers += Resolver.jcenterRepo,
-  routesImport += "utils.route.Binders._",
-  scalacOptions ++= Seq(
+def baseSettings = Revolver.settings ++ Seq(
+  fork              := true,
+  scalaVersion      := scalaV,
+  scalacOptions    ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
     "-unchecked", // Enable additional warnings where generated code depends on assumptions.
@@ -49,6 +31,38 @@ lazy val server = (project in file("server")).settings(
     "-Ywarn-nullary-override", // Warn when non-nullary overrides nullary, e.g. def foo() over def foo.
     "-Ywarn-numeric-widen" // Warn when numerics are widened.
   ),
+
+  scalastyleFailOnError := true,
+  compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+  compile in Compile:= ((compile in Compile) dependsOn compileScalastyle).value,
+  wartremoverWarnings  ++= Warts.unsafe,
+
+  dockerRepository  := Some("modigen")
+)
+
+def baseProject(name: String, d: sbt.File) = Project(name, d).settings(baseSettings)
+
+lazy val server = baseProject("server", file("server")).settings(
+  // docker settings
+  name                   := "api",
+  version                := "0.1",
+  packageName in Docker  := "api",
+  daemonUser in Docker   := "root",
+
+  scalaJSProjects := clients,
+  pipelineStages := Seq(scalaJSProd, gzip),
+
+  wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "Routes.scala",
+  wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "RoutesPrefix.scala",
+  wartremoverExcluded += crossTarget.value / "routes" / "main" / "controllers" / "ReverseRoutes.scala",
+  wartremoverExcluded += crossTarget.value / "routes" / "main" / "controllers" / "javascript" / "JavaScriptReverseRoutes.scala",
+
+  routesGenerator := InjectedRoutesGenerator,
+  routesImport += "utils.route.Binders._",
+
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
+  resolvers += Resolver.jcenterRepo,
   libraryDependencies ++= Seq(
     "commons-codec" % "commons-codec" % "1.9",
     // silhouette
@@ -95,12 +109,8 @@ lazy val server = (project in file("server")).settings(
     "org.scala-lang" % "scala-swing" % "2.11.0-M7",
 
     "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion
-
-
-  )).enablePlugins(PlayScala).
-  aggregate(clients.map(projectToRef): _*).
-  dependsOn(sharedJvm).dependsOn(common).dependsOn(backend)
-
+  )
+).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend)
 
 
 //********************************************************
@@ -115,19 +125,14 @@ ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(DanglingCloseParenthesis, Preserve)
 
 
-lazy val client = (project in file("client")).settings(
-  scalaVersion := scalaV,
+lazy val client = baseProject("client", file("client")).settings(
+  fork := false,
   persistLauncher := true,
-  resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-
-  scalastyleFailOnError := true,
-  compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-  compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
-  wartremoverWarnings  ++= Warts.unsafe,
-
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
+  
+  resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
     //"com.github.jahoefne" % "scalot_2.11" % "1.0",
     "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
@@ -138,31 +143,42 @@ lazy val client = (project in file("client")).settings(
     "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
     "com.lihaoyi" %%% "upickle" % "0.3.4"
   )
-).enablePlugins(ScalaJSPlugin, ScalaJSPlay).
-  dependsOn(sharedJs)
+).enablePlugins(ScalaJSPlugin, ScalaJSPlay).dependsOn(sharedJs)
 
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).
-  settings(scalaVersion := scalaV,
-    resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-    libraryDependencies += "com.github.jahoefne" % "scalot_2.11" % "1.0"//"com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT"
-  ).
-  jsConfigure(_ enablePlugins ScalaJSPlay).
-  jsSettings(sourceMapsBase := baseDirectory.value / "..")
+lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(
+  scalaVersion := scalaV,
+  scalacOptions    ++= Seq(
+    "-deprecation", // Emit warning and location for usages of deprecated APIs.
+    "-feature", // Emit warning and location for usages of features that should be imported explicitly.
+    "-unchecked", // Enable additional warnings where generated code depends on assumptions.
+    //"-Xfatal-warnings", // Fail the compilation if there are any warnings.
+    "-Xlint", // Enable recommended additional warnings.
+    "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
+    "-Ywarn-dead-code", // Warn when dead code is identified.
+    "-Ywarn-inaccessible", // Warn about inaccessible types in method signatures.
+    "-Ywarn-nullary-override", // Warn when non-nullary overrides nullary, e.g. def foo() over def foo.
+    "-Ywarn-numeric-widen" // Warn when numerics are widened.
+  ),
+
+  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
+  libraryDependencies ++= Seq(
+    "com.github.jahoefne" % "scalot_2.11" % "1.0" //"com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT"
+  ),
+
+  scalastyleFailOnError := true,
+  compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+  compile in Compile:= ((compile in Compile) dependsOn compileScalastyle).value,
+  wartremoverWarnings  ++= Warts.unsafe
+).jsConfigure(_ enablePlugins ScalaJSPlay).jsSettings(sourceMapsBase := baseDirectory.value / "..")
 
 lazy val sharedJvm = shared.jvm
 lazy val sharedJs = shared.js
 
 
-lazy val common = Project("common", file("common")).settings(
+lazy val common = baseProject("common", file("common")).settings(
   Seq(
     version := "0.1",
-    scalaVersion := scalaV,
     resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/",
-
-    scalastyleFailOnError := true,
-    compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-    compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
-    wartremoverWarnings  ++= Warts.unsafe,
 
     libraryDependencies   ++= Seq(
       // silhouette
@@ -188,31 +204,18 @@ lazy val common = Project("common", file("common")).settings(
 onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
 
 
-def projectT(name: String, d: sbt.File) = Project(name, d).
-  settings(
-    Revolver.settings ++
-      Seq(
-        scalaVersion      := scalaV,
-        scalacOptions    ++= Seq("-encoding", "UTF-8", "-deprecation", "-feature", "-unchecked"),
-        fork in Test      := true,
-        fork in run       := true,
-        dockerRepository  := Some("modigen"),
-
-        scalastyleFailOnError := true,
-        compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-        compile in Compile:= ((compile in Compile) dependsOn compileScalastyle).value,
-        wartremoverWarnings  ++= Warts.unsafe,
-
-        libraryDependencies ++= Seq(
-          "com.typesafe.play"         %% "play-json"                % "2.5.7",
-          "com.typesafe.akka"         %% "akka-actor"               % akkaVersion,
-          "com.typesafe.akka"         %% "akka-cluster"             % akkaVersion,
-          "com.typesafe.akka"         %% "akka-cluster-tools"       % akkaVersion,
-          "com.typesafe.akka"         %% "akka-cluster-metrics"     % akkaVersion,
-          "com.typesafe.akka"         %% "akka-persistence"         % akkaVersion
-        )
-      )
-  ).enablePlugins(JavaAppPackaging)
+def projectT(name: String, d: sbt.File) = baseProject(name, d).settings(
+  Seq(
+    libraryDependencies ++= Seq(
+      "com.typesafe.play"         %% "play-json"                % "2.5.7",
+      "com.typesafe.akka"         %% "akka-actor"               % akkaVersion,
+      "com.typesafe.akka"         %% "akka-cluster"             % akkaVersion,
+      "com.typesafe.akka"         %% "akka-cluster-tools"       % akkaVersion,
+      "com.typesafe.akka"         %% "akka-cluster-metrics"     % akkaVersion,
+      "com.typesafe.akka"         %% "akka-persistence"         % akkaVersion
+    )
+  )
+).enablePlugins(JavaAppPackaging)
 
 lazy val backend = projectT("backend", file("backend")).settings(
   Seq(
@@ -241,27 +244,15 @@ lazy val backend = projectT("backend", file("backend")).settings(
 ).dependsOn(common)
 
 
-def image(name: String, d: sbt.File) = Project(name, d).
-  settings(
-    Seq(
-      scalaVersion      := scalaV,
-      scalacOptions    ++= Seq("-encoding", "UTF-8", "-deprecation", "-feature", "-unchecked"),
-      fork in Test      := true,
-      fork in run       := true,
-      dockerRepository  := Some("modigen"),
-
-      scalastyleFailOnError := true,
-      compileScalastyle     := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-      compile in Compile    := ((compile in Compile) dependsOn compileScalastyle).value,
-      wartremoverWarnings  ++= Warts.unsafe,
-
-      libraryDependencies ++= Seq(
-        "org.rogach"                %% "scallop"                  % "2.0.2",
-        "org.scala-lang"            % "scala-reflect"             % "2.11.8",
-        "org.scala-lang"            % "scala-compiler"            % "2.11.8"
-      )
+def image(name: String, d: sbt.File) = baseProject(name, d).settings(
+  Seq(
+    libraryDependencies ++= Seq(
+      "org.rogach"                %% "scallop"                  % "2.0.2",
+      "org.scala-lang"            % "scala-reflect"             % "2.11.8",
+      "org.scala-lang"            % "scala-compiler"            % "2.11.8"
     )
-  ).enablePlugins(JavaAppPackaging).dependsOn(common)
+  )
+).enablePlugins(JavaAppPackaging).dependsOn(common)
 
 
 lazy val scalaFilter = image("scalaFilter", file("./images/filter/scala")).settings(
