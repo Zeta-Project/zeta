@@ -16,3 +16,8 @@ addSbtPlugin("com.vmunier" % "sbt-play-scalajs" % "0.2.6")
 addSbtPlugin("com.typesafe.sbt" % "sbt-gzip" % "1.0.0")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.0")
+
+addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "0.8.0")
+
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.0.2")
+
