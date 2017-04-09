@@ -179,9 +179,9 @@ object StyleGenerator {
     if (s.line_color.isEmpty)
       ret +=
         """
-      				stroke: '#000000',
-      				'stroke-width': 0,
-      				'stroke-dasharray': "0"
+              stroke: '#000000',
+              'stroke-width': 0,
+              'stroke-dasharray': "0"
         """
     else
       s.line_color.get match {
@@ -192,7 +192,7 @@ object StyleGenerator {
         case _ =>
           ret +=
             """
-      				stroke: '""" + s.line_color.get.getRGBValue +
+              stroke: '""" + s.line_color.get.getRGBValue +
             """'"""
           if (s.line_width.isDefined)
             ret += """,'stroke-width':""" + s.line_width.get

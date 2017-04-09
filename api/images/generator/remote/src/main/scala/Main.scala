@@ -23,11 +23,11 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       val filename = s"${actorName}.scala"
       val content = s"""
       |class ${actorName}() extends Actor {
-      |		def receive = {
+      |   def receive = {
       |
       |   }
       | }
-		 """
+     """
 
       File(filename, content)
     }

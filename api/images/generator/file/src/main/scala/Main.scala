@@ -55,14 +55,14 @@ object Main extends Template[CreateOptions, String] {
     val content =
       """
         |class MyTransformer() extends Transformer {
-        |	def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
+        | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
         |   println(s"User : ${entity.id}")
         |   entity.model.elements.values.foreach { element => element match {
         |     case node: Node => println(node.`type`.name)
         |     case edge: Edge => println(edge.`type`.name)
         |   }}
-        |		Future.successful(this)
-        |	}
+        |   Future.successful(this)
+        | }
         |
         | def exit()(implicit documents: Documents, files: Files, remote: Remote) : Future[Result] = {
         |   val result = Success("The generator finished")

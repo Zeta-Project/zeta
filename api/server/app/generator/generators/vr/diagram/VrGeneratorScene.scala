@@ -12,7 +12,7 @@ object VrGeneratorScene {
 
   def generate(nodes: Iterable[Node], connections: Iterable[Connection]) = {
     s"""
-	   <link rel="stylesheet" href="/assets/prototyp/style/stylesheet.css">
+      <link rel="stylesheet" href="/assets/prototyp/style/stylesheet.css">
 
       <script src="/assets/prototyp/bower_components/threejs/build/three.min.js"></script>
       <script src="/assets/prototyp/bower_components/threex.domevents/threex.domevents.js"></script>

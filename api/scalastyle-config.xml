@@ -11,7 +11,7 @@
    <parameter name="tabSize"><![CDATA[4]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.file.FileTabChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.file.FileTabChecker" level="error"/>
  <check enabled="false" class="org.scalastyle.file.HeaderMatchesChecker" level="error">
   <parameters>
    <parameter name="regex">false</parameter>

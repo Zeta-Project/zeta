@@ -64,13 +64,13 @@ object Main extends Template[CreateOptions, String] {
   def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]) = {
     s"""
       |class MyTransformer() extends Transformer {
-      |	def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
+      | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
       |   val transformed = entity.model.elements.values.map { element => element match {
       |     case node: Node => transformNode(node)
       |     case edge: Edge => transformEdge(edge)
       |   }}
-      |		Future.successful(this)
-      |	}
+      |   Future.successful(this)
+      | }
       |
       | def transformNode(node: Node): Node = node.`type`.name match {
       |   ${mClassList.map(matchMClassMethod).mkString(sep2)}
