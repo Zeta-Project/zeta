@@ -2,11 +2,22 @@ package actors.worker
 
 import java.util.UUID
 
-import actors.worker.MasterWorkerProtocol.{ CancelWork, Work }
+import actors.worker.MasterWorkerProtocol.CancelWork
+import actors.worker.MasterWorkerProtocol.Work
 import actors.worker.Worker.WorkTimeout
-import akka.actor.{ Actor, ActorInitializationException, ActorLogging, ActorRef, DeathPactException, OneForOneStrategy, Props, ReceiveTimeout, Terminated }
-import akka.actor.SupervisorStrategy.{ Restart, Stop }
-import akka.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import akka.actor.Actor
+import akka.actor.ActorInitializationException
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.DeathPactException
+import akka.actor.OneForOneStrategy
+import akka.actor.Props
+import akka.actor.ReceiveTimeout
+import akka.actor.Terminated
+import akka.actor.SupervisorStrategy.Restart
+import akka.actor.SupervisorStrategy.Stop
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator
 
 import scala.concurrent.duration._
 

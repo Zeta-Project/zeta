@@ -2,16 +2,23 @@ package actors.worker
 
 import java.nio.charset.Charset
 
-import actors.worker.MasterWorkerProtocol.{ CancelWork, Work }
-import akka.actor.{ Actor, ActorLogging, Props }
+import actors.worker.MasterWorkerProtocol.CancelWork
+import actors.worker.MasterWorkerProtocol.Work
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
 import akka.stream.ActorMaterializer
-import com.spotify.docker.client.{ DefaultDockerClient, LogMessage, LogStream }
+import com.spotify.docker.client.DefaultDockerClient
+import com.spotify.docker.client.LogMessage
+import com.spotify.docker.client.LogStream
 import com.spotify.docker.client.DockerClient.AttachParameter
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
-import com.spotify.docker.client.messages.{ ContainerConfig, HostConfig }
+import com.spotify.docker.client.messages.ContainerConfig
+import com.spotify.docker.client.messages.HostConfig
 import models.document.Log
-import models.document.http.{ HttpRepository => DocumentRepository }
-import models.frontend.{ JobLog, JobLogMessage }
+import models.document.http.HttpRepository
+import models.frontend.JobLog
+import models.frontend.JobLogMessage
 import play.api.libs.ws.ahc.AhcWSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -56,7 +63,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
     }
 
     case work: Work =>
-      val documents = DocumentRepository(work.session)
+      val documents = HttpRepository(work.session)
       log.info("DockerWorkExecutor received job {}", work.id)
       var jobStream = JobLog(job = work.id)
       var jobPersist = JobLog(job = work.id)

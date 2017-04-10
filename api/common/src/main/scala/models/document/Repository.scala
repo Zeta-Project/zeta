@@ -1,6 +1,7 @@
 package models.document
 
-import play.api.libs.json.{ Reads, Writes }
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 import rx.lang.scala.Observable
 
 import scala.concurrent.Future

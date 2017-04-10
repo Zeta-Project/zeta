@@ -2,15 +2,19 @@ package actors.master
 
 import actors.worker.MasterWorkerProtocol
 import actors.worker.MasterWorkerProtocol.CancelWork
-import akka.actor.{ ActorLogging, ActorRef, Props }
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import akka.cluster.Cluster
 import akka.cluster.client.ClusterClientReceptionist
-import akka.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator
 import akka.persistence.PersistentActor
 import models.session.Session
 
 import scala.concurrent.duration._
-import scala.concurrent.duration.{ Deadline, FiniteDuration }
+import scala.concurrent.duration.Deadline
+import scala.concurrent.duration.FiniteDuration
 
 object Master {
   def props(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, sessionManager: Session): Props =

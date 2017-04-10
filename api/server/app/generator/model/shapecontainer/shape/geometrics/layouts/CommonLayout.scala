@@ -1,7 +1,9 @@
 package generator.model.shapecontainer.shape.geometrics.layouts
 
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel, CommonParserMethods }
+import generator.parser.Cache
+import generator.parser.GeoModel
+import generator.parser.CommonParserMethods
 import parser._
 
 /**

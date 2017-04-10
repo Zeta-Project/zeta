@@ -2,8 +2,10 @@ package generator.generators.style
 
 import generator.model.style._
 import generator.model.style.color.Transparent
-import generator.model.style.gradient.{ Gradient, HORIZONTAL }
-import java.nio.file.{ Paths, Files }
+import generator.model.style.gradient.Gradient
+import generator.model.style.gradient.HORIZONTAL
+import java.nio.file.Paths
+import java.nio.file.Files
 
 /**
  * The StyleGenerator object, responsible for generation of style.js

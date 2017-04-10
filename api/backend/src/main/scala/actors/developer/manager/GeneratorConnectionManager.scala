@@ -1,7 +1,9 @@
 package actors.developer.manager
 
 import actors.developer.WorkState
-import akka.actor.{ Actor, ActorLogging, Props }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
 import models.frontend._
 import models.worker._
 

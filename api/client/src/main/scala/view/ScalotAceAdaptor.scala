@@ -1,7 +1,12 @@
 package view
 
-import facade.{ Range, Document, Delta }
-import scalot.{ InsComp, DelComp, SkipComp, Operation }
+import facade.Range
+import facade.Document
+import facade.Delta
+import scalot.InsComp
+import scalot.DelComp
+import scalot.SkipComp
+import scalot.Operation
 
 import scala.scalajs.js
 

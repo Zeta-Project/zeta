@@ -3,7 +3,8 @@ package generator.generators.shape
 import java.util.UUID
 
 import scala.collection.mutable
-import generator.model.shapecontainer.shape.{ Compartment, Shape }
+import generator.model.shapecontainer.shape.Compartment
+import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
 

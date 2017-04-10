@@ -2,7 +2,8 @@ package generator.parser
 
 import generator.model.ClassHierarchy
 import generator.model.diagram.Diagram
-import generator.model.diagram.action.{ ActionGroup, Action }
+import generator.model.diagram.action.ActionGroup
+import generator.model.diagram.action.Action
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.style.Style

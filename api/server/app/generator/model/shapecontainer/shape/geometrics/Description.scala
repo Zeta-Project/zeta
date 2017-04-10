@@ -1,8 +1,10 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.geometrics.Alignment.{ VAlign, HAlign }
+import generator.model.shapecontainer.shape.geometrics.Alignment.VAlign
+import generator.model.shapecontainer.shape.geometrics.Alignment.HAlign
 import generator.model.style.Style
-import generator.parser.{ Cache, CommonParserMethods }
+import generator.parser.Cache
+import generator.parser.CommonParserMethods
 import parser._
 
 /**

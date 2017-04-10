@@ -3,12 +3,17 @@ package models.authenticators
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
-import com.mohiva.play.silhouette.api.{ ExpirableAuthenticator, Logger, LoginInfo, StorableAuthenticator }
-import com.mohiva.play.silhouette.api.crypto.{ AuthenticatorEncoder, CookieSigner }
+import com.mohiva.play.silhouette.api.ExpirableAuthenticator
+import com.mohiva.play.silhouette.api.Logger
+import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.StorableAuthenticator
+import com.mohiva.play.silhouette.api.crypto.AuthenticatorEncoder
+import com.mohiva.play.silhouette.api.crypto.CookieSigner
 import com.mohiva.play.silhouette.api.exceptions._
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService._
-import com.mohiva.play.silhouette.api.services.{ AuthenticatorResult, AuthenticatorService }
+import com.mohiva.play.silhouette.api.services.AuthenticatorResult
+import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.util.JsonFormats._
 import com.mohiva.play.silhouette.api.util._
 import models.User
@@ -20,9 +25,13 @@ import play.api.mvc._
 import models.session.Session
 
 import scala.concurrent.duration._
-import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.language.postfixOps
-import scala.util.{ Failure, Success, Try }
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 
 /**
  * An authenticator that uses a stateful as well as stateless, cookie based approach.

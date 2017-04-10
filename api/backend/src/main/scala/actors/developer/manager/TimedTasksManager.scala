@@ -1,7 +1,12 @@
 package actors.developer.manager
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Cancellable, Props }
-import models.document.{ Change, TimedTask }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Cancellable
+import akka.actor.Props
+import models.document.Change
+import models.document.TimedTask
 import models.worker.RunTimedTask
 import models.document._
 import scala.concurrent.duration._

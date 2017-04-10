@@ -1,6 +1,7 @@
 package controllers
 
-import play.api.mvc.{ Action, Controller }
+import play.api.mvc.Action
+import play.api.mvc.Controller
 
 class DynamicFileController extends Controller {
   val basePath = System.getenv("PWD") + "/server/model_specific/"

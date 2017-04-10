@@ -1,8 +1,10 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.geometrics.layouts.{ LineLayoutParser, LineLayout }
+import generator.model.shapecontainer.shape.geometrics.layouts.LineLayoutParser
+import generator.model.shapecontainer.shape.geometrics.layouts.LineLayout
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel }
+import generator.parser.Cache
+import generator.parser.GeoModel
 
 /**
  * Created by julian on 15.10.15.

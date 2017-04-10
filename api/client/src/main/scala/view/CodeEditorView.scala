@@ -1,6 +1,7 @@
 package view
 
-import controller.{ CodeEditorController, ModeController }
+import controller.CodeEditorController
+import controller.ModeController
 import facade._
 import org.scalajs.dom
 import scalot._

@@ -4,7 +4,8 @@ import models.document._
 import play.api.libs.json._
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.reflect._
 
 object CachedRepository {
@@ -18,7 +19,8 @@ object CachedRepository {
  */
 class CachedRepository(remote: Repository) extends Repository with Cache {
   import scala.concurrent.ExecutionContext.Implicits.global
-  import com.github.blemale.scaffeine.{ Cache, Scaffeine }
+  import com.github.blemale.scaffeine.Cache
+  import com.github.blemale.scaffeine.Scaffeine
   import scala.concurrent.duration._
 
   val cache: Cache[String, Document] =

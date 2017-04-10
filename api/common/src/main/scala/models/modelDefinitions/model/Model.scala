@@ -6,7 +6,7 @@ import models.modelDefinitions.model.elements.ModelWrites._
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
-import scala.collection.immutable.{ Map, _ }
+import scala.collection.immutable.Map
 
 /**
  * Immutable container for model definitions

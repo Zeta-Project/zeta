@@ -2,18 +2,24 @@ package models.model
 
 import java.io.File
 
-import akka.actor.{ Actor, ActorRef, Props }
-import models.model.DataVisActor.{ MetamodelFailure, MetamodelLoaded }
+import akka.actor.Actor
+import akka.actor.ActorRef
+import akka.actor.Props
+import models.model.DataVisActor.MetamodelFailure
+import models.model.DataVisActor.MetamodelLoaded
 import models.model.ModelWsActor.DataVisInvalidError
 import play.api.Logger
-import play.api.libs.json.{ JsObject, Json }
-import shared.DiagramWSMessage.{ DataVisCodeMessage, DataVisScopeQuery }
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
+import shared.DiagramWSMessage.DataVisCodeMessage
+import shared.DiagramWSMessage.DataVisScopeQuery
 import util.MetamodelBuilder
 import util.datavis.domain.Conditional
 import util.datavis.generator.ListenersGenerator
 import util.datavis.parser.DataVisParsers
 import util.datavis.validator.ConstrainedDataVisValidator
-import util.domain.{ Metamodel, ObjectWithAttributes }
+import util.domain.Metamodel
+import util.domain.ObjectWithAttributes
 
 class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) extends Actor with DataVisParsers {
   val log = Logger(this getClass () getName ())

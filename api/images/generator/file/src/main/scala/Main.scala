@@ -1,11 +1,14 @@
 import generator._
 import models.document.{ Repository => Documents, _ }
-import models.file.{ File, Repository => Files }
-import models.modelDefinitions.model.elements.{ Edge, Node }
+import models.file.File
+import models.file.{ Repository => Files }
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.Node
 import models.remote.Remote
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class MyTransformer() extends Transformer {
   def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {

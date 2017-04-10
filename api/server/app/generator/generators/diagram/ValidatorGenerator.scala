@@ -3,9 +3,11 @@ package generator.generators.diagram
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import models.modelDefinitions.metaModel.elements.{ MLinkDef, MClass }
+import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MClass
 
-import scala.collection.mutable.{ HashMap, ListBuffer }
+import scala.collection.mutable.HashMap
+import scala.collection.mutable.ListBuffer
 
 /**
  * ValidatorGenerator is responsible for the creation of the String for validator.js

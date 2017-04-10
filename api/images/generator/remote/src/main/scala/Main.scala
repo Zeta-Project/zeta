@@ -1,11 +1,16 @@
-import generator.{ Success, _ }
+import generator._
 import models.document.{ Repository => Documents, _ }
-import models.file.{ File, Repository => Files }
+import models.file.File
+import models.file.{ Repository => Files }
 import models.remote.Remote
-import models.modelDefinitions.model.elements.{ Edge, Node }
-import rx.lang.scala.Notification.{ OnCompleted, OnError, OnNext }
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.Node
+import rx.lang.scala.Notification.OnCompleted
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 object Main extends Template[CreateOptions, RemoteOptions] {
   override def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {

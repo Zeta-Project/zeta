@@ -1,9 +1,12 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.{ Compartment }
-import generator.model.shapecontainer.shape.geometrics.layouts.{ CommonLayoutParser, RectangleEllipseLayout, CommonLayout }
+import generator.model.shapecontainer.shape.Compartment
+import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayoutParser
+import generator.model.shapecontainer.shape.geometrics.layouts.RectangleEllipseLayout
+import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel }
+import generator.parser.Cache
+import generator.parser.GeoModel
 
 /**
  * Created by julian on 19.10.15.

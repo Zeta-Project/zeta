@@ -2,12 +2,16 @@ package actors.developer
 
 import actors.developer.WorkState._
 import actors.worker.MasterWorkerProtocol._
-import akka.actor.{ ActorLogging, Props }
-import akka.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import akka.actor.ActorLogging
+import akka.actor.Props
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator
 import akka.persistence.PersistentActor
 import models.document._
 import scala.concurrent.duration._
-import models.frontend.{ CancelWorkByUser, JobInfo, JobInfoList }
+import models.frontend.CancelWorkByUser
+import models.frontend.JobInfo
+import models.frontend.JobInfoList
 import models.worker._
 
 object WorkQueue {

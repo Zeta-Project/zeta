@@ -7,7 +7,8 @@ import org.rogach.scallop.ScallopConf
 import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val id = opt[String](required = true)

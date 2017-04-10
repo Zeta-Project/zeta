@@ -1,7 +1,13 @@
 package controller
 
 import org.scalajs.dom
-import org.scalajs.dom.{ CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket, console, window }
+import org.scalajs.dom.CloseEvent
+import org.scalajs.dom.ErrorEvent
+import org.scalajs.dom.Event
+import org.scalajs.dom.MessageEvent
+import org.scalajs.dom.WebSocket
+import org.scalajs.dom.console
+import org.scalajs.dom.window
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage._
 import upickle.default._

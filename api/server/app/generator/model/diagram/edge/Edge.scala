@@ -1,10 +1,17 @@
 package generator.model.diagram.edge
 
-import generator.model.diagram.action.{ ActionInclude, Action, Actions }
-import generator.model.diagram.methodes.{ OnDelete, OnUpdate, OnCreate, Methodes }
-import generator.model.diagram.traits.{ Container, Palette }
+import generator.model.diagram.action.ActionInclude
+import generator.model.diagram.action.Action
+import generator.model.diagram.action.Actions
+import generator.model.diagram.methodes.OnDelete
+import generator.model.diagram.methodes.OnUpdate
+import generator.model.diagram.methodes.OnCreate
+import generator.model.diagram.methodes.Methodes
+import generator.model.diagram.traits.Container
+import generator.model.diagram.traits.Palette
 import generator.model.style.Style
-import models.modelDefinitions.metaModel.elements.{ MClass, MReference }
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 
 /**
  * Created by julian on 30.11.15.

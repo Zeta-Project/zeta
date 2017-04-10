@@ -2,10 +2,12 @@ package models.file.http
 
 import models.document.Document
 import models.file._
-import play.api.libs.ws.{ WSClient, WSRequest }
+import play.api.libs.ws.WSClient
+import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 object HttpRepository {
   def apply(session: String)(implicit client: WSClient): HttpRepository = new HttpRepository(session)

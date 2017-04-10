@@ -1,6 +1,9 @@
 package models.modelDefinitions.metaModel.elements
 
-import models.modelDefinitions.metaModel.elements.ScalarValue.{ MString, MInt, MDouble, MBool }
+import models.modelDefinitions.metaModel.elements.ScalarValue.MString
+import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
+import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
+import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
 import play.api.libs.json._
 
 /**

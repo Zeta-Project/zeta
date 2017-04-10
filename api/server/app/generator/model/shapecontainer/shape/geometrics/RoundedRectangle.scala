@@ -1,8 +1,10 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.geometrics.layouts.{ RoundedRectangleLayoutParser, RoundedRectangleLayout }
+import generator.model.shapecontainer.shape.geometrics.layouts.RoundedRectangleLayoutParser
+import generator.model.shapecontainer.shape.geometrics.layouts.RoundedRectangleLayout
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel }
+import generator.parser.Cache
+import generator.parser.GeoModel
 
 /**
  * Created by julian on 19.10.15.

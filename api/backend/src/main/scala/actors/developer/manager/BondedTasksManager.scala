@@ -1,13 +1,17 @@
 package actors.developer.manager
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import models.document._
 import models.frontend._
 import models.worker._
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 object BondedTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new BondedTasksManager(worker, repository))

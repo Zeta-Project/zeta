@@ -1,9 +1,9 @@
 package generator.generators.vr.diagram
 
 import generator.model.diagram.Diagram
-import generator.model.diagram.edge.{ Edge }
+import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import generator.model.shapecontainer.connection.{ Connection }
+import generator.model.shapecontainer.connection.Connection
 
 /**
  * Created by max on 12.11.16.

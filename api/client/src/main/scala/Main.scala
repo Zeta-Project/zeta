@@ -1,7 +1,7 @@
-
 package client
 
-import controller.{ ModeController, CodeEditorController }
+import controller.ModeController
+import controller.CodeEditorController
 import org.scalajs.dom
 import org.scalajs.jquery._
 

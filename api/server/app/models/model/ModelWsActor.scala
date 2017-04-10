@@ -1,13 +1,21 @@
 package models.model
 
-import akka.actor.{ Actor, ActorRef, Props }
+import akka.actor.Actor
+import akka.actor.ActorRef
+import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.{ Publish, Subscribe, SubscribeAck }
-import models.model.ModelWsActor.{ DataVisInvalidError, DataVisParseError }
+import akka.cluster.pubsub.DistributedPubSubMediator.Publish
+import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
+import akka.cluster.pubsub.DistributedPubSubMediator.SubscribeAck
+import models.model.ModelWsActor.DataVisInvalidError
+import models.model.ModelWsActor.DataVisParseError
 import play.api.Logger
 import shared.DiagramWSMessage
-import shared.DiagramWSMessage.{ DataVisCodeMessage, DataVisScopeQuery }
-import shared.DiagramWSOutMessage.{ DataVisError, DataVisScope, NewScriptFile }
+import shared.DiagramWSMessage.DataVisCodeMessage
+import shared.DiagramWSMessage.DataVisScopeQuery
+import shared.DiagramWSOutMessage.DataVisError
+import shared.DiagramWSOutMessage.DataVisScope
+import shared.DiagramWSOutMessage.NewScriptFile
 import upickle.default._
 
 class ModelWsActor(out: ActorRef, instanceId: String, graphType: String) extends Actor {

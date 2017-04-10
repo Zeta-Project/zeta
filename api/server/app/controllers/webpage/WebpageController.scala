@@ -11,11 +11,13 @@ import models.modelDefinitions.model.ModelShortInfo
 import play.api.Logger
 import play.api.libs.ws.WSClient
 import play.api.mvc.Controller
-import rx.lang.scala.Notification.{ OnError, OnNext }
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
 import utils.auth.DefaultEnv
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class WebpageController @Inject() (implicit ws: WSClient, silhouette: Silhouette[DefaultEnv]) extends Controller {
 

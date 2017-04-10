@@ -1,6 +1,7 @@
 package generator.generators.vr.diagram
 
-import java.nio.file.{ Files, Paths }
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge

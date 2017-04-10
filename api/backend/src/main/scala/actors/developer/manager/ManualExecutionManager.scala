@@ -1,10 +1,18 @@
 package actors.developer.manager
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import models.document._
-import models.document.{ Filter, Generator }
-import models.frontend.{ ExecuteFilterError, ExecuteGeneratorError, RunFilter, RunGenerator }
-import models.worker.{ RunFilterManually, RunGeneratorManually }
+import models.document.Filter
+import models.document.Generator
+import models.frontend.ExecuteFilterError
+import models.frontend.ExecuteGeneratorError
+import models.frontend.RunFilter
+import models.frontend.RunGenerator
+import models.worker.RunFilterManually
+import models.worker.RunGeneratorManually
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ManualExecutionManager {

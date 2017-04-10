@@ -6,12 +6,16 @@ import actors.developer.WorkQueue.JobCannotBeEnqueued
 import actors.developer.WorkState._
 import actors.developer.manager._
 import actors.worker.MasterWorkerProtocol._
-import akka.actor.{ Actor, ActorLogging, Props }
-import akka.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
 import models.document._
-import models.document.http.{ CachedRepository, HttpRepository }
+import models.document.http.CachedRepository
+import models.document.http.HttpRepository
 import models.frontend._
 import models.session.SyncGatewaySession
 import models.worker._
@@ -47,7 +51,7 @@ class Mediator() extends Actor with ActorLogging {
   val ttl = 3600
 
   import context.dispatcher
-  import DistributedPubSubMediator.{ Subscribe }
+  import DistributedPubSubMediator.Subscribe
   val mediator = DistributedPubSub(context.system).mediator
   val developerId = self.path.name
   mediator ! Subscribe(developerId, self)

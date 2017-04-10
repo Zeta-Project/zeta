@@ -3,20 +3,27 @@ package controllers.restApi
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.api.actions.{ SecuredRequest }
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import models.User
-import models.document.{ MetaModelEntity, _ }
+import models.document.AllMetaModels
+import models.document.MetaModelEntity
+import models.document.Repository
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.elements.MCoreWrites._
 import models.modelDefinitions.metaModel._
-import models.modelDefinitions.metaModel.elements.{ MClass, MReference }
-import play.api.libs.json.{ JsError, Json }
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
+import play.api.libs.json.JsError
+import play.api.libs.json.Json
 import play.api.mvc._
-import rx.lang.scala.Notification.{ OnError, OnNext }
-import utils.auth.{ DefaultEnv, RepositoryFactory }
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 /**
  * RESTful API for metamodel definitions

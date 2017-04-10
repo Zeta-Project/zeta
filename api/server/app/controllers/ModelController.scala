@@ -4,14 +4,20 @@ import javax.inject.Inject
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
-import com.mohiva.play.silhouette.api.{ HandlerResult, Silhouette }
+import com.mohiva.play.silhouette.api.HandlerResult
+import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import models.document.{ ModelEntity, Repository }
+import models.document.ModelEntity
+import models.document.Repository
 import models.model.ModelWsActor
 import play.api.Logger
 import play.api.libs.streams.ActorFlow
-import play.api.mvc.{ AnyContentAsEmpty, Controller, Request, WebSocket }
-import utils.auth.{ DefaultEnv, RepositoryFactory }
+import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.Controller
+import play.api.mvc.Request
+import play.api.mvc.WebSocket
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

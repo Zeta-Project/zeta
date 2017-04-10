@@ -1,9 +1,12 @@
 import generator.model.diagram.Diagram
-import generator.model.diagram.action.{ Action, ActionGroup }
+import generator.model.diagram.action.Action
+import generator.model.diagram.action.ActionGroup
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.style.Style
-import generator.parser.{ ConnectionSketch, ShapeSketch, Cache }
+import generator.parser.ConnectionSketch
+import generator.parser.ShapeSketch
+import generator.parser.Cache
 
 /**
  * Created by julian on 06.01.16.

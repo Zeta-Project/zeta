@@ -7,7 +7,8 @@ import scalot._
 import shared.CodeEditorMessage._
 import view.CodeEditorView
 import org.scalajs.dom.console
-import scalot.ClientFSM.{ Apply, NoOp }
+import scalot.ClientFSM.Apply
+import scalot.ClientFSM.NoOp
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal

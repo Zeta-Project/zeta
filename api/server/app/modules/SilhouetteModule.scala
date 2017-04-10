@@ -1,31 +1,45 @@
 package modules
 
 import com.google.inject.name.Named
-import com.google.inject.{ AbstractModule, Guice, Provides }
-import com.mohiva.play.silhouette.api.actions.{ SecuredErrorHandler, UnsecuredErrorHandler }
+import com.google.inject.AbstractModule
+import com.google.inject.Guice
+import com.google.inject.Provides
+import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
+import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
 import com.mohiva.play.silhouette.api.crypto._
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services._
 import com.mohiva.play.silhouette.api.util._
-import com.mohiva.play.silhouette.api.{ Environment, EventBus, Silhouette, SilhouetteProvider }
-import com.mohiva.play.silhouette.crypto.{ JcaCookieSigner, JcaCookieSignerSettings, JcaCrypter, JcaCrypterSettings }
+import com.mohiva.play.silhouette.api.Environment
+import com.mohiva.play.silhouette.api.EventBus
+import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.SilhouetteProvider
+import com.mohiva.play.silhouette.crypto.JcaCookieSigner
+import com.mohiva.play.silhouette.crypto.JcaCookieSignerSettings
+import com.mohiva.play.silhouette.crypto.JcaCrypter
+import com.mohiva.play.silhouette.crypto.JcaCrypterSettings
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.providers.oauth1._
-import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.{ CookieSecretProvider, CookieSecretSettings }
+import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretProvider
+import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretSettings
 import com.mohiva.play.silhouette.impl.providers.oauth1.services.PlayOAuth1Service
 import com.mohiva.play.silhouette.impl.providers.oauth2._
-import com.mohiva.play.silhouette.impl.providers.oauth2.state.{ CookieStateProvider, CookieStateSettings, DummyStateProvider }
+import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateProvider
+import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateSettings
+import com.mohiva.play.silhouette.impl.providers.oauth2.state.DummyStateProvider
 import com.mohiva.play.silhouette.impl.providers.openid.YahooProvider
 import com.mohiva.play.silhouette.impl.providers.openid.services.PlayOpenIDService
 import com.mohiva.play.silhouette.impl.services._
 import com.mohiva.play.silhouette.impl.util._
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
-import com.mohiva.play.silhouette.persistence.daos.{ DelegableAuthInfoDAO, InMemoryAuthInfoDAO }
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import models.authenticators._
 import models.daos._
-import models.services.{ UserService, UserServiceImpl }
+import models.services.UserService
+import models.services.UserServiceImpl
 import models.session.Session
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
@@ -34,7 +48,9 @@ import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.openid.OpenIdClient
 import play.api.libs.ws.WSClient
-import utils.auth.{ CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv }
+import utils.auth.CustomSecuredErrorHandler
+import utils.auth.CustomUnsecuredErrorHandler
+import utils.auth.DefaultEnv
 import play.api.libs.ws._
 
 /**
@@ -51,7 +67,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[UserService].to[UserServiceImpl]
     bind[UserDAO].to[SGUserDAO]
-    //bind[UserDAO].to[UserDAOImpl]
     bind[CacheLayer].to[PlayCacheLayer]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)

@@ -3,7 +3,8 @@ package generator.model.diagram
 import generator.model.diagram.action.ActionGroup
 import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
-import generator.model.style.{ HasStyle, Style }
+import generator.model.style.HasStyle
+import generator.model.style.Style
 import generator.parser.Cache
 import models.document.MetaModelEntity
 

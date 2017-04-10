@@ -6,7 +6,9 @@ import generator.model.shapecontainer.shape.anchor.Anchor
 import generator.model.shapecontainer.shape.anchor.Anchor.AnchorType
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.Style
-import generator.parser.{ Cache, CommonParserMethods, GeoModel }
+import generator.parser.Cache
+import generator.parser.CommonParserMethods
+import generator.parser.GeoModel
 import parser._
 
 /**

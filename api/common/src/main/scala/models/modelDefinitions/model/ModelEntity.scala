@@ -3,8 +3,11 @@ package models.modelDefinitions.model
 import java.time.Instant
 
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.{ Dsl, MetaModel, MetaModelEntity }
-import models.modelDefinitions.model.elements.{ ModelElement, ModelReads }
+import models.modelDefinitions.metaModel.Dsl
+import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.MetaModelEntity
+import models.modelDefinitions.model.elements.ModelElement
+import models.modelDefinitions.model.elements.ModelReads
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 

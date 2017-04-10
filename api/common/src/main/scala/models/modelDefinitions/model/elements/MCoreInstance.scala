@@ -1,6 +1,8 @@
 package models.modelDefinitions.model.elements
 
-import models.modelDefinitions.metaModel.elements.{ AttributeValue, MClass, MReference }
+import models.modelDefinitions.metaModel.elements.AttributeValue
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 
 import scala.collection.immutable.Seq
 import scala.reflect.ClassTag

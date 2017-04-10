@@ -1,6 +1,6 @@
 package models.worker
 
-import java.util.{ Objects }
+import java.util.Objects
 import julienrf.json.derived
 import play.api.libs.json._
 

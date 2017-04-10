@@ -1,7 +1,11 @@
 package actors.common
 
-import akka.actor.{ Actor, ActorLogging, Address, Props }
-import akka.cluster.{ Cluster, ClusterEvent }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Address
+import akka.actor.Props
+import akka.cluster.Cluster
+import akka.cluster.ClusterEvent
 
 object ClusterListener {
   def props(): Props = Props(new ClusterListener())

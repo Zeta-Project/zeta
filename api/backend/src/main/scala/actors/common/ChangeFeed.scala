@@ -1,9 +1,15 @@
 package actors.common
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import com.neovisionaries.ws.client._
 import models.document._
-import play.api.libs.json.{ JsError, JsSuccess, Json, Reads }
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
 
 /**
  * Configuration to connect to the Sync Gateway

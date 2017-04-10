@@ -1,9 +1,11 @@
 package generator.model.shapecontainer.connection
 
 import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics.{ Text, GeometricModel }
+import generator.model.shapecontainer.shape.geometrics.Text
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
 import generator.model.style.Style
-import generator.parser.{ PlacingSketch, CommonParserMethods }
+import generator.parser.PlacingSketch
+import generator.parser.CommonParserMethods
 
 /**
  * Created by julian on 20.10.15.

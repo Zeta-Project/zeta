@@ -1,6 +1,7 @@
 package generator.generators.diagram
 
-import java.nio.file.{ Paths, Files }
+import java.nio.file.Paths
+import java.nio.file.Files
 import generator.model.diagram.Diagram
 
 /**

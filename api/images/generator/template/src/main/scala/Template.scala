@@ -5,16 +5,21 @@ import models.document.http.{ HttpRepository => DocumentRepository }
 import models.file.{ Repository => Files, _ }
 import models.file.http.{ HttpRepository => FileRepository }
 import org.rogach.scallop.ScallopConf
-import play.api.libs.json.{ JsError, JsSuccess }
-import play.api.libs.json.{ Json, Reads }
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
 
 import scala.concurrent.duration._
-import scala.concurrent.{ Await, Future, Promise }
+import scala.concurrent.Await
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.reflect.ClassTag
 import scala.reflect.runtime._
 import scala.tools.reflect.ToolBox
 import generator._
-import models.remote.{ Remote, RemoteGenerator }
+import models.remote.Remote
+import models.remote.RemoteGenerator
 import models.session.SyncGatewaySession
 import play.api.libs.ws.ahc.AhcWSClient
 

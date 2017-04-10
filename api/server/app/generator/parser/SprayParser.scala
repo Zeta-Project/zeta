@@ -1,16 +1,23 @@
 package generator.parser
 
-import generator.model.diagram.action.{ Action, ActionGroup, ActionInclude }
+import generator.model.diagram.action.Action
+import generator.model.diagram.action.ActionGroup
+import generator.model.diagram.action.ActionInclude
 import generator.model.diagram.edge.Edge
-import generator.model.diagram.methodes.{ ActionBlock, OnCreate, OnDelete, OnUpdate }
-import generator.model.diagram.node.{ DiaShape, Node }
+import generator.model.diagram.methodes.ActionBlock
+import generator.model.diagram.methodes.OnCreate
+import generator.model.diagram.methodes.OnDelete
+import generator.model.diagram.methodes.OnUpdate
+import generator.model.diagram.node.DiaShape
+import generator.model.diagram.node.Node
 import generator.model.diagram.Diagram
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.Style
 import models.document.MetaModelEntity
-import models.modelDefinitions.metaModel.elements.{ MClass, MReference }
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 import parser._
 
 /**

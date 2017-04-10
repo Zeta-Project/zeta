@@ -1,8 +1,14 @@
 package cluster
 
-import akka.actor.{ ActorPath, ActorRef, ActorSystem, AddressFromURIString, RootActorPath }
-import akka.cluster.client.{ ClusterClient, ClusterClientSettings }
-import com.typesafe.config.{ Config, ConfigFactory }
+import akka.actor.ActorPath
+import akka.actor.ActorRef
+import akka.actor.ActorSystem
+import akka.actor.AddressFromURIString
+import akka.actor.RootActorPath
+import akka.cluster.client.ClusterClient
+import akka.cluster.client.ClusterClientSettings
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 
 /**
  * Created by user on 9/28/16.

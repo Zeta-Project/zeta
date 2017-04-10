@@ -2,8 +2,14 @@ package actors.image
 
 import java.util.concurrent.Executors
 
-import actors.common.{ ChangeFeed, Channel, Configuration, Images }
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import actors.common.ChangeFeed
+import actors.common.Channel
+import actors.common.Configuration
+import actors.common.Images
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import models.document._
 
 import scala.concurrent.ExecutionContext

@@ -1,7 +1,8 @@
 package generator.generators.shape
 
 import generator.generators.style.StyleGenerator
-import generator.model.shapecontainer.connection.{ Connection, Placing }
+import generator.model.shapecontainer.connection.Connection
+import generator.model.shapecontainer.connection.Placing
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.HasStyle
 

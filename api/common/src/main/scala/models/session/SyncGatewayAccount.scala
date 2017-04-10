@@ -4,7 +4,8 @@ import java.util.UUID
 import play.api.libs.json._
 import play.api.libs.ws.WSClient
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 /**
  * A Sync Gateway user account.

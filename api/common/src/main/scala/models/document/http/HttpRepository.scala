@@ -2,11 +2,15 @@ package models.document.http
 
 import models.document._
 import models.modelDefinitions.model.Model
-import play.api.libs.json.{ Json, _ }
-import play.api.libs.ws.{ WSAuthScheme, WSClient, WSRequest }
+import play.api.libs.json._
+import play.api.libs.ws.WSAuthScheme
+import play.api.libs.ws.WSClient
+import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Await, Future, Promise }
+import scala.concurrent.Await
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.reflect._
 
 object HttpRepository {

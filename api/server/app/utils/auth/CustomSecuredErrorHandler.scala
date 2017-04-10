@@ -3,7 +3,9 @@ package utils.auth
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
-import play.api.i18n.{ MessagesApi, I18nSupport, Messages }
+import play.api.i18n.MessagesApi
+import play.api.i18n.I18nSupport
+import play.api.i18n.Messages
 import play.api.mvc.RequestHeader
 import play.api.mvc.Results._
 

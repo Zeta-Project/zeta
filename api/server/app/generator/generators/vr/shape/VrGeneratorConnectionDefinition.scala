@@ -1,8 +1,10 @@
 package generator.generators.vr.shape
 
-import java.nio.file.{ Files, Paths }
+import java.nio.file.Files
+import java.nio.file.Paths
 
-import generator.model.shapecontainer.connection.{ Connection, Placing }
+import generator.model.shapecontainer.connection.Connection
+import generator.model.shapecontainer.connection.Placing
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.DASH
 

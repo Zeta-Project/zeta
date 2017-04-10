@@ -10,10 +10,14 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers._
 import forms.SignUpForm
 import models.User
-import models.services.{ AuthTokenService, UserService }
-import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
+import models.services.AuthTokenService
+import models.services.UserService
+import play.api.i18n.I18nSupport
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.mailer.{ Email, MailerClient }
+import play.api.libs.mailer.Email
+import play.api.libs.mailer.MailerClient
 import play.api.mvc.Controller
 import utils.auth.DefaultEnv
 

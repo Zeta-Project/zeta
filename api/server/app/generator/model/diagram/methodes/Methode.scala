@@ -1,6 +1,7 @@
 package generator.model.diagram.methodes
 
-import generator.model.diagram.action.{ ActionGroup, Action }
+import generator.model.diagram.action.ActionGroup
+import generator.model.diagram.action.Action
 
 /**
  * Created by julian on 08.12.15.

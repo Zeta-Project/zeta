@@ -1,6 +1,7 @@
 package modules
 
-import jobs.{ AuthTokenCleaner, Scheduler }
+import jobs.AuthTokenCleaner
+import jobs.Scheduler
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
 

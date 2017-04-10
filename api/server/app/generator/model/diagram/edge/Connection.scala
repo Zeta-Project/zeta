@@ -1,7 +1,9 @@
 package generator.model.diagram.edge
 
 import generator.model.style.Style
-import generator.parser.{ Cache, ConnectionSketch, PropsAndComps }
+import generator.parser.Cache
+import generator.parser.ConnectionSketch
+import generator.parser.PropsAndComps
 import models.modelDefinitions.metaModel.elements.MReference
 import parser._
 

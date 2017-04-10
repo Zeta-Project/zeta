@@ -1,6 +1,7 @@
 import generator._
 import models.document.{ Repository => Documents, _ }
-import models.file.{ File, Repository => Files }
+import models.file.File
+import models.file.{ Repository => Files }
 import models.remote.Remote
 
 import scala.concurrent.ExecutionContext.Implicits.global

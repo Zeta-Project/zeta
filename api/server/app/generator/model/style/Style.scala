@@ -2,8 +2,11 @@ package generator.model.style
 
 import generator.model.ClassHierarchy
 import generator.model.style.color._
-import generator.model.style.gradient.{ GradientColorArea, Gradient, GradientAlignment }
-import generator.parser.{ Cache, CommonParserMethods }
+import generator.model.style.gradient.GradientColorArea
+import generator.model.style.gradient.Gradient
+import generator.model.style.gradient.GradientAlignment
+import generator.parser.Cache
+import generator.parser.CommonParserMethods
 import parser._
 
 sealed class Style private (

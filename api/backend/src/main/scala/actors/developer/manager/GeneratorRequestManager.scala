@@ -1,9 +1,14 @@
 package actors.developer.manager
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
-import models.document.{ Generator, GeneratorImage, Repository }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.Repository
 import models.frontend._
-import models.worker.{ RunGeneratorFromGeneratorJob }
+import models.worker.RunGeneratorFromGeneratorJob
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object GeneratorRequestManager {

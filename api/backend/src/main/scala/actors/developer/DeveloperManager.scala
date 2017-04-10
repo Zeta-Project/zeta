@@ -1,10 +1,17 @@
 package actors.developer
 
-import actors.common.{ ChangeFeed, Channel, Configuration, Developers }
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import actors.common.ChangeFeed
+import actors.common.Channel
+import actors.common.Configuration
+import actors.common.Developers
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import akka.cluster.sharding.ClusterSharding
 import models.document._
-import models.frontend.{ Init, MessageEnvelope }
+import models.frontend.Init
+import models.frontend.MessageEnvelope
 
 object DeveloperManager {
   def props() = Props(new DeveloperManager())

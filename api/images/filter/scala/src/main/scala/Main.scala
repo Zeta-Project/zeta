@@ -11,7 +11,8 @@ import rx.lang.scala.Observable
 
 import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val filter = opt[String](required = true)

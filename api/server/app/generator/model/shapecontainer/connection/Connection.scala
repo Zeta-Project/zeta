@@ -3,7 +3,9 @@ package generator.model.shapecontainer.connection
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-import generator.parser.{ Cache, PlacingSketch, CommonParserMethods }
+import generator.parser.Cache
+import generator.parser.PlacingSketch
+import generator.parser.CommonParserMethods
 import parser._
 
 /**

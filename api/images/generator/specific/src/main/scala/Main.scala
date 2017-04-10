@@ -1,11 +1,13 @@
 import generator._
 import models.document.{ Repository => Documents, _ }
-import models.file.{ File, Repository => Files }
-import models.modelDefinitions.metaModel.elements.{ MClass, MReference }
+import models.file.File
+import models.file.{ Repository => Files }
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 import models.remote.Remote
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future }
+import scala.concurrent.Future
 
 object Main extends Template[CreateOptions, String] {
   val sep = "\n"

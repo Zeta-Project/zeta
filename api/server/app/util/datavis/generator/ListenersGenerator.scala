@@ -1,6 +1,7 @@
 package util.datavis.generator
 
-import java.io.{ File, FileWriter }
+import java.io.File
+import java.io.FileWriter
 
 import util.datavis.domain._
 

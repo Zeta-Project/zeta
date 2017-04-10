@@ -1,5 +1,5 @@
 import cluster.ClusterManager
-import com.typesafe.config.{ ConfigFactory }
+import com.typesafe.config.ConfigFactory
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.guice._

@@ -6,7 +6,8 @@ import com.mohiva.play.silhouette.api.util.PasswordInfo
 import julienrf.json.derived
 import models.User
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.{ Dsl, MetaModel }
+import models.modelDefinitions.metaModel.Dsl
+import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.Model
 import models.worker._
 import org.joda.time._

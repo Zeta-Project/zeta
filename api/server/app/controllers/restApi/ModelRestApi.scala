@@ -7,15 +7,19 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import models.User
 import models.document._
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.model.elements.{ Edge, Node }
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.Model
 import play.api.libs.json._
 import play.api.mvc._
 import models.modelDefinitions.model.elements.ModelWrites._
-import rx.lang.scala.Notification.{ OnError, OnNext }
-import utils.auth.{ DefaultEnv, RepositoryFactory }
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scalaoauth2.provider.OAuth2ProviderActionBuilders._
 
 /**

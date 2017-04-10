@@ -1,18 +1,29 @@
-import actors.developer.{ DeveloperManager, Mediator }
+import actors.developer.DeveloperManager
+import actors.developer.Mediator
 import actors.frontend.DeveloperDummy
 import actors.master.Master
-import actors.worker.{ DockerWorkExecutor, Worker }
-import akka.actor.{ ActorIdentity, ActorPath, ActorSystem, Identify, PoisonPill, Props }
-import akka.cluster.sharding.{ ClusterSharding, ClusterShardingSettings }
-import akka.cluster.singleton.{ ClusterSingletonManager, ClusterSingletonManagerSettings }
-import akka.persistence.journal.leveldb.{ SharedLeveldbJournal, SharedLeveldbStore }
+import actors.worker.DockerWorkExecutor
+import actors.worker.Worker
+import akka.actor.ActorIdentity
+import akka.actor.ActorPath
+import akka.actor.ActorSystem
+import akka.actor.Identify
+import akka.actor.PoisonPill
+import akka.actor.Props
+import akka.cluster.sharding.ClusterSharding
+import akka.cluster.sharding.ClusterShardingSettings
+import akka.cluster.singleton.ClusterSingletonManager
+import akka.cluster.singleton.ClusterSingletonManagerSettings
+import akka.persistence.journal.leveldb.SharedLeveldbJournal
+import akka.persistence.journal.leveldb.SharedLeveldbStore
 import akka.util.Timeout
 import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import cluster.ClusterManager
 import com.typesafe.config.ConfigFactory
 import models.session.SyncGatewaySession
-import org.rogach.scallop.{ ScallopConf, ScallopOption }
+import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 

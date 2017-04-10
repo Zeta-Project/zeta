@@ -1,9 +1,12 @@
 package generator.model.shapecontainer.shape.geometrics.layouts
 
 import generator.model.shapecontainer.shape.geometrics.Alignment
-import generator.model.shapecontainer.shape.geometrics.Alignment.{ VAlign, HAlign }
+import generator.model.shapecontainer.shape.geometrics.Alignment.VAlign
+import generator.model.shapecontainer.shape.geometrics.Alignment.HAlign
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel, CommonParserMethods }
+import generator.parser.Cache
+import generator.parser.GeoModel
+import generator.parser.CommonParserMethods
 import parser._
 /**
  * Created by julian on 20.10.15.

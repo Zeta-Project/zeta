@@ -1,13 +1,18 @@
 package actors.developer.manager
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import models.document._
-import models.frontend.{ ModelChanged, SavedModel }
+import models.frontend.ModelChanged
+import models.frontend.SavedModel
 import models.worker.RunEventDrivenTask
 import rx.lang.scala.Observable
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 object EventDrivenTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new EventDrivenTasksManager(worker, repository))

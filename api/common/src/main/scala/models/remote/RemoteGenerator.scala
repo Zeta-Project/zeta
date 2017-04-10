@@ -1,11 +1,13 @@
 package models.remote
+
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 import com.neovisionaries.ws.client._
 import models.frontend._
-import play.api.libs.json.{ Json, _ }
-import rx.lang.scala.{ Observable, Subject }
+import play.api.libs.json._
+import rx.lang.scala.Observable
+import rx.lang.scala.Subject
 
 object RemoteGenerator {
   def apply(session: String, work: String, parent: Option[String] = None, key: Option[String] = None): Remote = new RemoteGenerator(session, work, parent, key)

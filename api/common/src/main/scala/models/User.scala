@@ -2,7 +2,8 @@ package models
 
 import java.util.UUID
 
-import com.mohiva.play.silhouette.api.{ Identity, LoginInfo }
+import com.mohiva.play.silhouette.api.Identity
+import com.mohiva.play.silhouette.api.LoginInfo
 import org.apache.commons.codec.binary.Hex
 import play.api.libs.json.Json
 

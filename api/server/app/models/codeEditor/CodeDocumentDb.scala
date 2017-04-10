@@ -4,8 +4,9 @@ import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.casbah.commons.MongoDBObject
-import com.novus.salat.{ Context, _ }
-import play.api.{ Logger, Play }
+import com.novus.salat._
+import play.api.Logger
+import play.api.Play
 
 /** Represents a Serverside CodeDocument which is stored in the Database */
 case class DbCodeDocument(docId: String, dslType: String, metaModelUuid: String, doc: scalot.Server)

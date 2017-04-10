@@ -1,16 +1,21 @@
 package controllers
 
-import akka.actor.{ ActorRef, ActorSystem }
+import akka.actor.ActorRef
+import akka.actor.ActorSystem
 import javax.inject._
 
 import actors.developer.Mediator
-import actors.frontend.{ DeveloperFrontend, GeneratorFrontend, UserFrontend }
+import actors.frontend.DeveloperFrontend
+import actors.frontend.GeneratorFrontend
+import actors.frontend.UserFrontend
 import akka.cluster.sharding.ClusterSharding
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import com.mohiva.play.silhouette.api.{ HandlerResult, Silhouette }
+import com.mohiva.play.silhouette.api.HandlerResult
+import com.mohiva.play.silhouette.api.Silhouette
 import models.User
-import models.document.{ ModelEntity, Repository }
+import models.document.ModelEntity
+import models.document.Repository
 import models.frontend._
 import models.session.Session
 import play.api.libs.streams.ActorFlow
@@ -18,9 +23,11 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.mvc._
-import utils.auth.{ DefaultEnv, RepositoryFactory }
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class BackendController @Inject() (
     implicit system: ActorSystem,

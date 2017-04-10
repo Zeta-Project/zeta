@@ -3,9 +3,12 @@ package generator.model.diagram.node
 import generator.model.shapecontainer.shape.Compartment
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-import generator.parser.{ Cache, ShapeSketch }
+import generator.parser.Cache
+import generator.parser.ShapeSketch
 import models.document.MetaModelEntity
-import models.modelDefinitions.metaModel.elements.{ MAttribute, MClass, MReference }
+import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 import parser._
 
 /**

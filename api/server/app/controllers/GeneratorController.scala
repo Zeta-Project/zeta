@@ -2,21 +2,25 @@ package controllers
 
 import javax.inject.Inject
 
-import generator.parser.{ Cache, SprayParser }
+import generator.parser.Cache
+import generator.parser.SprayParser
 import generator.generators.diagram.DiagramGenerator
 import generator.generators.style.StyleGenerator
 import generator.generators.shape.ShapeGenerator
 import generator.generators.vr.shape.VrShapeGenerator
-import java.nio.file.{ Files, Paths }
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import generator.generators.vr.diagram.VrDiagramGenerator
 import generator.model.diagram.Diagram
-import models.document.{ MetaModelEntity, Repository }
+import models.document.MetaModelEntity
+import models.document.Repository
 import play.api.mvc.Controller
-import utils.auth.{ DefaultEnv, RepositoryFactory }
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
 
 class GeneratorController @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
