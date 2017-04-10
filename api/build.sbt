@@ -1,9 +1,5 @@
 import sbt.Project.projectToRef
 
-import com.typesafe.sbt.SbtScalariform._
-
-import scalariform.formatter.preferences._
-
 name := "zeta-api"
 
 version := "1.0.0"
@@ -111,19 +107,6 @@ lazy val server = baseProject("server", file("server")).settings(
     "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion
   )
 ).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend)
-
-
-//********************************************************
-// Scalariform settings
-//********************************************************
-
-defaultScalariformSettings
-
-ScalariformKeys.preferences := ScalariformKeys.preferences.value
-  .setPreference(FormatXml, false)
-  .setPreference(DoubleIndentClassDeclaration, false)
-  .setPreference(DanglingCloseParenthesis, Preserve)
-
 
 lazy val client = baseProject("client", file("client")).settings(
   fork := false,

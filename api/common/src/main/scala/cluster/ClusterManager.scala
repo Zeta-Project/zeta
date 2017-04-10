@@ -39,17 +39,17 @@ object ClusterManager {
 
     val formattedRoles = roles.mkString(",")
 
-    val content = s"""akka.cluster.roles = [ $formattedRoles ]
-                     |akka.remote.netty.tcp.port=${port}
-                     |akka.remote.netty.tcp.hostname=${HostIP.load()}
-                     |${formattedSeeds}""".stripMargin
+    val content = s"""akka.cluster.roles = [ ${formattedRoles} ]
+      |akka.remote.netty.tcp.port=${port}
+      |akka.remote.netty.tcp.hostname=${HostIP.load()}
+      |${formattedSeeds}""".stripMargin
+
     ConfigFactory.parseString(content).resolve()
   }
 
   def getLocalConfig(port: Int): Config = {
     val content = s"""akka.remote.netty.tcp.port=${port}
-                      |akka.remote.netty.tcp.hostname=${HostIP.load()}
-     """.stripMargin
+      |akka.remote.netty.tcp.hostname=${HostIP.load()}""".stripMargin
 
     ConfigFactory.parseString(content).withFallback(ConfigFactory.load("worker"))
   }

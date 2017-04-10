@@ -10,11 +10,11 @@ import parser._
  * representation of a description
  */
 sealed class Description private (
-  override val id: String,
-  val style: Option[Style],
-  val hAlign: Option[HAlign],
-  val vAlign: Option[VAlign]
-) extends TextBody
+    override val id: String,
+    val style: Option[Style],
+    val hAlign: Option[HAlign],
+    val vAlign: Option[VAlign])
+  extends TextBody
 
 object Description extends CommonParserMethods {
 

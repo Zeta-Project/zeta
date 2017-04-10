@@ -11,17 +11,17 @@ import models.modelDefinitions.metaModel.elements.{ MReference, MClass }
  * representation of a node
  */
 case class Node(
-  name: String,
-  mcoreElement: MClass,
-  style: Option[Style] = None,
-  /*node-block*/
-  shape: Option[DiaShape] = None,
-  override val palette: Option[String] = None,
-  override val container: Option[MReference] = None,
-  override val onCreate: Option[OnCreate] = None,
-  override val onUpdate: Option[OnUpdate] = None,
-  override val onDelete: Option[OnDelete] = None,
-  override val actions: List[Action] = List(),
-  override val actionIncludes: Option[ActionInclude] = None
-) extends Palette with Container with Methodes with Actions
+    name: String,
+    mcoreElement: MClass,
+    style: Option[Style] = None,
+    /*node-block*/
+    shape: Option[DiaShape] = None,
+    override val palette: Option[String] = None,
+    override val container: Option[MReference] = None,
+    override val onCreate: Option[OnCreate] = None,
+    override val onUpdate: Option[OnUpdate] = None,
+    override val onDelete: Option[OnDelete] = None,
+    override val actions: List[Action] = List(),
+    override val actionIncludes: Option[ActionInclude] = None)
+  extends Palette with Container with Methodes with Actions
 

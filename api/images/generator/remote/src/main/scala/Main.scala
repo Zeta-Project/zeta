@@ -22,12 +22,12 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       val actorName = node.getAttribute[String]("name")
       val filename = s"${actorName}.scala"
       val content = s"""
-      |class ${actorName}() extends Actor {
-      |   def receive = {
-      |
-      |   }
-      | }
-     """
+        |class ${actorName}() extends Actor {
+        |   def receive = {
+        |
+        |   }
+        | }
+        """
 
       File(filename, content)
     }

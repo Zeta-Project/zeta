@@ -19,9 +19,9 @@ object GeneratorShapeDefinition {
   /** generates all JointJS shapes */
   def generate(shapes: Iterable[Shape], packageName: String) = {
     s"""
-       ${head(packageName)}
-       ${shapes.map(shape => generateShape(shape, packageName)).mkString("")}
-     """
+      ${head(packageName)}
+      ${shapes.map(shape => generateShape(shape, packageName)).mkString("")}
+    """
   }
 
   def head(packageName: String) = {
@@ -93,30 +93,34 @@ object GeneratorShapeDefinition {
     }
     s"""
       width: ${newWidth.asInstanceOf[Int]}, height: ${newHeight.asInstanceOf[Int]}
-     """
+    """
   }
 
   protected def getResizingPolicies(shape: Shape) = {
     s"""
-       horizontal: ${shape.stretching_horizontal.getOrElse("true")},
-       vertical: ${shape.stretching_vertical.getOrElse("true")},
-       proportional: ${shape.proportional.getOrElse("true")}
-     """
+      horizontal: ${shape.stretching_horizontal.getOrElse("true")},
+      vertical: ${shape.stretching_vertical.getOrElse("true")},
+      proportional: ${shape.proportional.getOrElse("true")}
+    """
   }
 
   def generateSizeProperties(shape: Shape): String = {
     s"""
-       ${
-      if (shape.size_height_max.isDefined && shape.size_width_max.isDefined) {
-        s"""'size-max': {height: ${shape.size_height_max.get}, width: ${shape.size_width_max.get}},"""
-      } else { "" }
-    }
-        ${
-      if (shape.size_height_min.isDefined && shape.size_width_min.isDefined) {
-        s"""'size-min': {height: ${shape.size_height_min.get}, width: ${shape.size_width_min.get}},"""
-      } else { "" }
-    }
-     """
+      ${
+        if (shape.size_height_max.isDefined && shape.size_width_max.isDefined) {
+          s"""'size-max': {height: ${shape.size_height_max.get}, width: ${shape.size_width_max.get}},"""
+        } else {
+          ""
+        }
+      }
+      ${
+        if (shape.size_height_min.isDefined && shape.size_width_min.isDefined) {
+          s"""'size-min': {height: ${shape.size_height_min.get}, width: ${shape.size_width_min.get}},"""
+        } else {
+          ""
+        }
+      }
+    """
   }
 
   /** generates the markup of the JointJS shape */
@@ -240,7 +244,7 @@ object GeneratorShapeDefinition {
             className: "$className",
             id: "${comp.compartment_id}"
           }
-         """
+        """
       case _ => ""
     }
     else List()
@@ -312,8 +316,8 @@ object GeneratorShapeDefinition {
 
   protected def generatePosition(shape: Rectangle) = {
     s"""
-       x: ${getX(shape)},
-       y: ${getY(shape)},
+      x: ${getX(shape)},
+      y: ${getY(shape)},
     """
   }
 

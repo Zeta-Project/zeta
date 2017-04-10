@@ -9,11 +9,11 @@ import generator.parser.{ Cache, GeoModel }
  * Representation of a simple Line
  */
 sealed class Line private (
-  parent: Option[GeometricModel] = None,
-  override val style: Option[Style] = None,
-  override val points: (Point, Point)
-)
-    extends GeometricModel(parent) with LineLayout {
+    parent: Option[GeometricModel] = None,
+    override val style: Option[Style] = None,
+    override val points: (Point, Point))
+  extends GeometricModel(parent) with LineLayout {
+
   def x1 = points._1.x
   def y1 = points._1.y
   def x2 = points._2.x

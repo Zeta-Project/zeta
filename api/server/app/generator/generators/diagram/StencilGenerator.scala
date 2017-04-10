@@ -24,8 +24,8 @@ object StencilGenerator {
   def generateHeader =
     """
     /*
-    * This is a generated stencil file for JointJS
-    */
+     * This is a generated stencil file for JointJS
+     */
     """
 
   def generateStencilGroups(diagram: Diagram) = {
@@ -45,28 +45,27 @@ object StencilGenerator {
       for (node <- diagram.nodes) yield {
         s"""
         var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
-      ${
-          if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
-            s"""mcoreAttributes: [
-                 {
-                    mcore: '${node.onCreate.get.askFor.get.name}',
-                    cellPath: ['attrs', '.label', 'text']
-                  }
-                ],"""
-          } else {
-            ""
+          ${
+            if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
+              s"""mcoreAttributes: [
+                {
+                  mcore: '${node.onCreate.get.askFor.get.name}',
+                  cellPath: ['attrs', '.label', 'text']
+                }
+              ],"""
+            } else {
+              ""
+            }
           }
-        }
-      nodeName: '${node.name}',
-      mClass: '${node.mcoreElement.name}',
-      mClassAttributeInfo: [${
-          node.mcoreElement.attributes.map(attr =>
-            s"""
-           { name: '${attr.name}', type: '${attr.`type`}'}
-         """).mkString(",")
-        }]
-    });
-    """
+          nodeName: '${node.name}',
+          mClass: '${node.mcoreElement.name}',
+          mClassAttributeInfo: [${
+            node.mcoreElement.attributes.map(
+              attr => s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
+            ).mkString(",")
+          }]
+        });
+        """
       }
     }.mkString
   }
@@ -75,11 +74,11 @@ object StencilGenerator {
     s"""
     Stencil.shapes = {
       ${
-      {
-        for (((key, value), i) <- mapping.zipWithIndex) yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
-       """
-      }.mkString(",")
-    }
+        {
+          for (((key, value), i) <- mapping.zipWithIndex) yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
+            """
+        }.mkString(",")
+      }
     };
     """
   }
@@ -88,42 +87,44 @@ object StencilGenerator {
     s"""
     ${getVarName(group)}: [
       ${
-      {
-        for (node <- nodes) yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
-         """
-      }.mkString
-    }
-      ]
+        {
+          for (node <- nodes) yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
+            """
+        }.mkString
+      }
+    ]
     """
   }
 
   def generateDocumentReadyFunction(diagram: Diagram) = {
-    """
-    $(document).ready(function() {""" + s"""
+    """$(document).ready(function() {""" + s"""
       ${
-      {
-        for (node <- diagram.nodes) yield s"""
-      ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
+        {
+          for (node <- diagram.nodes) yield s"""
+            ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
 
+            ${
+              {
+                for ((key, value) <- node.shape.get.vals) yield s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
+              }.mkString
+            }
+          """
+        }.mkString
+      }
       ${
-          {
-            for ((key, value) <- node.shape.get.vals) yield s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
-          }.mkString
-        }"""
-      }.mkString
-    }
-      ${
-      if (diagram.style isDefined) {
-        s"""
-          var style = document.createElement('style');
-          style.id = 'highlighting-style';
-          style.type = 'text/css';
-          style.innerHTML = getDiagramHighlighting("${diagram.style.get.name}");
-          document.getElementsByTagName('head')[0].appendChild(style);"""
-      } else ""
-    }
-    });
-    """
+        if (diagram.style isDefined) {
+          s"""
+            var style = document.createElement('style');
+            style.id = 'highlighting-style';
+            style.type = 'text/css';
+            style.innerHTML = getDiagramHighlighting("${diagram.style.get.name}");
+            document.getElementsByTagName('head')[0].appendChild(style);
+          """
+        } else {
+          ""
+        }
+      }
+    });"""
   }
 
   def setPackageName(packageName: String) { this.packageName = packageName }

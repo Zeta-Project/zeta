@@ -27,8 +27,7 @@ object SignInForm {
    * @param rememberMe Indicates if the user should stay logged in on the next visit.
    */
   case class Data(
-    email: String,
-    password: String,
-    rememberMe: Boolean
-  )
+      email: String,
+      password: String,
+      rememberMe: Boolean)
 }

@@ -27,14 +27,13 @@ import scala.language.postfixOps
  * @param webJarAssets     The WebJar assets locator.
  */
 class ActivateAccountController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  userService: UserService,
-  authTokenService: AuthTokenService,
-  mailerClient: MailerClient,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    userService: UserService,
+    authTokenService: AuthTokenService,
+    mailerClient: MailerClient,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Sends an account activation email to the user with the given email.

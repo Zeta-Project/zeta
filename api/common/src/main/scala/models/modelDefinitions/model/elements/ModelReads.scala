@@ -210,14 +210,10 @@ object ModelReads {
       meta.getMClass(name).map(c => c.getTypeMAttributes).getOrElse(Seq[MAttribute]())
     }))
   )(Node.apply2 _).filter(invalidToEdgesError2) {
-      validateNodeLinks
-    }.filter(attributeDuplicateError) {
-      ensureUniqueAttributes
-    }
-
-  //.filter(ValidationError("")) {
-  //ensureBoundedAttributes
-  //}
+    validateNodeLinks
+  }.filter(attributeDuplicateError) {
+    ensureUniqueAttributes
+  }
 
   private def validateNodeLinks(n: Node) = {
     n.inputs.forall(e => n.`type`.typeHasInput(e.`type`.name)) &&
@@ -232,12 +228,6 @@ object ModelReads {
   private def ensureUniqueAttributes(value: HasAttributes) = {
     value.attributes.map(_.name.toLowerCase).toSet.size == value.attributes.size
   }
-
-  //  private def ensureBoundedAttributes(value: HasAttributes) = {
-  //    value.attributes.foldLeft(true) { (acc, att) =>
-  //      true
-  //    }
-  //  }
 
   private def extractNodes(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToNodes] = {
     m.map {
@@ -263,9 +253,9 @@ object ModelReads {
     }.map(extractNodes) and
     (__ \ "attributes").read(Seq[Attribute]())
   )(Edge.apply2 _).filter(invalidToNodesError2) {
-      validateEdgeLinks
-    }.filter(attributeDuplicateError) {
-      ensureUniqueAttributes
-    }
+    validateEdgeLinks
+  }.filter(attributeDuplicateError) {
+    ensureUniqueAttributes
+  }
 
 }

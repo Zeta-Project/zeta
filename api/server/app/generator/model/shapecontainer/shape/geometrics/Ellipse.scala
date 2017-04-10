@@ -13,11 +13,11 @@ import generator.parser.{ Cache, GeoModel }
  * rein pragmatisch, da Ellipse und Rectangle die selben Attribute haben
  */
 sealed class Ellipse private (
-  parent: Option[GeometricModel] = None,
-  commonLayout: CommonLayout,
-  compartment: Option[Compartment],
-  wrapping: List[GeoModel]
-) extends Rectangle(parent, commonLayout, compartment, wrapping)
+    parent: Option[GeometricModel] = None,
+    commonLayout: CommonLayout,
+    compartment: Option[Compartment],
+    wrapping: List[GeoModel])
+  extends Rectangle(parent, commonLayout, compartment, wrapping)
 
 object Ellipse {
   /**

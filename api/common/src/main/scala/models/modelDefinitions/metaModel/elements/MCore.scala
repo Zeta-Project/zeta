@@ -237,27 +237,27 @@ object MReference {
  * @param lowerBound the lower bound
  */
 case class MAttribute(
-  name: String,
-  globalUnique: Boolean,
-  localUnique: Boolean,
-  `type`: AttributeType,
-  default: AttributeValue,
-  constant: Boolean,
-  singleAssignment: Boolean,
-  expression: String,
-  ordered: Boolean,
-  transient: Boolean,
-  upperBound: Int,
-  lowerBound: Int
-) extends MObject with MBounds
+    name: String,
+    globalUnique: Boolean,
+    localUnique: Boolean,
+    `type`: AttributeType,
+    default: AttributeValue,
+    constant: Boolean,
+    singleAssignment: Boolean,
+    expression: String,
+    ordered: Boolean,
+    transient: Boolean,
+    upperBound: Int,
+    lowerBound: Int)
+  extends MObject with MBounds
 
 /** MLinkDef implementation */
 case class MLinkDef(
-  mType: ClassOrRef,
-  upperBound: Int,
-  lowerBound: Int,
-  deleteIfLower: Boolean
-) extends MBounds
+    mType: ClassOrRef,
+    upperBound: Int,
+    lowerBound: Int,
+    deleteIfLower: Boolean)
+  extends MBounds
 
 /**
  * The MEnum implementation
@@ -265,9 +265,9 @@ case class MLinkDef(
  * @param values the symbols
  */
 case class MEnum(
-  name: String,
-  values: Seq[EnumSymbol]
-) extends MObject with AttributeType
+    name: String,
+    values: Seq[EnumSymbol])
+  extends MObject with AttributeType
 
 /**
  * An Enum Symbol

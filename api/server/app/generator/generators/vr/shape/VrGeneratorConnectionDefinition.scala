@@ -33,22 +33,22 @@ object VrGeneratorConnectionDefinition {
     ${importPlacing(conn.placing)}
 
     <dom-module id="vr-connection-${conn.name}">
-        <template>
-            <!-- Polyline is always needed -->
-            <vr-polyline id="line" ${if (conn.style.get.line_style.get == DASH) { "dashed" } else { "" }}></vr-polyline>
-            ${conn.placing.map(generatePlacing(_)).mkString}
-        </template>
+      <template>
+        <!-- Polyline is always needed -->
+        <vr-polyline id="line" ${if (conn.style.get.line_style.get == DASH) { "dashed" } else { "" }}></vr-polyline>
+        ${conn.placing.map(generatePlacing(_)).mkString}
+      </template>
     </dom-module>
 
     <script>
-        window.VrElement = window.VrElement || {};
-        VrElement.Connection${conn.name.capitalize} = Polymer({
-            is: "vr-connection-${conn.name}",
-            behaviors: [
-                        VrBehavior.Connection,
-                        VrBehavior.Delete
-            ]
-        });
+      window.VrElement = window.VrElement || {};
+      VrElement.Connection${conn.name.capitalize} = Polymer({
+        is: "vr-connection-${conn.name}",
+        behaviors: [
+          VrBehavior.Connection,
+          VrBehavior.Delete
+        ]
+      });
     </script>
     """
   }
@@ -67,7 +67,7 @@ object VrGeneratorConnectionDefinition {
     <vr-placing offset="${placing.position_offset}" angle="${angle}" radius="${radius}">
       ${generateElement(placing.shapeCon)}
     </vr-placing>
-     """
+    """
   }
 
   def generateElement(geometric: GeometricModel) = {

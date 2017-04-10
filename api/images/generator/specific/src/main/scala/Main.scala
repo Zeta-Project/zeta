@@ -42,22 +42,26 @@ object Main extends Template[CreateOptions, String] {
   }
 
   def getMClassTypeMethod(entity: MClass): String = {
-    s"""def transform${entity.name}Node(node: Node): Node = {
-        |  node
-        |}""".stripMargin
+    s"""
+      |def transform${entity.name}Node(node: Node): Node = {
+      |  node
+      |}
+    """.stripMargin
   }
 
   def getMReferenceTypeMethod(entity: MReference): String = {
-    s"""def transform${entity.name}Edge(edge: Edge): Edge = {
-       |  edge
-       |}""".stripMargin
+    s"""
+      |def transform${entity.name}Edge(edge: Edge): Edge = {
+      |  edge
+      |}
+    """.stripMargin
   }
 
   def methodPrototypes(mClass: Iterable[MClass], mReference: Iterable[MReference]): String = {
     s"""
-       |${mClass.map(getMClassTypeMethod).mkString(sepMethods)}
-       |
-       |${mReference.map(getMReferenceTypeMethod).mkString(sepMethods)}
+      |${mClass.map(getMClassTypeMethod).mkString(sepMethods)}
+      |
+      |${mReference.map(getMReferenceTypeMethod).mkString(sepMethods)}
     """.stripMargin
   }
 

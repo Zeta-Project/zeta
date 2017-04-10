@@ -19,7 +19,7 @@ object GeneratorInspectorDefinition {
         ${shapes.map(shape => generateDefinition(shape, packageName, attrs, nodes)).mkString}
         $getLinkAttributes
       };
-     """
+    """
   }
 
   def generateDefinition(shape: ShapeContainerElement, packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]], nodes: List[Node]): String = {
@@ -146,9 +146,9 @@ object GeneratorInspectorDefinition {
     s"""
     'polyline${if (hasStyle(shape)) "." + shapeClass}' : inp({
       fill: { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 1, label:'Background-Color Polyline' },
-       stroke: { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 2, label: 'Line-Color' },
-       'stroke-width': { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 3, min: 0, max: 30, defaultValue: 1, label: ' Stroke Width Line' },
-       'stroke-dasharray': { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 4, label: 'Stroke Dash Line' }
+      stroke: { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 2, label: 'Line-Color' },
+      'stroke-width': { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 3, min: 0, max: 30, defaultValue: 1, label: ' Stroke Width Line' },
+      'stroke-dasharray': { group: 'Presentation Polyline ${attrCounterMap(shape.getClass.getSimpleName)}', index: 4, label: 'Stroke Dash Line' }
     })
     """
   }

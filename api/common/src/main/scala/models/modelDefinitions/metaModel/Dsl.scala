@@ -44,10 +44,9 @@ object Diagram {
  * @param style the style definition
  */
 case class Dsl(
-  diagram: Option[Diagram] = None,
-  shape: Option[Shape] = None,
-  style: Option[Style] = None
-)
+    diagram: Option[Diagram] = None,
+    shape: Option[Shape] = None,
+    style: Option[Style] = None)
 
 object Dsl {
   implicit val dslReads = Json.reads[Dsl]

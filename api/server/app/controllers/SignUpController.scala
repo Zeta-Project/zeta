@@ -33,17 +33,16 @@ import scala.concurrent.Future
  * @param webJarAssets           The webjar assets implementation.
  */
 class SignUpController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  userService: UserService,
-  authInfoRepository: AuthInfoRepository,
-  authTokenService: AuthTokenService,
-  avatarService: AvatarService,
-  passwordHasherRegistry: PasswordHasherRegistry,
-  mailerClient: MailerClient,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    userService: UserService,
+    authInfoRepository: AuthInfoRepository,
+    authTokenService: AuthTokenService,
+    avatarService: AvatarService,
+    passwordHasherRegistry: PasswordHasherRegistry,
+    mailerClient: MailerClient,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Views the `Sign Up` page.

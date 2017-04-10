@@ -36,17 +36,16 @@ import scala.language.postfixOps
  * @param webJarAssets The webjar assets implementation.
  */
 class SignInController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  userService: UserService,
-  authInfoRepository: AuthInfoRepository,
-  credentialsProvider: CredentialsProvider,
-  socialProviderRegistry: SocialProviderRegistry,
-  configuration: Configuration,
-  clock: Clock,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    userService: UserService,
+    authInfoRepository: AuthInfoRepository,
+    credentialsProvider: CredentialsProvider,
+    socialProviderRegistry: SocialProviderRegistry,
+    configuration: Configuration,
+    clock: Clock,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Views the `Sign In` page.

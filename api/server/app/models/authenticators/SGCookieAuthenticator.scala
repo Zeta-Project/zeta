@@ -50,15 +50,14 @@ import scala.util.{ Failure, Success, Try }
  * @param fingerprint Maybe a fingerprint of the user.
  */
 case class SGCookieAuthenticator(
-  id: String,
-  loginInfo: LoginInfo,
-  lastUsedDateTime: DateTime,
-  expirationDateTime: DateTime,
-  idleTimeout: Option[FiniteDuration],
-  cookieMaxAge: Option[FiniteDuration],
-  fingerprint: Option[String]
-)
-    extends StorableAuthenticator with ExpirableAuthenticator {
+    id: String,
+    loginInfo: LoginInfo,
+    lastUsedDateTime: DateTime,
+    expirationDateTime: DateTime,
+    idleTimeout: Option[FiniteDuration],
+    cookieMaxAge: Option[FiniteDuration],
+    fingerprint: Option[String])
+  extends StorableAuthenticator with ExpirableAuthenticator {
 
   /**
    * The Type of the generated value an authenticator will be serialized to.
@@ -144,17 +143,16 @@ object SGCookieAuthenticator extends Logger {
  * @param executionContext The execution context to handle the asynchronous operations.
  */
 class SGCookieAuthenticatorService(
-  settings: SGCookieAuthenticatorSettings,
-  repository: Option[AuthenticatorRepository[SGCookieAuthenticator]],
-  cookieSigner: CookieSigner,
-  authenticatorEncoder: AuthenticatorEncoder,
-  fingerprintGenerator: FingerprintGenerator,
-  idGenerator: IDGenerator,
-  clock: Clock,
-  session: Session
-)(implicit val executionContext: ExecutionContext)
-    extends AuthenticatorService[SGCookieAuthenticator]
-    with Logger {
+    settings: SGCookieAuthenticatorSettings,
+    repository: Option[AuthenticatorRepository[SGCookieAuthenticator]],
+    cookieSigner: CookieSigner,
+    authenticatorEncoder: AuthenticatorEncoder,
+    fingerprintGenerator: FingerprintGenerator,
+    idGenerator: IDGenerator,
+    clock: Clock,
+    session: Session)(implicit val executionContext: ExecutionContext)
+  extends AuthenticatorService[SGCookieAuthenticator]
+  with Logger {
 
   import SGCookieAuthenticator._
 
@@ -467,13 +465,13 @@ object SGCookieAuthenticatorService {
  * @param authenticatorExpiry The duration an authenticator expires after it was created.
  */
 case class SGCookieAuthenticatorSettings(
-  cookieName: String = "id",
-  cookiePath: String = "/",
-  cookieDomain: Option[String] = None,
-  secureCookie: Boolean = true,
-  httpOnlyCookie: Boolean = true,
-  useFingerprinting: Boolean = true,
-  cookieMaxAge: Option[FiniteDuration] = None,
-  authenticatorIdleTimeout: Option[FiniteDuration] = None,
-  authenticatorExpiry: FiniteDuration = 12 hours
-)
+    cookieName: String = "id",
+    cookiePath: String = "/",
+    cookieDomain: Option[String] = None,
+    secureCookie: Boolean = true,
+    httpOnlyCookie: Boolean = true,
+    useFingerprinting: Boolean = true,
+    cookieMaxAge: Option[FiniteDuration] = None,
+    authenticatorIdleTimeout: Option[FiniteDuration] = None,
+    authenticatorExpiry: FiniteDuration = 12 hours)
+

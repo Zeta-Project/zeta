@@ -17,8 +17,8 @@ object LinkhelperGenerator {
   def generateHead =
     """
     /*
-    * This is a generated linkhelper file for JointJS
-    */
+     * This is a generated linkhelper file for JointJS
+     */
     """
 
   protected def generateLinkhelper(diagram: Diagram) =
@@ -32,13 +32,7 @@ object LinkhelperGenerator {
   protected def generatePlacingTexts(diagram: Diagram) = {
     s"""
     placingTexts:{
-      ${
-      diagram.edges.map(e =>
-        s"""
-            ${e.name}: {
-              ${generateStringProperties(e).mkString(",")}
-          }""").mkString(",")
-    }
+      ${diagram.edges.map(e => s"""${e.name}: { ${generateStringProperties(e).mkString(",")} }""").mkString(",")}
     },
     """
   }

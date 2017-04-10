@@ -18,9 +18,8 @@ class MyTransformer() extends Transformer {
     val filename = "example.txt"
     val content =
       s"""
-         |Number of nodes : ${nodes}
-         |Number of edges : ${edges}
-       """.stripMargin
+        |Number of nodes : ${nodes}
+        |Number of edges : ${edges}""".stripMargin
 
     files.create(entity, File(filename, content)).map { result =>
       println(s"Successfully saved results to '${filename}' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")

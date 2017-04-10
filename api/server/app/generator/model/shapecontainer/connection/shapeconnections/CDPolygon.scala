@@ -8,8 +8,9 @@ import generator.model.style.Style
  * rein pragmatischm, da Polygon und PolyLine die selben Attribute haben
  */
 class CDPolygon(
-  style: Option[Style] = None,
-  point1: Point,
-  point2: Point,
-  otherPoints: List[Point] = List[Point]()
-) extends CDPolyLine(style, point1, point2, otherPoints)
+    style: Option[Style] = None,
+    point1: Point,
+    point2: Point,
+    otherPoints: List[Point] = List[Point]())
+  extends CDPolyLine(style, point1, point2, otherPoints)
+

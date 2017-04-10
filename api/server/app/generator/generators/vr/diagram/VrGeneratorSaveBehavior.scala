@@ -20,56 +20,56 @@ object VrGeneratorSaveBehavior {
       window.VrBehavior = window.VrBehavior || {};
       VrBehavior.Save = [VrBehavior.ThreeJS, {
 
-      _save: function () {
-        var self = this;
-        var token = null;
+        _save: function () {
+          var self = this;
+          var token = null;
 
-        // get model id from href
-        var href = window.location.href;
-        var modelId = href.substr(href.lastIndexOf('/') + 1, href.length);
+          // get model id from href
+          var href = window.location.href;
+          var modelId = href.substr(href.lastIndexOf('/') + 1, href.length);
 
-        var tagType = {
-          ${nodes.map(generateNodeMapping(_)).mkString.dropRight(1)}
-        };
-
-        getToken();
-
-        function getToken() {
-          var accessTokenAttributes = {
-            method: 'POST',
-            url: 'http://localhost:9000/oauth/accessTokenLocal',
-            contentType: 'application/x-www-form-urlencoded',
-            body: 'client_id=modigen-browser-app1&grant_type=implicit',
-            id: 'token',
-            withCredentials: true,
-            success: _onTokenSuccess,
-            failure: _onFailure
+          var tagType = {
+            ${nodes.map(generateNodeMapping(_)).mkString.dropRight(1)}
           };
 
-          self._createRequest(accessTokenAttributes);
-        }
+          getToken();
 
-        function _onTokenSuccess(event) {
-           token = event.detail.xhr.response.token_type + ' ' + event.detail.xhr.response.access_token;
+          function getToken() {
+            var accessTokenAttributes = {
+              method: 'POST',
+              url: 'http://localhost:9000/oauth/accessTokenLocal',
+              contentType: 'application/x-www-form-urlencoded',
+              body: 'client_id=modigen-browser-app1&grant_type=implicit',
+              id: 'token',
+              withCredentials: true,
+              success: _onTokenSuccess,
+              failure: _onFailure
+            };
 
-          _getModel();
-        }
+            self._createRequest(accessTokenAttributes);
+          }
 
-        function _getModel() {
-          var modelAttributes = {
-            id: 'model',
-            method: 'GET',
-            url: 'http://localhost:9000/models/' + modelId,
-            withCredentials: true,
-            headers: {'authorization': token},
-            success: _onModelSuccess,
-            failure: _onFailure
-          };
+          function _onTokenSuccess(event) {
+            token = event.detail.xhr.response.token_type + ' ' + event.detail.xhr.response.access_token;
 
-          self._createRequest(modelAttributes);
-        }
+            _getModel();
+          }
 
-        function updateElement(old, modified) {
+          function _getModel() {
+            var modelAttributes = {
+              id: 'model',
+              method: 'GET',
+              url: 'http://localhost:9000/models/' + modelId,
+              withCredentials: true,
+              headers: {'authorization': token},
+              success: _onModelSuccess,
+              failure: _onFailure
+            };
+
+            self._createRequest(modelAttributes);
+          }
+
+          function updateElement(old, modified) {
             if (old.mClass !== undefined) {
               // update position
               old.position.x = modified.xPos;
@@ -171,7 +171,7 @@ object VrGeneratorSaveBehavior {
               ${generateMixedSwitch(nodes, edgeMap)}
             }
 
-          allElements.elements.push(newElement);
+            allElements.elements.push(newElement);
             return allElements;
           }
 
@@ -250,8 +250,8 @@ object VrGeneratorSaveBehavior {
 
           function findIndexOfElement(allElements, elementId) {
             return allElements.map(function (e) {
-                return e.id;
-              }).indexOf(elementId);
+              return e.id;
+            }).indexOf(elementId);
           }
 
           function _onSaveSuccess(event) {
@@ -263,8 +263,8 @@ object VrGeneratorSaveBehavior {
           }
         }
       }]
-     </script>
-     """
+    </script>
+    """
   }
 
   def generateNodeMapping(node: Node) = {

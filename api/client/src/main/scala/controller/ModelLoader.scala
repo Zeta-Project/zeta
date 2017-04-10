@@ -5,28 +5,26 @@ import scala.scalajs.js.Dynamic.literal
 import org.scalajs.jquery._
 import scala.scalajs.js.annotation.JSExport
 
-//@js.native
-/* remarks: annotation above does not exist prior to scala.js 0.6.5, so we can't use it (currently in project: 0.6.4)
-   but: will be required in scala.js 1.0.0
-   see: https://www.scala-js.org/doc/interoperability/facade-types.html
-*/
+/**
+ * remarks: annotation above does not exist prior to scala.js 0.6.5, so we can't use it (currently in project: 0.6.4)
+ * but: will be required in scala.js 1.0.0
+ * see: https://www.scala-js.org/doc/interoperability/facade-types.html
+ */
 trait MetaElementData extends js.Object {
   val mType: String = js.native
   val name: String = js.native
 }
 
-//@js.native
 trait MetaModelData extends js.Object {
   val name: String = js.native
   val elements: scalajs.js.Array[MetaElementData] = js.native
 }
 
 case class MetaModel(
-  id: String,
-  name: String,
-  mClasses: scalajs.js.Array[MetaElementData],
-  mReferences: scalajs.js.Array[MetaElementData]
-)
+    id: String,
+    name: String,
+    mClasses: scalajs.js.Array[MetaElementData],
+    mReferences: scalajs.js.Array[MetaElementData])
 
 @JSExport
 class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {

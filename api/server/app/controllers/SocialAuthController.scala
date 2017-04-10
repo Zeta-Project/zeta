@@ -25,14 +25,13 @@ import scala.concurrent.Future
  * @param webJarAssets The webjar assets implementation.
  */
 class SocialAuthController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  userService: UserService,
-  authInfoRepository: AuthInfoRepository,
-  socialProviderRegistry: SocialProviderRegistry,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport with Logger {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    userService: UserService,
+    authInfoRepository: AuthInfoRepository,
+    socialProviderRegistry: SocialProviderRegistry,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport with Logger {
 
   /**
    * Authenticates a user against a social provider.

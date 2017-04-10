@@ -109,8 +109,9 @@ class Edge(
     val `type`: MReference,
     _source: => Seq[ToNodes],
     _target: => Seq[ToNodes],
-    val attributes: Seq[Attribute]
-) extends ModelElement with HasAttributes {
+    val attributes: Seq[Attribute])
+  extends ModelElement with HasAttributes {
+
   lazy val source = _source
   lazy val target = _target
 
@@ -134,6 +135,6 @@ object Edge {
 }
 
 case class Attribute(
-  name: String,
-  value: Seq[AttributeValue]
-)
+    val name: String,
+    val value: Seq[AttributeValue])
+

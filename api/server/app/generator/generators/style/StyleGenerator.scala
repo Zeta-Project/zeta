@@ -28,16 +28,16 @@ object StyleGenerator {
   /** Generates the getStyle function */
   def generateGetStyle(styles: List[Style]): String = {
     s"""
-        function getStyle(stylename) {
-          var style;
-          switch(stylename) {
-            ${styles.map(style => generateStyleCase(style)).mkString("")}
+      function getStyle(stylename) {
+        var style;
+        switch(stylename) {
+          ${styles.map(style => generateStyleCase(style)).mkString("")}
           default:
             style = {};
             break;
-          }
-          return style;
         }
+        return style;
+      }
     """
   }
 
@@ -71,14 +71,15 @@ object StyleGenerator {
   /** generates a case for the switch case of the getDiagramHilighting*/
   def generateDiagramHighlightingCases(s: Style) = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
-    if (!highlighting.isEmpty)
-      raw"""case "${s.name}":
-
-              var highlighting = '$highlighting';
-
-            break;
+    if (!highlighting.isEmpty) {
+      raw"""
+      case "${s.name}":
+        var highlighting = '$highlighting';
+        break;
       """
-    else ""
+    } else {
+      ""
+    }
   }
 
   def getSelected(s: Style) =
@@ -104,21 +105,21 @@ object StyleGenerator {
   /** generates all text style attributes for the style */
   def createFontAttributes(s: Style) =
     s"""
-            text: {
-              ${fontAttributes(s)}
-            },
+    text: {
+      ${fontAttributes(s)}
+    },
     """
 
   /** generates all text style attributes */
   def fontAttributes(s: Style) = {
     raw"""
-       'dominant-baseline': "text-before-edge",
-       'font-family': '${s.font_name.getOrElse("sans-serif")}',
-       'font-size': '${s.font_size.getOrElse("11")}',
-       'fill': '${val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000"}',
-       'font-weight': ' ${if (s.font_bold.isDefined && s.font_bold.get) "bold" else "normal"}'
-       ${if (s.font_italic.getOrElse(false)) raw""",'font-style': 'italic' """ else ""}
-       """
+      'dominant-baseline': "text-before-edge",
+      'font-family': '${s.font_name.getOrElse("sans-serif")}',
+      'font-size': '${s.font_size.getOrElse("11")}',
+      'fill': '${val c = s.font_color; if (c.isDefined) c.get.getRGBValue else "#000000"}',
+      'font-weight': ' ${if (s.font_bold.isDefined && s.font_bold.get) "bold" else "normal"}'
+      ${if (s.font_italic.getOrElse(false)) raw""",'font-style': 'italic' """ else ""}
+    """
   }
 
   /** creates all common attributes, which are not associated with text */
@@ -150,17 +151,19 @@ object StyleGenerator {
         type: 'linearGradient',
         stops: [
           ${
-      gr.area.map(area =>
-        s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'")
-        .mkString("{", "\n}, {", "}")
-    }
+            gr.area.map(
+              area => s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"
+            ).mkString("{", "\n}, {", "}")
+          }
         ]
         ${
-      if (horizontal) "" else
-        """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
-    }
+          if (horizontal)
+            ""
+          else
+            """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
+        }
       },
-      """
+    """
   }
 
   /** generates simple one colored background */
@@ -168,8 +171,8 @@ object StyleGenerator {
     if (s.background_color.isDefined) {
       val bg_color = s.background_color.get
       raw"""
-          fill: '${bg_color.getRGBValue}',
-        """
+        fill: '${bg_color.getRGBValue}',
+      """
     } else ""
   }
 
@@ -179,15 +182,15 @@ object StyleGenerator {
     if (s.line_color.isEmpty)
       ret +=
         """
-              stroke: '#000000',
-              'stroke-width': 0,
-              'stroke-dasharray': "0"
+          stroke: '#000000',
+          'stroke-width': 0,
+          'stroke-dasharray': "0"
         """
     else
       s.line_color.get match {
         case Transparent => ret +=
           """
-                                        'stroke-opacity': 0,
+            'stroke-opacity': 0,
           """
         case _ =>
           ret +=
@@ -200,23 +203,23 @@ object StyleGenerator {
             s.line_style.get match {
               case DASH => ret +=
                 """
-                                  ,'stroke-dasharray': "10,10"
+                  ,'stroke-dasharray': "10,10"
                 """
               case DOT => ret +=
                 """
-                                  ,'stroke-dasharray': "5,5
+                  ,'stroke-dasharray': "5,5
                 """
               case DASHDOT => ret +=
                 """
-                                  ,'stroke-dasharray': "10,5,5,5"
+                  ,'stroke-dasharray': "10,5,5,5"
                 """
               case DASHDOTDOT => ret +=
                 """
-                                  ,'stroke-dasharray': "10,5,5,5,5,5"
+                  ,'stroke-dasharray': "10,5,5,5,5,5"
                 """
               case _ => ret +=
                 """
-                                  ,'stroke-dasharray': "0"
+                  ,'stroke-dasharray': "0"
                 """
             }
       }

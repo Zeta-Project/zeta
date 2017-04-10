@@ -7,14 +7,13 @@ import generator.parser.CommonParserMethods
  * representation of CompartmentInfo
  */
 sealed class Compartment private (
-  val compartment_id: String,
-  val compartment_layout: Option[CompartmentLayout] = None,
-  val compartment_stretching_horizontal: Option[Boolean] = None,
-  val compartment_stretching_vertical: Option[Boolean] = None,
-  val compartment_spacing: Option[Int] = None,
-  val compartment_margin: Option[Int] = None,
-  val compartment_invisible: Option[Boolean] = None
-)
+    val compartment_id: String,
+    val compartment_layout: Option[CompartmentLayout] = None,
+    val compartment_stretching_horizontal: Option[Boolean] = None,
+    val compartment_stretching_vertical: Option[Boolean] = None,
+    val compartment_spacing: Option[Int] = None,
+    val compartment_margin: Option[Int] = None,
+    val compartment_invisible: Option[Boolean] = None)
 
 sealed abstract class CompartmentLayout
 case object FIXED extends CompartmentLayout

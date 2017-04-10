@@ -11,18 +11,19 @@ import models.modelDefinitions.metaModel.elements.{ MClass, MReference }
  * representation of an Edge
  */
 case class Edge(
-  name: String,
-  mcoreElement: MReference,
-  var style: Option[Style] = None,
-  /*edge-Block*/
-  connection: Connection,
-  from: MClass,
-  to: MClass,
-  override val palette: Option[String] = None,
-  override val container: Option[MReference] = None,
-  override val onCreate: Option[OnCreate] = None,
-  override val onUpdate: Option[OnUpdate] = None,
-  override val onDelete: Option[OnDelete] = None,
-  override val actions: List[Action] = List(),
-  override val actionIncludes: Option[ActionInclude] = None
-) extends Palette with Container with Methodes with Actions
+    name: String,
+    mcoreElement: MReference,
+    var style: Option[Style] = None,
+    /*edge-Block*/
+    connection: Connection,
+    from: MClass,
+    to: MClass,
+    override val palette: Option[String] = None,
+    override val container: Option[MReference] = None,
+    override val onCreate: Option[OnCreate] = None,
+    override val onUpdate: Option[OnUpdate] = None,
+    override val onDelete: Option[OnDelete] = None,
+    override val actions: List[Action] = List(),
+    override val actionIncludes: Option[ActionInclude] = None)
+  extends Palette with Container with Methodes with Actions
+

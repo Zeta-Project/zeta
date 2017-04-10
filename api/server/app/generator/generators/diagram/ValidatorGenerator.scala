@@ -35,8 +35,8 @@ object ValidatorGenerator {
   def generateHead =
     """
     /*
-    * This is a generated validator file for JointJS
-    */
+     * This is a generated validator file for JointJS
+     */
     """
 
   def generateInOutMatrix(diagram: Diagram) = {
@@ -68,12 +68,12 @@ object ValidatorGenerator {
   def generateInOutMatrixForMClass(inputs: Seq[MLinkDef], mcName: String): String = {
     s"""
     $mcName: {
-    ${
-      (for (input <- inputs) yield s"""${input.mType.name}: {
-              upperBound: ${input.upperBound},
-              lowerBound: ${input.lowerBound}}""")
-        .mkString(",")
-    }
+      ${
+        (for (input <- inputs) yield s"""${input.mType.name}: {
+          upperBound: ${input.upperBound},
+          lowerBound: ${input.lowerBound}}"""
+        ).mkString(",")
+      }
     }
     """
   }
@@ -104,8 +104,8 @@ object ValidatorGenerator {
   def generateSourceMatrix(diagram: Diagram) = {
     val sourceMatrix = getSourceMatrix(diagram)
     val s = for (((key, value), i) <- sourceMatrix.zipWithIndex) yield s"""$key: {
-        ${generateEdgeMap(value)}
-      }"""
+      ${generateEdgeMap(value)}
+    }"""
 
     s"""
     sourceMatrix: {

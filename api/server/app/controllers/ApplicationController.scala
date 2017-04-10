@@ -18,12 +18,11 @@ import utils.auth.DefaultEnv
  * @param webJarAssets The webjar assets implementation.
  */
 class ApplicationController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  socialProviderRegistry: SocialProviderRegistry,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    socialProviderRegistry: SocialProviderRegistry,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Handles the index action.

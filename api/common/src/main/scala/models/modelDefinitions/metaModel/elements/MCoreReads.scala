@@ -211,8 +211,8 @@ object MCoreReads {
     (__ \ "lowerBound").read[Int](min(0)) and
     (__ \ "deleteIfLower").read[Boolean]
   )(MLinkDef.apply _).filter(boundsError) {
-      boundsCheck(_)
-    }
+    boundsCheck(_)
+  }
 
   def detectType(name: String) = name match {
     case "String" => ScalarType.String
@@ -245,23 +245,23 @@ object MCoreReads {
     (__ \ "upperBound").read[Int](min(-1)) and
     (__ \ "lowerBound").read[Int](min(0))
   )(MAttribute.apply _).filter(boundsError) {
-      boundsCheck(_)
-    }.filter(typeDefaultError) { att =>
-      (att.`type`, att.default) match {
-        case (ScalarType.String, ScalarValue.MString(_)) => true
-        case (ScalarType.Bool, ScalarValue.MBool(_)) => true
-        case (ScalarType.Double, ScalarValue.MDouble(_)) => true
-        case (ScalarType.Int, ScalarValue.MDouble(d)) if d <= Int.MaxValue => true
-        case (MEnum(_, _), ScalarValue.MString(_)) => true
-        case _ => false
-      }
-    }.map { att =>
-      (att.`type`, att.default) match {
-        case (m: MEnum, ScalarValue.MString(s)) => att.copy(default = EnumSymbol(s, m))
-        case (ScalarType.Int, ScalarValue.MDouble(d)) => att.copy(default = ScalarValue.MInt(d.toInt))
-        case _ => att
-      }
+    boundsCheck(_)
+  }.filter(typeDefaultError) {
+    att => (att.`type`, att.default) match {
+      case (ScalarType.String, ScalarValue.MString(_)) => true
+      case (ScalarType.Bool, ScalarValue.MBool(_)) => true
+      case (ScalarType.Double, ScalarValue.MDouble(_)) => true
+      case (ScalarType.Int, ScalarValue.MDouble(d)) if d <= Int.MaxValue => true
+      case (MEnum(_, _), ScalarValue.MString(_)) => true
+      case _ => false
     }
+  }.map {
+    att => (att.`type`, att.default) match {
+      case (m: MEnum, ScalarValue.MString(s)) => att.copy(default = EnumSymbol(s, m))
+      case (ScalarType.Int, ScalarValue.MDouble(d)) => att.copy(default = ScalarValue.MInt(d.toInt))
+      case _ => att
+    }
+  }
 
   implicit val mClassReads: Reads[MClass] = (
     (__ \ "name").read[String](minLength[String](1)) and
@@ -285,12 +285,12 @@ object MCoreReads {
     (__ \ "name").read[String](minLength[String](1)) and
     (__ \ "symbols").read[Seq[String]].map(_.map(EnumSymbol(_, MEnum("", Seq.empty))))
   )(MEnum.apply _).filter(enumSymbolError) { enum =>
-      enum.values.size > 0 && enum.values.distinct.size == enum.values.size
-    }.map { enum =>
-      val builder = new {
-        val finalEnum: MEnum = enum.copy(values = enum.values.map(s => new EnumSymbol(s.name, finalEnum)))
-      }
-      builder.finalEnum
+    enum.values.size > 0 && enum.values.distinct.size == enum.values.size
+  }.map { enum =>
+    val builder = new {
+      val finalEnum: MEnum = enum.copy(values = enum.values.map(s => new EnumSymbol(s.name, finalEnum)))
     }
+    builder.finalEnum
+  }
 
 }

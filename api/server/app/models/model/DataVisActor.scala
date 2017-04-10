@@ -21,13 +21,6 @@ class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) exte
   val generator = new ListenersGenerator
 
   // TODO: Connect model instance to new REST API
-  /* MetaModelDatabase_2.loadModel(graphType) onComplete{
-    case scala.util.Success(opt) => opt match {
-      case None => self ! MetamodelFailure()
-      case Some(mm) => //self ! MetamodelLoaded(mm.model)
-    }
-    case scala.util.Failure(t) => self ! MetamodelFailure
-  } */
 
   override def receive = {
     case msg: DataVisCodeMessage => handleDataVisCode(msg)
@@ -49,18 +42,7 @@ class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) exte
     }
   }
 
-  private def handleScopeQuery(classname: String) = {
-    /*
-    log.debug("Scope query for MObj" + classname)
-    metamodel.getObjectByName(classname) match {
-      case None => socket ! DiagramWSActor.DataVisInvalidError(List("Unable to load class " + classname + " from metamodel."), "")
-      case Some(mObject) => mObject match {
-       // case mClass:MClass => socket ! DataVisScope(mClass.allAttributes.map(_.name), classname)
-        //case mReference:MReference => socket ! DataVisScope(mReference.attributes.map(_.name), classname)
-      }
-    }
-    */
-  }
+  private def handleScopeQuery(classname: String) = {}
 
   private def validateAndGenerateDataVisCode(mObject: ObjectWithAttributes, conditionals: List[Conditional], msg: DataVisCodeMessage) = {
     val validator = new ConstrainedDataVisValidator

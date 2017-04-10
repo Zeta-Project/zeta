@@ -17,53 +17,54 @@ object GeneratorConnectionDefinition {
 
   def generate(connections: Iterable[Connection]) = {
     s"""
-      $head
+      ${head}
       function getConnectionStyle(stylename){
         var style;
         switch(stylename){
           ${
-      connections.map(c => s"""case '${c.name}':
-            ${
-        if (c.style.isDefined)
-          "style = getStyle('" + c.style.get.name + "');\n"
-        else
-          "style = {'.connection':{stroke: 'black'}};\n"
-      }
-            ${generateInlineStyle(c)}
-            ${handlePlacings(c)}
-            break;""").mkString
-    }
+            connections.map(c => s"""
+              case '${c.name}': ${
+                if (c.style.isDefined)
+                  "style = getStyle('" + c.style.get.name + "');\n"
+                else
+                  "style = {'.connection':{stroke: 'black'}};\n"
+                }
+                ${generateInlineStyle(c)}
+                ${handlePlacings(c)}
+                break;
+            """).mkString
+            }
           default:
             style = {};
             break;
+        }
+
+        return style;
       }
 
-      return style;
-    }
-
-    function getPlacings(stylename){
-      var placings;
-      switch(stylename){
+      function getPlacings(stylename){
+        var placings;
+        switch(stylename){
           $generateCachedPlacings
-        default:
-          placings = [];
-        break;
+          default:
+            placings = [];
+            break;
+        }
+
+        return placings;
       }
 
-      return placings;
-    }
-
-    function getLabels(stylename){
-      var labels;
-      switch(stylename){
+      function getLabels(stylename){
+        var labels;
+        switch(stylename){
           $generateCachedLabels
-        default:
-          labels = [];
-        break;
-      }
+          default:
+            labels = [];
+          break;
+        }
 
-      return labels;
-    }
+        return labels;
+      }
     """
   }
 
@@ -117,10 +118,12 @@ object GeneratorConnectionDefinition {
         case _ => cachePlacing(connection.name, p)
       }
       if (!isTargetMarkerSet) {
-        ret += """style['.marker-target'] = {
-                    d: 'M 0 0' //override JointJS default arrow
-                  };
-              """
+        ret +=
+          """
+            style['.marker-target'] = {
+              d: 'M 0 0' //override JointJS default arrow
+            };
+          """
       }
     }
     ret
@@ -131,11 +134,11 @@ object GeneratorConnectionDefinition {
       case hs: HasStyle =>
         if (hs.style.isDefined) {
           s"""
-              ${StyleGenerator.commonAttributes(hs.style.get)},
-              text: {
+            ${StyleGenerator.commonAttributes(hs.style.get)},
+            text: {
               ${StyleGenerator.fontAttributes(hs.style.get)}
-              },
-            """
+            },
+          """
         } else {
           ""
         }
@@ -151,10 +154,10 @@ object GeneratorConnectionDefinition {
           s"""
           case "$k":
             placings = [
-            ${v.map(p => generatePlacing(p)).mkString(",")}
-          ];
-          break;
-        """
+              ${v.map(p => generatePlacing(p)).mkString(",")}
+            ];
+            break;
+          """
       }.mkString
       placingsCache.clear()
     }
@@ -164,10 +167,11 @@ object GeneratorConnectionDefinition {
   protected def generateCachedLabels = {
     val labels = labelCache.map {
       case (k, v) =>
-        s"""case "$k":
+        s"""
+        case "$k":
           labels = [ ${v.map(generateLabel).mkString}];
           break;
-      """
+        """
     }.mkString
     labelCache.clear()
     labels
@@ -297,9 +301,9 @@ object GeneratorConnectionDefinition {
 
   protected def generateMirroredMarker(placing: Placing) = {
     /*
-     PolyLine and Polygon need to be mirrored against the x and y-axis because target
-     marker gets rotated by 180 degree
-    */
+     * PolyLine and Polygon need to be mirrored against the x and y-axis because target
+     * marker gets rotated by 180 degree
+     */
     val svgPathData = placing.shapeCon match {
       case p: Polygon => generateMirroredPolygon(placing.shapeCon.asInstanceOf[Polygon])
       case pl: PolyLine => generaMirroredPolyLine(placing.shapeCon.asInstanceOf[PolyLine])

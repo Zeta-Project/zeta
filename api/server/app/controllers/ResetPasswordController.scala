@@ -28,15 +28,14 @@ import scala.concurrent.Future
  * @param webJarAssets           The WebJar assets locator.
  */
 class ResetPasswordController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  userService: UserService,
-  authInfoRepository: AuthInfoRepository,
-  passwordHasherRegistry: PasswordHasherRegistry,
-  authTokenService: AuthTokenService,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    userService: UserService,
+    authInfoRepository: AuthInfoRepository,
+    passwordHasherRegistry: PasswordHasherRegistry,
+    authTokenService: AuthTokenService,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Views the `Reset Password` page.

@@ -76,7 +76,7 @@ object VrGeneratorShapeDefinition {
         this.maxMoveVertical = 0;
         this.height = ${totalSize._1.toInt}
         this.width = ${totalSize._2.toInt}
-       ${createInnerSizing(geometrics, totalSize)}
+        ${createInnerSizing(geometrics, totalSize)}
 
         function create(element, text, center, position, min, max, percentage) {
           //var element = new VrElement.Box();
@@ -149,9 +149,10 @@ object VrGeneratorShapeDefinition {
           val wrapper = c.asInstanceOf[Wrapper]
           val position = c.position.getOrElse((0, 0))
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
-          s"""${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
-              create(new VrElement.${element.capitalize}() , ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
-              ${createInnerSizing(wrapper.children, totalSize)}
+          s"""
+            ${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
+            create(new VrElement.${element.capitalize}() , ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+            ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
         case _ => g.toString()

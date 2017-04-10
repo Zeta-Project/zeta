@@ -113,13 +113,10 @@ object ModelEntity {
  * @param links optional attribute for HATEOAS links, only used when serving to clients
  */
 case class ModelShortInfo(
-  id: String,
-  metaModelId: String,
-  name: String,
-  //  created: Instant,
-  //  updated: Instant,
-  links: Option[Seq[HLink]] = None
-)
+    id: String,
+    metaModelId: String,
+    name: String,
+    links: Option[Seq[HLink]] = None)
 
 object ModelShortInfo {
 
@@ -127,8 +124,6 @@ object ModelShortInfo {
     (__ \ "id").read[String] and
     (__ \ "metaModelId").read[String] and
     (__ \ "model" \ "name").read[String] and
-    //   (__ \ "created").read[Instant] and
-    //   (__ \ "updated").read[Instant] and
     (__ \ "links").readNullable[Seq[HLink]]
   )(ModelShortInfo.apply _)
 
