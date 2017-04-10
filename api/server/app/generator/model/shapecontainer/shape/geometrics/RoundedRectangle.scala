@@ -31,7 +31,9 @@ object RoundedRectangle {
    * @param parentStyle is the style used by the parent and eventual will be merged with the geoModels style to a new style
    * @param hierarchyContainer holds hierarchical information about styles and is therefor needed
    */
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = parse(geoModel, parent, parentStyle, hierarchyContainer)
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
+    parse(geoModel, parent, parentStyle, hierarchyContainer)
+  }
   def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[RoundedRectangle] = {
     /*mapping*/
     val rrLayout: Option[RoundedRectangleLayout] = RoundedRectangleLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)

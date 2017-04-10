@@ -25,7 +25,9 @@ object Ellipse {
    * @param geoModel is the sketch to parse into a GeometricModel
    * @param parent is the parent instance that wraps the new GeometricModel
    */
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = parse(geoModel, parent, parentStyle, hierarchyContainer)
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
+    parse(geoModel, parent, parentStyle, hierarchyContainer)
+  }
   def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[Ellipse] = {
     /*mapping*/
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)

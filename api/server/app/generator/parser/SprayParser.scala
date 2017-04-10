@@ -189,9 +189,11 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
   private def shapeVARPropertie = ("var" ~ "[" ~> ident <~ "]") ~ ("->" ~> ident) ^^ { case key ~ value => ("var", key -> value) }
   private def shapeTextPropertie = shapeVALPropertie | shapeVARPropertie <~ ",?".r
   private def shapeCompartmentPropertie = ("nest" ~> ident) ~ ("->" ~> ident) <~ ",?".r ^^ { case key ~ value => ("nest", key -> value) }
-  private def diagramShape: Parser[(String, PropsAndComps)] = ("shape" ~ ":" ~> ident) ~ (("(" ~> rep((shapeTextPropertie | shapeCompartmentPropertie) <~ ",?".r) <~ ")")?) ^^ {
-    case shapeReference ~ propertiesAndCompartments =>
-      ("shape", PropsAndComps(shapeReference, propertiesAndCompartments))
+  private def diagramShape: Parser[(String, PropsAndComps)] = {
+    ("shape" ~ ":" ~> ident) ~ (("(" ~> rep((shapeTextPropertie | shapeCompartmentPropertie) <~ ",?".r) <~ ")")?) ^^ {
+      case shapeReference ~ propertiesAndCompartments =>
+        ("shape", PropsAndComps(shapeReference, propertiesAndCompartments))
+    }
   }
 
   private def node: Parser[(String, NodeSketch)] = {

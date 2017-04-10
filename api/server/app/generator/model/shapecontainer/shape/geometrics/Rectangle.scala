@@ -29,7 +29,9 @@ object Rectangle {
    * @param geoModel is the sketch to parse into a GeometricModel
    * @param parent is the parent instance that wraps the new GeometricModel
    */
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel] = None, parentStyle: Option[Style], diagram: Cache) = parse(geoModel, parent, parentStyle, diagram)
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel] = None, parentStyle: Option[Style], diagram: Cache) = {
+    parse(geoModel, parent, parentStyle, diagram)
+  }
   def parse(geoModel: GeoModel, parent: Option[GeometricModel] = None, parentStyle: Option[Style], diagram: Cache): Option[Rectangle] = {
     /*mapping*/
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, diagram)

@@ -28,9 +28,16 @@ trait CommonParserMethods extends JavaTokenParsers {
   def attributePair: Parser[(String, String)] = variable ~ arguments ^^ { case v ~ a => (v, a) }
 
   /*special cases - grammar is nasty.. */
-  def compartmentinfo_attribute: Parser[String] = compartmentinfo_attribute_layout | compartmentinfo_attribute_stretching | compartmentinfo_attribute_spacing | compartmentinfo_attribute_margin | compartmentinfo_attribute_invisible | compartmentinfo_attribute_id
-  def compartmentinfo_attribute_layout: Parser[String] = "layout\\s*=\\s*(fixed|vertical|horizontal|fit)".r ^^ { _.toString }
-  def compartmentinfo_attribute_stretching: Parser[String] = "stretching\\s*\\(\\s*horizontal\\s*=\\s*(yes|y|true|no|n|false)\\s*,\\s*vertical\\s*=\\s*(yes|y|true|no|n|false)\\)".r ^^ { _.toString }
+  def compartmentinfo_attribute: Parser[String] = {
+    compartmentinfo_attribute_layout | compartmentinfo_attribute_stretching | compartmentinfo_attribute_spacing | compartmentinfo_attribute_margin |
+      compartmentinfo_attribute_invisible | compartmentinfo_attribute_id
+  }
+  def compartmentinfo_attribute_layout: Parser[String] = {
+    "layout\\s*=\\s*(fixed|vertical|horizontal|fit)".r ^^ { _.toString }
+  }
+  def compartmentinfo_attribute_stretching: Parser[String] = {
+    "stretching\\s*\\(\\s*horizontal\\s*=\\s*(yes|y|true|no|n|false)\\s*,\\s*vertical\\s*=\\s*(yes|y|true|no|n|false)\\)".r ^^ { _.toString }
+  }
   def compartmentinfo_attribute_spacing: Parser[String] = "spacing\\s*=\\s*\\d+".r ^^ { _.toString }
   def compartmentinfo_attribute_margin: Parser[String] = "margin\\s*=\\s*\\d+".r ^^ { _.toString }
   def compartmentinfo_attribute_invisible: Parser[String] = "invisible\\s*=\\s*invisible".r ^^ { _.toString }

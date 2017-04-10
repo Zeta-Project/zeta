@@ -21,7 +21,15 @@ sealed class Diagram private (
   extends HasStyle
 
 object Diagram {
-  def apply(name: String, globActGrps: Map[String, ActionGroup], nodes: List[Node], edges: List[Edge], style: Option[Style], metamodel: MetaModelEntity, cache: Cache) = {
+  def apply(
+    name: String,
+    globActGrps: Map[String, ActionGroup],
+    nodes: List[Node],
+    edges: List[Edge],
+    style: Option[Style],
+    metamodel: MetaModelEntity,
+    cache: Cache) = {
+
     new Diagram(name, globActGrps, nodes, edges, style, metamodel)
   }
 }

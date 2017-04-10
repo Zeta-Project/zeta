@@ -5,7 +5,7 @@
    <parameter name="maxFileLength"><![CDATA[800]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.file.FileLineLengthChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.file.FileLineLengthChecker" level="error">
   <parameters>
    <parameter name="maxLineLength"><![CDATA[160]]></parameter>
    <parameter name="tabSize"><![CDATA[4]]></parameter>

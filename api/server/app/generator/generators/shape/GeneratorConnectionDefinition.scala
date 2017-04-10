@@ -356,7 +356,12 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generateSvgPathData(shape: RoundedRectangle) = {
-    "M " + shape.x + " " + shape.curve_width + " " + shape.y + " " + shape.curve_height + " l " + (shape.size_width - 2 * shape.curve_width) + "l 0 a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " " + shape.curve_height + "l 0 " + (shape.size_height - 2 * shape.curve_height) + " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 -" + shape.curve_width + " " + shape.curve_height + " l -" + (shape.size_width - 2 * shape.curve_width) + " 0 a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 -" + shape.curve_width + " -" + shape.curve_height + " l 0 -" + (shape.size_height - 2 * shape.curve_height) + " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " -" + shape.curve_height
+    "M " + shape.x + " " + shape.curve_width + " " + shape.y + " " + shape.curve_height + " l " + (shape.size_width - 2 * shape.curve_width) +
+      "l 0 a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " " + shape.curve_height + "l 0 " +
+      (shape.size_height - 2 * shape.curve_height) + " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 -" + shape.curve_width +
+      " " + shape.curve_height + " l -" + (shape.size_width - 2 * shape.curve_width) + " 0 a " + shape.curve_width + " " + shape.curve_height +
+      " 0 0 1 -" + shape.curve_width + " -" + shape.curve_height + " l 0 -" + (shape.size_height - 2 * shape.curve_height) +
+      " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " -" + shape.curve_height
   }
 
   protected def generateSvgPathData(shape: Polygon) = {
@@ -368,7 +373,8 @@ object GeneratorConnectionDefinition {
   protected def generateSvgPathData(shape: Ellipse) = {
     val rx = shape.size_width / 2
     val ry = shape.size_height / 2
-    "M " + shape.x + " " + shape.y + " a  " + rx + " " + ry + " 0 0 1 " + rx + " -" + ry + " a  " + rx + " " + ry + " 0 0 1 " + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " -" + ry
+    "M " + shape.x + " " + shape.y + " a  " + rx + " " + ry + " 0 0 1 " + rx + " -" + ry + " a  " + rx + " " + ry + " 0 0 1 " + rx + " " +
+      ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " -" + ry
   }
 
   protected def generateStyleCorrections = {

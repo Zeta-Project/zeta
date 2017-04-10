@@ -112,11 +112,28 @@ sealed class Shape private (
 }
 
 object Shape extends CommonParserMethods {
-  val validShapeVariables = List("size-min", "size-max", "stretching", "proportional", "anchor", "description(\\s*style\\s*[a-zA-ZüäöÜÄÖ]+([-_][a-zA-ZüäöÜÄÖ])*)?\\s*")
+  val validShapeVariables = List(
+    "size-min",
+    "size-max",
+    "stretching",
+    "proportional",
+    "anchor",
+    "description(\\s*style\\s*[a-zA-ZüäöÜÄÖ]+([-_][a-zA-ZüäöÜÄÖ])*)?\\s*"
+  )
 
   def apply(n: String) = new Shape(name = n)
-  def apply(name: String, parents: Option[List[String]], style: Option[Style], attributes: List[(String, String)], geos: List[GeoModel], description: Option[(String, String)], anchor: Option[String], hierarchyContainer: Cache) =
+  def apply(
+    name: String,
+    parents: Option[List[String]],
+    style: Option[Style],
+    attributes: List[(String, String)],
+    geos: List[GeoModel],
+    description: Option[(String, String)],
+    anchor: Option[String],
+    hierarchyContainer: Cache) = {
+
     parse(name, parents, style, attributes, geos, description, anchor, hierarchyContainer)
+  }
 
   def parse(
     name: String,
@@ -200,8 +217,23 @@ object Shape extends CommonParserMethods {
       anchor = Some(Anchor.parse(Anchor.anchor, anch.get).get)
 
     /*create the actual shape instance*/
-    val newShape = new Shape(name, style, size_width_min, size_height_min, size_width_max, size_height_max,
-      stretching_horizontal, stretching_vertical, prop, shapes, textMap, compartmentMap, geos, description, anchor)
+    val newShape = new Shape(
+      name,
+      style,
+      size_width_min,
+      size_height_min,
+      size_width_max,
+      size_height_max,
+      stretching_horizontal,
+      stretching_vertical,
+      prop,
+      shapes,
+      textMap,
+      compartmentMap,
+      geos,
+      description,
+      anchor
+    )
 
     /*include new shape instance in shapeHierarchie*/
     if (extendedShapes.nonEmpty) {
@@ -217,12 +249,16 @@ object Shape extends CommonParserMethods {
     case prop: String => Some(matchBoolean(prop))
     case _ => None
   }
-  def stretching: Parser[Option[(Boolean, Boolean)]] = "\\(\\s*(horizontal\\s*=\\s*)?".r ~> argument ~ (",\\s*(vertical\\s*=\\s*)?".r ~> argument) <~ ")" ^^ {
-    case hor ~ ver => Some(matchBoolean(hor), matchBoolean(ver))
-    case _ => None
+  def stretching: Parser[Option[(Boolean, Boolean)]] = {
+    "\\(\\s*(horizontal\\s*=\\s*)?".r ~> argument ~ (",\\s*(vertical\\s*=\\s*)?".r ~> argument) <~ ")" ^^ {
+      case hor ~ ver => Some(matchBoolean(hor), matchBoolean(ver))
+      case _ => None
+    }
   }
-  def width_height: Parser[Option[(Int, Int)]] = "\\(\\s*(width\\s*=\\s*)?".r ~> argument_int ~ (",\\s*(height\\s*=\\s*)?".r ~> argument_int) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
+  def width_height: Parser[Option[(Int, Int)]] = {
+    "\\(\\s*(width\\s*=\\s*)?".r ~> argument_int ~ (",\\s*(height\\s*=\\s*)?".r ~> argument_int) <~ ")" ^^ {
+      case width ~ height => Some((width.toInt, height.toInt))
+      case _ => None
+    }
   }
 }

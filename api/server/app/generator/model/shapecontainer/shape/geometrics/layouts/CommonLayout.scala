@@ -27,7 +27,9 @@ object CommonLayoutParser extends CommonParserMethods {
     var pos: Option[(Int, Int)] = None
     var size_w: Option[Int] = None
     var size_h: Option[Int] = None
-    var styl: Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style) //if geoModel.style and parentstyle are defined a childStyle is created
+
+    //if geoModel.style and parentstyle are defined a childStyle is created
+    var styl: Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style)
 
     attributes.foreach {
       case x if x.matches("position.+") => pos = {

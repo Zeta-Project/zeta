@@ -6,9 +6,13 @@ import util.domain._
 class DataVisValidator {
   val errors = scala.collection.mutable.MutableList[String]()
 
-  def validate(conditionals: List[Conditional], mObj: ObjectWithAttributes): Boolean = conditionals.forall(c => validate(c, mObj))
+  def validate(conditionals: List[Conditional], mObj: ObjectWithAttributes): Boolean = {
+    conditionals.forall(c => validate(c, mObj))
+  }
 
-  def validate(conditional: Conditional, mObj: ObjectWithAttributes) = isTypeValid(conditional.condition, mObj) && isTypeValid(conditional.assignment, mObj)
+  def validate(conditional: Conditional, mObj: ObjectWithAttributes) = {
+    isTypeValid(conditional.condition, mObj) && isTypeValid(conditional.assignment, mObj)
+  }
 
   def isTypeValid(condition: Condition, mObj: ObjectWithAttributes) = condition.x match {
     case id: MIdentifier => condition.y match {
@@ -26,7 +30,8 @@ class DataVisValidator {
 
   def isTypeValid(assignment: Assignment, mObj: ObjectWithAttributes) = assignment.target match {
     case style: StyleIdentifier => true
-    case mid: MIdentifier => areTypesEqual(assignment.value, mid, mObj) || fail("Assignment of incompatible type for attribute " + assignment.target)
+    case mid: MIdentifier =>
+      areTypesEqual(assignment.value, mid, mObj) || fail("Assignment of incompatible type for attribute " + assignment.target)
   }
 
   def areTypesEqual(x: MIdentifier, y: MIdentifier, mObj: ObjectWithAttributes) = {
@@ -34,7 +39,8 @@ class DataVisValidator {
       case None => fail(mObj.name + "has no attribute " + x.identifier)
       case Some(attrX) => mObj.attribute(y.identifier) match {
         case None => fail(mObj.name + "has no attribute " + y.identifier)
-        case Some(attrY) => attrX._type == attrY._type || fail("Type error: types of " + x + " and " + y + " do not match. (x:" + attrX._type + ", y:" + attrY._type + ")")
+        case Some(attrY) =>
+          attrX._type == attrY._type || fail("Type error: types of " + x + " and " + y + " do not match. (x:" + attrX._type + ", y:" + attrY._type + ")")
       }
     }
   }

@@ -22,7 +22,14 @@ import utils.auth.{ DefaultEnv, RepositoryFactory }
 
 import scala.concurrent.{ Future, Promise }
 
-class BackendController @Inject() (implicit system: ActorSystem, mat: Materializer, repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv], session: Session) extends Controller {
+class BackendController @Inject() (
+    implicit system: ActorSystem,
+    mat: Materializer,
+    repositoryFactory: RepositoryFactory,
+    silhouette: Silhouette[DefaultEnv],
+    session: Session)
+  extends Controller {
+
   implicit val developerMsg = MessageFlowTransformer.jsonMessageFlowTransformer[DeveloperRequest, DeveloperResponse]
   implicit val userMsg = MessageFlowTransformer.jsonMessageFlowTransformer[UserRequest, UserResponse]
   implicit val generatorMsg = MessageFlowTransformer.jsonMessageFlowTransformer[GeneratorRequest, GeneratorResponse]

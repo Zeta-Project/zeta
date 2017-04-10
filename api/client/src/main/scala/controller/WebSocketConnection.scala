@@ -6,7 +6,12 @@ import shared.CodeEditorMessage
 import shared.CodeEditorMessage._
 import upickle.default._
 
-case class WebSocketConnection(uri: String = s"ws://${window.location.host}/codeeditor/socket", controller: CodeEditorController, metaModelUuid: String, dslType: String) {
+case class WebSocketConnection(
+    uri: String = s"ws://${window.location.host}/codeeditor/socket",
+    controller: CodeEditorController,
+    metaModelUuid: String,
+    dslType: String) {
+
   /** Set up WebSocket connection */
   val ws = new dom.WebSocket(uri + "/" + metaModelUuid + "/" + dslType)
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)

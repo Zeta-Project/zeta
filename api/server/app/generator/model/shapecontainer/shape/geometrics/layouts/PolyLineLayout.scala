@@ -14,7 +14,9 @@ trait PolyLineLayout extends Layout {
 }
 
 object PolyLineLayoutParser {
-  def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLineLayout] = parse(geoModel, parentStyle, hierarchyContainer)
+  def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLineLayout] = {
+    parse(geoModel, parentStyle, hierarchyContainer)
+  }
   def parse(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLineLayout] = {
     implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes

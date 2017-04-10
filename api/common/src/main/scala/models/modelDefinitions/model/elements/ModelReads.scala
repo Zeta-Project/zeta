@@ -17,9 +17,15 @@ import scala.collection.immutable._
 
 object ModelReads {
 
-  def emtpyNode(id: String) = Node(id, MClass("", false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]()), Seq[ToEdges](), Seq[ToEdges](), Seq[Attribute]())
+  def emtpyNode(id: String) = {
+    val mclass = MClass("", false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    Node(id, mclass, Seq[ToEdges](), Seq[ToEdges](), Seq[Attribute]())
+  }
 
-  def emtpyEdge(id: String) = new Edge(id, MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]()), Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
+  def emtpyEdge(id: String) = {
+    val mReference = MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    new Edge(id, mReference, Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
+  }
 
   private trait InvalidLink {
     val message: String

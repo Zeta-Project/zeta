@@ -74,8 +74,10 @@ object Compartment extends CommonParserMethods {
     case spac => spac.toInt
   }
 
-  def parse_stretching = ("stretching\\s*\\(\\s*horizontal\\s*=".r ~> "(yes|y|true|no|n|false)".r) ~ (",\\s*vertical\\s*=".r ~> ("(yes|y|true|no|n|false)".r <~ ")")) ^^ {
-    case hor ~ ver => (matchBoolean(hor), matchBoolean(ver))
+  def parse_stretching = {
+    ("stretching\\s*\\(\\s*horizontal\\s*=".r ~> "(yes|y|true|no|n|false)".r) ~ (",\\s*vertical\\s*=".r ~> ("(yes|y|true|no|n|false)".r <~ ")")) ^^ {
+      case hor ~ ver => (matchBoolean(hor), matchBoolean(ver))
+    }
   }
 
   def parse_id = "id\\s*=".r ~> ident ^^ { _.toString }

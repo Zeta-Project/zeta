@@ -21,7 +21,13 @@ object MasterWorkerProtocol {
 
   // Messages to Master from Developer
   trait DeveloperToMaster
-  case class Work(job: Job, owner: String, dockerSettings: DockerSettings, session: String = "", id: String = UUID.randomUUID().toString) extends DeveloperToMaster
+  case class Work(
+      job: Job,
+      owner: String,
+      dockerSettings: DockerSettings,
+      session: String = "",
+      id: String = UUID.randomUUID().toString)
+    extends DeveloperToMaster
   case class CancelWork(id: String) extends DeveloperToMaster
   case class DeveloperReceivedCompletedWork(id: String) extends DeveloperToMaster
 

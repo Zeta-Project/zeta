@@ -21,7 +21,9 @@ sealed class Line private (
 }
 
 object Line {
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = parse(geoModel, parent, parentStyle, hierarchyContainer)
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
+    parse(geoModel, parent, parentStyle, hierarchyContainer)
+  }
   def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[Line] = {
     val lineLayout = LineLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     if (lineLayout.isEmpty)

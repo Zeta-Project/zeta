@@ -16,7 +16,12 @@ import utils.auth.{ DefaultEnv, RepositoryFactory }
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ModelController @Inject() (implicit mat: Materializer, system: ActorSystem, repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class ModelController @Inject() (
+    implicit mat: Materializer,
+    system: ActorSystem,
+    repositoryFactory: RepositoryFactory,
+    silhouette: Silhouette[DefaultEnv])
+  extends Controller {
 
   val log = Logger(this getClass () getName ())
 

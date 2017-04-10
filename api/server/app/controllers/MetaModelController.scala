@@ -20,19 +20,18 @@ import scala.concurrent.Future
  * Created by mgt on 17.10.15.
  */
 
-class MetaModelController @Inject() (implicit mat: Materializer, system: ActorSystem, repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class MetaModelController @Inject() (
+    implicit mat: Materializer,
+    system: ActorSystem,
+    repositoryFactory: RepositoryFactory,
+    silhouette: Silhouette[DefaultEnv])
+  extends Controller {
 
   def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   def metaModelEditor(metaModelUuid: String) = silhouette.SecuredAction.async { implicit request =>
     repository.get[MetaModelEntity](metaModelUuid).map { metaModelEntity =>
-      // Fix Graph with MetaModelGraphDiff
-      //val oldMetaModelEntity = metaModelEntity.get
-      //val fixedConcept = MetamodelGraphDiff.fixGraph(oldMetaModelEntity.metaModel)
-      //val fixedDefinition = oldMetaModelEntity.metaModel.copy(concept = fixedConcept)
-      //val fixedMetaModelEntity = oldMetaModelEntity.copy(metaModel = fixedConcept)
-
       Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.identity), metaModelUuid, metaModelEntity))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)

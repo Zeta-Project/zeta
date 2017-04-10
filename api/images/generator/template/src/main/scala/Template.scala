@@ -40,7 +40,10 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
     case (None, Some(generator), None, None, None, Some(options)) =>
       Right(Unit)
     case _ =>
-      Left("Invalid arguments. It's only valid to call a generator with a filter, a generator with a model or to generate a generator with options and the image id.")
+      Left(
+        "Invalid arguments. It's only valid to call a generator with a filter, " +
+        "a generator with a model or to generate a generator with options and the image id."
+      )
   }
 
   verify()

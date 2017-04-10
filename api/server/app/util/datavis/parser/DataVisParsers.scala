@@ -26,7 +26,11 @@ trait DataVisParsers extends JavaTokenParsers {
 
   def identifier = styleIdentifier | mIdentifier //Order is important!
 
-  def styleIdentifier = "style" ~ selector ~ dotProperties ^^ { case _ ~ selector ~ properties => new StyleIdentifier(selector, buildIdentifier("", properties)) }
+  def styleIdentifier = {
+    "style" ~ selector ~ dotProperties ^^ {
+      case _ ~ selector ~ properties => new StyleIdentifier(selector, buildIdentifier("", properties))
+    }
+  }
   def mIdentifier = ident ~ dotProperties ^^ { case first ~ properties => new MIdentifier(buildIdentifier(first, properties)) }
 
   def dotProperties = dotProperty.*

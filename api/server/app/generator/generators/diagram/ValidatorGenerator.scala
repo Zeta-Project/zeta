@@ -182,10 +182,15 @@ object ValidatorGenerator {
 
   def generateCompartmentMap(compartmentMap: HashMap[String, List[String]]) = {
     s"""
-      ${
+    ${
       val compartmentData = compartmentMap
-      for (((key, value), i) <- compartmentData.zipWithIndex) yield s"""$key: [${for (compartment <- value) yield s""""$compartment"${if (compartment != value.last) ", "}"""}]${if (i != compartmentData.size) ", "}"""
-    }"""
+      for (((key, value), i) <- compartmentData.zipWithIndex)
+        yield s"""$key: [${
+          for (compartment <- value)
+            yield s""""$compartment"${if (compartment != value.last) ", "}"""
+        }]${if (i != compartmentData.size) ", "}"""
+    }
+    """
   }
 
   private def getTargetMatrix(diagram: Diagram) = {

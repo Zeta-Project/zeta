@@ -151,7 +151,21 @@ object VrGeneratorShapeDefinition {
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
           s"""
             ${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
-            create(new VrElement.${element.capitalize}() , ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+            create(
+              new VrElement.${element.capitalize}(),
+              ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }},
+              true,
+              {
+                x: ${position._1 / totalSize._2},
+                y: -${position._2 / totalSize._1}
+              },
+              null,
+              null,
+              {
+                height: ${c.size_height / totalSize._1},
+                width: ${c.size_width / totalSize._2}
+              }
+            );
             ${createInnerSizing(wrapper.children, totalSize)}
           """
         }

@@ -76,7 +76,9 @@ object Style extends CommonParserMethods {
    * @param attributes List of Tuples of Strings -> List[(String, String)] consist of tuple._1 = attribute's name and tuple._2 the according value
    * @param hierarchyContainer is a Diagram which contains the styleHierarchy which gives information about inheritance
    */
-  def apply(name: String, parents: Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache) = parse(name, parents, attributes, hierarchyContainer)
+  def apply(name: String, parents: Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache) = {
+    parse(name, parents, attributes, hierarchyContainer)
+  }
   def parse(name: String, parents: Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache): Style = {
 
     implicit val cache = hierarchyContainer
@@ -122,8 +124,7 @@ object Style extends CommonParserMethods {
       attributes.foreach {
         case ("description", x) => description = Some(x)
         case ("transparency", x: String) => transparency = ifValid(x.toDouble)
-        case ("background-color", x) =>
-          background_color = Some(parse(colorOrGradient, x).get)
+        case ("background-color", x) => background_color = Some(parse(colorOrGradient, x).get)
         case ("line-color", x) => line_color = Some(parse(colorWithTransparency, x).get)
         case ("line-style", x) => line_style = LineStyle.getIfValid(x)
         case ("line-width", x: String) => line_width = ifValid(x.toInt)
@@ -143,8 +144,26 @@ object Style extends CommonParserMethods {
     }
 
     /*create the instance of the actual new Style*/
-    val newStyle = new Style(name, description, transparency, background_color, line_color, line_style, line_width, font_color,
-      font_name, font_size, font_bold, font_italic, gradient_orientation, selected_highlighting, multiselected_highlighting, allowed_highlighting, unallowed_highlighting, extendedStyle)
+    val newStyle = new Style(
+      name,
+      description,
+      transparency,
+      background_color,
+      line_color,
+      line_style,
+      line_width,
+      font_color,
+      font_name,
+      font_size,
+      font_bold,
+      font_italic,
+      gradient_orientation,
+      selected_highlighting,
+      multiselected_highlighting,
+      allowed_highlighting,
+      unallowed_highlighting,
+      extendedStyle
+    )
 
     /*include new style instance in stylehierarchie*/
     if (extendedStyle.nonEmpty) {
@@ -167,9 +186,26 @@ object Style extends CommonParserMethods {
     attribute + " in " + className + " '" + name + "' was ignored")
 
   /*neccessary for parsing*/
-  val colors = Set("white", "light-light-gray", "light-gray", "gray", "black", "red", "light-orange",
-    "orange", "dark-orange", "yellow", "green", "light-green", "dark-green", "cyan", "light-blue",
-    "blue", "dark-blue", "transparent")
+  val colors = Set(
+    "white",
+    "light-light-gray",
+    "light-gray",
+    "gray",
+    "black",
+    "red",
+    "light-orange",
+    "orange",
+    "dark-orange",
+    "yellow",
+    "green",
+    "light-green",
+    "dark-green",
+    "cyan",
+    "light-blue",
+    "blue",
+    "dark-blue",
+    "transparent"
+  )
 
   def colorOrGradient: Parser[ColorOrGradient] = (color | transparent | gradient) ^^ {
     case g: Gradient => g
@@ -187,7 +223,9 @@ object Style extends CommonParserMethods {
       ("blue" ~ "=" ~> argument_int <~ ")") ^^ {
         case red ~ blue ~ green => (red, blue, green)
       }
-  private def colorConstant: Parser[String] = ("(" + colors.map(c => c + { if (c != colors.last) "|" else "" }).mkString + ")").r ^^ { _.toString }
+  private def colorConstant: Parser[String] = {
+    ("(" + colors.map(c => c + { if (c != colors.last) "|" else "" }).mkString + ")").r ^^ { _.toString }
+  }
 
   def transparent: Parser[ColorOrGradient] = "transparent".r ^^ { case t => Transparent }
 
@@ -203,5 +241,7 @@ object Style extends CommonParserMethods {
         case c ~ d => GradientColorArea(c, d)
       }
 
-  def colorWithTransparency: Parser[ColorWithTransparency] = (color | transparent) ^^ { _.asInstanceOf[ColorWithTransparency] }
+  def colorWithTransparency: Parser[ColorWithTransparency] = {
+    (color | transparent) ^^ { _.asInstanceOf[ColorWithTransparency] }
+  }
 }

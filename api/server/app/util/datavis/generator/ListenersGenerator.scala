@@ -20,7 +20,9 @@ class ListenersGenerator {
     fileName
   }
 
-  def generateContents(objectId: String, conditionals: List[Conditional]) = generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
+  def generateContents(objectId: String, conditionals: List[Conditional]) = {
+    generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
+  }
 
   def generateHead =
     """
@@ -35,7 +37,9 @@ class ListenersGenerator {
       | _.extend(dataVisListeners["$objectId"], Backbone.Events);
     """.stripMargin
 
-  def generateListeners(objectId: String, conditional: List[Conditional]) = conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
+  def generateListeners(objectId: String, conditional: List[Conditional]) = {
+    conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
+  }
 
   def generateListener(objectId: String, conditional: Conditional) = {
     val comparisonLeft = generateComparisonOperand(conditional.condition.x)

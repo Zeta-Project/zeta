@@ -21,7 +21,9 @@ object Main extends Template[CreateOptions, String] {
    * @param files     Access to the Files repository
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = compiledGenerator(file)
+  override def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
+    compiledGenerator(file)
+  }
 
   /**
    * Initialize the generator
@@ -31,7 +33,9 @@ object Main extends Template[CreateOptions, String] {
    * @param files     Access to the Files repository
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = compiledGenerator(file)
+  override def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
+    compiledGenerator(file)
+  }
 
   def matchMClassMethod(entity: MClass) = {
     s"""case "${entity.name}" => transform${entity.name}Node(node)"""
