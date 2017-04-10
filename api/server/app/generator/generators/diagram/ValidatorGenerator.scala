@@ -254,7 +254,8 @@ object ValidatorGenerator {
     for (parent <- nodeList) {
       var validCompartments = List[String]()
       if (parent.shape isDefined) {
-        for ((name, compartment) <- parent.shape.get.nests /*compartments*/ ) {
+        for ((name, compartment) <- parent.shape.get.nests) {
+          /*compartments*/
           //TODO cant be resolved since compartments have no nestedShape  - Spray.xtext says compartments are (Ereference -> Shape) mapping.... ?!?!?
           //if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
           //  validCompartments =  compartment.nestedShape.name :: validCompartments

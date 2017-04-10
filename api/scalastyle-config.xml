@@ -50,7 +50,7 @@
    <parameter name="tokens">LPAREN</parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.DisallowSpaceBeforeTokenChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.DisallowSpaceBeforeTokenChecker" level="error">
   <parameters>
    <parameter name="tokens">COLON, COMMA, RPAREN</parameter>
   </parameters>
