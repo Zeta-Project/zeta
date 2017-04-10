@@ -39,4 +39,3 @@ class UserFrontend(out: ActorRef, backend: ActorRef, userId: String, model: Stri
       out ! response
   }
 }
-

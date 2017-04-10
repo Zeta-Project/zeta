@@ -28,4 +28,3 @@ case class Cache(
   def +(shapeSketch: ShapeSketch) = shapeSketches += shapeSketch.name -> shapeSketch
   def +(connectionSketch: ConnectionSketch) = connectionSketches += connectionSketch.name -> connectionSketch
 }
-

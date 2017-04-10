@@ -19,7 +19,7 @@
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.file.IndentationChecker" level="error"/>
- <check enabled="true" class="org.scalastyle.file.NewLineAtEofChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.file.NewLineAtEofChecker" level="error"/>
  <check enabled="false" class="org.scalastyle.file.NoNewLineAtEofChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.file.RegexChecker" level="warning">
   <parameters>

@@ -6,4 +6,3 @@ package generator.model.shapecontainer.shape.geometrics
  * and so on
  */
 abstract class GeometricModel(var parent: Option[GeometricModel] = None)
-
