@@ -55,7 +55,7 @@
    <parameter name="tokens">COLON, COMMA, RPAREN</parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.EmptyClassChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.EmptyClassChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.EnsureSingleSpaceAfterTokenChecker" level="error">
   <parameters>
    <parameter name="tokens">COLON, IF</parameter>

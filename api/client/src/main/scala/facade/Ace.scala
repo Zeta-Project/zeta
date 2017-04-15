@@ -59,8 +59,7 @@ class KeyBinding protected () extends js.Object {
 }
 
 @JSName("AceAjax.KeyBinding")
-object KeyBinding extends js.Object {
-}
+object KeyBinding extends js.Object
 
 class TextMode extends js.Object {
   def this($id: js.Any) = this()
@@ -92,8 +91,7 @@ class Anchor protected () extends js.Object {
 }
 
 @JSName("AceAjax.Anchor")
-object Anchor extends js.Object {
-}
+object Anchor extends js.Object
 
 @JSName("AceAjax.BackgroundTokenizer")
 class BackgroundTokenizer protected () extends js.Object {
@@ -109,8 +107,7 @@ class BackgroundTokenizer protected () extends js.Object {
 }
 
 @JSName("AceAjax.BackgroundTokenizer")
-object BackgroundTokenizer extends js.Object {
-}
+object BackgroundTokenizer extends js.Object
 
 @JSName("AceAjax.Document")
 class Document protected () extends js.Object {
@@ -144,8 +141,7 @@ class Document protected () extends js.Object {
 }
 
 @JSName("AceAjax.Document")
-object Document extends js.Object {
-}
+object Document extends js.Object
 
 trait IEditSession extends js.Object {
   var selection: Selection = js.native
@@ -255,7 +251,7 @@ trait IEditSession extends js.Object {
 }
 
 @JSName("AceAjax.EditSession")
-object EditSession extends js.Object {}
+object EditSession extends js.Object
 
 @JSName("AceAjax.Editor")
 class Editor protected () extends js.Object {
@@ -394,8 +390,7 @@ class Editor protected () extends js.Object {
 }
 
 @JSName("AceAjax.Editor")
-object Editor extends js.Object {
-}
+object Editor extends js.Object
 
 trait EditorChangeEvent extends js.Object {
   var start: Position = js.native
@@ -419,8 +414,7 @@ class PlaceHolder protected () extends js.Object {
 }
 
 @JSName("AceAjax.PlaceHolder")
-object PlaceHolder extends js.Object {
-}
+object PlaceHolder extends js.Object
 
 trait IRangeList extends js.Object {
   var ranges: js.Array[Range] = js.native
@@ -432,9 +426,7 @@ trait IRangeList extends js.Object {
 }
 
 @JSName("AceAjax.RangeList")
-object RangeList extends js.Object {
-  /* ??? ConstructorMember(FunSignature(List(),List(),Some(TypeRef(TypeName(IRangeList),List())))) */
-}
+object RangeList extends js.Object
 
 @JSName("AceAjax.Range")
 class Range protected () extends js.Object {
@@ -479,12 +471,10 @@ object Range extends js.Object {
 }
 
 @JSName("AceAjax.RenderLoop")
-class RenderLoop extends js.Object {
-}
+class RenderLoop extends js.Object
 
 @JSName("AceAjax.RenderLoop")
-object RenderLoop extends js.Object {
-}
+object RenderLoop extends js.Object
 
 @JSName("AceAjax.ScrollBar")
 class ScrollBar protected () extends js.Object {
@@ -497,8 +487,7 @@ class ScrollBar protected () extends js.Object {
 }
 
 @JSName("AceAjax.ScrollBar")
-object ScrollBar extends js.Object {
-}
+object ScrollBar extends js.Object
 
 @JSName("AceAjax.Search")
 class Search extends js.Object {
@@ -511,8 +500,7 @@ class Search extends js.Object {
 }
 
 @JSName("AceAjax.Search")
-object Search extends js.Object {
-}
+object Search extends js.Object
 
 @JSName("AceAjax.Selection")
 class Selection protected () extends js.Object {
@@ -570,8 +558,7 @@ class Selection protected () extends js.Object {
 }
 
 @JSName("AceAjax.Selection")
-object Selection extends js.Object {
-}
+object Selection extends js.Object
 
 @JSName("AceAjax.Split")
 class Split extends js.Object {
@@ -591,8 +578,7 @@ class Split extends js.Object {
 }
 
 @JSName("AceAjax.Split")
-object Split extends js.Object {
-}
+object Split extends js.Object
 
 @JSName("AceAjax.TokenIterator")
 class TokenIterator protected () extends js.Object {
@@ -605,8 +591,7 @@ class TokenIterator protected () extends js.Object {
 }
 
 @JSName("AceAjax.TokenIterator")
-object TokenIterator extends js.Object {
-}
+object TokenIterator extends js.Object
 
 @JSName("AceAjax.Tokenizer")
 class Tokenizer protected () extends js.Object {
@@ -615,8 +600,7 @@ class Tokenizer protected () extends js.Object {
 }
 
 @JSName("AceAjax.Tokenizer")
-object Tokenizer extends js.Object {
-}
+object Tokenizer extends js.Object
 
 @JSName("AceAjax.UndoManager")
 class UndoManager extends js.Object {
@@ -629,8 +613,7 @@ class UndoManager extends js.Object {
 }
 
 @JSName("AceAjax.UndoManager")
-object UndoManager extends js.Object {
-}
+object UndoManager extends js.Object
 
 @JSName("AceAjax.VirtualRenderer")
 class VirtualRenderer protected () extends js.Object {
@@ -700,5 +683,4 @@ class VirtualRenderer protected () extends js.Object {
 }
 
 @JSName("AceAjax.VirtualRenderer")
-object VirtualRenderer extends js.Object {
-}
+object VirtualRenderer extends js.Object
