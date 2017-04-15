@@ -39,7 +39,7 @@
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.CovariantEqualsChecker" level="error"/>
- <check enabled="true" class="org.scalastyle.scalariform.CyclomaticComplexityChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.CyclomaticComplexityChecker" level="error">
   <parameters>
    <parameter name="maximum"><![CDATA[10]]></parameter>
   </parameters>

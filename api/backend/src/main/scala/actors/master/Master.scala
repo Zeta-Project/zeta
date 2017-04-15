@@ -72,155 +72,174 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
     /**
      * Worker send a registration message
      */
-    case MasterWorkerProtocol.RegisterWorker(workerId) =>
-      if (workers.contains(workerId)) {
-        workers += (workerId -> workers(workerId).copy(ref = sender(), deadline = workerDeathTimeout))
-      } else {
-        workers += (workerId -> WorkerState(sender(), Idle, workerDeathTimeout))
-        if (workState.hasWork)
-          sender() ! MasterWorkerProtocol.WorkIsReady
-      }
-
+    case MasterWorkerProtocol.RegisterWorker(workerId) => registerWorker(workerId)
     /**
      * Worker is asking for work
      */
-    case MasterWorkerProtocol.WorkerRequestsWork(workerId) =>
-      if (workState.hasWork) {
-        workers.get(workerId) match {
-          case Some(worker @ WorkerState(_, Idle, _)) =>
-            val workerRef = sender()
-            val work = workState.nextWork
-            persist(WorkStarted(work.id)) { event =>
-              workState = workState.updated(event)
-              workers += (workerId -> worker.copy(status = Busy(work.id, Deadline.now + workerTimeout)))
-              sessionManager.getSession(work.owner, sessionDuration.toSeconds).map { session =>
-                workerRef ! work.copy(session = session)
-              }.recover {
-                case e: Exception =>
-                  log.error(s"Master failed on loading a session for ${work.owner}")
-                  self ! work
-              }
-            }
-          case _ =>
-        }
-      }
-
+    case MasterWorkerProtocol.WorkerRequestsWork(workerId) => sendWork(workerId)
     /**
      * Worker successful executed work
      */
-    case MasterWorkerProtocol.WorkIsDone(workerId, workId, result) =>
-      // send a ack to the worker to tell the worker that the message was received
-      sender() ! MasterWorkerProtocol.Ack(workId)
-      // set the worker back to idle state
-      changeWorkerToIdle(workerId)
-      // if the work is not persisted as "done", we need to persist this state
-      if (!workState.isDone(workId)) {
-        persist(WorkCompleted(workId, result)) { event =>
-          workState = workState.updated(event)
-          workState.completedWorkById(workId) match {
-            case Some(completed) =>
-              log.info("Sending work {} as completed to the work creator {}", workerId, completed.work.owner)
-              mediator ! DistributedPubSubMediator.Publish(completed.work.owner, MasterWorkerProtocol.MasterCompletedWork(workId, result))
-            case None =>
-              // should not happen
-              log.error("Completed work {} was not available as expected", workId)
-          }
-        }
-      }
-
+    case MasterWorkerProtocol.WorkIsDone(workerId, workId, result) => processWorkResult(workerId, workId, result)
     /**
      * Worker executed work and work failed.
      */
-    case MasterWorkerProtocol.WorkFailed(workerId, workId) =>
-      // send a ack to the worker to tell the worker that the message was received
-      sender() ! MasterWorkerProtocol.Ack(workId)
-      // set the worker back to idle state
-      changeWorkerToIdle(workerId)
-
-      if (workState.isInProgress(workId)) {
-        log.info("Work {} failed by worker {}", workId, workerId)
-        changeWorkerToIdle(workerId)
-        persist(WorkerFailed(workId)) { event =>
-          workState = workState.updated(event)
-          notifyWorkers()
-        }
-      }
-
-    /*
+    case MasterWorkerProtocol.WorkFailed(workerId, workId) => processWorkFailed(workerId, workId)
+    /**
      * Developer sends ack that he received the result of the completed work
      */
-    case MasterWorkerProtocol.DeveloperReceivedCompletedWork(workId) =>
-      log.info("Master received ack that work completion was received {}", workId)
-      persist(WorkCompletionReceived(workId)) { event =>
-        workState = workState.updated(event)
-      }
-
+    case MasterWorkerProtocol.DeveloperReceivedCompletedWork(workId) => confirmWorkResult(workId)
     /**
      * New work was send by a developer.
      */
-    case work: MasterWorkerProtocol.Work =>
-      if (workState.isAccepted(work.id)) {
+    case work: MasterWorkerProtocol.Work => processWork(work)
+    /**
+     * Work should be canceled.
+     */
+    case cancelWork: CancelWork => processCancelWork(cancelWork)
+    case WorkerTimeoutTick => processWorkerTimeout()
+    /**
+     * Check for completed work from which no ack was received by the developer (which started the work).
+     */
+    case CompletedWorkTick => processWorkCompleted()
+  }
+
+  private def registerWorker(workerId: String) = {
+    if (workers.contains(workerId)) {
+      workers += (workerId -> workers(workerId).copy(ref = sender(), deadline = workerDeathTimeout))
+    } else {
+      workers += (workerId -> WorkerState(sender(), Idle, workerDeathTimeout))
+      if (workState.hasWork)
+        sender() ! MasterWorkerProtocol.WorkIsReady
+    }
+  }
+
+  private def sendWork(workerId: String) = {
+    if (workState.hasWork) {
+      workers.get(workerId) match {
+        case Some(worker @ WorkerState(_, Idle, _)) =>
+          val workerRef = sender()
+          val work = workState.nextWork
+          persist(WorkStarted(work.id)) { event =>
+            workState = workState.updated(event)
+            workers += (workerId -> worker.copy(status = Busy(work.id, Deadline.now + workerTimeout)))
+            sessionManager.getSession(work.owner, sessionDuration.toSeconds).map { session =>
+              workerRef ! work.copy(session = session)
+            }.recover {
+              case e: Exception =>
+                log.error(s"Master failed on loading a session for ${work.owner}")
+                self ! work
+            }
+          }
+        case _ =>
+      }
+    }
+  }
+
+  private def processWorkResult(workerId: String, workId: String, result: Int) = {
+    // send a ack to the worker to tell the worker that the message was received
+    sender() ! MasterWorkerProtocol.Ack(workId)
+    // set the worker back to idle state
+    changeWorkerToIdle(workerId)
+    // if the work is not persisted as "done", we need to persist this state
+    if (!workState.isDone(workId)) {
+      persist(WorkCompleted(workId, result)) { event =>
+        workState = workState.updated(event)
+        workState.completedWorkById(workId) match {
+          case Some(completed) =>
+            log.info("Sending work {} as completed to the work creator {}", workerId, completed.work.owner)
+            mediator ! DistributedPubSubMediator.Publish(completed.work.owner, MasterWorkerProtocol.MasterCompletedWork(workId, result))
+          case None =>
+            // should not happen
+            log.error("Completed work {} was not available as expected", workId)
+        }
+      }
+    }
+  }
+
+  private def processWorkFailed(workerId: String, workId: String) = {
+    // send a ack to the worker to tell the worker that the message was received
+    sender() ! MasterWorkerProtocol.Ack(workId)
+    // set the worker back to idle state
+    changeWorkerToIdle(workerId)
+
+    if (workState.isInProgress(workId)) {
+      log.info("Work {} failed by worker {}", workId, workerId)
+      changeWorkerToIdle(workerId)
+      persist(WorkerFailed(workId)) { event =>
+        workState = workState.updated(event)
+        notifyWorkers()
+      }
+    }
+  }
+
+  private def confirmWorkResult(workId: String) = {
+    log.info("Master received ack that work completion was received {}", workId)
+    persist(WorkCompletionReceived(workId)) { event =>
+      workState = workState.updated(event)
+    }
+  }
+
+  private def processWork(work: MasterWorkerProtocol.Work) = {
+    if (workState.isAccepted(work.id)) {
+      sender() ! MasterWorkerProtocol.MasterAcceptedWork(work.id)
+    } else {
+      persist(WorkAccepted(work)) { event =>
         sender() ! MasterWorkerProtocol.MasterAcceptedWork(work.id)
-      } else {
-        persist(WorkAccepted(work)) { event =>
-          sender() ! MasterWorkerProtocol.MasterAcceptedWork(work.id)
+        workState = workState.updated(event)
+        notifyWorkers()
+      }
+    }
+  }
+
+  private def processCancelWork(cancelWork: CancelWork) = {
+    log.info("Cancel work: {}", cancelWork.id)
+    val reply = sender()
+
+    // check if a worker is working on the workId
+    val worker = workers.find {
+      case (workerId, state) => state.status match {
+        case Idle => false
+        case Busy(workId, deadline) => workId == cancelWork.id
+      }
+    }
+    // if a worker is working send the worker a cancel. otherwise the work is already done
+    worker match {
+      case Some(x) => x._2.ref ! cancelWork
+      case None => reply ! MasterWorkerProtocol.MasterCompletedWork(cancelWork.id, 3)
+    }
+  }
+
+  private def processWorkerTimeout() = {
+    /**
+     * A busy worker actor reached the timeout
+     */
+    for ((workerId, s @ WorkerState(_, Busy(workId, timeout), _)) ← workers) {
+      if (timeout.isOverdue) {
+        log.info("Work timed out: {}", workId)
+        workers -= workerId
+        persist(WorkerTimedOut(workId)) { event =>
           workState = workState.updated(event)
           notifyWorkers()
         }
       }
-
+    }
     /**
-     * Work should be canceled.
+     * A idle worker actor reached the timeout
      */
-    case cancelWork: CancelWork =>
-      log.info("Cancel work: {}", cancelWork.id)
-      val reply = sender()
+    for ((workerId, s @ WorkerState(_, Idle, timeout)) ← workers) {
+      if (timeout.isOverdue) {
+        log.info("Worker timed out and removed from the system: {}", workerId)
+        workers -= workerId
+      }
+    }
+  }
 
-      // check if a worker is working on the workId
-      val worker = workers.find {
-        case (workerId, state) => state.status match {
-          case Idle => false
-          case Busy(workId, deadline) => workId == cancelWork.id
-        }
-      }
-      // if a worker is working send the worker a cancel. otherwise the work is already done
-      worker match {
-        case Some(x) => x._2.ref ! cancelWork
-        case None => reply ! MasterWorkerProtocol.MasterCompletedWork(cancelWork.id, 3)
-      }
-
-    case WorkerTimeoutTick =>
-      /**
-       * A busy worker actor reached the timeout
-       */
-      for ((workerId, s @ WorkerState(_, Busy(workId, timeout), _)) ← workers) {
-        if (timeout.isOverdue) {
-          log.info("Work timed out: {}", workId)
-          workers -= workerId
-          persist(WorkerTimedOut(workId)) { event =>
-            workState = workState.updated(event)
-            notifyWorkers()
-          }
-        }
-      }
-      /**
-       * A idle worker actor reached the timeout
-       */
-      for ((workerId, s @ WorkerState(_, Idle, timeout)) ← workers) {
-        if (timeout.isOverdue) {
-          log.info("Worker timed out and removed from the system: {}", workerId)
-          workers -= workerId
-        }
-      }
-
-    /**
-     * Check for completed work from which no ack was received by the developer (which started the work).
-     */
-    case CompletedWorkTick =>
-      workState.completedWorkList foreach { completed =>
-        log.info(s"Re-send work completed : '${completed.work.job}' to ${completed.work.owner}")
-        mediator ! DistributedPubSubMediator.Publish(completed.work.owner, MasterWorkerProtocol.MasterCompletedWork(completed.work.id, completed.result))
-      }
+  private def processWorkCompleted() = {
+    workState.completedWorkList foreach { completed =>
+      log.info(s"Re-send work completed : '${completed.work.job}' to ${completed.work.owner}")
+      mediator ! DistributedPubSubMediator.Publish(completed.work.owner, MasterWorkerProtocol.MasterCompletedWork(completed.work.id, completed.result))
+    }
   }
 
   /**

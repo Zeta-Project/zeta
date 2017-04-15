@@ -32,12 +32,14 @@ object MasterWorkerProtocol {
   case class CancelWork(id: String) extends DeveloperToMaster
   case class DeveloperReceivedCompletedWork(id: String) extends DeveloperToMaster
 
+  trait ToDeveloper
+
   // Messages from Master to Developer
-  trait MasterToDeveloper
+  trait MasterToDeveloper extends ToDeveloper
   case class MasterAcceptedWork(workerId: String) extends MasterToDeveloper
   case class MasterCompletedWork(workerId: String, result: Int) extends MasterToDeveloper
 
   // Messages from Worker to Developer
-  trait WorkerToDeveloper
+  trait WorkerToDeveloper extends ToDeveloper
   case class WorkerStreamedMessage(jobLog: JobLog) extends WorkerToDeveloper
 }

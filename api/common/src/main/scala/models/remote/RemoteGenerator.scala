@@ -8,6 +8,7 @@ import models.frontend._
 import play.api.libs.json._
 import rx.lang.scala.Observable
 import rx.lang.scala.Subject
+import rx.lang.scala.Subscriber
 
 object RemoteGenerator {
   def apply(session: String, work: String, parent: Option[String] = None, key: Option[String] = None): Remote = new RemoteGenerator(session, work, parent, key)
@@ -61,8 +62,6 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
   def call[Input, Output](generator: String, options: Input)(implicit writes: Writes[Input], reads: Reads[Output]): Observable[Output] = {
     val subscriptionKey = UUID.randomUUID().toString
 
-    def error(message: String) = new Exception(s"Remote generator call of ${generator} with options ${options} fired an error : ${message}")
-
     // start the generator with the provided options
     sendRunGenerator(subscriptionKey, generator, options)
 
@@ -71,33 +70,50 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
 
       connection.subscribe(response => {
         response match {
-          case StartGeneratorError(key, reason) => if (key == subscriptionKey) {
-            subscriber.onError(throw new Exception(reason))
-          }
+          case StartGeneratorError(key, reason) =>
+            processStartError(subscriptionKey, subscriber, key, reason)
           case FromGenerator(index, key, message) => if (key == subscriptionKey) {
             if (index == i.incrementAndGet()) {
               Json.parse(message).validate[Output] match {
-                case JsSuccess(value, path) => {
-                  if (!subscriber.isUnsubscribed) {
-                    subscriber.onNext(value)
-                  }
-                }
-                case JsError(errors) => subscriber.onError(error(s"Unable to parse message '${message}' from generator to expected Output format."))
+                case JsSuccess(value, path) =>
+                  processMessageSuccess(subscriber, value)
+                case JsError(errors) =>
+                  createError(subscriber, generator, options.toString, s"Unable to parse message '${message}' from generator to expected Output format.")
               }
             } else {
-              subscriber.onError(error("Sequence number was not as expected. Lost messages."))
+              createError(subscriber, generator, options.toString, "Sequence number was not as expected. Lost messages.")
             }
           }
           case GeneratorCompleted(key, result) => if (key == subscriptionKey) {
-            if (result == 0) {
-              subscriber.onCompleted()
-            } else {
-              subscriber.onError(error(s"Generator completed with status code ${result}"))
-            }
+            processComplete(generator, options, subscriber, result)
           }
         }
       })
     })
+  }
+
+  private def processStartError[Output](subscriptionKey: String, subscriber: Subscriber[Output], key: String, reason: String) = {
+    if (key == subscriptionKey) {
+      subscriber.onError(throw new Exception(reason))
+    }
+  }
+
+  private def createError[Output](subscriber: Subscriber[Output], generator: String, options: String, message: String) = {
+    subscriber.onError(new Exception(s"Remote generator call of ${generator} with options ${options} fired an error : ${message}"))
+  }
+
+  private def processMessageSuccess[Output](subscriber: Subscriber[Output], value: Output) = {
+    if (!subscriber.isUnsubscribed) {
+      subscriber.onNext(value)
+    }
+  }
+
+  private def processComplete[Input, Output](generator: String, options: Input, subscriber: Subscriber[Output], result: Int) = {
+    if (result == 0) {
+      subscriber.onCompleted()
+    } else {
+      createError(subscriber, generator, options.toString, s"Generator completed with status code ${result}")
+    }
   }
 
   def emit[Output](value: Output)(implicit writes: Writes[Output]): Unit = parent match {

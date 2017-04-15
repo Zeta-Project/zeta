@@ -52,15 +52,33 @@ object CommonLayoutParser extends CommonParserMethods {
       case _ =>
     }
 
-    var ret: Option[CommonLayout] = None
-    if (size_w.isDefined && size_h.isDefined)
-      ret = Some(new CommonLayout {
-        override val position: Option[(Int, Int)] = pos
-        override val size_width: Int = size_w.get
-        override val size_height: Int = size_h.get
-        override val style: Option[Style] = styl
-      })
-    else println("no size was given for Position in: " + geoModel.typ)
-    ret
+    createCommonLayout(size_w, size_h, pos, styl, geoModel)
+  }
+
+  private def createCommonLayout(
+    size_w: Option[Int],
+    size_h: Option[Int],
+    pos: Option[(Int, Int)],
+    styl: Option[Style],
+    geoModel: GeoModel) = {
+
+    size_w match {
+      case None =>
+        println("no size was given for Position in: " + geoModel.typ)
+        None
+      case Some(width) =>
+        size_h match {
+          case None =>
+            println("no size was given for Position in: " + geoModel.typ)
+            None
+          case Some(height) =>
+            Some(new CommonLayout {
+              override val position: Option[(Int, Int)] = pos
+              override val size_width: Int = size_w.get
+              override val size_height: Int = size_h.get
+              override val style: Option[Style] = styl
+            })
+        }
+    }
   }
 }

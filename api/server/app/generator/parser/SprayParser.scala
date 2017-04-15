@@ -1,5 +1,7 @@
 package generator.parser
 
+import java.io.Serializable
+
 import generator.model.diagram.action.Action
 import generator.model.diagram.action.ActionGroup
 import generator.model.diagram.action.ActionInclude
@@ -209,31 +211,38 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
       (("(" ~ "style" ~ ":" ~> ident <~ ")")?) ~
       ("{" ~> rep(diagramShape | palette | container | onCreate | onUpdate | onDelete | actions) <~ "}") ^^ {
         case name ~ mcoreElement ~ corporatestyle ~ args =>
-          val corporateStyle: Option[Style] = if (corporatestyle.isDefined) corporatestyle.get else None
-          var shap: Option[PropsAndComps] = None
-          var pal: Option[String] = None
-          var con: Option[String] = None
-          var onCr: Option[(ActionBlock, String)] = None
-          var onUp: Option[ActionBlock] = None
-          var onDe: Option[ActionBlock] = None
-          var actions: List[Action] = List()
-          var actionIncludes: Option[ActionInclude] = None
-          args.foreach {
-            case i if i._1 == "shape" => shap = Some(i._2.asInstanceOf[PropsAndComps])
-            case i if i._1 == "palette" => pal = Some(i._2.asInstanceOf[String])
-            case i if i._1 == "container" => con = Some(i._2.asInstanceOf[String])
-            case i if i._1 == "onCreate" =>
-              val tmp = i._2.asInstanceOf[(Option[ActionBlock], Option[String])]
-              onCr = Some(tmp._1.get, tmp._2.get)
-            case i if i._1 == "onUpdate" => onUp = i._2.asInstanceOf[Option[ActionBlock]]
-            case i if i._1 == "onDelete" => onDe = i._2.asInstanceOf[Option[ActionBlock]]
-            case i if i._1 == "actions" =>
-              actions = i._2.asInstanceOf[(ActionInclude, List[Action])]._2
-              actionIncludes = Some(i._2.asInstanceOf[(ActionInclude, List[Action])]._1)
-          }
-          ("node", NodeSketch(name, mcoreElement, corporateStyle, shap, pal, con, onCr, onUp, onDe, actions, actionIncludes))
+          createNodeSketch(name, mcoreElement, corporatestyle, args)
       }
   }
+
+  private def createNodeSketch(name: String, mcoreElement: String, corporatestyle: Option[String], args: List[(String, Serializable)]) = {
+    val corporateStyle: Option[Style] = if (corporatestyle.isDefined) corporatestyle.get else None
+    var shap: Option[PropsAndComps] = None
+    var pal: Option[String] = None
+    var con: Option[String] = None
+    var onCr: Option[(ActionBlock, String)] = None
+    var onUp: Option[ActionBlock] = None
+    var onDe: Option[ActionBlock] = None
+    var actions: List[Action] = List()
+    var actionIncludes: Option[ActionInclude] = None
+    for {argument <- args} {
+      argument._1 match {
+        case "shape" => shap = Some(argument._2.asInstanceOf[PropsAndComps])
+        case "palette" => pal = Some(argument._2.asInstanceOf[String])
+        case "container" => con = Some(argument._2.asInstanceOf[String])
+        case "onCreate" =>
+          val tmp = argument._2.asInstanceOf[(Option[ActionBlock], Option[String])]
+          onCr = Some(tmp._1.get, tmp._2.get)
+        case "onUpdate" => onUp = argument._2.asInstanceOf[Option[ActionBlock]]
+        case "onDelete" => onDe = argument._2.asInstanceOf[Option[ActionBlock]]
+        case "actions" =>
+          actions = argument._2.asInstanceOf[(ActionInclude, List[Action])]._2
+          actionIncludes = Some(argument._2.asInstanceOf[(ActionInclude, List[Action])]._1)
+      }
+    }
+    ("node", NodeSketch(name, mcoreElement, corporateStyle, shap, pal, con, onCr, onUp, onDe, actions, actionIncludes))
+  }
+
   case class NodeSketch(
       name: String,
       mcoreElement: String,
@@ -283,28 +292,43 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
       ("to" ~ ":" ~> ident) ~
       (rep(palette | container | onCreate | onUpdate | onDelete | actions) <~ "}") ^^ {
         case edgeName ~ mcoreElement ~ styleOpt ~ diaCon ~ from ~ to ~ args =>
-          val style: Option[Style] = if (styleOpt isDefined) styleOpt.get else None
-          var pal: Option[String] = None
-          var con: Option[String] = None
-          var onCr: Option[(ActionBlock, String)] = None
-          var onUp: Option[ActionBlock] = None
-          var onDe: Option[ActionBlock] = None
-          var actions: List[Action] = List()
-          var actionIncludes: Option[ActionInclude] = None
-          args.foreach {
-            case i if i._1 == "palette" => pal = Some(i._2.asInstanceOf[String])
-            case i if i._1 == "container" => con = Some(i._2.asInstanceOf[String])
-            case i if i._1 == "onCreate" => onCr = Some(i._2.asInstanceOf[(ActionBlock, String)])
-            case i if i._1 == "onUpdate" => onUp = i._2.asInstanceOf[Option[ActionBlock]]
-            case i if i._1 == "onDelete" => onDe = i._2.asInstanceOf[Option[ActionBlock]]
-            case i if i._1 == "actions" =>
-              actions = i._2.asInstanceOf[(ActionInclude, List[Action])]._2
-              actionIncludes = Some(i._2.asInstanceOf[(ActionInclude, List[Action])]._1)
-            case _ =>
-          }
-          ("edge", EdgeSketch(edgeName, mcoreElement, style, diaCon, from, to, pal, con, onCr, onUp, onDe, actions, actionIncludes))
+          createEdgeSketch(styleOpt, edgeName, mcoreElement, diaCon, from, to, args)
       }
   }
+
+  private def createEdgeSketch(
+    styleOpt: Option[String],
+    name: String,
+    mcoreElement: String,
+    diaCon: PropsAndComps,
+    from: String,
+    to: String,
+    args: List[(String, Serializable)]) = {
+
+    val style: Option[Style] = if (styleOpt.isDefined) styleOpt.get else None
+    var pal: Option[String] = None
+    var con: Option[String] = None
+    var onCr: Option[(ActionBlock, String)] = None
+    var onUp: Option[ActionBlock] = None
+    var onDe: Option[ActionBlock] = None
+    var actions: List[Action] = List()
+    var actionIncludes: Option[ActionInclude] = None
+
+    for {argument <- args} {
+      argument._1 match {
+        case "palette" => pal = Some(argument._2.asInstanceOf[String])
+        case "container" => con = Some(argument._2.asInstanceOf[String])
+        case "onCreate" => onCr = Some(argument._2.asInstanceOf[(ActionBlock, String)])
+        case "onUpdate" => onUp = argument._2.asInstanceOf[Option[ActionBlock]]
+        case "onDelete" => onDe = argument._2.asInstanceOf[Option[ActionBlock]]
+        case "actions" =>
+          actions = argument._2.asInstanceOf[(ActionInclude, List[Action])]._2
+          actionIncludes = Some(argument._2.asInstanceOf[(ActionInclude, List[Action])]._1)
+      }
+    }
+    ("edge", EdgeSketch(name, mcoreElement, style, diaCon, from, to, pal, con, onCr, onUp, onDe, actions, actionIncludes))
+  }
+
   case class EdgeSketch(
       name: String,
       mReferenceName: String,

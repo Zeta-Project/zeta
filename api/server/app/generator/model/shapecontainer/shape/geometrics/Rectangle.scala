@@ -38,7 +38,7 @@ object Rectangle {
   def parse(geoModel: GeoModel, parent: Option[GeometricModel] = None, parentStyle: Option[Style], diagram: Cache): Option[Rectangle] = {
     /*mapping*/
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, diagram)
-    val compartmentInfo: Option[Compartment] = Compartment.parse(geoModel.attributes)
+    val compartmentInfo: Option[Compartment] = Compartment(geoModel.attributes)
 
     if (commonLayout.isEmpty)
       return None

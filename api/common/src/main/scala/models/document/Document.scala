@@ -30,12 +30,14 @@ sealed trait Document {
   override def hashCode: Int = Objects.hashCode(_id)
 }
 
-sealed trait Task
-sealed trait Image {
+sealed trait Task extends Document
+sealed trait Image extends Document {
   def dockerImage: String
 }
 
-case class TimedTask(_id: String, _rev: String, name: String, generator: String, filter: String, interval: Int, start: String) extends Document with Task {
+sealed trait Entity extends Document
+
+case class TimedTask(_id: String, _rev: String, name: String, generator: String, filter: String, interval: Int, start: String) extends Task {
   def delay: Int = {
     val first = DateTime.parse(start)
     val now = new DateTime()
@@ -43,19 +45,19 @@ case class TimedTask(_id: String, _rev: String, name: String, generator: String,
     if (diff > 0) diff else 1
   }
 }
-case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String) extends Document with Task
-case class BondedTask(_id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String) extends Document with Task
+case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String) extends Task
+case class BondedTask(_id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String) extends Task
 case class Generator(_id: String, _rev: String, name: String, image: String) extends Document
 case class Filter(_id: String, _rev: String, name: String, description: String, instances: List[String]) extends Document
-case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String) extends Document with Image
-case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String) extends Document with Image
+case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
+case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
 case class Settings(_id: String, _rev: String, owner: String, jobSettings: JobSettings) extends Document
-case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None) extends Document
+case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None) extends Entity
 case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends Document
-case class ModelEntity(_id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Document
+case class ModelEntity(_id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity
 case class Log(_id: String, _rev: String, log: String, status: Int, date: String) extends Document
-case class PasswordInfoEntity(_id: String, _rev: String, passwordInfo: PasswordInfo) extends Document
-case class UserEntity(_id: String, _rev: String, user: User) extends Document
+case class PasswordInfoEntity(_id: String, _rev: String, passwordInfo: PasswordInfo) extends Entity
+case class UserEntity(_id: String, _rev: String, user: User) extends Entity
 
 object Settings {
   def apply(owner: String): Settings = {
@@ -163,20 +165,38 @@ object Document {
   implicit lazy val formatDocument: OFormat[Document] = derived.flat.oformat((__ \ "type").format[String])
 
   def update(doc: Document, rev: String): Document = doc match {
-    case d: TimedTask => d.copy(_rev = rev)
-    case d: EventDrivenTask => d.copy(_rev = rev)
-    case d: BondedTask => d.copy(_rev = rev)
+    case t: Task => updateTask(rev, t)
+    case i: Image => updateImage(rev, i)
+    case e: Entity => updateEntity(rev, e)
     case d: Generator => d.copy(_rev = rev)
     case d: Filter => d.copy(_rev = rev)
-    case d: GeneratorImage => d.copy(_rev = rev)
-    case d: FilterImage => d.copy(_rev = rev)
     case d: Settings => d.copy(_rev = rev)
-    case d: MetaModelEntity => d.copy(_rev = rev)
     case d: MetaModelRelease => d.copy(_rev = rev)
-    case d: ModelEntity => d.copy(_rev = rev)
     case d: Log => d.copy(_rev = rev)
-    case d: PasswordInfoEntity => d.copy(_rev = rev)
-    case d: UserEntity => d.copy(_rev = rev)
+  }
+
+  private def updateEntity(rev: String, e: Entity) = {
+    e match {
+      case d: MetaModelEntity => d.copy(_rev = rev)
+      case d: ModelEntity => d.copy(_rev = rev)
+      case d: PasswordInfoEntity => d.copy(_rev = rev)
+      case d: UserEntity => d.copy(_rev = rev)
+    }
+  }
+
+  private def updateImage(rev: String, i: Image) = {
+    i match {
+      case d: GeneratorImage => d.copy(_rev = rev)
+      case d: FilterImage => d.copy(_rev = rev)
+    }
+  }
+
+  private def updateTask(rev: String, t: Task) = {
+    t match {
+      case d: TimedTask => d.copy(_rev = rev)
+      case d: EventDrivenTask => d.copy(_rev = rev)
+      case d: BondedTask => d.copy(_rev = rev)
+    }
   }
 }
 

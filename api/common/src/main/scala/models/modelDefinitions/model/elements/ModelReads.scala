@@ -1,7 +1,6 @@
 package models.modelDefinitions.model.elements
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
 import models.modelDefinitions.metaModel.elements._
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax._
@@ -164,20 +163,10 @@ object ModelReads {
 
   def attributesReads(mAttributes: Seq[MAttribute]) = Reads { json =>
 
-    val required = mAttributes.map(a => a.name -> a.`type`).toMap
-
     def locate(e: scala.Seq[(JsPath, scala.Seq[ValidationError])], idx: Int) = e.map { case (p, valerr) => (JsPath(idx)) ++ p -> valerr }
 
-    required.map {
-      case (key, ScalarType.Double) => (__ \ key).read[List[Double]].map(ds => Attribute(key, ds.map(d => ScalarValue.MDouble(d)))).reads(json)
-      case (key, ScalarType.Int) => (__ \ key).read[List[Int]].map(is => Attribute(key, is.map(i => ScalarValue.MInt(i)))).reads(json)
-      case (key, ScalarType.String) => (__ \ key).read[List[String]].map(ss => Attribute(key, ss.map(s => ScalarValue.MString(s)))).reads(json)
-      case (key, ScalarType.Bool) => (__ \ key).read[List[Boolean]].map(bs => Attribute(key, bs.map(b => ScalarValue.MBool(b)))).reads(json)
-      case (key, MEnum(name, values)) => (__ \ key).read[List[String]].filter(ValidationError(s"Found elements aren't valid symbols of enum $name")) {
-        _.forall(symbolString => values.exists(_.name == symbolString))
-      }.map(sym => Attribute(key, sym.map(s => values.find(_.name == s).get))).reads(json)
-      case _ => JsError("Unknown attribute type")
-    }.iterator.zipWithIndex.foldLeft(Right(Vector.empty): Either[scala.Seq[(JsPath, scala.Seq[ValidationError])], Vector[Attribute]]) {
+    buildAttributeMap(mAttributes, json)
+      .iterator.zipWithIndex.foldLeft(Right(Vector.empty): Either[scala.Seq[(JsPath, scala.Seq[ValidationError])], Vector[Attribute]]) {
       case (Right(vs), (JsSuccess(v, _), _)) => Right(vs :+ v)
       case (Right(_), (JsError(e), idx)) => Left(locate(e, idx))
       case (Left(e), (_: JsSuccess[_], _)) => Left(e)
@@ -190,6 +179,19 @@ object ModelReads {
       mAttributes.exists { ma =>
         ma.name == a.name && checkAttributeMult(a, ma)
       }
+    }
+  }
+
+  private def buildAttributeMap(mAttributes: Seq[MAttribute], json: JsValue) = {
+    mAttributes.map(a => a.name -> a.`type`).toMap.map {
+      case (key, ScalarType.Double) => (__ \ key).read[List[Double]].map(ds => Attribute(key, ds.map(d => ScalarValue.MDouble(d)))).reads(json)
+      case (key, ScalarType.Int) => (__ \ key).read[List[Int]].map(is => Attribute(key, is.map(i => ScalarValue.MInt(i)))).reads(json)
+      case (key, ScalarType.String) => (__ \ key).read[List[String]].map(ss => Attribute(key, ss.map(s => ScalarValue.MString(s)))).reads(json)
+      case (key, ScalarType.Bool) => (__ \ key).read[List[Boolean]].map(bs => Attribute(key, bs.map(b => ScalarValue.MBool(b)))).reads(json)
+      case (key, MEnum(name, values)) => (__ \ key).read[List[String]].filter(ValidationError(s"Found elements aren't valid symbols of enum $name")) {
+        _.forall(symbolString => values.exists(_.name == symbolString))
+      }.map(sym => Attribute(key, sym.map(s => values.find(_.name == s).get))).reads(json)
+      case _ => JsError("Unknown attribute type")
     }
   }
 

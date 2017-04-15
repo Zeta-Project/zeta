@@ -89,7 +89,7 @@ class Mediator() extends Actor with ActorLogging {
     registerTask.cancel()
   }
 
-  def refreshSession = {
+  private def refreshSession() = {
     sessionManager.getSession(developerId, ttl).map { session =>
       remote.session = session
     }.recover {
@@ -101,15 +101,10 @@ class Mediator() extends Actor with ActorLogging {
     // refresh the session to access the db
     case Refresh => refreshSession
     // Handle job messages from the Master or the Worker
-    case response: MasterToDeveloper => workQueue forward response
-    case response: WorkerToDeveloper => handleWorkerResponse(response)
+    case response: ToDeveloper => processToDeveloper(response)
     // Handle any request from a client to this actor
     case connection: Connection => handleConnection(connection)
-    case request: DeveloperRequest => handleDeveloperRequest(request)
-    case request: UserRequest => handleUserRequest(request)
-    // request which are send from a generator or need to be send to a generator
-    case request: RunGeneratorFromGenerator => generatorRequest ! request
-    case request: ToGenerator => generatorConnection ! request
+    case request: Request => processRequest(request)
     case request: WorkState.Event => {
       checkForBondedTask(request)
       generatorConnection ! request
@@ -120,6 +115,29 @@ class Mediator() extends Actor with ActorLogging {
     case response: DeveloperResponse => sendToToolDeveloperClients(response)
     // error by the workQueue
     case error: JobCannotBeEnqueued => log.warning(error.reason)
+  }
+
+  private def processToDeveloper(response: ToDeveloper) = {
+    response match {
+      case response: MasterToDeveloper => workQueue forward response
+      case response: WorkerToDeveloper => handleWorkerResponse(response)
+    }
+  }
+
+  private def processRequest(request: Request) = {
+    request match {
+      case request: DeveloperRequest => handleDeveloperRequest(request)
+      case request: UserRequest => handleUserRequest(request)
+      case request: GeneratorRequest => processGeneratorRequest(request)
+    }
+  }
+
+  private def processGeneratorRequest(request: GeneratorRequest) = {
+    request match {
+      // request which are send from a generator or need to be send to a generator
+      case request: RunGeneratorFromGenerator => generatorRequest ! request
+      case request: ToGenerator => generatorConnection ! request
+    }
   }
 
   def documentChange(changed: Changed) = {

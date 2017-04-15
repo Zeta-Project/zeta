@@ -28,7 +28,7 @@ object StyleGenerator {
   }
 
   /** Generates the getStyle function */
-  def generateGetStyle(styles: List[Style]): String = {
+  private def generateGetStyle(styles: List[Style]): String = {
     s"""
       function getStyle(stylename) {
         var style;
@@ -44,7 +44,7 @@ object StyleGenerator {
   }
 
   /** Generates a case of the switch-case in the getStyle function */
-  def generateStyleCase(s: Style) =
+  private def generateStyleCase(s: Style) =
     s"""
       case '${s.name}':
         style = {
@@ -55,7 +55,7 @@ object StyleGenerator {
     """
 
   /** generates getDiagramHighlighting function with the highlighting styles*/
-  def generateGetDiagramHighlighting(styles: List[Style]): String = {
+  private def generateGetDiagramHighlighting(styles: List[Style]): String = {
     s"""
       function getDiagramHighlighting(stylename) {
         var highlighting;
@@ -71,7 +71,7 @@ object StyleGenerator {
   }
 
   /** generates a case for the switch case of the getDiagramHilighting*/
-  def generateDiagramHighlightingCases(s: Style) = {
+  private def generateDiagramHighlightingCases(s: Style) = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty) {
       raw"""
@@ -84,28 +84,40 @@ object StyleGenerator {
     }
   }
 
-  def getSelected(s: Style) =
-    if (s.selected_highlighting isDefined) {
-      s""".paper-container .free-transform { border: 1px dashed  ${s.selected_highlighting.get.getRGBValue}; }"""
-    } else ""
+  private def getSelected(s: Style) = {
+    s.selected_highlighting match {
+      case None => ""
+      case Some(value) =>
+        s""".paper-container .free-transform { border: 1px dashed  ${value.getRGBValue}; }"""
+    }
+  }
 
-  def getMultiselected(s: Style) =
-    if (s.multiselected_highlighting isDefined) {
-      s""".paper-container .selection-box { border: 1px solid ${s.multiselected_highlighting.get.getRGBValue}; }"""
-    } else ""
+  private def getMultiselected(s: Style) = {
+    s.multiselected_highlighting match {
+      case None => ""
+      case Some(value) =>
+        s""".paper-container .selection-box { border: 1px solid ${value.getRGBValue}; }"""
+    }
+  }
 
-  def getAllowed(s: Style): String =
-    if (s.allowed_highlighting isDefined) {
-      s""".paper-container .linking-allowed { outline: 2px solid ${s.allowed_highlighting.get.getRGBValue}; }"""
-    } else ""
+  private def getAllowed(s: Style): String = {
+    s.allowed_highlighting match {
+      case None => ""
+      case Some(value) =>
+        s""".paper-container .linking-allowed { outline: 2px solid ${value.getRGBValue}; }"""
+    }
+  }
 
-  def getUnallowed(s: Style): String =
-    if (s.unallowed_highlighting isDefined) {
-      s""".paper-container .linking-unallowed { outline: 2px solid ${s.unallowed_highlighting.get.getRGBValue}; }"""
-    } else ""
+  private def getUnallowed(s: Style): String = {
+    s.unallowed_highlighting match {
+      case None => ""
+      case Some(value) =>
+        s""".paper-container .linking-unallowed { outline: 2px solid ${value.getRGBValue}; }"""
+    }
+  }
 
   /** generates all text style attributes for the style */
-  def createFontAttributes(s: Style) =
+  private def createFontAttributes(s: Style) =
     s"""
     text: {
       ${fontAttributes(s)}
@@ -144,10 +156,18 @@ object StyleGenerator {
     """
   }
 
-  def checkBackgroundGradientNecessary(s: Style) = if (s.background_color.isDefined && s.background_color.get.isInstanceOf[Gradient]) true else false
+  private def checkBackgroundGradientNecessary(s: Style) = {
+    s.background_color match {
+      case None => false
+      case Some(value) => value match {
+        case t: Gradient => true
+        case _ => false
+      }
+    }
+  }
 
   /** generates gradient background */
-  def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
+  private def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
     s"""
       fill: {
         type: 'linearGradient',
@@ -159,72 +179,81 @@ object StyleGenerator {
           }
         ]
         ${
-          if (horizontal)
+          if (horizontal) {
             ""
-          else
+          } else {
             """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
+          }
         }
       },
     """
   }
 
   /** generates simple one colored background */
-  def createBackgroundAttributes(s: Style): String = {
-    if (s.background_color.isDefined) {
-      val bg_color = s.background_color.get
-      raw"""
-        fill: '${bg_color.getRGBValue}',
-      """
-    } else ""
+  private def createBackgroundAttributes(s: Style): String = {
+    s.background_color match {
+      case None => ""
+      case Some(value) =>
+        raw"""
+          fill: '${value.getRGBValue}',
+        """
+    }
   }
 
   /** generates the stroke attributes */
-  def createLineAttributesFromLayout(s: Style) = {
-    var ret = """"""
-    if (s.line_color.isEmpty)
-      ret +=
+  private def createLineAttributesFromLayout(s: Style) = {
+    s.line_color match {
+      case None =>
         """
           stroke: '#000000',
           'stroke-width': 0,
           'stroke-dasharray': "0"
         """
-    else
-      s.line_color.get match {
-        case Transparent => ret +=
+      case Some(value) => value match {
+        case Transparent =>
           """
             'stroke-opacity': 0,
           """
         case _ =>
-          ret +=
-            """
-              stroke: '""" + s.line_color.get.getRGBValue +
-            """'"""
-          if (s.line_width.isDefined)
-            ret += """,'stroke-width':""" + s.line_width.get
-          if (s.line_style isDefined)
-            s.line_style.get match {
-              case DASH => ret +=
-                """
-                  ,'stroke-dasharray': "10,10"
-                """
-              case DOT => ret +=
-                """
-                  ,'stroke-dasharray': "5,5
-                """
-              case DASHDOT => ret +=
-                """
-                  ,'stroke-dasharray': "10,5,5,5"
-                """
-              case DASHDOTDOT => ret +=
-                """
-                  ,'stroke-dasharray': "10,5,5,5,5,5"
-                """
-              case _ => ret +=
-                """
-                  ,'stroke-dasharray': "0"
-                """
-            }
+          """
+            stroke: '""" + value.getRGBValue +
+          """'""" + processLineWidth(s.line_width) + processLineStyle(s.line_style)
       }
-    ret
+    }
+  }
+
+  private def processLineWidth(lineWidth: Option[Int]) = {
+    lineWidth match {
+      case None => ""
+      case Some(value) => """,'stroke-width':""" + value
+    }
+  }
+
+  private def processLineStyle(lineStyle: Option[LineStyle]) = {
+    lineStyle match {
+      case None => ""
+      case Some(value) => value match {
+        case DASH =>
+          """
+            ,'stroke-dasharray': "10,10"
+          """
+        case DOT =>
+          """
+            ,'stroke-dasharray': "5,5
+          """
+        case DASHDOT =>
+          """
+            ,'stroke-dasharray': "10,5,5,5"
+          """
+        case DASHDOTDOT =>
+          """
+            ,'stroke-dasharray': "10,5,5,5,5,5"
+          """
+        case _ =>
+          """
+            ,'stroke-dasharray': "0"
+          """
+      }
+    }
   }
 }

@@ -202,15 +202,7 @@ class SGCookieAuthenticatorService(
     }).flatMap { fingerprint =>
       request.cookies.get(settings.cookieName) match {
         case Some(cookie) =>
-          (repository match {
-            case Some(d) => d.find(cookie.value)
-            case None => unserialize(cookie.value, cookieSigner, authenticatorEncoder) match {
-              case Success(authenticator) => Future.successful(Some(authenticator))
-              case Failure(error) =>
-                logger.info(error.getMessage, error)
-                Future.successful(None)
-            }
-          }).map {
+          processCookie(cookie).map {
             case Some(a) if fingerprint.isDefined && a.fingerprint != fingerprint =>
               logger.info(InvalidFingerprint.format(ID, fingerprint, a))
               None
@@ -220,6 +212,18 @@ class SGCookieAuthenticatorService(
       }
     }.recover {
       case e => throw new AuthenticatorRetrievalException(RetrieveError.format(ID), e)
+    }
+  }
+
+  private def processCookie(cookie: Cookie) = {
+    repository match {
+      case Some(d) => d.find(cookie.value)
+      case None => unserialize(cookie.value, cookieSigner, authenticatorEncoder) match {
+        case Success(authenticator) => Future.successful(Some(authenticator))
+        case Failure(error) =>
+          logger.info(error.getMessage, error)
+          Future.successful(None)
+      }
     }
   }
 

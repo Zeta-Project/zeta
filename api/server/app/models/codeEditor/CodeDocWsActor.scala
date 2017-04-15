@@ -101,8 +101,14 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
     )
   }
 
-  def receive = {
-    case pickled: String => try {
+  override def receive: Actor.Receive = {
+    case pickled: String => processCommand(pickled)
+    case medMsg: MediatorMessage => processMediatorMessage(medMsg)
+    case _ => log.debug(s" ${self.toString()} - Message is not a String!")
+  }
+
+  private def processCommand(pickled: String) = {
+    try {
       read[CodeEditorMessage](pickled) match {
 
         case msg: TextOperation =>
@@ -119,16 +125,15 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
         case _ => log.error("Discarding message, probably sent by myself")
       }
     }
+  }
 
-    case medMsg: MediatorMessage =>
-      if (medMsg.broadcaster != self) {
-        medMsg.msg match {
-          case x: CodeEditorMessage => out ! write[CodeEditorMessage](x)
-          case _ => log.error("Unknown message type from Meidator")
-        }
+  private def processMediatorMessage(medMsg: MediatorMessage) = {
+    if (medMsg.broadcaster != self) {
+      medMsg.msg match {
+        case x: CodeEditorMessage => out ! write[CodeEditorMessage](x)
+        case _ => log.error("Unknown message type from Meidator")
       }
-
-    case _ => log.debug(s" ${self.toString()} - Message is not a String!")
+    }
   }
 }
 
