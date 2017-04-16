@@ -14,7 +14,7 @@ import scala.util.Try
  */
 object VrGeneratorShapeDefinition {
   def generate(shapes: Iterable[Shape], packageName: String, location: String) = {
-    for (shape <- shapes) { generateFile(shape, packageName, location) }
+    for {shape <- shapes} { generateFile(shape, packageName, location) }
   }
 
   private def generateFile(shape: Shape, packageName: String, DEFAULT_SHAPE_LOCATION: String) = {
@@ -125,7 +125,7 @@ object VrGeneratorShapeDefinition {
   }
 
   private def generateImports(geometrics: List[GeometricModel]): String = {
-    (for (g: GeometricModel <- geometrics) yield {
+    (for {g: GeometricModel <- geometrics} yield {
       g match {
         case g: Line => s"""<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">"""
         // caution: Order is important because ellipse extends rectangle
@@ -142,7 +142,7 @@ object VrGeneratorShapeDefinition {
 
   private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)): String = {
     var textCount = 0
-    (for (g: GeometricModel <- geometrics) yield {
+    (for {g: GeometricModel <- geometrics} yield {
       val element = getElement(g)
       g match {
         case text: Text => "" // just ignore texts at this point
@@ -188,18 +188,18 @@ object VrGeneratorShapeDefinition {
       case g: PolyLine => "polyline"
       case g: RoundedRectangle => "roundedrectangle"
       case g: Text => "text"
-      case _ => geometric.toString()
+      case _ => geometric.toString
     }
   }
 
   private def generateCalcMax(goemetrics: List[GeometricModel]) = {
     val numberOfTexts = goemetrics.map(getAllTexts(_)).sum
-    (for (i <- 0 until numberOfTexts) yield { "calcMax(this.text" + i + ");\n" }).mkString
+    (for {i <- 0 until numberOfTexts} yield { "calcMax(this.text" + i + ");\n" }).mkString
   }
 
   private def generateTextArgs(geometrics: List[GeometricModel]) = {
     val numberOfTexts = geometrics.map(getAllTexts(_)).sum
-    (for (i <- 0 until numberOfTexts) yield { " ,text" + i }).mkString
+    (for {i <- 0 until numberOfTexts} yield { " ,text" + i }).mkString
   }
 
   private def getAllTexts(geometric: GeometricModel): Int = {

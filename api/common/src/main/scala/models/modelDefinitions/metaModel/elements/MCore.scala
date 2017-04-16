@@ -70,10 +70,13 @@ class MClass(
   def updateAttributes(_attributes: Seq[MAttribute]) =
     new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
 
-  override def toString = {
-    val superNames = for (e <- superTypes) yield e.name
-    val inputsNames = for (e <- inputs) yield e.mType.name
-    val outputsNames = for (e <- outputs) yield e.mType.name
+  /**
+   * @return String
+   */
+  override def toString: String = {
+    val superNames = for {e <- superTypes} yield e.name
+    val inputsNames = for {e <- inputs} yield e.mType.name
+    val outputsNames = for {e <- outputs} yield e.mType.name
     s"MClass($name, $abstractness, $superNames, $inputsNames, $outputsNames, $attributes)"
   }
 
@@ -198,9 +201,12 @@ class MReference(
   def updateAttributes(_attributes: Seq[MAttribute]) =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, _attributes)
 
-  override def toString = {
-    val sourceNames = for (e <- source) yield e.mType.name
-    val targetNames = for (e <- target) yield e.mType.name
+  /**
+   * @return String
+   */
+  override def toString: String = {
+    val sourceNames = for {e <- source} yield e.mType.name
+    val targetNames = for {e <- target} yield e.mType.name
     s"MReference($name, $sourceDeletionDeletesTarget, $targetDeletionDeletesSource, $sourceNames, $targetNames, $attributes)"
   }
 }

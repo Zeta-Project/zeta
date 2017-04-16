@@ -134,19 +134,19 @@ object MCoreReads {
       }
 
       def checkSuperTypes(source: String, superTypes: Seq[MClass]): List[String] = {
-        for (
-          s <- superTypes.toList;
+        for {
+          s <- superTypes.toList
           target = s.name if !mapping.contains(target) || !mapping(target).isInstanceOf[MClass]
-        ) yield {
+        } yield {
           s"invalid super type: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
         }
       }
 
       def checkLinkDefs(source: String, links: Seq[MLinkDef], typeCheck: MObject => Boolean): List[String] = {
-        for (
-          link <- links.toList;
+        for {
+          link <- links.toList
           target = link.mType.name if !mapping.contains(target) || !typeCheck(mapping(target))
-        ) yield {
+        } yield {
           s"invalid MLinkDef: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
         }
       }

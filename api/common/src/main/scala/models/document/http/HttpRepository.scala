@@ -199,7 +199,7 @@ class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implic
           if (response.status == 200) {
             val documents: Documents = response.json.as[Documents]
 
-            for (document <- documents.rows) {
+            for {document <- documents.rows} {
               if (!subscriber.isUnsubscribed) {
                 val result = get[T](document.id).map { result =>
                   subscriber.onNext(result)

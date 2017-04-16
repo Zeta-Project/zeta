@@ -98,7 +98,7 @@ object GeneratorConnectionDefinition {
     val placings = connection.placing
     var isTargetMarkerSet = false; //Check, whether a target marker is set, because JointJS will show an arrow if none is set
     var ret = ""
-    for (p <- placings) {
+    for {p <- placings} {
 
       p.position_offset match {
         case 0.0 => ret +=

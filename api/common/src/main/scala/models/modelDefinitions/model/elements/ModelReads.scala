@@ -76,25 +76,25 @@ object ModelReads {
     }
   }
 
-  def validateRefs(mapping: Map[String, ModelElement]): List[String] = {
+  private def validateRefs(mapping: Map[String, ModelElement]): List[String] = {
     val values = mapping.values.toList
 
     def checkEdgeLinks(source: String, links: Seq[ToEdges]): List[String] = {
-      for (
+      for {
         toEdges <- links.toList;
         edge <- toEdges.edges;
         target = edge.id if !mapping.contains(target) || !mapping(target).isInstanceOf[Edge]
-      ) yield {
+      } yield {
         s"invalid link to edge: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
       }
     }
 
     def checkNodeLinks(source: String, links: Seq[ToNodes]): List[String] = {
-      for (
+      for {
         toNodes <- links.toList;
         node <- toNodes.nodes;
         target = node.id if !mapping.contains(target) || !mapping(target).isInstanceOf[Node]
-      ) yield {
+      } yield {
         s"invalid link to node: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
       }
     }

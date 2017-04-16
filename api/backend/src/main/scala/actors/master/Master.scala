@@ -214,7 +214,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
     /**
      * A busy worker actor reached the timeout
      */
-    for ((workerId, s @ WorkerState(_, Busy(workId, timeout), _)) ← workers) {
+    for {(workerId, s @ WorkerState(_, Busy(workId, timeout), _)) ← workers} {
       if (timeout.isOverdue) {
         log.info("Work timed out: {}", workId)
         workers -= workerId
@@ -227,7 +227,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
     /**
      * A idle worker actor reached the timeout
      */
-    for ((workerId, s @ WorkerState(_, Idle, timeout)) ← workers) {
+    for {(workerId, s @ WorkerState(_, Idle, timeout)) ← workers} {
       if (timeout.isOverdue) {
         log.info("Worker timed out and removed from the system: {}", workerId)
         workers -= workerId

@@ -39,7 +39,7 @@ object LinkhelperGenerator {
 
   protected def generateStringProperties(edge: Edge) = {
     val stringProperties = edge.connection.vals
-    for ((key, value) <- stringProperties) yield s"""'$key': "${value.getOrElse("").toString}""""
+    for {(key, value) <- stringProperties} yield s"""'$key': "${value.getOrElse("").toString}""""
   }
 
   protected def generateHelperMethods =

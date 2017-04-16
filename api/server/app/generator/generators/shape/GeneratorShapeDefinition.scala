@@ -127,7 +127,7 @@ object GeneratorShapeDefinition {
   /** generates the markup of the JointJS shape */
   protected def generateSvgMarkup(shape: Shape) = {
     """ '<g class="rotatable"><g class="scalable"><rect class="bounding-box" />""" + {
-      for (s <- shape.shapes.getOrElse(List())) yield {
+      for {s <- shape.shapes.getOrElse(List())} yield {
         generateSvgShape(s, shape.name, "scalable")
       }
     }.mkString("") + "</g></g>'"
@@ -391,7 +391,7 @@ object GeneratorShapeDefinition {
 
   protected def maxX(points: List[Point]) = {
     var max = points.head.x
-    for (p <- points) {
+    for {p <- points} {
       if (p.x > max) {
         max = p.x
       }
@@ -401,7 +401,7 @@ object GeneratorShapeDefinition {
 
   protected def minX(points: List[Point]) = {
     var min = points.head.x
-    for (p <- points) {
+    for {p <- points} {
       if (p.x < min) {
         min = p.x
       }
@@ -443,7 +443,7 @@ object GeneratorShapeDefinition {
 
   protected def maxY(points: List[Point]) = {
     var max = points.head.y
-    for (p <- points) {
+    for {p <- points} {
       if (p.y > max) {
         max = p.y
       }
@@ -453,7 +453,7 @@ object GeneratorShapeDefinition {
 
   protected def minY(points: List[Point]) = {
     var min = points.head.y
-    for (p <- points) {
+    for {p <- points} {
       if (p.y < min) {
         min = p.y
       }

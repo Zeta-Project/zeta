@@ -32,7 +32,7 @@ object StencilGenerator {
     var i = 1
     val groupSet = getNodeToPaletteMapping(diagram).keySet
     var groups = List[String]()
-    for (groupName <- groupSet) {
+    for {groupName <- groupSet} {
       groups ::= getVarName(groupName) + s""": {index: $i, label: '$groupName' }"""
       i += 1
     }
@@ -42,7 +42,7 @@ object StencilGenerator {
   def generateShapes(diagram: Diagram) = {
 
     {
-      for (node <- diagram.nodes) yield {
+      for {node <- diagram.nodes} yield {
         s"""
         var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
           ${
@@ -75,7 +75,7 @@ object StencilGenerator {
     Stencil.shapes = {
       ${
         {
-          for (((key, value), i) <- mapping.zipWithIndex) yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
+          for {((key, value), i) <- mapping.zipWithIndex} yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
             """
         }.mkString(",")
       }
@@ -88,7 +88,7 @@ object StencilGenerator {
     ${getVarName(group)}: [
       ${
         {
-          for (node <- nodes) yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
+          for {node <- nodes} yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
             """
         }.mkString
       }
@@ -100,7 +100,7 @@ object StencilGenerator {
     """$(document).ready(function() {""" + s"""
       ${
         {
-          for (node <- diagram.nodes) yield s"""
+          for {node <- diagram.nodes} yield s"""
             ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
 
             ${
@@ -131,7 +131,7 @@ object StencilGenerator {
 
   private def getNodeToPaletteMapping(diagram: Diagram): mutable.HashMap[String, ListBuffer[Node]] = {
     var mapping = new mutable.HashMap[String, ListBuffer[Node]]
-    for (node <- diagram.nodes) {
+    for {node <- diagram.nodes} {
       val paletteName = node.palette.getOrElse("")
       if (mapping.contains(paletteName)) {
         mapping(paletteName) += node

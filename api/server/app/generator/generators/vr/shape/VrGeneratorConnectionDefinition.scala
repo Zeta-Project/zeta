@@ -13,7 +13,7 @@ import generator.model.style.DASH
  */
 object VrGeneratorConnectionDefinition {
   def generate(connections: Iterable[Connection], location: String) {
-    for (conn <- connections) { generateFile(conn, location) }
+    for {conn <- connections} { generateFile(conn, location) }
   }
 
   def generateFile(conn: Connection, DEFAULT_SHAPE_LOCATION: String) = {

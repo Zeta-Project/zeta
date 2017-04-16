@@ -34,7 +34,7 @@ object GeneratorShapeAndInlineStyle {
       val att = attrs(shape.name)
       s"""
         case "${shape.name}":
-          ${(for (s <- shape.shapes.get) yield generateStyles(s, att).mkString).mkString}
+          ${(for {s <- shape.shapes.get} yield generateStyles(s, att).mkString).mkString}
           break;
       """
     } else {
@@ -48,13 +48,13 @@ object GeneratorShapeAndInlineStyle {
     ret += getRightShape(shape, attrs(shape))
     shape match {
       case e: Ellipse =>
-        for (child <- e.children) ret ++= generateStyles(child, attrs)
+        for {child <- e.children} ret ++= generateStyles(child, attrs)
       case r: Rectangle =>
-        for (child <- r.children) ret ++= generateStyles(child, attrs)
+        for {child <- r.children} ret ++= generateStyles(child, attrs)
       case rr: RoundedRectangle =>
-        for (child <- rr.children) ret ++= generateStyles(child, attrs)
+        for {child <- rr.children} ret ++= generateStyles(child, attrs)
       case p: Polygon =>
-        for (child <- p.children) ret ++= generateStyles(child, attrs)
+        for {child <- p.children} ret ++= generateStyles(child, attrs)
       case _ =>
     }
     ret

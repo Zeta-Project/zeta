@@ -39,7 +39,7 @@ object ScalotAceAdaptor {
     var deltas: Seq[Delta] = Seq[Delta]()
     def idxToPos(idx: Int) = doc.indexToPosition(idx, 0)
     var base = 0
-    for (comp <- op.ops) {
+    for {comp <- op.ops} {
       comp match {
         case SkipComp(x) => base = base + x
 

@@ -72,7 +72,7 @@
    <parameter name="regex">^[a-z][A-Za-z0-9]*$</parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.ForBraceChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.ForBraceChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.IfBraceChecker" level="warning">
   <parameters>
    <parameter name="singleLineAllowed"><![CDATA[true]]></parameter>

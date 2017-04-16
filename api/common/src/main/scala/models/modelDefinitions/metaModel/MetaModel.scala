@@ -81,13 +81,15 @@ case class MetaModel(
    */
   private def searchSuperType(superTypes: List[MClass], toFind: MClass): Boolean = {
     superTypes match {
-      case Nil => {
-        val levelUp = superTypes.filter(_.superTypes.size > 0)
-        if (levelUp.isEmpty) false
-        else (for (s <- levelUp) yield {
-          searchSuperType(s.superTypes.toList, toFind)
-        }).exists(b => b)
-      }
+      case Nil =>
+        val levelUp = superTypes.filter(_.superTypes.nonEmpty)
+        if (levelUp.isEmpty) {
+          false
+        } else {
+          (for {s <- levelUp} yield {
+            searchSuperType(s.superTypes.toList, toFind)
+          }).exists(b => b)
+        }
       case head :: tail => if (head.name == toFind.name) true else searchSuperType(tail, toFind)
     }
   }

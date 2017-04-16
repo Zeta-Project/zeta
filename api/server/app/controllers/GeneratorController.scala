@@ -50,7 +50,7 @@ class GeneratorController @Inject() (implicit repositoryFactory: RepositoryFacto
       }
       if (error.isEmpty) {
         try {
-          StyleGenerator.doGenerate((for (style <- hierarchyContainer.styleHierarchy.nodeView) yield style._2.data).toList, generatorOutputLocation)
+          StyleGenerator.doGenerate((for {style <- hierarchyContainer.styleHierarchy.nodeView} yield style._2.data).toList, generatorOutputLocation)
           ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
           DiagramGenerator.doGenerate(diagram.get, generatorOutputLocation)
 

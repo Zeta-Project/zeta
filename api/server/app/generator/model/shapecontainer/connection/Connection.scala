@@ -23,7 +23,7 @@ sealed class Connection private (
     val placing: List[Placing] = List[Placing]()
 ) extends ShapeContainerElement {
   val textMap = {
-    val textMaps = for (p <- placing) yield {
+    val textMaps = for {p <- placing} yield {
       p.shape.textMap
     }
     textMaps.filter(_.isDefined).map(_.get).foldLeft(Map[String, Text]()) { (ret, m) => ret ++ m }

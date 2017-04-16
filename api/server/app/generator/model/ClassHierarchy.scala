@@ -84,7 +84,7 @@ object ClassHierarchy {
    * @return the matching attribute of type T wrapped as an Option or None if the attribute is not defined in the according C type instance
    */
   def mostRelevant[T, C](stack: List[C])(f: C => Option[T]): Option[T] = {
-    for (parent <- stack) {
+    for {parent <- stack} {
       if (f(parent).isDefined)
         return f(parent)
     }

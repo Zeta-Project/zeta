@@ -71,7 +71,7 @@ object ValidatorGenerator {
     s"""
     $mcName: {
       ${
-        (for (input <- inputs) yield s"""${input.mType.name}: {
+        (for {input <- inputs} yield s"""${input.mType.name}: {
           upperBound: ${input.upperBound},
           lowerBound: ${input.lowerBound}}"""
         ).mkString(",")
@@ -87,7 +87,7 @@ object ValidatorGenerator {
     targetMatrix: {
       ${
       {
-        for (((key, value), i) <- clazzes.zipWithIndex) yield s"""$key: {
+        for {((key, value), i) <- clazzes.zipWithIndex} yield s"""$key: {
       ${generateEdgeMap(value)}
     }"""
       }.mkString(",")
@@ -98,14 +98,14 @@ object ValidatorGenerator {
   def generateEdgeMap(edgeMap: HashMap[String, Boolean]) = {
     s"""
     ${
-      (for (((key, value), i) <- edgeMap.zipWithIndex) yield s"""$key: ${if (value) "true" else "false"}""").mkString(",")
+      (for {((key, value), i) <- edgeMap.zipWithIndex} yield s"""$key: ${if (value) "true" else "false"}""").mkString(",")
     }
     """
   }
 
   def generateSourceMatrix(diagram: Diagram) = {
     val sourceMatrix = getSourceMatrix(diagram)
-    val s = for (((key, value), i) <- sourceMatrix.zipWithIndex) yield s"""$key: {
+    val s = for {((key, value), i) <- sourceMatrix.zipWithIndex} yield s"""$key: {
       ${generateEdgeMap(value)}
     }"""
 
@@ -157,7 +157,7 @@ object ValidatorGenerator {
     edgeData: {
       ${
       {
-        for (edge <- diagram.edges) yield s"""${edge.name}: {
+        for {edge <- diagram.edges} yield s"""${edge.name}: {
       type: "${edge.mcoreElement.name}",
       from: "${edge.from.name}",
       to: "${edge.to.name}",
@@ -174,7 +174,7 @@ object ValidatorGenerator {
     compartmentMatrix: {
       ${
       val compartmentMatrix = getCompartmentMatrix(diagram.nodes)
-      for (((key, value), i) <- compartmentMatrix.zipWithIndex) yield s"""${key.name}: {
+      for {((key, value), i) <- compartmentMatrix.zipWithIndex} yield s"""${key.name}: {
       ${generateCompartmentMap(value)}
     }${if (i != compartmentMatrix.size) ","}"""
     }
@@ -186,7 +186,7 @@ object ValidatorGenerator {
     s"""
     ${
       val compartmentData = compartmentMap
-      for (((key, value), i) <- compartmentData.zipWithIndex)
+      for {((key, value), i) <- compartmentData.zipWithIndex}
         yield s"""$key: [${
           for (compartment <- value)
             yield s""""$compartment"${if (compartment != value.last) ", "}"""
@@ -197,7 +197,7 @@ object ValidatorGenerator {
 
   private def getTargetMatrix(diagram: Diagram) = {
     val targetMatrix = new HashMap[String, HashMap[String, Boolean]]
-    for (node <- diagram.nodes) {
+    for {node <- diagram.nodes} {
       val edgeTargetMap = getEdgeTargetMap(node, diagram.edges)
       targetMatrix.put(node.name, edgeTargetMap)
     }
@@ -206,7 +206,7 @@ object ValidatorGenerator {
 
   private def getSourceMatrix(diagram: Diagram) = {
     val sourceMatrix = new HashMap[String, HashMap[String, Boolean]]
-    for (node <- diagram.nodes) {
+    for {node <- diagram.nodes} {
       val edgeSourceMap = getEdgeSourceMap(node, diagram.edges)
       sourceMatrix.put(node.name, edgeSourceMap)
     }
@@ -215,7 +215,7 @@ object ValidatorGenerator {
 
   private def getCompartmentMatrix(nodes: List[Node]) = {
     val compartmentMatrix = new HashMap[Node, HashMap[String, List[String]]]
-    for (node <- nodes) {
+    for {node <- nodes} {
       val compartmentMap = getCompartmentMap(node, nodes)
       compartmentMatrix.put(node, compartmentMap)
     }
@@ -225,7 +225,7 @@ object ValidatorGenerator {
   private def getEdgeTargetMap(node: Node, edges: List[Edge]) = {
     val edgeTargetMap = HashMap[String, Boolean]()
     val nodeClass = node.mcoreElement
-    for (edge <- edges) {
+    for {edge <- edges} {
       val targetClass = edge.to
       val superTypeIsValidTarget = nodeClass.superTypes.find(mc => mc.name == targetClass.name).isDefined
       edgeTargetMap.put(edge.name, nodeClass.name == targetClass.name || superTypeIsValidTarget)
@@ -236,7 +236,7 @@ object ValidatorGenerator {
   private def getEdgeSourceMap(node: Node, edges: List[Edge]) = {
     val edgeSourceMap = new HashMap[String, Boolean]
     val nodeClass = node.mcoreElement
-    for (edge <- edges) {
+    for {edge <- edges} {
       val sourceClass = edge.from
       val superTypeIsValidSource = nodeClass.superTypes.find(mc => mc.name == sourceClass.name).isDefined
       edgeSourceMap.put(edge.name, nodeClass.name == sourceClass.name || superTypeIsValidSource)
@@ -251,10 +251,10 @@ object ValidatorGenerator {
   private def getCompartmentMap(node: Node, nodeList: List[Node]) = {
     val compartmentMap = new HashMap[String, List[String]]
     val nodeClass = node.mcoreElement
-    for (parent <- nodeList) {
+    for {parent <- nodeList} {
       var validCompartments = List[String]()
       if (parent.shape isDefined) {
-        for ((name, compartment) <- parent.shape.get.nests) {
+        for {(name, compartment) <- parent.shape.get.nests} {
           /*compartments*/
           //TODO cant be resolved since compartments have no nestedShape  - Spray.xtext says compartments are (Ereference -> Shape) mapping.... ?!?!?
           //if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
