@@ -24,11 +24,18 @@ object PolyLine {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLine] = {
     parse(geoModel, parent, parentStyle, hierarchyContainer)
   }
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLine] = {
+
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[PolyLine] = {
+
     val polyLineLayout: Option[PolyLineLayout] = PolyLineLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (polyLineLayout.isEmpty)
+    if (polyLineLayout.isEmpty) {
       None
-    else
+    } else {
       Some(new PolyLine(parent, polyLineLayout.get))
+    }
   }
 }

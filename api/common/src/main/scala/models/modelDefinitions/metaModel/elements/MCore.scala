@@ -93,8 +93,9 @@ class MClass(
    */
   private def getSuperHierarchy(acc: Seq[MClass], inspect: Seq[MClass]): Seq[MClass] = {
     inspect.foldLeft(acc) { (a, m) =>
-      if (a.exists(_.name == m.name)) a
-      else {
+      if (a.exists(_.name == m.name)) {
+        a
+      } else {
         getSuperHierarchy(m +: acc, m.superTypes)
       }
     }

@@ -26,11 +26,18 @@ object Line {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
     parse(geoModel, parent, parentStyle, hierarchyContainer)
   }
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[Line] = {
+
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[Line] = {
+
     val lineLayout = LineLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (lineLayout.isEmpty)
+    if (lineLayout.isEmpty) {
       None
-    else
+    } else {
       Some(new Line(parent, lineLayout.get.style, lineLayout.get.points))
+    }
   }
 }

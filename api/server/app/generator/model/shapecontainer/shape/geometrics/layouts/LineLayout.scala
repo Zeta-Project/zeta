@@ -26,21 +26,22 @@ object LineLayoutParser {
     var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
     attributes.foreach {
       case x if x.matches("point.+") =>
-        if (point1.isEmpty)
+        if (point1.isEmpty) {
           point1 = PointParser(x)
-        else {
+        } else {
           point2 = PointParser(x)
         }
       case anonymousStyle: String if hierarchyContainer.styleHierarchy.contains(anonymousStyle) =>
         styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
       case _ =>
     }
-    if (point1.isDefined && point2.isDefined)
+    if (point1.isDefined && point2.isDefined) {
       Some(new LineLayout {
         override val style = styl
         override val points: (Point, Point) = (point1.get, point2.get)
       })
-    else
+    } else {
       None
+    }
   }
 }

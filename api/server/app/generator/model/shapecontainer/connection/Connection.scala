@@ -53,9 +53,9 @@ object Connection extends CommonParserMethods {
     }
     val placingList = placings.map { Placing(_, style, cache.shapeHierarchy.root.data) }
 
-    if (placingList isEmpty)
+    if (placingList isEmpty) {
       None
-    else {
+    } else {
       val newConnection = new Connection(name, connection_type, style, placingList)
       cache + newConnection
       Some(newConnection)

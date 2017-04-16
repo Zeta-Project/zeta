@@ -36,13 +36,20 @@ object RoundedRectangle {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
     parse(geoModel, parent, parentStyle, hierarchyContainer)
   }
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[RoundedRectangle] = {
+
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[RoundedRectangle] = {
+
     /*mapping*/
     val rrLayout: Option[RoundedRectangleLayout] = RoundedRectangleLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
 
-    if (rrLayout.isEmpty)
-      return None
-
-    Some(new RoundedRectangle(parent, rrLayout.get, geoModel.children))
+    if (rrLayout.isEmpty) {
+      None
+    } else {
+      Some(new RoundedRectangle(parent, rrLayout.get, geoModel.children))
+    }
   }
 }

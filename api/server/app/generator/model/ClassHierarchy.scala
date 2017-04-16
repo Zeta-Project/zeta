@@ -24,10 +24,11 @@ sealed class ClassHierarchy[T <% { def toString: String; val name: String }](roo
   def get(className: String): Option[T] = {
     if (className isEmpty) return None
     val ret = nodeView.get(className)
-    if (ret.isDefined)
+    if (ret.isDefined) {
       Some(ret.get.data)
-    else
+    } else {
       None
+    }
   }
   def setRelation(parent: T, child: T) = nodeView(parent.name) inheritedBy child
   def contains(className: String): Boolean = {
@@ -85,8 +86,9 @@ object ClassHierarchy {
    */
   def mostRelevant[T, C](stack: List[C])(f: C => Option[T]): Option[T] = {
     for {parent <- stack} {
-      if (f(parent).isDefined)
+      if (f(parent).isDefined) {
         return f(parent)
+      }
     }
     None
   }

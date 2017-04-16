@@ -35,21 +35,30 @@ case object Multiline extends TextType
 object Text extends CommonParserMethods {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], textType: TextType, parentStyle: Option[Style], hierarchyContainer: Cache) =
     parse(geoModel, parent, textType, parentStyle, hierarchyContainer)
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], textType: TextType, parentStyle: Option[Style], hierarchyContainer: Cache): Option[Text] = {
+
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    textType: TextType,
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[Text] = {
+
     var id: String = ""
     val textLayout: Option[TextLayout] = TextLayoutParser(geoModel, parentStyle, hierarchyContainer)
-    if (textLayout isEmpty)
+    if (textLayout.isEmpty) {
       return None
+    }
 
     geoModel.attributes.foreach {
       case x if x.matches("id.*") => id = parse(idAsString, x).get
       case _ =>
     }
 
-    if (textLayout.isEmpty || id == "")
+    if (textLayout.isEmpty || id == "") {
       None
-    else
+    } else {
       Some(new Text(parent, textType, id, textLayout.get))
+    }
   }
 }
 

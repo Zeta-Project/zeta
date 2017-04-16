@@ -51,12 +51,15 @@ case class Shape private (
   /*first check for new TextOutputs*/
   val textMap = {
     var ret = parentTextMap
-    if (shapes isDefined) {
+    if (shapes.isDefined) {
       var texts = shapes.get.filter(i => i.isInstanceOf[Text]).map(i => i.asInstanceOf[Text].id -> i.asInstanceOf[Text]).toMap
       /*now check for old TextOutputs*/
-      if (parentTextMap.isDefined)
+      if (parentTextMap.isDefined) {
         parentTextMap.get.foreach(i => texts += i)
-      if (texts nonEmpty) ret = Some(texts)
+      }
+      if (texts.nonEmpty) {
+        ret = Some(texts)
+      }
     }
     ret
   }
@@ -64,12 +67,16 @@ case class Shape private (
   val compartmentMap = {
     /*if parentShape had CompartmentInfos and if new CompartmentInfos were parsed, create a new Map[String, CompartmentInfo]*/
     /*first check for new CompartmentInfo*/
-    val comparts = if (shapes isDefined) {
+    val comparts = if (shapes.isDefined) {
       rCompartment(shapes.get)
-    } else List[Compartment]()
-    if (comparts nonEmpty)
+    } else {
+      List[Compartment]()
+    }
+    if (comparts.nonEmpty) {
       Some(comparts.map(i => i.compartment_id -> i).toMap)
-    else None
+    } else {
+      None
+    }
   }
 
   /*useful Methodes */

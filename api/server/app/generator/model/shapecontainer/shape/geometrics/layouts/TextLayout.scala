@@ -25,8 +25,9 @@ object TextLayoutParser extends CommonParserMethods {
 
     /*mapping*/
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (commonLayout.isEmpty)
+    if (commonLayout.isEmpty) {
       return None
+    }
     var hali: Option[HAlign] = None
     var vali: Option[VAlign] = None
     var txt = ""

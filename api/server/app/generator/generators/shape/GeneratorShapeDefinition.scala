@@ -238,17 +238,20 @@ object GeneratorShapeDefinition {
   }
 
   protected def generateCompartmentProperties(shapeName: String) = {
-    if (compartmentMap.keySet.exists(_ == shapeName)) compartmentMap(shapeName) map {
-      case (className, comp) =>
-        s"""
+    if (compartmentMap.keySet.exists(_ == shapeName)) {
+      compartmentMap(shapeName) map {
+        case (className, comp) =>
+          s"""
           {
             className: "$className",
             id: "${comp.compartment_id}"
           }
         """
-      case _ => ""
+        case _ => ""
+      }
+    } else {
+      List()
     }
-    else List()
   }
 
   private def getAttributes(shape: GeometricModel, parentClass: String): String = {

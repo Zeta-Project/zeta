@@ -36,10 +36,11 @@ object CommonLayoutParser extends CommonParserMethods {
     attributes.foreach {
       case x if x.matches("position.+") => pos = {
         val newPositoin = parse(position, x).get
-        if (newPositoin isDefined)
+        if (newPositoin.isDefined) {
           newPositoin
-        else
+        } else {
           None
+        }
       }
       case x if x.matches("size.+") =>
         val newSize = parse(size, x).get

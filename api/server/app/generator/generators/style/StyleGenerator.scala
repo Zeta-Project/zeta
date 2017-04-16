@@ -140,7 +140,7 @@ object StyleGenerator {
   def commonAttributes(s: Style): String = {
     raw"""
       ${
-      if (checkBackgroundGradientNecessary(s))
+      if (checkBackgroundGradientNecessary(s)) {
         createGradientAttributes(
           s.background_color.get.asInstanceOf[Gradient],
           s.gradient_orientation.get match {
@@ -148,8 +148,9 @@ object StyleGenerator {
             case _ => false
           }
         )
-      else
+      } else {
         createBackgroundAttributes(s)
+      }
     }
       'fill-opacity':${s.transparency.getOrElse("1.0")},
       ${createLineAttributesFromLayout(s)}

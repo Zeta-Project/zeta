@@ -24,11 +24,13 @@ object GeneratorConnectionDefinition {
         switch(stylename){
           ${
             connections.map(c => s"""
-              case '${c.name}': ${
-                if (c.style.isDefined)
-                  "style = getStyle('" + c.style.get.name + "');\n"
-                else
-                  "style = {'.connection':{stroke: 'black'}};\n"
+              case '${c.name}':
+                ${
+                  if (c.style.isDefined) {
+                    "style = getStyle('" + c.style.get.name + "');\n"
+                  } else {
+                    "style = {'.connection':{stroke: 'black'}};\n"
+                  }
                 }
                 ${generateInlineStyle(c)}
                 ${handlePlacings(c)}
@@ -78,20 +80,22 @@ object GeneratorConnectionDefinition {
   }
 
   protected def generateInlineStyle(connection: Connection) = {
-    if (connection.style isDefined)
+    if (connection.style isDefined) {
       s"""
-    //Get inline style
-    var inline = {
-      '.connection, .marker-target, .marker-source':{
-        ${StyleGenerator.commonAttributes(connection.style.get)},
-        ${StyleGenerator.fontAttributes(connection.style.get)}
-      }
-    };
+        //Get inline style
+        var inline = {
+          '.connection, .marker-target, .marker-source':{
+            ${StyleGenerator.commonAttributes(connection.style.get)},
+            ${StyleGenerator.fontAttributes(connection.style.get)}
+          }
+        };
 
-    //Merge with default style
-    jQuery.extend(style, inline);
-    """
-    else ""
+        //Merge with default style
+        jQuery.extend(style, inline);
+      """
+    } else {
+      ""
+    }
   }
 
   protected def handlePlacings(connection: Connection) = {

@@ -25,11 +25,17 @@ object Polygon {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
     parse(geoModel, parent, parentStyle, hierarchyContainer)
   }
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[Polygon] = {
-    val polygonLayout: Option[PolyLineLayout] = PolyLineLayoutParser(geoModel, parentStyle, hierarchyContainer)
-    if (polygonLayout.isEmpty)
-      return None
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[Polygon] = {
 
-    Some(new Polygon(parent, polygonLayout.get, geoModel.children))
+    val polygonLayout: Option[PolyLineLayout] = PolyLineLayoutParser(geoModel, parentStyle, hierarchyContainer)
+    if (polygonLayout.isEmpty) {
+      None
+    } else {
+      Some(new Polygon(parent, polygonLayout.get, geoModel.children))
+    }
   }
 }

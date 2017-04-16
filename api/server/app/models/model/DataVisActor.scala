@@ -52,10 +52,11 @@ class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) exte
 
   private def validateAndGenerateDataVisCode(mObject: ObjectWithAttributes, conditionals: List[Conditional], msg: DataVisCodeMessage) = {
     val validator = new ConstrainedDataVisValidator
-    if (validator.validate(conditionals, mObject))
+    if (validator.validate(conditionals, mObject)) {
       generateAndPublish(msg, conditionals)
-    else
+    } else {
       socket ! DataVisInvalidError(validator.errors.toList, msg.context)
+    }
   }
 
   private def generateAndPublish(msg: DataVisCodeMessage, conditionals: List[Conditional]) = {

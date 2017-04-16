@@ -34,12 +34,13 @@ object PolyLineLayoutParser {
         styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
       case _ =>
     }
-    if (collectedPoints.length > 1)
+    if (collectedPoints.length > 1) {
       Some(new PolyLineLayout {
         override val points: List[Point] = collectedPoints
         override val style: Option[Style] = styl
       })
-    else
+    } else {
       None
+    }
   }
 }

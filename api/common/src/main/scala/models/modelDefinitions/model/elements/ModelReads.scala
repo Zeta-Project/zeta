@@ -45,8 +45,11 @@ object ModelReads {
 
     def finalize(map: Map[String, ModelElement]): JsResult[Map[String, ModelElement]] = {
       val refErrors = validateRefs(map)
-      if (refErrors.isEmpty) JsSuccess(wire(map))
-      else JsError(s"Model contains invalid references: ${refErrors.mkString(", ")}")
+      if (refErrors.isEmpty) {
+        JsSuccess(wire(map))
+      } else {
+        JsError(s"Model contains invalid references: ${refErrors.mkString(", ")}")
+      }
     }
 
     def wireNodes(newMap: => Map[String, ModelElement], old: Seq[ToNodes]): Seq[ToNodes] = {

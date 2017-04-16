@@ -109,8 +109,9 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
       workers += (workerId -> workers(workerId).copy(ref = sender(), deadline = workerDeathTimeout))
     } else {
       workers += (workerId -> WorkerState(sender(), Idle, workerDeathTimeout))
-      if (workState.hasWork)
+      if (workState.hasWork) {
         sender() ! MasterWorkerProtocol.WorkIsReady
+      }
     }
   }
 

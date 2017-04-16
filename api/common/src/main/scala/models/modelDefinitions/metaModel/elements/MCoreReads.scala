@@ -77,8 +77,9 @@ object MCoreReads {
 
     def finalize(mObjects: Seq[MObject]): JsResult[Map[String, MObject]] = {
       val nameMapping = mObjects.map(mObj => mObj.name -> mObj).toMap
-      if (mObjects.size != nameMapping.size) JsError("MObjects must have unique names")
-      else {
+      if (mObjects.size != nameMapping.size) {
+        JsError("MObjects must have unique names")
+      } else {
         val refErrors = validateRefs(nameMapping)
         if (refErrors.isEmpty) {
           val mappingWithEnums = addEnums(nameMapping)
@@ -115,8 +116,9 @@ object MCoreReads {
       def checkSingleEnum(source: String, enum: MEnum, default: EnumSymbol): List[String] = {
         mapping.get(enum.name) match {
           case Some(MEnum(_, symbols)) => {
-            if (symbols.map(_.name).contains(default.name)) Nil
-            else {
+            if (symbols.map(_.name).contains(default.name)) {
+              Nil
+            } else {
               s"$source: default value '${default.name}' is not part of enum '${enum.name}'" :: Nil
             }
           }

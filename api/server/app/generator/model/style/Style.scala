@@ -79,10 +79,14 @@ object Style extends CommonParserMethods {
    */
   def generateChildStyle(cache: Cache, parents: Option[Style]*): Option[Style] = {
     val parentStyles = parents.filter(_.isDefined)
-    if (parentStyles.length == 1) return parentStyles.head
-    else if (parentStyles.isEmpty) return None
-    val childName = "(child_of -> " + parentStyles.map(p => p.get.name + { if (p != parentStyles.last) " & " else "" }).mkString + ")"
-    Some(Style(childName, Some(parentStyles.toList.map(i => i.get.name)), List[(String, String)](), cache))
+    if (parentStyles.length == 1) {
+      parentStyles.head
+    } else if (parentStyles.isEmpty) {
+      None
+    } else {
+      val childName = "(child_of -> " + parentStyles.map(p => p.get.name + { if (p != parentStyles.last) " & " else "" }).mkString + ")"
+      Some(Style(childName, Some(parentStyles.toList.map(i => i.get.name)), List[(String, String)](), cache))
+    }
   }
 
   /**

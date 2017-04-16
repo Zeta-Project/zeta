@@ -58,10 +58,11 @@ object GeneratorInspectorDefinition {
   }
 
   private def getRightAttributes(shape: GeometricModel, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
-    if (attrCounterMap.keySet.exists(_ == shape.getClass.getSimpleName))
+    if (attrCounterMap.keySet.contains(shape.getClass.getSimpleName)) {
       attrCounterMap(shape.getClass.getSimpleName) = attrCounterMap(shape.getClass.getSimpleName) + 1
-    else
+    } else {
       attrCounterMap(shape.getClass.getSimpleName) = 1
+    }
 
     shape match {
       case e: Ellipse => getAttributes(e, shapeClass, maxWidth, maxHeight)

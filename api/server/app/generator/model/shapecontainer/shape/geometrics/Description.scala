@@ -37,9 +37,10 @@ object Description extends CommonParserMethods {
       case anonymousStyle: String if cache.styleHierarchy.contains(anonymousStyle) => styl = Style.generateChildStyle(cache, styl, anonymousStyle)
       case _ =>
     }
-    if (id != "")
+    if (id != "") {
       Some(new Description(id, styl, hali, vali))
-    else
+    } else {
       None
+    }
   }
 }

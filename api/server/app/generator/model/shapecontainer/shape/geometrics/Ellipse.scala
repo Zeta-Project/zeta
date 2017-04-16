@@ -30,14 +30,21 @@ object Ellipse {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
     parse(geoModel, parent, parentStyle, hierarchyContainer)
   }
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[Ellipse] = {
+
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[Ellipse] = {
+
     /*mapping*/
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     val compartment: Option[Compartment] = Compartment(geoModel.attributes)
 
-    if (commonLayout.isEmpty)
-      return None
-
-    Some(new Ellipse(parent, commonLayout.get, compartment, geoModel.children))
+    if (commonLayout.isEmpty) {
+      None
+    } else {
+      Some(new Ellipse(parent, commonLayout.get, compartment, geoModel.children))
+    }
   }
 }

@@ -20,8 +20,9 @@ object RoundedRectangleLayoutParser extends CommonParserMethods {
     val attributes = geoModel.attributes
     /*mapping*/
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (commonLayout.isEmpty)
+    if (commonLayout.isEmpty) {
       return None
+    }
 
     attributes.foreach {
       case x if x.matches("curve.+") =>

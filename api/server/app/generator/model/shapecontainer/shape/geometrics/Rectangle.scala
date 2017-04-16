@@ -35,14 +35,20 @@ object Rectangle {
   def apply(geoModel: GeoModel, parent: Option[GeometricModel] = None, parentStyle: Option[Style], diagram: Cache) = {
     parse(geoModel, parent, parentStyle, diagram)
   }
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel] = None, parentStyle: Option[Style], diagram: Cache): Option[Rectangle] = {
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel] = None,
+    parentStyle: Option[Style],
+    diagram: Cache): Option[Rectangle] = {
+
     /*mapping*/
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, diagram)
     val compartmentInfo: Option[Compartment] = Compartment(geoModel.attributes)
 
-    if (commonLayout.isEmpty)
-      return None
-
-    Some(new Rectangle(parent, commonLayout.get, compartmentInfo, geoModel.children))
+    if (commonLayout.isEmpty) {
+      None
+    } else {
+      Some(new Rectangle(parent, commonLayout.get, compartmentInfo, geoModel.children))
+    }
   }
 }

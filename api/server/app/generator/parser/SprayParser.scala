@@ -261,11 +261,16 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
       val corporateStyle: Option[Style] = Style.generateChildStyle(cache, diagramStyle, style)
       val mClass = metaMapMClass.get(mcoreElement)
       val diagramShape: Option[DiaShape] =
-        if (shape isDefined) Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaModelE))
-        else None
+        if (shape isDefined) {
+          Some(new DiaShape(corporateStyle, shape.get.ref, shape.get.propertiesAndCompartments, cache, mClass.get, metaModelE))
+        } else {
+          None
+        }
       val onCr = if (onCreate isDefined) {
         Some(OnCreate(Some(onCreate.get._1), mClass.get.attributes.find(_.name == onCreate.get._2)))
-      } else None
+      } else {
+        None
+      }
       val onUp = if (onUpdate isDefined) Some(OnUpdate(onUpdate)) else None
       val onDe = if (onDelete isDefined) Some(OnDelete(onDelete)) else None
 
@@ -355,7 +360,9 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
 
       val onCr = if (onCreate isDefined) {
         Some(OnCreate(Some(onCreate.get._1), mReference.get.attributes.find(_.name == onCreate.get._2)))
-      } else None
+      } else {
+        None
+      }
       val onUp = if (onUpdate isDefined) Some(OnUpdate(onUpdate)) else None
       val onDe = if (onDelete isDefined) Some(OnDelete(onDelete)) else None
 
