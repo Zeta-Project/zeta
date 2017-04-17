@@ -58,7 +58,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
       }
       case None => {
         log.warning("Tried to stop, but no container is running..")
-        sender() ! Worker.WorkComplete(137)
+        sender() ! WorkComplete(137)
       }
     }
 
@@ -215,14 +215,14 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
       }
 
       execute(work).map {
-        result => out ! Worker.WorkComplete(result)
+        result => out ! WorkComplete(result)
       } recover {
         case e: Exception => {
           if (work.job.stream) {
             jobStream = jobStream.copy(messages = jobStream.messages.enqueue(JobLogMessage(e.getCause.toString, "error")))
             out ! MasterWorkerProtocol.WorkerStreamedMessage(jobStream)
           }
-          out ! Worker.WorkComplete(1)
+          out ! WorkComplete(1)
         }
       }
   }

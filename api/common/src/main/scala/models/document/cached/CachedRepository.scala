@@ -1,9 +1,13 @@
 package models.document.http
 
+import com.github.blemale.scaffeine.{ Cache => ScaffeineCache }
+import com.github.blemale.scaffeine.Scaffeine
 import models.document._
 import play.api.libs.json._
 import rx.lang.scala.Observable
 
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.reflect._
@@ -18,12 +22,8 @@ object CachedRepository {
  * Cached Repository which use Scaffine to cache documents
  */
 class CachedRepository(remote: Repository) extends Repository with Cache {
-  import scala.concurrent.ExecutionContext.Implicits.global
-  import com.github.blemale.scaffeine.Cache
-  import com.github.blemale.scaffeine.Scaffeine
-  import scala.concurrent.duration._
 
-  val cache: Cache[String, Document] =
+  val cache: ScaffeineCache[String, Document] =
     Scaffeine()
       .recordStats()
       .expireAfterWrite(10.minutes)

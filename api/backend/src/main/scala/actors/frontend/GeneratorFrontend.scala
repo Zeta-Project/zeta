@@ -2,7 +2,11 @@ package actors.frontend
 
 import akka.actor._
 import models.frontend._
+
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+private case object RegisterGeneratorFrontend
 
 /**
  * Actor to connect a generator to the backend
@@ -10,16 +14,11 @@ import scala.concurrent.duration._
 
 object GeneratorFrontend {
   def props(out: ActorRef, backend: ActorRef, userId: String, workId: String) = Props(new GeneratorFrontend(out, backend, userId, workId))
-
-  private case object Register
 }
 
 class GeneratorFrontend(out: ActorRef, backend: ActorRef, userId: String, workId: String) extends Actor with ActorLogging {
-  import GeneratorFrontend._
-  import context.dispatcher
-
-  val instance = GeneratorClient(out, workId)
-  val registerTask = context.system.scheduler.schedule(1.seconds, 30.seconds, self, Register)
+  private val instance = GeneratorClient(out, workId)
+  private val registerTask = context.system.scheduler.schedule(1.seconds, 30.seconds, self, RegisterGeneratorFrontend)
 
   override def postStop() = {
     backend ! MessageEnvelope(userId, Disconnected(instance))
@@ -29,7 +28,7 @@ class GeneratorFrontend(out: ActorRef, backend: ActorRef, userId: String, workId
     log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
   }
   def receive = {
-    case Register =>
+    case RegisterGeneratorFrontend =>
       backend ! MessageEnvelope(userId, Connected(instance))
     case request: GeneratorRequest =>
       backend ! MessageEnvelope(userId, request)

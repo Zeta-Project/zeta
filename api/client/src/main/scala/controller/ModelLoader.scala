@@ -4,6 +4,8 @@ import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 import org.scalajs.jquery._
 import scala.scalajs.js.annotation.JSExport
+import scalajs.js.{Array => JsArray}
+import scala.scalajs.js.JSConverters._
 
 /**
  * remarks: annotation above does not exist prior to scala.js 0.6.5, so we can't use it (currently in project: 0.6.4)
@@ -59,9 +61,7 @@ class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {
 
 case class ModelLoader(modelId: String) {
 
-  def mClasses: scalajs.js.Array[String] = {
-    import scala.scalajs.js.JSConverters._
-
+  def mClasses: JsArray[String] = {
     /*
      * TODO: We need a REST API method which returns the mClass names for a given meta model.
      * For authorized access use the AccessToken object.
@@ -79,9 +79,7 @@ case class ModelLoader(modelId: String) {
     Array[String]("TestMClass1", "TestMClass2", "TestMClass3").toJSArray
   }
 
-  def mRefs: scalajs.js.Array[String] = {
-    import scala.scalajs.js.JSConverters._
-
+  def mRefs: JsArray[String] = {
     /*
      * TODO: We need a REST API method which returns the mRef names for a given meta model.
      * For authorized access use the AccessToken object.

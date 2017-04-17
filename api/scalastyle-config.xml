@@ -84,7 +84,7 @@
    <parameter name="illegalImports"><![CDATA[sun._,java.awt._]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.ImportGroupingChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.ImportGroupingChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.ImportOrderChecker" level="warning">
   <parameters>
    <parameter name="groups">java,scala,others</parameter>

@@ -13,8 +13,8 @@ object DummyWorkerExecutor {
 class DummyWorkerExecutor() extends Actor with ActorLogging {
   def receive = {
     case work: Work =>
-      sender ! Worker.WorkComplete(0)
+      sender ! WorkComplete(0)
     case cancel: CancelWork =>
-      sender ! Worker.WorkComplete(1)
+      sender ! WorkComplete(1)
   }
 }

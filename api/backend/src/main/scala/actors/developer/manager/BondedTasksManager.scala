@@ -13,14 +13,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+case class GetBondedTaskList(user: ModelUser)
+
 object BondedTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new BondedTasksManager(worker, repository))
-  case class GetBondedTaskList(user: ModelUser)
 }
 
 class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
-  import BondedTasksManager._
-
   // 1. check if the bonded task exist
   // 2. get the filter attached to the bonded task
   // 3. check if the user (which triggered the task) can execute the task.

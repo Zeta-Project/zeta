@@ -5,6 +5,13 @@ import actors.worker.MasterWorkerProtocol.Work
 import scala.collection.Iterable
 import scala.collection.immutable.Queue
 
+trait Event
+case class WorkEnqueued(work: Work) extends Event
+case class WorkCanceled(work: Work) extends Event
+case class WorkSendToMaster(work: Work) extends Event
+case class WorkAcceptedByMaster(work: Work) extends Event
+case class WorkCompleted(work: Work, result: Int) extends Event
+
 object WorkState {
   def empty(): WorkState = WorkState(
     pendingWork = Queue.empty,
@@ -12,23 +19,13 @@ object WorkState {
     workInProgress = Map.empty,
     workCanceled = Map.empty
   )
-
-  trait Event
-  case class WorkEnqueued(work: Work) extends Event
-  case class WorkCanceled(work: Work) extends Event
-  case class WorkSendToMaster(work: Work) extends Event
-  case class WorkAcceptedByMaster(work: Work) extends Event
-  case class WorkCompleted(work: Work, result: Int) extends Event
 }
 
 case class WorkState(
-    val pendingWork: Queue[Work],
-    val workInWait: Map[String, Work],
-    val workInProgress: Map[String, Work],
-    val workCanceled: Map[String, Work]
-) {
-
-  import WorkState._
+    pendingWork: Queue[Work],
+    workInWait: Map[String, Work],
+    workInProgress: Map[String, Work],
+    workCanceled: Map[String, Work]) {
 
   def hasWork: Boolean = pendingWork.nonEmpty
   def nextWork: Work = pendingWork.head

@@ -2,15 +2,13 @@ package actors.developer
 
 import actors.common._
 import actors.developer.Mediator.Refresh
-import actors.developer.WorkQueue.JobCannotBeEnqueued
-import actors.developer.WorkState._
 import actors.developer.manager._
 import actors.worker.MasterWorkerProtocol._
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator
+import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
 import models.document._
@@ -23,6 +21,7 @@ import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Mediator {
   val locatedOnNode = "developer"
@@ -50,8 +49,6 @@ class Mediator() extends Actor with ActorLogging {
   // the ttl of the session to access the database
   val ttl = 3600
 
-  import context.dispatcher
-  import DistributedPubSubMediator.Subscribe
   val mediator = DistributedPubSub(context.system).mediator
   val developerId = self.path.name
   mediator ! Subscribe(developerId, self)
@@ -105,7 +102,7 @@ class Mediator() extends Actor with ActorLogging {
     // Handle any request from a client to this actor
     case connection: Connection => handleConnection(connection)
     case request: Request => processRequest(request)
-    case request: WorkState.Event => {
+    case request: Event => {
       checkForBondedTask(request)
       generatorConnection ! request
     }
@@ -154,11 +151,11 @@ class Mediator() extends Actor with ActorLogging {
     connection match {
       case Connected(client) => client match {
         case developer @ ToolDeveloper(out, user) => {
-          workQueue forward WorkQueue.GetJobInfoList
+          workQueue forward GetJobInfoList
           developers += (client.id -> developer)
         }
         case user @ ModelUser(out, id, model) => {
-          bondedTasks forward BondedTasksManager.GetBondedTaskList(user)
+          bondedTasks forward GetBondedTaskList(user)
           users += (client.id -> user)
         }
         case _ => generatorConnection ! connection
@@ -210,7 +207,7 @@ class Mediator() extends Actor with ActorLogging {
   def resendBondedTasksToUsers() = {
     users.foreach {
       case (id, user) =>
-        bondedTasks ! BondedTasksManager.GetBondedTaskList(user)
+        bondedTasks ! GetBondedTaskList(user)
     }
   }
 

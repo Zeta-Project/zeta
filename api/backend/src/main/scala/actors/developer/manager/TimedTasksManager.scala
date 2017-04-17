@@ -12,16 +12,14 @@ import models.document._
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object TimedTasksManager {
-  private case class ExecuteTask(task: TimedTask)
+private case class ExecuteTask(task: TimedTask)
 
+object TimedTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new TimedTasksManager(worker, repository))
 }
 
 class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
-  import TimedTasksManager._
-
-  var schedules: Map[String, Cancellable] = Map()
+  private var schedules: Map[String, Cancellable] = Map()
 
   def create(task: TimedTask) = {
     val schedule = context.system.scheduler.schedule(task.delay.minutes, task.interval.minutes, self, ExecuteTask(task))

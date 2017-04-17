@@ -9,6 +9,8 @@ import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
 import scala.concurrent.Await
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.reflect._
@@ -25,7 +27,6 @@ case class Auth(username: String, password: String)
  * Http Repository to query the Couchbase Sync Gateway
  */
 class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implicit client: WSClient) extends Repository {
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   def this(auth: Option[Auth])(implicit client: WSClient) = this("", auth)
 
@@ -180,7 +181,6 @@ class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implic
   // List of documents from the query
   case class Documents(rows: List[Doc])
   implicit lazy val readDocuments: Reads[Documents] = Json.reads[Documents]
-  import scala.concurrent.duration._
   /**
    * Query for documents which match the specification
    *

@@ -2,7 +2,11 @@ package actors.frontend
 
 import akka.actor._
 import models.frontend._
+
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+private case object RegisterDeveloperFrontend
 
 /**
  * Actor to connect a tool developer to the backend
@@ -10,16 +14,11 @@ import scala.concurrent.duration._
 
 object DeveloperFrontend {
   def props(out: ActorRef, backend: ActorRef, userId: String) = Props(new DeveloperFrontend(out, backend, userId))
-
-  private case object Register
 }
 
 class DeveloperFrontend(out: ActorRef, backend: ActorRef, userId: String) extends Actor with ActorLogging {
-  import DeveloperFrontend._
-  import context.dispatcher
-
-  val instance = ToolDeveloper(out, userId)
-  val registerTask = context.system.scheduler.schedule(1.seconds, 30.seconds, self, Register)
+  private val instance = ToolDeveloper(out, userId)
+  private val registerTask = context.system.scheduler.schedule(1.seconds, 30.seconds, self, RegisterDeveloperFrontend)
 
   override def postStop() = {
     backend ! MessageEnvelope(userId, Disconnected(instance))
@@ -29,7 +28,7 @@ class DeveloperFrontend(out: ActorRef, backend: ActorRef, userId: String) extend
     log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
   }
   def receive = {
-    case Register =>
+    case RegisterDeveloperFrontend =>
       backend ! MessageEnvelope(userId, Connected(instance))
     case request: DeveloperRequest =>
       backend ! MessageEnvelope(userId, request)

@@ -38,12 +38,11 @@ case class Style private (
  * either parses a complete style or just generates an anonymous Style out of only a list of attributes
  */
 object Style extends CommonParserMethods {
-  import ColorConstant.knownColors
   val validStyleAttributes = List("description", "transparency", "background-color", "line-color", "line-style", "line-width",
     "font-color", "font-name", "font-size", "font-bold", "font-italic", "gradient-orientation", "gradient-area-color",
     "gradient-area-offset", "allowed", "unallowed", "selected", "multiselected", "highlighting")
 
-  lazy val validColor = ("(" + knownColors.keySet.map(i => if (i != knownColors.keySet.last) i + "|").mkString + ")").r
+  lazy val validColor = ("(" + ColorConstant.knownColors.keySet.map(i => if (i != ColorConstant.knownColors.keySet.last) i + "|").mkString + ")").r
 
   private def highlighting_selected = "selected" ~ "=" ~> color ^^ { i => ("selected", i) }
   private def highlighting_multiselected = "multiselected" ~ "=" ~> color ^^ { i => ("multiselected", i) }
@@ -227,7 +226,7 @@ object Style extends CommonParserMethods {
 
   private def color: Parser[Color] = (rgb | colorConstant) ^^ {
     case (r: Int, g: Int, b: Int) => RGBColor((r, g, b))
-    case constant: String => knownColors(constant)
+    case constant: String => ColorConstant.knownColors(constant)
   }
   private def rgb: Parser[(Int, Int, Int)] = {
     "=" ~ "RGB" ~ "(" ~ "red" ~ "=" ~> (argument_int <~ ",") ~

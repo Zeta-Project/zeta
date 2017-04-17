@@ -1,7 +1,5 @@
 package models.authenticators
 
-import javax.inject.Inject
-
 import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api.ExpirableAuthenticator
 import com.mohiva.play.silhouette.api.Logger
@@ -14,7 +12,7 @@ import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService._
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
-import com.mohiva.play.silhouette.api.util.JsonFormats._
+import com.mohiva.play.silhouette.api.util.JsonFormats
 import com.mohiva.play.silhouette.api.util._
 import models.User
 import models.authenticators.SGCookieAuthenticatorService._
@@ -23,11 +21,11 @@ import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.mvc._
 import models.session.Session
+import play.api.libs.json.OFormat
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import scala.concurrent.Promise
 import scala.language.postfixOps
 import scala.util.Failure
 import scala.util.Success
@@ -84,7 +82,10 @@ object SGCookieAuthenticator extends Logger {
   /**
    * Converts the CookieAuthenticator to Json and vice versa.
    */
-  implicit val jsonFormat = Json.format[SGCookieAuthenticator]
+  private val jsonFormat: OFormat[SGCookieAuthenticator] = {
+    implicit val FiniteDurationFormat = JsonFormats.FiniteDurationFormat
+    Json.format[SGCookieAuthenticator]
+  }
 
   /**
    * Serializes the authenticator.
@@ -99,7 +100,7 @@ object SGCookieAuthenticator extends Logger {
     cookieSigner: CookieSigner,
     authenticatorEncoder: AuthenticatorEncoder
   ) = {
-    cookieSigner.sign(authenticatorEncoder.encode(Json.toJson(authenticator).toString()))
+    cookieSigner.sign(authenticatorEncoder.encode(Json.toJson(authenticator)(jsonFormat).toString()))
   }
 
   /**
@@ -130,7 +131,7 @@ object SGCookieAuthenticator extends Logger {
    */
   private def buildAuthenticator(str: String): Try[SGCookieAuthenticator] = {
     Try(Json.parse(str)) match {
-      case Success(json) => json.validate[SGCookieAuthenticator].asEither match {
+      case Success(json) => json.validate[SGCookieAuthenticator](jsonFormat).asEither match {
         case Left(error) => Failure(new AuthenticatorException(InvalidJsonFormat.format(ID, error)))
         case Right(authenticator) => Success(authenticator)
       }
@@ -162,8 +163,6 @@ class SGCookieAuthenticatorService(
     session: Session)(implicit val executionContext: ExecutionContext)
   extends AuthenticatorService[SGCookieAuthenticator]
   with Logger {
-
-  import SGCookieAuthenticator._
 
   /**
    * Creates a new authenticator for the specified login info.
@@ -218,7 +217,7 @@ class SGCookieAuthenticatorService(
   private def processCookie(cookie: Cookie) = {
     repository match {
       case Some(d) => d.find(cookie.value)
-      case None => unserialize(cookie.value, cookieSigner, authenticatorEncoder) match {
+      case None => SGCookieAuthenticator.unserialize(cookie.value, cookieSigner, authenticatorEncoder) match {
         case Success(authenticator) => Future.successful(Some(authenticator))
         case Failure(error) =>
           logger.info(error.getMessage, error)
@@ -241,7 +240,7 @@ class SGCookieAuthenticatorService(
     session.getSession(User.getUserId(authenticator.loginInfo), settings.authenticatorExpiry.toSeconds).flatMap { aValue =>
       (repository match {
         case Some(d) => d.add(authenticator).map(_.id)
-        case None => Future.successful(serialize(authenticator, cookieSigner, authenticatorEncoder))
+        case None => Future.successful(SGCookieAuthenticator.serialize(authenticator, cookieSigner, authenticatorEncoder))
       }).map { value =>
         Container(
           Cookie(
@@ -335,7 +334,7 @@ class SGCookieAuthenticatorService(
         case None => Future.successful(AuthenticatorResult(result.withCookies(
           Cookie(
             name = settings.cookieName,
-            value = serialize(authenticator, cookieSigner, authenticatorEncoder),
+            value = SGCookieAuthenticator.serialize(authenticator, cookieSigner, authenticatorEncoder),
             // The maxAge` must be used from the authenticator, because it might be changed by the user
             // to implement "Remember Me" functionality
             maxAge = authenticator.cookieMaxAge.map(_.toSeconds.toInt),

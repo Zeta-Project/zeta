@@ -12,6 +12,7 @@ import play.api.libs.json.Reads
 
 import scala.concurrent.duration._
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.reflect.ClassTag
@@ -55,7 +56,6 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
 }
 
 abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Reads[CreateOptions], callOptions: Reads[CallOptions]) extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()

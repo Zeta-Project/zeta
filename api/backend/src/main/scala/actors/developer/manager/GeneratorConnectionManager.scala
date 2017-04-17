@@ -1,6 +1,7 @@
 package actors.developer.manager
 
-import actors.developer.WorkState
+import actors.developer.Event
+import actors.developer.WorkCompleted
 import actors.worker.MasterWorkerProtocol.Work
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -21,8 +22,8 @@ class GeneratorConnectionManager() extends Actor with ActorLogging {
     // streamed a result from a generator, send it to the generator now
     case toGenerator: ToGenerator => streamResultToGenerator(toGenerator)
     // event from the work queue which need to be handled
-    case WorkState.WorkCompleted(work, result) => processWork(work, result)
-    case _: WorkState.Event => // ignore other events
+    case WorkCompleted(work, result) => processWork(work, result)
+    case _: Event => // ignore other events
   }
 
   private def processConnection(connection: Connection) = {

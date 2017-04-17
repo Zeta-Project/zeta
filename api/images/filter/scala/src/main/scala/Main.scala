@@ -12,6 +12,7 @@ import rx.lang.scala.Observable
 import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
@@ -22,8 +23,6 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
 }
 
 object Main extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
-
   println("Execute Filter")
   val cmd = new Commands(args)
 

@@ -5,6 +5,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import play.api.mvc.RequestHeader
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
@@ -16,7 +17,6 @@ object SyncGatewaySession {
  * Session to access the Sync Gateway
  */
 class SyncGatewaySession()(implicit client: WSClient) extends Session {
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   val url = "http://database:4985/db/_session"
 

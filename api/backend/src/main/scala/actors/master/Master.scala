@@ -9,31 +9,29 @@ import akka.cluster.Cluster
 import akka.cluster.client.ClusterClientReceptionist
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator
+import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.persistence.PersistentActor
 import models.session.Session
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Deadline
 import scala.concurrent.duration.FiniteDuration
+
+private sealed trait WorkerStatus
+private case object Idle extends WorkerStatus
+private case class Busy(workId: String, deadline: Deadline) extends WorkerStatus
+private case class WorkerState(ref: ActorRef, status: WorkerStatus, deadline: Deadline)
+
+private case object WorkerTimeoutTick
+private case object CompletedWorkTick
 
 object Master {
   def props(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, sessionManager: Session): Props =
     Props(classOf[Master], workerTimeout, sessionDuration, sessionManager)
-
-  private sealed trait WorkerStatus
-  private case object Idle extends WorkerStatus
-  private case class Busy(workId: String, deadline: Deadline) extends WorkerStatus
-  private case class WorkerState(ref: ActorRef, status: WorkerStatus, deadline: Deadline)
-
-  private case object WorkerTimeoutTick
-  private case object CompletedWorkTick
 }
 
 class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, sessionManager: Session) extends PersistentActor with ActorLogging {
-  import DistributedPubSubMediator.Subscribe
-  import Master._
-  import WorkState._
-
   val numberOfWorkersToNotify = 4
   val mediator = DistributedPubSub(context.system).mediator
   mediator ! Subscribe("Master", self)
@@ -53,9 +51,8 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
   // workState is event sourced
   private var workState = WorkState.empty()
 
-  import context.dispatcher
-  val workerTimeoutTask = context.system.scheduler.schedule(workerTimeout / 2, workerTimeout / 2, self, WorkerTimeoutTick)
-  val completedWorkTask = context.system.scheduler.schedule(10.seconds, 10.seconds, self, CompletedWorkTick)
+  private val workerTimeoutTask = context.system.scheduler.schedule(workerTimeout / 2, workerTimeout / 2, self, WorkerTimeoutTick)
+  private val completedWorkTask = context.system.scheduler.schedule(10.seconds, 10.seconds, self, CompletedWorkTick)
 
   override def postStop() = {
     workerTimeoutTask.cancel()

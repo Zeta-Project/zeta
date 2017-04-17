@@ -1,32 +1,30 @@
 package actors.developer
 
-import actors.developer.WorkState._
 import actors.worker.MasterWorkerProtocol._
 import akka.actor.ActorLogging
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator
+import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.persistence.PersistentActor
 import models.document._
+
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import models.frontend.CancelWorkByUser
 import models.frontend.JobInfo
 import models.frontend.JobInfoList
 import models.worker._
 
+case class JobCannotBeEnqueued(job: Job, reason: String)
+case object GetJobInfoList
+private case object CheckTick
+private case object NextWork
+
 object WorkQueue {
   def props(developer: String) = Props(new WorkQueue(developer: String))
-
-  case class JobCannotBeEnqueued(job: Job, reason: String)
-  case object GetJobInfoList
-  private case object CheckTick
-  private case object NextWork
 }
 
 class WorkQueue(developer: String) extends PersistentActor with ActorLogging {
-  import WorkQueue._
-  import DistributedPubSubMediator.Publish
-
   private val PENDING_JOB = "pending"
   private val WAITING_JOB = "waiting"
   private val RUNNING_JOB = "running"
@@ -35,8 +33,6 @@ class WorkQueue(developer: String) extends PersistentActor with ActorLogging {
   private val master = DistributedPubSub(context.system).mediator
 
   private var jobSettings = JobSettings.default()
-
-  import context.dispatcher
 
   // workState is event sourced
   private var workState = WorkState.empty()
@@ -86,7 +82,7 @@ class WorkQueue(developer: String) extends PersistentActor with ActorLogging {
 
   private def publishEvent(event: Event) = {
     log.info("Publish event : {}", event.toString)
-    sendJobInfoList
+    sendJobInfoList()
     context.parent ! event
   }
 

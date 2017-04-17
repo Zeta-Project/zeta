@@ -6,6 +6,7 @@ import play.api.libs.ws.WSClient
 import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
@@ -17,7 +18,6 @@ object HttpRepository {
  * Http Repository to query the Couchbase Sync Gateway
  */
 class HttpRepository(session: String)(implicit client: WSClient) extends Repository {
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   def request(address: String): WSRequest = client.url(address).withHeaders("Cookie" -> s"SyncGatewaySession=${session};")
 

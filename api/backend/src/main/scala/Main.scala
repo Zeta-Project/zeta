@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 object Main extends App {
@@ -56,7 +57,6 @@ protected trait Starter {
   def initiate(cmd: Commands): Unit
 
   protected def setSharedJournal(system: ActorSystem, path: ActorPath): Unit = {
-    import system.dispatcher
     implicit val timeout = Timeout(15.seconds)
     val f = system.actorSelection(path) ? Identify(None)
     f.onSuccess {

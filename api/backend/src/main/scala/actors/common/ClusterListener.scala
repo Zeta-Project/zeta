@@ -5,15 +5,17 @@ import akka.actor.ActorLogging
 import akka.actor.Address
 import akka.actor.Props
 import akka.cluster.Cluster
-import akka.cluster.ClusterEvent
+import akka.cluster.ClusterEvent.InitialStateAsEvents
+import akka.cluster.ClusterEvent.MemberEvent
+import akka.cluster.ClusterEvent.MemberJoined
+import akka.cluster.ClusterEvent.MemberRemoved
+import akka.cluster.ClusterEvent.MemberUp
 
 object ClusterListener {
   def props(): Props = Props(new ClusterListener())
 }
 
 class ClusterListener extends Actor with ActorLogging {
-  import ClusterEvent._
-
   private var members = Set.empty[Address]
 
   Cluster(context.system).subscribe(self, InitialStateAsEvents, classOf[MemberEvent])
