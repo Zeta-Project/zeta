@@ -29,66 +29,20 @@ object VrGeneratorShapeDefinition {
 
   private def generatePolymerElement(shape: Shape) = {
     val geometrics = shape.shapes.getOrElse(List())
-    val totalSize = (
-      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
-      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
-    )
-
     s"""
-    <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
+    ${generateImports()}
     ${generateImports(geometrics)}
 
-
     <dom-module id="vr-${shape.name}"><template></template></dom-module>
-
 
     <script>
     window.VrElement = window.VrElement || {};
     VrElement.${shape.name.capitalize} = Polymer({
       is: "vr-${shape.name}",
-
-      behaviors: [
-        VrBehavior.Move,
-        VrBehavior.Resize,
-        VrBehavior.Highlight,
-        VrBehavior.Delete,
-        VrBehavior.Connect,
-        VrBehavior.Look,
-        VrBehavior.InnerSizing
-      ],
-
       observers: [ '_resizeConnection(xPos, yPos, width, height)' ],
 
-      ready: function() {
-        var self = this;
-        this.highlight = true;
-        this.resizeVertical = true;
-        this.resizeHorizontal = true;
-        this.moveHorizontal = true;
-        this.moveVertical = true;
-        this.minMoveHorizontal = 0;
-        this.maxMoveVertical = 0;
-        this.height = ${totalSize._1.toInt}
-        this.width = ${totalSize._2.toInt}
-        ${createInnerSizing(geometrics, totalSize)}
-
-        function create(element, text, center, position, min, max, percentage) {
-          //var element = new VrElement.Box();
-          element.width = self.width;
-          element.xPos = 0;
-          element.text = text;
-          element.textCener = center;
-          Polymer.dom(self.root).appendChild(element);
-          self.registerInnerSizingElement(element, position, min, max, percentage);
-        }
-      },
+      ${generateBahaviors()}
+      ${generateReadyFunction(geometrics)}
 
       _resizeConnection(xPos, yPos, width, height ${generateTextArgs(geometrics)}) {
         if (this.getThreeJS()) {
@@ -124,6 +78,19 @@ object VrGeneratorShapeDefinition {
     """
   }
 
+  private def generateImports() = {
+    s"""
+      | <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
+    """.stripMargin
+  }
+
   private def generateImports(geometrics: List[GeometricModel]): String = {
     (for {g: GeometricModel <- geometrics} yield {
       g match {
@@ -138,6 +105,52 @@ object VrGeneratorShapeDefinition {
         case _ => "<!-- no matching value -->" + g.toString()
       }
     }).mkString
+  }
+
+  private def generateBahaviors() = {
+    """
+      | behaviors: [
+      |   VrBehavior.Move,
+      |   VrBehavior.Resize,
+      |   VrBehavior.Highlight,
+      |   VrBehavior.Delete,
+      |   VrBehavior.Connect,
+      |   VrBehavior.Look,
+      |   VrBehavior.InnerSizing
+      |],
+    """.stripMargin
+  }
+
+  private def generateReadyFunction(geometrics: List[GeometricModel]) = {
+    val totalSize = (
+      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
+      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
+    )
+    s"""
+      | ready: function() {
+      |   var self = this;
+      |   this.highlight = true;
+      |   this.resizeVertical = true;
+      |   this.resizeHorizontal = true;
+      |   this.moveHorizontal = true;
+      |   this.moveVertical = true;
+      |   this.minMoveHorizontal = 0;
+      |   this.maxMoveVertical = 0;
+      |   this.height = ${totalSize._1.toInt}
+      |   this.width = ${totalSize._2.toInt}
+      |   ${createInnerSizing(geometrics, totalSize)}
+      |
+      |   function create(element, text, center, position, min, max, percentage) {
+      |     //var element = new VrElement.Box();
+      |     element.width = self.width;
+      |     element.xPos = 0;
+      |     element.text = text;
+      |     element.textCener = center;
+      |     Polymer.dom(self.root).appendChild(element);
+      |     self.registerInnerSizingElement(element, position, min, max, percentage);
+      |   }
+      | },
+    """.stripMargin
   }
 
   private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)): String = {

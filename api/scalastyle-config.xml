@@ -99,7 +99,7 @@
    <parameter name="ignore"><![CDATA[-1,0,1,2,3]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.MethodLengthChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.MethodLengthChecker" level="error">
   <parameters>
    <parameter name="maxLength"><![CDATA[50]]></parameter>
   </parameters>

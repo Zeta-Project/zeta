@@ -17,7 +17,7 @@ object GeneratorInspectorDefinition {
     s"""
       var InspectorDefs = {
         ${shapes.map(shape => generateDefinition(shape, packageName, attrs, nodes)).mkString}
-        $getLinkAttributes
+        ${getLinkAttributes()}
       };
     """
   }
@@ -75,67 +75,79 @@ object GeneratorInspectorDefinition {
     }
   }
 
-  def getAttributes(shape: Rectangle, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def getAttributes(shape: Rectangle, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
-    'rect${if (hasStyle(shape)) "." + shapeClass}': inp({
-      fill: {
-        group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 1,
-        label: 'Background-Color Rectangle'
-      },
-      'fill-opacity': {
-        group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 2,
-        label: 'Opacity Rectangle'
-      },
-      stroke: {
-        group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        label: 'Line-Color Rectangle'
-      },
-      'stroke-width': {
-        group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 4,
-        min: 0,
-        max: 30,
-        defaultValue: 1
-      },
-      'stroke-dasharray': {
-        group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 5,
-        label: 'Stroke Dash Rectangle'
-      }
-    }),
-    '.$shapeClass': inp({
-      x: {
-        group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 1,
-        max: ${maxWidth - shape.size_width},
-        label: 'x Position Rectangle'
-      },
-      y: {
-        group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 2,
-        max: ${maxHeight - shape.size_height},
-        label: 'y Position Rectangle'
-      },
-      height: {
-        group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        max: $maxHeight,
-        label: 'Height Rectangle'
-      },
-      width: {
-        group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        max: $maxWidth,
-        label: 'Width Rectangle'
-      }
-    })"""
-
+      | 'rect${if (hasStyle(shape)) "." + shapeClass}': inp({
+      |  ${generateAttributesSpecific(shape)}
+      | }),
+      | '.$shapeClass': inp({
+      |   ${generateAttributesGeneral(shape, maxWidth, maxHeight)}
+      | })
+    """.stripMargin
   }
 
-  def getAttributes(shape: Text, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def generateAttributesSpecific(shape: Rectangle) = {
+    s"""
+      | fill: {
+      |   group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 1,
+      |   label: 'Background-Color Rectangle'
+      | },
+      | 'fill-opacity': {
+      |   group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 2,
+      |   label: 'Opacity Rectangle'
+      | },
+      | stroke: {
+      |   group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   label: 'Line-Color Rectangle'
+      | },
+      | 'stroke-width': {
+      |   group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 4,
+      |   min: 0,
+      |   max: 30,
+      |   defaultValue: 1
+      | },
+      | 'stroke-dasharray': {
+      |   group: 'Presentation Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 5,
+      |   label: 'Stroke Dash Rectangle'
+      | }
+    """.stripMargin
+  }
+
+  private def generateAttributesGeneral(shape: Rectangle, maxWidth: Int, maxHeight: Int) = {
+    s"""
+      | x: {
+      |   group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 1,
+      |   max: ${maxWidth - shape.size_width},
+      |   label: 'x Position Rectangle'
+      | },
+      | y: {
+      |   group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 2,
+      |   max: ${maxHeight - shape.size_height},
+      |   label: 'y Position Rectangle'
+      | },
+      | height: {
+      |   group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   max: $maxHeight,
+      |   label: 'Height Rectangle'
+      | },
+      | width: {
+      |   group: 'Geometry Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   max: $maxWidth,
+      |   label: 'Width Rectangle'
+      | }
+    """.stripMargin
+  }
+
+  private def getAttributes(shape: Text, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
     'text${if (hasStyle(shape)) "." + shapeClass}' : inp({
       text: {
@@ -177,7 +189,7 @@ object GeneratorInspectorDefinition {
     """
   }
 
-  def getAttributes(shape: Line, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def getAttributes(shape: Line, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
     'line${if (hasStyle(shape)) "." + shapeClass}': inp({
       stroke: {
@@ -202,65 +214,79 @@ object GeneratorInspectorDefinition {
     """
   }
 
-  def getAttributes(shape: Ellipse, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def getAttributes(shape: Ellipse, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
-    'ellipse${if (hasStyle(shape)) "." + shapeClass}': inp({
-      fill: {
-        group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 1,
-        label:'Background-Color Ellipse'
-      },
-      'fill-opacity': {
-        group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 2,
-        label: 'Opacity Ellipse'
-      },
-      stroke: {
-        group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        label: 'Line-Color Ellipse'
-      },
-      'stroke-width': {
-        group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 4,
-        min: 0,
-        max: 30,
-        defaultValue: 1,
-        label: 'Stroke Width Ellipse'
-      },
-      'stroke-dasharray': {
-        group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 5,
-        label: 'Stroke Dash Ellipse'
-      }
-    }),
-    '.$shapeClass': inp({
-      cx: {
-        group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 1,
-        min: ${shape.size_width / 2},
-        max: ${maxWidth - shape.size_width / 2}
-      },
-      cy: {
-        group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 2,
-        min: ${shape.size_height / 2},
-        max: ${maxHeight - shape.size_height / 2}
-      },
-      rx: {
-        group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        max: ${maxWidth / 2}
-      },
-      ry: {
-        group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        max: ${maxHeight / 2}
-      }
-    })"""
+      | 'ellipse${if (hasStyle(shape)) "." + shapeClass}': inp({
+      |   ${generateAttributesSpecific(shape)}
+      | }),
+      | '.$shapeClass': inp({
+      |   ${generateAttributesGeneral(shape, maxWidth, maxHeight)}
+      | })
+    """.stripMargin
   }
 
-  def getAttributes(shape: Polygon, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def generateAttributesSpecific(shape: Ellipse) = {
+    s"""
+      | fill: {
+      |   group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 1,
+      |   label:'Background-Color Ellipse'
+      | },
+      |   'fill-opacity': {
+      |   group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 2,
+      |   label: 'Opacity Ellipse'
+      | },
+      | stroke: {
+      |   group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   label: 'Line-Color Ellipse'
+      | },
+      | 'stroke-width': {
+      |   group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 4,
+      |   min: 0,
+      |   max: 30,
+      |   defaultValue: 1,
+      |   label: 'Stroke Width Ellipse'
+      | },
+      | 'stroke-dasharray': {
+      |   group: 'Presentation Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 5,
+      |   label: 'Stroke Dash Ellipse'
+      | }
+    """.stripMargin
+  }
+
+  private def generateAttributesGeneral(shape: Ellipse, maxWidth: Int, maxHeight: Int) = {
+    s"""
+      | cx: {
+      |   group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 1,
+      |   min: ${shape.size_width / 2},
+      |   max: ${maxWidth - shape.size_width / 2}
+      | },
+      | cy: {
+      |   group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 2,
+      |   min: ${shape.size_height / 2},
+      |   max: ${maxHeight - shape.size_height / 2}
+      | },
+      | rx: {
+      |   group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   max: ${maxWidth / 2}
+      | },
+      | ry: {
+      |   group: 'Geometry Ellipse ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   max: ${maxHeight / 2}
+      | }
+    """.stripMargin
+  }
+
+
+  private def getAttributes(shape: Polygon, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
     'polygon${if (hasStyle(shape)) "." + shapeClass}' : inp({
       fill: {
@@ -295,7 +321,7 @@ object GeneratorInspectorDefinition {
     """
   }
 
-  def getAttributes(shape: PolyLine, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def getAttributes(shape: PolyLine, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
     'polyline${if (hasStyle(shape)) "." + shapeClass}' : inp({
       fill: {
@@ -325,79 +351,92 @@ object GeneratorInspectorDefinition {
     """
   }
 
-  def getAttributes(shape: RoundedRectangle, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
+  private def getAttributes(shape: RoundedRectangle, shapeClass: String, maxWidth: Int, maxHeight: Int) = {
     s"""
-    'rect${if (hasStyle(shape)) "." + shapeClass}' : inp({
-      fill: {
-        group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 1
-      },
-      'fill-opacity': {
-        group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 2,
-        label: 'Opacity Rounded Rectangle'
-      },
-      stroke: {
-        group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        label: 'Line-Color Rounded Rectangle'
-      },
-      'stroke-width': {
-        group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 4,
-        min: 0,
-        max: 30,
-        defaultValue: 1,
-        label: 'Stroke Width Rounded Rectangle'
-      },
-      'stroke-dasharray': {
-        group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 5,
-        label: 'Stroke Dash Rounded Rectangle'
-      },
-    }),
-    '.$shapeClass': inp({
-      rx: {
-        group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 6,
-        max: ${shape.size_width / 2},
-        label: 'Curve X'
-      },
-      ry: {
-        group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 7,
-        max: ${shape.size_height / 2},
-        label: 'Curve Y'
-      },
-      x: {
-        group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 1,
-        max: ${maxWidth - shape.size_width},
-        label: 'x Position Rounded Rectangle'
-      },
-      y: {
-        group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 2,
-        max: ${maxHeight - shape.size_height},
-        label: 'y Position Rounded Rectangle'
-      },
-      height: {
-        group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        max: $maxHeight,
-        label: 'Height Rounded Rectangle'
-      },
-      width: {
-        group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
-        index: 3,
-        max: $maxWidth,
-        label: 'Width Rounded Rectangle'
-      }
-    })"""
+      | 'rect${if (hasStyle(shape)) "." + shapeClass}' : inp({
+      |   ${generateAttributesSpecific(shape)}
+      | }),
+      | '.$shapeClass': inp({
+      |   ${generateAttributesGeneral(shape, maxWidth, maxHeight)}
+      | })
+    """.stripMargin
   }
 
-  def getLinkAttributes =
-    """
+  private def generateAttributesSpecific(shape: RoundedRectangle) = {
+    s"""
+      | fill: {
+      |   group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 1
+      | },
+      | 'fill-opacity': {
+      |   group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 2,
+      |   label: 'Opacity Rounded Rectangle'
+      | },
+      | stroke: {
+      |   group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   label: 'Line-Color Rounded Rectangle'
+      | },
+      | 'stroke-width': {
+      |   group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 4,
+      |   min: 0,
+      |   max: 30,
+      |   defaultValue: 1,
+      |   label: 'Stroke Width Rounded Rectangle'
+      | },
+      | 'stroke-dasharray': {
+      |   group: 'Presentation R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 5,
+      |   label: 'Stroke Dash Rounded Rectangle'
+      | },
+    """.stripMargin
+  }
+
+  private def generateAttributesGeneral(shape: RoundedRectangle, maxWidth: Int, maxHeight: Int) = {
+    s"""
+      | rx: {
+      |   group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 6,
+      |   max: ${shape.size_width / 2},
+      |   label: 'Curve X'
+      | },
+      | ry: {
+      |   group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 7,
+      |   max: ${shape.size_height / 2},
+      |   label: 'Curve Y'
+      | },
+      | x: {
+      |   group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 1,
+      |   max: ${maxWidth - shape.size_width},
+      |   label: 'x Position Rounded Rectangle'
+      | },
+      | y: {
+      |   group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 2,
+      |   max: ${maxHeight - shape.size_height},
+      |   label: 'y Position Rounded Rectangle'
+      | },
+      | height: {
+      |   group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   max: $maxHeight,
+      |   label: 'Height Rounded Rectangle'
+      | },
+      | width: {
+      |   group: 'Geometry R-Rectangle ${attrCounterMap(shape.getClass.getSimpleName)}',
+      |   index: 3,
+      |   max: $maxWidth,
+      |   label: 'Width Rounded Rectangle'
+      | }
+    """.stripMargin
+  }
+
+    private def getLinkAttributes() = {
+    s"""
     'zeta.MLink': {
       inputs: {
         labels: {
@@ -409,38 +448,7 @@ object GeneratorInspectorDefinition {
             }
           },
           item: {
-            type: 'object',
-            properties: {
-              position: {
-                type: 'range',
-                min: 0.1,
-                max: .9,
-                step: .1,
-                defaultValue: .5,
-                label: 'position',
-                index: 2,
-                attrs: {
-                  label: {
-                    'data-tooltip': 'Position the label relative to the source of the link'
-                  }
-                }
-              },
-              attrs: {
-                text: {
-                  text: {
-                    type: 'text',
-                    label: 'text',
-                    defaultValue: 'label',
-                    index: 1,
-                    attrs: {
-                      label: {
-                        'data-tooltip': 'Set text of the label'
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            ${generateItem()}
           }
         }
       },
@@ -452,13 +460,51 @@ object GeneratorInspectorDefinition {
       }
     }
     """
+  }
 
-  def hasStyle(shape: GeometricModel) = shape match {
+  private def generateItem() = {
+    """
+      | type: 'object',
+      | properties: {
+      |   position: {
+      |     type: 'range',
+      |     min: 0.1,
+      |     max: .9,
+      |     step: .1,
+      |     defaultValue: .5,
+      |     label: 'position',
+      |     index: 2,
+      |     attrs: {
+      |       label: {
+      |         'data-tooltip': 'Position the label relative to the source of the link'
+      |       }
+      |     }
+      |   },
+      |   attrs: {
+      |     text: {
+      |       text: {
+      |         type: 'text',
+      |         label: 'text',
+      |         defaultValue: 'label',
+      |         index: 1,
+      |         attrs: {
+      |           label: {
+      |             'data-tooltip': 'Set text of the label'
+      |           }
+      |         }
+      |       }
+      |     }
+      |   }
+      | }
+    """.stripMargin
+  }
+
+  private def hasStyle(shape: GeometricModel) = shape match {
     case s: HasStyle if s.style.isDefined => true
     case _ => false
   }
 
-  def generateMClassAttributeInputs(node: Node) = {
+  private def generateMClassAttributeInputs(node: Node) = {
     val attributeNames = node.mcoreElement.attributes.map(a => "'" + a.name + "'")
     val ret = s"""
       mClassAttributes: {
