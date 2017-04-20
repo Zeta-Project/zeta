@@ -17,7 +17,6 @@ import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
 import models.document.Log
 import models.document.http.HttpRepository
-import models.document.http.HttpRepository
 import models.frontend.JobLog
 import models.frontend.JobLogMessage
 import play.api.libs.ws.ahc.AhcWSClient
@@ -104,8 +103,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
 
     // stream output from the docker container
     private def output(logStream: LogStream): Unit = {
-      while (logStream.hasNext()) {
-        val next = logStream.next()
+      for {next <- logStream} {
         val message = Charset.forName("UTF-8").decode(next.content).toString
         val nextMessage = next.stream match {
           case LogMessage.Stream.STDOUT => Some(JobLogMessage(message, "info"))
@@ -113,7 +111,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
           case LogMessage.Stream.STDIN => None
         }
         nextMessage match {
-          case Some(message) => {
+          case Some(message) =>
             // streaming active?
             if (work.job.stream) {
               streamMessage(message)
@@ -122,7 +120,6 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
             if (work.job.persist) {
               persistMessage(message)
             }
-          }
           case None => // no message
         }
       }

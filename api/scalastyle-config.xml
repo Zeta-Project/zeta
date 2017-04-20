@@ -181,6 +181,6 @@
  <check enabled="true" class="org.scalastyle.scalariform.UppercaseLChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.VarFieldChecker" level="warning"/>
  <check enabled="true" class="org.scalastyle.scalariform.VarLocalChecker" level="warning"/>
- <check enabled="true" class="org.scalastyle.scalariform.WhileChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.WhileChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.XmlLiteralChecker" level="error"/>
 </scalastyle>
