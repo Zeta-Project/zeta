@@ -148,7 +148,7 @@
   </parameters>
  </check>
  <check enabled="false" class="org.scalastyle.scalariform.PatternMatchAlignChecker" level="error"/>
- <check enabled="true" class="org.scalastyle.scalariform.ProcedureDeclarationChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.ProcedureDeclarationChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.PublicMethodsHaveTypeChecker" level="warning">
   <parameters>
    <parameter name="ignoreOverride">false</parameter>

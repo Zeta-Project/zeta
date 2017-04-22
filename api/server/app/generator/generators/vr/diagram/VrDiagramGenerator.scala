@@ -15,7 +15,7 @@ object VrDiagramGenerator {
   private val SCENE = "vr-scene.html"
   private val SAVE_BEHAVIOR = "vr-save.html"
 
-  def doGenerate(diagram: Diagram, location: String) {
+  def doGenerate(diagram: Diagram, location: String): Unit = {
     val DEFAULT_DIAGRAM_LOCATION = location
 
     val nodes = diagram.nodes

@@ -127,7 +127,9 @@ object StencilGenerator {
     });"""
   }
 
-  def setPackageName(packageName: String) { this.packageName = packageName }
+  def setPackageName(name: String): Unit = {
+    packageName = name
+  }
 
   private def getNodeToPaletteMapping(diagram: Diagram): mutable.HashMap[String, ListBuffer[Node]] = {
     var mapping = new mutable.HashMap[String, ListBuffer[Node]]

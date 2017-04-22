@@ -27,5 +27,5 @@ trait Remote {
    * @param value The value which to stream
    * @tparam Output The output type of the stream
    */
-  def emit[Output](value: Output)(implicit writes: Writes[Output])
+  def emit[Output](value: Output)(implicit writes: Writes[Output]): Unit
 }

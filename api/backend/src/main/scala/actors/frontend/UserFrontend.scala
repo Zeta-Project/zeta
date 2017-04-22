@@ -35,7 +35,7 @@ class UserFrontend(out: ActorRef, backend: ActorRef, userId: String, model: Stri
     backend ! MessageEnvelope(userId, Disconnected(instance))
     registerTask.cancel()
   }
-  override def preRestart(reason: Throwable, message: Option[Any]) {
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
     log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
   }
   def receive = {

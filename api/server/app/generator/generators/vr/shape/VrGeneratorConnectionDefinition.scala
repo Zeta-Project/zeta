@@ -20,7 +20,7 @@ import generator.model.style.DASH
  * Created by max on 26.10.16.
  */
 object VrGeneratorConnectionDefinition {
-  def generate(connections: Iterable[Connection], location: String) {
+  def generate(connections: Iterable[Connection], location: String): Unit = {
     for {conn <- connections} { generateFile(conn, location) }
   }
 

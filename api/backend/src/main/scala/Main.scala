@@ -187,7 +187,7 @@ protected class WorkersStarter extends Starter {
     (1 to config.numberOfWorkers) foreach (i => startWorker(config, i, 0))
   }
 
-  private def startWorker(config: Config, number: Int, port: Int) {
+  private def startWorker(config: Config, number: Int, port: Int): Unit = {
     val system = createActorSystem(WorkersStarter.ActorRole, config.seeds, port)
     val executor = system.actorOf(DockerWorkExecutor.props(), s"work-executor-$number")
     system.actorOf(Worker.props(executor, WorkersStarter.RegisterInterval, Starter.WorkTimeout), s"worker-$number")

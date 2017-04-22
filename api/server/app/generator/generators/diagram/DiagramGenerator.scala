@@ -15,7 +15,7 @@ object DiagramGenerator {
   /**
    *  generates the files stencil.js, validator.js and linkhelper.js
    */
-  def doGenerate(diagram: Diagram, location: String) {
+  def doGenerate(diagram: Diagram, location: String): Unit = {
     val DEFAULT_DIAGRAM_LOCATION = location
     val packageName = "zeta"
     StencilGenerator.setPackageName(packageName)

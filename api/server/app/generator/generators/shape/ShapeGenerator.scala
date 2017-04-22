@@ -17,7 +17,7 @@ object ShapeGenerator {
   val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
 
   /** creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js*/
-  def doGenerate(cache: Cache, location: String, nodes: List[Node]) {
+  def doGenerate(cache: Cache, location: String, nodes: List[Node]): Unit = {
     val DEFAULT_SHAPE_LOCATION = location
     val attrs = GeneratorShapeDefinition.attrsInspector
     val packageName = "zeta"
@@ -40,7 +40,6 @@ object ShapeGenerator {
     // ElementAndInlineStyle
     val jointJSShapeAndInlineStyleContent = GeneratorShapeAndInlineStyle.generate(shapes, packageName, attrs)
     Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME), jointJSShapeAndInlineStyleContent.getBytes)
-
   }
 
 }

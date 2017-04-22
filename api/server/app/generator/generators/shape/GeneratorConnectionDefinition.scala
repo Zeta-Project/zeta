@@ -402,7 +402,7 @@ object GeneratorConnectionDefinition {
     """transform: 'scale(1,1)',"""
   }
 
-  private def cachePlacing(connection: String, placing: Placing) {
+  private def cachePlacing(connection: String, placing: Placing) = {
     if (placing.shapeCon.isInstanceOf[Text]) {
       writeToCache(connection, placing, labelCache)
     } else {
@@ -411,7 +411,7 @@ object GeneratorConnectionDefinition {
 
   }
 
-  private def writeToCache(connection: String, placing: Placing, cache: mutable.HashMap[String, mutable.MutableList[Placing]]) {
+  private def writeToCache(connection: String, placing: Placing, cache: mutable.HashMap[String, mutable.MutableList[Placing]]) = {
     if (cache.contains(connection)) {
       cache(connection) += placing
     } else {

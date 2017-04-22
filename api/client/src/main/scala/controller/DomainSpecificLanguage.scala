@@ -1,5 +1,5 @@
 package controller
 
 trait DomainSpecificLanguage {
-  def langForModel(id: String)
+  def langForModel(id: String): Unit
 }
