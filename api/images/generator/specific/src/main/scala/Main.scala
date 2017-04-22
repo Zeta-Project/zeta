@@ -1,7 +1,16 @@
-import generator._
-import models.document.{ Repository => Documents, _ }
+import generator.Error
+import generator.Result
+import generator.Success
+import generator.Transformer
+
+import models.document.Filter
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.MetaModelEntity
+import models.document.ModelEntity
+import models.document.{Repository => Documents}
 import models.file.File
-import models.file.{ Repository => Files }
+import models.file.{Repository => Files}
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
 import models.remote.Remote

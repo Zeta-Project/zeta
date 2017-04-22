@@ -1,8 +1,10 @@
 package facade
 
-import org.scalajs.dom.raw._
+import org.scalajs.dom.raw.HTMLElement
+
 import scala.scalajs.js
-import js.annotation._
+
+import js.annotation.JSName
 
 package object ace extends js.GlobalScope {
   var ace: Ace = js.native

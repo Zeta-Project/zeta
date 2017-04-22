@@ -2,56 +2,87 @@ package modules
 
 import com.google.inject.name.Named
 import com.google.inject.AbstractModule
-import com.google.inject.Guice
 import com.google.inject.Provides
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
-import com.mohiva.play.silhouette.api.crypto._
+import com.mohiva.play.silhouette.api.crypto.CookieSigner
+import com.mohiva.play.silhouette.api.crypto.Crypter
+import com.mohiva.play.silhouette.api.crypto.CrypterAuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.services._
-import com.mohiva.play.silhouette.api.util._
+import com.mohiva.play.silhouette.api.services.AuthenticatorService
+import com.mohiva.play.silhouette.api.services.AvatarService
+import com.mohiva.play.silhouette.api.util.CacheLayer
+import com.mohiva.play.silhouette.api.util.Clock
+import com.mohiva.play.silhouette.api.util.FingerprintGenerator
+import com.mohiva.play.silhouette.api.util.HTTPLayer
+import com.mohiva.play.silhouette.api.util.IDGenerator
+import com.mohiva.play.silhouette.api.util.PasswordHasher
+import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
+import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.api.Environment
 import com.mohiva.play.silhouette.api.EventBus
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.SilhouetteProvider
+import com.mohiva.play.silhouette.api.util.PlayHTTPLayer
 import com.mohiva.play.silhouette.crypto.JcaCookieSigner
 import com.mohiva.play.silhouette.crypto.JcaCookieSignerSettings
 import com.mohiva.play.silhouette.crypto.JcaCrypter
 import com.mohiva.play.silhouette.crypto.JcaCrypterSettings
-import com.mohiva.play.silhouette.impl.authenticators._
-import com.mohiva.play.silhouette.impl.providers._
-import com.mohiva.play.silhouette.impl.providers.oauth1._
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.providers.OAuth1Info
+import com.mohiva.play.silhouette.impl.providers.OAuth1Settings
+import com.mohiva.play.silhouette.impl.providers.OAuth1TokenSecretProvider
+import com.mohiva.play.silhouette.impl.providers.OAuth2Info
+import com.mohiva.play.silhouette.impl.providers.OAuth2Settings
+import com.mohiva.play.silhouette.impl.providers.OAuth2StateProvider
+import com.mohiva.play.silhouette.impl.providers.OpenIDInfo
+import com.mohiva.play.silhouette.impl.providers.OpenIDSettings
+import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
+import com.mohiva.play.silhouette.impl.providers.oauth1.TwitterProvider
+import com.mohiva.play.silhouette.impl.providers.oauth1.XingProvider
 import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretProvider
 import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretSettings
 import com.mohiva.play.silhouette.impl.providers.oauth1.services.PlayOAuth1Service
-import com.mohiva.play.silhouette.impl.providers.oauth2._
+import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
+import com.mohiva.play.silhouette.impl.providers.oauth2.FacebookProvider
+import com.mohiva.play.silhouette.impl.providers.oauth2.GoogleProvider
+import com.mohiva.play.silhouette.impl.providers.oauth2.VKProvider
 import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateProvider
 import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateSettings
 import com.mohiva.play.silhouette.impl.providers.oauth2.state.DummyStateProvider
 import com.mohiva.play.silhouette.impl.providers.openid.YahooProvider
 import com.mohiva.play.silhouette.impl.providers.openid.services.PlayOpenIDService
-import com.mohiva.play.silhouette.impl.services._
-import com.mohiva.play.silhouette.impl.util._
+import com.mohiva.play.silhouette.impl.services.GravatarService
+import com.mohiva.play.silhouette.impl.util.DefaultFingerprintGenerator
+import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
+import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import models.authenticators._
-import models.daos._
+import models.authenticators.SGCookieAuthenticator
+import models.authenticators.SGCookieAuthenticatorService
+import models.authenticators.SGCookieAuthenticatorSettings
+import models.daos.SGAuthInfoDAO
+import models.daos.SGUserDAO
+import models.daos.UserDAO
 import models.services.UserService
 import models.services.UserServiceImpl
 import models.session.Session
-import net.ceedubs.ficus.Ficus._
-import net.ceedubs.ficus.readers.ArbitraryTypeReader._
+import net.ceedubs.ficus.Ficus
+import net.ceedubs.ficus.Ficus.finiteDurationReader
+import net.ceedubs.ficus.Ficus.mapValueReader
+import net.ceedubs.ficus.Ficus.optionValueReader
+import net.ceedubs.ficus.Ficus.toFicusConfig
+import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
-import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.openid.OpenIdClient
 import play.api.libs.ws.WSClient
 import utils.auth.CustomSecuredErrorHandler
 import utils.auth.CustomUnsecuredErrorHandler
 import utils.auth.DefaultEnv
-import play.api.libs.ws._
 
 /**
  * The Guice module which wires all Silhouette dependencies.
@@ -155,8 +186,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides @Named("oauth1-token-secret-cookie-signer")
   def provideOAuth1TokenSecretCookieSigner(configuration: Configuration): CookieSigner = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth1TokenSecretProvider.cookie.signer")
-
     new JcaCookieSigner(config)
   }
 
@@ -168,8 +200,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides @Named("oauth1-token-secret-crypter")
   def provideOAuth1TokenSecretCrypter(configuration: Configuration): Crypter = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.oauth1TokenSecretProvider.crypter")
-
     new JcaCrypter(config)
   }
 
@@ -181,8 +214,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides @Named("oauth2-state-cookie-signer")
   def provideOAuth2StageCookieSigner(configuration: Configuration): CookieSigner = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth2StateProvider.cookie.signer")
-
     new JcaCookieSigner(config)
   }
 
@@ -194,8 +228,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides @Named("authenticator-cookie-signer")
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
-
     new JcaCookieSigner(config)
   }
 
@@ -207,8 +242,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides @Named("authenticator-crypter")
   def provideAuthenticatorCrypter(configuration: Configuration): Crypter = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.authenticator.crypter")
-
     new JcaCrypter(config)
   }
 
@@ -253,7 +289,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     configuration: Configuration,
     clock: Clock
   ): AuthenticatorService[SGCookieAuthenticator] = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[SGCookieAuthenticatorSettings]("silhouette.authenticator")
     val encoder = new CrypterAuthenticatorEncoder(crypter)
 
@@ -285,7 +322,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     configuration: Configuration,
     clock: Clock
   ): OAuth1TokenSecretProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val settings = configuration.underlying.as[CookieSecretSettings]("silhouette.oauth1TokenSecretProvider")
     new CookieSecretProvider(settings, cookieSigner, crypter, clock)
   }
@@ -305,7 +343,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     @Named("oauth2-state-cookie-signer") cookieSigner: CookieSigner,
     configuration: Configuration, clock: Clock
   ): OAuth2StateProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val settings = configuration.underlying.as[CookieStateSettings]("silhouette.oauth2StateProvider")
     new CookieStateProvider(settings, idGenerator, cookieSigner, clock)
   }
@@ -351,7 +390,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     stateProvider: OAuth2StateProvider,
     configuration: Configuration
   ): FacebookProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     new FacebookProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.facebook"))
   }
 
@@ -369,7 +409,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     stateProvider: OAuth2StateProvider,
     configuration: Configuration
   ): GoogleProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     new GoogleProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.google"))
   }
 
@@ -387,7 +428,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     stateProvider: OAuth2StateProvider,
     configuration: Configuration
   ): VKProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     new VKProvider(httpLayer, stateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.vk"))
   }
 
@@ -400,7 +442,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideClefProvider(httpLayer: HTTPLayer, configuration: Configuration): ClefProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     new ClefProvider(httpLayer, new DummyStateProvider, configuration.underlying.as[OAuth2Settings]("silhouette.clef"))
   }
 
@@ -418,7 +461,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     tokenSecretProvider: OAuth1TokenSecretProvider,
     configuration: Configuration
   ): TwitterProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val settings = configuration.underlying.as[OAuth1Settings]("silhouette.twitter")
     new TwitterProvider(httpLayer, new PlayOAuth1Service(settings), tokenSecretProvider, settings)
   }
@@ -437,7 +481,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     tokenSecretProvider: OAuth1TokenSecretProvider,
     configuration: Configuration
   ): XingProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val settings = configuration.underlying.as[OAuth1Settings]("silhouette.xing")
     new XingProvider(httpLayer, new PlayOAuth1Service(settings), tokenSecretProvider, settings)
   }
@@ -458,7 +503,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     client: OpenIdClient,
     configuration: Configuration
   ): YahooProvider = {
-
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
     val settings = configuration.underlying.as[OpenIDSettings]("silhouette.yahoo")
     new YahooProvider(httpLayer, new PlayOpenIDService(client, settings), settings)
   }

@@ -5,7 +5,7 @@ import generator.parser.Cache
 import generator.parser.ConnectionSketch
 import generator.parser.PropsAndComps
 import models.modelDefinitions.metaModel.elements.MReference
-import parser._
+import parser.IDtoConnectionSketch
 
 /**
  * Created by julian on 11.12.15.

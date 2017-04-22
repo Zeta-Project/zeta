@@ -1,9 +1,27 @@
 package actors.developer
 
-import actors.common._
+import java.util.concurrent.TimeUnit
+
+import actors.common.AllDocsFromDeveloper
+import actors.common.ChangeFeed
+import actors.common.Configuration
+import actors.common.Images
 import actors.developer.Mediator.Refresh
-import actors.developer.manager._
-import actors.worker.MasterWorkerProtocol._
+import actors.developer.manager.BondedTasksManager
+import actors.developer.manager.EventDrivenTasksManager
+import actors.developer.manager.FiltersManager
+import actors.developer.manager.GeneratorConnectionManager
+import actors.developer.manager.GeneratorRequestManager
+import actors.developer.manager.GeneratorsManager
+import actors.developer.manager.GetBondedTaskList
+import actors.developer.manager.ManualExecutionManager
+import actors.developer.manager.ModelReleaseManager
+import actors.developer.manager.TimedTasksManager
+import actors.worker.MasterWorkerProtocol.MasterToDeveloper
+import actors.worker.MasterWorkerProtocol.ToDeveloper
+import actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
+import actors.worker.MasterWorkerProtocol.WorkerToDeveloper
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
@@ -11,15 +29,41 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
-import models.document._
+
+import models.document.BondedTask
+import models.document.Changed
+import models.document.Filter
 import models.document.http.CachedRepository
 import models.document.http.HttpRepository
-import models.frontend._
+import models.frontend.BondedTaskCompleted
+import models.frontend.BondedTaskStarted
+import models.frontend.CancelWorkByUser
+import models.frontend.Connected
+import models.frontend.Connection
+import models.frontend.CreateGenerator
+import models.frontend.DeveloperRequest
+import models.frontend.DeveloperResponse
+import models.frontend.Disconnected
+import models.frontend.ExecuteBondedTask
+import models.frontend.GeneratorClient
+import models.frontend.GeneratorRequest
+import models.frontend.MessageEnvelope
+import models.frontend.ModelUser
+import models.frontend.Request
+import models.frontend.RunFilter
+import models.frontend.RunGenerator
+import models.frontend.RunGeneratorFromGenerator
+import models.frontend.RunModelRelease
+import models.frontend.SavedModel
+import models.frontend.ToGenerator
+import models.frontend.ToolDeveloper
+import models.frontend.UserRequest
 import models.session.SyncGatewaySession
-import models.worker._
+import models.worker.RunBondedTask
+
 import play.api.libs.ws.ahc.AhcWSClient
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -56,7 +100,7 @@ class Mediator() extends Actor with ActorLogging {
   // Get a session from the database. Blocking should be ok here because we need to initialize the actor
   // and if we don't get a session from the database we should stop the actor
   val sessionManager = SyncGatewaySession()
-  val session = Await.result(sessionManager.getSession(developerId, ttl), 10.seconds)
+  val session = Await.result(sessionManager.getSession(developerId, ttl), Duration(10, TimeUnit.SECONDS))
   val remote = HttpRepository(session)
   val repository = CachedRepository(remote)
 
@@ -80,7 +124,7 @@ class Mediator() extends Actor with ActorLogging {
   var developers: Map[String, ToolDeveloper] = Map()
   var users: Map[String, ModelUser] = Map()
 
-  val registerTask = context.system.scheduler.schedule((ttl / 10).seconds, (ttl / 10).seconds, self, Refresh)
+  val registerTask = context.system.scheduler.schedule(Duration(ttl / 10, TimeUnit.SECONDS), Duration(ttl / 10, TimeUnit.SECONDS), self, Refresh)
 
   override def postStop() = {
     registerTask.cancel()

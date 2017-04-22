@@ -1,3 +1,5 @@
+import java.util.concurrent.TimeUnit
+
 import actors.developer.DeveloperManager
 import actors.developer.Mediator
 import actors.frontend.DeveloperDummy
@@ -27,7 +29,8 @@ import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
@@ -57,7 +60,7 @@ protected trait Starter {
   def initiate(cmd: Commands): Unit
 
   protected def setSharedJournal(system: ActorSystem, path: ActorPath): Unit = {
-    implicit val timeout = Timeout(15.seconds)
+    implicit val timeout = Timeout(Duration(15, TimeUnit.SECONDS))
     val f = system.actorSelection(path) ? Identify(None)
     f.onSuccess {
       case ActorIdentity(_, Some(ref)) =>
@@ -86,7 +89,7 @@ protected object Starter {
   /**
    * The time after which a work (execution of a generator, filter, etc..) will be cancelled
    */
-  val WorkTimeout: FiniteDuration = 4.minutes
+  val WorkTimeout: FiniteDuration = Duration(4, TimeUnit.MINUTES)
 }
 
 protected class MasterStarter extends Starter {
@@ -155,11 +158,11 @@ protected object MasterStarter {
    * Note: This time should be longer as the workTimeout, because if workTimeout was reached, the system should be
    * able to store the log of the docker container
    */
-  val SessionDuration: FiniteDuration = Starter.WorkTimeout.plus(2.minutes)
+  val SessionDuration: FiniteDuration = Starter.WorkTimeout.plus(Duration(2, TimeUnit.MINUTES))
   /**
    * The time after which a worker will be marked as unreachable
    */
-  val WorkerTimeout: FiniteDuration = 5.minutes
+  val WorkerTimeout: FiniteDuration = Duration(5, TimeUnit.MINUTES)
 
   def apply(): MasterStarter = new MasterStarter()
 }
@@ -197,7 +200,7 @@ protected object WorkersStarter {
   /**
    * The interval in which a worker register itself to the master
    */
-  val RegisterInterval: FiniteDuration = 30.seconds
+  val RegisterInterval: FiniteDuration = Duration(30, TimeUnit.SECONDS)
   val MilliSecWaitForMaster = 20000
 
   def apply(): WorkersStarter = new WorkersStarter()

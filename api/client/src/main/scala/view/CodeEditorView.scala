@@ -2,14 +2,24 @@ package view
 
 import controller.CodeEditorController
 import controller.ModeController
-import facade._
+
+import facade.Delta
+import facade.ace
+import facade.IEditSession
+
 import org.scalajs.dom
-import scalot._
+
+import scalot.Client
+import scalot.Operation
 
 import scala.scalajs.js
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.genTravConvertible2JSRichGenTrav
 import scala.util.Random
-import scalatags.JsDom.all._
+
+import scalatags.JsDom.all
+import scalatags.JsDom.all.stringFrag
+import scalatags.JsDom.all.bindJsAny
+import scalatags.JsDom.all.bindJsAnyLike
 
 class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, dslType: String, autoSave: Boolean) {
 
@@ -34,16 +44,16 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
 
   private def createSkeleton() =
     dom.document.getElementById("editor").appendChild(
-      div(`class` := "container")(
-      div(`class` := "panel panel-default")(
-        div(`class` := "panel-heading")(
-          h3(`class` := "panel-title editor-title")(
-            strong()(s"$dslType"),
-            span(
-              `class` := "btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right",
-              id := "btn-save",
-              title := "Save Document",
-              onclick := { (e: dom.MouseEvent) =>
+      all.div(all.`class` := "container")(
+      all.div(all.`class` := "panel panel-default")(
+        all.div(all.`class` := "panel-heading")(
+          all.h3(all.`class` := "panel-title editor-title")(
+            all.strong()(s"$dslType"),
+            all.span(
+              all.`class` := "btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right",
+              all.id := "btn-save",
+              all.title := "Save Document",
+              all.onclick := { (e: dom.MouseEvent) =>
                 {
                   controller.saveCode()
                 }
@@ -51,9 +61,9 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
             )
           )
         ),
-        div(`class` := "panel-body editor-body")(
-          div(style := "background-color: gray;")(
-            div(`class` := "editor", `id` := aceId)
+        all.div(all.`class` := "panel-body editor-body")(
+          all.div(all.style := "background-color: gray;")(
+            all.div(all.`class` := "editor", all.`id` := aceId)
           )
         )
       )

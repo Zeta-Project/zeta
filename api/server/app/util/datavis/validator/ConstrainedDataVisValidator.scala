@@ -1,7 +1,14 @@
 package util.datavis.validator
 
 import modigen.util.datavis.validator.DataVisValidator
-import util.datavis.domain._
+
+import util.datavis.domain.Condition
+import util.datavis.domain.Conditional
+import util.datavis.domain.Identifier
+import util.datavis.domain.Literal
+import util.datavis.domain.MIdentifier
+import util.datavis.domain.Operand
+import util.datavis.domain.StyleIdentifier
 import util.domain.ObjectWithAttributes
 
 class ConstrainedDataVisValidator extends DataVisValidator {

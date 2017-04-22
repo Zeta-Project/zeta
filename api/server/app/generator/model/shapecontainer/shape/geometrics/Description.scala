@@ -5,7 +5,7 @@ import generator.model.shapecontainer.shape.geometrics.Alignment.HAlign
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
-import parser._
+import parser.IDtoOptionStyle
 
 /**
  * Created by julian on 03.11.15.

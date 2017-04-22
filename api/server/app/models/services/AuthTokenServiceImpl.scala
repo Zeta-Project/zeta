@@ -1,17 +1,18 @@
 package models.services
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.util.Clock
 import models.AuthToken
 import models.daos.AuthTokenDAO
 import org.joda.time.DateTimeZone
-import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 
 /**
  * Handles actions to auth tokens.
@@ -28,7 +29,7 @@ class AuthTokenServiceImpl @Inject() (authTokenDAO: AuthTokenDAO, clock: Clock) 
    * @param expiry The duration a token expires.
    * @return The saved auth token.
    */
-  def create(userID: UUID, expiry: FiniteDuration = 5 minutes) = {
+  def create(userID: UUID, expiry: FiniteDuration = Duration(5, TimeUnit.MINUTES)) = {
     val token = AuthToken(UUID.randomUUID(), userID, clock.now.withZone(DateTimeZone.UTC).plusSeconds(expiry.toSeconds.toInt))
     authTokenDAO.save(token)
   }

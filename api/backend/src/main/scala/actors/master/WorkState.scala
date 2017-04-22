@@ -1,6 +1,6 @@
 package actors.master
 
-import actors.worker.MasterWorkerProtocol._
+import actors.worker.MasterWorkerProtocol.Work
 import scala.collection.immutable.Queue
 
 // wrapper to hold completed work

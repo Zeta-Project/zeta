@@ -1,8 +1,11 @@
 package util
 
-import util.domain._
-import play.api.Logger
-import play.api.libs.json._
+import play.api.libs.json.JsObject
+
+import util.domain.MClass
+import util.domain.MEnum
+import util.domain.MReference
+import util.domain.Metamodel
 
 class MetamodelBuilder {
 

@@ -8,9 +8,13 @@ import org.scalajs.dom.MessageEvent
 import org.scalajs.dom.WebSocket
 import org.scalajs.dom.console
 import org.scalajs.dom.window
+
 import shared.CodeEditorMessage
-import shared.CodeEditorMessage._
-import upickle.default._
+import shared.CodeEditorMessage.DocLoaded
+import shared.CodeEditorMessage.DocNotFound
+import shared.CodeEditorMessage.TextOperation
+
+import upickle.default
 
 case class WebSocketConnection(
     uri: String = s"ws://${window.location.host}/codeeditor/socket",
@@ -30,7 +34,7 @@ case class WebSocketConnection(
   }
 
   def onMessage(msg: MessageEvent) = {
-    read[CodeEditorMessage](msg.data.toString) match {
+    default.read[CodeEditorMessage](msg.data.toString) match {
       case msg: TextOperation => controller.operationFromRemote(msg)
       case msg: DocLoaded => controller.docLoadedMessage(msg)
       case msg: DocNotFound => controller.docNotFoundMessage(msg)
@@ -40,7 +44,7 @@ case class WebSocketConnection(
 
   def sendMessage(msg: CodeEditorMessage) = ws.readyState match {
     case WebSocket.OPEN =>
-      ws.send(write(msg))
+      ws.send(default.write(msg))
     case _ =>
       console.error("Could not send Message because WebSocket is not in ready state!", ws)
   }

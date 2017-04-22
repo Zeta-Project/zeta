@@ -1,12 +1,13 @@
 package models.services
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 import models.AuthToken
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 
 /**
  * Handles actions to auth tokens.
@@ -20,7 +21,7 @@ trait AuthTokenService {
    * @param expiry The duration a token expires.
    * @return The saved auth token.
    */
-  def create(userID: UUID, expiry: FiniteDuration = 5 minutes): Future[AuthToken]
+  def create(userID: UUID, expiry: FiniteDuration = Duration(5, TimeUnit.MINUTES)): Future[AuthToken]
 
   /**
    * Validates a token ID.

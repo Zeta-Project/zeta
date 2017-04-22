@@ -1,13 +1,26 @@
 package models.modelDefinitions.model.elements
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements._
+import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MEnum
+import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.ScalarValue
+
 import play.api.data.validation.ValidationError
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsError
+import play.api.libs.json.JsPath
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.__
 
 import scala.annotation.tailrec
-import scala.collection.immutable._
+import scala.collection.immutable.Seq
 
 /**
  * Reads[T] for Model structures (bottom of file)

@@ -6,7 +6,8 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.PlacingSketch
 import generator.parser.CommonParserMethods
-import parser._
+
+import parser.OptionToStyle
 
 /**
  * Created by julian on 20.10.15.

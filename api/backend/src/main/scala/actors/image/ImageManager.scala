@@ -10,7 +10,7 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.document._
+import models.document.Change
 
 import scala.concurrent.ExecutionContext
 

@@ -4,8 +4,18 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.document._
+
+import models.document.AllFilters
+import models.document.Change
+import models.document.Changed
+import models.document.Created
+import models.document.Deleted
+import models.document.Filter
+import models.document.ModelEntity
+import models.document.Repository
+import models.document.Updated
 import models.worker.RerunFilterJob
+
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
 

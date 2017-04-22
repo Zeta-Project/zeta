@@ -3,7 +3,7 @@ package models.daos
 import java.util.UUID
 
 import models.AuthToken
-import models.daos.AuthTokenDAOImpl._
+
 import org.joda.time.DateTime
 
 import scala.collection.mutable
@@ -20,7 +20,7 @@ class AuthTokenDAOImpl extends AuthTokenDAO {
    * @param id The unique token ID.
    * @return The found token or None if no token for the given ID could be found.
    */
-  def find(id: UUID) = Future.successful(tokens.get(id))
+  def find(id: UUID) = Future.successful(AuthTokenDAOImpl.tokens.get(id))
 
   /**
    * Finds expired tokens.
@@ -28,7 +28,7 @@ class AuthTokenDAOImpl extends AuthTokenDAO {
    * @param dateTime The current date time.
    */
   def findExpired(dateTime: DateTime) = Future.successful {
-    tokens.filter {
+    AuthTokenDAOImpl.tokens.filter {
       case (id, token) =>
         token.expiry.isBefore(dateTime)
     }.values.toSeq
@@ -41,7 +41,7 @@ class AuthTokenDAOImpl extends AuthTokenDAO {
    * @return The saved token.
    */
   def save(token: AuthToken) = {
-    tokens += (token.id -> token)
+    AuthTokenDAOImpl.tokens += (token.id -> token)
     Future.successful(token)
   }
 
@@ -52,7 +52,7 @@ class AuthTokenDAOImpl extends AuthTokenDAO {
    * @return A future to wait for the process to be completed.
    */
   def remove(id: UUID) = {
-    tokens -= id
+    AuthTokenDAOImpl.tokens -= id
     Future.successful(())
   }
 }

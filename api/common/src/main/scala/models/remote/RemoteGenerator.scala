@@ -3,9 +3,21 @@ package models.remote
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
-import com.neovisionaries.ws.client._
-import models.frontend._
-import play.api.libs.json._
+import com.neovisionaries.ws.client.WebSocket
+import com.neovisionaries.ws.client.WebSocketAdapter
+import com.neovisionaries.ws.client.WebSocketFactory
+import com.neovisionaries.ws.client.WebSocketFrame
+import models.frontend.FromGenerator
+import models.frontend.GeneratorCompleted
+import models.frontend.GeneratorResponse
+import models.frontend.RunGeneratorFromGenerator
+import models.frontend.StartGeneratorError
+import models.frontend.ToGenerator
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 import rx.lang.scala.Observable
 import rx.lang.scala.Subject
 import rx.lang.scala.Subscriber

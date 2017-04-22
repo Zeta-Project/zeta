@@ -1,7 +1,7 @@
 package forms
 
-import play.api.data.Forms._
-import play.api.data._
+import play.api.data.Form
+import play.api.data.Forms
 
 /**
  * The `Change Password` form.
@@ -11,8 +11,8 @@ object ChangePasswordForm {
   /**
    * A play framework form.
    */
-  val form = Form(tuple(
-    "current-password" -> nonEmptyText,
-    "new-password" -> nonEmptyText
+  val form = Form(Forms.tuple(
+    "current-password" -> Forms.nonEmptyText,
+    "new-password" -> Forms.nonEmptyText
   ))
 }

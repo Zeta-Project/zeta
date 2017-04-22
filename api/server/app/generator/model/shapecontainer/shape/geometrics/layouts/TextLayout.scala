@@ -7,7 +7,8 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
 import generator.parser.CommonParserMethods
-import parser._
+import parser.IDtoStyle
+
 /**
  * Created by julian on 20.10.15.
  * representation of a textlayout and its parser

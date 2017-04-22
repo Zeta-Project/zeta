@@ -1,7 +1,8 @@
 package models.frontend
 
 import julienrf.json.derived
-import play.api.libs.json._
+import play.api.libs.json.__
+import play.api.libs.json.OFormat
 
 /**
  * Representation of a change of the model.

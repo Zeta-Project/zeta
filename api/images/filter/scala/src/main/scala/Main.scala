@@ -1,12 +1,18 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import filter.BaseFilter
-import models.document._
+
+import models.document.AllModels
+import models.document.Filter
+import models.document.ModelEntity
 import models.document.http.{ HttpRepository => DocumentRepository }
 import models.file.File
 import models.file.http.{ HttpRepository => FileRepository }
+
 import org.rogach.scallop.ScallopConf
+
 import play.api.libs.ws.ahc.AhcWSClient
+
 import rx.lang.scala.Observable
 
 import scala.reflect.runtime.currentMirror

@@ -1,7 +1,9 @@
 package models.file.http
 
 import models.document.Document
-import models.file._
+import models.file.File
+import models.file.Repository
+import models.file.Specification
 import play.api.libs.ws.WSClient
 import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable

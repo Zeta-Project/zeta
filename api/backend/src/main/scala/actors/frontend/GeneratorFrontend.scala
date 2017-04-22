@@ -1,9 +1,20 @@
 package actors.frontend
 
-import akka.actor._
-import models.frontend._
+import java.util.concurrent.TimeUnit
 
-import scala.concurrent.duration._
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+
+import models.frontend.Connected
+import models.frontend.Disconnected
+import models.frontend.GeneratorClient
+import models.frontend.GeneratorRequest
+import models.frontend.GeneratorResponse
+import models.frontend.MessageEnvelope
+
+import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 
 private case object RegisterGeneratorFrontend
@@ -18,7 +29,7 @@ object GeneratorFrontend {
 
 class GeneratorFrontend(out: ActorRef, backend: ActorRef, userId: String, workId: String) extends Actor with ActorLogging {
   private val instance = GeneratorClient(out, workId)
-  private val registerTask = context.system.scheduler.schedule(1.seconds, 30.seconds, self, RegisterGeneratorFrontend)
+  private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterGeneratorFrontend)
 
   override def postStop() = {
     backend ! MessageEnvelope(userId, Disconnected(instance))

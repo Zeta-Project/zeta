@@ -4,9 +4,19 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.document._
-import models.frontend._
-import models.worker._
+import models.document.AllBondedTasks
+import models.document.BondedTask
+import models.document.Filter
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.Repository
+import models.frontend.BondedTaskList
+import models.frontend.BondedTaskNotExecutable
+import models.frontend.Entry
+import models.frontend.ExecuteBondedTask
+import models.frontend.ModelUser
+import models.worker.RunBondedTask
+
 import rx.lang.scala.Observable
 
 import scala.concurrent.ExecutionContext.Implicits.global

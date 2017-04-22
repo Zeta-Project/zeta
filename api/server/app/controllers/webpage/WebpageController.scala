@@ -4,20 +4,27 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import models.document._
+
+import models.document.AllMetaModels
+import models.document.AllModels
+import models.document.MetaModelEntity
+import models.document.ModelEntity
+import models.document.Repository
 import models.document.http.HttpRepository
 import models.modelDefinitions.metaModel.MetaModelShortInfo
 import models.modelDefinitions.model.ModelShortInfo
+
 import play.api.Logger
 import play.api.libs.ws.WSClient
 import play.api.mvc.Controller
+
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import utils.auth.DefaultEnv
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent.Promise
+
+import utils.auth.DefaultEnv
 
 class WebpageController @Inject() (implicit ws: WSClient, silhouette: Silhouette[DefaultEnv]) extends Controller {
 

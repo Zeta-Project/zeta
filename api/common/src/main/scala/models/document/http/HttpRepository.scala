@@ -1,19 +1,34 @@
 package models.document.http
 
-import models.document._
+import java.util.concurrent.TimeUnit
+
+import models.document.Document
+import models.document.HttpAllDocsQuery
+import models.document.MetaModelEntity
+import models.document.ModelEntity
+import models.document.Repository
+import models.document.Specification
 import models.modelDefinitions.model.Model
-import play.api.libs.json._
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsError
+import play.api.libs.json.JsNull
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 import play.api.libs.ws.WSAuthScheme
 import play.api.libs.ws.WSClient
 import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
 import scala.concurrent.Await
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.reflect._
+import scala.reflect.ClassTag
+import scala.reflect.classTag
 
 object HttpRepository {
   def apply(session: String)(implicit client: WSClient): HttpRepository = new HttpRepository(session)
@@ -206,7 +221,7 @@ class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implic
                 }.recover {
                   case e: Exception => subscriber.onError(e)
                 }
-                Await.result(result, 5000 millis)
+                Await.result(result, Duration(100, TimeUnit.MILLISECONDS))
               }
             }
 

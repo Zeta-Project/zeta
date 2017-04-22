@@ -1,7 +1,8 @@
 package models.session
 
 import java.util.UUID
-import play.api.libs.json._
+
+import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global

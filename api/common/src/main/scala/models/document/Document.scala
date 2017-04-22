@@ -9,9 +9,15 @@ import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.Model
-import models.worker._
-import org.joda.time._
-import play.api.libs.json._
+import models.worker.Job
+import models.worker.RunBondedTask
+import models.worker.RunEventDrivenTask
+import models.worker.RunTimedTask
+import org.joda.time.DateTime
+import org.joda.time.Minutes
+import play.api.libs.json.__
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 sealed trait Document {
   val _id: String

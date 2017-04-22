@@ -3,7 +3,15 @@ package generator.generators.vr.shape
 import java.nio.file.Files
 import java.nio.file.Paths
 
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Line
+import generator.model.shapecontainer.shape.geometrics.PolyLine
+import generator.model.shapecontainer.shape.geometrics.Polygon
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
+import generator.model.shapecontainer.shape.geometrics.Text
+import generator.model.shapecontainer.shape.geometrics.Wrapper
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import generator.model.shapecontainer.shape.Shape
 

@@ -1,9 +1,25 @@
 package util.datavis.parser
 
-import util.datavis.domain._
 import language.postfixOps
 
 import scala.util.parsing.combinator.JavaTokenParsers
+
+import util.datavis.domain.Assignment
+import util.datavis.domain.BooleanLiteral
+import util.datavis.domain.Comparator
+import util.datavis.domain.Condition
+import util.datavis.domain.Conditional
+import util.datavis.domain.Equal
+import util.datavis.domain.Greater
+import util.datavis.domain.GreaterOrEqual
+import util.datavis.domain.Less
+import util.datavis.domain.LessOrEqual
+import util.datavis.domain.Literal
+import util.datavis.domain.MIdentifier
+import util.datavis.domain.NotEqual
+import util.datavis.domain.NumericLiteral
+import util.datavis.domain.StringLiteral
+import util.datavis.domain.StyleIdentifier
 
 trait DataVisParsers extends JavaTokenParsers {
   def script = conditional *

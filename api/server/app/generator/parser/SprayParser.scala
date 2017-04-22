@@ -15,12 +15,25 @@ import generator.model.diagram.node.Node
 import generator.model.diagram.Diagram
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.DefaultText
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Line
+import generator.model.shapecontainer.shape.geometrics.Multiline
+import generator.model.shapecontainer.shape.geometrics.PolyLine
+import generator.model.shapecontainer.shape.geometrics.Polygon
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
+import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
+
 import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import parser._
+
+import parser.OptionToStyle
+import parser.IDtoOptionStyle
+import parser.IDtoStyle
 
 /**
  * Created by julian on 23.10.15.

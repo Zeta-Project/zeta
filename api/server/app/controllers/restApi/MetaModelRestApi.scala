@@ -4,20 +4,30 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+
 import models.User
 import models.document.AllMetaModels
 import models.document.MetaModelEntity
 import models.document.Repository
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.elements.MCoreWrites._
-import models.modelDefinitions.metaModel._
+import models.modelDefinitions.metaModel.Diagram
+import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.MetaModelShortInfo
+import models.modelDefinitions.metaModel.Shape
+import models.modelDefinitions.metaModel.Style
+import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
+
 import play.api.libs.json.JsError
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.BodyParsers
+import play.api.mvc.Controller
+import play.api.mvc.Result
+
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
+
 import utils.auth.DefaultEnv
 import utils.auth.RepositoryFactory
 

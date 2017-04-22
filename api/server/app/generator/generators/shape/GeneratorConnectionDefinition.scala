@@ -3,7 +3,15 @@ package generator.generators.shape
 import generator.generators.style.StyleGenerator
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.connection.Placing
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Line
+import generator.model.shapecontainer.shape.geometrics.Point
+import generator.model.shapecontainer.shape.geometrics.PolyLine
+import generator.model.shapecontainer.shape.geometrics.Polygon
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
+import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.HasStyle
 
 import scala.collection.mutable

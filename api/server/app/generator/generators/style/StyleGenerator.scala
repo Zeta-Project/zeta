@@ -1,11 +1,18 @@
 package generator.generators.style
 
-import generator.model.style._
+import generator.model.style.DASH
+import generator.model.style.DASHDOT
+import generator.model.style.DASHDOTDOT
+import generator.model.style.DOT
+import generator.model.style.LineStyle
+import generator.model.style.Style
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.HORIZONTAL
+
 import java.nio.file.Paths
 import java.nio.file.Files
+
 
 /**
  * The StyleGenerator object, responsible for generation of style.js

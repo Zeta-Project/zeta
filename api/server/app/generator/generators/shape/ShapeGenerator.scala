@@ -1,6 +1,7 @@
 package generator.generators.shape
 
-import java.nio.file._
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import generator.model.diagram.node.Node
 import generator.parser.Cache

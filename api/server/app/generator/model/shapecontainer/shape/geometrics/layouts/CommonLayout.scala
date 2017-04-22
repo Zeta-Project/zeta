@@ -4,7 +4,7 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
 import generator.parser.CommonParserMethods
-import parser._
+import parser.IDtoStyle
 
 /**
  * Created by julian on 15.10.15.

@@ -1,7 +1,23 @@
 package modigen.util.datavis.validator
 
-import util.datavis.domain._
-import util.domain._
+import util.datavis.domain.Assignment
+import util.datavis.domain.BooleanLiteral
+import util.datavis.domain.Condition
+import util.datavis.domain.Conditional
+import util.datavis.domain.Literal
+import util.datavis.domain.MIdentifier
+import util.datavis.domain.NumericLiteral
+import util.datavis.domain.StringLiteral
+import util.datavis.domain.StyleIdentifier
+import util.domain.MAttribute
+import util.domain.MAttributeBoolean
+import util.domain.MAttributeMEnumNumber
+import util.domain.MAttributeMEnumString
+import util.domain.MAttributeNumber
+import util.domain.MAttributeString
+import util.domain.MEnumNumber
+import util.domain.MEnumString
+import util.domain.ObjectWithAttributes
 
 /**
  * DataVisValidator

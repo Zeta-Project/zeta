@@ -1,13 +1,18 @@
 package generator.model.style
 
 import generator.model.ClassHierarchy
-import generator.model.style.color._
+import generator.model.style.color.Color
+import generator.model.style.color.ColorConstant
+import generator.model.style.color.ColorOrGradient
+import generator.model.style.color.ColorWithTransparency
+import generator.model.style.color.RGBColor
+import generator.model.style.color.Transparent
 import generator.model.style.gradient.GradientColorArea
 import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.GradientAlignment
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
-import parser._
+import parser.IDtoStyle
 
 case class Style private (
     name: String = "noName",

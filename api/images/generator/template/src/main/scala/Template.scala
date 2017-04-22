@@ -1,28 +1,35 @@
+import java.util.concurrent.TimeUnit
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import models.document.{ Repository => Documents, _ }
-import models.document.http.{ HttpRepository => DocumentRepository }
-import models.file.{ Repository => Files, _ }
-import models.file.http.{ HttpRepository => FileRepository }
+import generator.Result
+import generator.Transformer
+import models.document.Filter
+import models.document.Generator
+import models.document.ModelEntity
+import models.document.{Repository => Documents}
+import models.document.http.{HttpRepository => DocumentRepository}
+import models.file.File
+import models.file.{Repository => Files}
+import models.file.http.{HttpRepository => FileRepository}
+import models.remote.Remote
+import models.remote.RemoteGenerator
+import models.session.SyncGatewaySession
 import org.rogach.scallop.ScallopConf
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
+import play.api.libs.ws.ahc.AhcWSClient
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.reflect.ClassTag
-import scala.reflect.runtime._
+import scala.reflect.runtime
 import scala.tools.reflect.ToolBox
-import generator._
-import models.remote.Remote
-import models.remote.RemoteGenerator
-import models.session.SyncGatewaySession
-import play.api.libs.ws.ahc.AhcWSClient
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session = opt[String]()
@@ -67,7 +74,7 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
   implicit val files = FileRepository(cmd.session.getOrElse(""))
   implicit val session = SyncGatewaySession()
 
-  val user = Await.result(session.getUser(cmd.session.getOrElse("")), 10.seconds)
+  val user = Await.result(session.getUser(cmd.session.getOrElse("")), Duration(10, TimeUnit.SECONDS))
 
   if (cmd.options.supplied) {
     val raw = cmd.options.getOrElse("")
@@ -178,7 +185,7 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
     val p = Promise[T]
 
     try {
-      val toolbox = currentMirror.mkToolBox()
+      val toolbox = runtime.currentMirror.mkToolBox()
       val tree = toolbox.parse(file)
       val compiledCode = toolbox.eval(tree)
       val fn = compiledCode.asInstanceOf[T]

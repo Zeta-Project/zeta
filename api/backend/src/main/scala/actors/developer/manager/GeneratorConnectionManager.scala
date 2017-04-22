@@ -6,8 +6,14 @@ import actors.worker.MasterWorkerProtocol.Work
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
-import models.frontend._
-import models.worker._
+import models.frontend.Connected
+import models.frontend.Connection
+import models.frontend.Disconnected
+import models.frontend.FromGenerator
+import models.frontend.GeneratorClient
+import models.frontend.GeneratorCompleted
+import models.frontend.ToGenerator
+import models.worker.RunGeneratorFromGeneratorJob
 
 object GeneratorConnectionManager {
   def props() = Props(new GeneratorConnectionManager())

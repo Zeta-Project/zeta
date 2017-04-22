@@ -1,6 +1,7 @@
 package actors.worker
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 import actors.worker.MasterWorkerProtocol.CancelWork
 import actors.worker.MasterWorkerProtocol.Work
@@ -18,14 +19,16 @@ import akka.actor.SupervisorStrategy.Stop
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Deadline
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 
 object WorkTimeout
 case class WorkComplete(result: Int)
 
 object Worker {
-  def props(executor: ActorRef, registerInterval: FiniteDuration = 10.seconds, workTimeout: FiniteDuration): Props =
+  def props(executor: ActorRef, registerInterval: FiniteDuration = Duration(10, TimeUnit.SECONDS), workTimeout: FiniteDuration): Props =
     Props(classOf[Worker], executor, registerInterval, workTimeout)
 }
 
@@ -33,10 +36,10 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
   private val mediator = DistributedPubSub(context.system).mediator
   private val workerId = UUID.randomUUID().toString
 
-  private val registerTask = context.system.scheduler.schedule(10.seconds, registerInterval, mediator,
+  private val registerTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), registerInterval, mediator,
     Publish("Master", MasterWorkerProtocol.RegisterWorker(workerId)))
 
-  private val workTimeoutTask = context.system.scheduler.schedule(10.seconds, workTimeout / 4, self, WorkTimeout)
+  private val workTimeoutTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), workTimeout / 4, self, WorkTimeout)
 
   private val workExecutor = context.watch(executor)
 
@@ -83,7 +86,7 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
     case WorkComplete(result) =>
       log.info("Work is complete. Result {}.", result)
       sendToMaster(MasterWorkerProtocol.WorkIsDone(workerId, currentWork.id, result))
-      context.setReceiveTimeout(5.seconds)
+      context.setReceiveTimeout(Duration(5, TimeUnit.SECONDS))
       context.become(waitForWorkIsDoneAck(result))
     case msg: MasterWorkerProtocol.WorkerStreamedMessage =>
       mediator ! Publish(currentWork.owner, msg)

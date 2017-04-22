@@ -16,7 +16,7 @@ import shared.DiagramWSMessage.DataVisScopeQuery
 import shared.DiagramWSOutMessage.DataVisError
 import shared.DiagramWSOutMessage.DataVisScope
 import shared.DiagramWSOutMessage.NewScriptFile
-import upickle.default._
+import upickle.default
 
 class ModelWsActor(out: ActorRef, instanceId: String, graphType: String) extends Actor {
   val mediator = DistributedPubSub(context.system).mediator
@@ -28,15 +28,15 @@ class ModelWsActor(out: ActorRef, instanceId: String, graphType: String) extends
   override def receive: Actor.Receive = {
     case webSocketMsg: String => processMessage(webSocketMsg)
     case ModelWsActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))
-    case newFile: NewScriptFile => out ! write(newFile)
-    case scope: DataVisScope => out ! write(scope)
+    case newFile: NewScriptFile => out ! default.write(newFile)
+    case scope: DataVisScope => out ! default.write(scope)
     case DataVisParseError(error, objectId) =>
       log.debug(error)
-      out ! write(DataVisError(List(error), objectId))
+      out ! default.write(DataVisError(List(error), objectId))
 
     case DataVisInvalidError(errors, objectId) =>
       errors.foreach(err => log.debug(err))
-      out ! write(DataVisError(errors, objectId))
+      out ! default.write(DataVisError(errors, objectId))
 
     case mediatorAck: SubscribeAck => log.debug("Subscribed to messages for instance with uuid: " + instanceId)
     case _ => log.error("Unknown message received.")
@@ -44,7 +44,7 @@ class ModelWsActor(out: ActorRef, instanceId: String, graphType: String) extends
 
   private def processMessage(webSocketMsg: String) = {
     try {
-      read[DiagramWSMessage](webSocketMsg) match {
+      default.read[DiagramWSMessage](webSocketMsg) match {
         case code: DataVisCodeMessage => dataVisActor ! code
         case scope: DataVisScopeQuery => dataVisActor ! scope
       }

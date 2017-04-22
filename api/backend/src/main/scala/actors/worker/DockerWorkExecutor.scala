@@ -22,8 +22,11 @@ import models.frontend.JobLogMessage
 import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.collection.JavaConversions._
-import scala.concurrent._
+import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.JavaConversions.seqAsJavaList
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 object DockerWorkExecutor {
   def props() = Props(new DockerWorkExecutor())

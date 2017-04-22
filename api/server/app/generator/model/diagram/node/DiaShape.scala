@@ -9,7 +9,7 @@ import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import parser._
+import parser.IDtoShapeSketch
 
 /**
  * Created by julian on 30.11.15.

@@ -4,28 +4,31 @@ import javax.inject.Inject
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
+
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+
 import models.document.MetaModelEntity
 import models.document.Repository
-import models.metaModel._
+import models.metaModel.MetaModelWsActor
+
 import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.WebSocket
-import utils.auth.DefaultEnv
-import utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
+
 /**
  * Created by mgt on 17.10.15.
  */
-
 class MetaModelController @Inject() (
     implicit mat: Materializer,
     system: ActorSystem,

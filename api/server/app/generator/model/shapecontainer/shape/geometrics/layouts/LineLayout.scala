@@ -5,7 +5,7 @@ import generator.model.shapecontainer.shape.geometrics.Point
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
-import parser._
+import parser.IDtoStyle
 
 /**
  * Created by julian on 20.10.15.

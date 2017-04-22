@@ -1,7 +1,7 @@
 package models.modelDefinitions.metaModel.elements
 
 import scala.annotation.tailrec
-import scala.collection.immutable._
+import scala.collection.immutable.Seq
 
 /**
  * Immutable domain model for the MCore (meta)metamodel

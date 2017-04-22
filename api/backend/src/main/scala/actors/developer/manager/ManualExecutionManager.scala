@@ -4,7 +4,9 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.document._
+
+import models.document.GeneratorImage
+import models.document.Repository
 import models.document.Filter
 import models.document.Generator
 import models.frontend.ExecuteFilterError
@@ -13,6 +15,7 @@ import models.frontend.RunFilter
 import models.frontend.RunGenerator
 import models.worker.RunFilterManually
 import models.worker.RunGeneratorManually
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object ManualExecutionManager {

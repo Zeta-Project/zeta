@@ -3,7 +3,12 @@ package util.datavis.generator
 import java.io.File
 import java.io.FileWriter
 
-import util.datavis.domain._
+import util.datavis.domain.Assignment
+import util.datavis.domain.Conditional
+import util.datavis.domain.Literal
+import util.datavis.domain.MIdentifier
+import util.datavis.domain.Operand
+import util.datavis.domain.StyleIdentifier
 
 class ListenersGenerator {
   val filesuffix = "listeners.js"

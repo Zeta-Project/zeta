@@ -1,19 +1,40 @@
 package actors.developer
 
-import actors.worker.MasterWorkerProtocol._
+import java.util.concurrent.TimeUnit
+
+import actors.worker.MasterWorkerProtocol.CancelWork
+import actors.worker.MasterWorkerProtocol.DeveloperReceivedCompletedWork
+import actors.worker.MasterWorkerProtocol.MasterAcceptedWork
+import actors.worker.MasterWorkerProtocol.MasterCompletedWork
+import actors.worker.MasterWorkerProtocol.Work
+
 import akka.actor.ActorLogging
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.persistence.PersistentActor
-import models.document._
 
-import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext.Implicits.global
+import models.document.Changed
+import models.document.Created
+import models.document.JobSettings
+import models.document.Settings
+import models.document.Updated
 import models.frontend.CancelWorkByUser
 import models.frontend.JobInfo
 import models.frontend.JobInfoList
-import models.worker._
+import models.worker.CreateGeneratorJob
+import models.worker.CreateMetaModelReleaseJob
+import models.worker.Job
+import models.worker.RerunFilterJob
+import models.worker.RunBondedTask
+import models.worker.RunEventDrivenTask
+import models.worker.RunFilterManually
+import models.worker.RunGeneratorFromGeneratorJob
+import models.worker.RunGeneratorManually
+import models.worker.RunTimedTask
+
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 case class JobCannotBeEnqueued(job: Job, reason: String)
 case object GetJobInfoList
@@ -38,7 +59,8 @@ class WorkQueue(developer: String) extends PersistentActor with ActorLogging {
   private var workState = WorkState.empty()
 
   // trigger task to check if work was accepted from the master
-  val workAcceptedTask = context.system.scheduler.schedule(10.seconds, 10.seconds, self, CheckTick)
+  private val duration = Duration(10, TimeUnit.SECONDS)
+  private val workAcceptedTask = context.system.scheduler.schedule(duration, duration, self, CheckTick)
 
   override def postStop(): Unit = workAcceptedTask.cancel()
 

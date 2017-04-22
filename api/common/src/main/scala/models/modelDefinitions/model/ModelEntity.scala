@@ -3,15 +3,17 @@ package models.modelDefinitions.model
 import java.time.Instant
 
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.MetaModelEntity
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.ModelReads
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
-
-import scala.collection.immutable.Map
+import play.api.libs.functional.syntax
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.__
+import play.api.libs.json.OWrites
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
  * The container that is used to persist model definitions, contains additional metadata
@@ -81,7 +83,7 @@ object ModelEntity {
     (__ \ "updated").write[Instant] and
     (__ \ "model").write[Model] and
     (__ \ "links").writeNullable[Seq[HLink]]
-  )(unlift(ModelEntity.unapply))
+  )(syntax.unlift(ModelEntity.unapply))
 
   /** stripped reads/writes are used when communicating with clients */
   def strippedReads(metaModelId: String, metaModel: MetaModel): Reads[ModelEntity] = (
@@ -111,8 +113,6 @@ object ModelEntity {
  * @param id the id of the model
  * @param metaModelId the name of the metamodel
  * @param name the name of themodel
- * @param created the time of creation
- * @param updated the time of the last update
  * @param links optional attribute for HATEOAS links, only used when serving to clients
  */
 case class ModelShortInfo(

@@ -1,11 +1,14 @@
 package controller
 
+import org.scalajs.jquery
+import org.scalajs.jquery.JQueryAjaxSettings
+import org.scalajs.jquery.JQueryXHR
+
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
-import org.scalajs.jquery._
 import scala.scalajs.js.annotation.JSExport
 import scalajs.js.{Array => JsArray}
-import scala.scalajs.js.JSConverters._
+import scala.scalajs.js.JSConverters.array2JSRichGenTrav
 
 /**
  * remarks: annotation above does not exist prior to scala.js 0.6.5, so we can't use it (currently in project: 0.6.4)
@@ -37,7 +40,7 @@ class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {
   }
 
   private def loadMetaModel(): Unit = {
-    jQuery.ajax(literal(
+    jquery.jQuery.ajax(literal(
       `type` = "GET",
       url = s"/metamodels/$metaModelId/definition",
       contentType = "application/json; charset=utf-8",
@@ -68,7 +71,7 @@ case class ModelLoader(modelId: String) {
      * See CodeEditorController.saveCode() for an usage example.
      */
 
-    val res = jQuery.ajax(literal(
+    val res = jquery.jQuery.ajax(literal(
       url = s"/metamodels/$modelId/definition/mclasses",
       `type` = "GET",
       async = false,
@@ -86,7 +89,7 @@ case class ModelLoader(modelId: String) {
      * See CodeEditorController.saveCode() for an usage example.
      */
 
-    val res = jQuery.ajax(literal(
+    val res = jquery.jQuery.ajax(literal(
       url = s"/metamodels/$modelId/definition/mreferences",
       `type` = "GET",
       async = false,

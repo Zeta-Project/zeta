@@ -1,5 +1,7 @@
 package actors.master
 
+import java.util.concurrent.TimeUnit
+
 import actors.worker.MasterWorkerProtocol
 import actors.worker.MasterWorkerProtocol.CancelWork
 import akka.actor.ActorLogging
@@ -13,7 +15,7 @@ import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.persistence.PersistentActor
 import models.session.Session
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Deadline
 import scala.concurrent.duration.FiniteDuration
@@ -52,7 +54,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
   private var workState = WorkState.empty()
 
   private val workerTimeoutTask = context.system.scheduler.schedule(workerTimeout / 2, workerTimeout / 2, self, WorkerTimeoutTick)
-  private val completedWorkTask = context.system.scheduler.schedule(10.seconds, 10.seconds, self, CompletedWorkTick)
+  private val completedWorkTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), Duration(10, TimeUnit.SECONDS), self, CompletedWorkTick)
 
   override def postStop() = {
     workerTimeoutTask.cancel()

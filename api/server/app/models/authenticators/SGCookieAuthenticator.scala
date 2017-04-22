@@ -1,32 +1,48 @@
 package models.authenticators
 
-import com.mohiva.play.silhouette.api.Authenticator.Implicits._
+import java.util.concurrent.TimeUnit
+
+import com.mohiva.play.silhouette.api.Authenticator.Implicits.RichDateTime
 import com.mohiva.play.silhouette.api.ExpirableAuthenticator
 import com.mohiva.play.silhouette.api.Logger
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.StorableAuthenticator
 import com.mohiva.play.silhouette.api.crypto.AuthenticatorEncoder
 import com.mohiva.play.silhouette.api.crypto.CookieSigner
-import com.mohiva.play.silhouette.api.exceptions._
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorCreationException
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorDiscardingException
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorException
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorInitializationException
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorRenewalException
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorRetrievalException
+import com.mohiva.play.silhouette.api.exceptions.AuthenticatorUpdateException
 import com.mohiva.play.silhouette.api.repositories.AuthenticatorRepository
-import com.mohiva.play.silhouette.api.services.AuthenticatorService._
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
+import com.mohiva.play.silhouette.api.util.Clock
+import com.mohiva.play.silhouette.api.util.ExtractableRequest
+import com.mohiva.play.silhouette.api.util.FingerprintGenerator
+import com.mohiva.play.silhouette.api.util.IDGenerator
 import com.mohiva.play.silhouette.api.util.JsonFormats
-import com.mohiva.play.silhouette.api.util._
+
 import models.User
-import models.authenticators.SGCookieAuthenticatorService._
+import models.session.Session
+
 import org.joda.time.DateTime
+
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
-import play.api.mvc._
-import models.session.Session
 import play.api.libs.json.OFormat
+import play.api.mvc.Cookie
+import play.api.mvc.Cookies
+import play.api.mvc.DiscardingCookie
+import play.api.mvc.RequestHeader
+import play.api.mvc.Result
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import scala.language.postfixOps
+import scala.concurrent.duration.Duration
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
@@ -119,7 +135,9 @@ object SGCookieAuthenticator extends Logger {
 
     cookieSigner.extract(str) match {
       case Success(data) => buildAuthenticator(authenticatorEncoder.decode(data))
-      case Failure(e) => Failure(new AuthenticatorException(InvalidCookieSignature.format(ID), e))
+      case Failure(e) =>
+        val message = SGCookieAuthenticatorService.InvalidCookieSignature.format(SGCookieAuthenticatorService.ID)
+        Failure(new AuthenticatorException(message, e))
     }
   }
 
@@ -132,10 +150,14 @@ object SGCookieAuthenticator extends Logger {
   private def buildAuthenticator(str: String): Try[SGCookieAuthenticator] = {
     Try(Json.parse(str)) match {
       case Success(json) => json.validate[SGCookieAuthenticator](jsonFormat).asEither match {
-        case Left(error) => Failure(new AuthenticatorException(InvalidJsonFormat.format(ID, error)))
+        case Left(error) =>
+          val message = SGCookieAuthenticatorService.InvalidJsonFormat.format(SGCookieAuthenticatorService.ID, error)
+          Failure(new AuthenticatorException(message))
         case Right(authenticator) => Success(authenticator)
       }
-      case Failure(error) => Failure(new AuthenticatorException(InvalidJson.format(ID, str), error))
+      case Failure(error) =>
+        val message = SGCookieAuthenticatorService.InvalidJson.format(SGCookieAuthenticatorService.ID, str)
+        Failure(new AuthenticatorException(message, error))
     }
   }
 }
@@ -184,7 +206,9 @@ class SGCookieAuthenticatorService(
         fingerprint = if (settings.useFingerprinting) Some(fingerprintGenerator.generate) else None
       )
     }.recover {
-      case e => throw new AuthenticatorCreationException(CreateError.format(ID, loginInfo), e)
+      case e =>
+        val message = AuthenticatorService.CreateError.format(SGCookieAuthenticatorService.ID, loginInfo)
+        throw new AuthenticatorCreationException(message, e)
     }
   }
 
@@ -203,14 +227,15 @@ class SGCookieAuthenticatorService(
         case Some(cookie) =>
           processCookie(cookie).map {
             case Some(a) if fingerprint.isDefined && a.fingerprint != fingerprint =>
-              logger.info(InvalidFingerprint.format(ID, fingerprint, a))
+              val message = SGCookieAuthenticatorService.InvalidFingerprint.format(SGCookieAuthenticatorService.ID, fingerprint, a)
+              logger.info(message)
               None
             case v => v
           }
         case None => Future.successful(None)
       }
     }.recover {
-      case e => throw new AuthenticatorRetrievalException(RetrieveError.format(ID), e)
+      case e => throw new AuthenticatorRetrievalException(AuthenticatorService.RetrieveError.format(SGCookieAuthenticatorService.ID), e)
     }
   }
 
@@ -267,10 +292,14 @@ class SGCookieAuthenticatorService(
           )
         )
       }.recover {
-        case e => throw new AuthenticatorInitializationException(InitError.format(ID, authenticator), e)
+        case e =>
+          val message = AuthenticatorService.InitError.format(SGCookieAuthenticatorService.ID, authenticator)
+          throw new AuthenticatorInitializationException(message, e)
       }
     }.recover {
-      case e => throw new AuthenticatorInitializationException(InitError.format(ID, authenticator), e)
+      case e =>
+        val message = AuthenticatorService.InitError.format(SGCookieAuthenticatorService.ID, authenticator)
+        throw new AuthenticatorInitializationException(message, e)
     }
   }
 
@@ -356,10 +385,14 @@ class SGCookieAuthenticatorService(
           )
         )))
       }).recover {
-        case e => throw new AuthenticatorUpdateException(UpdateError.format(ID, authenticator), e)
+        case e =>
+          val message = AuthenticatorService.UpdateError.format(SGCookieAuthenticatorService.ID, authenticator)
+          throw new AuthenticatorUpdateException(message, e)
       }
     }.recover {
-      case e => throw new AuthenticatorInitializationException(InitError.format(ID, authenticator), e)
+      case e =>
+        val message = AuthenticatorService.InitError.format(SGCookieAuthenticatorService.ID, authenticator)
+        throw new AuthenticatorInitializationException(message, e)
     }
   }
 
@@ -381,7 +414,9 @@ class SGCookieAuthenticatorService(
     }).flatMap { _ =>
       create(authenticator.loginInfo).flatMap(init)
     }.recover {
-      case e => throw new AuthenticatorRenewalException(RenewError.format(ID, authenticator), e)
+      case e =>
+        val message = AuthenticatorService.RenewError.format(SGCookieAuthenticatorService.ID, authenticator)
+        throw new AuthenticatorRenewalException(message, e)
     }
   }
 
@@ -402,7 +437,9 @@ class SGCookieAuthenticatorService(
   ): Future[AuthenticatorResult] = {
 
     renew(authenticator).flatMap(v => embed(v, result)).recover {
-      case e => throw new AuthenticatorRenewalException(RenewError.format(ID, authenticator), e)
+      case e =>
+        val message = AuthenticatorService.RenewError.format(SGCookieAuthenticatorService.ID, authenticator)
+        throw new AuthenticatorRenewalException(message, e)
     }
   }
 
@@ -439,7 +476,9 @@ class SGCookieAuthenticatorService(
         )
       ))
     }.recover {
-      case e => throw new AuthenticatorDiscardingException(DiscardError.format(ID, authenticator), e)
+      case e =>
+        val message = AuthenticatorService.DiscardError.format(SGCookieAuthenticatorService.ID, authenticator)
+        throw new AuthenticatorDiscardingException(message, e)
     }
   }
 }
@@ -485,5 +524,5 @@ case class SGCookieAuthenticatorSettings(
     useFingerprinting: Boolean = true,
     cookieMaxAge: Option[FiniteDuration] = None,
     authenticatorIdleTimeout: Option[FiniteDuration] = None,
-    authenticatorExpiry: FiniteDuration = 12 hours)
+    authenticatorExpiry: FiniteDuration = Duration(12, TimeUnit.HOURS))
 

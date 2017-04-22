@@ -1,12 +1,15 @@
 package models.modelDefinitions.model
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.model.elements._
-import models.modelDefinitions.model.elements.ModelWrites._
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
-
-import scala.collection.immutable.Map
+import models.modelDefinitions.model.elements.ModelElement
+import models.modelDefinitions.model.elements.ModelReads
+import models.modelDefinitions.model.elements.ModelWrites
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
  * Immutable container for model definitions
@@ -44,6 +47,7 @@ object Model {
   }
 
   implicit val writes = new Writes[Model] {
+    private implicit val mObjectWrites = ModelWrites.mObjectWrites
     def writes(d: Model): JsValue = Json.obj(
       "name" -> d.name,
       "elements" -> d.elements.values,

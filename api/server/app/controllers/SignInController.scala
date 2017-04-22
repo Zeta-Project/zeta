@@ -2,28 +2,36 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.Authenticator.Implicits._
-import com.mohiva.play.silhouette.api._
+import com.mohiva.play.silhouette.api.Authenticator.Implicits.RichDateTime
+import com.mohiva.play.silhouette.api.LoginEvent
+import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
-import com.mohiva.play.silhouette.impl.providers._
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
+
 import forms.SignInForm
+
 import models.services.UserService
-import net.ceedubs.ficus.Ficus._
+
+import net.ceedubs.ficus.Ficus.toFicusConfig
+import net.ceedubs.ficus.Ficus.finiteDurationReader
+import net.ceedubs.ficus.Ficus.optionValueReader
+
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
-import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
-import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.concurrent.duration.FiniteDuration
+
+import utils.auth.DefaultEnv
 
 /**
  * The `Sign In` controller.

@@ -4,12 +4,17 @@ import generator.model.ClassHierarchy
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.anchor.Anchor
 import generator.model.shapecontainer.shape.anchor.Anchor.AnchorType
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.Description
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.Text
+import generator.model.shapecontainer.shape.geometrics.Wrapper
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
 import generator.parser.GeoModel
-import parser._
+import parser.IDtoShape
 
 /**
  * Created by julian on 29.09.15.

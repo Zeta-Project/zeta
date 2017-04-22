@@ -1,12 +1,19 @@
 package models.modelDefinitions.metaModel.elements
 
 import play.api.data.validation.ValidationError
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.__
+import play.api.libs.json.JsError
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsString
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
 
 import scala.annotation.tailrec
-import scala.collection.immutable._
+import scala.collection.immutable.Seq
 
 /**
  * Reads[T] for all MCore structures (bottom of file)
@@ -131,8 +138,8 @@ object MCoreReads {
 
   implicit val linkDefReads: Reads[MLinkDef] = (
     (__ \ "type").read[String].map(PlaceHolder) and
-    (__ \ "upperBound").read[Int](min(-1)) and
-    (__ \ "lowerBound").read[Int](min(0)) and
+    (__ \ "upperBound").read[Int](Reads.min(-1)) and
+    (__ \ "lowerBound").read[Int](Reads.min(0)) and
     (__ \ "deleteIfLower").read[Boolean]
   )(MLinkDef.apply _).filter(boundsError) {
     boundsCheck(_)
@@ -166,8 +173,8 @@ object MCoreReads {
     (__ \ "expression").read[String] and
     (__ \ "ordered").read[Boolean] and
     (__ \ "transient").read[Boolean] and
-    (__ \ "upperBound").read[Int](min(-1)) and
-    (__ \ "lowerBound").read[Int](min(0))
+    (__ \ "upperBound").read[Int](Reads.min(-1)) and
+    (__ \ "lowerBound").read[Int](Reads.min(0))
   )(MAttribute.apply _).filter(boundsError) {
     boundsCheck(_)
   }.filter(typeDefaultError) {
@@ -188,7 +195,7 @@ object MCoreReads {
   }
 
   implicit val mClassReads: Reads[MClass] = (
-    (__ \ "name").read[String](minLength[String](1)) and
+    (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "abstract").read[Boolean] and
     (__ \ "superTypes").read[Seq[String]].map(_.map(empty.mClass)) and
     (__ \ "inputs").read[Seq[MLinkDef]] and
@@ -197,7 +204,7 @@ object MCoreReads {
   )(MClass.apply _)
 
   implicit val mReferenceReads: Reads[MReference] = (
-    (__ \ "name").read[String](minLength[String](1)) and
+    (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "sourceDeletionDeletesTarget").read[Boolean] and
     (__ \ "targetDeletionDeletesSource").read[Boolean] and
     (__ \ "source").read[Seq[MLinkDef]] and
@@ -206,7 +213,7 @@ object MCoreReads {
   )(MReference.apply _)
 
   implicit val mEnumReads: Reads[MEnum] = (
-    (__ \ "name").read[String](minLength[String](1)) and
+    (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "symbols").read[Seq[String]].map(_.map(EnumSymbol(_, MEnum("", Seq.empty))))
   )(MEnum.apply _).filter(enumSymbolError) { enum =>
     enum.values.size > 0 && enum.values.distinct.size == enum.values.size

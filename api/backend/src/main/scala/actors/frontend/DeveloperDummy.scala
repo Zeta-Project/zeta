@@ -1,9 +1,21 @@
 package actors.frontend
 
+import java.util.concurrent.TimeUnit
+
 import actors.developer.Mediator
-import akka.actor._
-import models.frontend._
-import scala.concurrent.duration._
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+
+import models.frontend.Connected
+import models.frontend.DeveloperRequest
+import models.frontend.DeveloperResponse
+import models.frontend.Disconnected
+import models.frontend.MessageEnvelope
+import models.frontend.ToolDeveloper
+
+import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 import akka.cluster.sharding.ClusterSharding
 
@@ -23,7 +35,7 @@ class DeveloperDummy() extends Actor with ActorLogging {
   private val backend: ActorRef = ClusterSharding(context.system).shardRegion(Mediator.shardRegionName)
 
   private val instance = ToolDeveloper(self, userId)
-  private val registerTask = context.system.scheduler.schedule(1.seconds, 10.seconds, self, RegisterDeveloperDummy)
+  private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(10, TimeUnit.SECONDS), self, RegisterDeveloperDummy)
 
   override def postStop() = {
     backend ! MessageEnvelope(userId, Disconnected(instance))

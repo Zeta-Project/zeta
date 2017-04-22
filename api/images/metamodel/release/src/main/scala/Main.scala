@@ -1,9 +1,13 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import models.document._
+
+import models.document.AllMetaModelReleases
+import models.document.MetaModelEntity
+import models.document.MetaModelRelease
 import models.document.http.{ HttpRepository => DocumentRepository }
-import models.file.http.{ HttpRepository => FileRepository }
+
 import org.rogach.scallop.ScallopConf
+
 import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
