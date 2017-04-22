@@ -62,7 +62,7 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   verify()
 }
 
-abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Reads[CreateOptions], callOptions: Reads[CallOptions]) extends App {
+abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: Reads[T]) extends App {
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()
@@ -126,16 +126,16 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
     System.exit(1)
   }
 
-  private def parseCallOptions(rawOptions: String): Future[CallOptions] = {
-    Json.parse(rawOptions).validate[CallOptions] match {
-      case s: JsSuccess[CallOptions] => Future.successful(s.get)
+  private def parseCallOptions(rawOptions: String): Future[T] = {
+    Json.parse(rawOptions).validate[T] match {
+      case s: JsSuccess[T] => Future.successful(s.get)
       case e: JsError => Future.failed(new Exception("Option parameter was provided but could not be parsed"))
     }
   }
 
   private def parseGeneratorCreateOptions(rawOptions: String, image: String): Future[Result] = {
-    Json.parse(rawOptions).validate[CreateOptions] match {
-      case s: JsSuccess[CreateOptions] => createTransformer(s.get, image)
+    Json.parse(rawOptions).validate[S] match {
+      case s: JsSuccess[S] => createTransformer(s.get, image)
       case e: JsError => Future.failed(new Exception(e.toString))
     }
   }
@@ -248,7 +248,7 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
    *
    * @return The Result of the generator
    */
-  def runGeneratorWithOptions(options: CallOptions)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
+  def runGeneratorWithOptions(options: T)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
 
   /**
    * Initialize the generator
@@ -279,5 +279,5 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
    * @param files Access to the Files repository
    * @return The result of the generator creation
    */
-  def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
+  def createTransformer(options: S, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
 }

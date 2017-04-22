@@ -33,7 +33,7 @@
    <parameter name="regex">^[A-Z][A-Za-z]*$</parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.ClassTypeParameterChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.ClassTypeParameterChecker" level="error">
   <parameters>
    <parameter name="regex">^[A-Z_]$</parameter>
   </parameters>
