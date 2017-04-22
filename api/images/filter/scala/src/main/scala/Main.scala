@@ -94,7 +94,7 @@ object Main extends App {
       .doOnError(p.failure(_))
       .flatMap(instance => Observable.from(checkInstance(filter, instance)))
       .doOnError(p.failure(_))
-      .filter { case (instance, checked) => if (checked) true else false }
+      .filter { case (instance, checked) => checked }
       .map(_._1)
       .toList
       .foreach(p.success(_))
