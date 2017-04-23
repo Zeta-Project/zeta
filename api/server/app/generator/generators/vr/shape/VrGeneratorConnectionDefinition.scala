@@ -45,7 +45,13 @@ object VrGeneratorConnectionDefinition {
     <dom-module id="vr-connection-${conn.name}">
       <template>
         <!-- Polyline is always needed -->
-        <vr-polyline id="line" ${if (conn.style.get.line_style.get == DASH) { "dashed" } else { "" }}></vr-polyline>
+        <vr-polyline id="line" ${
+      if (conn.style.get.line_style.get == DASH) {
+        "dashed"
+      } else {
+        ""
+      }
+    }></vr-polyline>
         ${conn.placing.map(generatePlacing(_)).mkString}
       </template>
     </dom-module>

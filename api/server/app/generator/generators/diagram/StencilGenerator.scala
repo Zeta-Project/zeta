@@ -7,8 +7,8 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
- * The StencilGenerator object, responsible for the generation of the String for stencil.js
- */
+  * The StencilGenerator object, responsible for the generation of the String for stencil.js
+  */
 object StencilGenerator {
 
   //FIXME variable in object
@@ -48,24 +48,24 @@ object StencilGenerator {
         s"""
         var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
           ${
-            if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
-              s"""mcoreAttributes: [
+          if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
+            s"""mcoreAttributes: [
                 {
                   mcore: '${node.onCreate.get.askFor.get.name}',
                   cellPath: ['attrs', '.label', 'text']
                 }
               ],"""
-            } else {
-              ""
-            }
+          } else {
+            ""
           }
+        }
           nodeName: '${node.name}',
           mClass: '${node.mcoreElement.name}',
           mClassAttributeInfo: [${
-            node.mcoreElement.attributes.map(
-              attr => s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
-            ).mkString(",")
-          }]
+          node.mcoreElement.attributes.map(
+            attr => s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
+          ).mkString(",")
+        }]
         });
         """
       }
@@ -76,11 +76,12 @@ object StencilGenerator {
     s"""
     Stencil.shapes = {
       ${
-        {
-          for {((key, value), i) <- mapping.zipWithIndex} yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
+      {
+        for {((key, value), i) <- mapping.zipWithIndex} yield
+          s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
             """
-        }.mkString(",")
-      }
+      }.mkString(",")
+    }
     };
     """
   }
@@ -89,20 +90,27 @@ object StencilGenerator {
     s"""
     ${getVarName(group)}: [
       ${
-        {
-          for {node <- nodes} yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
+      {
+        for {node <- nodes} yield
+          s"""${
+            getVarName(node.name) + {
+              if (node != nodes.last) "," else ""
+            }
+          }
             """
-        }.mkString
-      }
+      }.mkString
+    }
     ]
     """
   }
 
   def generateDocumentReadyFunction(diagram: Diagram) = {
-    """$(document).ready(function() {""" + s"""
+    """$(document).ready(function() {""" +
+      s"""
       ${
         {
-          for {node <- diagram.nodes} yield s"""
+          for {node <- diagram.nodes} yield
+            s"""
             ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
 
             ${

@@ -7,8 +7,8 @@ import generator.model.diagram.node.Node
 import generator.parser.Cache
 
 /**
- * The ShapeGenerator Object
- */
+  * The ShapeGenerator Object
+  */
 object ShapeGenerator {
 
   val JOINTJS_SHAPE_FILENAME = "shape.js"
@@ -17,8 +17,8 @@ object ShapeGenerator {
   val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
 
   /**
-   * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js
-   */
+    * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js
+    */
   def doGenerate(cache: Cache, location: String, nodes: List[Node]): Unit = {
     val DEFAULT_SHAPE_LOCATION = location
     val shapeGen = doGenerateFile(cache, nodes)

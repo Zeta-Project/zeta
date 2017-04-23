@@ -14,16 +14,16 @@ import java.nio.file.Paths
 import java.nio.file.Files
 
 /**
- * The StyleGenerator object, responsible for generation of style.js
- */
+  * The StyleGenerator object, responsible for generation of style.js
+  */
 object StyleGenerator {
 
   def filename = "style.js"
 
   /**
-   * Generates the Output String and writes the String
-   * to the file style.js in the outputLocation
-   */
+    * Generates the Output String and writes the String
+    * to the file style.js in the outputLocation
+    */
   def doGenerate(styles: List[Style], outputLocation: String): Unit = {
     val output = doGenerateFile(styles)
 
@@ -70,8 +70,8 @@ object StyleGenerator {
     """
 
   /**
-   * generates getDiagramHighlighting function with the highlighting styles
-   */
+    * generates getDiagramHighlighting function with the highlighting styles
+    */
   private def generateGetDiagramHighlighting(styles: List[Style]): String = {
     s"""
       function getDiagramHighlighting(stylename) {
@@ -88,8 +88,8 @@ object StyleGenerator {
   }
 
   /**
-   * generates a case for the switch case of the getDiagramHilighting
-   */
+    * generates a case for the switch case of the getDiagramHilighting
+    */
   private def generateDiagramHighlightingCases(s: Style) = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty) {
@@ -193,18 +193,18 @@ object StyleGenerator {
         type: 'linearGradient',
         stops: [
           ${
-            gr.area.map(
-              area => s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"
-            ).mkString("{", "\n}, {", "}")
-          }
+      gr.area.map(
+        area => s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"
+      ).mkString("{", "\n}, {", "}")
+    }
         ]
         ${
-          if (horizontal) {
-            ""
-          } else {
-            """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
-          }
-        }
+      if (horizontal) {
+        ""
+      } else {
+        """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
+      }
+    }
       },
     """
   }
@@ -237,7 +237,7 @@ object StyleGenerator {
         case _ =>
           """
             stroke: '""" + value.getRGBValue +
-          """'""" + processLineWidth(s.line_width) + processLineStyle(s.line_style)
+            """'""" + processLineWidth(s.line_width) + processLineStyle(s.line_style)
       }
     }
   }

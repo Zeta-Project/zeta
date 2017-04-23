@@ -90,14 +90,14 @@ object VrGeneratorShapeDefinition {
 
   private def generateImports() = {
     s"""
-      | <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
-      | <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
+       | <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
+       | <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
     """.stripMargin
   }
 
@@ -137,29 +137,29 @@ object VrGeneratorShapeDefinition {
       geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
     )
     s"""
-      | ready: function() {
-      |   var self = this;
-      |   this.highlight = true;
-      |   this.resizeVertical = true;
-      |   this.resizeHorizontal = true;
-      |   this.moveHorizontal = true;
-      |   this.moveVertical = true;
-      |   this.minMoveHorizontal = 0;
-      |   this.maxMoveVertical = 0;
-      |   this.height = ${totalSize._1.toInt}
-      |   this.width = ${totalSize._2.toInt}
-      |   ${createInnerSizing(geometrics, totalSize)}
-      |
+       | ready: function() {
+       |   var self = this;
+       |   this.highlight = true;
+       |   this.resizeVertical = true;
+       |   this.resizeHorizontal = true;
+       |   this.moveHorizontal = true;
+       |   this.moveVertical = true;
+       |   this.minMoveHorizontal = 0;
+       |   this.maxMoveVertical = 0;
+       |   this.height = ${totalSize._1.toInt}
+       |   this.width = ${totalSize._2.toInt}
+       |   ${createInnerSizing(geometrics, totalSize)}
+       |
       |   function create(element, text, center, position, min, max, percentage) {
-      |     //var element = new VrElement.Box();
-      |     element.width = self.width;
-      |     element.xPos = 0;
-      |     element.text = text;
-      |     element.textCener = center;
-      |     Polymer.dom(self.root).appendChild(element);
-      |     self.registerInnerSizingElement(element, position, min, max, percentage);
-      |   }
-      | },
+       |     //var element = new VrElement.Box();
+       |     element.width = self.width;
+       |     element.xPos = 0;
+       |     element.text = text;
+       |     element.textCener = center;
+       |     Polymer.dom(self.root).appendChild(element);
+       |     self.registerInnerSizingElement(element, position, min, max, percentage);
+       |   }
+       | },
     """.stripMargin
   }
 
@@ -177,7 +177,13 @@ object VrGeneratorShapeDefinition {
             ${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
             create(
               new VrElement.${element.capitalize}(),
-              ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }},
+              ${
+            if (hasText(wrapper)) {
+              "this.text" + (textCount - 1)
+            } else {
+              "\"\""
+            }
+          },
               true,
               {
                 x: ${position._1 / totalSize._2},
@@ -217,12 +223,16 @@ object VrGeneratorShapeDefinition {
 
   private def generateCalcMax(goemetrics: List[GeometricModel]) = {
     val numberOfTexts = goemetrics.map(getAllTexts(_)).sum
-    (for {i <- 0 until numberOfTexts} yield { "calcMax(this.text" + i + ");\n" }).mkString
+    (for {i <- 0 until numberOfTexts} yield {
+      "calcMax(this.text" + i + ");\n"
+    }).mkString
   }
 
   private def generateTextArgs(geometrics: List[GeometricModel]) = {
     val numberOfTexts = geometrics.map(getAllTexts(_)).sum
-    (for {i <- 0 until numberOfTexts} yield { " ,text" + i }).mkString
+    (for {i <- 0 until numberOfTexts} yield {
+      " ,text" + i
+    }).mkString
   }
 
   private def getAllTexts(geometric: GeometricModel): Int = {
