@@ -84,14 +84,16 @@ class SignInController @Inject() (
               Future.successful(Ok(views.html.silhouette.activateAccount(data.email)))
             case Some(user) =>
               val c = configuration.underlying
-              silhouette.env.authenticatorService.create(loginInfo).map {
-                case authenticator if data.rememberMe =>
+              silhouette.env.authenticatorService.create(loginInfo).map { authenticator =>
+                if (data.rememberMe) {
                   authenticator.copy(
                     expirationDateTime = clock.now + c.as[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorExpiry"),
                     idleTimeout = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorIdleTimeout"),
                     cookieMaxAge = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.cookieMaxAge")
                   )
-                case authenticator => authenticator
+                } else {
+                  authenticator
+                }
               }.flatMap { authenticator =>
                 silhouette.env.eventBus.publish(LoginEvent(user, request))
                 silhouette.env.authenticatorService.init(authenticator).flatMap { v =>

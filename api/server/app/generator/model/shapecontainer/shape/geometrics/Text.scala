@@ -32,9 +32,22 @@ abstract class TextType
 case object DefaultText extends TextType
 case object Multiline extends TextType
 
+/**
+ * Text
+ */
 object Text extends CommonParserMethods {
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel], textType: TextType, parentStyle: Option[Style], hierarchyContainer: Cache) =
+
+  /**
+   * @param geoModel GeoModel instance
+   * @param parent GeometricModel instance
+   * @param textType TextType instance
+   * @param parentStyle Style instance
+   * @param hierarchyContainer Cache instance
+   * @return Text instance
+   */
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel], textType: TextType, parentStyle: Option[Style], hierarchyContainer: Cache) = {
     parse(geoModel, parent, textType, parentStyle, hierarchyContainer)
+  }
 
   private def parse(
     geoModel: GeoModel,
@@ -48,9 +61,10 @@ object Text extends CommonParserMethods {
     if (textLayout.isEmpty) {
       None
     } else {
-      geoModel.attributes.foreach {
-        case x if x.matches("id.*") => id = parse(idAsString, x).get
-        case _ =>
+      geoModel.attributes.foreach { x =>
+        if (x.matches("id.*")) {
+          id = parse(idAsString, x).get
+        }
       }
 
       if (textLayout.isEmpty || id == "") {

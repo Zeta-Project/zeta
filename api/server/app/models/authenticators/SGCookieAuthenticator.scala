@@ -206,7 +206,7 @@ class SGCookieAuthenticatorService(
         fingerprint = if (settings.useFingerprinting) Some(fingerprintGenerator.generate) else None
       )
     }.recover {
-      case e =>
+      case e: Throwable =>
         val message = AuthenticatorService.CreateError.format(SGCookieAuthenticatorService.ID, loginInfo)
         throw new AuthenticatorCreationException(message, e)
     }
@@ -230,12 +230,12 @@ class SGCookieAuthenticatorService(
               val message = SGCookieAuthenticatorService.InvalidFingerprint.format(SGCookieAuthenticatorService.ID, fingerprint, a)
               logger.info(message)
               None
-            case v => v
+            case v: Option[SGCookieAuthenticator] => v
           }
         case None => Future.successful(None)
       }
     }.recover {
-      case e => throw new AuthenticatorRetrievalException(AuthenticatorService.RetrieveError.format(SGCookieAuthenticatorService.ID), e)
+      case e: Throwable => throw new AuthenticatorRetrievalException(AuthenticatorService.RetrieveError.format(SGCookieAuthenticatorService.ID), e)
     }
   }
 
@@ -292,12 +292,12 @@ class SGCookieAuthenticatorService(
           )
         )
       }.recover {
-        case e =>
+        case e: Throwable =>
           val message = AuthenticatorService.InitError.format(SGCookieAuthenticatorService.ID, authenticator)
           throw new AuthenticatorInitializationException(message, e)
       }
     }.recover {
-      case e =>
+      case e: Throwable =>
         val message = AuthenticatorService.InitError.format(SGCookieAuthenticatorService.ID, authenticator)
         throw new AuthenticatorInitializationException(message, e)
     }
@@ -385,12 +385,12 @@ class SGCookieAuthenticatorService(
           )
         )))
       }).recover {
-        case e =>
+        case e: Throwable =>
           val message = AuthenticatorService.UpdateError.format(SGCookieAuthenticatorService.ID, authenticator)
           throw new AuthenticatorUpdateException(message, e)
       }
     }.recover {
-      case e =>
+      case e: Throwable =>
         val message = AuthenticatorService.InitError.format(SGCookieAuthenticatorService.ID, authenticator)
         throw new AuthenticatorInitializationException(message, e)
     }
@@ -414,7 +414,7 @@ class SGCookieAuthenticatorService(
     }).flatMap { _ =>
       create(authenticator.loginInfo).flatMap(init)
     }.recover {
-      case e =>
+      case e: Throwable =>
         val message = AuthenticatorService.RenewError.format(SGCookieAuthenticatorService.ID, authenticator)
         throw new AuthenticatorRenewalException(message, e)
     }
@@ -437,7 +437,7 @@ class SGCookieAuthenticatorService(
   ): Future[AuthenticatorResult] = {
 
     renew(authenticator).flatMap(v => embed(v, result)).recover {
-      case e =>
+      case e: Throwable =>
         val message = AuthenticatorService.RenewError.format(SGCookieAuthenticatorService.ID, authenticator)
         throw new AuthenticatorRenewalException(message, e)
     }
@@ -476,7 +476,7 @@ class SGCookieAuthenticatorService(
         )
       ))
     }.recover {
-      case e =>
+      case e: Throwable =>
         val message = AuthenticatorService.DiscardError.format(SGCookieAuthenticatorService.ID, authenticator)
         throw new AuthenticatorDiscardingException(message, e)
     }

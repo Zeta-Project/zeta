@@ -15,7 +15,17 @@ trait LineLayout extends Layout {
   val points: (Point, Point)
 }
 
+/**
+ * LineLayoutParser
+ */
 object LineLayoutParser {
+
+  /**
+   * @param geoModel GeoModel instance
+   * @param parentStyle Style instance
+   * @param hierarchyContainer Cache instance
+   * @return LineLayout instance
+   */
   def parse(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[LineLayout] = {
     implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
@@ -24,16 +34,16 @@ object LineLayoutParser {
     var point1: Option[Point] = None
     var point2: Option[Point] = None
     var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
-    attributes.foreach {
-      case x if x.matches("point.+") =>
+    attributes.foreach { x =>
+      if (x.matches("point.+")) {
         if (point1.isEmpty) {
           point1 = PointParser(x)
         } else {
           point2 = PointParser(x)
         }
-      case anonymousStyle: String if hierarchyContainer.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
-      case _ =>
+      } else if (hierarchyContainer.styleHierarchy.contains(x)) {
+        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(x))
+      }
     }
     if (point1.isDefined && point2.isDefined) {
       Some(new LineLayout {

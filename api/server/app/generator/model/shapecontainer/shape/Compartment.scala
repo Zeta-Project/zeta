@@ -39,22 +39,23 @@ object Compartment extends CommonParserMethods {
 
     var compartment_attributes = List[String]()
 
-    attributes.foreach {
-      case x if x.startsWith("compartment") =>
+    attributes.foreach { x =>
+      if (x.startsWith("compartment")) {
         compartment_attributes = parse(split_compartment, x).get
+      }
     }
 
     for {attribute <- compartment_attributes} {
       attribute.toSeq match {
-        case x@Seq('l', 'a', 'y', 'o', 'u', 't', _*) => layout = Some(parse(parse_layout, x.toString()).get)
-        case x@Seq('m', 'a', 'r', 'g', 'i', 'n', _*) => margin = Some(parse(parse_margin, x.toString()).get)
-        case x@Seq('s', 'p', 'a', 'c', 'i', 'n', 'g', _*) => spacing = Some(parse(parse_spacing, x.toString()).get)
+        case x@Seq('l', 'a', 'y', 'o', 'u', 't', _*) => layout = Some(parse(parseLayout, x.toString()).get)
+        case x@Seq('m', 'a', 'r', 'g', 'i', 'n', _*) => margin = Some(parse(parseMargin, x.toString()).get)
+        case x@Seq('s', 'p', 'a', 'c', 'i', 'n', 'g', _*) => spacing = Some(parse(parseSpacing, x.toString()).get)
         case x@Seq('s', 't', 'r', 'e', 't', 'c', 'h', 'i', 'n', 'g', _*) =>
-          val tup = parse(parse_stretching, x.toString()).get
+          val tup = parse(parseStretching, x.toString()).get
           stretching_horizontal = Some(tup._1)
           stretching_vertical = Some(tup._2)
         case x@Seq('i', 'n', 'v', 'i', 's', 'i', 'b', 'l', 'e', _*) => invisible = Some(true)
-        case x@Seq('i', 'd',_*) => id = Some(parse(parse_id, x.toString()).get)
+        case x@Seq('i', 'd',_*) => id = Some(parse(parseId, x.toString()).get)
       }
     }
 
@@ -77,26 +78,22 @@ object Compartment extends CommonParserMethods {
     }
   }
 
-  def parse_layout = "layout\\s*=\\s*".r ~> "(fixed|vertical|horizontal|fit)".r ^^ {
-    case layo if layo == "fixed" => FIXED
-    case layo if layo == "horizontal" => HORIZONTAL
-    case layo if layo == "vertical" => VERTICAL
-    case layo if layo == "fit" => FIT
+  private def parseLayout = "layout\\s*=\\s*".r ~> "(fixed|vertical|horizontal|fit)".r ^^ {
+    case "fixed" => FIXED
+    case "horizontal" => HORIZONTAL
+    case "vertical" => VERTICAL
+    case "fit" => FIT
   }
 
-  def parse_margin = "margin\\s*=\\s*".r ~> "\\d+".r ^^ {
-    case mar => mar.toInt
-  }
-  def parse_spacing = "spacing\\s*=\\s*".r ~> "\\d+".r ^^ {
-    case spac => spac.toInt
-  }
+  private def parseMargin = "margin\\s*=\\s*".r ~> "\\d+".r ^^ { mar => mar.toInt }
+  private def parseSpacing = "spacing\\s*=\\s*".r ~> "\\d+".r ^^ { spac: String => spac.toInt }
 
-  def parse_stretching = {
+  private def parseStretching = {
     ("stretching\\s*\\(\\s*horizontal\\s*=".r ~> "(yes|y|true|no|n|false)".r) ~ (",\\s*vertical\\s*=".r ~> ("(yes|y|true|no|n|false)".r <~ ")")) ^^ {
       case hor ~ ver => (matchBoolean(hor), matchBoolean(ver))
     }
   }
 
-  def parse_id = "id\\s*=".r ~> ident ^^ { _.toString }
+  private def parseId = "id\\s*=".r ~> ident ^^ { _.toString }
 }
 

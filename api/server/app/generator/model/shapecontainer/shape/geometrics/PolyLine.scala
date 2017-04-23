@@ -20,7 +20,18 @@ class PolyLine(
   override val points: List[Point] = polyLineLayout.points
 }
 
+/**
+ * PolyLine
+ */
 object PolyLine {
+
+  /**
+   * @param geoModel GeoModel instance
+   * @param parent GeometricModel instance
+   * @param parentStyle Style instance
+   * @param hierarchyContainer Cache instance
+   * @return PolyLine instance
+   */
   def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLine] = {
     parse(geoModel, parent, parentStyle, hierarchyContainer)
   }
@@ -31,7 +42,7 @@ object PolyLine {
     parentStyle: Option[Style],
     hierarchyContainer: Cache): Option[PolyLine] = {
 
-    val polyLineLayout: Option[PolyLineLayout] = PolyLineLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
+    val polyLineLayout: Option[PolyLineLayout] = PolyLineLayoutParser(geoModel, parentStyle, hierarchyContainer)
     if (polyLineLayout.isEmpty) {
       None
     } else {

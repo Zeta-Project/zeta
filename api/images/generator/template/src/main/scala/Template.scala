@@ -162,14 +162,14 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     }
 
     futures.onSuccess {
-      case generator => generator.exit.map { result =>
+      case generator: Transformer => generator.exit.map { result =>
         p.success(result)
       }.recover {
         case e: Exception => p.failure(e)
       }
     }
     futures.onFailure {
-      case e => p.failure(e)
+      case e: Throwable => p.failure(e)
     }
 
     p.future

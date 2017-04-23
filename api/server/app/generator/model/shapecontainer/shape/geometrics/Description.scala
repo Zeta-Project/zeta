@@ -18,8 +18,17 @@ sealed class Description private (
     val vAlign: Option[VAlign])
   extends TextBody
 
+/**
+ * Description
+ */
 object Description extends CommonParserMethods {
 
+  /**
+   * @param attrs Attributes
+   * @param parentStyle Style instance
+   * @param hierarchyContainer Cache instance
+   * @return Description instance
+   */
   def parse(attrs: (String, String), parentStyle: Option[Style], hierarchyContainer: Cache): Option[Description] = {
     implicit val cache = hierarchyContainer
     // mapping
@@ -29,14 +38,17 @@ object Description extends CommonParserMethods {
     var id: String = ""
 
     val attributes = attrs._2.split("\n")
-    attributes.foreach {
-      case x: String if x.matches("align\\s*\\((horizontal=)?(center|left|right),\\s*(vertical=)?(top|middle|bottom)\\)") =>
+    attributes.foreach { x =>
+      if (x.matches("align\\s*\\((horizontal=)?(center|left|right),\\s*(vertical=)?(top|middle|bottom)\\)")) {
         hali = Alignment.parseHAlign("(center|right|left)".r.findFirstIn(x).get)
         vali = Alignment.parseVAlign("(top|middle|bottom)".r.findFirstIn(x).get)
-      case x if x.matches("id.*") => id = parse(idAsString, x).get
-      case anonymousStyle: String if cache.styleHierarchy.contains(anonymousStyle) => styl = Style.generateChildStyle(cache, styl, anonymousStyle)
-      case _ =>
+      } else if (x.matches("id.*")) {
+        id = parse(idAsString, x).get
+      } else if (cache.styleHierarchy.contains(x)) {
+        styl = Style.generateChildStyle(cache, styl, x)
+      }
     }
+
     if (id != "") {
       Some(new Description(id, styl, hali, vali))
     } else {

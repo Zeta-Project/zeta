@@ -18,7 +18,7 @@ object Anchor extends CommonParserMethods {
   class AnchorRelativePosition(pos: List[(Int, Int)]) extends AnchorManual(pos)
   class AnchorFixPointPosition(pos: List[(Int, Int)]) extends AnchorManual(pos)
 
-  def anchor: Parser[AnchorType] = (anchorPredefined | anchorManual) ^^ { case anch => anch }
+  def anchor: Parser[AnchorType] = (anchorPredefined | anchorManual) ^^ { anch => anch }
 
   def anchorPredefined: Parser[AnchorPredefined] = "=?".r ~> "(center|corners)".r ^^ {
     case center: String if center == "center" => Center

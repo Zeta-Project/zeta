@@ -20,7 +20,17 @@ trait CommonLayout extends Layout {
   def y = position.getOrElse(0, 0)._2
 }
 
+/**
+ * CommonLayoutParser
+ */
 object CommonLayoutParser extends CommonParserMethods {
+
+  /**
+   * @param geoModel GeoModel instance
+   * @param parentStyle Style instance
+   * @param cache Cache instance
+   * @return CommonLayout instance
+   */
   def parse(geoModel: GeoModel, parentStyle: Option[Style], cache: Cache): Option[CommonLayout] = {
     implicit val hierarchyContainer = cache
     val attributes = geoModel.attributes
@@ -32,25 +42,25 @@ object CommonLayoutParser extends CommonParserMethods {
 
     // if geoModel.style and parentstyle are defined a childStyle is created
     var styl: Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style)
-
-    attributes.foreach {
-      case x if x.matches("position.+") => pos = {
-        val newPositoin = parse(position, x).get
-        if (newPositoin.isDefined) {
-          newPositoin
-        } else {
-          None
+    attributes.foreach { x =>
+      if (x.matches("position.+")) {
+        pos = {
+          val newPositoin = parse(position, x).get
+          if (newPositoin.isDefined) {
+            newPositoin
+          } else {
+            None
+          }
         }
-      }
-      case x if x.matches("size.+") =>
+      } else if (x.matches("size.+")) {
         val newSize = parse(size, x).get
         if (newSize.isDefined) {
           size_w = Some(newSize.get._1)
           size_h = Some(newSize.get._2)
         }
-      case anonymousStyle: String if cache.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.generateChildStyle(cache, styl, Some(anonymousStyle)) // generate anonymous style
-      case _ =>
+      } else if (cache.styleHierarchy.contains(x)) {
+        styl = Style.generateChildStyle(cache, styl, Some(x)) // generate anonymous style
+      }
     }
 
     createCommonLayout(size_w, size_h, pos, styl, geoModel)

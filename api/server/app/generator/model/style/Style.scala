@@ -242,7 +242,7 @@ object Style extends CommonParserMethods {
     ("(" + colors.map(c => c + { if (c != colors.last) "|" else "" }).mkString + ")").r ^^ { _.toString }
   }
 
-  private def transparent: Parser[ColorOrGradient] = "transparent".r ^^ { case t => Transparent }
+  private def transparent: Parser[ColorOrGradient] = "transparent".r ^^ (_ => Transparent)
 
   private def gradient =
     ("=" ~ "gradient" ~> ident <~ "{") ~

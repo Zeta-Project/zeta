@@ -43,7 +43,7 @@ class AuthTokenCleaner @Inject() (
         msg.append("=================================\n")
         logger.info(msg.toString)
       }.recover {
-        case e =>
+        case e: Throwable =>
           msg.append("Couldn't cleanup auth tokens because of unexpected error\n")
           msg.append("=================================\n")
           logger.error(msg.toString, e)
