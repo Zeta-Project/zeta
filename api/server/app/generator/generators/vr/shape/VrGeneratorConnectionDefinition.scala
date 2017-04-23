@@ -1,25 +1,27 @@
 package generator.generators.vr.shape
 
-import java.nio.file.{ Files, Paths }
+import java.nio.file.{Files, Paths}
 
-import generator.model.shapecontainer.connection.{ Connection, Placing }
+import generator.model.shapecontainer.connection.{Connection, Placing}
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.style.DASH
 
 /**
- * Created by max on 26.10.16.
- */
+  * Created by max on 26.10.16.
+  */
 object VrGeneratorConnectionDefinition {
   def generate(connections: Iterable[Connection], location: String) {
-    for (conn <- connections) { generateFile(conn, location) }
+    connections.map(generateFile).map(p => Files.write(Paths.get(location + p._1), p._2.getBytes()))
   }
 
-  def generateFile(conn: Connection, DEFAULT_SHAPE_LOCATION: String) = {
+  private type FileName = String
+  private type PolymerFile = String
+
+  def generateFile(conn: Connection): (FileName, PolymerFile) = {
     val FILENAME = "vr-connection-" + conn.name + ".html"
 
     val polymerElement = generatePolymerElement(conn)
-
-    Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + FILENAME), polymerElement.getBytes())
+    (FILENAME, polymerElement)
   }
 
   def generatePolymerElement(conn: Connection) = {
@@ -35,7 +37,13 @@ object VrGeneratorConnectionDefinition {
     <dom-module id="vr-connection-${conn.name}">
         <template>
             <!-- Polyline is always needed -->
-            <vr-polyline id="line" ${if (conn.style.get.line_style.get == DASH) { "dashed" } else { "" }}></vr-polyline>
+            <vr-polyline id="line" ${
+      if (conn.style.get.line_style.get == DASH) {
+        "dashed"
+      } else {
+        ""
+      }
+    }></vr-polyline>
             ${conn.placing.map(generatePlacing(_)).mkString}
         </template>
     </dom-module>
