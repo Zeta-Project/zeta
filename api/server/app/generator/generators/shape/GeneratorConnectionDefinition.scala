@@ -110,7 +110,7 @@ object GeneratorConnectionDefinition {
 
   private def handlePlacings(connection: Connection) = {
     val placings = connection.placing
-    var isTargetMarkerSet = false; //Check, whether a target marker is set, because JointJS will show an arrow if none is set
+    var isTargetMarkerSet = false; // Check, whether a target marker is set, because JointJS will show an arrow if none is set
     var ret = ""
     for {p <- placings} {
 

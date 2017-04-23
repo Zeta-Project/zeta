@@ -162,7 +162,7 @@
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.SimplifyBooleanExpressionChecker" level="error"/>
- <check enabled="true" class="org.scalastyle.scalariform.SpaceAfterCommentStartChecker" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.SpaceAfterCommentStartChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.SpacesAfterPlusChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.SpacesBeforePlusChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.StructuralTypeChecker" level="warning"/>

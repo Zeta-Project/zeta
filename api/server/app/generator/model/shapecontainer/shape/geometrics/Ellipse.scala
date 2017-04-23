@@ -37,7 +37,7 @@ object Ellipse {
     parentStyle: Option[Style],
     hierarchyContainer: Cache): Option[Ellipse] = {
 
-    /*mapping*/
+    // mapping
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     val compartment: Option[Compartment] = Compartment(geoModel.attributes)
 

@@ -17,7 +17,7 @@ class Text(
     parent: Option[GeometricModel] = None,
     textType: TextType,
     override val id: String = "",
-    textLayout: TextLayout /*textBody (GrammarSheet)*/
+    textLayout: TextLayout // textBody (GrammarSheet)
 ) extends GeometricModel(parent) with TextLayout with TextBody {
   override val textBody: String = textLayout.textBody
   override val style: Option[Style] = textLayout.style

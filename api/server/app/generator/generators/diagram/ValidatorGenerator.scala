@@ -14,7 +14,9 @@ import scala.collection.mutable.ListBuffer
  */
 object ValidatorGenerator {
 
-  /** generates matrix for validation of link types and checking upper and lower bounds*/
+  /**
+   * generates matrix for validation of link types and checking upper and lower bounds
+   */
   def generate(diagram: Diagram) = {
     // TODO: fix ${generateCompartmentMatrix(diagram)}
     s"""
@@ -227,7 +229,7 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for {edge <- edges} {
       val targetClass = edge.to
-      val superTypeIsValidTarget = nodeClass.superTypes.find(mc => mc.name == targetClass.name).isDefined
+      val superTypeIsValidTarget = nodeClass.superTypes.exists(mc => mc.name == targetClass.name)
       edgeTargetMap.put(edge.name, nodeClass.name == targetClass.name || superTypeIsValidTarget)
     }
     edgeTargetMap
@@ -238,7 +240,7 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for {edge <- edges} {
       val sourceClass = edge.from
-      val superTypeIsValidSource = nodeClass.superTypes.find(mc => mc.name == sourceClass.name).isDefined
+      val superTypeIsValidSource = nodeClass.superTypes.exists(mc => mc.name == sourceClass.name)
       edgeSourceMap.put(edge.name, nodeClass.name == sourceClass.name || superTypeIsValidSource)
     }
     edgeSourceMap
@@ -253,13 +255,13 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for {parent <- nodeList} {
       var validCompartments = List[String]()
-      if (parent.shape isDefined) {
+      if (parent.shape.isDefined) {
         for {(name, compartment) <- parent.shape.get.nests} {
-          /*compartments*/
-          //TODO cant be resolved since compartments have no nestedShape  - Spray.xtext says compartments are (Ereference -> Shape) mapping.... ?!?!?
-          //if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
-          //  validCompartments =  compartment.nestedShape.name :: validCompartments
-          //}
+          /* compartments */
+          // TODO cant be resolved since compartments have no nestedShape  - Spray.xtext says compartments are (Ereference -> Shape) mapping.... ?!?!?
+          // if(compartment.nestedShape.EReferenceType.isSuperTypeOf(nodeClass)){
+          //   validCompartments =  compartment.nestedShape.name :: validCompartments
+          // }
         }
       }
       compartmentMap.put(parent.name, validCompartments)

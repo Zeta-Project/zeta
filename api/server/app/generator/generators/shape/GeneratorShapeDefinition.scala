@@ -25,7 +25,9 @@ object GeneratorShapeDefinition {
   private val compartmentMap = mutable.HashMap[String, mutable.ListBuffer[(String, Compartment)]]()
   private val stencilSize = 80
 
-  /** generates all JointJS shapes */
+  /**
+   * generates all JointJS shapes
+   */
   def generate(shapes: Iterable[Shape], packageName: String) = {
     s"""
       ${head(packageName)}
@@ -58,7 +60,9 @@ object GeneratorShapeDefinition {
     """
   }
 
-  /** generates a JointJS shape from Shape*/
+  /**
+   * generates a JointJS shape from Shape
+   */
   def generateShape(shape: Shape, packageName: String) = {
     s"""
     joint.shapes.$packageName.${shape.name} = joint.shapes.basic.Generic.extend({
@@ -84,7 +88,9 @@ object GeneratorShapeDefinition {
     """
   }
 
-  /** calculates the size of the Shape in the stencil, while keeping proportions*/
+  /**
+   * calculates the size of the Shape in the stencil, while keeping proportions
+   */
   protected def getStencilSize(shape: Shape): String = {
     val height = calculateHeight(shape).asInstanceOf[Double]
     val width = calculateWidth(shape).asInstanceOf[Double]
@@ -386,7 +392,7 @@ object GeneratorShapeDefinition {
     shape.x + shape.size_width
   }
 
-  //Ellipse is automatically positioned with xcor + radius. Thus, we need xcor + radius + radius = xcor + diameter here.
+  // Ellipse is automatically positioned with xcor + radius. Thus, we need xcor + radius + radius = xcor + diameter here.
   protected def getWidth(shape: Ellipse) = {
     shape.x + shape.size_width
   }
@@ -448,7 +454,7 @@ object GeneratorShapeDefinition {
 
   protected def getHeight(shape: Rectangle) = shape.y + shape.size_height
 
-  //Ellipse is automatically positioned with ycor + radius. Thus we need ycor + radius + radius = ycor + diameter here
+  // Ellipse is automatically positioned with ycor + radius. Thus we need ycor + radius + radius = ycor + diameter here
   protected def getHeight(shape: Ellipse) = shape.y + shape.size_height
 
   protected def getHeight(shape: Polygon) = maxY(shape.points)
@@ -483,7 +489,7 @@ object GeneratorShapeDefinition {
     if (shape.parent isEmpty) {
       point.x
     } else {
-      point.x + callRightReferenceX(shape.parent.get) //last because multiple inheritance is now possible and latest bound principle
+      point.x + callRightReferenceX(shape.parent.get) // last because multiple inheritance is now possible and latest bound principle
     }
   }
 
@@ -608,7 +614,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceX(shape: Rectangle): Int = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       shape.position.getOrElse((0, 0))._1
     } else {
       shape.position.getOrElse((0, 0))._1 + callRightReferenceX(shape.parent.get)
@@ -616,7 +622,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceX(shape: Ellipse) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       shape.position.getOrElse((0, 0))._1
     } else {
       shape.position.getOrElse((0, 0))._1 + callRightReferenceX(shape.parent.get)
@@ -624,7 +630,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceX(shape: Polygon) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       minX(shape.points)
     } else {
       minX(shape.points) + callRightReferenceX(shape.parent.get)
@@ -632,7 +638,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceX(shape: RoundedRectangle) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       shape.position.getOrElse((0, 0))._1
     } else {
       shape.position.getOrElse((0, 0))._1 + callRightReferenceX(shape.parent.get)
@@ -640,7 +646,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceY(shape: Rectangle) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       shape.position.getOrElse((0, 0))._2
     } else {
       shape.position.getOrElse((0, 0))._2 + callRightReferenceY(shape.parent.get)
@@ -648,7 +654,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceY(shape: Ellipse) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       shape.position.getOrElse((0, 0))._2
     } else {
       shape.position.getOrElse((0, 0))._2 + callRightReferenceY(shape.parent.get)
@@ -656,7 +662,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceY(shape: Polygon) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       minY(shape.points)
     } else {
       minY(shape.points) + callRightReferenceY(shape.parent.get)
@@ -664,7 +670,7 @@ object GeneratorShapeDefinition {
   }
 
   protected def referenceY(shape: RoundedRectangle) = {
-    if (shape.parent isEmpty) {
+    if (shape.parent.isEmpty) {
       shape.y
     } else {
       shape.y + callRightReferenceY(shape.parent.get)
@@ -672,10 +678,10 @@ object GeneratorShapeDefinition {
   }
 
   protected def getParent(shape: Shape) = {
-    if (shape.extendedShape isEmpty) {
+    if (shape.extendedShape.isEmpty) {
       null
     } else {
-      shape.extendedShape last
+      shape.extendedShape.last
     }
   }
 }

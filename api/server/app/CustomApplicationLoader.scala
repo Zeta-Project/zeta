@@ -34,8 +34,6 @@ object NodeConfigurator {
     val roles = List("api")
     val clusterConfig = ClusterManager.getClusterJoinConfig(roles, seeds, 0).withFallback(ConfigFactory.load())
 
-    clusterConfig
-      //.withValue("play.akka.actor-system", ConfigValueFactory.fromAnyRef("ClusterSystem"))
-      .withFallback(config)
+    clusterConfig.withFallback(config)
   }
 }

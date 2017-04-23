@@ -209,7 +209,6 @@ class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implic
       request(address)
         .withQueryString("startkey" -> specification.startkey)
         .withQueryString("endkey" -> specification.endkey)
-        //.withQueryString("limit" -> specification.httpOptions.limit)
         .get().map { response =>
           if (response.status == 200) {
             val documents: Documents = response.json.as[Documents]

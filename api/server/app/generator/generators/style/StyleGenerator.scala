@@ -13,7 +13,6 @@ import generator.model.style.gradient.HORIZONTAL
 import java.nio.file.Paths
 import java.nio.file.Files
 
-
 /**
  * The StyleGenerator object, responsible for generation of style.js
  */
@@ -61,7 +60,9 @@ object StyleGenerator {
       break;
     """
 
-  /** generates getDiagramHighlighting function with the highlighting styles*/
+  /**
+   * generates getDiagramHighlighting function with the highlighting styles
+   */
   private def generateGetDiagramHighlighting(styles: List[Style]): String = {
     s"""
       function getDiagramHighlighting(stylename) {
@@ -77,7 +78,9 @@ object StyleGenerator {
     """
   }
 
-  /** generates a case for the switch case of the getDiagramHilighting*/
+  /**
+   * generates a case for the switch case of the getDiagramHilighting
+   */
   private def generateDiagramHighlightingCases(s: Style) = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty) {

@@ -18,7 +18,7 @@ object RoundedRectangleLayoutParser extends CommonParserMethods {
   def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache) = parse(geoModel, parentStyle, hierarchyContainer)
   def parse(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[RoundedRectangleLayout] = {
     val attributes = geoModel.attributes
-    /*mapping*/
+    // mapping
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     if (commonLayout.isEmpty) {
       None

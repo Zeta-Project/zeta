@@ -71,8 +71,6 @@ class WebpageController @Inject() (implicit ws: WSClient, silhouette: Silhouette
       p.success(Seq())
     }
     p.future
-
-    //Future.successful(Seq[ModelShortInfo]())
   }
 
   def diagramsOverview(uuid: String) = silhouette.SecuredAction.async { implicit request =>

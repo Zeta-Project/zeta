@@ -15,7 +15,7 @@ trait CommonLayout extends Layout {
   val size_width: Int
   val size_height: Int
 
-  /*unsafe getter!*/
+  // unsafe getter!
   def x = position.getOrElse(0, 0)._1
   def y = position.getOrElse(0, 0)._2
 }
@@ -25,12 +25,12 @@ object CommonLayoutParser extends CommonParserMethods {
     implicit val hierarchyContainer = cache
     val attributes = geoModel.attributes
 
-    /*mapping*/
+    // mapping
     var pos: Option[(Int, Int)] = None
     var size_w: Option[Int] = None
     var size_h: Option[Int] = None
 
-    //if geoModel.style and parentstyle are defined a childStyle is created
+    // if geoModel.style and parentstyle are defined a childStyle is created
     var styl: Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style)
 
     attributes.foreach {
@@ -49,7 +49,7 @@ object CommonLayoutParser extends CommonParserMethods {
           size_h = Some(newSize.get._2)
         }
       case anonymousStyle: String if cache.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.generateChildStyle(cache, styl, Some(anonymousStyle)) //generate anonymous style
+        styl = Style.generateChildStyle(cache, styl, Some(anonymousStyle)) // generate anonymous style
       case _ =>
     }
 

@@ -26,7 +26,7 @@ sealed class Placing private (
 object Placing extends CommonParserMethods {
   def apply(attributes: PlacingSketch, parentStyle: Option[Style], ancestorShape: Shape) = parse(attributes, parentStyle, ancestorShape)
   def parse(attributes: PlacingSketch, parentStyle: Option[Style], ancestorShape: Shape): Placing = {
-    /*mapping*/
+    // mapping
     val tup = parse(placingPosition, attributes.position).get
 
     new Placing(tup._1, tup._2, attributes.shape.parse(None, parentStyle).get, ancestorShape)
@@ -37,4 +37,3 @@ object Placing extends CommonParserMethods {
   }
 
 }
-

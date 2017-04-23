@@ -23,7 +23,7 @@ object PolyLineLayoutParser {
     implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
 
-    /*mapping*/
+    // mapping
     var collectedPoints: List[Point] = List[Point]()
     var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
     attributes.foreach {

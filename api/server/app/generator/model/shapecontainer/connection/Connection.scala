@@ -46,7 +46,7 @@ object Connection extends CommonParserMethods {
     hierarchyContainer: Cache
   ): Option[Connection] = {
     implicit val cache = hierarchyContainer
-    /*mapping*/
+    // mapping
     var style: Option[Style] = styleRef
     val connection_type: Option[ConnectionStyle] = if (typ isDefined) Some(parse(connectionType, typ.get).get) else None
     if (anonymousStyle.isDefined) {

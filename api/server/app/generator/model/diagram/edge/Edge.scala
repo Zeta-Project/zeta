@@ -21,7 +21,7 @@ case class Edge(
     name: String,
     mcoreElement: MReference,
     var style: Option[Style] = None,
-    /*edge-Block*/
+    // edge-Block
     connection: Connection,
     from: MClass,
     to: MClass,

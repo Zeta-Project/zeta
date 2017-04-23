@@ -118,7 +118,6 @@ class MetaModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory,
         HLink.put("update", routes.MetaModelRestApi.get(m.id).absoluteURL),
         HLink.delete("remove", routes.MetaModelRestApi.get(m.id).absoluteURL)
       )))
-      //Ok(Json.toJson(out)(MetaModel.strippedWrites))
       Ok(Json.toJson(out))
     })
   }

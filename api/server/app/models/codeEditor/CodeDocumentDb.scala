@@ -26,7 +26,9 @@ object CodeDocumentDb {
   val db = mongoClient(Play.current.configuration.getString("mongodb.name").get)
   val coll = db("CodeDocuments")
 
-  /** Salat Context **/
+  /**
+   * Salat Context
+   */
   implicit val ctx = new Context {
     val name = "CodeDocCtx"
     override val typeHintStrategy = StringTypeHintStrategy(when = TypeHintFrequency.Always, typeHint = "_typeHint")

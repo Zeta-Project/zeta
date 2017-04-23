@@ -51,7 +51,7 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
   }
   require(metaMapMClass nonEmpty)
 
-  /*Style-specific----------------------------------------------------------------------------*/
+  /* Style-specific---------------------------------------------------------------------------- */
   private def styleVariable = ("""(""" + Style.validStyleAttributes.map(_ + "|").mkString + """)""").r ^^ { _.toString }
   private def styleAttribute = styleVariable ~ (rgbArgument | gradientArgument | arguments) ^^ { case v ~ a => (v, a) }
   private def rgbArgument = "\\s*=\\s*RGB\\s*\\(.+\\)".r ^^ { _.toString }
@@ -66,14 +66,16 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
     }
   private def styles = rep(style)
   def parseStyle(input: String) = parseAll(styles, trimRight(input)).get
-  /*------------------------------------------------------------------------------------------*/
+  /* ------------------------------------------------------------------------------------------ */
 
-  /*GeometricModel-specific-------------------------------------------------------------------*/
+  /* GeometricModel-specific------------------------------------------------------------------- */
   private def geoVariable: Parser[String] = "(position|size|point|curve|align|id|textBody|compartment)".r ^^ { _.toString }
   private def geoAttribute = geoVariable ~ arguments ^^ { case v ~ a => v + a }
   private def geoIdentifier: Parser[String] = "(ellipse|line|polygon|polyline|rectangle|rounded-rectangle|text|wrapped-text)".r ^^ { _.toString }
 
-  /**parses a geoModel. first ident is the GeometricModels name, second ident is an optional reference to a style*/
+  /**
+   * parses a geoModel. first ident is the GeometricModels name, second ident is an optional reference to a style
+   */
   private def geoModel: Parser[GeoModel] =
     geoIdentifier ~
       ((("style" ~> ident)?) <~ "{") ~
@@ -82,9 +84,9 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
         case name ~ style ~ attr ~ children =>
           GeoModel(name, { if (style.isDefined) Some(style.get) else None }, attr, children, cache)
       }
-  /*------------------------------------------------------------------------------------------*/
+  /* ------------------------------------------------------------------------------------------ */
 
-  /*Shape-specific----------------------------------------------------------------------------*/
+  /* Shape-specific---------------------------------------------------------------------------- */
   private def shapeVariable = ("""(""" + Shape.validShapeVariables.map(_ + "|").mkString + """)""").r ^^ { _.toString }
   private def shapeAttribute = shapeVariable ~ arguments ^^ { case v ~ a => (v, a) }
   private def descriptionAttribute: Parser[(String, String)] =
@@ -110,9 +112,9 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
 
   def parseAbstractShape(input: String): List[AnyRef] = parseAll(abstractShapes, trimRight(input)).get
   def parseShape(input: String): List[AnyRef] = parseAll(shapeSketches, trimRight(input)).get
-  /*------------------------------------------------------------------------------------------*/
+  /* ------------------------------------------------------------------------------------------ */
 
-  /*Connection-Specific-----------------------------------------------------------------------*/
+  /* Connection-Specific----------------------------------------------------------------------- */
   private def c_type = "connection-type\\s*=\\s*".r ~> "(freeform|manhatten)".r
   private def c_placing = ("placing\\s*\\{".r ~> ("position" ~> arguments)) ~ (geoModel <~ "}") ^^ {
     case posi ~ geo => PlacingSketch(posi, geo)
@@ -136,9 +138,9 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
 
   def parseConnection(input: String) = parseAll(connectionSketches, trimRight(input)).get
   def parseAbstractConnection(input: String) = parseAll(abstractConnections, trimRight(input)).get
-  /*------------------------------------------------------------------------------------------*/
+  /* ------------------------------------------------------------------------------------------ */
 
-  /*Diagram-Specific--------------------------------------------------------------------------*/
+  /* Diagram-Specific-------------------------------------------------------------------------- */
   private def possibleActionDefinitionNr1 = {
     ("action" ~> ident) ~
       (("(" ~ "label" ~ ":") ~> argument <~ ",") ~
@@ -260,7 +262,7 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
       name: String,
       mcoreElement: String,
       style: Option[Style] = None,
-      /*node-block*/
+      // node-block
       shape: Option[PropsAndComps] = None,
       palette: Option[String] = None,
       container: Option[String] = None,
@@ -351,7 +353,7 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
       name: String,
       mReferenceName: String,
       style: Option[Style] = None,
-      /*edge-Block*/
+      // edge-Block
       connection: PropsAndComps,
       from: String,
       to: String,
@@ -408,7 +410,7 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
 
   private def sprayDiagrams = rep(sprayDiagram)
   def parseDiagram(e: String) = parseAll(sprayDiagrams, trimRight(e)).get
-  /*------------------------------------------------------------------------------------------*/
+  /* ------------------------------------------------------------------------------------------ */
 
   private def trimRight(s: String) = s.replaceAll("\\/\\/.+", "").split("\n").map(s => s.trim + "\n").mkString
 }

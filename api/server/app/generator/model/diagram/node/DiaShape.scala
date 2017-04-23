@@ -20,7 +20,7 @@ class DiaShape(corporateStyle: Option[Style], shape: String,
   implicit val cache = c
   val referencedShape: generator.model.shapecontainer.shape.Shape = {
     val shapesketch: ShapeSketch = shape
-    /*Hier werden aus ShapeSketches endlich eigentliche Shapes!*/
+    // Hier werden aus ShapeSketches endlich eigentliche Shapes!
     shapesketch.toShape(corporateStyle)
   }
   var vals = Map[String, Text]()

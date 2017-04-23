@@ -23,7 +23,7 @@ object TextLayoutParser extends CommonParserMethods {
   def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[TextLayout] = {
     val attributes = geoModel.attributes
 
-    /*mapping*/
+    // mapping
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     if (commonLayout.isEmpty) {
       None

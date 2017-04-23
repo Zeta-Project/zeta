@@ -38,7 +38,6 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
   val mediator = DistributedPubSub(context.system).mediator
   mediator ! Subscribe("Master", self)
 
-  //val mediator = DistributedPubSub(context.system).mediator
   ClusterClientReceptionist(context.system).registerService(self)
 
   // persistenceId must include cluster role to support multiple masters

@@ -28,17 +28,17 @@ import parser.IDtoShape
 case class Shape private (
     override val name: String = "no name",
     style: Option[Style] = None,
-    size_width_min: Option[Int] = None, /*from ShapeLayout*/
-    size_height_min: Option[Int] = None, /*from ShapeLayout*/
-    size_width_max: Option[Int] = None, /*from ShapeLayout*/
-    size_height_max: Option[Int] = None, /*from ShapeLayout*/
-    stretching_horizontal: Option[Boolean] = None, /*from ShapeLayout*/
-    stretching_vertical: Option[Boolean] = None, /*from ShapeLayout*/
-    proportional: Option[Boolean] = None, /*from ShapeLayout*/
+    size_width_min: Option[Int] = None, // from ShapeLayout
+    size_height_min: Option[Int] = None, // from ShapeLayout
+    size_width_max: Option[Int] = None, // from ShapeLayout
+    size_height_max: Option[Int] = None, // from ShapeLayout
+    stretching_horizontal: Option[Boolean] = None, // from ShapeLayout
+    stretching_vertical: Option[Boolean] = None, // from ShapeLayout
+    proportional: Option[Boolean] = None, // from ShapeLayout
 
     parentShapes: Option[List[GeometricModel]] = None,
-    parentTextMap: Option[Map[String, Text]] = None, /*necessary addition*/
-    parentCompartmentMap: Option[Map[String, Compartment]] = None, /*necessary addition*/
+    parentTextMap: Option[Map[String, Text]] = None, // necessary addition
+    parentCompartmentMap: Option[Map[String, Compartment]] = None, // necessary addition
     geos: List[GeoModel] = List(),
 
     description: Option[Description] = None,
@@ -46,19 +46,19 @@ case class Shape private (
     extendedShape: List[Shape] = List()
 ) extends ShapeContainerElement {
 
-  /*if parentShape had GeometricModels in 'shapes'-attribute, both the lists (parents and new List of GeometricModels) need to be merged*/
+  // if parentShape had GeometricModels in 'shapes'-attribute, both the lists (parents and new List of GeometricModels) need to be merged
   val shapes = {
     val inherited_and_new_geometrics = parentShapes.getOrElse(List()) ::: parseGeometricModels(geos, style)
     if (inherited_and_new_geometrics nonEmpty) Some(inherited_and_new_geometrics) else None
   }
 
-  /*if parentShape has TextOutputFields (Text) and if new TextFields(in geos) were parsed, create a new Map[String, Text]*/
-  /*first check for new TextOutputs*/
+  // if parentShape has TextOutputFields (Text) and if new TextFields(in geos) were parsed, create a new Map[String, Text]
+  // first check for new TextOutputs
   val textMap = {
     var ret = parentTextMap
     if (shapes.isDefined) {
       var texts = shapes.get.filter(i => i.isInstanceOf[Text]).map(i => i.asInstanceOf[Text].id -> i.asInstanceOf[Text]).toMap
-      /*now check for old TextOutputs*/
+      // now check for old TextOutputs
       if (parentTextMap.isDefined) {
         parentTextMap.get.foreach(i => texts += i)
       }
@@ -70,8 +70,8 @@ case class Shape private (
   }
 
   val compartmentMap = {
-    /*if parentShape had CompartmentInfos and if new CompartmentInfos were parsed, create a new Map[String, CompartmentInfo]*/
-    /*first check for new CompartmentInfo*/
+    // if parentShape had CompartmentInfos and if new CompartmentInfos were parsed, create a new Map[String, CompartmentInfo]
+    // first check for new CompartmentInfo
     val comparts = if (shapes.isDefined) {
       rCompartment(shapes.get)
     } else {
@@ -84,29 +84,39 @@ case class Shape private (
     }
   }
 
-  /*useful Methodes */
-  override def toString = "Shape(" + name +
-    /*"; style: "                  +*/ ", " + style +
-    /*"; size_width_min: "         +*/ ", " + size_width_min +
-    /*"; size_height_min: "        +*/ ", " + size_height_min +
-    /*"; size_width_max: "         +*/ ", " + size_width_max +
-    /*"; size_height_max: "        +*/ ", " + size_height_max +
-    /*"; stretching_horizontal: "  +*/ ", " + stretching_horizontal +
-    /*"; stretching_vertical: "    +*/ ", " + stretching_vertical +
-    /*"; proportional: "           +*/ ", " + proportional +
-    /*"; shapes: "                 +*/ ", " + shapes +
-    /*"; tests: "                  +*/ ", " + textMap +
-    /*"; compartments: "           +*/ ", " + compartmentMap +
-    /*"; description: "            +*/ ", " + description +
-    /*"; anchor: "                 +*/ ", " + anchor +
-    /*"; parentShapes: "           +*/ ", " + extendedShape + ")"
+  /**
+   * useful Methodes
+   */
+  override def toString = {
+    List(
+      name,
+      style,
+      size_width_min,
+      size_height_min,
+      size_width_max,
+      size_height_max,
+      stretching_horizontal,
+      stretching_vertical,
+      proportional,
+      shapes,
+      textMap,
+      compartmentMap,
+      description,
+      anchor,
+      extendedShape
+    ).mkString("Shape(", ", ", ")")
+  }
 
-  /**for generating shape-attribute specific content*/
+  /**
+   * for generating shape-attribute specific content
+   */
   private def parseGeometricModels(geoModels: List[GeoModel], parentStyle: Option[Style]) =
     geoModels.map { _.parse(None, parentStyle) }.
       foldLeft(List[GeometricModel]())((list, c: Option[GeometricModel]) => if (c.isDefined) c.get :: list else list)
 
-  /**recursively searches for Compartments in the geometricModels*/
+  /**
+   * recursively searches for Compartments in the geometricModels
+   */
   private def rCompartment(g: List[GeometricModel], compartments: List[Compartment] = List[Compartment]()): List[Compartment] = {
     var ret: List[Compartment] = compartments
     g foreach {
@@ -190,7 +200,7 @@ object Shape extends CommonParserMethods {
 
     val newShape = processAnch(anch, processDesc(desc, cache, processAttributes(attributes, shape)))
 
-    /*include new shape instance in shapeHierarchie*/
+    // include new shape instance in shapeHierarchie
     if (extendedShapes.nonEmpty) {
       extendedShapes.reverse.foreach(elem => cache.shapeHierarchy(elem.name, newShape))
     } else {
@@ -266,7 +276,7 @@ object Shape extends CommonParserMethods {
     }
   }
 
-  /*parsingRules for special attributes*/
+  // parsingRules for special attributes
   private def proportional: Parser[Option[Boolean]] = "=?".r ~> argument ^^ {
     case prop: String => Some(matchBoolean(prop))
     case _ => None

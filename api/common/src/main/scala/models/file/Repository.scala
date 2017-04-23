@@ -6,7 +6,6 @@ import rx.lang.scala.Observable
 import scala.concurrent.Future
 
 trait Repository {
-  //type Document = String
 
   /**
    * Create a new file

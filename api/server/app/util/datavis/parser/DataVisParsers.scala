@@ -40,7 +40,7 @@ trait DataVisParsers extends JavaTokenParsers {
 
   def operand = literal | identifier
 
-  def identifier = styleIdentifier | mIdentifier //Order is important!
+  def identifier = styleIdentifier | mIdentifier // Order is important!
 
   def styleIdentifier = {
     "style" ~ selector ~ dotProperties ^^ {

@@ -16,8 +16,8 @@ sealed class RoundedRectangle private (
     wrapping: List[GeoModel]
 ) extends GeometricModel(parent) with RoundedRectangleLayout with Wrapper {
   override val style: Option[Style] = rrLayout.style
-  override val curve_width: Int = rrLayout.curve_width /*from RoundedRectangleLayout*/
-  override val curve_height: Int = rrLayout.curve_height /*from RoundedRectangleLayout*/
+  override val curve_width: Int = rrLayout.curve_width // from RoundedRectangleLayout
+  override val curve_height: Int = rrLayout.curve_height // from RoundedRectangleLayout
   override val position: Option[(Int, Int)] = rrLayout.position
   override val size_width: Int = rrLayout.size_width
   override val size_height: Int = rrLayout.size_height
@@ -43,7 +43,7 @@ object RoundedRectangle {
     parentStyle: Option[Style],
     hierarchyContainer: Cache): Option[RoundedRectangle] = {
 
-    /*mapping*/
+    // mapping
     val rrLayout: Option[RoundedRectangleLayout] = RoundedRectangleLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
 
     if (rrLayout.isEmpty) {

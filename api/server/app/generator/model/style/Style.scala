@@ -113,8 +113,8 @@ object Style extends CommonParserMethods {
     val extendedStyle = parents.getOrElse(List[String]()).foldLeft(List[Style]())((styles, s_name) =>
       if (cache.styleHierarchy.contains(s_name.trim)) s_name.trim :: styles else styles)
 
-    /*mapping and defaults*/
-    /*fill the "mapping and defaults" with extended information or with None values if necessary*/
+    // mapping and defaults
+    // fill the "mapping and defaults" with extended information or with None values if necessary
     /**
      * relevant is a help-methode, which shortens the actual call to mostRelevant of ClassHierarchy by ensuring the collection-parameter
      * relevant speaks for the hierarchical context -> "A extends B, C" -> C is most relevant
@@ -151,8 +151,6 @@ object Style extends CommonParserMethods {
     } else {
       cache.styleHierarchy.newBaseClass(newStyle)
     }
-
-    /*return the new Style*/
     newStyle
   }
 

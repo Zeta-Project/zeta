@@ -21,7 +21,7 @@ case class Node(
     name: String,
     mcoreElement: MClass,
     style: Option[Style] = None,
-    /*node-block*/
+    // node-block
     shape: Option[DiaShape] = None,
     override val palette: Option[String] = None,
     override val container: Option[MReference] = None,

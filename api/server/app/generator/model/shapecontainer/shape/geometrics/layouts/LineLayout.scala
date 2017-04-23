@@ -20,7 +20,7 @@ object LineLayoutParser {
     implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
 
-    /*mapping*/
+    // mapping
     var point1: Option[Point] = None
     var point2: Option[Point] = None
     var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)

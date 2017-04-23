@@ -41,7 +41,7 @@ object Rectangle {
     parentStyle: Option[Style],
     diagram: Cache): Option[Rectangle] = {
 
-    /*mapping*/
+    // mapping
     val commonLayout: Option[CommonLayout] = CommonLayoutParser.parse(geoModel, parentStyle, diagram)
     val compartmentInfo: Option[Compartment] = Compartment(geoModel.attributes)
 

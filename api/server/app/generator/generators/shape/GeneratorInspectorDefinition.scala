@@ -19,7 +19,9 @@ import scala.collection.mutable.HashMap
 object GeneratorInspectorDefinition {
   var attrCounterMap = mutable.HashMap[String, Int]()
 
-  /** generates the inspector definition, with input definitions for the JointJS Shapes*/
+  /**
+   * generates the inspector definition, with input definitions for the JointJS Shapes
+   */
   def generate(shapes: Iterable[Shape], packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]], nodes: List[Node]): String = {
     s"""
       var InspectorDefs = {

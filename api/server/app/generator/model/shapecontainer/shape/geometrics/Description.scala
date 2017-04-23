@@ -22,7 +22,7 @@ object Description extends CommonParserMethods {
 
   def parse(attrs: (String, String), parentStyle: Option[Style], hierarchyContainer: Cache): Option[Description] = {
     implicit val cache = hierarchyContainer
-    /*mapping*/
+    // mapping
     var hali: Option[HAlign] = None
     var vali: Option[VAlign] = None
     var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, attrs._1)
