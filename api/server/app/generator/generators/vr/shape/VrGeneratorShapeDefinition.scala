@@ -1,6 +1,6 @@
 package generator.generators.vr.shape
 
-import java.nio.file.{ Files, Paths }
+import java.nio.file.{Files, Paths}
 
 import generator.model.shapecontainer.shape.geometrics._
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
@@ -9,20 +9,24 @@ import generator.model.shapecontainer.shape.Shape
 import scala.util.Try
 
 /**
- * Created by max on 08.11.16.
- */
+  * Created by max on 08.11.16.
+  */
 object VrGeneratorShapeDefinition {
-  def generate(shapes: Iterable[Shape], packageName: String, location: String) = {
-    for (shape <- shapes) { generateFile(shape, packageName, location) }
+  def generate(shapes: List[Shape], packageName: String, location: String): Unit = {
+    shapes.flatMap(generateFile).map(p => Files.write(Paths.get(location + p._1), p._2.getBytes()))
   }
 
-  private def generateFile(shape: Shape, packageName: String, DEFAULT_SHAPE_LOCATION: String) = {
-    if (shape.name != "rootShape") {
+  private type FileName = String
+  private type PolymerFile = String
+
+  def generateFile(shape: Shape): Option[(FileName, PolymerFile)] = {
+    if (shape.name == "rootShape") {
+      None
+    } else {
       val FILENAME = "vr-" + shape.name + ".html"
 
-      val polymerElement = generatePolymerElement(shape)
-
-      Files.write(Paths.get(DEFAULT_SHAPE_LOCATION + FILENAME), polymerElement.getBytes())
+      val polymerElement: String = generatePolymerElement(shape)
+      Some((FILENAME, polymerElement))
     }
   }
 
@@ -150,7 +154,13 @@ object VrGeneratorShapeDefinition {
           val position = c.position.getOrElse((0, 0))
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
           s"""${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
-              create(new VrElement.${element.capitalize}() , ${if (hasText(wrapper)) { "this.text" + (textCount - 1) } else { "\"\"" }}, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
+              create(new VrElement.${element.capitalize}() , ${
+            if (hasText(wrapper)) {
+              "this.text" + (textCount - 1)
+            } else {
+              "\"\""
+            }
+          }, true, {x: ${position._1 / totalSize._2}, y: -${position._2 / totalSize._1} }, null, null, { height: ${c.size_height / totalSize._1}, width: ${c.size_width / totalSize._2}});
               ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
@@ -178,12 +188,16 @@ object VrGeneratorShapeDefinition {
 
   private def generateCalcMax(goemetrics: List[GeometricModel]) = {
     val numberOfTexts = goemetrics.map(getAllTexts(_)).sum
-    (for (i <- 0 until numberOfTexts) yield { "calcMax(this.text" + i + ");\n" }).mkString
+    (for (i <- 0 until numberOfTexts) yield {
+      "calcMax(this.text" + i + ");\n"
+    }).mkString
   }
 
   private def generateTextArgs(geometrics: List[GeometricModel]) = {
     val numberOfTexts = geometrics.map(getAllTexts(_)).sum
-    (for (i <- 0 until numberOfTexts) yield { " ,text" + i }).mkString
+    (for (i <- 0 until numberOfTexts) yield {
+      " ,text" + i
+    }).mkString
   }
 
   private def getAllTexts(geometric: GeometricModel): Int = {
