@@ -2,28 +2,38 @@ package generator.generators.style
 
 import generator.model.style._
 import generator.model.style.color.Transparent
-import generator.model.style.gradient.{ Gradient, HORIZONTAL }
-import java.nio.file.{ Paths, Files }
+import generator.model.style.gradient.{Gradient, HORIZONTAL}
+import java.nio.file.{Paths, Files}
 
 /**
- * The StyleGenerator object, responsible for generation of style.js
- */
+  * The StyleGenerator object, responsible for generation of style.js
+  */
 object StyleGenerator {
 
   def filename = "style.js"
 
   /**
-   * Generates the Output String and writes the String
-   * to the file style.js in the outputLocation
-   */
-  def doGenerate(styles: List[Style], outputLocation: String) = {
-    val output =
-      s"""
+    * Generates the Output String and writes the String
+    * to the file style.js in the outputLocation
+    */
+  def doGenerate(styles: List[Style], outputLocation: String): Unit = {
+    val output = doGenerateFile(styles)
+
+    Files.write(Paths.get(outputLocation + filename), output.getBytes)
+  }
+
+  /**
+    *
+    * @param styles the Styles
+    * @return Generator as String
+    */
+  def doGenerateFile(styles: List[Style]): String = {
+    s"""
         ${generateGetStyle(styles)}
         ${generateGetDiagramHighlighting(styles)}
       """
-    Files.write(Paths.get(outputLocation + filename), output.getBytes)
   }
+
 
   /** Generates the getStyle function */
   def generateGetStyle(styles: List[Style]): String = {
@@ -52,7 +62,7 @@ object StyleGenerator {
       break;
     """
 
-  /** generates getDiagramHighlighting function with the highlighting styles*/
+  /** generates getDiagramHighlighting function with the highlighting styles */
   def generateGetDiagramHighlighting(styles: List[Style]): String = {
     s"""
       function getDiagramHighlighting(stylename) {
@@ -68,7 +78,7 @@ object StyleGenerator {
     """
   }
 
-  /** generates a case for the switch case of the getDiagramHilighting*/
+  /** generates a case for the switch case of the getDiagramHilighting */
   def generateDiagramHighlightingCases(s: Style) = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty)
