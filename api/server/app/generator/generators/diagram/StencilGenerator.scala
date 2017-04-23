@@ -7,9 +7,11 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
- * The StencilGenerator object, responsible for the generation of the String for stencil.js
- */
+  * The StencilGenerator object, responsible for the generation of the String for stencil.js
+  */
 object StencilGenerator {
+
+  //FIXME variable in object
   var packageName = ""
 
   def generate(diagram: Diagram) =
@@ -76,7 +78,8 @@ object StencilGenerator {
     Stencil.shapes = {
       ${
       {
-        for (((key, value), i) <- mapping.zipWithIndex) yield s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
+        for (((key, value), i) <- mapping.zipWithIndex) yield
+          s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
        """
       }.mkString(",")
     }
@@ -89,7 +92,12 @@ object StencilGenerator {
     ${getVarName(group)}: [
       ${
       {
-        for (node <- nodes) yield s"""${getVarName(node.name) + { if (node != nodes.last) "," else "" }}
+        for (node <- nodes) yield
+          s"""${
+            getVarName(node.name) + {
+              if (node != nodes.last) "," else ""
+            }
+          }
          """
       }.mkString
     }
@@ -99,34 +107,38 @@ object StencilGenerator {
 
   def generateDocumentReadyFunction(diagram: Diagram) = {
     """
-    $(document).ready(function() {""" + s"""
+    $(document).ready(function() {""" +
+      s"""
       ${
-      {
-        for (node <- diagram.nodes) yield s"""
+        {
+          for (node <- diagram.nodes) yield
+            s"""
       ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
 
       ${
-          {
-            for ((key, value) <- node.shape.get.vals) yield s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
-          }.mkString
-        }"""
-      }.mkString
-    }
+              {
+                for ((key, value) <- node.shape.get.vals) yield s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
+              }.mkString
+            }"""
+        }.mkString
+      }
       ${
-      if (diagram.style isDefined) {
-        s"""
+        if (diagram.style isDefined) {
+          s"""
           var style = document.createElement('style');
           style.id = 'highlighting-style';
           style.type = 'text/css';
           style.innerHTML = getDiagramHighlighting("${diagram.style.get.name}");
           document.getElementsByTagName('head')[0].appendChild(style);"""
-      } else ""
-    }
+        } else ""
+      }
     });
     """
   }
 
-  def setPackageName(packageName: String) { this.packageName = packageName }
+  def setPackageName(packageName: String) {
+    this.packageName = packageName
+  }
 
   private def getNodeToPaletteMapping(diagram: Diagram): mutable.HashMap[String, ListBuffer[Node]] = {
     var mapping = new mutable.HashMap[String, ListBuffer[Node]]
