@@ -2,7 +2,7 @@ package facade
 
 import scala.scalajs.js
 
-package object Bootbox extends js.GlobalScope {
+package object bootbox extends js.GlobalScope {
   var bootbox: BootboxTrait = js.native
 }
 

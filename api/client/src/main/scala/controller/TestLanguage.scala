@@ -6,7 +6,7 @@ import scala.scalajs.js.Dynamic.literal
 object TestLanguage {
   def langForModel(id: String) = {
     val model = ModelLoader(id)
-    facade.AceGrammar.AceGrammar.getMode(
+    facade.aceGrammar.AceGrammar.getMode(
       literal(
         RegExpID = "RegExp::",
         Style = createStyle(),

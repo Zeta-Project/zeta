@@ -137,7 +137,7 @@
    <parameter name="regex"><![CDATA[[A-Z][A-Za-z]*]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.PackageObjectNamesChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.PackageObjectNamesChecker" level="error">
   <parameters>
    <parameter name="regex"><![CDATA[^[a-z][A-Za-z]*$]]></parameter>
   </parameters>
