@@ -21,22 +21,21 @@ object RoundedRectangleLayoutParser extends CommonParserMethods {
     /*mapping*/
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     if (commonLayout.isEmpty) {
-      return None
+      None
+    } else {
+      attributes.find(x => x.matches("curve.+")) match {
+        case Some(x) =>
+          val newCurve = parse(curve, x).get
+          Some(new RoundedRectangleLayout {
+            override val style: Option[Style] = commonLayout.get.style
+            override val curve_width: Int = newCurve.get._1
+            override val curve_height: Int = newCurve.get._2
+            override val position: Option[(Int, Int)] = commonLayout.get.position
+            override val size_width: Int = commonLayout.get.size_width
+            override val size_height: Int = commonLayout.get.size_height
+          })
+        case None => None
+      }
     }
-
-    attributes.foreach {
-      case x if x.matches("curve.+") =>
-        val newCurve = parse(curve, x).get
-        return Some(new RoundedRectangleLayout {
-          override val style: Option[Style] = commonLayout.get.style
-          override val curve_width: Int = newCurve.get._1
-          override val curve_height: Int = newCurve.get._2
-          override val position: Option[(Int, Int)] = commonLayout.get.position
-          override val size_width: Int = commonLayout.get.size_width
-          override val size_height: Int = commonLayout.get.size_height
-        })
-      case _ =>
-    }
-    None
   }
 }

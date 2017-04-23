@@ -46,18 +46,18 @@ object Text extends CommonParserMethods {
     var id: String = ""
     val textLayout: Option[TextLayout] = TextLayoutParser(geoModel, parentStyle, hierarchyContainer)
     if (textLayout.isEmpty) {
-      return None
-    }
-
-    geoModel.attributes.foreach {
-      case x if x.matches("id.*") => id = parse(idAsString, x).get
-      case _ =>
-    }
-
-    if (textLayout.isEmpty || id == "") {
       None
     } else {
-      Some(new Text(parent, textType, id, textLayout.get))
+      geoModel.attributes.foreach {
+        case x if x.matches("id.*") => id = parse(idAsString, x).get
+        case _ =>
+      }
+
+      if (textLayout.isEmpty || id == "") {
+        None
+      } else {
+        Some(new Text(parent, textType, id, textLayout.get))
+      }
     }
   }
 }

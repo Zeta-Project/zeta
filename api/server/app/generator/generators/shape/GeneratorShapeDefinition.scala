@@ -197,14 +197,21 @@ object GeneratorShapeDefinition {
 
   protected def generateAttrs(shapeName: String): String = {
     val classes = attrs.get(shapeName)
-    if (classes isEmpty) return ""
-    val text = classes.get.map { c =>
-      c + {
-        if (c != classes.get.last) "," else ""
-      }
-    }.mkString
-    attrs.clear()
-    text
+    if (classes isEmpty) {
+      ""
+    } else {
+      val text = classes.get.map { c =>
+        c + {
+          if (c != classes.get.last) {
+            ","
+          } else {
+            ""
+          }
+        }
+      }.mkString
+      attrs.clear()
+      text
+    }
   }
 
   protected def buildAttrs(shape: GeometricModel, shapeName: String, className: String, parentClass: String) = {

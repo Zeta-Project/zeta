@@ -21,14 +21,19 @@ trait TextLayout extends CommonLayout {
 
 object TextLayoutParser extends CommonParserMethods {
   def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[TextLayout] = {
-    implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
 
     /*mapping*/
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
     if (commonLayout.isEmpty) {
-      return None
+      None
+    } else {
+      processAttributes(commonLayout, attributes, hierarchyContainer)
     }
+  }
+
+  private def processAttributes(commonLayout: Option[CommonLayout], attributes: List[String], hierarchyContainer: Cache) = {
+    implicit val cache = hierarchyContainer
     var hali: Option[HAlign] = None
     var vali: Option[VAlign] = None
     var txt = ""
