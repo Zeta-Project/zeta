@@ -1,0 +1,7 @@
+<code_scheme name="zeta_codeStyle">
+    <ScalaCodeStyleSettings>
+        <option name="classCountToUseImportOnDemand" value="100"/>
+        <option name="collectImports" value="false"/>
+        <option name="USE_SCALADOC2_FORMATTING" value="false"/>
+    </ScalaCodeStyleSettings>
+</code_scheme>
