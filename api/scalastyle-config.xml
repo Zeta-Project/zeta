@@ -118,7 +118,7 @@
  <check enabled="true" class="org.scalastyle.scalariform.NoCloneChecker" level="warning"/>
  <check enabled="true" class="org.scalastyle.scalariform.NoFinalizeChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.NonASCIICharacterChecker" level="warning"/>
- <check enabled="true" class="org.scalastyle.scalariform.NotImplementedErrorUsage" level="warning"/>
+ <check enabled="true" class="org.scalastyle.scalariform.NotImplementedErrorUsage" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.NoWhitespaceBeforeLeftBracketChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.NoWhitespaceAfterLeftBracketChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.NullChecker" level="warning"/>

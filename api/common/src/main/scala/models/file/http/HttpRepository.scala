@@ -58,7 +58,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The File to update
    * @return Future which resolve after update
    */
-  def update(doc: Document, file: File): Future[Unit] = ???
+  def update(doc: Document, file: File): Future[Unit] = Future {}
 
   /**
    * Get a single file
@@ -92,7 +92,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The file which to delete
    * @return Future which resolve after deletion
    */
-  def delete(doc: Document, file: File): Future[Unit] = ???
+  def delete(doc: Document, file: File): Future[Unit] = Future {}
 
   /**
    * Query files which match the specification
@@ -100,5 +100,5 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param specification The specification for the query
    * @return Observable to return all entities
    */
-  def query(specification: Specification): Observable[File] = ???
+  def query(specification: Specification): Observable[File] = Observable.from(List[File]())
 }
