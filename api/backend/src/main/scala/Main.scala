@@ -1,22 +1,37 @@
-import actors.developer.{ DeveloperManager, Mediator }
+import java.util.concurrent.TimeUnit
+
+import actors.developer.DeveloperManager
+import actors.developer.Mediator
 import actors.frontend.DeveloperDummy
 import actors.master.Master
-import actors.worker.{ DockerWorkExecutor, Worker }
-import akka.actor.{ ActorIdentity, ActorPath, ActorSystem, Identify, PoisonPill, Props }
-import akka.cluster.sharding.{ ClusterSharding, ClusterShardingSettings }
-import akka.cluster.singleton.{ ClusterSingletonManager, ClusterSingletonManagerSettings }
-import akka.persistence.journal.leveldb.{ SharedLeveldbJournal, SharedLeveldbStore }
+import actors.worker.DockerWorkExecutor
+import actors.worker.Worker
+import akka.actor.ActorIdentity
+import akka.actor.ActorPath
+import akka.actor.ActorSystem
+import akka.actor.Identify
+import akka.actor.PoisonPill
+import akka.actor.Props
+import akka.cluster.sharding.ClusterSharding
+import akka.cluster.sharding.ClusterShardingSettings
+import akka.cluster.singleton.ClusterSingletonManager
+import akka.cluster.singleton.ClusterSingletonManagerSettings
+import akka.persistence.journal.leveldb.SharedLeveldbJournal
+import akka.persistence.journal.leveldb.SharedLeveldbStore
 import akka.util.Timeout
 import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import cluster.ClusterManager
 import com.typesafe.config.ConfigFactory
 import models.session.SyncGatewaySession
-import org.rogach.scallop.{ ScallopConf, ScallopOption }
+import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.implicitConversions
 
 object Main extends App {
@@ -45,8 +60,7 @@ protected trait Starter {
   def initiate(cmd: Commands): Unit
 
   protected def setSharedJournal(system: ActorSystem, path: ActorPath): Unit = {
-    import system.dispatcher
-    implicit val timeout = Timeout(15.seconds)
+    implicit val timeout = Timeout(Duration(15, TimeUnit.SECONDS))
     val f = system.actorSelection(path) ? Identify(None)
     f.onSuccess {
       case ActorIdentity(_, Some(ref)) =>
@@ -75,7 +89,7 @@ protected object Starter {
   /**
    * The time after which a work (execution of a generator, filter, etc..) will be cancelled
    */
-  val WorkTimeout: FiniteDuration = 4.minutes
+  val WorkTimeout: FiniteDuration = Duration(4, TimeUnit.MINUTES)
 }
 
 protected class MasterStarter extends Starter {
@@ -144,11 +158,11 @@ protected object MasterStarter {
    * Note: This time should be longer as the workTimeout, because if workTimeout was reached, the system should be
    * able to store the log of the docker container
    */
-  val SessionDuration: FiniteDuration = Starter.WorkTimeout.plus(2.minutes)
+  val SessionDuration: FiniteDuration = Starter.WorkTimeout.plus(Duration(2, TimeUnit.MINUTES))
   /**
    * The time after which a worker will be marked as unreachable
    */
-  val WorkerTimeout: FiniteDuration = 5.minutes
+  val WorkerTimeout: FiniteDuration = Duration(5, TimeUnit.MINUTES)
 
   def apply(): MasterStarter = new MasterStarter()
 }
@@ -173,7 +187,7 @@ protected class WorkersStarter extends Starter {
     (1 to config.numberOfWorkers) foreach (i => startWorker(config, i, 0))
   }
 
-  private def startWorker(config: Config, number: Int, port: Int) {
+  private def startWorker(config: Config, number: Int, port: Int): Unit = {
     val system = createActorSystem(WorkersStarter.ActorRole, config.seeds, port)
     val executor = system.actorOf(DockerWorkExecutor.props(), s"work-executor-$number")
     system.actorOf(Worker.props(executor, WorkersStarter.RegisterInterval, Starter.WorkTimeout), s"worker-$number")
@@ -186,7 +200,7 @@ protected object WorkersStarter {
   /**
    * The interval in which a worker register itself to the master
    */
-  val RegisterInterval: FiniteDuration = 30.seconds
+  val RegisterInterval: FiniteDuration = Duration(30, TimeUnit.SECONDS)
   val MilliSecWaitForMaster = 20000
 
   def apply(): WorkersStarter = new WorkersStarter()

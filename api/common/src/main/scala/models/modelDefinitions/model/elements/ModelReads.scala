@@ -1,14 +1,26 @@
 package models.modelDefinitions.model.elements
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
-import models.modelDefinitions.metaModel.elements._
+import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MEnum
+import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.ScalarValue
+
 import play.api.data.validation.ValidationError
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsError
+import play.api.libs.json.JsPath
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.__
 
 import scala.annotation.tailrec
-import scala.collection.immutable._
+import scala.collection.immutable.Seq
 
 /**
  * Reads[T] for Model structures (bottom of file)
@@ -17,9 +29,15 @@ import scala.collection.immutable._
 
 object ModelReads {
 
-  def emtpyNode(id: String) = Node(id, MClass("", false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]()), Seq[ToEdges](), Seq[ToEdges](), Seq[Attribute]())
+  def emtpyNode(id: String) = {
+    val mclass = MClass("", false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    Node(id, mclass, Seq[ToEdges](), Seq[ToEdges](), Seq[Attribute]())
+  }
 
-  def emtpyEdge(id: String) = new Edge(id, MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]()), Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
+  def emtpyEdge(id: String) = {
+    val mReference = MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    new Edge(id, mReference, Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
+  }
 
   private trait InvalidLink {
     val message: String
@@ -40,8 +58,11 @@ object ModelReads {
 
     def finalize(map: Map[String, ModelElement]): JsResult[Map[String, ModelElement]] = {
       val refErrors = validateRefs(map)
-      if (refErrors.isEmpty) JsSuccess(wire(map))
-      else JsError(s"Model contains invalid references: ${refErrors.mkString(", ")}")
+      if (refErrors.isEmpty) {
+        JsSuccess(wire(map))
+      } else {
+        JsError(s"Model contains invalid references: ${refErrors.mkString(", ")}")
+      }
     }
 
     def wireNodes(newMap: => Map[String, ModelElement], old: Seq[ToNodes]): Seq[ToNodes] = {
@@ -71,25 +92,25 @@ object ModelReads {
     }
   }
 
-  def validateRefs(mapping: Map[String, ModelElement]): List[String] = {
+  private def validateRefs(mapping: Map[String, ModelElement]): List[String] = {
     val values = mapping.values.toList
 
     def checkEdgeLinks(source: String, links: Seq[ToEdges]): List[String] = {
-      for (
+      for {
         toEdges <- links.toList;
         edge <- toEdges.edges;
         target = edge.id if !mapping.contains(target) || !mapping(target).isInstanceOf[Edge]
-      ) yield {
+      } yield {
         s"invalid link to edge: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
       }
     }
 
     def checkNodeLinks(source: String, links: Seq[ToNodes]): List[String] = {
-      for (
+      for {
         toNodes <- links.toList;
         node <- toNodes.nodes;
         target = node.id if !mapping.contains(target) || !mapping(target).isInstanceOf[Node]
-      ) yield {
+      } yield {
         s"invalid link to node: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
       }
     }
@@ -158,20 +179,10 @@ object ModelReads {
 
   def attributesReads(mAttributes: Seq[MAttribute]) = Reads { json =>
 
-    val required = mAttributes.map(a => a.name -> a.`type`).toMap
-
     def locate(e: scala.Seq[(JsPath, scala.Seq[ValidationError])], idx: Int) = e.map { case (p, valerr) => (JsPath(idx)) ++ p -> valerr }
 
-    required.map {
-      case (key, ScalarType.Double) => (__ \ key).read[List[Double]].map(ds => Attribute(key, ds.map(d => ScalarValue.MDouble(d)))).reads(json)
-      case (key, ScalarType.Int) => (__ \ key).read[List[Int]].map(is => Attribute(key, is.map(i => ScalarValue.MInt(i)))).reads(json)
-      case (key, ScalarType.String) => (__ \ key).read[List[String]].map(ss => Attribute(key, ss.map(s => ScalarValue.MString(s)))).reads(json)
-      case (key, ScalarType.Bool) => (__ \ key).read[List[Boolean]].map(bs => Attribute(key, bs.map(b => ScalarValue.MBool(b)))).reads(json)
-      case (key, MEnum(name, values)) => (__ \ key).read[List[String]].filter(ValidationError(s"Found elements aren't valid symbols of enum $name")) {
-        _.forall(symbolString => values.exists(_.name == symbolString))
-      }.map(sym => Attribute(key, sym.map(s => values.find(_.name == s).get))).reads(json)
-      case _ => JsError("Unknown attribute type")
-    }.iterator.zipWithIndex.foldLeft(Right(Vector.empty): Either[scala.Seq[(JsPath, scala.Seq[ValidationError])], Vector[Attribute]]) {
+    buildAttributeMap(mAttributes, json)
+      .iterator.zipWithIndex.foldLeft(Right(Vector.empty): Either[scala.Seq[(JsPath, scala.Seq[ValidationError])], Vector[Attribute]]) {
       case (Right(vs), (JsSuccess(v, _), _)) => Right(vs :+ v)
       case (Right(_), (JsError(e), idx)) => Left(locate(e, idx))
       case (Left(e), (_: JsSuccess[_], _)) => Left(e)
@@ -184,6 +195,19 @@ object ModelReads {
       mAttributes.exists { ma =>
         ma.name == a.name && checkAttributeMult(a, ma)
       }
+    }
+  }
+
+  private def buildAttributeMap(mAttributes: Seq[MAttribute], json: JsValue) = {
+    mAttributes.map(a => a.name -> a.`type`).toMap.map {
+      case (key, ScalarType.Double) => (__ \ key).read[List[Double]].map(ds => Attribute(key, ds.map(d => ScalarValue.MDouble(d)))).reads(json)
+      case (key, ScalarType.Int) => (__ \ key).read[List[Int]].map(is => Attribute(key, is.map(i => ScalarValue.MInt(i)))).reads(json)
+      case (key, ScalarType.String) => (__ \ key).read[List[String]].map(ss => Attribute(key, ss.map(s => ScalarValue.MString(s)))).reads(json)
+      case (key, ScalarType.Bool) => (__ \ key).read[List[Boolean]].map(bs => Attribute(key, bs.map(b => ScalarValue.MBool(b)))).reads(json)
+      case (key, MEnum(name, values)) => (__ \ key).read[List[String]].filter(ValidationError(s"Found elements aren't valid symbols of enum $name")) {
+        _.forall(symbolString => values.exists(_.name == symbolString))
+      }.map(sym => Attribute(key, sym.map(s => values.find(_.name == s).get))).reads(json)
+      case _ => JsError("Unknown attribute type")
     }
   }
 
@@ -210,14 +234,10 @@ object ModelReads {
       meta.getMClass(name).map(c => c.getTypeMAttributes).getOrElse(Seq[MAttribute]())
     }))
   )(Node.apply2 _).filter(invalidToEdgesError2) {
-      validateNodeLinks
-    }.filter(attributeDuplicateError) {
-      ensureUniqueAttributes
-    }
-
-  //.filter(ValidationError("")) {
-  //ensureBoundedAttributes
-  //}
+    validateNodeLinks
+  }.filter(attributeDuplicateError) {
+    ensureUniqueAttributes
+  }
 
   private def validateNodeLinks(n: Node) = {
     n.inputs.forall(e => n.`type`.typeHasInput(e.`type`.name)) &&
@@ -232,12 +252,6 @@ object ModelReads {
   private def ensureUniqueAttributes(value: HasAttributes) = {
     value.attributes.map(_.name.toLowerCase).toSet.size == value.attributes.size
   }
-
-  //  private def ensureBoundedAttributes(value: HasAttributes) = {
-  //    value.attributes.foldLeft(true) { (acc, att) =>
-  //      true
-  //    }
-  //  }
 
   private def extractNodes(m: Map[String, Seq[String]])(implicit meta: MetaModel): Seq[ToNodes] = {
     m.map {
@@ -263,9 +277,9 @@ object ModelReads {
     }.map(extractNodes) and
     (__ \ "attributes").read(Seq[Attribute]())
   )(Edge.apply2 _).filter(invalidToNodesError2) {
-      validateEdgeLinks
-    }.filter(attributeDuplicateError) {
-      ensureUniqueAttributes
-    }
+    validateEdgeLinks
+  }.filter(attributeDuplicateError) {
+    ensureUniqueAttributes
+  }
 
 }

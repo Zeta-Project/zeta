@@ -1,22 +1,35 @@
 package actors.developer.manager
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
-import models.document._
-import models.frontend._
-import models.worker._
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+import models.document.AllBondedTasks
+import models.document.BondedTask
+import models.document.Filter
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.Repository
+import models.frontend.BondedTaskList
+import models.frontend.BondedTaskNotExecutable
+import models.frontend.Entry
+import models.frontend.ExecuteBondedTask
+import models.frontend.ModelUser
+import models.worker.RunBondedTask
+
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
+
+case class GetBondedTaskList(user: ModelUser)
 
 object BondedTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new BondedTasksManager(worker, repository))
-  case class GetBondedTaskList(user: ModelUser)
 }
 
 class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
-  import BondedTasksManager._
-
   // 1. check if the bonded task exist
   // 2. get the filter attached to the bonded task
   // 3. check if the user (which triggered the task) can execute the task.

@@ -1,11 +1,22 @@
-import generator._
-import models.document.{ Repository => Documents, _ }
-import models.file.{ File, Repository => Files }
-import models.modelDefinitions.metaModel.elements.{ MClass, MReference }
+import generator.Error
+import generator.Result
+import generator.Success
+import generator.Transformer
+
+import models.document.Filter
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.MetaModelEntity
+import models.document.ModelEntity
+import models.document.{Repository => Documents}
+import models.file.File
+import models.file.{Repository => Files}
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 import models.remote.Remote
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future }
+import scala.concurrent.Future
 
 object Main extends Template[CreateOptions, String] {
   val sep = "\n"
@@ -21,7 +32,9 @@ object Main extends Template[CreateOptions, String] {
    * @param files     Access to the Files repository
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = compiledGenerator(file)
+  override def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
+    compiledGenerator(file)
+  }
 
   /**
    * Initialize the generator
@@ -31,7 +44,9 @@ object Main extends Template[CreateOptions, String] {
    * @param files     Access to the Files repository
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = compiledGenerator(file)
+  override def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
+    compiledGenerator(file)
+  }
 
   def matchMClassMethod(entity: MClass) = {
     s"""case "${entity.name}" => transform${entity.name}Node(node)"""
@@ -42,35 +57,39 @@ object Main extends Template[CreateOptions, String] {
   }
 
   def getMClassTypeMethod(entity: MClass): String = {
-    s"""def transform${entity.name}Node(node: Node): Node = {
-        |  node
-        |}""".stripMargin
+    s"""
+      |def transform${entity.name}Node(node: Node): Node = {
+      |  node
+      |}
+    """.stripMargin
   }
 
   def getMReferenceTypeMethod(entity: MReference): String = {
-    s"""def transform${entity.name}Edge(edge: Edge): Edge = {
-       |  edge
-       |}""".stripMargin
+    s"""
+      |def transform${entity.name}Edge(edge: Edge): Edge = {
+      |  edge
+      |}
+    """.stripMargin
   }
 
   def methodPrototypes(mClass: Iterable[MClass], mReference: Iterable[MReference]): String = {
     s"""
-       |${mClass.map(getMClassTypeMethod).mkString(sepMethods)}
-       |
-       |${mReference.map(getMReferenceTypeMethod).mkString(sepMethods)}
+      |${mClass.map(getMClassTypeMethod).mkString(sepMethods)}
+      |
+      |${mReference.map(getMReferenceTypeMethod).mkString(sepMethods)}
     """.stripMargin
   }
 
   def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]) = {
     s"""
       |class MyTransformer() extends Transformer {
-      |	def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
+      | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
       |   val transformed = entity.model.elements.values.map { element => element match {
       |     case node: Node => transformNode(node)
       |     case edge: Edge => transformEdge(edge)
       |   }}
-      |		Future.successful(this)
-      |	}
+      |   Future.successful(this)
+      | }
       |
       | def transformNode(node: Node): Node = node.`type`.name match {
       |   ${mClassList.map(matchMClassMethod).mkString(sep2)}

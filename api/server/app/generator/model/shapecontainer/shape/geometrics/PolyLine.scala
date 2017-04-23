@@ -1,8 +1,10 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.geometrics.layouts.{ PolyLineLayoutParser, PolyLineLayout }
+import generator.model.shapecontainer.shape.geometrics.layouts.PolyLineLayoutParser
+import generator.model.shapecontainer.shape.geometrics.layouts.PolyLineLayout
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel }
+import generator.parser.Cache
+import generator.parser.GeoModel
 
 /**
  * Created by julian on 19.10.15.
@@ -18,14 +20,33 @@ class PolyLine(
   override val points: List[Point] = polyLineLayout.points
 }
 
+/**
+ * PolyLine
+ */
 object PolyLine {
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLine] = parse(geoModel, parent, parentStyle, hierarchyContainer)
 
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLine] = {
-    val polyLineLayout: Option[PolyLineLayout] = PolyLineLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (polyLineLayout.isEmpty)
+  /**
+   * @param geoModel GeoModel instance
+   * @param parent GeometricModel instance
+   * @param parentStyle Style instance
+   * @param hierarchyContainer Cache instance
+   * @return PolyLine instance
+   */
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLine] = {
+    parse(geoModel, parent, parentStyle, hierarchyContainer)
+  }
+
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[PolyLine] = {
+
+    val polyLineLayout: Option[PolyLineLayout] = PolyLineLayoutParser(geoModel, parentStyle, hierarchyContainer)
+    if (polyLineLayout.isEmpty) {
       None
-    else
+    } else {
       Some(new PolyLine(parent, polyLineLayout.get))
+    }
   }
 }

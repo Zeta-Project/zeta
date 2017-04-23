@@ -2,7 +2,7 @@ package facade
 
 import scala.scalajs.js
 
-package object AceGrammar extends js.GlobalScope {
+package object aceGrammar extends js.GlobalScope {
   val AceGrammar: AceGrammarTrait = js.native
 }
 

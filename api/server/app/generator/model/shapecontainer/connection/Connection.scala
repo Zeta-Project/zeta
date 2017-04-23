@@ -3,8 +3,11 @@ package generator.model.shapecontainer.connection
 import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-import generator.parser.{ Cache, PlacingSketch, CommonParserMethods }
-import parser._
+import generator.parser.Cache
+import generator.parser.PlacingSketch
+import generator.parser.CommonParserMethods
+
+import parser.OptionToStyle
 
 /**
  * Created by julian on 20.10.15.
@@ -21,7 +24,7 @@ sealed class Connection private (
     val placing: List[Placing] = List[Placing]()
 ) extends ShapeContainerElement {
   val textMap = {
-    val textMaps = for (p <- placing) yield {
+    val textMaps = for {p <- placing} yield {
       p.shape.textMap
     }
     textMaps.filter(_.isDefined).map(_.get).foldLeft(Map[String, Text]()) { (ret, m) => ret ++ m }
@@ -43,7 +46,7 @@ object Connection extends CommonParserMethods {
     hierarchyContainer: Cache
   ): Option[Connection] = {
     implicit val cache = hierarchyContainer
-    /*mapping*/
+    // mapping
     var style: Option[Style] = styleRef
     val connection_type: Option[ConnectionStyle] = if (typ isDefined) Some(parse(connectionType, typ.get).get) else None
     if (anonymousStyle.isDefined) {
@@ -51,9 +54,9 @@ object Connection extends CommonParserMethods {
     }
     val placingList = placings.map { Placing(_, style, cache.shapeHierarchy.root.data) }
 
-    if (placingList isEmpty)
+    if (placingList isEmpty) {
       None
-    else {
+    } else {
       val newConnection = new Connection(name, connection_type, style, placingList)
       cache + newConnection
       Some(newConnection)

@@ -1,10 +1,9 @@
 package models.modelDefinitions.model.elements
 
-import play.api.libs.json._
-
-import scala.collection.immutable._
-
-import models.modelDefinitions.metaModel.elements.MCoreWrites._
+import models.modelDefinitions.metaModel.elements.MCoreWrites
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Writes
 
 /**
  * Writes[T] for Model structures
@@ -45,21 +44,22 @@ object ModelWrites {
     }
   }
 
-  def transformAttributes(atts: Seq[Attribute]) = {
+  private def transformAttributes(atts: Seq[Attribute]) = {
+    implicit val attributeValueWrites = MCoreWrites.attributeValueWrites
     val elems = atts.map(
       a => a.name -> Json.toJsFieldJsValueWrapper(a.value)
     )
     Json.obj(elems: _*)
   }
 
-  def transformEdges(edges: Seq[ToEdges]) = {
+  private def transformEdges(edges: Seq[ToEdges]) = {
     val elems = edges.map(
       e => e.`type`.name -> Json.toJsFieldJsValueWrapper(e.edges.map(_.id))
     )
     Json.obj(elems: _*)
   }
 
-  def transformNodes(nodes: Seq[ToNodes]) = {
+  private def transformNodes(nodes: Seq[ToNodes]) = {
     val elems = nodes.map(
       n => n.`type`.name -> Json.toJsFieldJsValueWrapper(n.nodes.map(_.id))
     )

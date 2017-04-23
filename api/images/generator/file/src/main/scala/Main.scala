@@ -1,11 +1,22 @@
-import generator._
-import models.document.{ Repository => Documents, _ }
-import models.file.{ File, Repository => Files }
-import models.modelDefinitions.model.elements.{ Edge, Node }
+import generator.Error
+import generator.Result
+import generator.Success
+import generator.Transformer
+
+import models.document.Filter
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.ModelEntity
+import models.document.{Repository => Documents}
+import models.file.File
+import models.file.{Repository => Files}
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.Node
 import models.remote.Remote
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 class MyTransformer() extends Transformer {
   def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
@@ -18,9 +29,8 @@ class MyTransformer() extends Transformer {
     val filename = "example.txt"
     val content =
       s"""
-         |Number of nodes : ${nodes}
-         |Number of edges : ${edges}
-       """.stripMargin
+        |Number of nodes : ${nodes}
+        |Number of edges : ${edges}""".stripMargin
 
     files.create(entity, File(filename, content)).map { result =>
       println(s"Successfully saved results to '${filename}' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
@@ -55,14 +65,14 @@ object Main extends Template[CreateOptions, String] {
     val content =
       """
         |class MyTransformer() extends Transformer {
-        |	def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
+        | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
         |   println(s"User : ${entity.id}")
         |   entity.model.elements.values.foreach { element => element match {
         |     case node: Node => println(node.`type`.name)
         |     case edge: Edge => println(edge.`type`.name)
         |   }}
-        |		Future.successful(this)
-        |	}
+        |   Future.successful(this)
+        | }
         |
         | def exit()(implicit documents: Documents, files: Files, remote: Remote) : Future[Result] = {
         |   val result = Success("The generator finished")

@@ -9,7 +9,7 @@ case class MClass(override val name: String, superTypes: List[MClass], attribute
 
   def allAttributes: List[MAttribute] = fullAttributeSet.toList
   def fullAttributeSet: Set[MAttribute] = superTypeAttributes.foldLeft(attributeSet)((attrs, next) => attrs ++ next)
-  def superTypeAttributes: List[Set[MAttribute]] = for (st <- superTypes) yield st.fullAttributeSet
+  def superTypeAttributes: List[Set[MAttribute]] = for {st <- superTypes} yield st.fullAttributeSet
   def attributeSet: Set[MAttribute] = attributes.toSet
 
 }

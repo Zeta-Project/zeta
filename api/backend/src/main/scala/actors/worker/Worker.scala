@@ -1,38 +1,49 @@
 package actors.worker
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
-import actors.worker.MasterWorkerProtocol.{ CancelWork, Work }
-import actors.worker.Worker.WorkTimeout
-import akka.actor.{ Actor, ActorInitializationException, ActorLogging, ActorRef, DeathPactException, OneForOneStrategy, Props, ReceiveTimeout, Terminated }
-import akka.actor.SupervisorStrategy.{ Restart, Stop }
-import akka.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import actors.worker.MasterWorkerProtocol.CancelWork
+import actors.worker.MasterWorkerProtocol.Work
+import akka.actor.Actor
+import akka.actor.ActorInitializationException
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.DeathPactException
+import akka.actor.OneForOneStrategy
+import akka.actor.Props
+import akka.actor.ReceiveTimeout
+import akka.actor.Terminated
+import akka.actor.SupervisorStrategy.Restart
+import akka.actor.SupervisorStrategy.Stop
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 
-import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Deadline
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
+
+object WorkTimeout
+case class WorkComplete(result: Int)
 
 object Worker {
-  def props(executor: ActorRef, registerInterval: FiniteDuration = 10.seconds, workTimeout: FiniteDuration): Props =
+  def props(executor: ActorRef, registerInterval: FiniteDuration = Duration(10, TimeUnit.SECONDS), workTimeout: FiniteDuration): Props =
     Props(classOf[Worker], executor, registerInterval, workTimeout)
-
-  case class WorkComplete(result: Int)
-
-  object WorkTimeout
 }
 
 class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: FiniteDuration) extends Actor with ActorLogging {
-  import DistributedPubSubMediator.Publish
-  val mediator = DistributedPubSub(context.system).mediator
-  val workerId = UUID.randomUUID().toString
+  private val mediator = DistributedPubSub(context.system).mediator
+  private val workerId = UUID.randomUUID().toString
 
-  import context.dispatcher
-  val registerTask = context.system.scheduler.schedule(10.seconds, registerInterval, mediator,
+  private val registerTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), registerInterval, mediator,
     Publish("Master", MasterWorkerProtocol.RegisterWorker(workerId)))
 
-  val workTimeoutTask = context.system.scheduler.schedule(10.seconds, workTimeout / 4, self, WorkTimeout)
+  private val workTimeoutTask = context.system.scheduler.schedule(Duration(10, TimeUnit.SECONDS), workTimeout / 4, self, WorkTimeout)
 
-  val workExecutor = context.watch(executor)
+  private val workExecutor = context.watch(executor)
 
-  var currentWork: Work = null
+  private var currentWork: Work = null
 
   override def supervisorStrategy = OneForOneStrategy() {
     case _: ActorInitializationException => Stop
@@ -72,10 +83,10 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
         log.warning("Received Cancel work {} but this work is not executed by this worker", cancelWork.id)
       }
     }
-    case Worker.WorkComplete(result) =>
+    case WorkComplete(result) =>
       log.info("Work is complete. Result {}.", result)
       sendToMaster(MasterWorkerProtocol.WorkIsDone(workerId, currentWork.id, result))
-      context.setReceiveTimeout(5.seconds)
+      context.setReceiveTimeout(Duration(5, TimeUnit.SECONDS))
       context.become(waitForWorkIsDoneAck(result))
     case msg: MasterWorkerProtocol.WorkerStreamedMessage =>
       mediator ! Publish(currentWork.owner, msg)

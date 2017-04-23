@@ -1,7 +1,8 @@
 package models.frontend
 
 import julienrf.json.derived
-import play.api.libs.json._
+import play.api.libs.json.__
+import play.api.libs.json.OFormat
 
 sealed trait GeneratorRequest extends Request
 case class RunGeneratorFromGenerator(parent: String, key: String, generator: String, options: String) extends GeneratorRequest

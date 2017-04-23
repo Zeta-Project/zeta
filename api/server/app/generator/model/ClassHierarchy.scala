@@ -11,23 +11,27 @@ sealed class ClassHierarchy[T <% { def toString: String; val name: String }](roo
   val root = Node(rootClass)
   var nodeView: Map[String, Node] = Map(root.data.name -> root)
 
-  /*several apply methods to simplify acces on elements*/
+  // several apply methods to simplify acces on elements
   def apply(parent: Node, className: T) = parent inheritedBy className
   def apply(parent: T, className: T) = nodeView(parent.name) inheritedBy className
   def apply(parent: String, className: T) = nodeView(parent) inheritedBy className
   def apply(className: T) = nodeView(className.name)
   def apply(className: Option[String]) = if (className.isDefined) Some(nodeView(className.get).data) else None
   def apply(className: String) = nodeView(className)
-  override def toString = root toString
+  override def toString = root.toString
 
   def newBaseClass(className: T) = root inheritedBy className
   def get(className: String): Option[T] = {
-    if (className isEmpty) return None
-    val ret = nodeView.get(className)
-    if (ret.isDefined)
-      Some(ret.get.data)
-    else
+    if (className.isEmpty) {
       None
+    } else {
+      val ret = nodeView.get(className)
+      if (ret.isDefined) {
+        Some(ret.get.data)
+      } else {
+        None
+      }
+    }
   }
   def setRelation(parent: T, child: T) = nodeView(parent.name) inheritedBy child
   def contains(className: String): Boolean = {
@@ -84,10 +88,9 @@ object ClassHierarchy {
    * @return the matching attribute of type T wrapped as an Option or None if the attribute is not defined in the according C type instance
    */
   def mostRelevant[T, C](stack: List[C])(f: C => Option[T]): Option[T] = {
-    for (parent <- stack) {
-      if (f(parent).isDefined)
-        return f(parent)
+    stack.find(p => f(p).isDefined) match {
+      case Some(parent) => f(parent)
+      case None => None
     }
-    None
   }
 }

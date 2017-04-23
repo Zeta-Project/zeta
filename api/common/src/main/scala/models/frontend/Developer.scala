@@ -3,7 +3,12 @@ package models.frontend
 import scala.collection.immutable.Queue
 import julienrf.json.derived
 import models.worker.Job
-import play.api.libs.json._
+import play.api.libs.json.__
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
+import play.api.libs.json.Writes
 
 /**
  * Request messages which can be send by a Tool-Developer

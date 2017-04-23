@@ -1,7 +1,7 @@
 package models.modelDefinitions.metaModel.elements
 
 import scala.annotation.tailrec
-import scala.collection.immutable._
+import scala.collection.immutable.Seq
 
 /**
  * Immutable domain model for the MCore (meta)metamodel
@@ -70,10 +70,13 @@ class MClass(
   def updateAttributes(_attributes: Seq[MAttribute]) =
     new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
 
-  override def toString = {
-    val superNames = for (e <- superTypes) yield e.name
-    val inputsNames = for (e <- inputs) yield e.mType.name
-    val outputsNames = for (e <- outputs) yield e.mType.name
+  /**
+   * @return String
+   */
+  override def toString: String = {
+    val superNames = for {e <- superTypes} yield e.name
+    val inputsNames = for {e <- inputs} yield e.mType.name
+    val outputsNames = for {e <- outputs} yield e.mType.name
     s"MClass($name, $abstractness, $superNames, $inputsNames, $outputsNames, $attributes)"
   }
 
@@ -90,8 +93,9 @@ class MClass(
    */
   private def getSuperHierarchy(acc: Seq[MClass], inspect: Seq[MClass]): Seq[MClass] = {
     inspect.foldLeft(acc) { (a, m) =>
-      if (a.exists(_.name == m.name)) a
-      else {
+      if (a.exists(_.name == m.name)) {
+        a
+      } else {
         getSuperHierarchy(m +: acc, m.superTypes)
       }
     }
@@ -198,9 +202,12 @@ class MReference(
   def updateAttributes(_attributes: Seq[MAttribute]) =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, _attributes)
 
-  override def toString = {
-    val sourceNames = for (e <- source) yield e.mType.name
-    val targetNames = for (e <- target) yield e.mType.name
+  /**
+   * @return String
+   */
+  override def toString: String = {
+    val sourceNames = for {e <- source} yield e.mType.name
+    val targetNames = for {e <- target} yield e.mType.name
     s"MReference($name, $sourceDeletionDeletesTarget, $targetDeletionDeletesSource, $sourceNames, $targetNames, $attributes)"
   }
 }
@@ -237,27 +244,27 @@ object MReference {
  * @param lowerBound the lower bound
  */
 case class MAttribute(
-  name: String,
-  globalUnique: Boolean,
-  localUnique: Boolean,
-  `type`: AttributeType,
-  default: AttributeValue,
-  constant: Boolean,
-  singleAssignment: Boolean,
-  expression: String,
-  ordered: Boolean,
-  transient: Boolean,
-  upperBound: Int,
-  lowerBound: Int
-) extends MObject with MBounds
+    name: String,
+    globalUnique: Boolean,
+    localUnique: Boolean,
+    `type`: AttributeType,
+    default: AttributeValue,
+    constant: Boolean,
+    singleAssignment: Boolean,
+    expression: String,
+    ordered: Boolean,
+    transient: Boolean,
+    upperBound: Int,
+    lowerBound: Int)
+  extends MObject with MBounds
 
 /** MLinkDef implementation */
 case class MLinkDef(
-  mType: ClassOrRef,
-  upperBound: Int,
-  lowerBound: Int,
-  deleteIfLower: Boolean
-) extends MBounds
+    mType: ClassOrRef,
+    upperBound: Int,
+    lowerBound: Int,
+    deleteIfLower: Boolean)
+  extends MBounds
 
 /**
  * The MEnum implementation
@@ -265,9 +272,9 @@ case class MLinkDef(
  * @param values the symbols
  */
 case class MEnum(
-  name: String,
-  values: Seq[EnumSymbol]
-) extends MObject with AttributeType
+    name: String,
+    values: Seq[EnumSymbol])
+  extends MObject with AttributeType
 
 /**
  * An Enum Symbol

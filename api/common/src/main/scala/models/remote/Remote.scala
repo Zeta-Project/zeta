@@ -1,6 +1,7 @@
 package models.remote
 
-import play.api.libs.json.{ Reads, Writes }
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 import rx.lang.scala.Observable
 
 /**
@@ -26,5 +27,5 @@ trait Remote {
    * @param value The value which to stream
    * @tparam Output The output type of the stream
    */
-  def emit[Output](value: Output)(implicit writes: Writes[Output])
+  def emit[Output](value: Output)(implicit writes: Writes[Output]): Unit
 }

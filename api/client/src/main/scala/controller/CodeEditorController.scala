@@ -2,12 +2,20 @@ package controller
 
 import java.util.UUID
 
-import org.scalajs.jquery._
-import scalot._
-import shared.CodeEditorMessage._
+import org.scalajs.jquery
+import org.scalajs.jquery.JQueryAjaxSettings
+import org.scalajs.jquery.JQueryXHR
+
+import scalot.ApplyResult
+import scalot.Client
+
+import shared.CodeEditorMessage.DocAdded
+import shared.CodeEditorMessage.DocDeleted
+import shared.CodeEditorMessage.DocLoaded
+import shared.CodeEditorMessage.DocNotFound
+import shared.CodeEditorMessage.TextOperation
+
 import view.CodeEditorView
-import org.scalajs.dom.console
-import scalot.ClientFSM.{ Apply, NoOp }
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
@@ -51,7 +59,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
    * This function fnSave() is a callback function which will be called inside authorized().
    */
   def saveCode() = {
-    jQuery.ajax(literal(
+    jquery.jQuery.ajax(literal(
       `type` = "PUT",
       url = s"/metamodels/$metaModelUuid/$dslType",
       contentType = "application/json; charset=utf-8",

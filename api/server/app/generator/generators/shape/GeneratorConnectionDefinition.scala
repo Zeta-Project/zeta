@@ -1,8 +1,17 @@
 package generator.generators.shape
 
 import generator.generators.style.StyleGenerator
-import generator.model.shapecontainer.connection.{ Connection, Placing }
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.connection.Connection
+import generator.model.shapecontainer.connection.Placing
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Line
+import generator.model.shapecontainer.shape.geometrics.Point
+import generator.model.shapecontainer.shape.geometrics.PolyLine
+import generator.model.shapecontainer.shape.geometrics.Polygon
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
+import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.HasStyle
 
 import scala.collection.mutable
@@ -17,57 +26,62 @@ object GeneratorConnectionDefinition {
 
   def generate(connections: Iterable[Connection]) = {
     s"""
-      $head
+      ${head}
       function getConnectionStyle(stylename){
         var style;
         switch(stylename){
-          ${
-      connections.map(c => s"""case '${c.name}':
-            ${
-        if (c.style.isDefined)
-          "style = getStyle('" + c.style.get.name + "');\n"
-        else
-          "style = {'.connection':{stroke: 'black'}};\n"
-      }
-            ${generateInlineStyle(c)}
-            ${handlePlacings(c)}
-            break;""").mkString
-    }
+          ${generateConnectionsCases(connections)}
           default:
             style = {};
             break;
+        }
+
+        return style;
       }
 
-      return style;
-    }
-
-    function getPlacings(stylename){
-      var placings;
-      switch(stylename){
+      function getPlacings(stylename){
+        var placings;
+        switch(stylename){
           $generateCachedPlacings
-        default:
-          placings = [];
-        break;
+          default:
+            placings = [];
+            break;
+        }
+
+        return placings;
       }
 
-      return placings;
-    }
-
-    function getLabels(stylename){
-      var labels;
-      switch(stylename){
+      function getLabels(stylename){
+        var labels;
+        switch(stylename){
           $generateCachedLabels
-        default:
-          labels = [];
-        break;
-      }
+          default:
+            labels = [];
+          break;
+        }
 
-      return labels;
-    }
+        return labels;
+      }
     """
   }
 
-  protected def head = {
+  private def generateConnectionsCases(connections: Iterable[Connection]) = {
+    connections.map(c => s"""
+      case '${c.name}':
+        ${
+          if (c.style.isDefined) {
+            "style = getStyle('" + c.style.get.name + "');\n"
+          } else {
+            "style = {'.connection':{stroke: 'black'}};\n"
+          }
+        }
+        ${generateInlineStyle(c)}
+        ${handlePlacings(c)}
+        break;
+    """).mkString
+  }
+
+  private def head = {
     raw"""
     /*
      * This is a generated ShapeFile for JointJS
@@ -75,28 +89,30 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generateInlineStyle(connection: Connection) = {
-    if (connection.style isDefined)
+  private def generateInlineStyle(connection: Connection) = {
+    if (connection.style isDefined) {
       s"""
-    //Get inline style
-    var inline = {
-      '.connection, .marker-target, .marker-source':{
-        ${StyleGenerator.commonAttributes(connection.style.get)},
-        ${StyleGenerator.fontAttributes(connection.style.get)}
-      }
-    };
+        //Get inline style
+        var inline = {
+          '.connection, .marker-target, .marker-source':{
+            ${StyleGenerator.commonAttributes(connection.style.get)},
+            ${StyleGenerator.fontAttributes(connection.style.get)}
+          }
+        };
 
-    //Merge with default style
-    jQuery.extend(style, inline);
-    """
-    else ""
+        //Merge with default style
+        jQuery.extend(style, inline);
+      """
+    } else {
+      ""
+    }
   }
 
-  protected def handlePlacings(connection: Connection) = {
+  private def handlePlacings(connection: Connection) = {
     val placings = connection.placing
-    var isTargetMarkerSet = false; //Check, whether a target marker is set, because JointJS will show an arrow if none is set
+    var isTargetMarkerSet = false; // Check, whether a target marker is set, because JointJS will show an arrow if none is set
     var ret = ""
-    for (p <- placings) {
+    for {p <- placings} {
 
       p.position_offset match {
         case 0.0 => ret +=
@@ -117,25 +133,27 @@ object GeneratorConnectionDefinition {
         case _ => cachePlacing(connection.name, p)
       }
       if (!isTargetMarkerSet) {
-        ret += """style['.marker-target'] = {
-                    d: 'M 0 0' //override JointJS default arrow
-                  };
-              """
+        ret +=
+          """
+            style['.marker-target'] = {
+              d: 'M 0 0' //override JointJS default arrow
+            };
+          """
       }
     }
     ret
   }
 
-  protected def generateStyle(geometricModel: GeometricModel): String = {
+  private def generateStyle(geometricModel: GeometricModel): String = {
     geometricModel match {
       case hs: HasStyle =>
         if (hs.style.isDefined) {
           s"""
-              ${StyleGenerator.commonAttributes(hs.style.get)},
-              text: {
+            ${StyleGenerator.commonAttributes(hs.style.get)},
+            text: {
               ${StyleGenerator.fontAttributes(hs.style.get)}
-              },
-            """
+            },
+          """
         } else {
           ""
         }
@@ -143,7 +161,7 @@ object GeneratorConnectionDefinition {
     }
   }
 
-  protected def generateCachedPlacings = {
+  private def generateCachedPlacings = {
     var placings = ""
     if (placingsCache.nonEmpty) {
       placings = placingsCache.map {
@@ -151,29 +169,30 @@ object GeneratorConnectionDefinition {
           s"""
           case "$k":
             placings = [
-            ${v.map(p => generatePlacing(p)).mkString(",")}
-          ];
-          break;
-        """
+              ${v.map(p => generatePlacing(p)).mkString(",")}
+            ];
+            break;
+          """
       }.mkString
       placingsCache.clear()
     }
     placings
   }
 
-  protected def generateCachedLabels = {
+  private def generateCachedLabels = {
     val labels = labelCache.map {
       case (k, v) =>
-        s"""case "$k":
+        s"""
+        case "$k":
           labels = [ ${v.map(generateLabel).mkString}];
           break;
-      """
+        """
     }.mkString
     labelCache.clear()
     labels
   }
 
-  protected def generateLabel(placing: Placing) = {
+  private def generateLabel(placing: Placing) = {
     raw"""
     {
       position: ${placing.position_offset},
@@ -189,7 +208,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacing(placing: Placing) = {
+  private def generatePlacing(placing: Placing) = {
     s"""
     {
       position: ${placing.position_offset},
@@ -208,7 +227,7 @@ object GeneratorConnectionDefinition {
     case t: Text => generatePlacingShape(t, distance)
   }
 
-  protected def generatePlacingShape(shape: Line, distance: Int) = {
+  private def generatePlacingShape(shape: Line, distance: Int) = {
     s"""
     markup: '<line />',
     attrs:{
@@ -221,7 +240,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacingShape(shape: PolyLine, distance: Int) = {
+  private def generatePlacingShape(shape: PolyLine, distance: Int) = {
     """
     markup: '<polyline />',
     attrs:{
@@ -232,7 +251,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacingShape(shape: Rectangle, distance: Int) = {
+  private def generatePlacingShape(shape: Rectangle, distance: Int) = {
     s"""
     markup: '<rect />',
     attrs:{
@@ -244,7 +263,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacingShape(shape: RoundedRectangle, distance: Int) = {
+  private def generatePlacingShape(shape: RoundedRectangle, distance: Int) = {
     s"""
     markup: '<rect />',
     attrs:{
@@ -258,7 +277,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacingShape(shape: Polygon, distance: Int) = {
+  private def generatePlacingShape(shape: Polygon, distance: Int) = {
     """
     markup: '<polygon />',
     attrs:{
@@ -268,7 +287,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacingShape(shape: Ellipse, distance: Int) = {
+  private def generatePlacingShape(shape: Ellipse, distance: Int) = {
     s"""
     markup: '<ellipse />',
     attrs:{
@@ -280,7 +299,7 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generatePlacingShape(shape: Text, distance: Int) = {
+  private def generatePlacingShape(shape: Text, distance: Int) = {
     s"""
     markup: '<text>${shape.textBody}</text>',
     attrs:{
@@ -289,17 +308,17 @@ object GeneratorConnectionDefinition {
     """
   }
 
-  protected def generateMarker(placing: Placing) = {
+  private def generateMarker(placing: Placing) = {
     """
     d: '""" + generateRightSvgPathData(placing.shapeCon) + """'
     """
   }
 
-  protected def generateMirroredMarker(placing: Placing) = {
+  private def generateMirroredMarker(placing: Placing) = {
     /*
-     PolyLine and Polygon need to be mirrored against the x and y-axis because target
-     marker gets rotated by 180 degree
-    */
+     * PolyLine and Polygon need to be mirrored against the x and y-axis because target
+     * marker gets rotated by 180 degree
+     */
     val svgPathData = placing.shapeCon match {
       case p: Polygon => generateMirroredPolygon(placing.shapeCon.asInstanceOf[Polygon])
       case pl: PolyLine => generaMirroredPolyLine(placing.shapeCon.asInstanceOf[PolyLine])
@@ -336,48 +355,54 @@ object GeneratorConnectionDefinition {
     }
   }
 
-  protected def generateSvgPathData(shape: Line) = {
+  private def generateSvgPathData(shape: Line) = {
     val points = shape.points
     """M """ + points._1.x + " " + points._1.y + " L " + points._2.x + " " + points._2.y
   }
 
-  protected def generateSvgPathData(shape: PolyLine) = {
+  private def generateSvgPathData(shape: PolyLine) = {
     val head = shape.points.head
     val tail = shape.points.tail
     """M """ + head.x + " " + head.y + " " + tail.map(point => "L " + point.x + " " + point.y).mkString
   }
 
-  protected def generateSvgPathData(shape: Rectangle) = {
+  private def generateSvgPathData(shape: Rectangle) = {
     """M """ + shape.x + " " + shape.y + "l " + shape.size_width + " 0 l 0 " + shape.size_height + " l -" + shape.size_width + " 0 z"
   }
 
-  protected def generateSvgPathData(shape: RoundedRectangle) = {
-    "M " + shape.x + " " + shape.curve_width + " " + shape.y + " " + shape.curve_height + " l " + (shape.size_width - 2 * shape.curve_width) + "l 0 a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " " + shape.curve_height + "l 0 " + (shape.size_height - 2 * shape.curve_height) + " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 -" + shape.curve_width + " " + shape.curve_height + " l -" + (shape.size_width - 2 * shape.curve_width) + " 0 a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 -" + shape.curve_width + " -" + shape.curve_height + " l 0 -" + (shape.size_height - 2 * shape.curve_height) + " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " -" + shape.curve_height
+  private def generateSvgPathData(shape: RoundedRectangle) = {
+    "M " + shape.x + " " + shape.curve_width + " " + shape.y + " " + shape.curve_height + " l " + (shape.size_width - 2 * shape.curve_width) +
+      "l 0 a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " " + shape.curve_height + "l 0 " +
+      (shape.size_height - 2 * shape.curve_height) + " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 -" + shape.curve_width +
+      " " + shape.curve_height + " l -" + (shape.size_width - 2 * shape.curve_width) + " 0 a " + shape.curve_width + " " + shape.curve_height +
+      " 0 0 1 -" + shape.curve_width + " -" + shape.curve_height + " l 0 -" + (shape.size_height - 2 * shape.curve_height) +
+      " a " + shape.curve_width + " " + shape.curve_height + " 0 0 1 " + shape.curve_width + " -" + shape.curve_height
   }
 
-  protected def generateSvgPathData(shape: Polygon) = {
+  private def generateSvgPathData(shape: Polygon) = {
     val head = shape.points.head
     val tail = shape.points.tail
     "M " + head.x + " " + head.y + " " + tail.map(p => "L " + p.x + " " + p.y).mkString + "z"
   }
 
-  protected def generateSvgPathData(shape: Ellipse) = {
+  private def generateSvgPathData(shape: Ellipse) = {
     val rx = shape.size_width / 2
     val ry = shape.size_height / 2
-    "M " + shape.x + " " + shape.y + " a  " + rx + " " + ry + " 0 0 1 " + rx + " -" + ry + " a  " + rx + " " + ry + " 0 0 1 " + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " -" + ry
+    "M " + shape.x + " " + shape.y + " a  " + rx + " " + ry + " 0 0 1 " + rx + " -" + ry + " a  " + rx + " " + ry + " 0 0 1 " + rx + " " +
+      ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " -" + ry
   }
 
-  protected def generateStyleCorrections = {
+  private def generateStyleCorrections = {
     """
     fill: 'transparent' //JointJS uses fill attribute to fill in all markers
     """
   }
 
-  protected def generateMarkerSourceCorrection = {
+  private def generateMarkerSourceCorrection = {
     """transform: 'scale(1,1)',"""
   }
 
-  protected def cachePlacing(connection: String, placing: Placing) {
+  private def cachePlacing(connection: String, placing: Placing) = {
     if (placing.shapeCon.isInstanceOf[Text]) {
       writeToCache(connection, placing, labelCache)
     } else {
@@ -386,7 +411,7 @@ object GeneratorConnectionDefinition {
 
   }
 
-  protected def writeToCache(connection: String, placing: Placing, cache: mutable.HashMap[String, mutable.MutableList[Placing]]) {
+  private def writeToCache(connection: String, placing: Placing, cache: mutable.HashMap[String, mutable.MutableList[Placing]]) = {
     if (cache.contains(connection)) {
       cache(connection) += placing
     } else {

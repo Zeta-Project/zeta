@@ -1,7 +1,10 @@
 package actors.worker
 
-import actors.worker.MasterWorkerProtocol.{ CancelWork, Work }
-import akka.actor.{ Actor, ActorLogging, Props }
+import actors.worker.MasterWorkerProtocol.CancelWork
+import actors.worker.MasterWorkerProtocol.Work
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
 
 object DummyWorkerExecutor {
   def props() = Props(new DummyWorkerExecutor())
@@ -10,8 +13,8 @@ object DummyWorkerExecutor {
 class DummyWorkerExecutor() extends Actor with ActorLogging {
   def receive = {
     case work: Work =>
-      sender ! Worker.WorkComplete(0)
+      sender ! WorkComplete(0)
     case cancel: CancelWork =>
-      sender ! Worker.WorkComplete(1)
+      sender ! WorkComplete(1)
   }
 }

@@ -4,19 +4,35 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import models.User
-import models.document._
-import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.model.elements.{ Edge, Node }
-import models.modelDefinitions.model.Model
-import play.api.libs.json._
-import play.api.mvc._
-import models.modelDefinitions.model.elements.ModelWrites._
-import rx.lang.scala.Notification.{ OnError, OnNext }
-import utils.auth.{ DefaultEnv, RepositoryFactory }
 
-import scala.concurrent.{ Future, Promise }
-import scalaoauth2.provider.OAuth2ProviderActionBuilders._
+import models.User
+import models.document.AllModels
+import models.document.MetaModelEntity
+import models.document.ModelEntity
+import models.document.Repository
+import models.modelDefinitions.helper.HLink
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
+import models.modelDefinitions.model.elements.Node
+import models.modelDefinitions.model.Model
+
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.mvc.BodyParsers
+import play.api.mvc.Controller
+import play.api.mvc.Result
+import play.api.mvc.Results
+
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
+
+import scala.concurrent.Future
+import scala.concurrent.Promise
+
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for model definitions
@@ -39,8 +55,8 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
         )))
       }
       .toList.materialize.subscribe(n => n match {
-        case OnError(err) => p.success(BadRequest(err.getMessage))
-        case OnNext(list) => p.success(Ok(Json.toJson(list)))
+        case OnError(err) => p.success(Results.BadRequest(err.getMessage))
+        case OnNext(list) => p.success(Results.Ok(Json.toJson(list)))
       })
     p.future
   }
@@ -48,12 +64,12 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   /** inserts whole model structure */
   def insert = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
     (request.body \ "metaModelId").validate[String].fold(
-      error => Future.successful(BadRequest(JsError.toJson(error))),
+      error => Future.successful(Results.BadRequest(JsError.toJson(error))),
       metaModelId => {
         val in = (request.body \ "model").validate[Model]
         in.fold(
           errors => {
-            Future.successful(BadRequest(JsError.toJson(errors)))
+            Future.successful(Results.BadRequest(JsError.toJson(errors)))
           },
           model => {
             val op = for {
@@ -62,9 +78,9 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
             } yield insert
 
             op.map { value =>
-              Ok(Json.toJson(value))
+              Results.Ok(Json.toJson(value))
             }.recover {
-              case e: Exception => BadRequest(e.getMessage)
+              case e: Exception => Results.BadRequest(e.getMessage)
             }
           }
         )
@@ -77,7 +93,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     val in = request.body.validate[Model]
     in.fold(
       errors => {
-        Future.successful(BadRequest(JsError.toJson(errors)))
+        Future.successful(Results.BadRequest(JsError.toJson(errors)))
       },
       model => {
         val op = for {
@@ -86,9 +102,9 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
         } yield updated
 
         op.map { value =>
-          Ok(Json.toJson(value.model))
+          Results.Ok(Json.toJson(value.model))
         }.recover {
-          case e: Exception => BadRequest(e.getMessage)
+          case e: Exception => Results.BadRequest(e.getMessage)
         }
       }
     )
@@ -101,15 +117,15 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
       Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
         case JsSuccess(model, path) => {
           repository.update[ModelEntity](saved.copy(model = model)).map { updated =>
-            p.success(Ok(Json.toJson(updated)))
+            p.success(Results.Ok(Json.toJson(updated)))
           }.recover {
-            case e: Exception => p.success(BadRequest(e.getMessage))
+            case e: Exception => p.success(Results.BadRequest(e.getMessage))
           }
         }
-        case JsError(errors) => p.success(BadRequest(s"Failed parsing of MetaModel in Model on GET ${id}"))
+        case JsError(errors) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET ${id}"))
       }
     }.recover {
-      case e: Exception => p.success(BadRequest(e.getMessage))
+      case e: Exception => p.success(Results.BadRequest(e.getMessage))
     }
     p.future
   }
@@ -122,13 +138,13 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
         HLink.get("meta_model", routes.MetaModelRestApi.get(m.metaModelId).absoluteURL),
         HLink.delete("remove", routes.ModelRestApi.get(m.id).absoluteURL)
       )))
-      Ok(Json.toJson(out))
+      Results.Ok(Json.toJson(out))
     })
   }
 
   /** returns model definition only */
   def getModelDefinition(id: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => Ok(Json.toJson(m.model)))
+    protectedRead(id, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
@@ -136,7 +152,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     protectedRead(id, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
-      Ok(Json.toJson(reduced.elements.values))
+      Results.Ok(Json.toJson(reduced.elements.values))
     })
   }
 
@@ -145,7 +161,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     protectedRead(id, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
-      reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
@@ -154,7 +170,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     protectedRead(id, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
-      Ok(Json.toJson(reduced.elements.values))
+      Results.Ok(Json.toJson(reduced.elements.values))
     })
   }
 
@@ -163,16 +179,16 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     protectedRead(id, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
-      reduced.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
   /** deletes a whole model */
   def delete(id: String) = silhouette.SecuredAction.async { implicit request =>
     repository.delete(id).map { value =>
-      Ok("")
+      Results.Ok("")
     }.recover {
-      case e: Exception => BadRequest(e.getMessage)
+      case e: Exception => Results.BadRequest(e.getMessage)
     }
   }
 
@@ -181,7 +197,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     repository.get[ModelEntity](id).map { model =>
       trans(model)
     }.recover {
-      case e: Exception => BadRequest(e.getMessage)
+      case e: Exception => Results.BadRequest(e.getMessage)
     }
   }
 }

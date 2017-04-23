@@ -10,7 +10,8 @@ import models.document.PasswordInfoEntity
 import utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 /**
  * An implementation of the auth info DAO which stores the data in the Sync Gateway DB

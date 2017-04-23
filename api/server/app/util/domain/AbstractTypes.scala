@@ -9,7 +9,7 @@ trait MBounds {
   def lowerBound: Int
 }
 
-//This is not part of the official MoDiGen metamodel, but a utility trait for easier access to attributes
+// This is not part of the official MoDiGen metamodel, but a utility trait for easier access to attributes
 trait ObjectWithAttributes {
   def attribute(name: String): Option[MAttribute]
   val name: String

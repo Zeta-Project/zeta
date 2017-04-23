@@ -1,22 +1,35 @@
+import java.util.concurrent.TimeUnit
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import models.document.{ Repository => Documents, _ }
-import models.document.http.{ HttpRepository => DocumentRepository }
-import models.file.{ Repository => Files, _ }
-import models.file.http.{ HttpRepository => FileRepository }
-import org.rogach.scallop.ScallopConf
-import play.api.libs.json.{ JsError, JsSuccess }
-import play.api.libs.json.{ Json, Reads }
-
-import scala.concurrent.duration._
-import scala.concurrent.{ Await, Future, Promise }
-import scala.reflect.ClassTag
-import scala.reflect.runtime._
-import scala.tools.reflect.ToolBox
-import generator._
-import models.remote.{ Remote, RemoteGenerator }
+import generator.Result
+import generator.Transformer
+import models.document.Filter
+import models.document.Generator
+import models.document.ModelEntity
+import models.document.{Repository => Documents}
+import models.document.http.{HttpRepository => DocumentRepository}
+import models.file.File
+import models.file.{Repository => Files}
+import models.file.http.{HttpRepository => FileRepository}
+import models.remote.Remote
+import models.remote.RemoteGenerator
 import models.session.SyncGatewaySession
+import org.rogach.scallop.ScallopConf
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
+
+import scala.concurrent.duration.Duration
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.reflect.ClassTag
+import scala.reflect.runtime
+import scala.tools.reflect.ToolBox
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session = opt[String]()
@@ -40,14 +53,16 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
     case (None, Some(generator), None, None, None, Some(options)) =>
       Right(Unit)
     case _ =>
-      Left("Invalid arguments. It's only valid to call a generator with a filter, a generator with a model or to generate a generator with options and the image id.")
+      Left(
+        "Invalid arguments. It's only valid to call a generator with a filter, " +
+        "a generator with a model or to generate a generator with options and the image id."
+      )
   }
 
   verify()
 }
 
-abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Reads[CreateOptions], callOptions: Reads[CallOptions]) extends App {
-  import scala.concurrent.ExecutionContext.Implicits.global
+abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: Reads[T]) extends App {
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()
@@ -59,7 +74,7 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
   implicit val files = FileRepository(cmd.session.getOrElse(""))
   implicit val session = SyncGatewaySession()
 
-  val user = Await.result(session.getUser(cmd.session.getOrElse("")), 10.seconds)
+  val user = Await.result(session.getUser(cmd.session.getOrElse("")), Duration(10, TimeUnit.SECONDS))
 
   if (cmd.options.supplied) {
     val raw = cmd.options.getOrElse("")
@@ -111,16 +126,16 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
     System.exit(1)
   }
 
-  private def parseCallOptions(rawOptions: String): Future[CallOptions] = {
-    Json.parse(rawOptions).validate[CallOptions] match {
-      case s: JsSuccess[CallOptions] => Future.successful(s.get)
+  private def parseCallOptions(rawOptions: String): Future[T] = {
+    Json.parse(rawOptions).validate[T] match {
+      case s: JsSuccess[T] => Future.successful(s.get)
       case e: JsError => Future.failed(new Exception("Option parameter was provided but could not be parsed"))
     }
   }
 
   private def parseGeneratorCreateOptions(rawOptions: String, image: String): Future[Result] = {
-    Json.parse(rawOptions).validate[CreateOptions] match {
-      case s: JsSuccess[CreateOptions] => createTransformer(s.get, image)
+    Json.parse(rawOptions).validate[S] match {
+      case s: JsSuccess[S] => createTransformer(s.get, image)
       case e: JsError => Future.failed(new Exception(e.toString))
     }
   }
@@ -147,14 +162,14 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
     }
 
     futures.onSuccess {
-      case generator => generator.exit.map { result =>
+      case generator: Transformer => generator.exit.map { result =>
         p.success(result)
       }.recover {
         case e: Exception => p.failure(e)
       }
     }
     futures.onFailure {
-      case e => p.failure(e)
+      case e: Throwable => p.failure(e)
     }
 
     p.future
@@ -170,7 +185,7 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
     val p = Promise[T]
 
     try {
-      val toolbox = currentMirror.mkToolBox()
+      val toolbox = runtime.currentMirror.mkToolBox()
       val tree = toolbox.parse(file)
       val compiledCode = toolbox.eval(tree)
       val fn = compiledCode.asInstanceOf[T]
@@ -233,7 +248,7 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
    *
    * @return The Result of the generator
    */
-  def runGeneratorWithOptions(options: CallOptions)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
+  def runGeneratorWithOptions(options: T)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
 
   /**
    * Initialize the generator
@@ -264,5 +279,5 @@ abstract class Template[CreateOptions, CallOptions]()(implicit createOptions: Re
    * @param files Access to the Files repository
    * @return The result of the generator creation
    */
-  def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
+  def createTransformer(options: S, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
 }

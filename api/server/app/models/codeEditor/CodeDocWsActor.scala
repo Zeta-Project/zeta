@@ -1,14 +1,24 @@
 package models.codeEditor
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
 import akka.cluster.client.ClusterClient.Publish
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.event.Logging
+
 import scalot.Server
+
 import shared.CodeEditorMessage
-import shared.CodeEditorMessage._
-import upickle.default._
+import shared.CodeEditorMessage.DocAdded
+import shared.CodeEditorMessage.DocDeleted
+import shared.CodeEditorMessage.DocLoaded
+import shared.CodeEditorMessage.DocNotFound
+import shared.CodeEditorMessage.TextOperation
+
+import upickle.default
 
 case class MediatorMessage(msg: Any, broadcaster: ActorRef)
 
@@ -79,7 +89,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
 
   /** Tell the client about the existing document */
   CodeDocumentDb.getDocWithUuidAndDslType(metaModelUuid, dslType) match {
-    case doc: Some[DbCodeDocument] => out ! write[CodeEditorMessage](
+    case doc: Some[DbCodeDocument] => out ! default.write[CodeEditorMessage](
       DocLoaded(
         str = doc.get.doc.str,
         revision = doc.get.doc.operations.length,
@@ -90,7 +100,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
         metaModelUuid = doc.get.metaModelUuid
       )
     )
-    case None => out ! write[CodeEditorMessage](
+    case None => out ! default.write[CodeEditorMessage](
       DocNotFound(
         dslType = dslType,
         metaModelUuid = metaModelUuid
@@ -98,9 +108,15 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
     )
   }
 
-  def receive = {
-    case pickled: String => try {
-      read[CodeEditorMessage](pickled) match {
+  override def receive: Actor.Receive = {
+    case pickled: String => processCommand(pickled)
+    case medMsg: MediatorMessage => processMediatorMessage(medMsg)
+    case _ => log.debug(s" ${self.toString()} - Message is not a String!")
+  }
+
+  private def processCommand(pickled: String) = {
+    try {
+      default.read[CodeEditorMessage](pickled) match {
 
         case msg: TextOperation =>
           docManager ! msg
@@ -116,16 +132,15 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
         case _ => log.error("Discarding message, probably sent by myself")
       }
     }
+  }
 
-    case medMsg: MediatorMessage =>
-      if (medMsg.broadcaster != self) {
-        medMsg.msg match {
-          case x: CodeEditorMessage => out ! write[CodeEditorMessage](x)
-          case _ => log.error("Unknown message type from Meidator")
-        }
+  private def processMediatorMessage(medMsg: MediatorMessage) = {
+    if (medMsg.broadcaster != self) {
+      medMsg.msg match {
+        case x: CodeEditorMessage => out ! default.write[CodeEditorMessage](x)
+        case _ => log.error("Unknown message type from Meidator")
       }
-
-    case _ => log.debug(s" ${self.toString()} - Message is not a String!")
+    }
   }
 }
 

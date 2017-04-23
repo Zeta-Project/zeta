@@ -3,12 +3,17 @@ package models.modelDefinitions.model
 import java.time.Instant
 
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.{ Dsl, MetaModel, MetaModelEntity }
-import models.modelDefinitions.model.elements.{ ModelElement, ModelReads }
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
-
-import scala.collection.immutable.Map
+import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.model.elements.ModelElement
+import models.modelDefinitions.model.elements.ModelReads
+import play.api.libs.functional.syntax
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.__
+import play.api.libs.json.OWrites
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
  * The container that is used to persist model definitions, contains additional metadata
@@ -78,7 +83,7 @@ object ModelEntity {
     (__ \ "updated").write[Instant] and
     (__ \ "model").write[Model] and
     (__ \ "links").writeNullable[Seq[HLink]]
-  )(unlift(ModelEntity.unapply))
+  )(syntax.unlift(ModelEntity.unapply))
 
   /** stripped reads/writes are used when communicating with clients */
   def strippedReads(metaModelId: String, metaModel: MetaModel): Reads[ModelEntity] = (
@@ -108,18 +113,13 @@ object ModelEntity {
  * @param id the id of the model
  * @param metaModelId the name of the metamodel
  * @param name the name of themodel
- * @param created the time of creation
- * @param updated the time of the last update
  * @param links optional attribute for HATEOAS links, only used when serving to clients
  */
 case class ModelShortInfo(
-  id: String,
-  metaModelId: String,
-  name: String,
-  //  created: Instant,
-  //  updated: Instant,
-  links: Option[Seq[HLink]] = None
-)
+    id: String,
+    metaModelId: String,
+    name: String,
+    links: Option[Seq[HLink]] = None)
 
 object ModelShortInfo {
 
@@ -127,8 +127,6 @@ object ModelShortInfo {
     (__ \ "id").read[String] and
     (__ \ "metaModelId").read[String] and
     (__ \ "model" \ "name").read[String] and
-    //   (__ \ "created").read[Instant] and
-    //   (__ \ "updated").read[Instant] and
     (__ \ "links").readNullable[Seq[HLink]]
   )(ModelShortInfo.apply _)
 

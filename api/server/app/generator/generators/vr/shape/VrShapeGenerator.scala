@@ -11,7 +11,7 @@ import generator.parser.Cache
  */
 object VrShapeGenerator {
 
-  def doGenerate(cache: Cache, location: String, nodes: List[Node]) {
+  def doGenerate(cache: Cache, location: String, nodes: List[Node]): Unit = {
     val packageName = "zeta"
     val shapes = cache.shapeHierarchy.nodeView.values.map(s => s.data)
     VrGeneratorShapeDefinition.generate(shapes, packageName, location)

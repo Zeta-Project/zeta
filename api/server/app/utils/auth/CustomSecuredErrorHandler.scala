@@ -3,9 +3,11 @@ package utils.auth
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
-import play.api.i18n.{ MessagesApi, I18nSupport, Messages }
+import play.api.i18n.MessagesApi
+import play.api.i18n.I18nSupport
+import play.api.i18n.Messages
 import play.api.mvc.RequestHeader
-import play.api.mvc.Results._
+import play.api.mvc.Results
 
 import scala.concurrent.Future
 
@@ -25,7 +27,7 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
    * @return The result to send to the client.
    */
   override def onNotAuthenticated(implicit request: RequestHeader) = {
-    Future.successful(Redirect(controllers.routes.SignInController.view()))
+    Future.successful(Results.Redirect(controllers.routes.SignInController.view()))
   }
 
   /**
@@ -37,6 +39,6 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
    * @return The result to send to the client.
    */
   override def onNotAuthorized(implicit request: RequestHeader) = {
-    Future.successful(Redirect(controllers.routes.SignInController.view()).flashing("error" -> Messages("access.denied")))
+    Future.successful(Results.Redirect(controllers.routes.SignInController.view()).flashing("error" -> Messages("access.denied")))
   }
 }

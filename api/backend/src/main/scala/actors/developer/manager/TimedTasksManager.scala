@@ -1,25 +1,41 @@
 package actors.developer.manager
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Cancellable, Props }
-import models.document.{ Change, TimedTask }
+import java.util.concurrent.TimeUnit
+
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Cancellable
+import akka.actor.Props
+
+import models.document.Change
+import models.document.Changed
+import models.document.Created
+import models.document.Deleted
+import models.document.Filter
+import models.document.Generator
+import models.document.GeneratorImage
+import models.document.Repository
+import models.document.TimedTask
+import models.document.Updated
 import models.worker.RunTimedTask
-import models.document._
-import scala.concurrent.duration._
+
+import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object TimedTasksManager {
-  private case class ExecuteTask(task: TimedTask)
+private case class ExecuteTask(task: TimedTask)
 
+object TimedTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new TimedTasksManager(worker, repository))
 }
 
 class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
-  import TimedTasksManager._
-
-  var schedules: Map[String, Cancellable] = Map()
+  private var schedules: Map[String, Cancellable] = Map()
 
   def create(task: TimedTask) = {
-    val schedule = context.system.scheduler.schedule(task.delay.minutes, task.interval.minutes, self, ExecuteTask(task))
+    val taskDelay = Duration(task.delay, TimeUnit.MINUTES)
+    val taskInterval = Duration(task.interval, TimeUnit.MINUTES)
+    val schedule = context.system.scheduler.schedule(taskDelay, taskInterval, self, ExecuteTask(task))
     schedules += (task.id -> schedule)
   }
 

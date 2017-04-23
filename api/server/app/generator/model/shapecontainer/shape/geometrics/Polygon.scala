@@ -1,8 +1,10 @@
 package generator.model.shapecontainer.shape.geometrics
 
-import generator.model.shapecontainer.shape.geometrics.layouts.{ PolyLineLayoutParser, PolyLineLayout }
+import generator.model.shapecontainer.shape.geometrics.layouts.PolyLineLayoutParser
+import generator.model.shapecontainer.shape.geometrics.layouts.PolyLineLayout
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel }
+import generator.parser.Cache
+import generator.parser.GeoModel
 
 /**
  * Created by julian on 20.10.15.
@@ -20,12 +22,20 @@ sealed class Polygon private (
 }
 
 object Polygon {
-  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = parse(geoModel, parent, parentStyle, hierarchyContainer)
-  def parse(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache): Option[Polygon] = {
-    val polygonLayout: Option[PolyLineLayout] = PolyLineLayoutParser(geoModel, parentStyle, hierarchyContainer)
-    if (polygonLayout.isEmpty)
-      return None
+  def apply(geoModel: GeoModel, parent: Option[GeometricModel], parentStyle: Option[Style], hierarchyContainer: Cache) = {
+    parse(geoModel, parent, parentStyle, hierarchyContainer)
+  }
+  private def parse(
+    geoModel: GeoModel,
+    parent: Option[GeometricModel],
+    parentStyle: Option[Style],
+    hierarchyContainer: Cache): Option[Polygon] = {
 
-    Some(new Polygon(parent, polygonLayout.get, geoModel.children))
+    val polygonLayout: Option[PolyLineLayout] = PolyLineLayoutParser(geoModel, parentStyle, hierarchyContainer)
+    if (polygonLayout.isEmpty) {
+      None
+    } else {
+      Some(new Polygon(parent, polygonLayout.get, geoModel.children))
+    }
   }
 }

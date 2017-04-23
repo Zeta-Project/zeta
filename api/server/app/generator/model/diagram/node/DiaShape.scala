@@ -3,10 +3,13 @@ package generator.model.diagram.node
 import generator.model.shapecontainer.shape.Compartment
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-import generator.parser.{ Cache, ShapeSketch }
+import generator.parser.Cache
+import generator.parser.ShapeSketch
 import models.document.MetaModelEntity
-import models.modelDefinitions.metaModel.elements.{ MAttribute, MClass, MReference }
-import parser._
+import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
+import parser.IDtoShapeSketch
 
 /**
  * Created by julian on 30.11.15.
@@ -17,7 +20,7 @@ class DiaShape(corporateStyle: Option[Style], shape: String,
   implicit val cache = c
   val referencedShape: generator.model.shapecontainer.shape.Shape = {
     val shapesketch: ShapeSketch = shape
-    /*Hier werden aus ShapeSketches endlich eigentliche Shapes!*/
+    // Hier werden aus ShapeSketches endlich eigentliche Shapes!
     shapesketch.toShape(corporateStyle)
   }
   var vals = Map[String, Text]()

@@ -1,7 +1,10 @@
 package actors.developer.manager
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
-import models._
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+
 import models.frontend.RunModelRelease
 import models.worker.CreateMetaModelReleaseJob
 

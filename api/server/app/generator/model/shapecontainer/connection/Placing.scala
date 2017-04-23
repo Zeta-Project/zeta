@@ -1,9 +1,11 @@
 package generator.model.shapecontainer.connection
 
 import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics.{ Text, GeometricModel }
+import generator.model.shapecontainer.shape.geometrics.Text
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
 import generator.model.style.Style
-import generator.parser.{ PlacingSketch, CommonParserMethods }
+import generator.parser.PlacingSketch
+import generator.parser.CommonParserMethods
 
 /**
  * Created by julian on 20.10.15.
@@ -24,7 +26,7 @@ sealed class Placing private (
 object Placing extends CommonParserMethods {
   def apply(attributes: PlacingSketch, parentStyle: Option[Style], ancestorShape: Shape) = parse(attributes, parentStyle, ancestorShape)
   def parse(attributes: PlacingSketch, parentStyle: Option[Style], ancestorShape: Shape): Placing = {
-    /*mapping*/
+    // mapping
     val tup = parse(placingPosition, attributes.position).get
 
     new Placing(tup._1, tup._2, attributes.shape.parse(None, parentStyle).get, ancestorShape)
@@ -35,4 +37,3 @@ object Placing extends CommonParserMethods {
   }
 
 }
-

@@ -1,10 +1,14 @@
 package generator.model.shapecontainer.shape.geometrics.layouts
 
 import generator.model.shapecontainer.shape.geometrics.Alignment
-import generator.model.shapecontainer.shape.geometrics.Alignment.{ VAlign, HAlign }
+import generator.model.shapecontainer.shape.geometrics.Alignment.VAlign
+import generator.model.shapecontainer.shape.geometrics.Alignment.HAlign
 import generator.model.style.Style
-import generator.parser.{ Cache, GeoModel, CommonParserMethods }
-import parser._
+import generator.parser.Cache
+import generator.parser.GeoModel
+import generator.parser.CommonParserMethods
+import parser.IDtoStyle
+
 /**
  * Created by julian on 20.10.15.
  * representation of a textlayout and its parser
@@ -17,13 +21,19 @@ trait TextLayout extends CommonLayout {
 
 object TextLayoutParser extends CommonParserMethods {
   def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[TextLayout] = {
-    implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
 
-    /*mapping*/
+    // mapping
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (commonLayout.isEmpty)
-      return None
+    if (commonLayout.isEmpty) {
+      None
+    } else {
+      processAttributes(commonLayout, attributes, hierarchyContainer)
+    }
+  }
+
+  private def processAttributes(commonLayout: Option[CommonLayout], attributes: List[String], hierarchyContainer: Cache) = {
+    implicit val cache = hierarchyContainer
     var hali: Option[HAlign] = None
     var vali: Option[VAlign] = None
     var txt = ""

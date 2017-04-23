@@ -4,7 +4,8 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import models.document.Repository
-import models.document.http.{ Auth, HttpRepository }
+import models.document.http.Auth
+import models.document.http.HttpRepository
 import play.api.libs.ws.WSClient
 
 trait RepositoryFactory {

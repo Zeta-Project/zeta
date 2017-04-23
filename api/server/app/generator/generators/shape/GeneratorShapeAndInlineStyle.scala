@@ -1,7 +1,14 @@
 package generator.generators.shape
 
 import generator.model.shapecontainer.shape.Shape
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Line
+import generator.model.shapecontainer.shape.geometrics.PolyLine
+import generator.model.shapecontainer.shape.geometrics.Polygon
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
+import generator.model.shapecontainer.shape.geometrics.Text
 
 import scala.collection.mutable
 import scala.collection.mutable.HashMap
@@ -22,11 +29,10 @@ object GeneratorShapeAndInlineStyle {
           default:
             style = {};
             break;
-
+        }
+        return style;
       }
-      return style;
-    }
-     """
+    """
   }
 
   def generateShapeStyle(shape: Shape, packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]]): String = {
@@ -34,11 +40,10 @@ object GeneratorShapeAndInlineStyle {
     if (shape != null && attrs.keys.exists(_ == shape.name)) {
       val att = attrs(shape.name)
       s"""
-          case "${shape.name}":
-          ${(for (s <- shape.shapes.get) yield generateStyles(s, att).mkString).mkString}
+        case "${shape.name}":
+          ${(for {s <- shape.shapes.get} yield generateStyles(s, att).mkString).mkString}
           break;
-
-          """
+      """
     } else {
       ""
     }
@@ -50,13 +55,13 @@ object GeneratorShapeAndInlineStyle {
     ret += getRightShape(shape, attrs(shape))
     shape match {
       case e: Ellipse =>
-        for (child <- e.children) ret ++= generateStyles(child, attrs)
+        for {child <- e.children} ret ++= generateStyles(child, attrs)
       case r: Rectangle =>
-        for (child <- r.children) ret ++= generateStyles(child, attrs)
+        for {child <- r.children} ret ++= generateStyles(child, attrs)
       case rr: RoundedRectangle =>
-        for (child <- rr.children) ret ++= generateStyles(child, attrs)
+        for {child <- rr.children} ret ++= generateStyles(child, attrs)
       case p: Polygon =>
-        for (child <- p.children) ret ++= generateStyles(child, attrs)
+        for {child <- p.children} ret ++= generateStyles(child, attrs)
       case _ =>
     }
     ret

@@ -7,11 +7,11 @@ import scala.util.parsing.combinator.JavaTokenParsers
  * commonly used parsing methods
  */
 trait CommonParserMethods extends JavaTokenParsers {
-  /*basic stuff*/
+  // basic stuff
   def attribute: Parser[(String, String)] = variable ~ argument <~ ",?".r ^^ { case v ~ a => (v.toString, a.toString) }
-  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString } //<~ "=?\\s*".r
-  def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { case dou => dou.toDouble }
-  def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { case dou => dou.toInt }
+  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString }
+  def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
+  def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
   def argument: Parser[String] =
     "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString }
   def argument_string: Parser[String] =
@@ -27,19 +27,28 @@ trait CommonParserMethods extends JavaTokenParsers {
   def attributeAsString: Parser[String] = variable ~ arguments ^^ { case v ~ arg => v + arg }
   def attributePair: Parser[(String, String)] = variable ~ arguments ^^ { case v ~ a => (v, a) }
 
-  /*special cases - grammar is nasty.. */
-  def compartmentinfo_attribute: Parser[String] = compartmentinfo_attribute_layout | compartmentinfo_attribute_stretching | compartmentinfo_attribute_spacing | compartmentinfo_attribute_margin | compartmentinfo_attribute_invisible | compartmentinfo_attribute_id
-  def compartmentinfo_attribute_layout: Parser[String] = "layout\\s*=\\s*(fixed|vertical|horizontal|fit)".r ^^ { _.toString }
-  def compartmentinfo_attribute_stretching: Parser[String] = "stretching\\s*\\(\\s*horizontal\\s*=\\s*(yes|y|true|no|n|false)\\s*,\\s*vertical\\s*=\\s*(yes|y|true|no|n|false)\\)".r ^^ { _.toString }
+  /**
+   * special cases - grammar is nasty..
+   */
+  def compartmentinfo_attribute: Parser[String] = {
+    compartmentinfo_attribute_layout | compartmentinfo_attribute_stretching | compartmentinfo_attribute_spacing | compartmentinfo_attribute_margin |
+      compartmentinfo_attribute_invisible | compartmentinfo_attribute_id
+  }
+  def compartmentinfo_attribute_layout: Parser[String] = {
+    "layout\\s*=\\s*(fixed|vertical|horizontal|fit)".r ^^ { _.toString }
+  }
+  def compartmentinfo_attribute_stretching: Parser[String] = {
+    "stretching\\s*\\(\\s*horizontal\\s*=\\s*(yes|y|true|no|n|false)\\s*,\\s*vertical\\s*=\\s*(yes|y|true|no|n|false)\\)".r ^^ { _.toString }
+  }
   def compartmentinfo_attribute_spacing: Parser[String] = "spacing\\s*=\\s*\\d+".r ^^ { _.toString }
   def compartmentinfo_attribute_margin: Parser[String] = "margin\\s*=\\s*\\d+".r ^^ { _.toString }
   def compartmentinfo_attribute_invisible: Parser[String] = "invisible\\s*=\\s*invisible".r ^^ { _.toString }
   def compartmentinfo_attribute_id: Parser[String] = "id\\s*=\\s*.+".r ^^ { _.toString }
 
-  /*Some explicit usages*/
-  def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ {
-    case list => list
-  }
+  /**
+   * Some explicit usages
+   */
+  def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ { list => list }
   def position: Parser[Option[(Int, Int)]] = "[Pp]osition\\s*\\(\\s*(x=)?".r ~> argument ~ ((",\\s*(y=)?".r ~> argument) <~ ")") ^^ {
     case xarg ~ yarg => Some((xarg.toInt, yarg.toInt))
     case _ => None
@@ -52,14 +61,13 @@ trait CommonParserMethods extends JavaTokenParsers {
     case width ~ height => Some((width.toInt, height.toInt))
     case _ => None
   }
-  def idAsString: Parser[String] = "(id|ID)\\s*=?\\s*".r ~> argument ^^ { case arg => arg }
+  def idAsString: Parser[String] = "(id|ID)\\s*=?\\s*".r ~> argument ^^ { arg => arg }
   /**
    * takes a String and parses a boolean value out of it -> if string is yes|true|y
    * @param b the stringargument
    */
   def matchBoolean(b: String): Boolean = b match {
     case `b` if b toLowerCase () matches "yes|true|y" => true
-    //case `b` if b toLowerCase() matches("no|false|n") => false
     case _ => false
   }
 }

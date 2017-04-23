@@ -3,8 +3,14 @@ package models.modelDefinitions.metaModel
 import java.time.Instant
 
 import models.modelDefinitions.helper.HLink
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.__
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.OWrites
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
  * The container that is used to persist metamodel definitions, contains additional metadata
@@ -58,7 +64,7 @@ object MetaModelEntity {
     (__ \ "metaModel").write[MetaModel] and
     (__ \ "dsl").write[Dsl] and
     (__ \ "links").writeNullable[Seq[HLink]]
-  )(unlift(MetaModelEntity.unapply))
+  )(syntax.unlift(MetaModelEntity.unapply))
 
   /** stripped reads/writes are used when communicating with clients */
   val strippedReads: Reads[MetaModelEntity] = (
@@ -87,25 +93,18 @@ object MetaModelEntity {
  * Represents concise information on a metamodel, used for REST-API overview uri
  * @param id the id of the metamodel
  * @param name the name of the metamodel
- * @param created the time of creation
- * @param updated the time of the last update
  * @param links optional attribute for HATEOAS links, only used when serving to clients
  */
 case class MetaModelShortInfo(
-  id: String,
-  name: String,
-  //created: Instant,
-  //updated: Instant,
-  links: Option[Seq[HLink]] = None
-)
+    id: String,
+    name: String,
+    links: Option[Seq[HLink]] = None)
 
 object MetaModelShortInfo {
 
   implicit val reads: Reads[MetaModelShortInfo] = (
     (__ \ "id").read[String] and
     (__ \ "metaModel" \ "name").read[String] and
-    // (__ \ "created").read[Instant] and
-    // (__ \ "updated").read[Instant] and
     (__ \ "links").readNullable[Seq[HLink]]
   )(MetaModelShortInfo.apply _)
 

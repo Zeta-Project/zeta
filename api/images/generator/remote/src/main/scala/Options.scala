@@ -1,4 +1,6 @@
-import play.api.libs.json.{ Json, Reads, Writes }
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
  * Options which will be passed as parameters to this application

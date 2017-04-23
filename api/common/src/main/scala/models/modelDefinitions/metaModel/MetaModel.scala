@@ -1,14 +1,20 @@
 package models.modelDefinitions.metaModel
 
-import models.modelDefinitions.metaModel.elements._
-import models.modelDefinitions.metaModel.elements.MCoreReads._
-import models.modelDefinitions.metaModel.elements.MCoreWrites._
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json.Writes._
-import play.api.libs.json._
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MCoreReads.mObjectMapReads
+import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
+import models.modelDefinitions.metaModel.elements.MEnum
+import models.modelDefinitions.metaModel.elements.MObject
+import models.modelDefinitions.metaModel.elements.MReference
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.__
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Reads.functorReads
+import play.api.libs.json.Writes
 
-import scala.collection.immutable._
+import scala.collection.immutable.List
 
 /**
  * Immutable container for metamodel definitions
@@ -81,13 +87,15 @@ case class MetaModel(
    */
   private def searchSuperType(superTypes: List[MClass], toFind: MClass): Boolean = {
     superTypes match {
-      case Nil => {
-        val levelUp = superTypes.filter(_.superTypes.size > 0)
-        if (levelUp.isEmpty) false
-        else (for (s <- levelUp) yield {
-          searchSuperType(s.superTypes.toList, toFind)
-        }).exists(b => b)
-      }
+      case Nil =>
+        val levelUp = superTypes.filter(_.superTypes.nonEmpty)
+        if (levelUp.isEmpty) {
+          false
+        } else {
+          (for {s <- levelUp} yield {
+            searchSuperType(s.superTypes.toList, toFind)
+          }).exists(b => b)
+        }
       case head :: tail => if (head.name == toFind.name) true else searchSuperType(tail, toFind)
     }
   }

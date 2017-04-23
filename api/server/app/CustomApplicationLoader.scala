@@ -1,8 +1,9 @@
 import cluster.ClusterManager
-import com.typesafe.config.{ ConfigFactory }
+import com.typesafe.config.ConfigFactory
 import play.api.ApplicationLoader
 import play.api.Configuration
-import play.api.inject.guice._
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.inject.guice.GuiceApplicationLoader
 
 class CustomApplicationLoader extends GuiceApplicationLoader() {
 
@@ -33,8 +34,6 @@ object NodeConfigurator {
     val roles = List("api")
     val clusterConfig = ClusterManager.getClusterJoinConfig(roles, seeds, 0).withFallback(ConfigFactory.load())
 
-    clusterConfig
-      //.withValue("play.akka.actor-system", ConfigValueFactory.fromAnyRef("ClusterSystem"))
-      .withFallback(config)
+    clusterConfig.withFallback(config)
   }
 }

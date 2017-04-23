@@ -1,24 +1,71 @@
 package actors.developer
 
-import actors.common._
+import java.util.concurrent.TimeUnit
+
+import actors.common.AllDocsFromDeveloper
+import actors.common.ChangeFeed
+import actors.common.Configuration
+import actors.common.Images
 import actors.developer.Mediator.Refresh
-import actors.developer.WorkQueue.JobCannotBeEnqueued
-import actors.developer.WorkState._
-import actors.developer.manager._
-import actors.worker.MasterWorkerProtocol._
-import akka.actor.{ Actor, ActorLogging, Props }
-import akka.cluster.pubsub.{ DistributedPubSub, DistributedPubSubMediator }
+import actors.developer.manager.BondedTasksManager
+import actors.developer.manager.EventDrivenTasksManager
+import actors.developer.manager.FiltersManager
+import actors.developer.manager.GeneratorConnectionManager
+import actors.developer.manager.GeneratorRequestManager
+import actors.developer.manager.GeneratorsManager
+import actors.developer.manager.GetBondedTaskList
+import actors.developer.manager.ManualExecutionManager
+import actors.developer.manager.ModelReleaseManager
+import actors.developer.manager.TimedTasksManager
+import actors.worker.MasterWorkerProtocol.MasterToDeveloper
+import actors.worker.MasterWorkerProtocol.ToDeveloper
+import actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
+import actors.worker.MasterWorkerProtocol.WorkerToDeveloper
+
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.Props
+import akka.cluster.pubsub.DistributedPubSub
+import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
-import models.document._
-import models.document.http.{ CachedRepository, HttpRepository }
-import models.frontend._
+
+import models.document.BondedTask
+import models.document.Changed
+import models.document.Filter
+import models.document.http.CachedRepository
+import models.document.http.HttpRepository
+import models.frontend.BondedTaskCompleted
+import models.frontend.BondedTaskStarted
+import models.frontend.CancelWorkByUser
+import models.frontend.Connected
+import models.frontend.Connection
+import models.frontend.CreateGenerator
+import models.frontend.DeveloperRequest
+import models.frontend.DeveloperResponse
+import models.frontend.Disconnected
+import models.frontend.ExecuteBondedTask
+import models.frontend.GeneratorClient
+import models.frontend.GeneratorRequest
+import models.frontend.MessageEnvelope
+import models.frontend.ModelUser
+import models.frontend.Request
+import models.frontend.RunFilter
+import models.frontend.RunGenerator
+import models.frontend.RunGeneratorFromGenerator
+import models.frontend.RunModelRelease
+import models.frontend.SavedModel
+import models.frontend.ToGenerator
+import models.frontend.ToolDeveloper
+import models.frontend.UserRequest
 import models.session.SyncGatewaySession
-import models.worker._
+import models.worker.RunBondedTask
+
 import play.api.libs.ws.ahc.AhcWSClient
 
-import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Mediator {
   val locatedOnNode = "developer"
@@ -46,8 +93,6 @@ class Mediator() extends Actor with ActorLogging {
   // the ttl of the session to access the database
   val ttl = 3600
 
-  import context.dispatcher
-  import DistributedPubSubMediator.{ Subscribe }
   val mediator = DistributedPubSub(context.system).mediator
   val developerId = self.path.name
   mediator ! Subscribe(developerId, self)
@@ -55,7 +100,7 @@ class Mediator() extends Actor with ActorLogging {
   // Get a session from the database. Blocking should be ok here because we need to initialize the actor
   // and if we don't get a session from the database we should stop the actor
   val sessionManager = SyncGatewaySession()
-  val session = Await.result(sessionManager.getSession(developerId, ttl), 10.seconds)
+  val session = Await.result(sessionManager.getSession(developerId, ttl), Duration(10, TimeUnit.SECONDS))
   val remote = HttpRepository(session)
   val repository = CachedRepository(remote)
 
@@ -79,13 +124,13 @@ class Mediator() extends Actor with ActorLogging {
   var developers: Map[String, ToolDeveloper] = Map()
   var users: Map[String, ModelUser] = Map()
 
-  val registerTask = context.system.scheduler.schedule((ttl / 10).seconds, (ttl / 10).seconds, self, Refresh)
+  val registerTask = context.system.scheduler.schedule(Duration(ttl / 10, TimeUnit.SECONDS), Duration(ttl / 10, TimeUnit.SECONDS), self, Refresh)
 
   override def postStop() = {
     registerTask.cancel()
   }
 
-  def refreshSession = {
+  private def refreshSession() = {
     sessionManager.getSession(developerId, ttl).map { session =>
       remote.session = session
     }.recover {
@@ -97,16 +142,11 @@ class Mediator() extends Actor with ActorLogging {
     // refresh the session to access the db
     case Refresh => refreshSession
     // Handle job messages from the Master or the Worker
-    case response: MasterToDeveloper => workQueue forward response
-    case response: WorkerToDeveloper => handleWorkerResponse(response)
+    case response: ToDeveloper => processToDeveloper(response)
     // Handle any request from a client to this actor
     case connection: Connection => handleConnection(connection)
-    case request: DeveloperRequest => handleDeveloperRequest(request)
-    case request: UserRequest => handleUserRequest(request)
-    // request which are send from a generator or need to be send to a generator
-    case request: RunGeneratorFromGenerator => generatorRequest ! request
-    case request: ToGenerator => generatorConnection ! request
-    case request: WorkState.Event => {
+    case request: Request => processRequest(request)
+    case request: Event => {
       checkForBondedTask(request)
       generatorConnection ! request
     }
@@ -116,6 +156,29 @@ class Mediator() extends Actor with ActorLogging {
     case response: DeveloperResponse => sendToToolDeveloperClients(response)
     // error by the workQueue
     case error: JobCannotBeEnqueued => log.warning(error.reason)
+  }
+
+  private def processToDeveloper(response: ToDeveloper) = {
+    response match {
+      case response: MasterToDeveloper => workQueue forward response
+      case response: WorkerToDeveloper => handleWorkerResponse(response)
+    }
+  }
+
+  private def processRequest(request: Request) = {
+    request match {
+      case request: DeveloperRequest => handleDeveloperRequest(request)
+      case request: UserRequest => handleUserRequest(request)
+      case request: GeneratorRequest => processGeneratorRequest(request)
+    }
+  }
+
+  private def processGeneratorRequest(request: GeneratorRequest) = {
+    request match {
+      // request which are send from a generator or need to be send to a generator
+      case request: RunGeneratorFromGenerator => generatorRequest ! request
+      case request: ToGenerator => generatorConnection ! request
+    }
   }
 
   def documentChange(changed: Changed) = {
@@ -132,11 +195,11 @@ class Mediator() extends Actor with ActorLogging {
     connection match {
       case Connected(client) => client match {
         case developer @ ToolDeveloper(out, user) => {
-          workQueue forward WorkQueue.GetJobInfoList
+          workQueue forward GetJobInfoList
           developers += (client.id -> developer)
         }
         case user @ ModelUser(out, id, model) => {
-          bondedTasks forward BondedTasksManager.GetBondedTaskList(user)
+          bondedTasks forward GetBondedTaskList(user)
           users += (client.id -> user)
         }
         case _ => generatorConnection ! connection
@@ -188,7 +251,7 @@ class Mediator() extends Actor with ActorLogging {
   def resendBondedTasksToUsers() = {
     users.foreach {
       case (id, user) =>
-        bondedTasks ! BondedTasksManager.GetBondedTaskList(user)
+        bondedTasks ! GetBondedTaskList(user)
     }
   }
 

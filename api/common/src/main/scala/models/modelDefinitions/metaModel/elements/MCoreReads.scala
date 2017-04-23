@@ -1,18 +1,24 @@
 package models.modelDefinitions.metaModel.elements
 
 import play.api.data.validation.ValidationError
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Reads._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.toFunctionalBuilderOps
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.__
+import play.api.libs.json.JsError
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsString
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
 
 import scala.annotation.tailrec
-import scala.collection.immutable._
+import scala.collection.immutable.Seq
 
 /**
  * Reads[T] for all MCore structures (bottom of file)
  * Contains also the necessary logic for graph initialization
  */
-
 object MCoreReads {
 
   case class PlaceHolder(name: String) extends ClassOrRef
@@ -77,9 +83,10 @@ object MCoreReads {
 
     def finalize(mObjects: Seq[MObject]): JsResult[Map[String, MObject]] = {
       val nameMapping = mObjects.map(mObj => mObj.name -> mObj).toMap
-      if (mObjects.size != nameMapping.size) JsError("MObjects must have unique names")
-      else {
-        val refErrors = validateRefs(nameMapping)
+      if (mObjects.size != nameMapping.size) {
+        JsError("MObjects must have unique names")
+      } else {
+        val refErrors = new RefsValidator(nameMapping).validate()
         if (refErrors.isEmpty) {
           val mappingWithEnums = addEnums(nameMapping)
           JsSuccess(wire(mappingWithEnums))
@@ -108,82 +115,6 @@ object MCoreReads {
       }
       builder.finalMap
     }
-
-    def validateRefs(mapping: Map[String, MObject]): List[String] = {
-      val values = mapping.values.toList
-
-      def checkSingleEnum(source: String, enum: MEnum, default: EnumSymbol): List[String] = {
-        mapping.get(enum.name) match {
-          case Some(MEnum(_, symbols)) => {
-            if (symbols.map(_.name).contains(default.name)) Nil
-            else {
-              s"$source: default value '${default.name}' is not part of enum '${enum.name}'" :: Nil
-            }
-          }
-          case _ => s"$source: enum '${enum.name}' wasn't found" :: Nil
-        }
-      }
-
-      def checkEnums(source: String, attributes: Seq[MAttribute]): List[String] = {
-        attributes.foldLeft(List[String]()) { (errors, attribute) =>
-          (attribute.`type`, attribute.default) match {
-            case (e: MEnum, s: EnumSymbol) => errors ::: checkSingleEnum(source, e, s)
-            case _ => errors
-          }
-        }
-      }
-
-      def checkSuperTypes(source: String, superTypes: Seq[MClass]): List[String] = {
-        for (
-          s <- superTypes.toList;
-          target = s.name if !mapping.contains(target) || !mapping(target).isInstanceOf[MClass]
-        ) yield {
-          s"invalid super type: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
-        }
-      }
-
-      def checkLinkDefs(source: String, links: Seq[MLinkDef], typeCheck: MObject => Boolean): List[String] = {
-        for (
-          link <- links.toList;
-          target = link.mType.name if !mapping.contains(target) || !typeCheck(mapping(target))
-        ) yield {
-          s"invalid MLinkDef: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
-        }
-      }
-
-      def classCheck(m: MObject) = m.isInstanceOf[MClass]
-
-      def refCheck(m: MObject) = m.isInstanceOf[MReference]
-
-      def processMReference(r: MReference): List[String] = {
-        checkLinkDefs(r.name, r.source, classCheck) :::
-          checkLinkDefs(r.name, r.target, classCheck) :::
-          checkEnums(r.name, r.attributes)
-      }
-
-      def processMClass(c: MClass): List[String] = {
-        checkLinkDefs(c.name, c.inputs, refCheck) :::
-          checkLinkDefs(c.name, c.outputs, refCheck) :::
-          checkSuperTypes(c.name, c.superTypes) :::
-          checkEnums(c.name, c.attributes)
-      }
-
-      def processMObject(mObj: MObject): List[String] = mObj match {
-        case c: MClass => processMClass(c)
-        case r: MReference => processMReference(r)
-        case _ => Nil
-      }
-
-      @tailrec
-      def walk(remaining: List[MObject], accErrors: List[String]): List[String] = {
-        remaining match {
-          case Nil => accErrors
-          case mObj :: tail => walk(tail, accErrors ::: processMObject(mObj))
-        }
-      }
-
-      walk(values, Nil)
-    }
   }
 
   val mTypeError = ValidationError("Unknown mType at top level: only MClass, MReference and MEnum allowed")
@@ -207,12 +138,12 @@ object MCoreReads {
 
   implicit val linkDefReads: Reads[MLinkDef] = (
     (__ \ "type").read[String].map(PlaceHolder) and
-    (__ \ "upperBound").read[Int](min(-1)) and
-    (__ \ "lowerBound").read[Int](min(0)) and
+    (__ \ "upperBound").read[Int](Reads.min(-1)) and
+    (__ \ "lowerBound").read[Int](Reads.min(0)) and
     (__ \ "deleteIfLower").read[Boolean]
   )(MLinkDef.apply _).filter(boundsError) {
-      boundsCheck(_)
-    }
+    boundsCheck(_)
+  }
 
   def detectType(name: String) = name match {
     case "String" => ScalarType.String
@@ -242,29 +173,29 @@ object MCoreReads {
     (__ \ "expression").read[String] and
     (__ \ "ordered").read[Boolean] and
     (__ \ "transient").read[Boolean] and
-    (__ \ "upperBound").read[Int](min(-1)) and
-    (__ \ "lowerBound").read[Int](min(0))
+    (__ \ "upperBound").read[Int](Reads.min(-1)) and
+    (__ \ "lowerBound").read[Int](Reads.min(0))
   )(MAttribute.apply _).filter(boundsError) {
-      boundsCheck(_)
-    }.filter(typeDefaultError) { att =>
-      (att.`type`, att.default) match {
-        case (ScalarType.String, ScalarValue.MString(_)) => true
-        case (ScalarType.Bool, ScalarValue.MBool(_)) => true
-        case (ScalarType.Double, ScalarValue.MDouble(_)) => true
-        case (ScalarType.Int, ScalarValue.MDouble(d)) if d <= Int.MaxValue => true
-        case (MEnum(_, _), ScalarValue.MString(_)) => true
-        case _ => false
-      }
-    }.map { att =>
-      (att.`type`, att.default) match {
-        case (m: MEnum, ScalarValue.MString(s)) => att.copy(default = EnumSymbol(s, m))
-        case (ScalarType.Int, ScalarValue.MDouble(d)) => att.copy(default = ScalarValue.MInt(d.toInt))
-        case _ => att
-      }
+    boundsCheck(_)
+  }.filter(typeDefaultError) {
+    att => (att.`type`, att.default) match {
+      case (ScalarType.String, ScalarValue.MString(_)) => true
+      case (ScalarType.Bool, ScalarValue.MBool(_)) => true
+      case (ScalarType.Double, ScalarValue.MDouble(_)) => true
+      case (ScalarType.Int, ScalarValue.MDouble(d)) if d <= Int.MaxValue => true
+      case (MEnum(_, _), ScalarValue.MString(_)) => true
+      case _ => false
     }
+  }.map {
+    att => (att.`type`, att.default) match {
+      case (m: MEnum, ScalarValue.MString(s)) => att.copy(default = EnumSymbol(s, m))
+      case (ScalarType.Int, ScalarValue.MDouble(d)) => att.copy(default = ScalarValue.MInt(d.toInt))
+      case _ => att
+    }
+  }
 
   implicit val mClassReads: Reads[MClass] = (
-    (__ \ "name").read[String](minLength[String](1)) and
+    (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "abstract").read[Boolean] and
     (__ \ "superTypes").read[Seq[String]].map(_.map(empty.mClass)) and
     (__ \ "inputs").read[Seq[MLinkDef]] and
@@ -273,7 +204,7 @@ object MCoreReads {
   )(MClass.apply _)
 
   implicit val mReferenceReads: Reads[MReference] = (
-    (__ \ "name").read[String](minLength[String](1)) and
+    (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "sourceDeletionDeletesTarget").read[Boolean] and
     (__ \ "targetDeletionDeletesSource").read[Boolean] and
     (__ \ "source").read[Seq[MLinkDef]] and
@@ -282,15 +213,101 @@ object MCoreReads {
   )(MReference.apply _)
 
   implicit val mEnumReads: Reads[MEnum] = (
-    (__ \ "name").read[String](minLength[String](1)) and
+    (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "symbols").read[Seq[String]].map(_.map(EnumSymbol(_, MEnum("", Seq.empty))))
   )(MEnum.apply _).filter(enumSymbolError) { enum =>
-      enum.values.size > 0 && enum.values.distinct.size == enum.values.size
-    }.map { enum =>
-      val builder = new {
-        val finalEnum: MEnum = enum.copy(values = enum.values.map(s => new EnumSymbol(s.name, finalEnum)))
-      }
-      builder.finalEnum
+    enum.values.size > 0 && enum.values.distinct.size == enum.values.size
+  }.map { enum =>
+    val builder = new {
+      val finalEnum: MEnum = enum.copy(values = enum.values.map(s => new EnumSymbol(s.name, finalEnum)))
     }
+    builder.finalEnum
+  }
 
+}
+
+private class RefsValidator(private val mapping: Map[String, MObject]) {
+
+  private def checkSingleEnum(source: String, enum: MEnum, default: EnumSymbol): List[String] = {
+    mapping.get(enum.name) match {
+      case Some(MEnum(_, symbols)) => {
+        if (symbols.map(_.name).contains(default.name)) {
+          Nil
+        } else {
+          s"$source: default value '${default.name}' is not part of enum '${enum.name}'" :: Nil
+        }
+      }
+      case _ => s"$source: enum '${enum.name}' wasn't found" :: Nil
+    }
+  }
+
+  private def checkEnums(source: String, attributes: Seq[MAttribute]): List[String] = {
+    attributes.foldLeft(List[String]()) { (errors, attribute) =>
+      (attribute.`type`, attribute.default) match {
+        case (e: MEnum, s: EnumSymbol) => errors ::: checkSingleEnum(source, e, s)
+        case _ => errors
+      }
+    }
+  }
+
+  private def checkSuperTypes(source: String, superTypes: Seq[MClass]): List[String] = {
+    for {
+      s <- superTypes.toList
+      target = s.name if !mapping.contains(target) || !mapping(target).isInstanceOf[MClass]
+    } yield {
+      s"invalid super type: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
+    }
+  }
+
+  private def checkLinkDefs(source: String, links: Seq[MLinkDef], typeCheck: MObject => Boolean): List[String] = {
+    for {
+      link <- links.toList
+      target = link.mType.name if !mapping.contains(target) || !typeCheck(mapping(target))
+    } yield {
+      s"invalid MLinkDef: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
+    }
+  }
+
+  private def classCheck(m: MObject) = {
+    m.isInstanceOf[MClass]
+  }
+
+  private def refCheck(m: MObject) = {
+    m.isInstanceOf[MReference]
+  }
+
+  private def processMReference(r: MReference): List[String] = {
+    checkLinkDefs(r.name, r.source, classCheck) :::
+      checkLinkDefs(r.name, r.target, classCheck) :::
+      checkEnums(r.name, r.attributes)
+  }
+
+  private def processMClass(c: MClass): List[String] = {
+    checkLinkDefs(c.name, c.inputs, refCheck) :::
+      checkLinkDefs(c.name, c.outputs, refCheck) :::
+      checkSuperTypes(c.name, c.superTypes) :::
+      checkEnums(c.name, c.attributes)
+  }
+
+  private def processMObject(mObj: MObject): List[String] = mObj match {
+    case c: MClass => processMClass(c)
+    case r: MReference => processMReference(r)
+    case _ => Nil
+  }
+
+  @tailrec
+  private def walk(remaining: List[MObject], accErrors: List[String]): List[String] = {
+    remaining match {
+      case Nil => accErrors
+      case mObj :: tail => walk(tail, accErrors ::: processMObject(mObj))
+    }
+  }
+
+  /**
+   * @return List of errors
+   */
+  def validate(): List[String] = {
+    val values = mapping.values.toList
+    walk(values, Nil)
+  }
 }

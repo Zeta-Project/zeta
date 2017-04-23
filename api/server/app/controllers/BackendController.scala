@@ -1,28 +1,54 @@
 package controllers
 
-import akka.actor.{ ActorRef, ActorSystem }
-import javax.inject._
+import javax.inject.Inject
 
-import actors.developer.Mediator
-import actors.frontend.{ DeveloperFrontend, GeneratorFrontend, UserFrontend }
+import akka.actor.ActorRef
+import akka.actor.ActorSystem
 import akka.cluster.sharding.ClusterSharding
 import akka.stream.Materializer
+
+import actors.developer.Mediator
+import actors.frontend.DeveloperFrontend
+import actors.frontend.GeneratorFrontend
+import actors.frontend.UserFrontend
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import com.mohiva.play.silhouette.api.{ HandlerResult, Silhouette }
+import com.mohiva.play.silhouette.api.HandlerResult
+import com.mohiva.play.silhouette.api.Silhouette
+
 import models.User
-import models.document.{ ModelEntity, Repository }
-import models.frontend._
+import models.document.ModelEntity
+import models.document.Repository
+import models.frontend.DeveloperRequest
+import models.frontend.DeveloperResponse
+import models.frontend.GeneratorRequest
+import models.frontend.GeneratorResponse
+import models.frontend.UserRequest
+import models.frontend.UserResponse
 import models.session.Session
+
 import play.api.libs.streams.ActorFlow
+import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.Controller
+import play.api.mvc.Request
+import play.api.mvc.WebSocket
 import play.api.mvc.WebSocket.MessageFlowTransformer
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.mvc._
-import utils.auth.{ DefaultEnv, RepositoryFactory }
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
-import scala.concurrent.{ Future, Promise }
+import utils.auth.DefaultEnv
+import utils.auth.RepositoryFactory
 
-class BackendController @Inject() (implicit system: ActorSystem, mat: Materializer, repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv], session: Session) extends Controller {
+class BackendController @Inject() (
+    implicit system: ActorSystem,
+    mat: Materializer,
+    repositoryFactory: RepositoryFactory,
+    silhouette: Silhouette[DefaultEnv],
+    session: Session)
+  extends Controller {
+
   implicit val developerMsg = MessageFlowTransformer.jsonMessageFlowTransformer[DeveloperRequest, DeveloperResponse]
   implicit val userMsg = MessageFlowTransformer.jsonMessageFlowTransformer[UserRequest, UserResponse]
   implicit val generatorMsg = MessageFlowTransformer.jsonMessageFlowTransformer[GeneratorRequest, GeneratorResponse]

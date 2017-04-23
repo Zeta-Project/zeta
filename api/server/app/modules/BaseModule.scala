@@ -1,12 +1,17 @@
 package modules
 
-import com.google.inject.{ AbstractModule, Provides }
-import models.daos.{ AuthTokenDAO, AuthTokenDAOImpl }
-import models.services.{ AuthTokenService, AuthTokenServiceImpl }
-import models.session.{ Session, SyncGatewaySession }
+import com.google.inject.AbstractModule
+import com.google.inject.Provides
+import models.daos.AuthTokenDAO
+import models.daos.AuthTokenDAOImpl
+import models.services.AuthTokenService
+import models.services.AuthTokenServiceImpl
+import models.session.Session
+import models.session.SyncGatewaySession
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
-import utils.auth.{ HttpRepositoryFactory, RepositoryFactory }
+import utils.auth.HttpRepositoryFactory
+import utils.auth.RepositoryFactory
 
 /**
  * The base Guice module.

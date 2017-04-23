@@ -2,18 +2,24 @@ package models.model
 
 import java.io.File
 
-import akka.actor.{ Actor, ActorRef, Props }
-import models.model.DataVisActor.{ MetamodelFailure, MetamodelLoaded }
+import akka.actor.Actor
+import akka.actor.ActorRef
+import akka.actor.Props
+import models.model.DataVisActor.MetamodelFailure
+import models.model.DataVisActor.MetamodelLoaded
 import models.model.ModelWsActor.DataVisInvalidError
 import play.api.Logger
-import play.api.libs.json.{ JsObject, Json }
-import shared.DiagramWSMessage.{ DataVisCodeMessage, DataVisScopeQuery }
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
+import shared.DiagramWSMessage.DataVisCodeMessage
+import shared.DiagramWSMessage.DataVisScopeQuery
 import util.MetamodelBuilder
 import util.datavis.domain.Conditional
 import util.datavis.generator.ListenersGenerator
 import util.datavis.parser.DataVisParsers
 import util.datavis.validator.ConstrainedDataVisValidator
-import util.domain.{ Metamodel, ObjectWithAttributes }
+import util.domain.Metamodel
+import util.domain.ObjectWithAttributes
 
 class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) extends Actor with DataVisParsers {
   val log = Logger(this getClass () getName ())
@@ -21,13 +27,6 @@ class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) exte
   val generator = new ListenersGenerator
 
   // TODO: Connect model instance to new REST API
-  /* MetaModelDatabase_2.loadModel(graphType) onComplete{
-    case scala.util.Success(opt) => opt match {
-      case None => self ! MetamodelFailure()
-      case Some(mm) => //self ! MetamodelLoaded(mm.model)
-    }
-    case scala.util.Failure(t) => self ! MetamodelFailure
-  } */
 
   override def receive = {
     case msg: DataVisCodeMessage => handleDataVisCode(msg)
@@ -49,25 +48,15 @@ class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) exte
     }
   }
 
-  private def handleScopeQuery(classname: String) = {
-    /*
-    log.debug("Scope query for MObj" + classname)
-    metamodel.getObjectByName(classname) match {
-      case None => socket ! DiagramWSActor.DataVisInvalidError(List("Unable to load class " + classname + " from metamodel."), "")
-      case Some(mObject) => mObject match {
-       // case mClass:MClass => socket ! DataVisScope(mClass.allAttributes.map(_.name), classname)
-        //case mReference:MReference => socket ! DataVisScope(mReference.attributes.map(_.name), classname)
-      }
-    }
-    */
-  }
+  private def handleScopeQuery(classname: String) = {}
 
   private def validateAndGenerateDataVisCode(mObject: ObjectWithAttributes, conditionals: List[Conditional], msg: DataVisCodeMessage) = {
     val validator = new ConstrainedDataVisValidator
-    if (validator.validate(conditionals, mObject))
+    if (validator.validate(conditionals, mObject)) {
       generateAndPublish(msg, conditionals)
-    else
+    } else {
       socket ! DataVisInvalidError(validator.errors.toList, msg.context)
+    }
   }
 
   private def generateAndPublish(msg: DataVisCodeMessage, conditionals: List[Conditional]) = {

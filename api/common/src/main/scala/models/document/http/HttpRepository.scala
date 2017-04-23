@@ -1,13 +1,34 @@
 package models.document.http
 
-import models.document._
+import java.util.concurrent.TimeUnit
+
+import models.document.Document
+import models.document.HttpAllDocsQuery
+import models.document.MetaModelEntity
+import models.document.ModelEntity
+import models.document.Repository
+import models.document.Specification
 import models.modelDefinitions.model.Model
-import play.api.libs.json.{ Json, _ }
-import play.api.libs.ws.{ WSAuthScheme, WSClient, WSRequest }
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsError
+import play.api.libs.json.JsNull
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
+import play.api.libs.ws.WSAuthScheme
+import play.api.libs.ws.WSClient
+import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Await, Future, Promise }
-import scala.reflect._
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.reflect.ClassTag
+import scala.reflect.classTag
 
 object HttpRepository {
   def apply(session: String)(implicit client: WSClient): HttpRepository = new HttpRepository(session)
@@ -21,7 +42,6 @@ case class Auth(username: String, password: String)
  * Http Repository to query the Couchbase Sync Gateway
  */
 class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implicit client: WSClient) extends Repository {
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   def this(auth: Option[Auth])(implicit client: WSClient) = this("", auth)
 
@@ -176,7 +196,6 @@ class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implic
   // List of documents from the query
   case class Documents(rows: List[Doc])
   implicit lazy val readDocuments: Reads[Documents] = Json.reads[Documents]
-  import scala.concurrent.duration._
   /**
    * Query for documents which match the specification
    *
@@ -190,19 +209,18 @@ class HttpRepository(var session: String = "", auth: Option[Auth] = None)(implic
       request(address)
         .withQueryString("startkey" -> specification.startkey)
         .withQueryString("endkey" -> specification.endkey)
-        //.withQueryString("limit" -> specification.httpOptions.limit)
         .get().map { response =>
           if (response.status == 200) {
             val documents: Documents = response.json.as[Documents]
 
-            for (document <- documents.rows) {
+            for {document <- documents.rows} {
               if (!subscriber.isUnsubscribed) {
                 val result = get[T](document.id).map { result =>
                   subscriber.onNext(result)
                 }.recover {
                   case e: Exception => subscriber.onError(e)
                 }
-                Await.result(result, 5000 millis)
+                Await.result(result, Duration(100, TimeUnit.MILLISECONDS))
               }
             }
 

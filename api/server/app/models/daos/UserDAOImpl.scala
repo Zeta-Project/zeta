@@ -3,8 +3,8 @@ package models.daos
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
+
 import models.User
-import models.daos.UserDAOImpl._
 
 import scala.collection.mutable
 import scala.concurrent.Future
@@ -21,7 +21,7 @@ class UserDAOImpl extends UserDAO {
    */
   def find(loginInfo: LoginInfo) = {
     Future.successful(
-      users.find { case (id, user) => user.loginInfo == loginInfo }.map(_._2)
+      UserDAOImpl.users.find { case (id, user) => user.loginInfo == loginInfo }.map(_._2)
     )
   }
 
@@ -31,7 +31,7 @@ class UserDAOImpl extends UserDAO {
    * @param userID The ID of the user to find.
    * @return The found user or None if no user for the given ID could be found.
    */
-  def find(userID: UUID) = Future.successful(users.get(userID))
+  def find(userID: UUID) = Future.successful(UserDAOImpl.users.get(userID))
 
   /**
    * Saves a user.
@@ -40,7 +40,7 @@ class UserDAOImpl extends UserDAO {
    * @return The saved user.
    */
   def save(user: User) = {
-    users += (user.userID -> user)
+    UserDAOImpl.users += (user.userID -> user)
     Future.successful(user)
   }
 }

@@ -1,14 +1,22 @@
 package generator.generators.vr.shape
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.Files
+import java.nio.file.Paths
 
-import generator.model.shapecontainer.connection.{Connection, Placing}
-import generator.model.shapecontainer.shape.geometrics._
+import generator.model.shapecontainer.connection.Connection
+import generator.model.shapecontainer.connection.Placing
+import generator.model.shapecontainer.shape.geometrics.Ellipse
+import generator.model.shapecontainer.shape.geometrics.GeometricModel
+import generator.model.shapecontainer.shape.geometrics.Line
+import generator.model.shapecontainer.shape.geometrics.Point
+import generator.model.shapecontainer.shape.geometrics.PolyLine
+import generator.model.shapecontainer.shape.geometrics.Polygon
+import generator.model.shapecontainer.shape.geometrics.Rectangle
+import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
+import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.DASH
 
-/**
-  * Created by max on 26.10.16.
-  */
+
 object VrGeneratorConnectionDefinition {
   def generate(connections: Iterable[Connection], location: String) {
     connections.map(generateFile).map(p => Files.write(Paths.get(location + p._1), p._2.getBytes()))
@@ -35,28 +43,22 @@ object VrGeneratorConnectionDefinition {
     ${importPlacing(conn.placing)}
 
     <dom-module id="vr-connection-${conn.name}">
-        <template>
-            <!-- Polyline is always needed -->
-            <vr-polyline id="line" ${
-      if (conn.style.get.line_style.get == DASH) {
-        "dashed"
-      } else {
-        ""
-      }
-    }></vr-polyline>
-            ${conn.placing.map(generatePlacing(_)).mkString}
-        </template>
+      <template>
+        <!-- Polyline is always needed -->
+        <vr-polyline id="line" ${if (conn.style.get.line_style.get == DASH) { "dashed" } else { "" }}></vr-polyline>
+        ${conn.placing.map(generatePlacing(_)).mkString}
+      </template>
     </dom-module>
 
     <script>
-        window.VrElement = window.VrElement || {};
-        VrElement.Connection${conn.name.capitalize} = Polymer({
-            is: "vr-connection-${conn.name}",
-            behaviors: [
-                        VrBehavior.Connection,
-                        VrBehavior.Delete
-            ]
-        });
+      window.VrElement = window.VrElement || {};
+      VrElement.Connection${conn.name.capitalize} = Polymer({
+        is: "vr-connection-${conn.name}",
+        behaviors: [
+          VrBehavior.Connection,
+          VrBehavior.Delete
+        ]
+      });
     </script>
     """
   }
@@ -75,10 +77,10 @@ object VrGeneratorConnectionDefinition {
     <vr-placing offset="${placing.position_offset}" angle="${angle}" radius="${radius}">
       ${generateElement(placing.shapeCon)}
     </vr-placing>
-     """
+    """
   }
 
-  def generateElement(geometric: GeometricModel) = {
+  def generateElement(geometric: GeometricModel): PolymerFile = {
     geometric match {
       case g: Ellipse => s"""<vr-ellipse x-pos="${g.x}" y-pos="${g.y}" width="${g.size_width}" height="${g.size_height}"></vr-ellipse>"""
       case g: Rectangle => s"""<vr-box x-pos="${g.x}" y-pos="${g.y}" width="${g.size_width}" height="${g.size_height}"></vr-box>"""
@@ -90,17 +92,17 @@ object VrGeneratorConnectionDefinition {
     }
   }
 
-  def generatePoints(points: List[Point]) = {
+  def generatePoints(points: List[Point]): String = {
     points.map(point => generateVrPoint(point.x, point.y)).mkString
   }
 
-  def generateVrPoint(xy: (Int, Int)) = {
+  def generateVrPoint(xy: (Int, Int)): String = {
     val (x, y) = xy
     s"""<vr-point x="${y}" y="${x}"></vr-point>
     """
   }
 
-  def getElement(geometric: GeometricModel) = {
+  def getElement(geometric: GeometricModel): PolymerFile = {
     geometric match {
       case g: Line => "Line"
       case g: Ellipse => "ellipse"
@@ -109,7 +111,7 @@ object VrGeneratorConnectionDefinition {
       case g: PolyLine => "polyline"
       case g: RoundedRectangle => "roundedrectangle"
       case g: Text => "text"
-      case _ => geometric.toString()
+      case _ => geometric.toString
     }
   }
 

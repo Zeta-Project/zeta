@@ -1,7 +1,12 @@
 package view
 
-import facade.{ Range, Document, Delta }
-import scalot.{ InsComp, DelComp, SkipComp, Operation }
+import facade.Range
+import facade.Document
+import facade.Delta
+import scalot.InsComp
+import scalot.DelComp
+import scalot.SkipComp
+import scalot.Operation
 
 import scala.scalajs.js
 
@@ -34,7 +39,7 @@ object ScalotAceAdaptor {
     var deltas: Seq[Delta] = Seq[Delta]()
     def idxToPos(idx: Int) = doc.indexToPosition(idx, 0)
     var base = 0
-    for (comp <- op.ops) {
+    for {comp <- op.ops} {
       comp match {
         case SkipComp(x) => base = base + x
 

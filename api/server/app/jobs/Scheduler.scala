@@ -1,6 +1,7 @@
 package jobs
 
-import akka.actor.{ ActorRef, ActorSystem }
+import akka.actor.ActorRef
+import akka.actor.ActorSystem
 import com.google.inject.Inject
 import com.google.inject.name.Named
 import com.typesafe.akka.extension.quartz.QuartzSchedulerExtension

@@ -1,6 +1,8 @@
 package models.modelDefinitions.model.elements
 
-import models.modelDefinitions.metaModel.elements.{ AttributeValue, MClass, MReference }
+import models.modelDefinitions.metaModel.elements.AttributeValue
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 
 import scala.collection.immutable.Seq
 import scala.reflect.ClassTag
@@ -109,8 +111,9 @@ class Edge(
     val `type`: MReference,
     _source: => Seq[ToNodes],
     _target: => Seq[ToNodes],
-    val attributes: Seq[Attribute]
-) extends ModelElement with HasAttributes {
+    val attributes: Seq[Attribute])
+  extends ModelElement with HasAttributes {
+
   lazy val source = _source
   lazy val target = _target
 
@@ -134,6 +137,6 @@ object Edge {
 }
 
 case class Attribute(
-  name: String,
-  value: Seq[AttributeValue]
-)
+    val name: String,
+    val value: Seq[AttributeValue])
+

@@ -2,7 +2,8 @@ package actors.worker
 
 import java.util.UUID
 
-import models.document.{ DockerSettings, Settings }
+import models.document.DockerSettings
+import models.document.Settings
 import models.frontend.JobLog
 import models.worker.Job
 
@@ -21,16 +22,24 @@ object MasterWorkerProtocol {
 
   // Messages to Master from Developer
   trait DeveloperToMaster
-  case class Work(job: Job, owner: String, dockerSettings: DockerSettings, session: String = "", id: String = UUID.randomUUID().toString) extends DeveloperToMaster
+  case class Work(
+      job: Job,
+      owner: String,
+      dockerSettings: DockerSettings,
+      session: String = "",
+      id: String = UUID.randomUUID().toString)
+    extends DeveloperToMaster
   case class CancelWork(id: String) extends DeveloperToMaster
   case class DeveloperReceivedCompletedWork(id: String) extends DeveloperToMaster
 
+  trait ToDeveloper
+
   // Messages from Master to Developer
-  trait MasterToDeveloper
+  trait MasterToDeveloper extends ToDeveloper
   case class MasterAcceptedWork(workerId: String) extends MasterToDeveloper
   case class MasterCompletedWork(workerId: String, result: Int) extends MasterToDeveloper
 
   // Messages from Worker to Developer
-  trait WorkerToDeveloper
+  trait WorkerToDeveloper extends ToDeveloper
   case class WorkerStreamedMessage(jobLog: JobLog) extends WorkerToDeveloper
 }

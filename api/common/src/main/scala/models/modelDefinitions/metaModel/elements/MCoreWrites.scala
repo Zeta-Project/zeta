@@ -1,7 +1,15 @@
 package models.modelDefinitions.metaModel.elements
 
-import models.modelDefinitions.metaModel.elements.ScalarValue.{ MString, MInt, MDouble, MBool }
-import play.api.libs.json._
+import models.modelDefinitions.metaModel.elements.ScalarValue.MString
+import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
+import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
+import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Writes
 
 /**
  * Writes[T] for all MCore structures

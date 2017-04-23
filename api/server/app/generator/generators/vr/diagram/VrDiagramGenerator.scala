@@ -1,21 +1,20 @@
 package generator.generators.vr.diagram
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.shapecontainer.connection.Connection
 
-/**
-  * Created by max on 12.11.16.
-  */
+
 object VrDiagramGenerator {
   val EXTENDED_NEW_BEHAVIOR = "vr-new-extended.html"
   val EXTENDED_CONNECT_BEHAVIOR = "vr-connect-extended.html"
   val SCENE = "vr-scene.html"
   val SAVE_BEHAVIOR = "vr-save.html"
 
-  def doGenerate(diagram: Diagram, location: String) {
+  def doGenerate(diagram: Diagram, location: String): Unit = {
     val DEFAULT_DIAGRAM_LOCATION = location
     val vrDiaGen = doGenerateFiles(diagram)
 

@@ -1,9 +1,18 @@
 package actors.master
 
-import actors.master.WorkState.CompletedWork
-import actors.worker.MasterWorkerProtocol._
-
+import actors.worker.MasterWorkerProtocol.Work
 import scala.collection.immutable.Queue
+
+// wrapper to hold completed work
+case class CompletedWork(work: Work, result: Int)
+
+sealed class WorkDomainEvent
+case class WorkAccepted(work: Work) extends WorkDomainEvent
+case class WorkStarted(workId: String) extends WorkDomainEvent
+case class WorkCompleted(workId: String, result: Int) extends WorkDomainEvent
+case class WorkCompletionReceived(workId: String) extends WorkDomainEvent
+case class WorkerFailed(workId: String) extends WorkDomainEvent
+case class WorkerTimedOut(workId: String) extends WorkDomainEvent
 
 object WorkState {
 
@@ -13,17 +22,6 @@ object WorkState {
     acceptedWorkIds = Set.empty,
     completedWork = Map.empty
   )
-
-  // wrapper to hold completed work
-  case class CompletedWork(work: Work, result: Int)
-
-  trait WorkDomainEvent
-  case class WorkAccepted(work: Work) extends WorkDomainEvent
-  case class WorkStarted(workId: String) extends WorkDomainEvent
-  case class WorkCompleted(workId: String, result: Int) extends WorkDomainEvent
-  case class WorkCompletionReceived(workId: String) extends WorkDomainEvent
-  case class WorkerFailed(workId: String) extends WorkDomainEvent
-  case class WorkerTimedOut(workId: String) extends WorkDomainEvent
 }
 
 case class WorkState private (
@@ -32,9 +30,6 @@ case class WorkState private (
     private val acceptedWorkIds: Set[String],
     private val completedWork: Map[String, CompletedWork]
 ) {
-
-  import WorkState._
-
   def hasWork: Boolean = pendingWork.nonEmpty
   def nextWork: Work = pendingWork.head
   def isAccepted(workId: String): Boolean = acceptedWorkIds.contains(workId)

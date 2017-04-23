@@ -1,9 +1,24 @@
 package actors.common
 
-import akka.actor.{ Actor, ActorLogging, ActorRef, Props }
-import com.neovisionaries.ws.client._
-import models.document._
-import play.api.libs.json.{ JsError, JsSuccess, Json, Reads }
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+import com.neovisionaries.ws.client.OpeningHandshakeException
+import com.neovisionaries.ws.client.WebSocket
+import com.neovisionaries.ws.client.WebSocketAdapter
+import com.neovisionaries.ws.client.WebSocketException
+import com.neovisionaries.ws.client.WebSocketFactory
+import com.neovisionaries.ws.client.WebSocketFrame
+import models.document.Changed
+import models.document.Created
+import models.document.Deleted
+import models.document.Document
+import models.document.Updated
+import play.api.libs.json.JsError
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
 
 /**
  * Configuration to connect to the Sync Gateway
@@ -67,44 +82,6 @@ class ChangeFeed(conf: Configuration, channels: List[Channel], listeners: List[A
     // sequence number of the change feed
     var seq = since
 
-    def parseMessage(message: String) = {
-      Json.parse(message).validate[List[Changes]] match {
-        case s: JsSuccess[List[Changes]] => {
-          val list: List[Changes] = s.get
-          list.foreach { element =>
-            element.doc match {
-              case Some(doc: Document) => sendDoc(doc, element.deleted.getOrElse(false))
-              case None => log.debug("No document received from change feed. Is a expected behaviour.")
-            }
-            // store the sequence number
-            seq = element.seq
-          }
-        }
-        case e: JsError => {
-          log.error("Errors: " + JsError.toJson(e).toString() + ". Raw :  " + message)
-        }
-      }
-    }
-
-    def sendDoc(doc: Document, deleted: Boolean) = {
-      if (deleted) {
-        log.info(s"Deleted ${doc.id}")
-        listeners.foreach { listener =>
-          listener ! Changed(doc, Deleted)
-        }
-      } else if (doc.isUpdated()) {
-        log.info(s"Updated ${doc.id}")
-        listeners.foreach { listener =>
-          listener ! Changed(doc, Updated)
-        }
-      } else {
-        log.info(s"Created ${doc.id}")
-        listeners.foreach { listener =>
-          listener ! Changed(doc, Created)
-        }
-      }
-    }
-
     val ch = channels.map(_.value).mkString(",")
     val uri = s"ws://${conf.url}/_changes?include_docs=true&feed=websocket&filter=sync_gateway/bychannel&channels=${ch}"
 
@@ -115,7 +92,7 @@ class ChangeFeed(conf: Configuration, channels: List[Channel], listeners: List[A
     ws.addListener(new WebSocketAdapter() {
       // A text message arrived from the server.
       override def onTextMessage(ws: WebSocket, message: String) = {
-        parseMessage(message)
+        seq = parseMessage(message, seq)
         ws.sendContinuation()
       }
 
@@ -137,6 +114,49 @@ class ChangeFeed(conf: Configuration, channels: List[Channel], listeners: List[A
       case (e: OpeningHandshakeException) => log.error(e.toString)
       // Failed to establish a WebSocket connection.
       case (e: WebSocketException) => log.error(e.toString)
+    }
+  }
+
+
+  private def parseMessage(message: String, seq: Int) = {
+    Json.parse(message).validate[List[Changes]] match {
+      case s: JsSuccess[List[Changes]] => {
+        val list: List[Changes] = s.get
+        var newSeq = seq
+        list.foreach { element =>
+          element.doc match {
+            case Some(doc: Document) => sendDoc(doc, element.deleted.getOrElse(false))
+            case None => log.debug("No document received from change feed. Is a expected behaviour.")
+          }
+          // store the sequence number
+          newSeq = element.seq
+        }
+        newSeq
+      }
+      case e: JsError => {
+        log.error("Errors: " + JsError.toJson(e).toString() + ". Raw :  " + message)
+        seq
+      }
+      case _ => seq
+    }
+  }
+
+  private def sendDoc(doc: Document, deleted: Boolean) = {
+    if (deleted) {
+      log.info(s"Deleted ${doc.id}")
+      listeners.foreach { listener =>
+        listener ! Changed(doc, Deleted)
+      }
+    } else if (doc.isUpdated()) {
+      log.info(s"Updated ${doc.id}")
+      listeners.foreach { listener =>
+        listener ! Changed(doc, Updated)
+      }
+    } else {
+      log.info(s"Created ${doc.id}")
+      listeners.foreach { listener =>
+        listener ! Changed(doc, Created)
+      }
     }
   }
 

@@ -1,8 +1,14 @@
 package util.datavis.generator
 
-import java.io.{ File, FileWriter }
+import java.io.File
+import java.io.FileWriter
 
-import util.datavis.domain._
+import util.datavis.domain.Assignment
+import util.datavis.domain.Conditional
+import util.datavis.domain.Literal
+import util.datavis.domain.MIdentifier
+import util.datavis.domain.Operand
+import util.datavis.domain.StyleIdentifier
 
 class ListenersGenerator {
   val filesuffix = "listeners.js"
@@ -20,21 +26,26 @@ class ListenersGenerator {
     fileName
   }
 
-  def generateContents(objectId: String, conditionals: List[Conditional]) = generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
+  def generateContents(objectId: String, conditionals: List[Conditional]) = {
+    generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
+  }
 
   def generateHead =
-    """|/*
-      |* Individual listeners for model.
-      |*/
+    """
+      |/*
+      | * Individual listeners for model.
+      | */
     """.stripMargin
 
   def generateListenerObject(objectId: String) =
     s"""
-     | dataVisListeners["$objectId"] = {};
-     | _.extend(dataVisListeners["$objectId"], Backbone.Events);
-   """.stripMargin
+      | dataVisListeners["$objectId"] = {};
+      | _.extend(dataVisListeners["$objectId"], Backbone.Events);
+    """.stripMargin
 
-  def generateListeners(objectId: String, conditional: List[Conditional]) = conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
+  def generateListeners(objectId: String, conditional: List[Conditional]) = {
+    conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
+  }
 
   def generateListener(objectId: String, conditional: Conditional) = {
     val comparisonLeft = generateComparisonOperand(conditional.condition.x)
@@ -43,12 +54,12 @@ class ListenersGenerator {
     val assignment = generateAssignment(conditional.assignment)
     val tmp = conditional.assignment.target
     s"""
-    |dataVisListeners["$objectId"].listenTo(window.globalGraph.getCell("$objectId"),'change:mAttributes', function(){
-    | var cell = window.globalGraph.getCell("$objectId");
-    | if($comparisonLeft $comparison $comparisonRight){
-    |   $assignment
-    | }
-    |});
+      |dataVisListeners["$objectId"].listenTo(window.globalGraph.getCell("$objectId"),'change:mAttributes', function(){
+      | var cell = window.globalGraph.getCell("$objectId");
+      | if($comparisonLeft $comparison $comparisonRight){
+      |   $assignment
+      | }
+      |});
     """.stripMargin
   }
 

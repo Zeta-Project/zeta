@@ -1,8 +1,9 @@
 package models.worker
 
-import java.util.{ Objects }
+import java.util.Objects
 import julienrf.json.derived
-import play.api.libs.json._
+import play.api.libs.json.__
+import play.api.libs.json.OFormat
 
 sealed trait Job {
   /**

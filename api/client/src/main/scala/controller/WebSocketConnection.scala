@@ -1,12 +1,27 @@
 package controller
 
 import org.scalajs.dom
-import org.scalajs.dom.{ CloseEvent, ErrorEvent, Event, MessageEvent, WebSocket, console, window }
-import shared.CodeEditorMessage
-import shared.CodeEditorMessage._
-import upickle.default._
+import org.scalajs.dom.CloseEvent
+import org.scalajs.dom.ErrorEvent
+import org.scalajs.dom.Event
+import org.scalajs.dom.MessageEvent
+import org.scalajs.dom.WebSocket
+import org.scalajs.dom.console
+import org.scalajs.dom.window
 
-case class WebSocketConnection(uri: String = s"ws://${window.location.host}/codeeditor/socket", controller: CodeEditorController, metaModelUuid: String, dslType: String) {
+import shared.CodeEditorMessage
+import shared.CodeEditorMessage.DocLoaded
+import shared.CodeEditorMessage.DocNotFound
+import shared.CodeEditorMessage.TextOperation
+
+import upickle.default
+
+case class WebSocketConnection(
+    uri: String = s"ws://${window.location.host}/codeeditor/socket",
+    controller: CodeEditorController,
+    metaModelUuid: String,
+    dslType: String) {
+
   /** Set up WebSocket connection */
   val ws = new dom.WebSocket(uri + "/" + metaModelUuid + "/" + dslType)
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
@@ -19,7 +34,7 @@ case class WebSocketConnection(uri: String = s"ws://${window.location.host}/code
   }
 
   def onMessage(msg: MessageEvent) = {
-    read[CodeEditorMessage](msg.data.toString) match {
+    default.read[CodeEditorMessage](msg.data.toString) match {
       case msg: TextOperation => controller.operationFromRemote(msg)
       case msg: DocLoaded => controller.docLoadedMessage(msg)
       case msg: DocNotFound => controller.docNotFoundMessage(msg)
@@ -29,7 +44,7 @@ case class WebSocketConnection(uri: String = s"ws://${window.location.host}/code
 
   def sendMessage(msg: CodeEditorMessage) = ws.readyState match {
     case WebSocket.OPEN =>
-      ws.send(write(msg))
+      ws.send(default.write(msg))
     case _ =>
       console.error("Could not send Message because WebSocket is not in ready state!", ws)
   }

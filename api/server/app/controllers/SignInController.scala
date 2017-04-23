@@ -2,25 +2,36 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.Authenticator.Implicits._
-import com.mohiva.play.silhouette.api._
+import com.mohiva.play.silhouette.api.Authenticator.Implicits.RichDateTime
+import com.mohiva.play.silhouette.api.LoginEvent
+import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.util.{ Clock, Credentials }
+import com.mohiva.play.silhouette.api.util.Clock
+import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
-import com.mohiva.play.silhouette.impl.providers._
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
+
 import forms.SignInForm
+
 import models.services.UserService
-import net.ceedubs.ficus.Ficus._
+
+import net.ceedubs.ficus.Ficus.toFicusConfig
+import net.ceedubs.ficus.Ficus.finiteDurationReader
+import net.ceedubs.ficus.Ficus.optionValueReader
+
 import play.api.Configuration
-import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
-import play.api.libs.concurrent.Execution.Implicits._
+import play.api.i18n.I18nSupport
+import play.api.i18n.Messages
+import play.api.i18n.MessagesApi
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
-import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
-import scala.concurrent.duration._
-import scala.language.postfixOps
+import scala.concurrent.duration.FiniteDuration
+
+import utils.auth.DefaultEnv
 
 /**
  * The `Sign In` controller.
@@ -36,17 +47,16 @@ import scala.language.postfixOps
  * @param webJarAssets The webjar assets implementation.
  */
 class SignInController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  userService: UserService,
-  authInfoRepository: AuthInfoRepository,
-  credentialsProvider: CredentialsProvider,
-  socialProviderRegistry: SocialProviderRegistry,
-  configuration: Configuration,
-  clock: Clock,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    userService: UserService,
+    authInfoRepository: AuthInfoRepository,
+    credentialsProvider: CredentialsProvider,
+    socialProviderRegistry: SocialProviderRegistry,
+    configuration: Configuration,
+    clock: Clock,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Views the `Sign In` page.
@@ -74,14 +84,16 @@ class SignInController @Inject() (
               Future.successful(Ok(views.html.silhouette.activateAccount(data.email)))
             case Some(user) =>
               val c = configuration.underlying
-              silhouette.env.authenticatorService.create(loginInfo).map {
-                case authenticator if data.rememberMe =>
+              silhouette.env.authenticatorService.create(loginInfo).map { authenticator =>
+                if (data.rememberMe) {
                   authenticator.copy(
                     expirationDateTime = clock.now + c.as[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorExpiry"),
                     idleTimeout = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorIdleTimeout"),
                     cookieMaxAge = c.getAs[FiniteDuration]("silhouette.authenticator.rememberMe.cookieMaxAge")
                   )
-                case authenticator => authenticator
+                } else {
+                  authenticator
+                }
               }.flatMap { authenticator =>
                 silhouette.env.eventBus.publish(LoginEvent(user, request))
                 silhouette.env.authenticatorService.init(authenticator).flatMap { v =>

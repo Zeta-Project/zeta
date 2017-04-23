@@ -23,12 +23,14 @@ object PointParser extends CommonParserMethods {
   }
 
   def apply(line: String) = parse(line)
-  def parse(line: String): Option[Point] = {
+
+  private def parse(line: String): Option[Point] = {
     val ret = parse(point, line).get
-    if (ret isDefined)
+    if (ret.isDefined) {
       ret
-    else
+    } else {
       None
+    }
   }
 
 }

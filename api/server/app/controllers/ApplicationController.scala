@@ -2,10 +2,12 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
+import com.mohiva.play.silhouette.api.LogoutEvent
+import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import models.User
-import play.api.i18n.{ I18nSupport, MessagesApi }
+import play.api.i18n.I18nSupport
+import play.api.i18n.MessagesApi
 import play.api.mvc.Controller
 import utils.auth.DefaultEnv
 
@@ -18,12 +20,11 @@ import utils.auth.DefaultEnv
  * @param webJarAssets The webjar assets implementation.
  */
 class ApplicationController @Inject() (
-  val messagesApi: MessagesApi,
-  silhouette: Silhouette[DefaultEnv],
-  socialProviderRegistry: SocialProviderRegistry,
-  implicit val webJarAssets: WebJarAssets
-)
-    extends Controller with I18nSupport {
+    val messagesApi: MessagesApi,
+    silhouette: Silhouette[DefaultEnv],
+    socialProviderRegistry: SocialProviderRegistry,
+    implicit val webJarAssets: WebJarAssets)
+  extends Controller with I18nSupport {
 
   /**
    * Handles the index action.

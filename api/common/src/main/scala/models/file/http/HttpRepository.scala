@@ -1,11 +1,16 @@
 package models.file.http
 
 import models.document.Document
-import models.file._
-import play.api.libs.ws.{ WSClient, WSRequest }
+import models.file.File
+import models.file.Repository
+import models.file.Specification
+import play.api.libs.ws.WSClient
+import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
 
 object HttpRepository {
   def apply(session: String)(implicit client: WSClient): HttpRepository = new HttpRepository(session)
@@ -15,7 +20,6 @@ object HttpRepository {
  * Http Repository to query the Couchbase Sync Gateway
  */
 class HttpRepository(session: String)(implicit client: WSClient) extends Repository {
-  import scala.concurrent.ExecutionContext.Implicits.global
 
   def request(address: String): WSRequest = client.url(address).withHeaders("Cookie" -> s"SyncGatewaySession=${session};")
 
@@ -54,7 +58,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The File to update
    * @return Future which resolve after update
    */
-  def update(doc: Document, file: File): Future[Unit] = ???
+  def update(doc: Document, file: File): Future[Unit] = Future {}
 
   /**
    * Get a single file
@@ -88,7 +92,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The file which to delete
    * @return Future which resolve after deletion
    */
-  def delete(doc: Document, file: File): Future[Unit] = ???
+  def delete(doc: Document, file: File): Future[Unit] = Future {}
 
   /**
    * Query files which match the specification
@@ -96,5 +100,5 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param specification The specification for the query
    * @return Observable to return all entities
    */
-  def query(specification: Specification): Observable[File] = ???
+  def query(specification: Specification): Observable[File] = Observable.from(List[File]())
 }
