@@ -29,6 +29,7 @@ import utils.auth.DefaultEnv
 import utils.auth.RepositoryFactory
 
 import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits
 
 class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
@@ -41,10 +42,10 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
       .map(createGenerators(_) match {
         case Left(_) => Ok("Generation successful")
         case Right(error) => BadRequest(error)
-      })
+      })(Implicits.global)
       .recover {
         case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
-      }
+      }(Implicits.global)
   }
 
   )
