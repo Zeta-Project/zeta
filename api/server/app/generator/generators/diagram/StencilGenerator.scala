@@ -30,7 +30,7 @@ object StencilGenerator {
      */
     """
 
-  def generateStencilGroups(diagram: Diagram) = {
+  def generateStencilGroups(diagram: Diagram): String = {
     var i = 1
     val groupSet = getNodeToPaletteMapping(diagram).keySet
     var groups = List[String]()
@@ -41,40 +41,40 @@ object StencilGenerator {
     "Stencil.groups = {" + groups.mkString(",") + "};"
   }
 
-  def generateShapes(diagram: Diagram) = {
+  def generateShapes(diagram: Diagram): String = {
 
     {
       for {node <- diagram.nodes} yield {
         s"""
-        var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
-          ${
+          |var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
+          |  ${
           if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
             s"""mcoreAttributes: [
-                {
-                  mcore: '${node.onCreate.get.askFor.get.name}',
-                  cellPath: ['attrs', '.label', 'text']
-                }
-              ],"""
+              |   |{
+              |  mcore: '${node.onCreate.get.askFor.get.name}',
+              |  cellPath: ['attrs', '.label', 'text']
+              |}
+              ],""".stripMargin
           } else {
             ""
           }
         }
-          nodeName: '${node.name}',
-          mClass: '${node.mcoreElement.name}',
-          mClassAttributeInfo: [${
+          |  nodeName: '${node.name}',
+          |  mClass: '${node.mcoreElement.name}',
+          |  mClassAttributeInfo: [${
           node.mcoreElement.attributes.map(
             attr => s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
           ).mkString(",")
         }]
-        });
-        """
+          |});
+          """.stripMargin
       }
     }.mkString
   }
 
-  def generateGroupsToStencilMapping(mapping: mutable.HashMap[String, ListBuffer[Node]]) = {
+  def generateGroupsToStencilMapping(mapping: mutable.HashMap[String, ListBuffer[Node]]): String = {
     s"""
-    Stencil.shapes = {
+      |Stencil.shapes = {
       ${
       {
         for {((key, value), i) <- mapping.zipWithIndex} yield {
@@ -83,11 +83,11 @@ object StencilGenerator {
         }
       }.mkString(",")
     }
-    };
-    """
+      |};
+    """.stripMargin
   }
 
-  def generateShapesToGroupMapping(group: String, nodes: ListBuffer[Node], isLast: Boolean) = {
+  def generateShapesToGroupMapping(group: String, nodes: ListBuffer[Node], isLast: Boolean): String = {
     s"""
     ${getVarName(group)}: [
       ${
@@ -106,7 +106,7 @@ object StencilGenerator {
     """
   }
 
-  def generateDocumentReadyFunction(diagram: Diagram) = {
+  def generateDocumentReadyFunction(diagram: Diagram): String = {
     """$(document).ready(function() {""" +
       s"""
       ${
@@ -157,16 +157,16 @@ object StencilGenerator {
     mapping
   }
 
-  private def getVarName(name: String) = {
+  private def getVarName(name: String): String = {
     val ret = name.replaceAll("\\W", "")
     ret.substring(0, 1).toLowerCase + ret.substring(1)
   }
 
-  private def getClassName(name: String) = name.replaceAll("\\W", "")
+  private def getClassName(name: String): String = name.replaceAll("\\W", "")
 
-  private def getShapeName(node: Node) = {
+  private def getShapeName(node: Node): String = {
     val diaShape = node.shape
-    if (diaShape isDefined) {
+    if (diaShape.isDefined) {
       diaShape.get.referencedShape.name
     } else {
       throw new NoSuchElementException("No Shape defined for node " + node.name)
