@@ -127,7 +127,7 @@
    <parameter name="maxMethods"><![CDATA[30]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.NumberOfTypesChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.NumberOfTypesChecker" level="error">
   <parameters>
    <parameter name="maxTypes"><![CDATA[30]]></parameter>
   </parameters>
