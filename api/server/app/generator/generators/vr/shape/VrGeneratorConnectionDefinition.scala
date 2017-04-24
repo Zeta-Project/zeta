@@ -15,24 +15,30 @@ import generator.model.shapecontainer.shape.geometrics.Rectangle
 import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.DASH
+import models.file.File
 
 
 object VrGeneratorConnectionDefinition {
   def generate(connections: Iterable[Connection], location: String) {
-    connections.map(generateFile).map(p => Files.write(Paths.get(location + p._1), p._2.getBytes()))
+    doGenerateFile(connections, location)
+      .map(f => Files.write(Paths.get(f.name), f.content.getBytes()))
   }
 
-  private type FileName = String
-  private type PolymerFile = String
 
-  def generateFile(conn: Connection): (FileName, PolymerFile) = {
-    val FILENAME = "vr-connection-" + conn.name + ".html"
+  def doGenerateFile(connections: Iterable[Connection], location: String): List[File] = {
+    connections.map(generateSingleFile(location)).toList
+  }
 
+
+  private def generateSingleFile(location: String)(conn: Connection): File = {
+    val filename = "vr-connection-" + conn.name + ".html"
     val polymerElement = generatePolymerElement(conn)
-    (FILENAME, polymerElement)
+
+    File(location + filename, polymerElement)
   }
 
-  def generatePolymerElement(conn: Connection) = {
+
+  def generatePolymerElement(conn: Connection): String = {
     s"""
     <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
     <link rel="import" href="/assets/prototyp/behaviors/vr-connection.html">
@@ -52,7 +58,7 @@ object VrGeneratorConnectionDefinition {
         ""
       }
     }></vr-polyline>
-        ${conn.placing.map(generatePlacing(_)).mkString}
+        ${conn.placing.map(generatePlacing).mkString}
       </template>
     </dom-module>
 
@@ -69,13 +75,13 @@ object VrGeneratorConnectionDefinition {
     """
   }
 
-  def importPlacing(placings: List[Placing]) = {
+  def importPlacing(placings: List[Placing]): String = {
     val placingTypes = placings.map(placing => getElement(placing.shapeCon))
     val imports = placingTypes.distinct
     imports.map(imp => s"""<link rel='import' href='/assets/prototyp/elements/vr-${imp}.html'>""").mkString
   }
 
-  def generatePlacing(placing: Placing) = {
+  def generatePlacing(placing: Placing): String = {
     val radius = placing.position_distance.getOrElse(0)
     val angle = 0
     val element = getElement(placing.shapeCon)
@@ -86,7 +92,7 @@ object VrGeneratorConnectionDefinition {
     """
   }
 
-  def generateElement(geometric: GeometricModel): PolymerFile = {
+  def generateElement(geometric: GeometricModel): String = {
     geometric match {
       case g: Ellipse => s"""<vr-ellipse x-pos="${g.x}" y-pos="${g.y}" width="${g.size_width}" height="${g.size_height}"></vr-ellipse>"""
       case g: Rectangle => s"""<vr-box x-pos="${g.x}" y-pos="${g.y}" width="${g.size_width}" height="${g.size_height}"></vr-box>"""
@@ -108,7 +114,7 @@ object VrGeneratorConnectionDefinition {
     """
   }
 
-  def getElement(geometric: GeometricModel): PolymerFile = {
+  def getElement(geometric: GeometricModel): String = {
     geometric match {
       case g: Line => "Line"
       case g: Ellipse => "ellipse"
