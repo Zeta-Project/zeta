@@ -182,15 +182,15 @@ object StyleGenerator {
   /** generates gradient background */
   private def createGradientAttributes(gr: Gradient, horizontal: Boolean): String = {
     s"""
-      fill: {
-        type: 'linearGradient',
-        stops: [
-          ${
+      |  fill: {
+      |    type: 'linearGradient',
+      |    stops: [
+      |    ${
       gr.area.map(
         area => s"offset: '${(area.offset * 100).toInt}%', color: '${area.color.getRGBValue}'"
       ).mkString("{", "\n}, {", "}")
     }
-        ]
+      |    ]
         ${
       if (horizontal) {
         ""
@@ -198,8 +198,8 @@ object StyleGenerator {
         """,attrs: { x1: '0%', y1: '0%', x2: '0%', y2: '100%'}"""
       }
     }
-      },
-    """
+      |  },
+    """.stripMargin
   }
 
   /** generates simple one colored background */

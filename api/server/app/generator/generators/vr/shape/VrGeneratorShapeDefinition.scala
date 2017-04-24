@@ -83,14 +83,14 @@ object VrGeneratorShapeDefinition {
 
   private def generateImports(): String = {
     s"""
-       | <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
-       | <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
+      | <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-resize.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-highlight.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-look.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-inner-sizing.html">
+      | <link rel="import" href="/assets/prototyp/behaviors/vr-connect.html">
     """.stripMargin
   }
 
@@ -111,7 +111,7 @@ object VrGeneratorShapeDefinition {
   }
 
   private def generateBehaviors(): String = {
-    """
+    s"""
       | behaviors: [
       |   VrBehavior.Move,
       |   VrBehavior.Resize,
@@ -130,29 +130,29 @@ object VrGeneratorShapeDefinition {
       geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
     )
     s"""
-       | ready: function() {
-       |   var self = this;
-       |   this.highlight = true;
-       |   this.resizeVertical = true;
-       |   this.resizeHorizontal = true;
-       |   this.moveHorizontal = true;
-       |   this.moveVertical = true;
-       |   this.minMoveHorizontal = 0;
-       |   this.maxMoveVertical = 0;
-       |   this.height = ${totalSize._1.toInt}
-       |   this.width = ${totalSize._2.toInt}
-       |   ${createInnerSizing(geometrics, totalSize)}
-       |
+      | ready: function() {
+      |   var self = this;
+      |   this.highlight = true;
+      |   this.resizeVertical = true;
+      |   this.resizeHorizontal = true;
+      |   this.moveHorizontal = true;
+      |   this.moveVertical = true;
+      |   this.minMoveHorizontal = 0;
+      |   this.maxMoveVertical = 0;
+      |   this.height = ${totalSize._1.toInt}
+      |   this.width = ${totalSize._2.toInt}
+      |   ${createInnerSizing(geometrics, totalSize)}
+      |
       |   function create(element, text, center, position, min, max, percentage) {
-       |     //var element = new VrElement.Box();
-       |     element.width = self.width;
-       |     element.xPos = 0;
-       |     element.text = text;
-       |     element.textCener = center;
-       |     Polymer.dom(self.root).appendChild(element);
-       |     self.registerInnerSizingElement(element, position, min, max, percentage);
-       |   }
-       | },
+      |     //var element = new VrElement.Box();
+      |     element.width = self.width;
+      |     element.xPos = 0;
+      |     element.text = text;
+      |     element.textCener = center;
+      |     Polymer.dom(self.root).appendChild(element);
+      |     self.registerInnerSizingElement(element, position, min, max, percentage);
+      |   }
+      | },
     """.stripMargin
   }
 
@@ -167,29 +167,29 @@ object VrGeneratorShapeDefinition {
           val position = c.position.getOrElse((0, 0))
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
           s"""
-            ${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
-            create(
-              new VrElement.${element.capitalize}(),
-              ${
+            |  ${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
+            |  create(
+            |    new VrElement.${element.capitalize}(),
+            |    ${
             if (hasText(wrapper)) {
               "this.text" + (textCount - 1)
             } else {
               "\"\""
             }
           },
-              true,
-              {
-                x: ${position._1 / totalSize._2},
-                y: -${position._2 / totalSize._1}
-              },
-              null,
-              null,
-              {
-                height: ${c.size_height / totalSize._1},
-                width: ${c.size_width / totalSize._2}
-              }
-            );
-            ${createInnerSizing(wrapper.children, totalSize)}
+            |    true,
+            |    {
+            |      x: ${position._1 / totalSize._2},
+            |      y: -${position._2 / totalSize._1}
+            |    },
+            |    null,
+            |    null,
+            |    {
+            |      height: ${c.size_height / totalSize._1},
+            |      width: ${c.size_width / totalSize._2}
+            |    }
+            |  );
+            |  ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
         case _ => g.toString

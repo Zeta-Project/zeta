@@ -32,39 +32,39 @@ object VrGeneratorConnectionDefinition {
 
   def generatePolymerElement(conn: Connection): String = {
     s"""
-    <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-connection.html">
-    <link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-polyline.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-placing.html">
-    <link rel="import" href="/assets/prototyp/elements/vr-point.html">
-    ${importPlacing(conn.placing)}
-
-    <dom-module id="vr-connection-${conn.name}">
-      <template>
-        <!-- Polyline is always needed -->
-        <vr-polyline id="line" ${
+      |<link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
+      |<link rel="import" href="/assets/prototyp/behaviors/vr-connection.html">
+      |<link rel="import" href="/assets/prototyp/behaviors/vr-delete.html">
+      |<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">
+      |<link rel="import" href="/assets/prototyp/elements/vr-placing.html">
+      |<link rel="import" href="/assets/prototyp/elements/vr-point.html">
+      |${importPlacing(conn.placing)}
+      |
+      |<dom-module id="vr-connection-${conn.name}">
+      |  <template>
+      |    <!-- Polyline is always needed -->
+      |    <vr-polyline id="line" ${
       if (conn.style.get.line_style.get == DASH) {
         "dashed"
       } else {
         ""
       }
     }></vr-polyline>
-        ${conn.placing.map(generatePlacing).mkString}
-      </template>
-    </dom-module>
-
-    <script>
-      window.VrElement = window.VrElement || {};
-      VrElement.Connection${conn.name.capitalize} = Polymer({
-        is: "vr-connection-${conn.name}",
-        behaviors: [
-          VrBehavior.Connection,
-          VrBehavior.Delete
-        ]
-      });
-    </script>
-    """
+      |    ${conn.placing.map(generatePlacing).mkString}
+      |  </template>
+      |</dom-module>
+      |
+      |<script>
+      |  window.VrElement = window.VrElement || {};
+      |  VrElement.Connection${conn.name.capitalize} = Polymer({
+      |    is: "vr-connection-${conn.name}",
+      |    behaviors: [
+      |      VrBehavior.Connection,
+      |      VrBehavior.Delete
+      |    ]
+      |  });
+      |</script>
+    """.stripMargin
   }
 
   def importPlacing(placings: List[Placing]): String = {
