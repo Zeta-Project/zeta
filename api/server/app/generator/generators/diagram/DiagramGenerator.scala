@@ -2,37 +2,37 @@ package generator.generators.diagram
 
 import java.nio.file.Paths
 import java.nio.file.Files
+
 import generator.model.diagram.Diagram
+import models.file.File
 
 /**
-  * The DiagramGenerator Object
-  */
+ * The DiagramGenerator Object
+ */
 object DiagramGenerator {
   private val JOINTJS_STENCIL_FILENAME = "stencil.js"
   private val JOINTJS_VALIDATOR_FILENAME = "validator.js"
   private val JOINTJS_LINKHELPER_FILENAME = "linkhelper.js"
 
   /**
-    * generates the files stencil.js, validator.js and linkhelper.js
-    */
+   * generates the files stencil.js, validator.js and linkhelper.js
+   */
   def doGenerate(diagram: Diagram, location: String): Unit = {
-    val DEFAULT_DIAGRAM_LOCATION = location
+    val diaGen = doGenerateFile(diagram, location)
 
-    val diaGen = doGenerateFile(diagram)
-
-    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION + JOINTJS_STENCIL_FILENAME), diaGen.stencil.getBytes)
-    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION + JOINTJS_VALIDATOR_FILENAME), diaGen.validator.getBytes)
-    Files.write(Paths.get(DEFAULT_DIAGRAM_LOCATION + JOINTJS_LINKHELPER_FILENAME), diaGen.linkhelper.getBytes)
+    diaGen.foreach(f => Files.write(Paths.get(f.name), f.content.getBytes))
   }
 
-  def doGenerateFile(diagram: Diagram): DiagramGenerator = {
+  def doGenerateFile(diagram: Diagram, location: String): List[File] = {
+    val DEFAULT_DIAGRAM_LOCATION = location
     val packageName = "zeta"
     //FIXME setting variable in object
     StencilGenerator.setPackageName(packageName)
-    DiagramGenerator(
-      stencil = StencilGenerator.generate(diagram),
-      validator = ValidatorGenerator.generate(diagram),
-      linkhelper = LinkhelperGenerator.generate(diagram)
+
+    List(
+      File(DEFAULT_DIAGRAM_LOCATION + JOINTJS_STENCIL_FILENAME, StencilGenerator.generate(diagram)),
+      File(DEFAULT_DIAGRAM_LOCATION + JOINTJS_VALIDATOR_FILENAME, ValidatorGenerator.generate(diagram)),
+      File(DEFAULT_DIAGRAM_LOCATION + JOINTJS_LINKHELPER_FILENAME, LinkhelperGenerator.generate(diagram))
     )
   }
 }
