@@ -2,6 +2,7 @@ package controller
 
 import java.util.UUID
 
+import org.scalajs.dom.console
 import org.scalajs.jquery
 import org.scalajs.jquery.JQueryAjaxSettings
 import org.scalajs.jquery.JQueryXHR
@@ -70,7 +71,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
       success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
       },
       error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
-        println(s"Cannot save: $errorThrown")
+        console.log(s"Cannot save: $errorThrown")
       }
     ).asInstanceOf[JQueryAjaxSettings])
   }

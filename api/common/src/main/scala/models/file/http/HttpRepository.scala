@@ -4,6 +4,7 @@ import models.document.Document
 import models.file.File
 import models.file.Repository
 import models.file.Specification
+import org.slf4j.LoggerFactory
 import play.api.libs.ws.WSClient
 import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
@@ -21,6 +22,7 @@ object HttpRepository {
  */
 class HttpRepository(session: String)(implicit client: WSClient) extends Repository {
 
+  private val logger = LoggerFactory.getLogger(HttpRepository.getClass)
   def request(address: String): WSRequest = client.url(address).withHeaders("Cookie" -> s"SyncGatewaySession=${session};")
 
   /**
@@ -41,8 +43,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
         if (response.status == 201) {
           p.success()
         } else {
-          println(response.statusText)
-          println(response.status)
+          logger.info(s"${response.statusText} - ${response.status}")
           p.failure(new Exception(s"The file '${file.name}' could not be saved to the document ${doc}'"))
         }
       }.recover {

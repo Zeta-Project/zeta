@@ -1,18 +1,17 @@
 import generator.Result
 import generator.Success
 import generator.Transformer
-
 import models.document.Filter
 import models.document.Generator
 import models.document.GeneratorImage
 import models.document.ModelEntity
-import models.document.{ Repository => Documents }
+import models.document.{Repository => Documents}
 import models.file.File
-import models.file.{ Repository => Files }
+import models.file.{Repository => Files}
 import models.remote.Remote
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
-
+import org.slf4j.LoggerFactory
 import rx.lang.scala.Notification.OnCompleted
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
@@ -21,7 +20,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+/**
+ * Main class of remote generator
+ */
 object Main extends Template[CreateOptions, RemoteOptions] {
+
+  private val logger = LoggerFactory.getLogger(getClass)
+
   override def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {
     for {
       image <- documents.get[GeneratorImage](image)
@@ -62,7 +67,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       val merged = r1.merge(r2)
 
       merged.materialize.subscribe(n => n match {
-        case OnNext(file) => println(file)
+        case OnNext(file) => logger.info(file.toString)
         case OnCompleted => p.success(this)
         case OnError(err) => p.failure(err)
       })
@@ -112,18 +117,16 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    * @return The Result of the generator
    */
   override def runGeneratorWithOptions(options: RemoteOptions)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {
-    println(s"called with options ${options}")
+    logger.info(s"called with options ${options}")
     remote.emit[File](File(options.nodeType, "Started and sleep now"))
     Thread.sleep(10000)
     val p = Promise[Result]
     documents.get[ModelEntity](options.modelId).map { entity =>
-      entity.model.elements.values.foreach { element =>
-        element match {
-          case node: Node => if (node.`type`.name == options.nodeType) {
-            remote.emit[File](File(options.nodeType, node.`type`.name))
-          }
-          case edge: Edge => // ignore
+      entity.model.elements.values.foreach {
+        case node: Node => if (node.`type`.name == options.nodeType) {
+          remote.emit[File](File(options.nodeType, node.`type`.name))
         }
+        case edge: Edge => // ignore
       }
       p.success(Success())
     }

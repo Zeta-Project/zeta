@@ -16,6 +16,7 @@ import models.remote.Remote
 import models.remote.RemoteGenerator
 import models.session.SyncGatewaySession
 import org.rogach.scallop.ScallopConf
+import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
@@ -63,6 +64,7 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
 }
 
 abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: Reads[T]) extends App {
+  private val logger = LoggerFactory.getLogger(getClass)
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()
@@ -80,11 +82,11 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val raw = cmd.options.getOrElse("")
     parseCallOptions(raw).map { opt =>
       runGeneratorWithOptions(opt).map { result =>
-        println(result.message)
+        logger.info(result.message)
         System.exit(result.status)
       }.recover {
         case e: Exception =>
-          System.err.println(e)
+          logger.error(e.getMessage, e)
           System.exit(1)
       }
     }
@@ -92,37 +94,37 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val model = cmd.model.getOrElse("")
     val generator = cmd.generator.getOrElse("")
     runGeneratorForSingleModel(generator, model).map { result =>
-      println(result.message)
+      logger.info(result.message)
       System.exit(result.status)
     }.recover {
       case e: Exception =>
-        System.err.println(e)
+        logger.error(e.getMessage, e)
         System.exit(1)
     }
   } else if (cmd.filter.supplied) {
     val filter = cmd.filter.getOrElse("")
     val generator = cmd.generator.getOrElse("")
     runGeneratorWithFilter(generator, filter).map { result =>
-      println(result.message)
+      logger.info(result.message)
       System.exit(result.status)
     }.recover {
       case e: Exception =>
-        System.err.println(e)
+        logger.error(e.getMessage, e)
         System.exit(1)
     }
   } else if (cmd.create.supplied) {
     val options = cmd.create.getOrElse("")
     val image = cmd.image.getOrElse("")
     parseGeneratorCreateOptions(options, image).map { result =>
-      println(result.message)
+      logger.info(result.message)
       System.exit(result.status)
     }.recover {
       case e: Exception =>
-        System.err.println(e)
+        logger.error(e.getMessage, e)
         System.exit(1)
     }
   } else {
-    System.err.println("No suitable options are provided to run the generator")
+    logger.error("No suitable options are provided to run the generator")
     System.exit(1)
   }
 
@@ -150,7 +152,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
 
   private def executeTransformation(generator: Transformer, filter: Filter): Future[Result] = {
     val p = Promise[Result]
-    println("run the generator")
+    logger.info("run the generator")
 
     val start: Future[Transformer] = generator.prepare(filter.instances)
     val futures = filter.instances.foldLeft(start) {

@@ -4,6 +4,7 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
 import generator.parser.CommonParserMethods
+import org.slf4j.LoggerFactory
 import parser.IDtoStyle
 
 /**
@@ -24,6 +25,8 @@ trait CommonLayout extends Layout {
  * CommonLayoutParser
  */
 object CommonLayoutParser extends CommonParserMethods {
+
+  private val logger = LoggerFactory.getLogger(CommonLayoutParser.getClass)
 
   /**
    * @param geoModel GeoModel instance
@@ -75,12 +78,12 @@ object CommonLayoutParser extends CommonParserMethods {
 
     size_w match {
       case None =>
-        println("no size was given for Position in: " + geoModel.typ)
+        logger.info("no size was given for Position in: " + geoModel.typ)
         None
       case Some(width) =>
         size_h match {
           case None =>
-            println("no size was given for Position in: " + geoModel.typ)
+            logger.info("no size was given for Position in: " + geoModel.typ)
             None
           case Some(height) =>
             Some(new CommonLayout {
