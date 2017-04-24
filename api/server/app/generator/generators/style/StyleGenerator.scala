@@ -9,37 +9,42 @@ import generator.model.style.Style
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.HORIZONTAL
-
 import java.nio.file.Paths
 import java.nio.file.Files
 
+import models.file.File
+
 /**
-  * The StyleGenerator object, responsible for generation of style.js
-  */
+ * The StyleGenerator object, responsible for generation of style.js
+ */
 object StyleGenerator {
 
-  def filename = "style.js"
+  private val Filename = "style.js"
 
   /**
-    * Generates the Output String and writes the String
-    * to the file style.js in the outputLocation
-    */
+   * Generates the Output String and writes the String
+   * to the file style.js in the outputLocation
+   */
   def doGenerate(styles: List[Style], outputLocation: String): Unit = {
-    val output = doGenerateFile(styles)
+    val output = doGenerateFile(styles, outputLocation)
 
-    Files.write(Paths.get(outputLocation + filename), output.getBytes)
+    Files.write(Paths.get(output.name), output.content.getBytes)
   }
 
   /**
-    *
-    * @param styles the Styles
-    * @return Generator as String
-    */
-  def doGenerateFile(styles: List[Style]): String = {
-    s"""
+   *
+   * @param styles         the Styles
+   * @param outputLocation the path of the file
+   * @return Generator as File
+   */
+  def doGenerateFile(styles: List[Style], outputLocation: String): File = {
+    val content =
+      s"""
         ${generateGetStyle(styles)}
         ${generateGetDiagramHighlighting(styles)}
       """
+
+    File(outputLocation + Filename, content)
   }
 
   /** Generates the getStyle function */
@@ -70,8 +75,8 @@ object StyleGenerator {
     """
 
   /**
-    * generates getDiagramHighlighting function with the highlighting styles
-    */
+   * generates getDiagramHighlighting function with the highlighting styles
+   */
   private def generateGetDiagramHighlighting(styles: List[Style]): String = {
     s"""
       function getDiagramHighlighting(stylename) {
@@ -88,9 +93,9 @@ object StyleGenerator {
   }
 
   /**
-    * generates a case for the switch case of the getDiagramHilighting
-    */
-  private def generateDiagramHighlightingCases(s: Style) = {
+   * generates a case for the switch case of the getDiagramHilighting
+   */
+  private def generateDiagramHighlightingCases(s: Style): String = {
     val highlighting = s"""${getSelected(s)}${getMultiselected(s)}${getAllowed(s)}${getUnallowed(s)}"""
     if (!highlighting.isEmpty) {
       raw"""
@@ -103,7 +108,7 @@ object StyleGenerator {
     }
   }
 
-  private def getSelected(s: Style) = {
+  private def getSelected(s: Style): String = {
     s.selected_highlighting match {
       case None => ""
       case Some(value) =>
@@ -111,7 +116,7 @@ object StyleGenerator {
     }
   }
 
-  private def getMultiselected(s: Style) = {
+  private def getMultiselected(s: Style): String = {
     s.multiselected_highlighting match {
       case None => ""
       case Some(value) =>
@@ -144,7 +149,7 @@ object StyleGenerator {
     """
 
   /** generates all text style attributes */
-  def fontAttributes(s: Style) = {
+  def fontAttributes(s: Style): String = {
     raw"""
       'dominant-baseline': "text-before-edge",
       'font-family': '${s.font_name.getOrElse("sans-serif")}',
@@ -176,7 +181,7 @@ object StyleGenerator {
     """
   }
 
-  private def checkBackgroundGradientNecessary(s: Style) = {
+  private def checkBackgroundGradientNecessary(s: Style): Boolean = {
     s.background_color match {
       case None => false
       case Some(value) => value match {
@@ -187,7 +192,7 @@ object StyleGenerator {
   }
 
   /** generates gradient background */
-  private def createGradientAttributes(gr: Gradient, horizontal: Boolean) = {
+  private def createGradientAttributes(gr: Gradient, horizontal: Boolean): String = {
     s"""
       fill: {
         type: 'linearGradient',
@@ -221,7 +226,7 @@ object StyleGenerator {
   }
 
   /** generates the stroke attributes */
-  private def createLineAttributesFromLayout(s: Style) = {
+  private def createLineAttributesFromLayout(s: Style): String = {
     s.line_color match {
       case None =>
         """
@@ -242,14 +247,14 @@ object StyleGenerator {
     }
   }
 
-  private def processLineWidth(lineWidth: Option[Int]) = {
+  private def processLineWidth(lineWidth: Option[Int]): String = {
     lineWidth match {
       case None => ""
       case Some(value) => """,'stroke-width':""" + value
     }
   }
 
-  private def processLineStyle(lineStyle: Option[LineStyle]) = {
+  private def processLineStyle(lineStyle: Option[LineStyle]): String = {
     lineStyle match {
       case None => ""
       case Some(value) => value match {
