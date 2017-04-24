@@ -10,7 +10,6 @@
     <option name="PRIVATE_METHOD_TYPE_ANNOTATION" value="2" />
   </ScalaCodeStyleSettings>
   <codeStyleSettings language="Scala">
-    <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
     <option name="DOWHILE_BRACE_FORCE" value="3" />
     <option name="WHILE_BRACE_FORCE" value="3" />
     <option name="FOR_BRACE_FORCE" value="1" />
