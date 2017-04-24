@@ -20,7 +20,7 @@ object DiagramGenerator {
   def doGenerateFile(diagram: Diagram, location: String): List[File] = {
     val DEFAULT_DIAGRAM_LOCATION = location
     val packageName = "zeta"
-    //FIXME setting variable in object
+    // FIXME setting variable in object
     StencilGenerator.setPackageName(packageName)
 
     List(

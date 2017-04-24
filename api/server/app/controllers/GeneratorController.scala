@@ -30,8 +30,6 @@ import utils.auth.RepositoryFactory
 
 import scala.annotation.tailrec
 
-//import scala.concurrent.ExecutionContext.Implicits.global
-
 class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
   private def repository[A](request: SecuredRequest[DefaultEnv, A]): Repository =
@@ -41,12 +39,12 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
     repository(req).get[MetaModelEntity](metaModelUuid)
       .map(createGenerators(_) match {
-             case Left(_) => Ok("Generation successful")
-             case Right(error) => BadRequest(error)
-           })
+        case Left(_) => Ok("Generation successful")
+        case Right(error) => BadRequest(error)
+      })
       .recover {
-                 case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
-               }
+        case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
+      }
   }
 
   )
@@ -54,14 +52,15 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
   private type ErrorMessage = String
 
   def createGenerators(metaModel: MetaModelEntity): Either[List[File], ErrorMessage] = {
-    val metaModelUuid = metaModel._id
-    val generatorOutputLocation: String = System.getenv("PWD") + "/server/model_specific/" + metaModelUuid + "/"
-    val vrGeneratorOutputLocation = System.getenv("PWD") + "/server/model_specific/vr/" + metaModelUuid + "/"
-
-    Files.createDirectories(Paths.get(generatorOutputLocation))
-    Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
-
     val hierarchyContainer = Cache()
+    parseMetaModel(metaModel, hierarchyContainer) match {
+      case Right(error) => Right(error)
+      case Left(dia) => createGeneratorFile(metaModel, dia, hierarchyContainer)
+    }
+  }
+
+
+  private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Either[Diagram, ErrorMessage] = {
     val parser = new SprayParser(hierarchyContainer, metaModel)
 
     def tryParse[E, R](get: Dsl => Option[E], parse: E => List[R], name: String): Either[List[R], ErrorMessage] = {
@@ -77,37 +76,58 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
     }
 
     tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style") match {
+      case Right(err) => Right(err)
       case Left(_) =>
-      case Right(err) => return Right(err)
-    }
-
-    tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape") match {
-      case Left(_) =>
-      case Right(err) => return Right(err)
-    }
-
-    val diagramName = "Diagram"
-    val diagram = tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), diagramName) match {
-      case Right(err) => return Right(err)
-      case Left(Some(dia) :: _) => dia
-      case Left(_) => return Right(s"No $diagramName available")
-    }
-
-    def tryRecoverSingle(block: () => File, onFailure: String): () => Either[List[File], ErrorMessage] =
-      tryRecover(() => List(block()), onFailure)
-
-
-    def tryRecover(block: () => List[File], onFailure: String): () => Either[List[File], ErrorMessage] = {
-      def execute() = {
-        try {
-          Left(block())
-        } catch {
-          case _: Throwable => Right(s"failed on: $onFailure")
+        tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape") match {
+          case Right(err) => Right(err)
+          case Left(_) =>
+            val diagramName = "Diagram"
+            tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), diagramName) match {
+              case Right(err) => Right(err)
+              case Left(Some(dia) :: _) => Left(dia)
+              case Left(_) => Right(s"No $diagramName available")
+            }
         }
-      }
-
-      () => execute()
     }
+  }
+
+
+  private def tryRecoverSingle(block: () => File, onFailure: String): () => Either[List[File], ErrorMessage] =
+    tryRecover(() => List(block()), onFailure)
+
+
+  private def tryRecover(block: () => List[File], onFailure: String): () => Either[List[File], ErrorMessage] = {
+    def execute() = {
+      try {
+        Left(block())
+      } catch {
+        case _: Throwable => Right(s"failed on: $onFailure")
+      }
+    }
+
+    () => execute()
+  }
+
+  @tailrec
+  private def generate(generators: List[() => Either[List[File], ErrorMessage]], carry: List[File] = Nil): Either[List[File], ErrorMessage] =
+    generators match {
+      case Nil => Left(carry)
+      case head :: tail => head() match {
+        case r: Right[_, _] => r
+        case Left(list) => generate(tail, carry ::: list)
+      }
+    }
+
+
+  private def createGeneratorFile(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Either[List[File], ErrorMessage] = {
+    val metaModelUuid = metaModel._id
+    val currentDir = System.getenv("PWD")
+    val generatorOutputLocation: String = currentDir + "/server/model_specific/" + metaModelUuid + "/"
+    val vrGeneratorOutputLocation = currentDir + "/server/model_specific/vr/" + metaModelUuid + "/"
+
+    Files.createDirectories(Paths.get(generatorOutputLocation))
+    Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
+
 
     val styles = hierarchyContainer.styleHierarchy.nodeView.values.map(_.data).toList
 
@@ -120,16 +140,6 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
       tryRecover(() => VrShapeGenerator.doGenerateFile(hierarchyContainer, vrGeneratorOutputLocation, diagram.nodes), "VrShapeGenerator"),
       tryRecover(() => VrDiagramGenerator.doGenerateFiles(diagram, vrGeneratorOutputLocation), "VrDiagramGenerator")
     )
-
-    @tailrec
-    def generate(generators: List[() => Either[List[File], ErrorMessage]], carry: List[File] = Nil): Either[List[File], ErrorMessage] =
-      generators match {
-        case Nil => Left(carry)
-        case head :: tail => head() match {
-          case r: Right[_, _] => r
-          case Left(list) => generate(tail, carry ::: list)
-        }
-      }
 
 
     val res = generate(generators)

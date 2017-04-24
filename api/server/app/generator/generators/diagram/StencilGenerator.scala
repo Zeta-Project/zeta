@@ -7,11 +7,11 @@ import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
 /**
-  * The StencilGenerator object, responsible for the generation of the String for stencil.js
-  */
+ * The StencilGenerator object, responsible for the generation of the String for stencil.js
+ */
 object StencilGenerator {
 
-  //FIXME variable in object
+  // FIXME variable in object
   var packageName = ""
 
   def generate(diagram: Diagram) =
@@ -77,9 +77,10 @@ object StencilGenerator {
     Stencil.shapes = {
       ${
       {
-        for {((key, value), i) <- mapping.zipWithIndex} yield
+        for {((key, value), i) <- mapping.zipWithIndex} yield {
           s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
             """
+        }
       }.mkString(",")
     }
     };
@@ -91,13 +92,14 @@ object StencilGenerator {
     ${getVarName(group)}: [
       ${
       {
-        for {node <- nodes} yield
+        for {node <- nodes} yield {
           s"""${
             getVarName(node.name) + {
               if (node != nodes.last) "," else ""
             }
           }
             """
+        }
       }.mkString
     }
     ]
@@ -109,7 +111,7 @@ object StencilGenerator {
       s"""
       ${
         {
-          for {node <- diagram.nodes} yield
+          for {node <- diagram.nodes} yield {
             s"""
             ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
 
@@ -119,6 +121,7 @@ object StencilGenerator {
               }.mkString
             }
           """
+          }
         }.mkString
       }
       ${

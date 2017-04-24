@@ -34,7 +34,8 @@ object ShapeGenerator {
     val inspector = File(DEFAULT_SHAPE_LOCATION + JOINTJS_INSPECTOR_FILENAME, GeneratorInspectorDefinition.generate(shapes, packageName, attrs, nodes))
 
     // ElementAndInlineStyle
-    val elementAndInlineStyle = File(DEFAULT_SHAPE_LOCATION + JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME, GeneratorShapeAndInlineStyle.generate(shapes, packageName, attrs))
+    val elementAndInlineStyle = File(DEFAULT_SHAPE_LOCATION + JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME,
+      GeneratorShapeAndInlineStyle.generate(shapes, packageName, attrs))
 
     List(shape, connectionStyle, inspector, elementAndInlineStyle)
   }

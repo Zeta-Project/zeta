@@ -1,8 +1,5 @@
 package generator.generators.vr.shape
 
-import java.nio.file.Files
-import java.nio.file.Paths
-
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.connection.Placing
 import generator.model.shapecontainer.shape.geometrics.Ellipse
@@ -19,11 +16,6 @@ import models.file.File
 
 
 object VrGeneratorConnectionDefinition {
-  def generate(connections: Iterable[Connection], location: String) {
-    doGenerateFile(connections, location)
-      .map(f => Files.write(Paths.get(f.name), f.content.getBytes()))
-  }
-
 
   def doGenerateFile(connections: Iterable[Connection], location: String): List[File] = {
     connections.map(generateSingleFile(location)).toList

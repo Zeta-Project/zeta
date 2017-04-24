@@ -1,8 +1,6 @@
 package generator.generators.vr.shape
 
-import java.nio.file.Files
-import java.nio.file.Paths
-
+import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Ellipse
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
 import generator.model.shapecontainer.shape.geometrics.Line
@@ -13,18 +11,12 @@ import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.shapecontainer.shape.geometrics.Wrapper
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
-import generator.model.shapecontainer.shape.Shape
 import models.file.File
 
 import scala.util.Try
 
 
 object VrGeneratorShapeDefinition {
-
-  def generate(shapes: List[Shape], location: String): Unit = {
-    doGenerateFile(shapes, location)
-      .map(f => Files.write(Paths.get(f.name), f.content.getBytes()))
-  }
 
   def doGenerateFile(shapes: List[Shape], location: String): List[File] = {
     shapes.filterNot(_.name != "rootShape").map(generateSingleFile(location))
