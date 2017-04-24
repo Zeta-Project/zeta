@@ -52,46 +52,7 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
   private type ErrorMessage = String
 
-  private def createGeneratorsOld(metaModel: MetaModelEntity): Option[ErrorMessage] = {
-    val metaModelUuid = metaModel._id
-    val generatorOutputLocation: String = System.getenv("PWD") + "/server/model_specific/" + metaModelUuid + "/"
-    val vrGeneratorOutputLocation = System.getenv("PWD") + "/server/model_specific/vr/" + metaModelUuid + "/"
-
-    Files.createDirectories(Paths.get(generatorOutputLocation))
-    Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
-
-    val hierarchyContainer = Cache()
-    val parser = new SprayParser(hierarchyContainer, metaModel)
-
-    val (diagram, error) = try {
-      parser.parseStyle(metaModel.dsl.style.get.code)
-      parser.parseShape(metaModel.dsl.shape.get.code)
-      val diagram = parser.parseDiagram(metaModel.dsl.diagram.get.code).head
-      (diagram, None)
-    } catch {
-      case _: Throwable =>
-        (None, Some("There occurred an error during parsing"))
-    }
-
-    error.orElse {
-                   try {
-                     StyleGenerator.doGenerate((for {style <- hierarchyContainer.styleHierarchy.nodeView} yield style._2.data).toList, generatorOutputLocation)
-                     ShapeGenerator.doGenerate(hierarchyContainer, generatorOutputLocation, diagram.get.nodes)
-                     DiagramGenerator.doGenerate(diagram.get, generatorOutputLocation)
-
-                     // Generate files for the VR - Editor
-                     VrShapeGenerator.doGenerate(hierarchyContainer, vrGeneratorOutputLocation, diagram.get.nodes)
-                     VrDiagramGenerator.doGenerate(diagram.get, vrGeneratorOutputLocation)
-                     None
-                   } catch {
-                     case _: Throwable => Some("There occurred an error during generation");
-                   }
-                 }
-    error
-  }
-
   def createGenerators(metaModel: MetaModelEntity): Option[ErrorMessage] = {
-
     val metaModelUuid = metaModel._id
     val generatorOutputLocation: String = System.getenv("PWD") + "/server/model_specific/" + metaModelUuid + "/"
     val vrGeneratorOutputLocation = System.getenv("PWD") + "/server/model_specific/vr/" + metaModelUuid + "/"

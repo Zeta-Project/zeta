@@ -17,12 +17,6 @@ object DiagramGenerator {
   /**
    * generates the files stencil.js, validator.js and linkhelper.js
    */
-  def doGenerate(diagram: Diagram, location: String): Unit = {
-    val diaGen = doGenerateFile(diagram, location)
-
-    diaGen.foreach(f => Files.write(Paths.get(f.name), f.content.getBytes))
-  }
-
   def doGenerateFile(diagram: Diagram, location: String): List[File] = {
     val DEFAULT_DIAGRAM_LOCATION = location
     val packageName = "zeta"
@@ -36,5 +30,3 @@ object DiagramGenerator {
     )
   }
 }
-
-case class DiagramGenerator(stencil: String, validator: String, linkhelper: String)

@@ -1,8 +1,5 @@
 package generator.generators.vr.diagram
 
-import java.nio.file.Files
-import java.nio.file.Paths
-
 import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.shapecontainer.connection.Connection
@@ -10,14 +7,10 @@ import models.file.File
 
 
 object VrDiagramGenerator {
-  val EXTENDED_NEW_BEHAVIOR = "vr-new-extended.html"
-  val EXTENDED_CONNECT_BEHAVIOR = "vr-connect-extended.html"
-  val SCENE = "vr-scene.html"
-  val SAVE_BEHAVIOR = "vr-save.html"
-
-  def doGenerate(diagram: Diagram, location: String): Unit = {
-    doGenerateFiles(diagram, location).map(f => Files.write(Paths.get(f.name), f.content.getBytes()))
-  }
+  private val EXTENDED_NEW_BEHAVIOR = "vr-new-extended.html"
+  private val EXTENDED_CONNECT_BEHAVIOR = "vr-connect-extended.html"
+  private val SCENE = "vr-scene.html"
+  private val SAVE_BEHAVIOR = "vr-save.html"
 
   def doGenerateFiles(diagram: Diagram, location: String): List[File] = {
     val DEFAULT_DIAGRAM_LOCATION = location

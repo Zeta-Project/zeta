@@ -9,9 +9,6 @@ import generator.model.style.Style
 import generator.model.style.color.Transparent
 import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.HORIZONTAL
-import java.nio.file.Paths
-import java.nio.file.Files
-
 import models.file.File
 
 /**
@@ -21,15 +18,6 @@ object StyleGenerator {
 
   private val Filename = "style.js"
 
-  /**
-   * Generates the Output String and writes the String
-   * to the file style.js in the outputLocation
-   */
-  def doGenerate(styles: List[Style], outputLocation: String): Unit = {
-    val output = doGenerateFile(styles, outputLocation)
-
-    Files.write(Paths.get(output.name), output.content.getBytes)
-  }
 
   /**
    *
