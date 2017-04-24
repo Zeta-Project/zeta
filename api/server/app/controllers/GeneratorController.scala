@@ -41,18 +41,19 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
     repository(req).get[MetaModelEntity](metaModelUuid)
       .map(createGenerators(_) match {
-             case None => Ok("Generation successful")
-             case Some(error) => BadRequest(error)
-           }).recover {
-                        case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
-                      }
+             case Left(_) => Ok("Generation successful")
+             case Right(error) => BadRequest(error)
+           })
+      .recover {
+                 case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
+               }
   }
 
   )
 
   private type ErrorMessage = String
 
-  def createGenerators(metaModel: MetaModelEntity): Option[ErrorMessage] = {
+  def createGenerators(metaModel: MetaModelEntity): Either[List[File], ErrorMessage] = {
     val metaModelUuid = metaModel._id
     val generatorOutputLocation: String = System.getenv("PWD") + "/server/model_specific/" + metaModelUuid + "/"
     val vrGeneratorOutputLocation = System.getenv("PWD") + "/server/model_specific/vr/" + metaModelUuid + "/"
@@ -77,19 +78,19 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
     tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style") match {
       case Left(_) =>
-      case Right(err) => return Some(err)
+      case Right(err) => return Right(err)
     }
 
     tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape") match {
       case Left(_) =>
-      case Right(err) => return Some(err)
+      case Right(err) => return Right(err)
     }
 
     val diagramName = "Diagram"
     val diagram = tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), diagramName) match {
-      case Right(err) => return Some(err)
+      case Right(err) => return Right(err)
       case Left(Some(dia) :: _) => dia
-      case Left(_) => return Some(s"No $diagramName available")
+      case Left(_) => return Right(s"No $diagramName available")
     }
 
     def tryRecoverSingle(block: () => File, onFailure: String): () => Either[List[File], ErrorMessage] =
@@ -135,14 +136,11 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
     res match {
       case Left(files) =>
         files.foreach(f => Files.write(Paths.get(f.name), f.content.getBytes))
-        None
-      case Right(error) =>
-        Some(error)
+      case _ =>
     }
 
-
+    res
   }
-
 
 }
 
