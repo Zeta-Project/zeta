@@ -14,30 +14,31 @@ import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.shapecontainer.shape.geometrics.Wrapper
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import generator.model.shapecontainer.shape.Shape
+import models.file.File
 
 import scala.util.Try
 
 
 object VrGeneratorShapeDefinition {
-  def generate(shapes: List[Shape], packageName: String, location: String): Unit = {
-    shapes.flatMap(generateFile).map(p => Files.write(Paths.get(location + p._1), p._2.getBytes()))
+
+  def generate(shapes: List[Shape], location: String): Unit = {
+    doGenerateFile(shapes, location)
+      .map(f => Files.write(Paths.get(f.name), f.content.getBytes()))
   }
 
-  private type FileName = String
-  private type PolymerFile = String
-
-  def generateFile(shape: Shape): Option[(FileName, PolymerFile)] = {
-    if (shape.name == "rootShape") {
-      None
-    } else {
-      val FILENAME = "vr-" + shape.name + ".html"
-
-      val polymerElement: String = generatePolymerElement(shape)
-      Some((FILENAME, polymerElement))
-    }
+  def doGenerateFile(shapes: List[Shape], location: String): List[File] = {
+    shapes.filterNot(_.name != "rootShape").map(generateSingleFile(location))
   }
 
-  private def generatePolymerElement(shape: Shape) = {
+
+  private def generateSingleFile(location: String)(shape: Shape): File = {
+    val FILENAME = "vr-" + shape.name + ".html"
+    val polymerElement: String = generatePolymerElement(shape)
+    File(location + FILENAME, polymerElement)
+  }
+
+
+  private def generatePolymerElement(shape: Shape): String = {
     val geometrics = shape.shapes.getOrElse(List())
     s"""
     ${generateImports()}
@@ -51,7 +52,7 @@ object VrGeneratorShapeDefinition {
       is: "vr-${shape.name}",
       observers: [ '_resizeConnection(xPos, yPos, width, height)' ],
 
-      ${generateBahaviors()}
+      ${generateBehaviors()}
       ${generateReadyFunction(geometrics)}
 
       _resizeConnection(xPos, yPos, width, height ${generateTextArgs(geometrics)}) {
@@ -88,7 +89,7 @@ object VrGeneratorShapeDefinition {
     """
   }
 
-  private def generateImports() = {
+  private def generateImports(): String = {
     s"""
        | <link rel="import" href="/assets/prototyp/bower_components/polymer/polymer.html">
        | <link rel="import" href="/assets/prototyp/behaviors/vr-move.html">
@@ -112,12 +113,12 @@ object VrGeneratorShapeDefinition {
         case g: PolyLine => s"""<link rel="import" href="/assets/prototyp/elements/vr-polyline.html">"""
         case g: RoundedRectangle => "<!-- VR has no RoundedRectangle -->"
         case g: Text => "<!-- Text -->" // not needed. Just for develop purpose
-        case _ => "<!-- no matching value -->" + g.toString()
+        case _ => "<!-- no matching value -->" + g.toString
       }
     }).mkString
   }
 
-  private def generateBahaviors() = {
+  private def generateBehaviors(): String = {
     """
       | behaviors: [
       |   VrBehavior.Move,
@@ -131,7 +132,7 @@ object VrGeneratorShapeDefinition {
     """.stripMargin
   }
 
-  private def generateReadyFunction(geometrics: List[GeometricModel]) = {
+  private def generateReadyFunction(geometrics: List[GeometricModel]): String = {
     val totalSize = (
       geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
       geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
@@ -199,7 +200,7 @@ object VrGeneratorShapeDefinition {
             ${createInnerSizing(wrapper.children, totalSize)}
           """
         }
-        case _ => g.toString()
+        case _ => g.toString
       }
     }).mkString
   }
@@ -208,7 +209,7 @@ object VrGeneratorShapeDefinition {
     wrapper.children.exists(_.isInstanceOf[Text])
   }
 
-  private def getElement(geometric: GeometricModel) = {
+  private def getElement(geometric: GeometricModel): String = {
     geometric match {
       case g: Line => "Line"
       case g: Ellipse => "ellipse"
@@ -221,15 +222,15 @@ object VrGeneratorShapeDefinition {
     }
   }
 
-  private def generateCalcMax(goemetrics: List[GeometricModel]) = {
-    val numberOfTexts = goemetrics.map(getAllTexts(_)).sum
+  private def generateCalcMax(goemetrics: List[GeometricModel]): String = {
+    val numberOfTexts = goemetrics.map(getAllTexts).sum
     (for {i <- 0 until numberOfTexts} yield {
       "calcMax(this.text" + i + ");\n"
     }).mkString
   }
 
-  private def generateTextArgs(geometrics: List[GeometricModel]) = {
-    val numberOfTexts = geometrics.map(getAllTexts(_)).sum
+  private def generateTextArgs(geometrics: List[GeometricModel]): String = {
+    val numberOfTexts = geometrics.map(getAllTexts).sum
     (for {i <- 0 until numberOfTexts} yield {
       " ,text" + i
     }).mkString
