@@ -96,9 +96,9 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
   private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val styles = hierarchyContainer.styleHierarchy.nodeView.values.map(_.data).toList
     val generators: List[() => Result[List[File]]] = List(
-      () => Result(() => List(StyleGenerator.doGenerateFile(styles)), "StyleGenerator"),
-      () => Result(() => ShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes), "ShapeGenerator"),
-      () => Result(() => DiagramGenerator.doGenerateFile(diagram), "DiagramGenerator")
+      () => StyleGenerator.doGenerateResult(styles).map(List(_)),
+      () => ShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
+      () => DiagramGenerator.doGenerateResult(diagram)
     )
 
     generate(generators)

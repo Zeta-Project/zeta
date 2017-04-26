@@ -10,6 +10,7 @@ import generator.model.style.color.Transparent
 import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.HORIZONTAL
 import models.file.File
+import models.result.Result
 
 /**
  * The StyleGenerator object, responsible for generation of style.js
@@ -20,19 +21,24 @@ object StyleGenerator {
 
 
   /**
-   *
    * @param styles the Styles
    * @return Generator as File
    */
-  def doGenerateFile(styles: List[Style]): File = {
-    val content =
-      s"""
-        ${generateGetStyle(styles)}
-        ${generateGetDiagramHighlighting(styles)}
-      """
-
-    File(Filename, content)
+  def doGenerateResult(styles: List[Style]): Result[File] = {
+    Result(() => File(Filename, doGenerateContent(styles)), "failed trying to create the Style generators")
   }
+
+  /**
+   * @param styles the Styles
+   * @return Generator as String
+   */
+  private def doGenerateContent(styles: List[Style]): String = {
+    s"""
+      |${generateGetStyle(styles)}
+      |${generateGetDiagramHighlighting(styles)}
+      """.stripMargin
+  }
+
 
   /** Generates the getStyle function */
   private def generateGetStyle(styles: List[Style]): String = {

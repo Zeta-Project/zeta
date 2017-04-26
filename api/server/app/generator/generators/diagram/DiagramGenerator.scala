@@ -1,10 +1,8 @@
 package generator.generators.diagram
 
-import java.nio.file.Paths
-import java.nio.file.Files
-
 import generator.model.diagram.Diagram
 import models.file.File
+import models.result.Result
 
 /**
  * The DiagramGenerator Object
@@ -17,7 +15,14 @@ object DiagramGenerator {
   /**
    * generates the files stencil.js, validator.js and linkhelper.js
    */
-  def doGenerateFile(diagram: Diagram): List[File] = {
+  def doGenerateResult(diagram: Diagram): Result[List[File]] = {
+    Result(() => doGenerateGenerators(diagram), "failed trying to create the Diagram generators")
+  }
+
+  /**
+   * generates the files stencil.js, validator.js and linkhelper.js
+   */
+  def doGenerateGenerators(diagram: Diagram): List[File] = {
     val packageName = "zeta"
     // FIXME setting variable in object
     StencilGenerator.setPackageName(packageName)

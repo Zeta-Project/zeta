@@ -3,6 +3,7 @@ package generator.generators.shape
 import generator.model.diagram.node.Node
 import generator.parser.Cache
 import models.file.File
+import models.result.Result
 
 /**
  * The ShapeGenerator Object
@@ -16,9 +17,16 @@ object ShapeGenerator {
 
 
   /**
+   * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js as Result
+   */
+  def doGenerateResult(cache: Cache, nodes: List[Node]): Result[List[File]] = {
+    Result(() => doGenerateGenerators(cache, nodes), "failed trying to create the Shape generators")
+  }
+
+  /**
    * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js
    */
-  def doGenerateFile(cache: Cache, nodes: List[Node]): List[File] = {
+  private def doGenerateGenerators(cache: Cache, nodes: List[Node]): List[File] = {
     val attrs = GeneratorShapeDefinition.attrsInspector
     val packageName = "zeta"
     val shapes = cache.shapeHierarchy.nodeView.values.map(s => s.data)
