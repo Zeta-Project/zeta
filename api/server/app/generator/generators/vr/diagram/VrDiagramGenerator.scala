@@ -12,16 +12,15 @@ object VrDiagramGenerator {
   private val SCENE = "vr-scene.html"
   private val SAVE_BEHAVIOR = "vr-save.html"
 
-  def doGenerateFiles(diagram: Diagram, location: String): List[File] = {
-    val DEFAULT_DIAGRAM_LOCATION = location
+  def doGenerateFiles(diagram: Diagram): List[File] = {
     val nodes = diagram.nodes
     val connections = diagram.edges.map(getConnection).groupBy(_.name).map(_._2.head)
 
     List(
-      File(DEFAULT_DIAGRAM_LOCATION + EXTENDED_NEW_BEHAVIOR, VrGeneratorNewBehavior.generate(nodes)),
-      File(DEFAULT_DIAGRAM_LOCATION + EXTENDED_CONNECT_BEHAVIOR, VrGeneratorConnectBehavior.generate(connections, diagram.edges)),
-      File(DEFAULT_DIAGRAM_LOCATION + SCENE, VrGeneratorScene.generate(nodes, connections)),
-      File(DEFAULT_DIAGRAM_LOCATION + SAVE_BEHAVIOR, VrGeneratorSaveBehavior.generate(nodes, connections, diagram))
+      File(EXTENDED_NEW_BEHAVIOR, VrGeneratorNewBehavior.generate(nodes)),
+      File(EXTENDED_CONNECT_BEHAVIOR, VrGeneratorConnectBehavior.generate(connections, diagram.edges)),
+      File(SCENE, VrGeneratorScene.generate(nodes, connections)),
+      File(SAVE_BEHAVIOR, VrGeneratorSaveBehavior.generate(nodes, connections, diagram))
     )
   }
 

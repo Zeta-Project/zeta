@@ -77,9 +77,10 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
   private def createGeneratorFile(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val metaModelUuid = metaModel._id
-    val currentDir = System.getenv("PWD")
-    val generatorOutputLocation: String = currentDir + "/server/model_specific/" + metaModelUuid + "/"
-    val vrGeneratorOutputLocation = currentDir + "/server/model_specific/vr/" + metaModelUuid + "/"
+
+    val currentDir = s"${System.getenv("PWD")}/server/model_specific"
+    val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
+    val vrGeneratorOutputLocation = s"$currentDir/vr/$metaModelUuid/"
 
     Files.createDirectories(Paths.get(generatorOutputLocation))
     Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
@@ -87,14 +88,18 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
     val styles = hierarchyContainer.styleHierarchy.nodeView.values.map(_.data).toList
 
+    def copyFile(location: String)(f: File): File = {
+      f.copy(name = location + f.name)
+    }
+
     val generators2: List[() => Result[List[File]]] = List(
-      () => Result(() => List(StyleGenerator.doGenerateFile(styles, generatorOutputLocation)), "StyleGenerator"),
-      () => Result(() => ShapeGenerator.doGenerateFile(hierarchyContainer, generatorOutputLocation, diagram.nodes), "ShapeGenerator"),
-      () => Result(() => DiagramGenerator.doGenerateFile(diagram, generatorOutputLocation), "DiagramGenerator"),
+      () => Result(() => List(copyFile(generatorOutputLocation)(StyleGenerator.doGenerateFile(styles))), "StyleGenerator"),
+      () => Result(() => ShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes).map(copyFile(generatorOutputLocation)), "ShapeGenerator"),
+      () => Result(() => DiagramGenerator.doGenerateFile(diagram).map(copyFile(generatorOutputLocation)), "DiagramGenerator"),
 
       // Generate files for the VR - Editor
-      () => Result(() => VrShapeGenerator.doGenerateFile(hierarchyContainer, vrGeneratorOutputLocation, diagram.nodes), "VrShapeGenerator"),
-      () => Result(() => VrDiagramGenerator.doGenerateFiles(diagram, vrGeneratorOutputLocation), "VrDiagramGenerator")
+      () => Result(() => VrShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes).map(copyFile(vrGeneratorOutputLocation)), "VrShapeGenerator"),
+      () => Result(() => VrDiagramGenerator.doGenerateFiles(diagram).map(copyFile(vrGeneratorOutputLocation)), "VrDiagramGenerator")
     )
 
     val res = generate(generators2)

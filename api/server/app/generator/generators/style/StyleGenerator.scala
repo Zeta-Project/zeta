@@ -21,18 +21,17 @@ object StyleGenerator {
 
   /**
    *
-   * @param styles         the Styles
-   * @param outputLocation the path of the file
+   * @param styles the Styles
    * @return Generator as File
    */
-  def doGenerateFile(styles: List[Style], outputLocation: String): File = {
+  def doGenerateFile(styles: List[Style]): File = {
     val content =
       s"""
         ${generateGetStyle(styles)}
         ${generateGetDiagramHighlighting(styles)}
       """
 
-    File(outputLocation + Filename, content)
+    File(Filename, content)
   }
 
   /** Generates the getStyle function */

@@ -17,16 +17,15 @@ object DiagramGenerator {
   /**
    * generates the files stencil.js, validator.js and linkhelper.js
    */
-  def doGenerateFile(diagram: Diagram, location: String): List[File] = {
-    val DEFAULT_DIAGRAM_LOCATION = location
+  def doGenerateFile(diagram: Diagram): List[File] = {
     val packageName = "zeta"
     // FIXME setting variable in object
     StencilGenerator.setPackageName(packageName)
 
     List(
-      File(DEFAULT_DIAGRAM_LOCATION + JOINTJS_STENCIL_FILENAME, StencilGenerator.generate(diagram)),
-      File(DEFAULT_DIAGRAM_LOCATION + JOINTJS_VALIDATOR_FILENAME, ValidatorGenerator.generate(diagram)),
-      File(DEFAULT_DIAGRAM_LOCATION + JOINTJS_LINKHELPER_FILENAME, LinkhelperGenerator.generate(diagram))
+      File(JOINTJS_STENCIL_FILENAME, StencilGenerator.generate(diagram)),
+      File(JOINTJS_VALIDATOR_FILENAME, ValidatorGenerator.generate(diagram)),
+      File(JOINTJS_LINKHELPER_FILENAME, LinkhelperGenerator.generate(diagram))
     )
   }
 }

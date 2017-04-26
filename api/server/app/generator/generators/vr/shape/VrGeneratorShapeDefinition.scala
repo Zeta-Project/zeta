@@ -18,15 +18,15 @@ import scala.util.Try
 
 object VrGeneratorShapeDefinition {
 
-  def doGenerateFile(shapes: List[Shape], location: String): List[File] = {
-    shapes.filterNot(_.name != "rootShape").map(generateSingleFile(location))
+  def doGenerateFile(shapes: List[Shape]): List[File] = {
+    shapes.filterNot(_.name != "rootShape").map(generateSingleFile)
   }
 
 
-  private def generateSingleFile(location: String)(shape: Shape): File = {
+  private def generateSingleFile(shape: Shape): File = {
     val FILENAME = "vr-" + shape.name + ".html"
     val polymerElement: String = generatePolymerElement(shape)
-    File(location + FILENAME, polymerElement)
+    File(FILENAME, polymerElement)
   }
 
 

@@ -17,16 +17,16 @@ import models.file.File
 
 object VrGeneratorConnectionDefinition {
 
-  def doGenerateFile(connections: Iterable[Connection], location: String): List[File] = {
-    connections.map(generateSingleFile(location)).toList
+  def doGenerateFile(connections: Iterable[Connection]): List[File] = {
+    connections.map(generateSingleFile).toList
   }
 
 
-  private def generateSingleFile(location: String)(conn: Connection): File = {
+  private def generateSingleFile(conn: Connection): File = {
     val filename = "vr-connection-" + conn.name + ".html"
     val polymerElement = generatePolymerElement(conn)
 
-    File(location + filename, polymerElement)
+    File(filename, polymerElement)
   }
 
 

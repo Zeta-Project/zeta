@@ -11,11 +11,11 @@ import models.file.File
  */
 object VrShapeGenerator {
 
-  def doGenerateFile(cache: Cache, location: String, nodes: List[Node]): List[File] = {
+  def doGenerateFile(cache: Cache, nodes: List[Node]): List[File] = {
     val shapes = cache.shapeHierarchy.nodeView.values.map(s => s.data).toList
 
-    val shapeDefinition = VrGeneratorShapeDefinition.doGenerateFile(shapes, location)
-    val connectionDefinition = VrGeneratorConnectionDefinition.doGenerateFile(cache.connections.values, location)
+    val shapeDefinition = VrGeneratorShapeDefinition.doGenerateFile(shapes)
+    val connectionDefinition = VrGeneratorConnectionDefinition.doGenerateFile(cache.connections.values)
 
     shapeDefinition ::: connectionDefinition
   }
