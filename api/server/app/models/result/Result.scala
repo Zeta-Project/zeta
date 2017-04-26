@@ -97,8 +97,3 @@ object Success {
 
   def unapply[T](arg: Success[T]): Option[T] = Some(arg.param)
 }
-
-
-
-
-
