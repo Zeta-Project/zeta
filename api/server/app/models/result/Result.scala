@@ -52,9 +52,9 @@ object Result {
 
   def apply[T](block: () => T, onFailure: Throwable => String): Result[T] =
     try {
-      new Success[T](block())
+      Success[T](block())
     } catch {
-      case t: Throwable => new Failure(onFailure(t))
+      case t: Throwable => Failure(onFailure(t))
     }
 
 }
