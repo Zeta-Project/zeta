@@ -1,13 +1,15 @@
 package generator.model
 
+import org.slf4j.LoggerFactory
+
 /**
  * Created by julian on 24.09.15.
  * ClassHierarchy is able to simluate a classhierarchy it stores nodes, which are linked to parents and children
  * with this ineritance of objects can be achieved
  */
-
 sealed class ClassHierarchy[T <% { def toString: String; val name: String }](rootClass: T) {
 
+  private val logger = LoggerFactory.getLogger(ClassHierarchy.getClass)
   val root = Node(rootClass)
   var nodeView: Map[String, Node] = Map(root.data.name -> root)
 
@@ -44,8 +46,13 @@ sealed class ClassHierarchy[T <% { def toString: String; val name: String }](roo
       var children: List[Node] = List(),
       var depth: Int = 0
   ) {
-    def rPrint(): Unit = { this.children.foreach { e => println("[" + this + "]: " + e); e.rPrint() } }
-    override def toString = this.data.name
+    def rPrint(): Unit = {
+      children.foreach { e =>
+        logger.info("[" + this + "]: " + e)
+        e.rPrint()
+      }
+    }
+    override def toString: String = data.name
 
     def inheritsFrom(className: T): Unit = {
       val newNode = if (nodeView.contains(className.name)) {

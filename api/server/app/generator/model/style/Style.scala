@@ -12,6 +12,7 @@ import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.GradientAlignment
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
+import org.slf4j.LoggerFactory
 import parser.IDtoStyle
 
 case class Style private (
@@ -46,6 +47,8 @@ object Style extends CommonParserMethods {
   val validStyleAttributes = List("description", "transparency", "background-color", "line-color", "line-style", "line-width",
     "font-color", "font-name", "font-size", "font-bold", "font-italic", "gradient-orientation", "gradient-area-color",
     "gradient-area-offset", "allowed", "unallowed", "selected", "multiselected", "highlighting")
+
+  private val logger = LoggerFactory.getLogger(Style.getClass)
 
   lazy val validColor = ("(" + ColorConstant.knownColors.keySet.map(i => if (i != ColorConstant.knownColors.keySet.last) i + "|").mkString + ")").r
 
@@ -196,7 +199,7 @@ object Style extends CommonParserMethods {
    * @param className is the type (e.G. Style, Shape ...)
    */
   def messageIgnored(attribute: String, name: String, className: String) = {
-    println("Styleparsing: attribute -> " + attribute + " in " + className + " '" + name + "' was ignored")
+    logger.info("Styleparsing: attribute -> " + attribute + " in " + className + " '" + name + "' was ignored")
   }
 
   /* neccessary for parsing */

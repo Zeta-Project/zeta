@@ -9,6 +9,7 @@ import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue
+import org.slf4j.LoggerFactory
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNumber
@@ -21,6 +22,8 @@ import play.api.libs.json.Json
  * MetamodelGraphDiff
  */
 object MetamodelGraphDiff {
+
+  private val logger = LoggerFactory.getLogger(MetamodelGraphDiff.getClass)
 
   /**
    * @param metaModel MetaModel instance
@@ -176,13 +179,13 @@ object MetamodelGraphDiff {
       val graphAttribute = graphAttributes(elementKey).find(attr => (attr \ "name").as[String] == attribute.name).get
       val newAttributes = JsArray((graphAttributes(elementKey) - graphAttribute).toSeq)
       replaceAttributes(elementKey, newAttributes)
-      println(s"Removed attribute ${attribute.name}")
+      logger.info(s"Removed attribute ${attribute.name}")
     }
 
     private def addToGraph(elementKey: String, attribute: MAttribute): Unit = {
       val newAttributes = JsArray((graphAttributes(elementKey) + toJsonAttribute(attribute)).toSeq)
       replaceAttributes(elementKey, newAttributes)
-      println(s"Added attribute ${attribute.name}")
+      logger.info(s"Added attribute ${attribute.name}")
     }
 
     private def replaceAttributes(elementKey: String, newAttributes: JsArray): Unit = {

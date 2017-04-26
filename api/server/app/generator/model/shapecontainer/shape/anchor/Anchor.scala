@@ -1,6 +1,7 @@
 package generator.model.shapecontainer.shape.anchor
 
 import generator.parser.CommonParserMethods
+import org.slf4j.LoggerFactory
 
 /**
  * Created by julian on 19.10.15.
@@ -18,16 +19,20 @@ object Anchor extends CommonParserMethods {
   class AnchorRelativePosition(pos: List[(Int, Int)]) extends AnchorManual(pos)
   class AnchorFixPointPosition(pos: List[(Int, Int)]) extends AnchorManual(pos)
 
-  def anchor: Parser[AnchorType] = (anchorPredefined | anchorManual) ^^ { anch => anch }
+  private val logger = LoggerFactory.getLogger(Anchor.getClass)
 
-  def anchorPredefined: Parser[AnchorPredefined] = "=?".r ~> "(center|corners)".r ^^ {
+  def anchor: Parser[AnchorType] = (anchorPredefined() | anchorManual) ^^ { anch => anch }
+
+  private def anchorPredefined(): Parser[AnchorPredefined] = "=?".r ~> "(center|corners)".r ^^ {
     case center: String if center == "center" => Center
     case corners: String if corners == "corners" => Corners
   }
 
-  def anchorManual: Parser[AnchorManual] = anchorFixPointPosition | anchorRelativePosition ^^ {
+  private def anchorManual(): Parser[AnchorManual] = anchorFixPointPosition | anchorRelativePosition ^^ {
     case anch: AnchorManual => anch
-    case _ => println("no match"); new AnchorRelativePosition(List())
+    case _ =>
+      logger.info("no match")
+      new AnchorRelativePosition(List())
   }
 
   def anchorRelativePosition: Parser[AnchorRelativePosition] = "\\{".r ~> rep(relativePosition) <~ "\\}".r ^^ {

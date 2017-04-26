@@ -1,18 +1,15 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import filter.BaseFilter
-
 import models.document.AllModels
 import models.document.Filter
 import models.document.ModelEntity
-import models.document.http.{ HttpRepository => DocumentRepository }
+import models.document.http.{HttpRepository => DocumentRepository}
 import models.file.File
-import models.file.http.{ HttpRepository => FileRepository }
-
+import models.file.http.{HttpRepository => FileRepository}
 import org.rogach.scallop.ScallopConf
-
+import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
-
 import rx.lang.scala.Observable
 
 import scala.reflect.runtime.currentMirror
@@ -28,8 +25,12 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   verify()
 }
 
+/**
+ * Main class of filter
+ */
 object Main extends App {
-  println("Execute Filter")
+  private val logger = LoggerFactory.getLogger(Main.getClass)
+  logger.info("Execute Filter")
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()
@@ -50,20 +51,20 @@ object Main extends App {
     } yield saved
 
     result foreach { result =>
-      println("Successful executed filter")
+      logger.info("Successful executed filter")
       System.exit(0)
     }
 
     result recover {
       case e: Exception =>
-        println(e)
+        logger.error(e.getMessage, e)
         System.exit(1)
     }
   })
 
   def compileFilter(file: File): Future[BaseFilter] = {
     val p = Promise[BaseFilter]
-    println("compile filter")
+    logger.info("compile filter")
 
     val content = s"""
       import models.document.{ModelEntity, MetaModelRelease}
@@ -88,7 +89,7 @@ object Main extends App {
 
   def checkInstances(filter: BaseFilter) = {
     val p = Promise[List[String]]
-    println("Check all models")
+    logger.info("Check all models")
 
     documents.query[ModelEntity](AllModels())
       .doOnError(p.failure(_))
@@ -104,20 +105,20 @@ object Main extends App {
   def checkInstance(fn: BaseFilter, entity: ModelEntity) = {
     val checked = fn.filter(entity)
     if (checked) {
-      println(s"${entity.model.metaModel.name} ${entity.id} ✓")
+      logger.info(s"${entity.model.metaModel.name} ${entity.id} ✓")
     } else {
-      println(s"${entity.model.metaModel.name} ${entity.id}")
+      logger.info(s"${entity.model.metaModel.name} ${entity.id}")
     }
     Future.successful(entity.id, checked)
   }
 
   def saveResult(filter: Filter, instances: List[String]): Future[Any] = {
     if (filter.instances.toSet == instances.toSet) {
-      println("Filter result is equal to saved result")
+      logger.info("Filter result is equal to saved result")
       Future.successful(true)
     } else {
       val newFilter = filter.copy(instances = instances)
-      println("Filter need to be saved")
+      logger.info("Filter need to be saved")
       documents.update[Filter](newFilter)
     }
   }

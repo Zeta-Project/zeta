@@ -15,6 +15,9 @@ import models.remote.Remote
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+/**
+ * Main class of basic generator
+ */
 object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {
     for {
@@ -28,11 +31,13 @@ object Main extends Template[CreateOptions, String] {
     val content =
       """
         |class MyTransformer() extends Transformer {
+        | private val logger = LoggerFactory.getLogger(getClass)
+        |
         | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
-        |   println(s"User : ${entity.id}")
+        |   logger.info(s"User : ${entity.id}")
         |   entity.model.elements.values.foreach { element => element match {
-        |     case node: Node => println(node.`type`.name)
-        |     case edge: Edge => println(edge.`type`.name)
+        |     case node: Node => logger.info(node.`type`.name)
+        |     case edge: Edge => logger.info(edge.`type`.name)
         |   }}
         |   Future.successful(this)
         | }
@@ -56,6 +61,7 @@ object Main extends Template[CreateOptions, String] {
       import models.file.{Repository => Files}
       import models.remote.Remote
       import generator._
+      import org.slf4j.LoggerFactory
 
       ${file.content}
 

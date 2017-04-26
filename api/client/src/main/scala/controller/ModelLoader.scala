@@ -1,5 +1,6 @@
 package controller
 
+import org.scalajs.dom.console
 import org.scalajs.jquery
 import org.scalajs.jquery.JQueryAjaxSettings
 import org.scalajs.jquery.JQueryXHR
@@ -56,7 +57,7 @@ class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {
       andThen(out)
     },
       error = { (jqXHR: JQueryXHR, textStatus: String, errorThrown: String) =>
-      println(s"Cannot load meta model: $errorThrown")
+      console.log(s"Cannot load meta model: $errorThrown")
     }
     ).asInstanceOf[JQueryAjaxSettings])
   }

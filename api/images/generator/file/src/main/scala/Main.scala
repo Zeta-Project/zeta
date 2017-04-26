@@ -2,7 +2,6 @@ import generator.Error
 import generator.Result
 import generator.Success
 import generator.Transformer
-
 import models.document.Filter
 import models.document.Generator
 import models.document.GeneratorImage
@@ -13,18 +12,21 @@ import models.file.{Repository => Files}
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.remote.Remote
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
 class MyTransformer() extends Transformer {
+  private val logger = LoggerFactory.getLogger(getClass)
+
   def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
-    println("Start example")
+    logger.info("Start example")
     val p = Promise[Transformer]
 
-    val nodes = entity.model.elements.values.filter(_.isInstanceOf[Node]).size
-    val edges = entity.model.elements.values.filter(_.isInstanceOf[Edge]).size
+    val nodes = entity.model.elements.values.count(_.isInstanceOf[Node])
+    val edges = entity.model.elements.values.count(_.isInstanceOf[Edge])
 
     val filename = "example.txt"
     val content =
@@ -33,7 +35,7 @@ class MyTransformer() extends Transformer {
         |Number of edges : ${edges}""".stripMargin
 
     files.create(entity, File(filename, content)).map { result =>
-      println(s"Successfully saved results to '${filename}' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
+      logger.info(s"Successfully saved results to '${filename}' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
       p.success(this)
     }.recover {
       case e: Exception => p.failure(e)
@@ -48,12 +50,15 @@ class MyTransformer() extends Transformer {
   }
 }
 
+/**
+ * Main class of file generator
+ */
 object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {
     for {
       image <- documents.get[GeneratorImage](image)
       generator <- documents.create[Generator](Generator(user, options.name, image))
-      created <- files.create(generator, createFileContent)
+      created <- files.create(generator, createFileContent())
     } yield Success()
   }
 
@@ -65,11 +70,12 @@ object Main extends Template[CreateOptions, String] {
     val content =
       """
         |class MyTransformer() extends Transformer {
+        | private val logger = LoggerFactory.getLogger(getClass)
         | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
-        |   println(s"User : ${entity.id}")
+        |   logger.info(s"User : ${entity.id}")
         |   entity.model.elements.values.foreach { element => element match {
-        |     case node: Node => println(node.`type`.name)
-        |     case edge: Edge => println(edge.`type`.name)
+        |     case node: Node => logger.info(node.`type`.name)
+        |     case edge: Edge => logger.info(edge.`type`.name)
         |   }}
         |   Future.successful(this)
         | }
@@ -94,6 +100,7 @@ object Main extends Template[CreateOptions, String] {
       import models.file.{File, Repository => Files}
       import models.remote.Remote
       import generator._
+      import org.slf4j.LoggerFactory
 
       ${file.content}
 

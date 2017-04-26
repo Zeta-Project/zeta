@@ -26,22 +26,27 @@ import generator.model.shapecontainer.shape.geometrics.Rectangle
 import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
-
 import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-
+import org.slf4j.LoggerFactory
 import parser.OptionToStyle
 import parser.IDtoOptionStyle
 import parser.IDtoStyle
 
 /**
- * Created by julian on 23.10.15.
+ * SprayParser
+ */
+object SprayParser
+
+/**
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
 class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends CommonParserMethods {
   implicit val cache = c
   type diaConnection = generator.model.diagram.edge.Connection
+
+  private val logger = LoggerFactory.getLogger(SprayParser.getClass)
 
   private val metaMapMClass = metaModelE.metaModel.elements.collect {
     case (name, x) if x.isInstanceOf[MClass] => (name, x.asInstanceOf[MClass])
@@ -49,7 +54,7 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
   private val metaMapMReference = metaModelE.metaModel.elements.collect {
     case (name, x) if x.isInstanceOf[MReference] => (name, x.asInstanceOf[MReference])
   }
-  require(metaMapMClass nonEmpty)
+  require(metaMapMClass.nonEmpty)
 
   /* Style-specific---------------------------------------------------------------------------- */
   private def styleVariable = ("""(""" + Style.validStyleAttributes.map(_ + "|").mkString + """)""").r ^^ { _.toString }
@@ -396,7 +401,7 @@ class SprayParser(c: Cache = Cache(), val metaModelE: MetaModelEntity) extends C
             None
           }
         case c: Any =>
-          println(c.toString())
+          logger.info(c.toString())
           Some(Diagram("test", Map(), List(), List(), None, null, cache))
       }
   }

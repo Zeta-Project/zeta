@@ -21,7 +21,7 @@
  <check enabled="true" class="org.scalastyle.file.IndentationChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.file.NewLineAtEofChecker" level="error"/>
  <check enabled="false" class="org.scalastyle.file.NoNewLineAtEofChecker" level="error"/>
- <check enabled="true" class="org.scalastyle.file.RegexChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.file.RegexChecker" level="error">
   <parameters>
    <parameter name="regex"><![CDATA[println]]></parameter>
   </parameters>
@@ -104,7 +104,7 @@
    <parameter name="maxLength"><![CDATA[50]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.MethodNamesChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.MethodNamesChecker" level="eror">
   <parameters>
    <parameter name="regex"><![CDATA[^[a-z][A-Za-z0-9]*$]]></parameter>
   </parameters>
@@ -127,7 +127,7 @@
    <parameter name="maxMethods"><![CDATA[30]]></parameter>
   </parameters>
  </check>
- <check enabled="true" class="org.scalastyle.scalariform.NumberOfTypesChecker" level="warning">
+ <check enabled="true" class="org.scalastyle.scalariform.NumberOfTypesChecker" level="error">
   <parameters>
    <parameter name="maxTypes"><![CDATA[30]]></parameter>
   </parameters>

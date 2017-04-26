@@ -1,13 +1,11 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-
 import models.document.AllMetaModelReleases
 import models.document.MetaModelEntity
 import models.document.MetaModelRelease
-import models.document.http.{ HttpRepository => DocumentRepository }
-
+import models.document.http.{HttpRepository => DocumentRepository}
 import org.rogach.scallop.ScallopConf
-
+import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,7 +19,11 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   verify()
 }
 
+/**
+ * Main class of metaModelRelease
+ */
 object Main extends App {
+  private val logger = LoggerFactory.getLogger(getClass)
   val cmd = new Commands(args)
 
   implicit val actorSystem = ActorSystem()
@@ -31,7 +33,7 @@ object Main extends App {
   val documents = DocumentRepository(cmd.session.getOrElse(""))
 
   cmd.id.foreach({ id =>
-    println("Create Model Release for " + id)
+    logger.info("Create Model Release for " + id)
 
     val result = for {
       from <- documents.get[MetaModelEntity](id)
@@ -40,13 +42,13 @@ object Main extends App {
     } yield release
 
     result foreach { result =>
-      println("Successful created model release ")
+      logger.info("Successful created model release ")
       System.exit(0)
     }
 
     result recover {
       case e: Exception =>
-        println(e)
+        logger.error(e.getMessage, e)
         System.exit(1)
     }
   })
