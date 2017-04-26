@@ -4,6 +4,7 @@ import generator.model.diagram.Diagram
 import generator.model.diagram.edge.Edge
 import generator.model.shapecontainer.connection.Connection
 import models.file.File
+import models.result.Result
 
 
 object VrDiagramGenerator {
@@ -12,7 +13,11 @@ object VrDiagramGenerator {
   private val SCENE = "vr-scene.html"
   private val SAVE_BEHAVIOR = "vr-save.html"
 
-  def doGenerateFiles(diagram: Diagram): List[File] = {
+  def doGenerateResult(diagram: Diagram): Result[List[File]] = {
+    Result(() => doGenerateGenerators(diagram), "failed trying to create the vr Diagram generators")
+  }
+
+  private def doGenerateGenerators(diagram: Diagram): List[File] = {
     val nodes = diagram.nodes
     val connections = diagram.edges.map(getConnection).groupBy(_.name).map(_._2.head)
 

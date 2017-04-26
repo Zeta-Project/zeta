@@ -77,7 +77,6 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
   private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val metaModelUuid = metaModel._id
-
     val currentDir = s"${System.getenv("PWD")}/server/model_specific"
     val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
     val vrGeneratorOutputLocation = s"$currentDir/vr/$metaModelUuid/"
@@ -107,8 +106,8 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
   private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val generators: List[() => Result[List[File]]] = List(
       // Generate files for the VR - Editor
-      () => Result(() => VrShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes), "VrShapeGenerator"),
-      () => Result(() => VrDiagramGenerator.doGenerateFiles(diagram), "VrDiagramGenerator")
+      () => VrShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
+      () => VrDiagramGenerator.doGenerateResult(diagram)
     )
 
     generate(generators)

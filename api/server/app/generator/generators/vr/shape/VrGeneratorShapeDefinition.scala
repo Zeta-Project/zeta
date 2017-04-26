@@ -12,13 +12,20 @@ import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.shapecontainer.shape.geometrics.Wrapper
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import models.file.File
+import models.result.Result
 
 import scala.util.Try
 
 
 object VrGeneratorShapeDefinition {
 
-  def doGenerateFile(shapes: List[Shape]): List[File] = {
+
+  def doGenerateResult(shapes: List[Shape]): Result[List[File]] = {
+    Result(() => doGenerateGenerators(shapes), "failed trying to create the vr Shape generators")
+  }
+
+
+  private def doGenerateGenerators(shapes: List[Shape]): List[File] = {
     shapes.filterNot(_.name != "rootShape").map(generateSingleFile)
   }
 

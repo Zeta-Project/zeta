@@ -13,11 +13,17 @@ import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.DASH
 import models.file.File
+import models.result.Result
 
 
 object VrGeneratorConnectionDefinition {
 
-  def doGenerateFile(connections: Iterable[Connection]): List[File] = {
+
+  def doGenerateResult(connections: Iterable[Connection]): Result[List[File]] = {
+    Result(() => doGenerateGenerators(connections), "failed trying to create the vr Connector generators")
+  }
+
+  private def doGenerateGenerators(connections: Iterable[Connection]): List[File] = {
     connections.map(generateSingleFile).toList
   }
 
