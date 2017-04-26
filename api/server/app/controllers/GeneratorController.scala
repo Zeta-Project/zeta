@@ -53,7 +53,7 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
   def createGenerators(metaModel: MetaModelEntity): Result[List[File]] = {
     val hierarchyContainer = Cache()
-    parseMetaModel(metaModel, hierarchyContainer).flatMap(dia => createGeneratorFile(metaModel, dia, hierarchyContainer))
+    parseMetaModel(metaModel, hierarchyContainer).flatMap(dia => createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer))
   }
 
   private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Result[Diagram] = {
@@ -75,37 +75,45 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
       }
   }
 
-  private def createGeneratorFile(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
+  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val metaModelUuid = metaModel._id
 
     val currentDir = s"${System.getenv("PWD")}/server/model_specific"
     val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
     val vrGeneratorOutputLocation = s"$currentDir/vr/$metaModelUuid/"
 
-    Files.createDirectories(Paths.get(generatorOutputLocation))
-    Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
+    createGeneratorFiles(diagram, hierarchyContainer).flatMap(gen => {
+      createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {
+        Files.createDirectories(Paths.get(generatorOutputLocation))
+        Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
+        gen.foreach(f => Files.write(Paths.get(generatorOutputLocation + f.name), f.content.getBytes))
+        vrGen.foreach(f => Files.write(Paths.get(vrGeneratorOutputLocation + f.name), f.content.getBytes))
+        gen ::: vrGen
+      })
+    })
+  }
 
-
+  private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val styles = hierarchyContainer.styleHierarchy.nodeView.values.map(_.data).toList
-
-    def copyFile(location: String)(f: File): File = {
-      f.copy(name = location + f.name)
-    }
-
-    val generators2: List[() => Result[List[File]]] = List(
-      () => Result(() => List(copyFile(generatorOutputLocation)(StyleGenerator.doGenerateFile(styles))), "StyleGenerator"),
-      () => Result(() => ShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes).map(copyFile(generatorOutputLocation)), "ShapeGenerator"),
-      () => Result(() => DiagramGenerator.doGenerateFile(diagram).map(copyFile(generatorOutputLocation)), "DiagramGenerator"),
-
-      // Generate files for the VR - Editor
-      () => Result(() => VrShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes).map(copyFile(vrGeneratorOutputLocation)), "VrShapeGenerator"),
-      () => Result(() => VrDiagramGenerator.doGenerateFiles(diagram).map(copyFile(vrGeneratorOutputLocation)), "VrDiagramGenerator")
+    val generators: List[() => Result[List[File]]] = List(
+      () => Result(() => List(StyleGenerator.doGenerateFile(styles)), "StyleGenerator"),
+      () => Result(() => ShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes), "ShapeGenerator"),
+      () => Result(() => DiagramGenerator.doGenerateFile(diagram), "DiagramGenerator")
     )
 
-    val res = generate(generators2)
-    res.foreach(_.foreach(f => Files.write(Paths.get(f.name), f.content.getBytes)))
-    res
+    generate(generators)
   }
+
+  private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
+    val generators: List[() => Result[List[File]]] = List(
+      // Generate files for the VR - Editor
+      () => Result(() => VrShapeGenerator.doGenerateFile(hierarchyContainer, diagram.nodes), "VrShapeGenerator"),
+      () => Result(() => VrDiagramGenerator.doGenerateFiles(diagram), "VrDiagramGenerator")
+    )
+
+    generate(generators)
+  }
+
 
   @tailrec
   private def generate(generators: List[() => Result[List[File]]], carry: List[File] = Nil): Result[List[File]] =
