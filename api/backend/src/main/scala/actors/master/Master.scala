@@ -21,11 +21,15 @@ import scala.concurrent.duration.Deadline
 import scala.concurrent.duration.FiniteDuration
 
 private sealed trait WorkerStatus
+
 private case object Idle extends WorkerStatus
+
 private case class Busy(workId: String, deadline: Deadline) extends WorkerStatus
+
 private case class WorkerState(ref: ActorRef, status: WorkerStatus, deadline: Deadline)
 
 private case object WorkerTimeoutTick
+
 private case object CompletedWorkTick
 
 object Master {
@@ -71,31 +75,38 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
      * Worker send a registration message
      */
     case MasterWorkerProtocol.RegisterWorker(workerId) => registerWorker(workerId)
+
     /**
      * Worker is asking for work
      */
     case MasterWorkerProtocol.WorkerRequestsWork(workerId) => sendWork(workerId)
+
     /**
      * Worker successful executed work
      */
     case MasterWorkerProtocol.WorkIsDone(workerId, workId, result) => processWorkResult(workerId, workId, result)
+
     /**
      * Worker executed work and work failed.
      */
     case MasterWorkerProtocol.WorkFailed(workerId, workId) => processWorkFailed(workerId, workId)
+
     /**
      * Developer sends ack that he received the result of the completed work
      */
     case MasterWorkerProtocol.DeveloperReceivedCompletedWork(workId) => confirmWorkResult(workId)
+
     /**
      * New work was send by a developer.
      */
     case work: MasterWorkerProtocol.Work => processWork(work)
+
     /**
      * Work should be canceled.
      */
     case cancelWork: CancelWork => processCancelWork(cancelWork)
     case WorkerTimeoutTick => processWorkerTimeout()
+
     /**
      * Check for completed work from which no ack was received by the developer (which started the work).
      */
@@ -116,7 +127,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
   private def sendWork(workerId: String) = {
     if (workState.hasWork) {
       workers.get(workerId) match {
-        case Some(worker @ WorkerState(_, Idle, _)) =>
+        case Some(worker@WorkerState(_, Idle, _)) =>
           val workerRef = sender()
           val work = workState.nextWork
           persist(WorkStarted(work.id)) { event =>
@@ -213,7 +224,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
     /**
      * A busy worker actor reached the timeout
      */
-    for {(workerId, s @ WorkerState(_, Busy(workId, timeout), _)) ← workers} {
+    for {(workerId, s@WorkerState(_, Busy(workId, timeout), _)) <- workers} {
       if (timeout.isOverdue) {
         log.info("Work timed out: {}", workId)
         workers -= workerId
@@ -226,7 +237,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
     /**
      * A idle worker actor reached the timeout
      */
-    for {(workerId, s @ WorkerState(_, Idle, timeout)) ← workers} {
+    for {(workerId, s@WorkerState(_, Idle, timeout)) <- workers} {
       if (timeout.isOverdue) {
         log.info("Worker timed out and removed from the system: {}", workerId)
         workers -= workerId
@@ -270,7 +281,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
 
   private def changeWorkerToIdle(workerId: String): Unit = {
     workers.get(workerId) match {
-      case Some(worker @ WorkerState(_, Busy(_, _), _)) =>
+      case Some(worker@WorkerState(_, Busy(_, _), _)) =>
         workers += (workerId -> worker.copy(status = Idle))
       case _ =>
       // ok, might happen after standby recovery, worker state is not persisted
