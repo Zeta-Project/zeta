@@ -87,10 +87,11 @@
  <check enabled="true" class="org.scalastyle.scalariform.ImportGroupingChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.ImportOrderChecker" level="warning">
   <parameters>
-   <parameter name="groups">java,scala,others</parameter>
+   <parameter name="lexicographic">false</parameter>
+   <parameter name="groups">java,others,scala</parameter>
    <parameter name="group.java">javax?\..+</parameter>
-   <parameter name="group.scala">scala\..+</parameter>
    <parameter name="group.others">.+</parameter>
+   <parameter name="group.scala">scala\..+</parameter>
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.LowercasePatternMatchChecker" level="error"/>
