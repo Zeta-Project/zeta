@@ -62,6 +62,8 @@ services:
       - "9000:9000"
     volumes:
       - /model_specific:/opt/docker/server/model_specific/
+    links:
+      - mongodb
   #  logging:
   #    driver: none
   b1:
