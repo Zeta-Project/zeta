@@ -4,21 +4,27 @@ import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceApplicationLoader
+import scala.collection.JavaConversions.iterableAsScalaIterable
 
+/**
+ * Entrypoint of application
+ */
 class CustomApplicationLoader extends GuiceApplicationLoader() {
 
+  /**
+   * Initiate configuration for builder
+   * @param context Application Context instance
+   * @return Instance of a builder for an guice application
+   */
   override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
     val classLoader = context.environment.classLoader
-    val configuration = Configuration(NodeConfigurator.loadConfig(classLoader))
+    val configuration = Configuration(loadConfig(classLoader))
 
     initialBuilder
       .in(context.environment)
       .loadConfig(context.initialConfiguration ++ configuration)
       .overrides(overrides(context): _*)
   }
-}
-
-object NodeConfigurator {
 
   /**
    * This method given a class loader will return the configuration object for an ActorSystem
@@ -27,10 +33,10 @@ object NodeConfigurator {
    * @param classLoader the configured classloader of the application
    * @return Config
    */
-  def loadConfig(classLoader: ClassLoader) = {
+  private def loadConfig(classLoader: ClassLoader) = {
     val config = ConfigFactory.load(classLoader)
 
-    val seeds = List("b1:2551", "b2:2551")
+    val seeds = config.getStringList("zeta.actor.cluster").toList
     val roles = List("api")
     val clusterConfig = ClusterManager.getClusterJoinConfig(roles, seeds, 0).withFallback(ConfigFactory.load())
 
