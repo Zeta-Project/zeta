@@ -60,6 +60,9 @@ lazy val server = baseProject("server", file("server")).settings(
   resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
   resolvers += Resolver.jcenterRepo,
   libraryDependencies ++= Seq(
+    //logging
+    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
+    //codec
     "commons-codec" % "commons-codec" % "1.9",
     // silhouette
     "com.mohiva" %% "play-silhouette" % "4.0.0",

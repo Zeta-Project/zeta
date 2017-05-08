@@ -1,5 +1,7 @@
 package models.result
 
+import grizzled.slf4j.Logging
+
 
 /**
  */
@@ -23,7 +25,7 @@ sealed trait Result[+T] {
 
 }
 
-object Result {
+object Result extends Logging {
 
   private[Result] val defaultMessage: Throwable => String = (t) => {
     val stack = t.getStackTrace
@@ -54,7 +56,10 @@ object Result {
     try {
       Success[T](block())
     } catch {
-      case t: Throwable => Failure(onFailure(t))
+      case t: Throwable =>
+        val msg = onFailure(t)
+        debug(s"Result failed with msg $msg.\nStacktrace:\n", t)
+        Failure(msg)
     }
 
 }
