@@ -1,29 +1,27 @@
 package view
 
+import scala.scalajs.js
+import scala.scalajs.js.Any
+import scala.util.Random
 import controller.CodeEditorController
 import controller.ModeController
-
 import facade.Delta
 import facade.ace
 import facade.IEditSession
-
 import org.scalajs.dom
 
+import scalatags.JsDom.GenericAttr
+import scalatags.JsDom.all
+import scalatags.JsDom.all.bindJsAnyLike
 import scalot.Client
 import scalot.Operation
 
-import scala.scalajs.js
-import scala.scalajs.js.JSConverters.genTravConvertible2JSRichGenTrav
-import scala.util.Random
-
-import scalatags.JsDom.all
-import scalatags.JsDom.all.stringFrag
-import scalatags.JsDom.all.bindJsAny
-import scalatags.JsDom.all.bindJsAnyLike
+import scala.scalajs.runtime.genTraversableOnce2jsArray
+import facade.Editor
 
 class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, dslType: String, autoSave: Boolean) {
 
-  private val aceId = Random.alphanumeric.take(20).mkString
+  private val aceId: String = Random.alphanumeric.take(20).mkString
   var selectedId: String = ""
 
   createSkeleton()
@@ -31,78 +29,108 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
     dom.document.getElementById("btn-save").classList.add("hidden")
   }
 
-  val editor = ace.ace.edit(s"$aceId")
+  private val editor: Editor = ace.ace.edit(s"$aceId")
   editor.setTheme("ace/theme/xcode")
   editor.getSession().setMode("scala")
-  editor.$blockScrolling = Double.PositiveInfinity
+  editor.$blockScrolling = Any.fromDouble(Double.PositiveInfinity)
+
+  private val _true: Any = Any.fromBoolean(true)
 
   editor.setOptions(js.Dynamic.literal(
-    enableBasicAutocompletion = true,
-    enableSnippets = true,
-    enableLiveAutocompletion = true
+    ("enableBasicAutocompletion", _true),
+    ("enableSnippets", _true),
+    ("enableLiveAutocompletion", _true)
   ))
 
-  private def createSkeleton() =
+  private def stringAttrX = new GenericAttr[String]()
+
+  private def createSkeleton() = {
     dom.document.getElementById("editor").appendChild(
-      all.div(all.`class` := "container")(
-      all.div(all.`class` := "panel panel-default")(
-        all.div(all.`class` := "panel-heading")(
-          all.h3(all.`class` := "panel-title editor-title")(
-            all.strong()(s"$dslType"),
-            all.span(
-              all.`class` := "btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right",
-              all.id := "btn-save",
-              all.title := "Save Document",
-              all.onclick := { (e: dom.MouseEvent) =>
-                {
-                  controller.saveCode()
-                }
-              }
-            )
-          )
+      createContainer().render
+    )
+  }
+
+  private def createContainer() = {
+    all.div(
+      all.cls.:=("container")(stringAttrX),
+      all.div(
+        all.cls.:=("panel panel-default")(stringAttrX),
+        createHeader(),
+        createBody()
+      )
+    )
+  }
+
+  private def createHeader() = {
+    all.div(
+      all.cls.:=("panel-heading")(stringAttrX),
+      all.h3(
+        all.cls.:=("panel-title editor-title")(stringAttrX),
+        all.strong(
+          all.stringFrag(s"$dslType")
         ),
-        all.div(all.`class` := "panel-body editor-body")(
-          all.div(all.style := "background-color: gray;")(
-            all.div(all.`class` := "editor", all.`id` := aceId)
-          )
+        createButton()
+      )
+    )
+  }
+
+  private def createButton() = {
+    all.span(
+      all.cls.:=("btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right")(stringAttrX),
+      all.id.:=("btn-save")(bindJsAnyLike),
+      all.title.:=("Save Document")(bindJsAnyLike),
+      all.onclick.:=((e: dom.MouseEvent) => {
+        controller.saveCode()
+      })
+    )
+  }
+
+  private def createBody() = {
+    all.div(
+      all.cls.:=("panel-body editor-body")(stringAttrX),
+      all.div(
+        all.style.:=("background-color: gray;")(bindJsAnyLike),
+        all.div(
+          all.cls.:=("editor")(stringAttrX),
+          all.id.:=(aceId)(bindJsAnyLike)
         )
       )
-    ).render
     )
+  }
 
-  var broadcast = true
+  var broadcast: Boolean = true
   var session: IEditSession = null
 
-  def displayDoc(doc: Client) = {
+  def displayDoc(doc: Client): js.Dynamic = {
     selectedId = doc.id
     session = ace.ace.createEditSession(
-      doc.str,
+      Any.fromString(doc.str),
       ModeController.getAllModesForModel(metaModelUuid)(doc.docType)
     )
-    session.on("change", {
-      (delta: js.Any) =>
-        if (broadcast) {
-          controller.operationFromLocal(
-            ScalotAceAdaptor
-              .aceDeltatoScalotOp(
-                delta
+    session.on("change", Any.fromFunction1((delta: js.Any) => {
+      if (broadcast) {
+        controller.operationFromLocal(
+          ScalotAceAdaptor
+            .aceDeltatoScalotOp(
+              delta
                 .asInstanceOf[js.Dynamic]
                 .selectDynamic("data")
                 .asInstanceOf[Delta],
-                editor.getSession().getDocument()
-              ),
-            selectedId
-          )
-        }
-    }: js.Function1[js.Any, Any])
+              editor.getSession().getDocument()
+            ),
+          selectedId
+        )
+      }
+    }))
     editor.setSession(session)
   }
 
-  def updateView(op: Operation) = {
+
+  def updateView(op: Operation): Unit = {
     val was = broadcast
     broadcast = false
     val doc = editor.getSession().getDocument()
-    doc.applyDeltas(ScalotAceAdaptor.scalotOpToAceDelta(op, doc).toJSArray)
+    doc.applyDeltas(genTraversableOnce2jsArray(ScalotAceAdaptor.scalotOpToAceDelta(op, doc)))
     broadcast = was
   }
 
