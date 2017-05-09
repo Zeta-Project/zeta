@@ -135,7 +135,7 @@ object VrGeneratorShapeDefinition {
 
     def calcMax(list: List[Int]): Int = list match {
       case Nil => 0
-      case any => any.max
+      case list: List[Int] => list.max
     }
 
     val totalSize: (Int, Int) = (
