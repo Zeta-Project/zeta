@@ -5,7 +5,6 @@ import generator.model.shapecontainer.ShapeContainerElement
 import generator.model.shapecontainer.shape.anchor.Anchor
 import generator.model.shapecontainer.shape.anchor.Anchor.AnchorType
 import generator.model.shapecontainer.shape.geometrics.Description
-import generator.model.shapecontainer.shape.geometrics.Ellipse
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
 import generator.model.shapecontainer.shape.geometrics.Rectangle
 import generator.model.shapecontainer.shape.geometrics.Text
@@ -14,80 +13,46 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
 import generator.parser.GeoModel
-import parser.IDtoShape
 
 /**
  * Created by julian on 29.09.15.
  * The actual representation of a shape class,
  * will hold all the relevant attributes
  *
- * @param name = id
+ * @param name         = id
  * @param parentShapes are the shapes that this new shape will inherit its attributes of
- * @param geos is a list of GeoModels kind of like sketch-GeometricModels, which will be converted into real GeometricModels inside the constructor
+ * @param geos         is a list of GeoModels kind of like sketch-GeometricModels, which will be converted into real GeometricModels inside the constructor
  */
-case class Shape private (
+final class Shape private(
     override val name: String = "no name",
-    style: Option[Style] = None,
-    size_width_min: Option[Int] = None, // from ShapeLayout
-    size_height_min: Option[Int] = None, // from ShapeLayout
-    size_width_max: Option[Int] = None, // from ShapeLayout
-    size_height_max: Option[Int] = None, // from ShapeLayout
-    stretching_horizontal: Option[Boolean] = None, // from ShapeLayout
-    stretching_vertical: Option[Boolean] = None, // from ShapeLayout
-    proportional: Option[Boolean] = None, // from ShapeLayout
+    val style: Option[Style] = None,
+    val size_width_min: Option[Int] = None, // from ShapeLayout
+    val size_height_min: Option[Int] = None, // from ShapeLayout
+    val size_width_max: Option[Int] = None, // from ShapeLayout
+    val size_height_max: Option[Int] = None, // from ShapeLayout
+    val stretching_horizontal: Option[Boolean] = None, // from ShapeLayout
+    val stretching_vertical: Option[Boolean] = None, // from ShapeLayout
+    val proportional: Option[Boolean] = None, // from ShapeLayout
 
-    parentShapes: Option[List[GeometricModel]] = None,
-    parentTextMap: Option[Map[String, Text]] = None, // necessary addition
-    parentCompartmentMap: Option[Map[String, Compartment]] = None, // necessary addition
-    geos: List[GeoModel] = List(),
+    val parentShapes: Option[List[GeometricModel]] = None,
+    val parentTextMap: Option[Map[String, Text]] = None, // necessary addition
+    val parentCompartmentMap: Option[Map[String, Compartment]] = None, // necessary addition
+    val geos: List[GeoModel] = Nil,
 
-    description: Option[Description] = None,
-    anchor: Option[AnchorType] = None,
-    extendedShape: List[Shape] = List()
+    val description: Option[Description] = None,
+    val anchor: Option[AnchorType] = None,
+    val extendedShape: List[Shape] = Nil, // FIXME dead param
+    val shapes: Option[List[GeometricModel]] = None, // equal to getShapes(parentShapes = None, geos = Nil, style = None)
+    val textMap: Option[Map[String, Text]] = None, // equal to getTextMap(shapes = None, parentTextMap = None)
+    val compartmentMap: Option[Map[String, Compartment]] = None // equal to getCompartmentMap(shapes = None)
+
 ) extends ShapeContainerElement {
 
-  // if parentShape had GeometricModels in 'shapes'-attribute, both the lists (parents and new List of GeometricModels) need to be merged
-  val shapes = {
-    val inherited_and_new_geometrics = parentShapes.getOrElse(List()) ::: parseGeometricModels(geos, style)
-    if (inherited_and_new_geometrics nonEmpty) Some(inherited_and_new_geometrics) else None
-  }
-
-  // if parentShape has TextOutputFields (Text) and if new TextFields(in geos) were parsed, create a new Map[String, Text]
-  // first check for new TextOutputs
-  val textMap = {
-    var ret = parentTextMap
-    if (shapes.isDefined) {
-      var texts = shapes.get.filter(i => i.isInstanceOf[Text]).map(i => i.asInstanceOf[Text].id -> i.asInstanceOf[Text]).toMap
-      // now check for old TextOutputs
-      if (parentTextMap.isDefined) {
-        parentTextMap.get.foreach(i => texts += i)
-      }
-      if (texts.nonEmpty) {
-        ret = Some(texts)
-      }
-    }
-    ret
-  }
-
-  val compartmentMap = {
-    // if parentShape had CompartmentInfos and if new CompartmentInfos were parsed, create a new Map[String, CompartmentInfo]
-    // first check for new CompartmentInfo
-    val comparts = if (shapes.isDefined) {
-      rCompartment(shapes.get)
-    } else {
-      List[Compartment]()
-    }
-    if (comparts.nonEmpty) {
-      Some(comparts.map(i => i.compartment_id -> i).toMap)
-    } else {
-      None
-    }
-  }
 
   /**
    * useful Methodes
    */
-  override def toString = {
+  override def toString: String = {
     List(
       name,
       style,
@@ -107,109 +72,129 @@ case class Shape private (
     ).mkString("Shape(", ", ", ")")
   }
 
-  /**
-   * for generating shape-attribute specific content
-   */
-  private def parseGeometricModels(geoModels: List[GeoModel], parentStyle: Option[Style]) =
-    geoModels.map { _.parse(None, parentStyle) }.
-      foldLeft(List[GeometricModel]())((list, c: Option[GeometricModel]) => if (c.isDefined) c.get :: list else list)
-
-  /**
-   * recursively searches for Compartments in the geometricModels
-   */
-  private def rCompartment(g: List[GeometricModel], compartments: List[Compartment] = List[Compartment]()): List[Compartment] = {
-    var ret: List[Compartment] = compartments
-    g foreach {
-      case e: Ellipse if e.compartment.isDefined =>
-        ret = e.compartment.get :: ret
-      case e: Rectangle if e.compartment.isDefined =>
-        ret = e.compartment.get :: ret
-      case _ =>
-    }
-    g foreach {
-      case e: Wrapper =>
-        ret = ret ::: rCompartment(e.children, ret)
-      case _ =>
-    }
-    ret
-  }
 }
 
+
 object Shape extends CommonParserMethods {
+  private val SizeMax = "size-max"
+  private val SizeMin = "size-min"
+
+  private val stretching = "stretching"
+  private val proportional = "proportional"
+  private val anchor = "anchor"
   val validShapeVariables = List(
-    "size-min",
-    "size-max",
-    "stretching",
-    "proportional",
-    "anchor",
+    SizeMin,
+    SizeMax,
+    stretching,
+    proportional,
+    anchor,
+    // scalastyle:off
     "description(\\s*style\\s*[a-zA-ZüäöÜÄÖ]+([-_][a-zA-ZüäöÜÄÖ])*)?\\s*"
+    // scalastyle:on
   )
 
-  def apply(n: String) = new Shape(name = n)
+  def apply(n: String): Shape = {
+    new Shape(name = n)
+  }
+
+
   def apply(
     name: String,
-    parents: Option[List[String]],
-    style: Option[Style],
+    parentShapesOpt: Option[List[String]],
+    styleArgument: Option[Style],
     attributes: List[(String, String)],
     geos: List[GeoModel],
     description: Option[(String, String)],
     anchor: Option[String],
-    hierarchyContainer: Cache) = {
+    hierarchyContainer: Cache): Shape = {
+    val extendedShapes: List[Shape] = calcExtendedShapes(parentShapesOpt, hierarchyContainer)
 
-    parse(name, parents, style, attributes, geos, description, anchor, hierarchyContainer)
+    def mostRelevant[T] = ClassHierarchy.mostRelevant[T, Shape](extendedShapes) _
+
+    def parseTuple[T] = parseAttrTuple[T](attributes, mostRelevant[T]) _
+
+    val style = processStyle(styleArgument, mostRelevant(_.style), hierarchyContainer)
+    val parentShapes = mostRelevant(_.shapes)
+    val shapes = getShapes(parentShapes = parentShapes, geos = geos, style = style)
+    val parentTextMap = mostRelevant(_.textMap)
+    val (sizeWidthMin, sizeHeightMin) = parseTuple(SizeMin, widthHeight)(_.size_width_min, _.size_height_min)
+    val (sizeWidthMax, sizeHeightMax) = parseTuple(SizeMax, widthHeight)(_.size_width_max, _.size_height_max)
+    val (stretchingHorizontal, stretchingVertical) = parseTuple(stretching, parseStretching)(_.stretching_horizontal, _.stretching_vertical)
+
+    updateShapeHierarchy(extendedShapes, hierarchyContainer)(
+      new Shape(
+        name = name,
+        style = style,
+        size_width_min = sizeWidthMin,
+        size_height_min = sizeHeightMin,
+        size_width_max = sizeWidthMax,
+        size_height_max = sizeHeightMax,
+        stretching_horizontal = stretchingHorizontal,
+        stretching_vertical = stretchingVertical,
+        proportional = parseAttr(attributes)(proportional, parseProportional).orElse(mostRelevant(_.proportional)),
+        parentShapes = parentShapes,
+        parentTextMap = parentTextMap,
+        parentCompartmentMap = mostRelevant(_.compartmentMap),
+        geos = geos,
+        description = description.flatMap(value => Description.parse(value, style, hierarchyContainer)).orElse(mostRelevant(_.description)),
+        anchor = getAnchor(anchor, attributes, extendedShapes),
+        extendedShape = Nil,
+        shapes = shapes,
+        textMap = getTextMap(shapes = shapes, parentTextMap = parentTextMap),
+        compartmentMap = getCompartmentMap(shapes = shapes)
+      )
+    )
   }
 
-  private def parse(
-    name: String,
-    parentShapes: Option[List[String]],
-    styleArgument: Option[Style],
-    attributes: List[(String, String)],
-    geos: List[GeoModel],
-    desc: Option[(String, String)],
-    anch: Option[String],
-    hierarchyContainer: Cache
-  ): Shape = {
-    implicit val cache = hierarchyContainer
+  private def getAnchor(anchor: Option[String], attributes: List[(String, String)], extendedShapes: List[Shape]): Option[AnchorType] = {
+    anchor.map(value => Anchor.parse(Anchor.anchor, value).get)
+      .orElse(attributes.find(_._1 == this.anchor).flatMap(value => Anchor.parse(Anchor.anchor, value._2) match {
+        case Anchor.Success(result: Anchor.AnchorType, _) => Some(result)
+        case _ => None
+      })).orElse(ClassHierarchy.mostRelevant(extendedShapes)(_.anchor))
+  }
 
-    val extendedShapes = parentShapes.getOrElse(List[String]()).foldLeft(List[Shape]())((shapes, s_name) =>
-      if (cache.shapeHierarchy.contains(s_name.trim)) s_name.trim :: shapes else shapes)
 
-    /**
-     * relevant is a help-methode, which shortens the actual call to mostRelevant of ClassHierarchy by ensuring the collection-parameter
-     * relevant speaks for the hierarchical context -> "A extends B, C" -> C is most relevant
-     */
-    def relevant[T](f: Shape => Option[T]) = ClassHierarchy.mostRelevant(extendedShapes) { f }
-
-    val shape = new Shape(
-      name = name,
-      style = processStyle(styleArgument, relevant { _.style }, hierarchyContainer),
-      size_width_min = relevant { _.size_width_min },
-      size_height_min = relevant { _.size_height_min },
-      size_width_max = relevant { _.size_width_max },
-      size_height_max = relevant { _.size_height_max },
-      stretching_horizontal = relevant { _.stretching_horizontal },
-      stretching_vertical = relevant { _.stretching_vertical },
-      proportional = relevant { _.proportional },
-      parentShapes = relevant { _.shapes },
-      parentTextMap = relevant { _.textMap },
-      parentCompartmentMap = relevant { _.compartmentMap },
-      geos = geos,
-      description = relevant { _.description },
-      anchor = relevant { _.anchor }
-    )
-
-    val newShape = processAnch(anch, processDesc(desc, cache, processAttributes(attributes, shape)))
-
-    // include new shape instance in shapeHierarchie
-    if (extendedShapes.nonEmpty) {
-      extendedShapes.reverse.foreach(elem => cache.shapeHierarchy(elem.name, newShape))
-    } else {
-      cache.shapeHierarchy.newBaseClass(newShape)
+  /**
+   * include new shape instance in shapeHierarchy
+   */
+  private def updateShapeHierarchy(extendedShapes: scala.List[Shape], cache: Cache)(newShape: Shape): Shape = {
+    extendedShapes match {
+      case Nil => cache.shapeHierarchy.newBaseClass(newShape)
+      case _ => extendedShapes.reverse.foreach(elem => cache.shapeHierarchy(elem.name, newShape))
     }
     newShape
   }
 
-  private def processStyle(styleArgument: Option[Style], style: Option[Style], cache: Cache) = {
+  private def calcExtendedShapes(parentShapesOpt: Option[List[String]], hierarchyContainer: Cache): List[Shape] = {
+    parentShapesOpt match {
+      case None => Nil
+      case Some(list) => list.foldLeft[List[Shape]](Nil)((shapes, s_name) => {
+        val trimmed = s_name.trim()
+        if (hierarchyContainer.shapeHierarchy.contains(trimmed)) {
+          parser.IDtoShape(trimmed)(hierarchyContainer) :: shapes
+        } else {
+          shapes
+        }
+      })
+    }
+  }
+
+
+  private def parseAttr[T](attributes: List[(String, String)])(attr: String, parser: Parser[Option[T]]): Option[T] = {
+    attributes.find(_._1 == attr).flatMap(at => parse(parser, at._2).get)
+  }
+
+  private def parseAttrTuple[T](attributes: List[(String, String)], checkRelevant: (Shape => Option[T]) => Option[T])
+    (attr: String, parser: Parser[Option[(T, T)]])
+    (defaultA: Shape => Option[T], defaultB: Shape => Option[T]): (Option[T], Option[T]) = {
+    parseAttr(attributes)(attr, parser) match {
+      case Some((a, b)) => (Some(a), Some(b))
+      case None => (checkRelevant(defaultA), checkRelevant(defaultB))
+    }
+  }
+
+  private def processStyle(styleArgument: Option[Style], style: Option[Style], cache: Cache): Option[Style] = {
     styleArgument match {
       case None => style
       case Some(_) => style match {
@@ -219,78 +204,82 @@ object Shape extends CommonParserMethods {
     }
   }
 
-  private def processAttributes(attributes: List[(String, String)], initShape: Shape): Shape = {
-    attributes.foldLeft(initShape) { (shape, value) =>
-      value._1 match {
-        case "size-min" => processSizeMin(value._2, shape)
-        case "size-max" => processSizeMax(value._2, shape)
-        case "stretching" => processStretching(value._2, shape)
-        case "proportional" => shape.copy(proportional = parse(proportional, value._2).get)
-        case "anchor" => processAnchor(value._2, shape)
-        case _ => shape
-      }
-    }
-  }
-
-  private def processDesc(desc: Option[(String, String)], cache: Cache, shape: Shape) = {
-    desc match {
-      case None => shape
-      case Some(value) => shape.copy(description = Description.parse(value, shape.style, cache))
-    }
-  }
-
-  private def processAnch(anch: Option[String], shape: Shape) = {
-    anch match {
-      case None => shape
-      case Some(value) => shape.copy(anchor = Some(Anchor.parse(Anchor.anchor, value).get))
-    }
-  }
-
-  private def processSizeMin(value: String, shape: Shape) = {
-    parse(widthHeight, value).get match {
-      case None => shape
-      case Some(opt) => shape.copy(size_width_min = Some(opt._1), size_height_min = Some(opt._2))
-    }
-  }
-
-  private def processSizeMax(value: String, shape: Shape) = {
-    parse(widthHeight, value).get match {
-      case None => shape
-      case Some(opt) => shape.copy(size_width_max = Some(opt._1), size_height_max = Some(opt._2))
-    }
-  }
-
-  private def processStretching(value: String, shape: Shape) = {
-    parse(stretching, value).get match {
-      case None => shape
-      case Some(opt) => shape.copy(stretching_horizontal = Some(opt._1), stretching_vertical = Some(opt._2))
-    }
-  }
-
-  private def processAnchor(value: String, shape: Shape) = {
-    val anchor = Anchor.parse(Anchor.anchor, value)
-    if (anchor.isEmpty) {
-      shape.copy(anchor = None)
-    } else {
-      shape.copy(anchor = Some(anchor.get))
-    }
-  }
-
   // parsingRules for special attributes
-  private def proportional: Parser[Option[Boolean]] = "=?".r ~> argument ^^ {
+  private def parseProportional: Parser[Option[Boolean]] = "=?".r ~> argument ^^ {
     case prop: String => Some(matchBoolean(prop))
     case _ => None
   }
-  private def stretching: Parser[Option[(Boolean, Boolean)]] = {
+
+  private def parseStretching: Parser[Option[(Boolean, Boolean)]] = {
     "\\(\\s*(horizontal\\s*=\\s*)?".r ~> argument ~ (",\\s*(vertical\\s*=\\s*)?".r ~> argument) <~ ")" ^^ {
       case hor ~ ver => Some(matchBoolean(hor), matchBoolean(ver))
       case _ => None
     }
   }
+
   private def widthHeight: Parser[Option[(Int, Int)]] = {
     "\\(\\s*(width\\s*=\\s*)?".r ~> argument_int ~ (",\\s*(height\\s*=\\s*)?".r ~> argument_int) <~ ")" ^^ {
       case width ~ height => Some((width.toInt, height.toInt))
       case _ => None
+    }
+  }
+
+  // TODO check type
+  // if parentShape had GeometricModels in 'shapes'-attribute, both the lists (parents and new List of GeometricModels) need to be merged
+  private def getShapes(parentShapes: Option[List[GeometricModel]], geos: List[GeoModel], style: Option[Style]): Option[List[GeometricModel]] = {
+    (parentShapes, parseGeometricModels(geos, style)) match {
+      case (None | Some(Nil), Nil) => None
+      case (None | Some(Nil), any) => Some(any)
+      case (list, Nil) => list
+      case (Some(list), any) => Some(list ::: any)
+    }
+  }
+
+  /**
+   * for generating shape-attribute specific content
+   */
+  private def parseGeometricModels(geoModels: List[GeoModel], parentStyle: Option[Style]): List[GeometricModel] = {
+    geoModels.flatMap(_.parse(None, parentStyle))
+  }
+
+
+  private def getCompartmentMap(shapes: Option[List[GeometricModel]]): Option[Map[String, Compartment]] = {
+    // if parentShape had CompartmentInfos and if new CompartmentInfos were parsed, create a new Map[String, CompartmentInfo]
+    // first check for new CompartmentInfo
+    shapes match {
+      case None | Some(Nil) => None
+      case Some(comp) => Some(rCompartment(comp).map(i => (i.compartment_id, i)).toMap)
+    }
+  }
+
+  /**
+   * recursively searches for Compartments in the geometricModels
+   */
+  private def rCompartment(gModels: List[GeometricModel], compartments: List[Compartment] = List[Compartment]()): List[Compartment] = {
+    gModels.foldLeft(compartments)((comp, gm) => gm match {
+      case r: Rectangle if r.compartment.isDefined =>
+        r.compartment.get :: comp
+      case w: Wrapper => rCompartment(w.children, comp)
+      case _ => comp
+    })
+  }
+
+  private def getTextMap(shapes: Option[List[GeometricModel]], parentTextMap: Option[Map[String, Text]]): Option[Map[String, Text]] = {
+    shapes match {
+      case None => parentTextMap
+      case Some(geometricModels) =>
+        val texts = geometricModels.flatMap {
+          case t: Text => List((t.id, t))
+          case _ => Nil
+        }
+        val textsList = parentTextMap match {
+          case None => texts
+          case Some(parent) => texts ::: parent.toList
+        }
+        textsList match {
+          case Nil => None
+          case list: List[(String, Text)] => Some(list.toMap)
+        }
     }
   }
 }

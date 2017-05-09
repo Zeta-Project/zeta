@@ -112,7 +112,7 @@
  <check enabled="true" class="org.scalastyle.scalariform.MultipleStringLiteralsChecker" level="warning">
   <parameters>
    <parameter name="allowed">1</parameter>
-   <parameter name="ignoreRegex">^\&quot;\&quot;$</parameter>
+   <parameter name="ignoreRegex">^\&quot;\)?\&quot;$</parameter>
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.NoCloneChecker" level="warning"/>
