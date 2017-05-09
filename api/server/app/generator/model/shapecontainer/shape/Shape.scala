@@ -26,12 +26,12 @@ import generator.parser.GeoModel
 final class Shape private(
     override val name: String = "no name",
     val style: Option[Style] = None,
-    val size_width_min: Option[Int] = None, // from ShapeLayout
-    val size_height_min: Option[Int] = None, // from ShapeLayout
-    val size_width_max: Option[Int] = None, // from ShapeLayout
-    val size_height_max: Option[Int] = None, // from ShapeLayout
-    val stretching_horizontal: Option[Boolean] = None, // from ShapeLayout
-    val stretching_vertical: Option[Boolean] = None, // from ShapeLayout
+    val sizeWidthMin: Option[Int] = None, // from ShapeLayout
+    val sizeHeightMin: Option[Int] = None, // from ShapeLayout
+    val sizeWidthMax: Option[Int] = None, // from ShapeLayout
+    val sizeHeightMax: Option[Int] = None, // from ShapeLayout
+    val stretchingHorizontal: Option[Boolean] = None, // from ShapeLayout
+    val stretchingVertical: Option[Boolean] = None, // from ShapeLayout
     val proportional: Option[Boolean] = None, // from ShapeLayout
 
     val parentShapes: Option[List[GeometricModel]] = None,
@@ -56,12 +56,12 @@ final class Shape private(
     List(
       name,
       style,
-      size_width_min,
-      size_height_min,
-      size_width_max,
-      size_height_max,
-      stretching_horizontal,
-      stretching_vertical,
+      sizeWidthMin,
+      sizeHeightMin,
+      sizeWidthMax,
+      sizeHeightMax,
+      stretchingHorizontal,
+      stretchingVertical,
       proportional,
       shapes,
       textMap,
@@ -76,15 +76,16 @@ final class Shape private(
 
 
 object Shape extends CommonParserMethods {
-  private val SizeMax = "size-max"
-  private val SizeMin = "size-min"
+  private val sizeMax = "size-max"
+  private val sizeMin = "size-min"
 
   private val stretching = "stretching"
   private val proportional = "proportional"
   private val anchor = "anchor"
+
   val validShapeVariables = List(
-    SizeMin,
-    SizeMax,
+    sizeMin,
+    sizeMax,
     stretching,
     proportional,
     anchor,
@@ -117,20 +118,20 @@ object Shape extends CommonParserMethods {
     val parentShapes = mostRelevant(_.shapes)
     val shapes = getShapes(parentShapes = parentShapes, geos = geos, style = style)
     val parentTextMap = mostRelevant(_.textMap)
-    val (sizeWidthMin, sizeHeightMin) = parseTuple(SizeMin, widthHeight)(_.size_width_min, _.size_height_min)
-    val (sizeWidthMax, sizeHeightMax) = parseTuple(SizeMax, widthHeight)(_.size_width_max, _.size_height_max)
-    val (stretchingHorizontal, stretchingVertical) = parseTuple(stretching, parseStretching)(_.stretching_horizontal, _.stretching_vertical)
+    val (sizeWidthMin, sizeHeightMin) = parseTuple(sizeMin, widthHeight)(_.sizeWidthMin, _.sizeHeightMin)
+    val (sizeWidthMax, sizeHeightMax) = parseTuple(sizeMax, widthHeight)(_.sizeWidthMax, _.sizeHeightMax)
+    val (stretchingHorizontal, stretchingVertical) = parseTuple(stretching, parseStretching)(_.stretchingHorizontal, _.stretchingVertical)
 
     updateShapeHierarchy(extendedShapes, hierarchyContainer)(
       new Shape(
         name = name,
         style = style,
-        size_width_min = sizeWidthMin,
-        size_height_min = sizeHeightMin,
-        size_width_max = sizeWidthMax,
-        size_height_max = sizeHeightMax,
-        stretching_horizontal = stretchingHorizontal,
-        stretching_vertical = stretchingVertical,
+        sizeWidthMin = sizeWidthMin,
+        sizeHeightMin = sizeHeightMin,
+        sizeWidthMax = sizeWidthMax,
+        sizeHeightMax = sizeHeightMax,
+        stretchingHorizontal = stretchingHorizontal,
+        stretchingVertical = stretchingVertical,
         proportional = parseAttr(attributes)(proportional, parseProportional).orElse(mostRelevant(_.proportional)),
         parentShapes = parentShapes,
         parentTextMap = parentTextMap,

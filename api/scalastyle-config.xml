@@ -69,7 +69,7 @@
  <check enabled="true" class="org.scalastyle.scalariform.EqualsHashCodeChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.FieldNamesChecker" level="warning">
   <parameters>
-   <parameter name="regex">^[a-z][A-Za-z0-9]*$</parameter>
+   <parameter name="regex">(^\(([a-z][A-Za-z0-9]*,\W)+[a-z][A-Za-z0-9]*\)$)|(^[a-z][A-Za-z0-9]*$)</parameter>
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.ForBraceChecker" level="error"/>

@@ -113,8 +113,8 @@ object GeneratorShapeDefinition {
 
   protected def getResizingPolicies(shape: Shape) = {
     s"""
-      horizontal: ${shape.stretching_horizontal.getOrElse("true")},
-      vertical: ${shape.stretching_vertical.getOrElse("true")},
+      horizontal: ${shape.stretchingHorizontal.getOrElse("true")},
+      vertical: ${shape.stretchingVertical.getOrElse("true")},
       proportional: ${shape.proportional.getOrElse("true")}
     """
   }
@@ -122,15 +122,15 @@ object GeneratorShapeDefinition {
   def generateSizeProperties(shape: Shape): String = {
     s"""
       ${
-        if (shape.size_height_max.isDefined && shape.size_width_max.isDefined) {
-          s"""'size-max': {height: ${shape.size_height_max.get}, width: ${shape.size_width_max.get}},"""
+        if (shape.sizeHeightMax.isDefined && shape.sizeWidthMax.isDefined) {
+          s"""'size-max': {height: ${shape.sizeHeightMax.get}, width: ${shape.sizeWidthMax.get}},"""
         } else {
           ""
         }
       }
       ${
-        if (shape.size_height_min.isDefined && shape.size_width_min.isDefined) {
-          s"""'size-min': {height: ${shape.size_height_min.get}, width: ${shape.size_width_min.get}},"""
+        if (shape.sizeHeightMin.isDefined && shape.sizeWidthMin.isDefined) {
+          s"""'size-min': {height: ${shape.sizeHeightMin.get}, width: ${shape.sizeWidthMin.get}},"""
         } else {
           ""
         }
