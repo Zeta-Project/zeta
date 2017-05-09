@@ -58,7 +58,7 @@ object Result extends Logging {
     } catch {
       case t: Throwable =>
         val msg = onFailure(t)
-        debug(s"Result failed with msg $msg.\nStacktrace:\n", t)
+        debug(s"Result failed with msg: $msg.\nStacktrace:\n", t)
         Failure(msg)
     }
 
