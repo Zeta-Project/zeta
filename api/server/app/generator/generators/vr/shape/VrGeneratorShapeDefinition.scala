@@ -1,5 +1,7 @@
 package generator.generators.vr.shape
 
+import scala.util.Try
+
 import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Ellipse
 import generator.model.shapecontainer.shape.geometrics.GeometricModel
@@ -13,8 +15,6 @@ import generator.model.shapecontainer.shape.geometrics.Wrapper
 import generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import models.file.File
 import models.result.Result
-
-import scala.util.Try
 
 
 object VrGeneratorShapeDefinition {
@@ -132,10 +132,18 @@ object VrGeneratorShapeDefinition {
   }
 
   private def generateReadyFunction(geometrics: List[GeometricModel]): String = {
-    val totalSize = (
-      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y).max.asInstanceOf[Double],
-      geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x).max.asInstanceOf[Double]
+
+    def calcMax(list: List[Int]): Int = list match {
+      case Nil => 0
+      case any => any.max
+    }
+
+    val totalSize: (Int, Int) = (
+      calcMax(geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_height + g.y)),
+      calcMax(geometrics.map(_.asInstanceOf[CommonLayout]).map(g => g.size_width + g.x))
     )
+
+
     s"""
       | ready: function() {
       |   var self = this;
@@ -146,8 +154,8 @@ object VrGeneratorShapeDefinition {
       |   this.moveVertical = true;
       |   this.minMoveHorizontal = 0;
       |   this.maxMoveVertical = 0;
-      |   this.height = ${totalSize._1.toInt}
-      |   this.width = ${totalSize._2.toInt}
+      |   this.height = ${totalSize._1}
+      |   this.width = ${totalSize._2}
       |   ${createInnerSizing(geometrics, totalSize)}
       |
       |   function create(element, text, center, position, min, max, percentage) {
@@ -163,6 +171,10 @@ object VrGeneratorShapeDefinition {
     """.stripMargin
   }
 
+  private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Int, Int)): String = {
+    createInnerSizing(geometrics, (totalSize._1.toDouble, totalSize._2.toDouble))
+  }
+
   private def createInnerSizing(geometrics: List[GeometricModel], totalSize: (Double, Double)): String = {
     var textCount = 0
     (for {g: GeometricModel <- geometrics} yield {
@@ -174,7 +186,10 @@ object VrGeneratorShapeDefinition {
           val position = c.position.getOrElse((0, 0))
           val texts = wrapper.children.filter(_.isInstanceOf[Text]).map(_.asInstanceOf[Text])
           s"""
-            |  ${texts.map(text => (s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString}
+            |  ${
+            texts.map(text => (
+              s"""this.text${textCount} = ${text.textBody};""".stripMargin, textCount += 1)).map(_._1).mkString
+          }
             |  create(
             |    new VrElement.${element.capitalize}(),
             |    ${
