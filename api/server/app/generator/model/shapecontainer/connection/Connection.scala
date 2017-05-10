@@ -17,7 +17,7 @@ import parser.OptionToStyle
  * @param placing outstanding
  * TODO
  */
-sealed class Connection private (
+final class Connection private (
     override val name: String,
     val connection_type: Option[ConnectionStyle] = None,
     val style: Option[Style] = None,
