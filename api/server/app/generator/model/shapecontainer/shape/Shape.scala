@@ -14,14 +14,32 @@ import generator.parser.Cache
 import generator.parser.CommonParserMethods
 import generator.parser.GeoModel
 
+
 /**
  * Created by julian on 29.09.15.
  * The actual representation of a shape class,
  * will hold all the relevant attributes
  *
- * @param name         = id
- * @param parentShapes are the shapes that this new shape will inherit its attributes of
- * @param geos         is a list of GeoModels kind of like sketch-GeometricModels, which will be converted into real GeometricModels inside the constructor
+ * @param name                 = id
+ * @param style                ??
+ * @param sizeWidthMin         ??
+ * @param sizeHeightMin        ??
+ * @param sizeWidthMax         ??
+ * @param sizeHeightMax        ??
+ * @param stretchingHorizontal ??
+ * @param stretchingVertical   ??
+ * @param proportional         ??
+ * @param parentShapes         are the shapes that this new shape will inherit its attributes of
+ * @param parentTextMap        ??
+ * @param parentCompartmentMap ??
+ * @param geos                 is a list of GeoModels kind of like sketch-GeometricModels, which will be converted into real GeometricModels inside the
+ *                             constructor
+ * @param description          ??
+ * @param anchor               ??
+ * @param extendedShape        ??
+ * @param shapes               ??
+ * @param textMap              ??
+ * @param compartmentMap       ??
  */
 final class Shape private(
     override val name: String = "no name",
@@ -94,11 +112,30 @@ object Shape extends CommonParserMethods {
     // scalastyle:on
   )
 
+  /**
+   * Constructor  for Shape
+   *
+   * @param n the name of the shape
+   * @return a Shape with name n
+   */
   def apply(n: String): Shape = {
     new Shape(name = n)
   }
 
 
+  /**
+   * Constructor  for Shape
+   *
+   * @param name               of shape
+   * @param parentShapesOpt    ??
+   * @param styleArgument      ??
+   * @param attributes         ??
+   * @param geos               ??
+   * @param description        ??
+   * @param anchor             ??
+   * @param hierarchyContainer ??
+   * @return a Shape
+   */
   def apply(
     name: String,
     parentShapesOpt: Option[List[String]],
@@ -206,9 +243,11 @@ object Shape extends CommonParserMethods {
   }
 
   // parsingRules for special attributes
-  private def parseProportional: Parser[Option[Boolean]] = "=?".r ~> argument ^^ {
-    case prop: String => Some(matchBoolean(prop))
-    case _ => None
+  private def parseProportional: Parser[Option[Boolean]] = {
+    "=?".r ~> argument ^^ {
+      case prop: String => Some(matchBoolean(prop))
+      case _ => None
+    }
   }
 
   private def parseStretching: Parser[Option[(Boolean, Boolean)]] = {
