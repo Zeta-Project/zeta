@@ -59,6 +59,8 @@ lazy val server = baseProject("server", file("server")).settings(
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",
   resolvers += Resolver.jcenterRepo,
+  wartremoverErrors += Wart.AsInstanceOf,
+
   libraryDependencies ++= Seq(
     //logging
     "org.clapper" %% "grizzled-slf4j" % "1.2.0",
