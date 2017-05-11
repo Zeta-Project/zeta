@@ -1,4 +1,6 @@
 <code_scheme name="zeta_codeStyle">
+  <option name="RIGHT_MARGIN" value="160" />
+  <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
   <ScalaCodeStyleSettings>
     <option name="classCountToUseImportOnDemand" value="1000" />
     <option name="collectImports" value="false" />
@@ -12,6 +14,7 @@
       </array>
     </option>
     <option name="sortAsScalastyle" value="true" />
+    <option name="METHOD_BRACE_FORCE" value="1" />
     <option name="FINALLY_BRACE_FORCE" value="3" />
     <option name="TRY_BRACE_FORCE" value="3" />
     <option name="USE_ALTERNATE_CONTINUATION_INDENT_FOR_PARAMS" value="true" />
