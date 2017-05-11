@@ -4,5 +4,4 @@ import generator.model.ContainerElement
 
 /**
  */
-trait ShapeContainerElement extends ContainerElement{
-}
+trait ShapeContainerElement extends ContainerElement
