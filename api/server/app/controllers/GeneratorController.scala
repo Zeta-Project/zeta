@@ -105,8 +105,7 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
     val generators: List[() => Result[List[File]]] = List(
       // Generate files for the VR - Editor
       // FIXME: VR generators are not working. If you want to enable them again, check the commit that introduced this message
-      // () => VrShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
-      // () => VrDiagramGenerator.doGenerateResult(diagram)
+      // Revision number: d60fbde380816a3a593a1bfdb4cdf72561977384
     )
 
     generate(generators)
