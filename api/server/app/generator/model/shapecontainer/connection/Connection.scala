@@ -39,12 +39,12 @@ object Connection extends CommonParserMethods {
    * parse method
    */
   def apply(
-      name: String,
-      styleRef: Option[Style],
-      typ: Option[String],
-      anonymousStyle: Option[String],
-      placings: List[PlacingSketch],
-      cache: Cache
+    name: String,
+    styleRef: Option[Style],
+    typ: Option[String],
+    anonymousStyle: Option[String],
+    placings: List[PlacingSketch],
+    cache: Cache
   ): Option[Connection] = {
     // mapping
     val connection_type: Option[ConnectionStyle] = typ.map(t => parse(connectionType, t).get)
