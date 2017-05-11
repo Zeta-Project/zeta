@@ -210,10 +210,9 @@ object Shape extends CommonParserMethods {
       case None => Nil
       case Some(list) => list.foldLeft[List[Shape]](Nil)((shapes, s_name) => {
         val trimmed = s_name.trim()
-        if (hierarchyContainer.shapeHierarchy.contains(trimmed)) {
-          IDtoShape(trimmed)(hierarchyContainer) :: shapes
-        } else {
-          shapes
+        IDtoShape(trimmed)(hierarchyContainer) match {
+          case Some(s) => s :: shapes
+          case None => shapes
         }
       })
     }

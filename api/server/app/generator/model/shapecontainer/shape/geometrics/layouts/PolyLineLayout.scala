@@ -40,7 +40,7 @@ object PolyLineLayoutParser {
     val collectedPoints = attributes.filter(_.matches("point.+")).flatMap(PointParser(_))
     val defaultStyle: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
     val style: Option[Style] = attributes.find(hierarchyContainer.styleHierarchy.contains)
-      .flatMap(x => Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(IDtoStyle(x)(hierarchyContainer))))
+      .flatMap(x => Style.generateChildStyle(hierarchyContainer, defaultStyle, IDtoStyle(x)(hierarchyContainer)))
       .orElse(defaultStyle)
 
     collectedPoints match {

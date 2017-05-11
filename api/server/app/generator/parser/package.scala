@@ -13,15 +13,11 @@ import generator.model.style.Style
  * CacheEvaluation
  */
 package object parser {
-  @inline def IDtoStyle(id: String)(c: Cache): Style = c.styleHierarchy(id).data
+  @inline def IDtoStyle(id: String)(c: Cache): Option[Style] = c.styleHierarchy.get(id)
 
-  @inline def IDtoOptionStyle(id: String)(c: Cache): Option[Style] = c.styleHierarchy.get(id)
+  @inline def OptionToStyle(id: Option[String])(c: Cache): Option[Style] = id.flatMap(IDtoStyle(_)(c))
 
-  @inline def OptionToStyle(id: Option[String])(c: Cache): Option[Style] = if (id.isDefined) c.styleHierarchy.get(id.get) else None
-
-  @inline def IDtoShape(id: String)(c: Cache): Shape = c.shapeHierarchy(id).data
-
-  @inline def IDtoOptionShape(id: String)(c: Cache): Option[Shape] = c.shapeHierarchy.get(id)
+  @inline def IDtoShape(id: String)(c: Cache): Option[Shape] = c.shapeHierarchy.get(id)
 
   @inline def IDtoShapeSketch(id: String)(c: Cache): ShapeSketch = c.shapeSketches(id)
 

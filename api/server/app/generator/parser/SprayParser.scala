@@ -119,7 +119,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       rep(geoAttribute | anonymousStyle) ~
       (rep(geoModel) <~ "}") ^^ {
       case name ~ style ~ attr ~ children =>
-        GeoModel(name, style.map(s => IDtoStyle(s)(cache)), attr, children, cache)
+        GeoModel(name, style.flatMap(s => IDtoStyle(s)(cache)), attr, children, cache)
     }
   }
 
@@ -320,7 +320,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   }
 
   private def createNodeSketch(name: String, mcoreElement: String, corporatestyle: Option[String], args: List[(String, Serializable)]): (String, NodeSketch) = {
-    val corporateStyle: Option[Style] = corporatestyle.map(s => IDtoStyle(s)(cache))
+    val corporateStyle: Option[Style] = corporatestyle.flatMap(s => IDtoStyle(s)(cache))
     var shap: Option[PropsAndComps] = None
     var pal: Option[String] = None
     var con: Option[String] = None
@@ -409,7 +409,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
     to: String,
     args: List[(String, Serializable)]): (String, EdgeSketch) = {
 
-    val style: Option[Style] = styleOpt.flatMap(s => (parser IDtoOptionStyle s)(cache))
+    val style: Option[Style] = styleOpt.flatMap(s => parser.IDtoStyle(s)(cache))
     var pal: Option[String] = None
     var con: Option[String] = None
     var onCr: Option[(ActionBlock, String)] = None
@@ -478,10 +478,10 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
         val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
 
         val nodes: List[Node] = arguments.collect {
-          case (typ, node: NodeSketch) if typ == "node" => node.toNode(style.map(s => IDtoStyle(s)(cache)), cache)
+          case (typ, node: NodeSketch) if typ == "node" => node.toNode(style.flatMap(s => IDtoStyle(s)(cache)), cache)
         }
         val edges: List[Edge] = arguments.collect {
-          case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.map(s => IDtoStyle(s)(cache)), cache)
+          case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.flatMap(s => IDtoStyle(s)(cache)), cache)
         }
 
         if (metaModelE.metaModel.name == metaModelName) {

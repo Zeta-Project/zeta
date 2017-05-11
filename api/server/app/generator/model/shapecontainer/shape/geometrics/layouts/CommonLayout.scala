@@ -55,7 +55,7 @@ object CommonLayoutParser extends CommonParserMethods with Logging {
 
         case (head :: tail, Mapping(_, _, None)) if cache.styleHierarchy.contains(head) =>
           // generate anonymous style)
-          val styleOpt = Style.generateChildStyle(cache, defaultStyle, Some(IDtoStyle(head)(cache)))
+          val styleOpt = Style.generateChildStyle(cache, defaultStyle, IDtoStyle(head)(cache))
           rek(tail, mappings.copy(styleOpt = styleOpt))
 
         case (_ :: tail, _) =>
