@@ -1,8 +1,8 @@
 package generator.model.shapecontainer
 
+import generator.model.ContainerElement
+
 /**
- * Created by julian on 20.10.15.
  */
-trait ShapeContainerElement {
-  val name: String
+trait ShapeContainerElement extends ContainerElement{
 }

@@ -1,3 +1,7 @@
 package generator.model.style
 
-abstract class StyleContainerElement
+import generator.model.ContainerElement
+
+/**
+ */
+trait StyleContainerElement extends ContainerElement

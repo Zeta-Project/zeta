@@ -1,28 +1,27 @@
 package generator.model
 
-import org.slf4j.LoggerFactory
+import grizzled.slf4j.Logging
 
 /**
  * Created by julian on 24.09.15.
- * ClassHierarchy is able to simluate a classhierarchy it stores nodes, which are linked to parents and children
- * with this ineritance of objects can be achieved
+ * ClassHierarchy is able to simulate a class hierarchy it stores nodes, which are linked to parents and children
+ * with this inheritance of objects can be achieved
  */
-sealed class ClassHierarchy[T <% { def toString: String; val name: String }](rootClass: T) {
+final class ClassHierarchy[T <: ContainerElement](rootClass: T) extends Logging{
 
-  private val logger = LoggerFactory.getLogger(ClassHierarchy.getClass)
   val root = Node(rootClass)
   var nodeView: Map[String, Node] = Map(root.data.name -> root)
 
-  // several apply methods to simplify acces on elements
-  def apply(parent: Node, className: T) = parent inheritedBy className
-  def apply(parent: T, className: T) = nodeView(parent.name) inheritedBy className
-  def apply(parent: String, className: T) = nodeView(parent) inheritedBy className
-  def apply(className: T) = nodeView(className.name)
-  def apply(className: Option[String]) = if (className.isDefined) Some(nodeView(className.get).data) else None
-  def apply(className: String) = nodeView(className)
-  override def toString = root.toString
+  // several apply methods to simplify access on elements
+  def apply(parent: Node, className: T) = parent.inheritedBy(className)
+  def apply(parent: T, className: T) = nodeView(parent.name).inheritedBy(className)
+  def apply(parent: String, className: T) = nodeView(parent).inheritedBy(className)
+  def apply(className: T): Node = nodeView(className.name)
+  def apply(className: Option[String]): Option[T] = if (className.isDefined) Some(nodeView(className.get).data) else None
+  def apply(className: String): Node = nodeView(className)
+  override def toString: String = root.toString
 
-  def newBaseClass(className: T) = root inheritedBy className
+  def newBaseClass(className: T): Unit = root.inheritedBy(className)
   def get(className: String): Option[T] = {
     if (className.isEmpty) {
       None
@@ -35,7 +34,7 @@ sealed class ClassHierarchy[T <% { def toString: String; val name: String }](roo
       }
     }
   }
-  def setRelation(parent: T, child: T) = nodeView(parent.name) inheritedBy child
+  def setRelation(parent: T, child: T) = nodeView(parent.name).inheritedBy(child)
   def contains(className: String): Boolean = {
     nodeView.contains(className)
   }
@@ -48,7 +47,7 @@ sealed class ClassHierarchy[T <% { def toString: String; val name: String }](roo
   ) {
     def rPrint(): Unit = {
       children.foreach { e =>
-        logger.info("[" + this + "]: " + e)
+        info(s"[$this]: $e")
         e.rPrint()
       }
     }
