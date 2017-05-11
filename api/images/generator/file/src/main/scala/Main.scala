@@ -12,6 +12,7 @@ import models.file.{Repository => Files}
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.remote.Remote
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +20,7 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 
 class MyTransformer() extends Transformer {
-  private val logger = LoggerFactory.getLogger(getClass)
+  private val logger: Logger = LoggerFactory.getLogger(getClass)
 
   def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
     logger.info("Start example")
@@ -32,7 +33,8 @@ class MyTransformer() extends Transformer {
     val content =
       s"""
         |Number of nodes : ${nodes}
-        |Number of edges : ${edges}""".stripMargin
+        |Number of edges : ${edges}
+      """.stripMargin
 
     files.create(entity, File(filename, content)).map { result =>
       logger.info(s"Successfully saved results to '${filename}' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
@@ -59,7 +61,9 @@ object Main extends Template[CreateOptions, String] {
       image <- documents.get[GeneratorImage](image)
       generator <- documents.create[Generator](Generator(user, options.name, image))
       created <- files.create(generator, createFileContent())
-    } yield Success()
+    } yield {
+      Success()
+    }
   }
 
   def createFileContent(): File = {
@@ -68,11 +72,11 @@ object Main extends Template[CreateOptions, String] {
 
   def createFile(name: String): File = {
     val content =
-      """
+      s"""
         |class MyTransformer() extends Transformer {
         | private val logger = LoggerFactory.getLogger(getClass)
         | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
-        |   logger.info(s"User : ${entity.id}")
+        |   logger.info(s"User : $${entity.id}")
         |   entity.model.elements.values.foreach { element => element match {
         |     case node: Node => logger.info(node.`type`.name)
         |     case edge: Edge => logger.info(edge.`type`.name)
@@ -80,7 +84,7 @@ object Main extends Template[CreateOptions, String] {
         |   Future.successful(this)
         | }
         |
-        | def exit()(implicit documents: Documents, files: Files, remote: Remote) : Future[Result] = {
+        |def exit()(implicit documents: Documents, files: Files, remote: Remote) : Future[Result] = {
         |   val result = Success("The generator finished")
         |   Future.successful(result)
         | }
@@ -90,21 +94,22 @@ object Main extends Template[CreateOptions, String] {
     File(name, content)
   }
 
-  def compiledGenerator(file: File) = {
-    val content = s"""
-      import scala.concurrent.ExecutionContext.Implicits.global
-      import scala.concurrent.{Future, Promise}
-      import models.modelDefinitions.model.elements.{Node, Edge}
-      import models.document.ModelEntity
-      import models.document.{Repository => Documents}
-      import models.file.{File, Repository => Files}
-      import models.remote.Remote
-      import generator._
-      import org.slf4j.LoggerFactory
-
-      ${file.content}
-
-      new MyTransformer()
+  def compiledGenerator(file: File): Future[Transformer] = {
+    val content =
+      s"""
+        |import scala.concurrent.ExecutionContext.Implicits.global
+        |import scala.concurrent.{Future, Promise}
+        |import models.modelDefinitions.model.elements.{Node, Edge}
+        |import models.document.ModelEntity
+        |import models.document.{Repository => Documents}
+        |import models.file.{File, Repository => Files}
+        |import models.remote.Remote
+        |import generator._
+        |import org.slf4j.LoggerFactory
+        |
+        |${file.content}
+        |
+        |new MyTransformer()
       """
     compile[Transformer](content)
   }
@@ -112,9 +117,9 @@ object Main extends Template[CreateOptions, String] {
   /**
    * Initialize the generator
    *
-   * @param file The file which was loaded for the generator
+   * @param file      The file which was loaded for the generator
    * @param documents Access to the Documents repository
-   * @param files Access to the Files repository
+   * @param files     Access to the Files repository
    * @return A Generator
    */
   override def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] =

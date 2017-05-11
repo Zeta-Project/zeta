@@ -56,7 +56,7 @@ class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
     case _ =>
       Left(
         "Invalid arguments. It's only valid to call a generator with a filter, " +
-        "a generator with a model or to generate a generator with options and the image id."
+          "a generator with a model or to generate a generator with options and the image id."
       )
   }
 
@@ -147,7 +147,9 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
       prepared <- transformer.prepare(entity.id)
       transformed <- prepared.transform(entity)
       result <- transformed.exit()
-    } yield result
+    } yield {
+      result
+    }
   }
 
   private def executeTransformation(generator: Transformer, filter: Filter): Future[Result] = {
@@ -223,16 +225,18 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
       file <- files.get(generator, Settings.generatorFile)
       fn <- getTransformer(file, filter)
       end <- executeTransformation(fn, filter)
-    } yield end
+    } yield {
+      end
+    }
   }
 
   /**
    * Run a model transformation for a single model
    *
    * @param generatorId The generator which to use
-   * @param modelId The model for which to run the generator
-   * @param documents Access to the Documents repository
-   * @param files Access to the Files repository
+   * @param modelId     The model for which to run the generator
+   * @param documents   Access to the Documents repository
+   * @param files       Access to the Files repository
    * @return The result of the generator
    */
   def runGeneratorForSingleModel(generatorId: String, modelId: String)(implicit documents: Documents, files: Files): Future[Result] = {
@@ -242,12 +246,18 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
       file <- files.get(generator, Settings.generatorFile)
       fn <- getTransformer(file, model)
       end <- executeTransformation(fn, model)
-    } yield end
+    } yield {
+      end
+    }
   }
 
   /**
    * Call the generator (called by another generator) to run with options
    *
+   * @param remote    Access to docker container
+   * @param files     Access to the Files repository
+   * @param documents Access to the Documents repository
+   * @param options   the options for the generator
    * @return The Result of the generator
    */
   def runGeneratorWithOptions(options: T)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
@@ -255,9 +265,11 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   /**
    * Initialize the generator
    *
-   * @param file The file which was loaded for the generator
+   * @param file      The file which was loaded for the generator
    * @param documents Access to the Documents repository
-   * @param files Access to the Files repository
+   * @param remote    Access to docker container
+   * @param files     Access to the Files repository
+   * @param filter    the Filter
    * @return A Generator
    */
   def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer]
@@ -265,9 +277,11 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   /**
    * Initialize the model transformer
    *
-   * @param file The file which was loaded for the generator
+   * @param file      The file which was loaded for the generator
    * @param documents Access to the Documents repository
-   * @param files Access to the Files repository
+   * @param remote    Access to docker container
+   * @param files     Access to the Files repository
+   * @param model     the modelEntity
    * @return A Generator
    */
   def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer]
@@ -275,10 +289,11 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   /**
    * Create assets for the model transformer
    *
-   * @param options The Options for the creation of the generator
-   * @param image The id of the image for the generator
+   * @param options   The Options for the creation of the generator
+   * @param image     The id of the image for the generator
    * @param documents Access to the Documents repository
-   * @param files Access to the Files repository
+   * @param files     Access to the Files repository
+   * @param remote    Access to docker container
    * @return The result of the generator creation
    */
   def createTransformer(options: S, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]

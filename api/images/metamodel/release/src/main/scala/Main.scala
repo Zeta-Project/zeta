@@ -5,6 +5,7 @@ import models.document.MetaModelEntity
 import models.document.MetaModelRelease
 import models.document.http.{HttpRepository => DocumentRepository}
 import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
@@ -12,10 +13,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+/**
+ *
+ * @param arguments the commands
+ */
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
-  val id = opt[String](required = true)
-  val session = opt[String](required = true)
-  val work = opt[String]()
+  val id: ScallopOption[String] = opt[String](required = true)
+  val session: ScallopOption[String] = opt[String](required = true)
+  val work: ScallopOption[String] = opt[String]()
   verify()
 }
 
@@ -39,7 +44,9 @@ object Main extends App {
       from <- documents.get[MetaModelEntity](id)
       doc <- getRelease(from)
       release <- documents.create[MetaModelRelease](doc)
-    } yield release
+    } yield {
+      release
+    }
 
     result foreach { result =>
       logger.info("Successful created model release ")

@@ -87,6 +87,7 @@
  <check enabled="true" class="org.scalastyle.scalariform.ImportGroupingChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.ImportOrderChecker" level="warning">
   <parameters>
+   <parameter name="lexicographic">true</parameter>
    <parameter name="groups">java,scala,others</parameter>
    <parameter name="group.java">javax?\..+</parameter>
    <parameter name="group.scala">scala\..+</parameter>

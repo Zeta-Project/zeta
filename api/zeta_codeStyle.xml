@@ -2,16 +2,29 @@
   <ScalaCodeStyleSettings>
     <option name="classCountToUseImportOnDemand" value="1000" />
     <option name="collectImports" value="false" />
+    <option name="importLayout">
+      <array>
+        <option value="java" />
+        <option value="_______ blank line _______" />
+        <option value="scala" />
+        <option value="_______ blank line _______" />
+        <option value="all other imports" />
+      </array>
+    </option>
+    <option name="sortAsScalastyle" value="true" />
     <option name="FINALLY_BRACE_FORCE" value="3" />
     <option name="TRY_BRACE_FORCE" value="3" />
-    <option name="INDENT_FIRST_PARAMETER_CLAUSE" value="true" />
+    <option name="USE_ALTERNATE_CONTINUATION_INDENT_FOR_PARAMS" value="true" />
     <option name="USE_SCALADOC2_FORMATTING" value="false" />
+    <option name="KEEP_MULTI_LINE_QUOTES" value="false" />
     <option name="MULTI_LINE_STRING_MARGIN_INDENT" value="1" />
-    <option name="PROCESS_MARGIN_ON_COPY_PASTE" value="false" />
     <option name="PRIVATE_PROPERTY_TYPE_ANNOTATION" value="2" />
     <option name="PRIVATE_METHOD_TYPE_ANNOTATION" value="2" />
   </ScalaCodeStyleSettings>
   <codeStyleSettings language="Scala">
+    <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
+    <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
+    <option name="IF_BRACE_FORCE" value="1" />
     <option name="DOWHILE_BRACE_FORCE" value="3" />
     <option name="WHILE_BRACE_FORCE" value="3" />
     <option name="FOR_BRACE_FORCE" value="1" />
