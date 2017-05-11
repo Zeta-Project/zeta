@@ -5,7 +5,6 @@ import generator.model.shapecontainer.shape.geometrics.Alignment.HAlign
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
-import parser.IDtoOptionStyle
 
 /**
  * Created by julian on 03.11.15.
@@ -26,15 +25,14 @@ object Description extends CommonParserMethods {
   /**
    * @param attrs Attributes
    * @param parentStyle Style instance
-   * @param hierarchyContainer Cache instance
+   * @param cache Cache instance
    * @return Description instance
    */
-  def parse(attrs: (String, String), parentStyle: Option[Style], hierarchyContainer: Cache): Option[Description] = {
-    implicit val cache = hierarchyContainer
+  def parse(attrs: (String, String), parentStyle: Option[Style], cache: Cache): Option[Description] = {
     // mapping
     var hali: Option[HAlign] = None
     var vali: Option[VAlign] = None
-    var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, attrs._1)
+    var styl: Option[Style] = Style.generateChildStyle(cache, parentStyle, _root_.parser.IDtoOptionStyle(attrs._1)(cache))
     var id: String = ""
 
     val attributes = attrs._2.split("\n")
@@ -45,7 +43,7 @@ object Description extends CommonParserMethods {
       } else if (x.matches("id.*")) {
         id = parse(idAsString, x).get
       } else if (cache.styleHierarchy.contains(x)) {
-        styl = Style.generateChildStyle(cache, styl, x)
+        styl = Style.generateChildStyle(cache, styl, _root_.parser.IDtoOptionStyle(x)(cache))
       }
     }
 
