@@ -5,16 +5,14 @@ import generator.parser.Cache
 import generator.parser.ConnectionSketch
 import generator.parser.PropsAndComps
 import models.modelDefinitions.metaModel.elements.MReference
-import parser.IDtoConnectionSketch
 
 /**
  * Created by julian on 11.12.15.
  * representation of diagram connection
  */
-class Connection(corporateStyle: Option[Style], propsAndComps: PropsAndComps, c: Cache, mc: MReference) {
-  implicit val cache = c
+class Connection(corporateStyle: Option[Style], propsAndComps: PropsAndComps, cache: Cache, mc: MReference) {
   val referencedConnection: Option[generator.model.shapecontainer.connection.Connection] = {
-    val connectionSketch: ConnectionSketch = propsAndComps.ref
+    val connectionSketch: ConnectionSketch = _root_.parser.IDtoConnectionSketch(propsAndComps.ref)(cache)
     connectionSketch.toConnection(corporateStyle, cache)
   }
   val propertiesAndCompartments = propsAndComps.propertiesAndCompartments

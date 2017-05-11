@@ -56,7 +56,8 @@ object Style extends CommonParserMethods with Logging {
   private def highlighting_multiselected: Style.Parser[(String, Color)] = "multiselected" ~ "=" ~> color ^^ { i => ("multiselected", i) }
   private def highlighting_allowed: Style.Parser[(String, Color)] = "allowed" ~ "=" ~> color ^^ { i => ("allowed", i) }
   private def highlighting_unallowed: Style.Parser[(String, Color)] = "unallowed" ~ "=" ~> color ^^ { i => ("unallowed", i) }
-  private def highlightingAttribute: Style.Parser[(String, Color)] = highlighting_selected | highlighting_multiselected | highlighting_allowed | highlighting_unallowed <~ ",?".r
+  private def highlightingAttribute: Style.Parser[(String, Color)] =
+    highlighting_selected | highlighting_multiselected | highlighting_allowed | highlighting_unallowed <~ ",?".r
   private def highlighting: Style.Parser[List[(String, Color)]] = "(" ~> rep1(highlightingAttribute) <~ ")"
 
   private val attributeMapper: Map[String, (Style, String) => Style] = Map[String, (Style, String) => Style](

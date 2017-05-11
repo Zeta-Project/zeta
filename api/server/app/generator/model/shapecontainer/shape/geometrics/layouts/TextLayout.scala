@@ -45,6 +45,7 @@ object TextLayoutParser extends CommonParserMethods {
       style: Option[Style] = None
   )
 
+  private val alignMatcher: String = "align\\s*\\((horizontal=)?(center|left|right),\\s*(vertical=)?(top|middle|bottom)\\)"
 
   private def parseRek(attributes: List[String], hierarchyContainer: Cache, commonLayout: CommonLayout): Mapping = {
     val defaultStyle: Option[Style] = commonLayout.style
@@ -55,7 +56,7 @@ object TextLayoutParser extends CommonParserMethods {
         case (Nil, _) | (_, Mapping(Some(_), Some(_), Some(_), Some(_))) =>
           mappings
 
-        case (head :: tail, Mapping(None, None, _, _)) if head.matches("align\\s*\\((horizontal=)?(center|left|right),\\s*(vertical=)?(top|middle|bottom)\\)") =>
+        case (head :: tail, Mapping(None, None, _, _)) if head.matches(alignMatcher) =>
           val hAli = "(center|right|left)".r.findFirstIn(head).flatMap(Alignment.parseHAlign)
           val vAli = "(top|middle|bottom)".r.findFirstIn(head).flatMap(Alignment.parseVAlign)
           rek(tail, mappings.copy(hAli = hAli, vAli = vAli))
