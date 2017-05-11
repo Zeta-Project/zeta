@@ -4,13 +4,14 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import javax.inject.Inject
 
+import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits
+
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import generator.generators.diagram.DiagramGenerator
 import generator.generators.shape.ShapeGenerator
 import generator.generators.style.StyleGenerator
-import generator.generators.vr.diagram.VrDiagramGenerator
-import generator.generators.vr.shape.VrShapeGenerator
 import generator.model.diagram.Diagram
 import generator.model.style.Style
 import generator.parser.Cache
@@ -30,9 +31,6 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import utils.auth.DefaultEnv
 import utils.auth.RepositoryFactory
-
-import scala.annotation.tailrec
-import scala.concurrent.ExecutionContext.Implicits
 
 class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
 
@@ -106,8 +104,9 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
   private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
     val generators: List[() => Result[List[File]]] = List(
       // Generate files for the VR - Editor
-      () => VrShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
-      () => VrDiagramGenerator.doGenerateResult(diagram)
+      // FIXME: VR generators are not working. If you want to enable them again, check the commit that introduced this message
+      // () => VrShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
+      // () => VrDiagramGenerator.doGenerateResult(diagram)
     )
 
     generate(generators)
