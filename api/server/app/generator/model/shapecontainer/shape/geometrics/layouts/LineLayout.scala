@@ -5,7 +5,6 @@ import generator.model.shapecontainer.shape.geometrics.Point
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
-import parser.IDtoStyle
 
 /**
  * Created by julian on 20.10.15.
@@ -15,43 +14,38 @@ trait LineLayout extends Layout {
   val points: (Point, Point)
 }
 
+case class LineLayoutDefaultImpl(
+    override val style: Option[Style],
+    override val points: (Point, Point)
+) extends LineLayout
+
 /**
  * LineLayoutParser
  */
 object LineLayoutParser {
 
   /**
-   * @param geoModel GeoModel instance
-   * @param parentStyle Style instance
+   * @param geoModel           GeoModel instance
+   * @param parentStyle        Style instance
    * @param hierarchyContainer Cache instance
    * @return LineLayout instance
    */
   def parse(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[LineLayout] = {
-    implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
 
-    // mapping
-    var point1: Option[Point] = None
-    var point2: Option[Point] = None
-    var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
-    attributes.foreach { x =>
-      if (x.matches("point.+")) {
-        if (point1.isEmpty) {
-          point1 = PointParser(x)
-        } else {
-          point2 = PointParser(x)
-        }
-      } else if (hierarchyContainer.styleHierarchy.contains(x)) {
-        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(x))
-      }
-    }
-    if (point1.isDefined && point2.isDefined) {
-      Some(new LineLayout {
-        override val style = styl
-        override val points: (Point, Point) = (point1.get, point2.get)
-      })
-    } else {
-      None
+    val stream = attributes.toStream.filter(_.matches("point.+")).flatMap(PointParser(_))
+    val point1Opt = stream.headOption
+    val point2Opt = stream.drop(1).headOption
+
+    val defaultStyle: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
+    val style: Option[Style] = attributes.find(hierarchyContainer.styleHierarchy.contains)
+      .flatMap(x => Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(_root_.parser.IDtoStyle(x)(hierarchyContainer))))
+      .orElse(defaultStyle)
+
+    (point1Opt,point2Opt) match {
+      case (Some(point1), Some(point2)) =>
+        Some(LineLayoutDefaultImpl(style, (point1, point2)))
+      case _ => None
     }
   }
 }
