@@ -28,11 +28,10 @@ import generator.model.shapecontainer.shape.geometrics.Rectangle
 import generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
+import grizzled.slf4j.Logging
 import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import org.slf4j.LoggerFactory
-import org.slf4j.Logger
 
 /**
  * SprayParser
@@ -42,10 +41,8 @@ object SprayParser
 /**
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
-class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) extends CommonParserMethods {
+class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) extends CommonParserMethods with Logging {
   type diaConnection = generator.model.diagram.edge.Connection
-
-  private val logger: Logger = LoggerFactory.getLogger(SprayParser.getClass)
 
   private val metaMapMClass: Map[String, MClass] = metaModelE.metaModel.elements.collect {
     case (name, x: MClass) => (name, x)
@@ -78,9 +75,14 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   }
 
   private def style: Parser[Style] = {
-    ("style" ~> ident) ~ (("extends" ~> rep(ident <~ ",?".r)) ?) ~ ("{" ~> rep(styleAttribute)) <~ "}" ^^ {
-      case name ~ parents ~ attributes => Style(name, parents, attributes, cache)
+    def mapToStyle(f: ~[~[String, Option[List[String]]], List[(String, String)]]): Style = {
+      val ((name: String, parents: Option[List[String]]), attributes: List[(String, String)]) = ((f._1._1, f._1._2), f._2)
+      Style(name, parents, attributes, cache)
     }
+
+    literal("style").~>(ident)
+      .~(literal("extends").~>(rep(ident.<~(regex(Predef.augmentString(",?").r)))).?)
+      .~(literal("{").~>(rep(styleAttribute))).<~(literal("}")).^^(mapToStyle)
   }
 
   private def anonymousStyle: Parser[String] = {
@@ -367,7 +369,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       val diagramShape: Option[DiaShape] =
         shape.map(s => new DiaShape(corporateStyle, s.ref, s.propertiesAndCompartments, cache, mClass.get, metaModelE))
 
-      val onCr = onCreate.flatMap(oc => mClass.get.attributes.find(_.name == oc._2).map(attr =>  OnCreate(oc._1, attr)))
+      val onCr = onCreate.flatMap(oc => mClass.get.attributes.find(_.name == oc._2).map(attr => OnCreate(oc._1, attr)))
 
       val onUp = onUpdate.map(OnUpdate)
       val onDe = onDelete.map(OnDelete)
@@ -457,7 +459,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       val fromClass = metaMapMClass.get(from)
       val toClass = metaMapMClass.get(to)
 
-      val onCr = onCreate.flatMap(oc => mReference.get.attributes.find(_.name == oc._2).map(attr =>  OnCreate(oc._1, attr)))
+      val onCr = onCreate.flatMap(oc => mReference.get.attributes.find(_.name == oc._2).map(attr => OnCreate(oc._1, attr)))
 
       val onUp = onUpdate.map(OnUpdate)
       val onDe = onDelete.map(OnDelete)
@@ -490,7 +492,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
           None
         }
       case c: Any =>
-        logger.info(c.toString())
+        info(c.toString())
         Some(Diagram("test", Map(), List(), List(), None, null, cache))
     }
   }
