@@ -33,7 +33,6 @@ import models.modelDefinitions.metaModel.elements.MReference
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
 import parser.OptionToStyle
-import parser.IDtoOptionStyle
 
 /**
  * SprayParser
@@ -156,7 +155,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (descriptionAttribute ?) ~
       (anchorAttribute ?) <~ "}" ^^ {
       case name ~ parent ~ style ~ attrs ~ geos ~ desc ~ anch =>
-        ShapeSketch(name, parent, style, attrs, geos, desc, anch, cache)
+        ShapeSketch(name, style, parent, attrs, geos, desc, anch, cache)
     }
   }
 
@@ -164,11 +163,11 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
 
   private def abstractShapes: Parser[List[ShapeContainerElement]] = rep(abstractShape | abstractConnection)
 
-  private def shapeSketches: Parser[List[Product with scala.Serializable]] = rep(shapeSketch | connectionSketch)
+  private def shapeSketches: Parser[List[Sketch]] = rep(shapeSketch | connectionSketch)
 
-  def parseAbstractShape(input: String): List[AnyRef] = parseAll(abstractShapes, trimRight(input)).get
+  def parseAbstractShape(input: String): List[ShapeContainerElement] = parseAll(abstractShapes, trimRight(input)).get
 
-  def parseShape(input: String): List[AnyRef] = parseAll(shapeSketches, trimRight(input)).get
+  def parseShape(input: String): List[Sketch] = parseAll(shapeSketches, trimRight(input)).get
 
   /* ------------------------------------------------------------------------------------------ */
 
@@ -294,11 +293,15 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
     }
   }
 
-  private def shapeVARPropertie: Parser[(String, (String, String))] = ("var" ~ "[" ~> ident <~ "]") ~ ("->" ~> ident) ^^ { case key ~ value => ("var", key -> value) }
+  private def shapeVARPropertie: Parser[(String, (String, String))] = {
+    ("var" ~ "[" ~> ident <~ "]") ~ ("->" ~> ident) ^^ { case key ~ value => ("var", key -> value) }
+  }
 
   private def shapeTextPropertie: Parser[(String, (String, String))] = shapeVALPropertie | shapeVARPropertie <~ ",?".r
 
-  private def shapeCompartmentPropertie: Parser[(String, (String, String))] = ("nest" ~> ident) ~ ("->" ~> ident) <~ ",?".r ^^ { case key ~ value => ("nest", key -> value) }
+  private def shapeCompartmentPropertie: Parser[(String, (String, String))] = {
+    ("nest" ~> ident) ~ ("->" ~> ident) <~ ",?".r ^^ { case key ~ value => ("nest", key -> value) }
+  }
 
   private def diagramShape: Parser[(String, PropsAndComps)] = {
     ("shape" ~ ":" ~> ident) ~ (("(" ~> rep((shapeTextPropertie | shapeCompartmentPropertie) <~ ",?".r) <~ ")") ?) ^^ {
@@ -318,7 +321,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   }
 
   private def createNodeSketch(name: String, mcoreElement: String, corporatestyle: Option[String], args: List[(String, Serializable)]): (String, NodeSketch) = {
-    val corporateStyle: Option[Style] = if (corporatestyle.isDefined) corporatestyle.get else None
+    val corporateStyle: Option[Style] = corporatestyle.map(s => _root_.parser.IDtoStyle(s)(cache))
     var shap: Option[PropsAndComps] = None
     var pal: Option[String] = None
     var con: Option[String] = None
@@ -399,13 +402,13 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   }
 
   private def createEdgeSketch(
-      styleOpt: Option[String],
-      name: String,
-      mcoreElement: String,
-      diaCon: PropsAndComps,
-      from: String,
-      to: String,
-      args: List[(String, Serializable)]): (String, EdgeSketch) = {
+    styleOpt: Option[String],
+    name: String,
+    mcoreElement: String,
+    diaCon: PropsAndComps,
+    from: String,
+    to: String,
+    args: List[(String, Serializable)]): (String, EdgeSketch) = {
 
     val style: Option[Style] = styleOpt.flatMap(s => _root_.parser.IDtoOptionStyle(s)(cache))
     var pal: Option[String] = None
@@ -475,8 +478,8 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       case name ~ metaModelName ~ style ~ arguments =>
         val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
 
-        val nodes: List[Node] = arguments.collect{
-          case (typ, node:NodeSketch) if typ == "node" => node.toNode(style.map(s => _root_.parser.IDtoStyle(s)(cache)), cache)
+        val nodes: List[Node] = arguments.collect {
+          case (typ, node: NodeSketch) if typ == "node" => node.toNode(style.map(s => _root_.parser.IDtoStyle(s)(cache)), cache)
         }
         val edges: List[Edge] = arguments.collect {
           case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.map(s => _root_.parser.IDtoStyle(s)(cache)), cache)
@@ -502,20 +505,26 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   private def trimRight(s: String): String = s.replaceAll("\\/\\/.+", "").split("\n").map(s => s.trim + "\n").mkString
 }
 
+trait Sketch {
+  val name: String
+  val style: Option[Style]
+}
+
+
 /**
  * ShapeSketch is a sketch of a Shape, only used for parsing a Shape String ans temporarily save all
  * the attributes in a struct for later compilation into a shape
  */
 case class ShapeSketch(
-    name: String,
+    override val name: String,
+    override val style: Option[Style],
     parents: Option[List[String]],
-    style: Option[Style],
     attrs: List[(String, String)],
     geos: List[GeoModel],
     descr: Option[(String, String)],
     anch: Option[String],
     cache: Cache
-) {
+) extends Sketch {
   cache + this
 
   def toShape(corporateStyle: Option[Style]) = Shape(name, parents, Style.generateChildStyle(cache, corporateStyle, style), attrs, geos, descr, anch, cache)
@@ -550,12 +559,12 @@ case class GeoModel(typ: String, style: Option[Style], attributes: List[String],
 case class PlacingSketch(position: String, shape: GeoModel)
 
 case class ConnectionSketch(
-    name: String,
-    style: Option[Style],
+    override val name: String,
+    override val style: Option[Style],
     connection_type: Option[String],
     anoStyle: Option[String],
     placing: List[PlacingSketch]
-) {
+) extends Sketch {
   def toConnection(corporateStyle: Option[Style], cache: Cache): Option[Connection] = {
     Connection(name, Style.generateChildStyle(cache, corporateStyle, style), connection_type, anoStyle, placing, cache)
   }
