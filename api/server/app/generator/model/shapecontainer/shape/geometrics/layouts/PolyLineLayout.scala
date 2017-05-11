@@ -5,7 +5,6 @@ import generator.model.shapecontainer.shape.geometrics.Point
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
-import parser.IDtoStyle
 
 /**
  * Created by julian on 20.10.15.
@@ -15,14 +14,18 @@ trait PolyLineLayout extends Layout {
   val points: List[Point]
 }
 
+case class PolyLineLayoutDefaultImpl(
+    override val points: List[Point],
+    override val style: Option[Style]) extends PolyLineLayout
+
 /**
  * PolyLineLayoutParser
  */
 object PolyLineLayoutParser {
 
   /**
-   * @param geoModel GeoModel instance
-   * @param parentStyle Style instance
+   * @param geoModel           GeoModel instance
+   * @param parentStyle        Style instance
    * @param hierarchyContainer Cache instance
    * @return PolyLineLayout instance
    */
@@ -31,27 +34,17 @@ object PolyLineLayoutParser {
   }
 
   private def parse(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[PolyLineLayout] = {
-    implicit val cache = hierarchyContainer
     val attributes = geoModel.attributes
 
-    // mapping
-    var collectedPoints: List[Point] = List[Point]()
-    var styl: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
-    attributes.foreach { x =>
-      if (x.matches("point.+")) {
-        val newPoint = PointParser(x)
-        if (newPoint.isDefined) collectedPoints = collectedPoints.::(newPoint.get)
-      } else if (hierarchyContainer.styleHierarchy.contains(x)) {
-        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(x))
-      }
-    }
-    if (collectedPoints.length > 1) {
-      Some(new PolyLineLayout {
-        override val points: List[Point] = collectedPoints
-        override val style: Option[Style] = styl
-      })
-    } else {
-      None
+    val collectedPoints = attributes.filter(_.matches("point.+")).flatMap(PointParser(_))
+    val defaultStyle: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
+    val style: Option[Style] = attributes.find(hierarchyContainer.styleHierarchy.contains)
+      .flatMap(x => Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(_root_.parser.IDtoStyle(x)(hierarchyContainer))))
+      .orElse(defaultStyle)
+
+    collectedPoints match {
+      case Nil => None
+      case _ => Some(PolyLineLayoutDefaultImpl(collectedPoints,style))
     }
   }
 }
