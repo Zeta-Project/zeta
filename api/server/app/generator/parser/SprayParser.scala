@@ -32,7 +32,6 @@ import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
 import org.slf4j.LoggerFactory
 import org.slf4j.Logger
-import parser.OptionToStyle
 
 /**
  * SprayParser
@@ -43,7 +42,6 @@ object SprayParser
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
 class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) extends CommonParserMethods {
-  implicit val implicitBullshit: Cache = cache
   type diaConnection = generator.model.diagram.edge.Connection
 
   private val logger: Logger = LoggerFactory.getLogger(SprayParser.getClass)
@@ -155,7 +153,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (descriptionAttribute ?) ~
       (anchorAttribute ?) <~ "}" ^^ {
       case name ~ parent ~ style ~ attrs ~ geos ~ desc ~ anch =>
-        ShapeSketch(name, style, parent, attrs, geos, desc, anch, cache)
+        ShapeSketch(name, _root_.parser.OptionToStyle(style)(cache), parent, attrs, geos, desc, anch, cache)
     }
   }
 
@@ -189,7 +187,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (anonymousStyle ?) ~
       rep(c_placing) <~ "}" ^^ {
       case name ~ style ~ typ ~ anonymousStyle ~ placings =>
-        val newConnection = ConnectionSketch(name, style, typ, anonymousStyle, placings)
+        val newConnection = ConnectionSketch(name, _root_.parser.OptionToStyle(style)(cache), typ, anonymousStyle, placings)
         cache + newConnection
         newConnection
     }
@@ -486,7 +484,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
         }
 
         if (metaModelE.metaModel.name == metaModelName) {
-          Some(Diagram(name, actionGroups, nodes, edges, style, metaModelE, cache))
+          Some(Diagram(name, actionGroups, nodes, edges, _root_.parser.OptionToStyle(style)(cache), metaModelE, cache))
         } else {
           None
         }

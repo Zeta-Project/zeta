@@ -1,6 +1,9 @@
 package generator.model.style
 
+import scala.util.matching.Regex
+
 import generator.model.ClassHierarchy
+import generator.model.style
 import generator.model.style.color.Color
 import generator.model.style.color.ColorConstant
 import generator.model.style.color.ColorOrGradient
@@ -12,8 +15,7 @@ import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.GradientAlignment
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
-import org.slf4j.LoggerFactory
-import parser.IDtoStyle
+import grizzled.slf4j.Logging
 
 case class Style private (
     name: String = "noName",
@@ -36,30 +38,28 @@ case class Style private (
 
     parents: List[Style] = List()
 ) extends StyleContainerElement {
-  override def toString = name
+  override def toString: String = name
 }
 
 /**
  * StyleParser
  * either parses a complete style or just generates an anonymous Style out of only a list of attributes
  */
-object Style extends CommonParserMethods {
+object Style extends CommonParserMethods with Logging {
   val validStyleAttributes = List("description", "transparency", "background-color", "line-color", "line-style", "line-width",
     "font-color", "font-name", "font-size", "font-bold", "font-italic", "gradient-orientation", "gradient-area-color",
     "gradient-area-offset", "allowed", "unallowed", "selected", "multiselected", "highlighting")
 
-  private val logger = LoggerFactory.getLogger(Style.getClass)
+  lazy val validColor: Regex = ("(" + ColorConstant.knownColors.keySet.map(i => if (i != ColorConstant.knownColors.keySet.last) i + "|").mkString + ")").r
 
-  lazy val validColor = ("(" + ColorConstant.knownColors.keySet.map(i => if (i != ColorConstant.knownColors.keySet.last) i + "|").mkString + ")").r
+  private def highlighting_selected: Style.Parser[(String, Color)] = "selected" ~ "=" ~> color ^^ { i => ("selected", i) }
+  private def highlighting_multiselected: Style.Parser[(String, Color)] = "multiselected" ~ "=" ~> color ^^ { i => ("multiselected", i) }
+  private def highlighting_allowed: Style.Parser[(String, Color)] = "allowed" ~ "=" ~> color ^^ { i => ("allowed", i) }
+  private def highlighting_unallowed: Style.Parser[(String, Color)] = "unallowed" ~ "=" ~> color ^^ { i => ("unallowed", i) }
+  private def highlightingAttribute: Style.Parser[(String, Color)] = highlighting_selected | highlighting_multiselected | highlighting_allowed | highlighting_unallowed <~ ",?".r
+  private def highlighting: Style.Parser[List[(String, Color)]] = "(" ~> rep1(highlightingAttribute) <~ ")"
 
-  private def highlighting_selected = "selected" ~ "=" ~> color ^^ { i => ("selected", i) }
-  private def highlighting_multiselected = "multiselected" ~ "=" ~> color ^^ { i => ("multiselected", i) }
-  private def highlighting_allowed = "allowed" ~ "=" ~> color ^^ { i => ("allowed", i) }
-  private def highlighting_unallowed = "unallowed" ~ "=" ~> color ^^ { i => ("unallowed", i) }
-  private def highlightingAttribute = highlighting_selected | highlighting_multiselected | highlighting_allowed | highlighting_unallowed <~ ",?".r
-  private def highlighting = "(" ~> rep1(highlightingAttribute) <~ ")"
-
-  private val attributeMapper = Map[String, (Style, String) => Style](
+  private val attributeMapper: Map[String, (Style, String) => Style] = Map[String, (Style, String) => Style](
     "description" -> ((style, value) => style.copy(description = Some(value))),
     "transparency" -> ((style, value) => style.copy(transparency = ifValid(value.toDouble))),
     "background-color" -> ((style, value) => style.copy(background_color = Some(parse(colorOrGradient, value).get))),
@@ -106,15 +106,13 @@ object Style extends CommonParserMethods {
    * @param attributes List of Tuples of Strings -> List[(String, String)] consist of tuple._1 = attribute's name and tuple._2 the according value
    * @param hierarchyContainer is a Diagram which contains the styleHierarchy which gives information about inheritance
    */
-  def apply(name: String, parents: Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache) = {
+  def apply(name: String, parents: Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache): Style = {
     parse(name, parents, attributes, hierarchyContainer)
   }
 
-  private def parse(name: String, parents: Option[List[String]], attributes: List[(String, String)], hierarchyContainer: Cache): Style = {
-
-    implicit val cache = hierarchyContainer
+  private def parse(name: String, parents: Option[List[String]], attributes: List[(String, String)], cache: Cache): Style = {
     val extendedStyle = parents.getOrElse(List[String]()).foldLeft(List[Style]())((styles, s_name) =>
-      if (cache.styleHierarchy.contains(s_name.trim)) s_name.trim :: styles else styles)
+      if (cache.styleHierarchy.contains(s_name.trim)) _root_.parser.IDtoStyle(s_name.trim)(cache) :: styles else styles)
 
     // mapping and defaults
     // fill the "mapping and defaults" with extended information or with None values if necessary
@@ -157,7 +155,7 @@ object Style extends CommonParserMethods {
     newStyle
   }
 
-  private def processAttributes(style: Style, attributes: List[(String, String)]) = {
+  private def processAttributes(style: Style, attributes: List[(String, String)]): Style = {
     if (attributes.nonEmpty) {
       attributes.foldLeft(style) { (style, entry) =>
         attributeMapper.get(entry._1) match {
@@ -180,7 +178,7 @@ object Style extends CommonParserMethods {
     }
   }
 
-  private def processHighlighting(initialStyle: Style, value: String) = {
+  private def processHighlighting(initialStyle: Style, value: String): Style = {
     parse(highlighting, value).get.foldLeft(initialStyle) { (style: Style, entry: (String, Color)) =>
       entry._1 match {
         case "allowed" => style.copy(allowed_highlighting = Some(entry._2))
@@ -198,8 +196,8 @@ object Style extends CommonParserMethods {
    * @param name is the name of the class
    * @param className is the type (e.G. Style, Shape ...)
    */
-  def messageIgnored(attribute: String, name: String, className: String) = {
-    logger.info("Styleparsing: attribute -> " + attribute + " in " + className + " '" + name + "' was ignored")
+  def messageIgnored(attribute: String, name: String, className: String): Unit = {
+    info(s"Styleparsing: attribute -> $attribute in $className '$name' was ignored")
   }
 
   /* neccessary for parsing */
@@ -247,7 +245,7 @@ object Style extends CommonParserMethods {
 
   private def transparent: Parser[ColorOrGradient] = "transparent".r ^^ (_ => Transparent)
 
-  private def gradient =
+  private def gradient: style.Style.Parser[Gradient] =
     ("=" ~ "gradient" ~> ident <~ "{") ~
       (("description" ~ "=" ~> argument_string)?) ~
       (rep(area) <~ "}") ^^ {
