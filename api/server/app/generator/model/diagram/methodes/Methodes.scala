@@ -1,7 +1,7 @@
 package generator.model.diagram.methodes
 
 /**
- * Created by julian on 08.12.15.
+ * ???
  */
 trait Methodes {
   val onCreate: Option[OnCreate]

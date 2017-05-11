@@ -1,6 +1,7 @@
 package generator.model.diagram.methodes
 
 /**
- * Created by julian on 08.12.15.
+ *  ???
+ * @param actionBlock ??
  */
-case class OnDelete(override val actionBlock: Option[ActionBlock] = None) extends Methode
+case class OnDelete(override val actionBlock: ActionBlock) extends Methode

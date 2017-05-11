@@ -1,10 +1,10 @@
 package generator.generators.diagram
 
-import generator.model.diagram.Diagram
-import generator.model.diagram.node.Node
-
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+
+import generator.model.diagram.Diagram
+import generator.model.diagram.node.Node
 
 /**
  * The StencilGenerator object, responsible for the generation of the String for stencil.js
@@ -14,28 +14,31 @@ object StencilGenerator {
   // FIXME variable in object
   var packageName = ""
 
-  def generate(diagram: Diagram) =
+  def generate(diagram: Diagram): String = {
     s"""
-    $generateHeader
-    ${generateStencilGroups(diagram)}
-    ${generateShapes(diagram)}
-    ${generateGroupsToStencilMapping(getNodeToPaletteMapping(diagram))}
-    ${generateDocumentReadyFunction(diagram)}
-    """
+      |$generateHeader
+      |${generateStencilGroups(diagram)}
+      |${generateShapes(diagram)}
+      |${generateGroupsToStencilMapping(getNodeToPaletteMapping(diagram))}
+      |${generateDocumentReadyFunction(diagram)}
+      |""".stripMargin
+  }
 
-  def generateHeader =
-    """
-    /*
-     * This is a generated stencil file for JointJS
-     */
-    """
+  def generateHeader: String = {
+    s"""
+      |/*
+      | * This is a generated stencil file for JointJS
+      | */
+      |""".stripMargin
+  }
 
   def generateStencilGroups(diagram: Diagram): String = {
     var i = 1
     val groupSet = getNodeToPaletteMapping(diagram).keySet
     var groups = List[String]()
     for {groupName <- groupSet} {
-      groups ::= getVarName(groupName) + s""": {index: $i, label: '$groupName' }"""
+      groups ::= getVarName(groupName) +
+        s""": {index: $i, label: '$groupName' }"""
       i += 1
     }
     "Stencil.groups = {" + groups.mkString(",") + "};"
@@ -43,31 +46,34 @@ object StencilGenerator {
 
   def generateShapes(diagram: Diagram): String = {
 
+    def mCoreAttr(node: Node): String = {
+      node.onCreate match {
+        case None => ""
+        case Some(oc) =>
+          s"""mcoreAttributes: [
+            |  {
+            |    mcore: '${oc.askFor.name}',
+            |    cellPath: ['attrs', '.label', 'text']
+            |  }
+            |],""".stripMargin
+      }
+    }
+
     {
-      for {node <- diagram.nodes} yield {
+      for {node: Node <- diagram.nodes} yield {
         s"""
           |var ${getVarName(node.name)} = new joint.shapes.$packageName.${getClassName(getShapeName(node))}({
-          |  ${
-          if (node.onCreate.isDefined && node.onCreate.get.askFor.isDefined) {
-            s"""mcoreAttributes: [
-              |   |{
-              |  mcore: '${node.onCreate.get.askFor.get.name}',
-              |  cellPath: ['attrs', '.label', 'text']
-              |}
-              ],""".stripMargin
-          } else {
-            ""
-          }
-        }
+          |  ${mCoreAttr(node)}
           |  nodeName: '${node.name}',
           |  mClass: '${node.mcoreElement.name}',
           |  mClassAttributeInfo: [${
           node.mcoreElement.attributes.map(
-            attr => s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
+            attr =>
+              s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
           ).mkString(",")
         }]
           |});
-          """.stripMargin
+          |""".stripMargin
       }
     }.mkString
   }
@@ -78,19 +84,18 @@ object StencilGenerator {
       ${
       {
         for {((key, value), i) <- mapping.zipWithIndex} yield {
-          s"""${generateShapesToGroupMapping(key, value, i == mapping.size)}
-            """
+          s"${generateShapesToGroupMapping(key, value, i == mapping.size)}"
         }
       }.mkString(",")
     }
       |};
-    """.stripMargin
+      |""".stripMargin
   }
 
   def generateShapesToGroupMapping(group: String, nodes: ListBuffer[Node], isLast: Boolean): String = {
     s"""
-    ${getVarName(group)}: [
-      ${
+      |${getVarName(group)}: [
+      |  ${
       {
         for {node <- nodes} yield {
           s"""${
@@ -102,42 +107,43 @@ object StencilGenerator {
         }
       }.mkString
     }
-    ]
-    """
+      |]
+      |""".stripMargin
   }
 
   def generateDocumentReadyFunction(diagram: Diagram): String = {
-    """$(document).ready(function() {""" +
-      s"""
-      ${
-        {
-          for {node <- diagram.nodes} yield {
-            s"""
-            ${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
-
-            ${
-              {
-                for ((key, value) <- node.shape.get.vals) yield s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
-              }.mkString
-            }
-          """
-          }
-        }.mkString
-      }
-      ${
-        if (diagram.style isDefined) {
+    s"""
+      |$$(document).ready(function() {
+      |${
+      {
+        for {node <- diagram.nodes} yield {
           s"""
-            var style = document.createElement('style');
-            style.id = 'highlighting-style';
-            style.type = 'text/css';
-            style.innerHTML = getDiagramHighlighting("${diagram.style.get.name}");
-            document.getElementsByTagName('head')[0].appendChild(style);
-          """
-        } else {
-          ""
+            |${getVarName(node.name)}.attr(getShapeStyle("${getClassName(getShapeName(node))}"));
+            |${
+            {
+              for ((key, value) <- node.shape.get.vals) yield {
+                s"""${getVarName(node.name)}.attr({'.${value.id}':{text: '${key}'}});"""
+              }
+            }.mkString
+          }
+            |""".stripMargin
         }
+      }.mkString
+    }
+      |${
+      diagram.style match {
+        case None => ""
+        case Some(style) =>
+          s"""
+            |var style = document.createElement('style');
+            |style.id = 'highlighting-style';
+            |style.type = 'text/css';
+            |style.innerHTML = getDiagramHighlighting("${style.name}");
+            |document.getElementsByTagName('head')[0].appendChild(style);
+            |""".stripMargin
       }
-    });"""
+    }
+      |});""".stripMargin
   }
 
   def setPackageName(name: String): Unit = {
@@ -162,7 +168,9 @@ object StencilGenerator {
     ret.substring(0, 1).toLowerCase + ret.substring(1)
   }
 
-  private def getClassName(name: String): String = name.replaceAll("\\W", "")
+  private def getClassName(name: String): String = {
+    name.replaceAll("\\W", "")
+  }
 
   private def getShapeName(node: Node): String = {
     val diaShape = node.shape

@@ -4,10 +4,10 @@ import generator.model.diagram.action.ActionGroup
 import generator.model.diagram.action.Action
 
 /**
- * Created by julian on 08.12.15.
+ * ???
  */
 trait Methode {
-  val actionBlock: Option[ActionBlock]
+  val actionBlock: ActionBlock
 }
 
 case class ActionBlock(

@@ -368,10 +368,10 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       val diagramShape: Option[DiaShape] =
         shape.map(s => new DiaShape(corporateStyle, s.ref, s.propertiesAndCompartments, cache, mClass.get, metaModelE))
 
-      val onCr = onCreate.map(oc => OnCreate(Some(oc._1), mClass.get.attributes.find(_.name == oc._2)))
+      val onCr = onCreate.flatMap(oc => mClass.get.attributes.find(_.name == oc._2).map(attr =>  OnCreate(oc._1, attr)))
 
-      val onUp = if (onUpdate.isDefined) Some(OnUpdate(onUpdate)) else None
-      val onDe = if (onDelete.isDefined) Some(OnDelete(onDelete)) else None
+      val onUp = onUpdate.map(OnUpdate)
+      val onDe = onDelete.map(OnDelete)
 
       val cont = container.flatMap(c => metaMapMReference.get(c))
       Node(name, mClass.get, corporateStyle, diagramShape, palette,
@@ -458,10 +458,10 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       val fromClass = metaMapMClass.get(from)
       val toClass = metaMapMClass.get(to)
 
-      val onCr = onCreate.map(oc => OnCreate(Some(oc._1), mReference.get.attributes.find(_.name == oc._2)))
+      val onCr = onCreate.flatMap(oc => mReference.get.attributes.find(_.name == oc._2).map(attr =>  OnCreate(oc._1, attr)))
 
-      val onUp = if (onUpdate.isDefined) Some(OnUpdate(onUpdate)) else None
-      val onDe = if (onDelete.isDefined) Some(OnDelete(onDelete)) else None
+      val onUp = onUpdate.map(OnUpdate)
+      val onDe = onDelete.map(OnDelete)
 
       val cont = container.flatMap(c => metaMapMReference.get(c))
       Edge(name, mReference.get, corporateStyle, diagramConnection, fromClass.get, toClass.get, palette, cont, onCr, onUp, onDe, actions, actionIncludes)
