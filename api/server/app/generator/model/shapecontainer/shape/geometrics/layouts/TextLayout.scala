@@ -1,5 +1,7 @@
 package generator.model.shapecontainer.shape.geometrics.layouts
 
+import scala.annotation.tailrec
+
 import generator.model.shapecontainer.shape.geometrics.Alignment
 import generator.model.shapecontainer.shape.geometrics.Alignment.VAlign
 import generator.model.shapecontainer.shape.geometrics.Alignment.HAlign
@@ -7,10 +9,8 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
 import generator.parser.CommonParserMethods
-import parser.IDtoStyle
 
 /**
- * Created by julian on 20.10.15.
  * representation of a textlayout and its parser
  */
 trait TextLayout extends CommonLayout {
@@ -19,46 +19,84 @@ trait TextLayout extends CommonLayout {
   val vAlign: Option[VAlign]
 }
 
+case class TextLayoutDefaultImpl(
+    override val style: Option[Style],
+    override val textBody: String,
+    override val hAlign: Option[HAlign],
+    override val vAlign: Option[VAlign],
+    override val position: Option[(Int, Int)],
+    override val size_width: Int,
+    override val size_height: Int) extends TextLayout
+
 object TextLayoutParser extends CommonParserMethods {
   def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[TextLayout] = {
     val attributes = geoModel.attributes
 
     // mapping
     val commonLayout = CommonLayoutParser.parse(geoModel, parentStyle, hierarchyContainer)
-    if (commonLayout.isEmpty) {
-      None
-    } else {
-      processAttributes(commonLayout, attributes, hierarchyContainer)
-    }
+    commonLayout.map(cl => processAttributes(cl, attributes, hierarchyContainer))
+
   }
 
-  private def processAttributes(commonLayout: Option[CommonLayout], attributes: List[String], hierarchyContainer: Cache) = {
-    implicit val cache = hierarchyContainer
-    var hali: Option[HAlign] = None
-    var vali: Option[VAlign] = None
-    var txt = ""
-    var styl: Option[Style] = commonLayout.get.style
+  private case class Mapping(
+      hAli: Option[HAlign] = None,
+      vAli: Option[VAlign] = None,
+      text: Option[String] = None,
+      style: Option[Style] = None
+  )
 
-    attributes.foreach {
-      case x: String if x.matches("align\\s*\\((horizontal=)?(center|left|right),\\s*(vertical=)?(top|middle|bottom)\\)") =>
-        hali = Alignment.parseHAlign("(center|right|left)".r.findFirstIn(x).get)
-        vali = Alignment.parseVAlign("(top|middle|bottom)".r.findFirstIn(x).get)
-      case x: String if x.matches("(?s)textBody.*") =>
-        txt = parse(planeText, x).get
-      case anonymousStyle: String if hierarchyContainer.styleHierarchy.contains(anonymousStyle) =>
-        styl = Style.generateChildStyle(hierarchyContainer, styl, Some(anonymousStyle))
-      case _ =>
+
+  private def parseRek(attributes: List[String], hierarchyContainer: Cache, commonLayout: CommonLayout): Mapping = {
+    val defaultStyle: Option[Style] = commonLayout.style
+
+    @tailrec
+    def rek(attrList: List[String], mappings: Mapping): Mapping = {
+      (attrList, mappings) match {
+        case (Nil, _) | (_, Mapping(Some(_), Some(_), Some(_), Some(_))) =>
+          mappings
+
+        case (head :: tail, Mapping(None, None, _, _)) if head.matches("align\\s*\\((horizontal=)?(center|left|right),\\s*(vertical=)?(top|middle|bottom)\\)") =>
+          val hAli = "(center|right|left)".r.findFirstIn(head).flatMap(Alignment.parseHAlign)
+          val vAli = "(top|middle|bottom)".r.findFirstIn(head).flatMap(Alignment.parseVAlign)
+          rek(tail, mappings.copy(hAli = hAli, vAli = vAli))
+
+        case (head :: tail, Mapping(_, _, None, _)) if head.matches("(?s)textBody.*") =>
+          val text = Some(parse(plainText, head).get)
+          rek(tail, mappings.copy(text = text))
+
+        case (head :: tail, Mapping(_, _, _, None)) if hierarchyContainer.styleHierarchy.contains(head) =>
+          // generate anonymous style)
+          val styleOpt = Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(_root_.parser.IDtoStyle(head)(hierarchyContainer)))
+          rek(tail, mappings.copy(style = styleOpt))
+
+        case (_ :: tail, _) =>
+          rek(tail, mappings)
+      }
     }
-    Some(new TextLayout {
-      override val style: Option[Style] = commonLayout.get.style
-      override val textBody = txt
-      override val hAlign: Option[HAlign] = hali
-      override val vAlign: Option[VAlign] = vali
-      override val position: Option[(Int, Int)] = commonLayout.get.position
-      override val size_width: Int = commonLayout.get.size_width
-      override val size_height: Int = commonLayout.get.size_height
-    })
+
+    val mappings = rek(attributes, Mapping())
+    mappings.copy(style = mappings.style.orElse(defaultStyle))
   }
 
-  def planeText: Parser[String] = "textBody" ~> "(?s).*".r ^^ { _.toString }
+  private def processAttributes(commonLayout: CommonLayout, attributes: List[String], hierarchyContainer: Cache): TextLayoutDefaultImpl = {
+    val mapping = parseRek(attributes, hierarchyContainer, commonLayout)
+
+    TextLayoutDefaultImpl(
+      mapping.style,
+      mapping.text.getOrElse(""),
+      mapping.hAli,
+      mapping.vAli,
+      commonLayout.position,
+      commonLayout.size_width,
+      commonLayout.size_height
+    )
+  }
+
+  private def plainText: Parser[String] = {
+    "textBody" ~> "(?s).*".r ^^ {
+      _.toString
+    }
+  }
 }
+
+
