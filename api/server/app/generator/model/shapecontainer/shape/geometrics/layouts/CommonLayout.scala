@@ -1,11 +1,13 @@
 package generator.model.shapecontainer.shape.geometrics.layouts
 
+import scala.annotation.tailrec
+
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
 import generator.parser.CommonParserMethods
-import org.slf4j.LoggerFactory
-import parser.IDtoStyle
+import grizzled.slf4j.Logging
+
 
 /**
  * Created by julian on 15.10.15.
@@ -17,82 +19,77 @@ trait CommonLayout extends Layout {
   val size_height: Int
 
   // unsafe getter!
-  def x = position.getOrElse(0, 0)._1
-  def y = position.getOrElse(0, 0)._2
+  lazy val (x, y) = position.getOrElse(0, 0)
+
 }
 
 /**
  * CommonLayoutParser
  */
-object CommonLayoutParser extends CommonParserMethods {
+object CommonLayoutParser extends CommonParserMethods with Logging {
 
-  private val logger = LoggerFactory.getLogger(CommonLayoutParser.getClass)
+  private case class Mapping(
+      posOpt: Option[(Int, Int)] = None,
+      sizeOpt: Option[(Int, Int)] = None,
+      styleOpt: Option[Style] = None)
 
-  /**
-   * @param geoModel GeoModel instance
-   * @param parentStyle Style instance
-   * @param cache Cache instance
-   * @return CommonLayout instance
-   */
-  def parse(geoModel: GeoModel, parentStyle: Option[Style], cache: Cache): Option[CommonLayout] = {
-    implicit val hierarchyContainer = cache
-    val attributes = geoModel.attributes
-
-    // mapping
-    var pos: Option[(Int, Int)] = None
-    var size_w: Option[Int] = None
-    var size_h: Option[Int] = None
-
+  private def parseRek(geoModel: GeoModel, parentStyle: Option[Style], cache: Cache): Mapping = {
     // if geoModel.style and parentstyle are defined a childStyle is created
-    var styl: Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style)
-    attributes.foreach { x =>
-      if (x.matches("position.+")) {
-        pos = {
-          val newPositoin = parse(position, x).get
-          if (newPositoin.isDefined) {
-            newPositoin
-          } else {
-            None
-          }
-        }
-      } else if (x.matches("size.+")) {
-        val newSize = parse(size, x).get
-        if (newSize.isDefined) {
-          size_w = Some(newSize.get._1)
-          size_h = Some(newSize.get._2)
-        }
-      } else if (cache.styleHierarchy.contains(x)) {
-        styl = Style.generateChildStyle(cache, styl, Some(x)) // generate anonymous style
+    val defaultStyle: Option[Style] = Style.generateChildStyle(cache, parentStyle, geoModel.style)
+
+
+    @tailrec
+    def rek(attributes: List[String], mappings: Mapping): Mapping = {
+      (attributes, mappings) match {
+        case (Nil, _) | (_, Mapping(Some(_), Some(_), Some(_))) =>
+          mappings
+
+        case (head :: tail, Mapping(None, _, _)) if head.matches("position.+") =>
+          val posOpt = parse(position, head).get
+          rek(tail, mappings.copy(posOpt = posOpt))
+
+        case (head :: tail, Mapping(_, None, _)) if head.matches("size.+") =>
+          val sizeOpt = parse(size, head).get
+          rek(tail, mappings.copy(sizeOpt = sizeOpt))
+
+        case (head :: tail, Mapping(_, _, None)) if cache.styleHierarchy.contains(head) =>
+          // generate anonymous style)
+          val styleOpt = Style.generateChildStyle(cache, defaultStyle, Some(_root_.parser.IDtoStyle(head)(cache)))
+          rek(tail, mappings.copy(styleOpt = styleOpt))
+
+        case (_ :: tail, _) =>
+          rek(tail, mappings)
       }
     }
 
-    createCommonLayout(size_w, size_h, pos, styl, geoModel)
+    val mappings = rek(geoModel.attributes, Mapping())
+    mappings.copy(styleOpt = mappings.styleOpt.orElse(defaultStyle))
   }
 
-  private def createCommonLayout(
-    size_w: Option[Int],
-    size_h: Option[Int],
-    pos: Option[(Int, Int)],
-    styl: Option[Style],
-    geoModel: GeoModel) = {
 
-    size_w match {
+  /**
+   * @param geoModel    GeoModel instance
+   * @param parentStyle Style instance
+   * @param cache       Cache instance
+   * @return CommonLayout instance
+   */
+  def parse(geoModel: GeoModel, parentStyle: Option[Style], cache: Cache): Option[CommonLayout] = {
+
+    val mappings = parseRek(geoModel, parentStyle, cache)
+
+    mappings.sizeOpt match {
+      case Some((width, height)) =>
+        Some(CommonLayoutDefaultImpl(mappings.posOpt, width, height, mappings.styleOpt))
       case None =>
-        logger.info("no size was given for Position in: " + geoModel.typ)
+        info(s"no size was given for Position in: ${geoModel.typ}")
         None
-      case Some(width) =>
-        size_h match {
-          case None =>
-            logger.info("no size was given for Position in: " + geoModel.typ)
-            None
-          case Some(height) =>
-            Some(new CommonLayout {
-              override val position: Option[(Int, Int)] = pos
-              override val size_width: Int = size_w.get
-              override val size_height: Int = size_h.get
-              override val style: Option[Style] = styl
-            })
-        }
     }
   }
 }
+
+private case class CommonLayoutDefaultImpl(
+    override val position: Option[(Int, Int)],
+    override val size_width: Int,
+    override val size_height: Int,
+    override val style: Option[Style]
+) extends CommonLayout

@@ -15,6 +15,10 @@ lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 def baseSettings = Revolver.settings ++ Seq(
   fork              := true,
   scalaVersion      := scalaV,
+  libraryDependencies ++= Seq(
+    //logging
+    "org.clapper" %% "grizzled-slf4j" % "1.2.0"
+  ),
   scalacOptions    ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
@@ -62,8 +66,6 @@ lazy val server = baseProject("server", file("server")).settings(
   wartremoverErrors += Wart.AsInstanceOf,
 
   libraryDependencies ++= Seq(
-    //logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
     //codec
     "commons-codec" % "commons-codec" % "1.9",
     // silhouette
