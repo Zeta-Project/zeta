@@ -15,6 +15,7 @@ import generator.model.style.gradient.Gradient
 import generator.model.style.gradient.GradientAlignment
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
+import generator.parser.IDtoStyle
 import grizzled.slf4j.Logging
 
 case class Style private (
@@ -113,7 +114,7 @@ object Style extends CommonParserMethods with Logging {
 
   private def parse(name: String, parents: Option[List[String]], attributes: List[(String, String)], cache: Cache): Style = {
     val extendedStyle = parents.getOrElse(List[String]()).foldLeft(List[Style]())((styles, s_name) =>
-      if (cache.styleHierarchy.contains(s_name.trim)) _root_.parser.IDtoStyle(s_name.trim)(cache) :: styles else styles)
+      if (cache.styleHierarchy.contains(s_name.trim)) IDtoStyle(s_name.trim)(cache) :: styles else styles)
 
     // mapping and defaults
     // fill the "mapping and defaults" with extended information or with None values if necessary

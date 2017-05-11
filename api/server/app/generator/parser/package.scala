@@ -1,12 +1,11 @@
+package generator
+
 import generator.model.diagram.Diagram
 import generator.model.diagram.action.Action
 import generator.model.diagram.action.ActionGroup
 import generator.model.shapecontainer.connection.Connection
 import generator.model.shapecontainer.shape.Shape
 import generator.model.style.Style
-import generator.parser.ConnectionSketch
-import generator.parser.ShapeSketch
-import generator.parser.Cache
 
 /**
  * Created by julian on 06.01.16.
@@ -14,28 +13,37 @@ import generator.parser.Cache
  * CacheEvaluation
  */
 package object parser {
-  implicit def IDtoStyle(id: String)(implicit c: Cache): Style = c.styleHierarchy(id).data
-  implicit def IDtoOptionStyle(id: String)(implicit c: Cache): Option[Style] = c.styleHierarchy.get(id)
-  implicit def OptionToStyle(id: Option[String])(implicit c: Cache): Option[Style] = if (id isDefined) c.styleHierarchy.get(id.get) else None
+  @inline def IDtoStyle(id: String)(c: Cache): Style = c.styleHierarchy(id).data
 
-  implicit def IDtoShape(id: String)(implicit c: Cache): Shape = c.shapeHierarchy(id).data
-  implicit def IDtoOptionShape(id: String)(implicit c: Cache): Option[Shape] = c.shapeHierarchy.get(id)
+  @inline def IDtoOptionStyle(id: String)(c: Cache): Option[Style] = c.styleHierarchy.get(id)
 
-  implicit def IDtoShapeSketch(id: String)(implicit c: Cache): ShapeSketch = c.shapeSketches(id)
-  implicit def IDtoOptionShapeSketch(id: String)(implicit c: Cache): Option[ShapeSketch] = c.shapeSketches.get(id)
+  @inline def OptionToStyle(id: Option[String])(c: Cache): Option[Style] = if (id.isDefined) c.styleHierarchy.get(id.get) else None
 
-  implicit def IDtoDiagram(id: String)(implicit c: Cache): Diagram = c.diagrams(id)
-  implicit def IDtoOptionDiagram(id: String)(implicit c: Cache): Option[Diagram] = c.diagrams.get(id)
+  @inline def IDtoShape(id: String)(c: Cache): Shape = c.shapeHierarchy(id).data
 
-  implicit def IDtoConnection(id: String)(implicit c: Cache): Connection = c.connections(id)
-  implicit def IDtoOptionConnection(id: String)(implicit c: Cache): Option[Connection] = c.connections.get(id)
+  @inline def IDtoOptionShape(id: String)(c: Cache): Option[Shape] = c.shapeHierarchy.get(id)
 
-  implicit def IDtoConnectionSketch(id: String)(implicit c: Cache): ConnectionSketch = c.connectionSketches(id)
-  implicit def IDtoOptionConnectionSketch(id: String)(implicit c: Cache): Option[ConnectionSketch] = c.connectionSketches.get(id)
+  @inline def IDtoShapeSketch(id: String)(c: Cache): ShapeSketch = c.shapeSketches(id)
 
-  implicit def IDtoActionGroup(id: String)(implicit c: Cache): ActionGroup = c.actionGroups(id)
-  implicit def IDtoOptionActionGroup(id: String)(implicit c: Cache): Option[ActionGroup] = c.actionGroups.get(id)
+  @inline def IDtoOptionShapeSketch(id: String)(c: Cache): Option[ShapeSketch] = c.shapeSketches.get(id)
 
-  implicit def IDtoAction(id: String)(implicit c: Cache): Action = c.actions(id)
-  implicit def IDtoOptionAction(id: String)(implicit c: Cache): Option[Action] = c.actions.get(id)
+  @inline def IDtoDiagram(id: String)(c: Cache): Diagram = c.diagrams(id)
+
+  @inline def IDtoOptionDiagram(id: String)(c: Cache): Option[Diagram] = c.diagrams.get(id)
+
+  @inline def IDtoConnection(id: String)(c: Cache): Connection = c.connections(id)
+
+  @inline def IDtoOptionConnection(id: String)(c: Cache): Option[Connection] = c.connections.get(id)
+
+  @inline def IDtoConnectionSketch(id: String)(c: Cache): ConnectionSketch = c.connectionSketches(id)
+
+  @inline def IDtoOptionConnectionSketch(id: String)(c: Cache): Option[ConnectionSketch] = c.connectionSketches.get(id)
+
+  @inline def IDtoActionGroup(id: String)(c: Cache): ActionGroup = c.actionGroups(id)
+
+  @inline def IDtoOptionActionGroup(id: String)(c: Cache): Option[ActionGroup] = c.actionGroups.get(id)
+
+  @inline def IDtoAction(id: String)(c: Cache): Action = c.actions(id)
+
+  @inline def IDtoOptionAction(id: String)(c: Cache): Option[Action] = c.actions.get(id)
 }

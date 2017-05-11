@@ -13,6 +13,7 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.CommonParserMethods
 import generator.parser.GeoModel
+import generator.parser.IDtoShape
 
 
 /**
@@ -210,7 +211,7 @@ object Shape extends CommonParserMethods {
       case Some(list) => list.foldLeft[List[Shape]](Nil)((shapes, s_name) => {
         val trimmed = s_name.trim()
         if (hierarchyContainer.shapeHierarchy.contains(trimmed)) {
-          parser.IDtoShape(trimmed)(hierarchyContainer) :: shapes
+          IDtoShape(trimmed)(hierarchyContainer) :: shapes
         } else {
           shapes
         }

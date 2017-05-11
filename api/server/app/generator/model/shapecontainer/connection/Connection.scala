@@ -7,6 +7,7 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.PlacingSketch
 import generator.parser.CommonParserMethods
+import generator.parser.IDtoOptionStyle
 
 /**
  * Created by julian on 20.10.15.
@@ -50,7 +51,7 @@ object Connection extends CommonParserMethods {
     val connection_type: Option[ConnectionStyle] = typ.map(t => parse(connectionType, t).get)
     val style: Option[Style] =
       anonymousStyle match {
-        case Some(as) => Style.generateChildStyle(cache, styleRef, _root_.parser.IDtoOptionStyle(as)(cache))
+        case Some(as) => Style.generateChildStyle(cache, styleRef, IDtoOptionStyle(as)(cache))
         case None => styleRef
       }
 

@@ -4,6 +4,7 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.ConnectionSketch
 import generator.parser.PropsAndComps
+import generator.parser.IDtoConnectionSketch
 import models.modelDefinitions.metaModel.elements.MReference
 
 /**
@@ -12,7 +13,7 @@ import models.modelDefinitions.metaModel.elements.MReference
  */
 class Connection(corporateStyle: Option[Style], propsAndComps: PropsAndComps, cache: Cache, mc: MReference) {
   val referencedConnection: Option[generator.model.shapecontainer.connection.Connection] = {
-    val connectionSketch: ConnectionSketch = _root_.parser.IDtoConnectionSketch(propsAndComps.ref)(cache)
+    val connectionSketch: ConnectionSketch = IDtoConnectionSketch(propsAndComps.ref)(cache)
     connectionSketch.toConnection(corporateStyle, cache)
   }
   val propertiesAndCompartments = propsAndComps.propertiesAndCompartments

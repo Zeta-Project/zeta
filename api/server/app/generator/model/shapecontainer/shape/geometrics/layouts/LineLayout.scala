@@ -5,6 +5,7 @@ import generator.model.shapecontainer.shape.geometrics.Point
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
+import generator.parser.IDtoStyle
 
 /**
  * Created by julian on 20.10.15.
@@ -39,7 +40,7 @@ object LineLayoutParser {
 
     val defaultStyle: Option[Style] = Style.generateChildStyle(hierarchyContainer, parentStyle, geoModel.style)
     val style: Option[Style] = attributes.find(hierarchyContainer.styleHierarchy.contains)
-      .flatMap(x => Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(_root_.parser.IDtoStyle(x)(hierarchyContainer))))
+      .flatMap(x => Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(IDtoStyle(x)(hierarchyContainer))))
       .orElse(defaultStyle)
 
     (point1Opt,point2Opt) match {

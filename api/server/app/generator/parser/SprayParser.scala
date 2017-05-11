@@ -2,6 +2,7 @@ package generator.parser
 
 import java.io.Serializable
 
+import generator.parser
 import generator.model.diagram.Diagram
 import generator.model.diagram.action.Action
 import generator.model.diagram.action.ActionGroup
@@ -118,7 +119,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       rep(geoAttribute | anonymousStyle) ~
       (rep(geoModel) <~ "}") ^^ {
       case name ~ style ~ attr ~ children =>
-        GeoModel(name, style.map(s => _root_.parser.IDtoStyle(s)(cache)), attr, children, cache)
+        GeoModel(name, style.map(s => IDtoStyle(s)(cache)), attr, children, cache)
     }
   }
 
@@ -153,7 +154,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (descriptionAttribute ?) ~
       (anchorAttribute ?) <~ "}" ^^ {
       case name ~ parent ~ style ~ attrs ~ geos ~ desc ~ anch =>
-        ShapeSketch(name, _root_.parser.OptionToStyle(style)(cache), parent, attrs, geos, desc, anch, cache)
+        ShapeSketch(name, OptionToStyle(style)(cache), parent, attrs, geos, desc, anch, cache)
     }
   }
 
@@ -187,7 +188,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (anonymousStyle ?) ~
       rep(c_placing) <~ "}" ^^ {
       case name ~ style ~ typ ~ anonymousStyle ~ placings =>
-        val newConnection = ConnectionSketch(name, _root_.parser.OptionToStyle(style)(cache), typ, anonymousStyle, placings)
+        val newConnection = ConnectionSketch(name, OptionToStyle(style)(cache), typ, anonymousStyle, placings)
         cache + newConnection
         newConnection
     }
@@ -319,7 +320,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   }
 
   private def createNodeSketch(name: String, mcoreElement: String, corporatestyle: Option[String], args: List[(String, Serializable)]): (String, NodeSketch) = {
-    val corporateStyle: Option[Style] = corporatestyle.map(s => _root_.parser.IDtoStyle(s)(cache))
+    val corporateStyle: Option[Style] = corporatestyle.map(s => IDtoStyle(s)(cache))
     var shap: Option[PropsAndComps] = None
     var pal: Option[String] = None
     var con: Option[String] = None
@@ -408,7 +409,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
     to: String,
     args: List[(String, Serializable)]): (String, EdgeSketch) = {
 
-    val style: Option[Style] = styleOpt.flatMap(s => _root_.parser.IDtoOptionStyle(s)(cache))
+    val style: Option[Style] = styleOpt.flatMap(s => (parser IDtoOptionStyle s)(cache))
     var pal: Option[String] = None
     var con: Option[String] = None
     var onCr: Option[(ActionBlock, String)] = None
@@ -477,14 +478,14 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
         val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
 
         val nodes: List[Node] = arguments.collect {
-          case (typ, node: NodeSketch) if typ == "node" => node.toNode(style.map(s => _root_.parser.IDtoStyle(s)(cache)), cache)
+          case (typ, node: NodeSketch) if typ == "node" => node.toNode(style.map(s => IDtoStyle(s)(cache)), cache)
         }
         val edges: List[Edge] = arguments.collect {
-          case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.map(s => _root_.parser.IDtoStyle(s)(cache)), cache)
+          case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.map(s => IDtoStyle(s)(cache)), cache)
         }
 
         if (metaModelE.metaModel.name == metaModelName) {
-          Some(Diagram(name, actionGroups, nodes, edges, _root_.parser.OptionToStyle(style)(cache), metaModelE, cache))
+          Some(Diagram(name, actionGroups, nodes, edges, OptionToStyle(style)(cache), metaModelE, cache))
         } else {
           None
         }

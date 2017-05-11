@@ -9,6 +9,7 @@ import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.GeoModel
 import generator.parser.CommonParserMethods
+import generator.parser.IDtoStyle
 
 /**
  * representation of a textlayout and its parser
@@ -67,7 +68,7 @@ object TextLayoutParser extends CommonParserMethods {
 
         case (head :: tail, Mapping(_, _, _, None)) if hierarchyContainer.styleHierarchy.contains(head) =>
           // generate anonymous style)
-          val styleOpt = Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(_root_.parser.IDtoStyle(head)(hierarchyContainer)))
+          val styleOpt = Style.generateChildStyle(hierarchyContainer, defaultStyle, Some(IDtoStyle(head)(hierarchyContainer)))
           rek(tail, mappings.copy(style = styleOpt))
 
         case (_ :: tail, _) =>

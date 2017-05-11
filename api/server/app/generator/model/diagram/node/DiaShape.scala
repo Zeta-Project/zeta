@@ -6,6 +6,7 @@ import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
 import generator.parser.Cache
 import generator.parser.ShapeSketch
+import generator.parser.IDtoShapeSketch
 import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
@@ -19,7 +20,7 @@ class DiaShape(
     corporateStyle: Option[Style], shape: String,
     propertiesAndCompartmentsOpt: Option[List[(String, (String, String))]], cache: Cache, mc: MClass, metaModelEntity: MetaModelEntity) {
   val referencedShape: Shape = {
-    val shapesketch: ShapeSketch = parser.IDtoShapeSketch(shape)(cache)
+    val shapesketch: ShapeSketch = IDtoShapeSketch(shape)(cache)
     // Here we finally create real Shapes out of ShapeSketches!
     shapesketch.toShape(corporateStyle)
   }
