@@ -1,7 +1,5 @@
 package generator.generators.vr.diagram
 
-import generator.model.diagram.Diagram
-import generator.model.diagram.edge.Edge
 import generator.model.diagram.node.Node
 import generator.model.shapecontainer.connection.Connection
 
@@ -20,7 +18,7 @@ object VrGeneratorScene {
       ${generateImports()}
 
       <!-- Import all generated elements -->
-      ${nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getShape + ".html\">\n").mkString}
+      ${nodes.map(node => "<link rel=\"import\" href=\"./vr-" + node.shape.get.getNameOfShape + ".html\">\n").mkString}
 
       <!-- Import all generated connections -->
       ${connections.map(connection => "<link rel=\"import\" href=\"./vr-connection-" + connection.name + ".html\">\n").mkString}

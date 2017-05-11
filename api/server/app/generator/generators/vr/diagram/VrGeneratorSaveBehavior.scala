@@ -60,7 +60,7 @@ object VrGeneratorSaveBehavior {
 
   private def generateNodeMapping(node: Node) = {
     val name = node.shape match {
-      case Some(shape) => shape.getShape
+      case Some(shape) => shape.getNameOfShape
       case _ => ""
     }
     s"""'VR-${name.toUpperCase()}': '${node.mcoreElement.name}',"""
@@ -126,14 +126,14 @@ object VrGeneratorSaveBehavior {
 
   private def getNodeName(mclass: String, nodes: Iterable[Node]) = {
     nodes.filter(_.mcoreElement.name == mclass).head.shape match {
-      case Some(shape) => shape.getShape.toUpperCase()
+      case Some(shape) => shape.getNameOfShape.toUpperCase()
       case _ => ""
     }
   }
 
   private def generateShapeSwitch(node: Node) = {
     val name = node.shape match {
-      case Some(shape) => shape.getShape
+      case Some(shape) => shape.getNameOfShape
       case _ => ""
     }
     s"""
@@ -252,7 +252,7 @@ object VrGeneratorSaveBehavior {
 
   private def generateNodeMClass(node: Node) = {
     val name = node.shape match {
-      case Some(shape) => shape.getShape
+      case Some(shape) => shape.getNameOfShape
       case _ => ""
     }
     s"""

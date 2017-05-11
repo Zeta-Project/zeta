@@ -43,7 +43,7 @@ object VrGeneratorNewBehavior {
   }
 
   def createMap(node: Node) = {
-    val name = node.shape.get.getShape
+    val name = node.shape.get.getNameOfShape
     s"""
     ${name}: function(scene, id, position, size) {
       return new VrElement.${name.capitalize}();

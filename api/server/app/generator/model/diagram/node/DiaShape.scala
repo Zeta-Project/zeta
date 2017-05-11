@@ -1,6 +1,7 @@
 package generator.model.diagram.node
 
 import generator.model.shapecontainer.shape.Compartment
+import generator.model.shapecontainer.shape.Shape
 import generator.model.shapecontainer.shape.geometrics.Text
 import generator.model.style.Style
 import generator.parser.Cache
@@ -9,35 +10,79 @@ import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import parser.IDtoShapeSketch
 
 /**
  * Created by julian on 30.11.15.
  * diagrams shape definition
  */
-class DiaShape(corporateStyle: Option[Style], shape: String,
-    propertiesAndCompartments: Option[List[(String, (String, String))]], c: Cache, mc: MClass, metaModelEntity: MetaModelEntity) {
-  implicit val cache = c
-  val referencedShape: generator.model.shapecontainer.shape.Shape = {
-    val shapesketch: ShapeSketch = shape
-    // Hier werden aus ShapeSketches endlich eigentliche Shapes!
+class DiaShape(
+    corporateStyle: Option[Style], shape: String,
+    propertiesAndCompartmentsOpt: Option[List[(String, (String, String))]], cache: Cache, mc: MClass, metaModelEntity: MetaModelEntity) {
+  val referencedShape: Shape = {
+    val shapesketch: ShapeSketch = parser.IDtoShapeSketch(shape)(cache)
+    // Here we finally create real Shapes out of ShapeSketches!
     shapesketch.toShape(corporateStyle)
   }
-  var vals = Map[String, Text]()
-  var vars = Map[MAttribute, Text]()
-  var nests = Map[MReference, Compartment]()
-  if (propertiesAndCompartments isDefined) {
 
-    vars = propertiesAndCompartments.get.filter(i => i._1 == "var").map(_._2).map(i =>
-      mc.attributes.filter(_.name == i._1).head -> referencedShape.textMap.get(i._2)).toMap
 
-    vals = propertiesAndCompartments.get.filter(i => i._1 == "val").map(_._2).map(i => i._1 -> referencedShape.textMap.get(i._2)).toMap
+  private def getElementFromCompartments[KEY, VALUE](propertiesAndCompartments: List[(String, (String, String))])
+    (elementType: String, mapOptSup: Shape => Option[Map[String, VALUE]], keyLookup: String => Option[KEY]): Map[KEY, VALUE] = {
 
-    nests = propertiesAndCompartments.get.filter(i => i._1 == "nest").map(_._2).map(i =>
-      metaModelEntity.metaModel.elements.find {
-        case (name, x) if x.isInstanceOf[MReference] & name == i._2 => true
-      }.asInstanceOf[Option[(String, MReference)]].get._2 -> referencedShape.compartmentMap.get(i._2)).toMap
+    propertiesAndCompartments.flatMap {
+      case (typeName, (lookupKey, valueKey)) if typeName == elementType =>
+        val entryOpt = keyLookup(lookupKey).flatMap(key => {
+          val valueOpt = mapOptSup(referencedShape).flatMap(_.get(valueKey))
+          valueOpt.map(value => (key, value))
+        })
+
+        entryOpt.toList
+
+      case _ => Nil
+    }.toMap
   }
-  // ADDED: to get the name of the shape
-  def getShape = shape
+
+  private type ElementSup[KEY, VALUE] = (String, (Shape) => Option[Map[String, VALUE]], (String) => Option[KEY]) => Map[KEY, VALUE]
+
+  val (
+    vals: Map[String, Text],
+    vars: Map[MAttribute, Text],
+    nests: Map[MReference, Compartment]
+    ) = propertiesAndCompartmentsOpt match {
+    case Some(propertiesAndCompartments: List[(String, (String, String))]) =>
+      def getElement[KEY, VALUE]: ElementSup[KEY, VALUE] = getElementFromCompartments[KEY, VALUE](propertiesAndCompartments)
+
+      (
+        getVals(getElement),
+        getVars(getElement),
+        getNests(getElement)
+      )
+    case None =>
+      (Map(), Map(), Map())
+  }
+
+
+  private def getVals(getElement: ElementSup[String, Text]): Map[String, Text] = {
+    getElement("val", _.textMap, Some(_))
+  }
+
+  private def getVars(getElement: ElementSup[MAttribute, Text]): Map[MAttribute, Text] = {
+    getElement("var", _.textMap, k => mc.attributes.find(_.name == k))
+  }
+
+  private def getNests(getElement: ElementSup[MReference, Compartment]): Map[MReference, Compartment] = {
+    getElement("nest", _.compartmentMap, key => metaModelEntity.metaModel.elements.toStream.flatMap {
+      case (name: String, ref: MReference) if name == key => List(ref)
+      case _ => Nil
+    }.headOption)
+  }
+
+
+  /**
+   * ADDED: to get the name of the shape
+   *
+   * @return the name
+   */
+  def getNameOfShape: String = {
+    shape
+  }
 }
