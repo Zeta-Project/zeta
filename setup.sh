@@ -10,6 +10,3 @@ popd
 
 docker-compose build
 
-pushd data
-docker build -t modigen:data .
-popd
