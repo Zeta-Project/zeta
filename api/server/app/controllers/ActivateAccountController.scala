@@ -4,23 +4,22 @@ import java.net.URLDecoder
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-
 import models.services.AuthTokenService
 import models.services.UserService
-
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
-
-import scala.concurrent.Future
-
 import utils.auth.DefaultEnv
 
 /**
@@ -48,7 +47,7 @@ class ActivateAccountController @Inject() (
    * @param email The email address of the user to send the activation mail to.
    * @return The result to display.
    */
-  def send(email: String) = silhouette.UnsecuredAction.async { implicit request =>
+  def send(email: String): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
     val result = Redirect(routes.SignInController.view()).flashing("info" -> Messages("activation.email.sent", decodedEmail))
@@ -77,7 +76,7 @@ class ActivateAccountController @Inject() (
    * @param token The token to identify a user.
    * @return The result to display.
    */
-  def activate(token: UUID) = silhouette.UnsecuredAction.async { implicit request =>
+  def activate(token: UUID): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request =>
     authTokenService.validate(token).flatMap {
       case Some(authToken) => userService.retrieve(authToken.userID).flatMap {
         case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>

@@ -3,35 +3,31 @@ package controllers
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.SignUpEvent
 import com.mohiva.play.silhouette.api.Silhouette
-
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-
 import forms.SignUpForm
 import forms.SignUpForm.Data
-
 import models.User
 import models.services.AuthTokenService
 import models.services.UserService
-
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
+import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Result
-
-import scala.concurrent.Future
-
 import utils.auth.DefaultEnv
 
 /**
@@ -47,7 +43,7 @@ import utils.auth.DefaultEnv
  * @param mailerClient           The mailer client.
  * @param webJarAssets           The webjar assets implementation.
  */
-class SignUpController @Inject() (
+class SignUpController @Inject()(
     val messagesApi: MessagesApi,
     silhouette: Silhouette[DefaultEnv],
     userService: UserService,
@@ -64,8 +60,10 @@ class SignUpController @Inject() (
    *
    * @return The result to display.
    */
-  def view = silhouette.UnsecuredAction.async { implicit request =>
-    Future.successful(Ok(views.html.silhouette.signUp(SignUpForm.form)))
+  def view: Action[AnyContent] = {
+    silhouette.UnsecuredAction.async { implicit request =>
+      Future.successful(Ok(views.html.silhouette.signUp(SignUpForm.form)))
+    }
   }
 
   /**
@@ -73,18 +71,20 @@ class SignUpController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.UnsecuredAction.async { implicit request =>
-    SignUpForm.form.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.silhouette.signUp(form))),
-      data => {
-        val result = Redirect(routes.SignUpController.view()).flashing("info" -> Messages("sign.up.email.sent", data.email))
-        val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
-        userService.retrieve(loginInfo).flatMap {
-          case Some(user) => processAlreadySignedUp(user, result, data, request)
-          case None => processSignUp(result, data, loginInfo, request)
+  def submit: Action[AnyContent] = {
+    silhouette.UnsecuredAction.async { implicit request =>
+      SignUpForm.form.bindFromRequest.fold(
+        form => Future.successful(BadRequest(views.html.silhouette.signUp(form))),
+        data => {
+          val result = Redirect(routes.SignUpController.view()).flashing("info" -> Messages("sign.up.email.sent", data.email))
+          val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
+          userService.retrieve(loginInfo).flatMap {
+            case Some(user) => processAlreadySignedUp(user, result, data, request)
+            case None => processSignUp(result, data, loginInfo, request)
+          }
         }
-      }
-    )
+      )
+    }
   }
 
   private def processAlreadySignedUp(user: User, result: Result, data: SignUpForm.Data, request: Request[AnyContent]) = {

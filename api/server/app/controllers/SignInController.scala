@@ -2,6 +2,9 @@ package controllers
 
 import javax.inject.Inject
 
+import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
+
 import com.mohiva.play.silhouette.api.Authenticator.Implicits.RichDateTime
 import com.mohiva.play.silhouette.api.LoginEvent
 import com.mohiva.play.silhouette.api.Silhouette
@@ -12,25 +15,19 @@ import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-
 import forms.SignInForm
-
 import models.services.UserService
-
-import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
-
+import net.ceedubs.ficus.Ficus.toFicusConfig
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
-
-import scala.concurrent.Future
-import scala.concurrent.duration.FiniteDuration
-
 import utils.auth.DefaultEnv
 
 /**
@@ -63,7 +60,7 @@ class SignInController @Inject() (
    *
    * @return The result to display.
    */
-  def view = silhouette.UnsecuredAction.async { implicit request =>
+  def view: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request =>
     Future.successful(Ok(views.html.silhouette.signIn(SignInForm.form, socialProviderRegistry)))
   }
 
@@ -72,7 +69,7 @@ class SignInController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.UnsecuredAction.async { implicit request =>
+  def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request =>
     SignInForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.silhouette.signIn(form, socialProviderRegistry))),
       data => {
@@ -103,7 +100,7 @@ class SignInController @Inject() (
             case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
           }
         }.recover {
-          case e: ProviderException =>
+          case _: ProviderException =>
             Redirect(routes.SignInController.view()).flashing("error" -> Messages("invalid.credentials"))
         }
       }

@@ -8,6 +8,8 @@ import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import models.User
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import utils.auth.DefaultEnv
 
@@ -31,7 +33,7 @@ class ApplicationController @Inject() (
    *
    * @return The result to display.
    */
-  def index = silhouette.SecuredAction { implicit request =>
+  def index: Action[AnyContent] = silhouette.SecuredAction { implicit request =>
     Ok(views.html.webpage.WebpageIndex(Some(request.identity)))
   }
 
@@ -40,7 +42,7 @@ class ApplicationController @Inject() (
    *
    * @return The user id
    */
-  def user = silhouette.SecuredAction { implicit request =>
+  def user: Action[AnyContent] = silhouette.SecuredAction { implicit request =>
     Ok(User.getUserId(request.identity.loginInfo))
   }
 
@@ -49,7 +51,7 @@ class ApplicationController @Inject() (
    *
    * @return The result to display.
    */
-  def signOut = silhouette.SecuredAction.async { implicit request =>
+  def signOut: Action[AnyContent] = silhouette.SecuredAction.async { implicit request =>
     val result = Redirect(routes.ApplicationController.index())
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
     silhouette.env.authenticatorService.discard(request.authenticator, result)
