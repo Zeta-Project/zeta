@@ -1,14 +1,12 @@
 package models.persistence
 
-import java.util.concurrent.TimeUnit
-
-import scala.concurrent.duration.Duration
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
+import akka.actor.Props
 import models.document.Document
 import models.persistence.DocumentAccessor.CleanUp
 import models.persistence.DocumentAccessor.CreateDocument
@@ -23,43 +21,75 @@ import models.persistence.DocumentAccessor.ReadingDocumentSucceed
 import models.persistence.DocumentAccessor.UpdateDocument
 import models.persistence.DocumentAccessor.UpdatingDocumentFailed
 import models.persistence.DocumentAccessor.UpdatingDocumentSucceed
+import models.persistence.DocumentAccessor.DocumentAccessorReceivedMessage
+import models.persistence.DocumentAccessorManager.CacheDuration
 
 
 /** Access object for a single Document.
  *
  * @tparam T type of the document
  */
-class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor with ActorLogging { // scalastyle:ignore
+class DocumentAccessor[T <: Document](private val persistence: Persistence[T], private val cacheDuration: CacheDuration)
+  extends Actor with ActorLogging { // scalastyle:ignore
 
-  private val keepInCacheTime: Long = Duration(1, TimeUnit.HOURS).toMillis // TODO inject
-  private val keepActorAliveTime: Long = Duration(1, TimeUnit.DAYS).toMillis // TODO inject
+  private var actorLifeExpireTime: Long = System.currentTimeMillis() + cacheDuration.keepActorAliveTime // scalastyle:ignore
+
+
+  private trait StatefulReceive extends Receive {
+    override def isDefinedAt(x: Any): Boolean = x.isInstanceOf[DocumentAccessorReceivedMessage]
+
+    override def apply(v: Any): Unit = v match {
+      case CleanUp => statefulCleanUp()
+      case ReadDocument => statefulRead()
+      case CreateDocument(doc: T) => statefulCreate(doc)
+      case UpdateDocument(doc: T) => updateDocument(doc)
+      case DeleteDocument => deleteDocument()
+    }
+
+    def statefulCreate(doc: T): Unit
+
+    def statefulCleanUp(): Unit
+
+    def statefulRead(): Unit
+  }
+
+
+  private case class CacheState(doc: T) extends StatefulReceive {
+    override def statefulCleanUp(): Unit = cleanUpInCacheState(actorLifeExpireTime)
+
+    override def statefulRead(): Unit = readDocumentInCacheState(doc)
+
+    override def statefulCreate(doc: T): Unit = createDocumentInCacheState()
+  }
+
+  private object CleanState extends StatefulReceive {
+    override def statefulCleanUp(): Unit = cleanUpInCleanState(actorLifeExpireTime)
+
+    override def statefulRead(): Unit = readDocumentInCleanState()
+
+    override def statefulCreate(doc: T): Unit = createDocumentInCleanState(doc)
+  }
+
 
   /** Process received messages.
    *
    * @return Receive
    */
-  override def receive: Receive = {
-    cleanState(System.currentTimeMillis + keepInCacheTime)
-  }
+  override def receive: Receive = CleanState
 
   private def id: String = {
     context.self.path.name
   }
 
-  private def cleanState(actorLifeExpireTime: Long): Receive = {
-    case CleanUp => cleanUpInCleanState(actorLifeExpireTime)
-    case CreateDocument(doc: T) => createDocument(doc)
-    case ReadDocument => readDocumentInCleanState()
-    case UpdateDocument(doc: T) => updateDocument(doc)
-    case DeleteDocument => deleteDocument()
+
+  private def becomeCleanState(keepAliveTime: Long = cacheDuration.keepActorAliveTime): Unit = {
+    this.actorLifeExpireTime = System.currentTimeMillis + keepAliveTime
+    context.unbecome()
   }
 
-  private def cacheState(doc: T, actorLifeExpireTime: Long): Receive = {
-    case CleanUp => cleanUpInCacheState(actorLifeExpireTime)
-    case CreateDocument(doc: T) => createDocument(doc)
-    case ReadDocument => readDocumentInCacheState(doc)
-    case UpdateDocument(doc: T) => updateDocument(doc)
-    case DeleteDocument => deleteDocument()
+  private def becomeCacheState(doc: T): Unit = {
+    this.actorLifeExpireTime = System.currentTimeMillis + cacheDuration.keepInCacheTime
+    context.become(CacheState(doc), discardOld = true)
   }
 
   private def cleanUpInCleanState(actorLifeExpireTime: Long): Unit = {
@@ -70,17 +100,25 @@ class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor
 
   private def cleanUpInCacheState(cacheExpireTime: Long): Unit = {
     if (System.currentTimeMillis > cacheExpireTime) {
-      context.become(cleanState(System.currentTimeMillis + keepActorAliveTime))
+      becomeCleanState()
     }
   }
 
-  private def createDocument(doc: T): Unit = {
-    Try(persistence.create(doc)) match {
-      case Success(_) =>
-        becomeCacheState(doc)
-        sender ! CreatingDocumentSucceed
-      case Failure(e) =>
-        sender ! CreatingDocumentFailed(e.getMessage)
+  private def createDocumentInCacheState(): Unit = {
+    sender ! CreatingDocumentFailed(DocumentAccessor.documentExists)
+  }
+
+  private def createDocumentInCleanState(doc: T): Unit = {
+    if (id == doc.id()) {
+      Try(persistence.create(doc)) match {
+        case Success(_) =>
+          becomeCacheState(doc)
+          sender ! CreatingDocumentSucceed
+        case Failure(e) =>
+          sender ! CreatingDocumentFailed(e.getMessage)
+      }
+    } else {
+      sender ! CreatingDocumentFailed(DocumentAccessor.differentIDs)
     }
   }
 
@@ -109,7 +147,7 @@ class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor
           sender ! UpdatingDocumentFailed(e.getMessage)
       }
     } else {
-      sender ! UpdatingDocumentFailed("id's do not match")
+      sender ! UpdatingDocumentFailed(DocumentAccessor.differentIDs)
     }
   }
 
@@ -117,19 +155,12 @@ class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor
     Try(persistence.delete(id)) match {
       case Success(_) =>
         sender ! DeletingDocumentSucceed
-        becomeCleanState()
+        becomeCleanState(cacheDuration.keepActorAliveAfterDeleteTime)
       case Failure(e) =>
         sender ! DeletingDocumentFailed(e.getMessage)
     }
   }
 
-  private def becomeCacheState(doc: T): Unit = {
-    context.become(cacheState(doc, System.currentTimeMillis + keepInCacheTime))
-  }
-
-  private def becomeCleanState(): Unit = {
-    context.become(cleanState(System.currentTimeMillis + keepActorAliveTime))
-  }
 
 }
 
@@ -138,14 +169,20 @@ class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor
  */
 object DocumentAccessor {
 
+  private val differentIDs = "id's do not match"
+  private val documentExists = "document already exists"
+
+  /** Marker trait for all messages received by DocumentAccessor */
+  sealed trait DocumentAccessorReceivedMessage
+
   /** Request-Message: Invoke the cleaning process. */
-  private[persistence] case object CleanUp
+  private[persistence] case object CleanUp extends DocumentAccessorReceivedMessage
 
   /** Request-Message: Create the document.
    *
    * @param doc the document to create
    */
-  case class CreateDocument(doc: Document)
+  case class CreateDocument(doc: Document) extends DocumentAccessorReceivedMessage
 
   /** Response-Message: Creating of the document succeeded. */
   case object CreatingDocumentSucceed
@@ -157,7 +194,7 @@ object DocumentAccessor {
   case class CreatingDocumentFailed(error: String)
 
   /** Request-Message: Read the document. */
-  case object ReadDocument
+  case object ReadDocument extends DocumentAccessorReceivedMessage
 
   /** Response-Message: Reading of the document succeeded.
    *
@@ -176,7 +213,7 @@ object DocumentAccessor {
    *
    * @param doc the document to update
    */
-  case class UpdateDocument(doc: Document)
+  case class UpdateDocument(doc: Document) extends DocumentAccessorReceivedMessage
 
   /** Response-Message: Updating of the document succeeded. */
   case object UpdatingDocumentSucceed
@@ -188,7 +225,7 @@ object DocumentAccessor {
   case class UpdatingDocumentFailed(error: String)
 
   /** Request-Message: Delete the document. */
-  case object DeleteDocument
+  case object DeleteDocument extends DocumentAccessorReceivedMessage
 
   /** Response-Message: Deleting of the document succeeded. */
   case object DeletingDocumentSucceed
@@ -199,4 +236,13 @@ object DocumentAccessor {
    */
   case class DeletingDocumentFailed(error: String)
 
+}
+
+trait DocumentAccessorFactory {
+  def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props
+}
+
+object DocumentAccessorFactoryDefaultImpl extends DocumentAccessorFactory {
+  override def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props =
+    Props(new DocumentAccessor[T](persistence, cacheDuration))
 }

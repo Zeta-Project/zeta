@@ -9,6 +9,8 @@ import models.document.Document
 trait Persistence[T <: Document] { // scalastyle:ignore
 
   /** Create a new document.
+   * <p>
+   * Throws an exception if the document already exists
    *
    * @param doc The Document to save
    */
