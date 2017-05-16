@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit
 
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import scala.concurrent.ExecutionContext.{Implicits => ExecutionContext}
 import scala.concurrent.duration.FiniteDuration
 
 import akka.actor.Actor
@@ -36,9 +35,8 @@ class DocumentAccessorManagerActor[T <: Document] extends Actor { // scalastyle:
   private val persistence: Persistence[T] = new CachePersistence[T] // TODO inject
   private val documentAccessorFactory: DocumentAccessorFactory = DocumentAccessorFactoryDefaultImpl // TODO inject
 
-
   private val cleanUpJob: Cancellable = {
-    context.system.scheduler.schedule(cacheDuration.cleanUpInterval, cacheDuration.cleanUpInterval, self, CleanUp)(ExecutionContext.global)
+    context.system.scheduler.schedule(cacheDuration.cleanUpInterval, cacheDuration.cleanUpInterval, self, CleanUp)(context.dispatcher)
   }
 
   /** Process received message.
@@ -56,7 +54,7 @@ class DocumentAccessorManagerActor[T <: Document] extends Actor { // scalastyle:
       val originalSender = sender
       Future {
         originalSender ! persistence.readAllIds
-      }(ExecutionContext.global)
+      }(context.dispatcher)
 
     case CleanUp =>
       context.children.foreach(_.forward(CleanUp))
