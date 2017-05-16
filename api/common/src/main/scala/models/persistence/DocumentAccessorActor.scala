@@ -8,28 +8,28 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
 import models.document.Document
-import models.persistence.DocumentAccessor.CleanUp
-import models.persistence.DocumentAccessor.CreateDocument
-import models.persistence.DocumentAccessor.CreatingDocumentFailed
-import models.persistence.DocumentAccessor.CreatingDocumentSucceed
-import models.persistence.DocumentAccessor.DeleteDocument
-import models.persistence.DocumentAccessor.DeletingDocumentFailed
-import models.persistence.DocumentAccessor.DeletingDocumentSucceed
-import models.persistence.DocumentAccessor.ReadDocument
-import models.persistence.DocumentAccessor.ReadingDocumentFailed
-import models.persistence.DocumentAccessor.ReadingDocumentSucceed
-import models.persistence.DocumentAccessor.UpdateDocument
-import models.persistence.DocumentAccessor.UpdatingDocumentFailed
-import models.persistence.DocumentAccessor.UpdatingDocumentSucceed
-import models.persistence.DocumentAccessor.DocumentAccessorReceivedMessage
-import models.persistence.DocumentAccessorManager.CacheDuration
+import models.persistence.DocumentAccessorActor.CleanUp
+import models.persistence.DocumentAccessorActor.CreateDocument
+import models.persistence.DocumentAccessorActor.CreatingDocumentFailed
+import models.persistence.DocumentAccessorActor.CreatingDocumentSucceed
+import models.persistence.DocumentAccessorActor.DeleteDocument
+import models.persistence.DocumentAccessorActor.DeletingDocumentFailed
+import models.persistence.DocumentAccessorActor.DeletingDocumentSucceed
+import models.persistence.DocumentAccessorActor.ReadDocument
+import models.persistence.DocumentAccessorActor.ReadingDocumentFailed
+import models.persistence.DocumentAccessorActor.ReadingDocumentSucceed
+import models.persistence.DocumentAccessorActor.UpdateDocument
+import models.persistence.DocumentAccessorActor.UpdatingDocumentFailed
+import models.persistence.DocumentAccessorActor.UpdatingDocumentSucceed
+import models.persistence.DocumentAccessorActor.DocumentAccessorReceivedMessage
+import models.persistence.DocumentAccessorManagerActor.CacheDuration
 
 
 /** Access object for a single Document.
  *
  * @tparam T type of the document
  */
-class DocumentAccessor[T <: Document](private val persistence: Persistence[T], private val cacheDuration: CacheDuration)
+class DocumentAccessorActor[T <: Document](private val persistence: Persistence[T], private val cacheDuration: CacheDuration)
   extends Actor with ActorLogging { // scalastyle:ignore
 
   private var actorLifeExpireTime: Long = System.currentTimeMillis() + cacheDuration.keepActorAliveTime // scalastyle:ignore
@@ -105,7 +105,7 @@ class DocumentAccessor[T <: Document](private val persistence: Persistence[T], p
   }
 
   private def createDocumentInCacheState(): Unit = {
-    sender ! CreatingDocumentFailed(DocumentAccessor.documentExists)
+    sender ! CreatingDocumentFailed(DocumentAccessorActor.documentExists)
   }
 
   private def createDocumentInCleanState(doc: T): Unit = {
@@ -118,7 +118,7 @@ class DocumentAccessor[T <: Document](private val persistence: Persistence[T], p
           sender ! CreatingDocumentFailed(e.getMessage)
       }
     } else {
-      sender ! CreatingDocumentFailed(DocumentAccessor.differentIDs)
+      sender ! CreatingDocumentFailed(DocumentAccessorActor.differentIDs)
     }
   }
 
@@ -147,7 +147,7 @@ class DocumentAccessor[T <: Document](private val persistence: Persistence[T], p
           sender ! UpdatingDocumentFailed(e.getMessage)
       }
     } else {
-      sender ! UpdatingDocumentFailed(DocumentAccessor.differentIDs)
+      sender ! UpdatingDocumentFailed(DocumentAccessorActor.differentIDs)
     }
   }
 
@@ -167,7 +167,7 @@ class DocumentAccessor[T <: Document](private val persistence: Persistence[T], p
 /**
  * Companion object for the DocumentAccessor.
  */
-object DocumentAccessor {
+object DocumentAccessorActor {
 
   private val differentIDs = "id's do not match"
   private val documentExists = "document already exists"
@@ -244,5 +244,5 @@ trait DocumentAccessorFactory {
 
 object DocumentAccessorFactoryDefaultImpl extends DocumentAccessorFactory {
   override def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props =
-    Props(new DocumentAccessor[T](persistence, cacheDuration))
+    Props(new DocumentAccessorActor[T](persistence, cacheDuration))
 }

@@ -10,17 +10,17 @@ import scala.concurrent.duration.FiniteDuration
 import akka.actor.Actor
 import akka.actor.Cancellable
 import models.document.Document
-import models.persistence.DocumentAccessor.CleanUp
-import models.persistence.DocumentAccessorManager.GetAccessor
-import models.persistence.DocumentAccessorManager.GetAllIds
-import models.persistence.DocumentAccessorManager.CacheDuration
+import models.persistence.DocumentAccessorActor.CleanUp
+import models.persistence.DocumentAccessorManagerActor.GetAccessor
+import models.persistence.DocumentAccessorManagerActor.GetAllIds
+import models.persistence.DocumentAccessorManagerActor.CacheDuration
 
 
 /** Manages all DocumentAccessors of type [[T]].
  *
  * @tparam T type of the document Describe param
  */
-class DocumentAccessorManager[T <: Document] extends Actor { // scalastyle:ignore
+class DocumentAccessorManagerActor[T <: Document] extends Actor { // scalastyle:ignore
 
 
   // TODO inject
@@ -71,7 +71,7 @@ class DocumentAccessorManager[T <: Document] extends Actor { // scalastyle:ignor
 }
 
 /** Companion object of DocumentAccessorManager. */
-object DocumentAccessorManager {
+object DocumentAccessorManagerActor {
 
   /**
    * @param cleanUpInterval               the interval between cleanup checks
