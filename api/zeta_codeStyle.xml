@@ -14,7 +14,6 @@
       </array>
     </option>
     <option name="sortAsScalastyle" value="true" />
-    <option name="METHOD_BRACE_FORCE" value="1" />
     <option name="FINALLY_BRACE_FORCE" value="3" />
     <option name="TRY_BRACE_FORCE" value="3" />
     <option name="USE_ALTERNATE_CONTINUATION_INDENT_FOR_PARAMS" value="true" />
