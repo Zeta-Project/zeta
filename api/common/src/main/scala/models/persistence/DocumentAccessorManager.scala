@@ -57,15 +57,16 @@ class DocumentAccessorManager[T <: Document] extends Actor { // scalastyle:ignor
 
 }
 
-/** Companion object of [[DocumentAccessorManager]]. */
+/** Companion object of DocumentAccessorManager. */
 object DocumentAccessorManager {
 
-  /** Get an [[DocumentAccessor]] by id.
+  /** Request-Message: Get an DocumentAccessor by id.
    *
    * @param id id of the document
    */
   case class GetAccessor(id: String)
 
+  /** Request-Message: Get all id's of the document type. */
   case object GetAllIds
 
 }

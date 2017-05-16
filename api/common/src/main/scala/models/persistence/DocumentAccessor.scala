@@ -24,16 +24,15 @@ import models.persistence.DocumentAccessor.UpdateDocument
 import models.persistence.DocumentAccessor.UpdatingDocumentFailed
 import models.persistence.DocumentAccessor.UpdatingDocumentSucceed
 
+
 /** Access object for a single Document.
  *
  * @tparam T type of the document
  */
 class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor with ActorLogging { // scalastyle:ignore
 
-
   private val keepInCacheTime: Long = Duration(1, TimeUnit.HOURS).toMillis // TODO inject
   private val keepActorAliveTime: Long = Duration(1, TimeUnit.DAYS).toMillis // TODO inject
-
 
   /** Process received messages.
    *
@@ -48,90 +47,81 @@ class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor
   }
 
   private def cleanState(actorLifeExpireTime: Long): Receive = {
-    cleanUpInCleanState(actorLifeExpireTime).
-      orElse(createDocument()).
-      orElse(readInCleanState()).
-      orElse(updateDocument()).
-      orElse(deleteDocument())
+    case CleanUp => cleanUpInCleanState(actorLifeExpireTime)
+    case CreateDocument(doc: T) => createDocument(doc)
+    case ReadDocument => readDocumentInCleanState()
+    case UpdateDocument(doc: T) => updateDocument(doc)
+    case DeleteDocument => deleteDocument()
   }
 
-  private def cacheState(doc: T, cacheExpireTime: Long): Receive = {
-    cleanUpInCacheState(cacheExpireTime).
-      orElse(createDocument()).
-      orElse(readInCacheState(doc)).
-      orElse(updateDocument()).
-      orElse(deleteDocument())
+  private def cacheState(doc: T, actorLifeExpireTime: Long): Receive = {
+    case CleanUp => cleanUpInCacheState(actorLifeExpireTime)
+    case CreateDocument(doc: T) => createDocument(doc)
+    case ReadDocument => readDocumentInCacheState(doc)
+    case UpdateDocument(doc: T) => updateDocument(doc)
+    case DeleteDocument => deleteDocument()
   }
 
-
-  private def cleanUpInCleanState(actorLifeExpireTime: Long): Receive = {
-    case CleanUp =>
-      if (System.currentTimeMillis > actorLifeExpireTime) {
-        context.stop(self)
-      }
+  private def cleanUpInCleanState(actorLifeExpireTime: Long): Unit = {
+    if (System.currentTimeMillis > actorLifeExpireTime) {
+      context.stop(self)
+    }
   }
 
-  private def cleanUpInCacheState(cacheExpireTime: Long): Receive = {
-    case CleanUp =>
-      if (System.currentTimeMillis > cacheExpireTime) {
-        context.become(cleanState(System.currentTimeMillis + keepActorAliveTime))
-      }
+  private def cleanUpInCacheState(cacheExpireTime: Long): Unit = {
+    if (System.currentTimeMillis > cacheExpireTime) {
+      context.become(cleanState(System.currentTimeMillis + keepActorAliveTime))
+    }
   }
 
-  private def createDocument(): Receive = {
-    case CreateDocument(doc: T) =>
-      Try(persistence.create(doc)) match {
+  private def createDocument(doc: T): Unit = {
+    Try(persistence.create(doc)) match {
+      case Success(_) =>
+        becomeCacheState(doc)
+        sender ! CreatingDocumentSucceed
+      case Failure(e) =>
+        sender ! CreatingDocumentFailed(e.getMessage)
+    }
+  }
+
+  private def readDocumentInCleanState(): Unit = {
+    Try(persistence.read(id)) match {
+      case Success(doc) =>
+        becomeCacheState(doc)
+        sender ! ReadingDocumentSucceed(doc)
+      case Failure(e) =>
+        sender ! ReadingDocumentFailed(e.getMessage)
+    }
+  }
+
+  private def readDocumentInCacheState(doc: T): Unit = {
+    becomeCacheState(doc)
+    sender ! ReadingDocumentSucceed(doc)
+  }
+
+  private def updateDocument(doc: T): Unit = {
+    if (id == doc.id()) {
+      Try(persistence.update(doc)) match {
         case Success(_) =>
-          sender ! CreatingDocumentSucceed
+          sender ! UpdatingDocumentSucceed
           becomeCacheState(doc)
         case Failure(e) =>
-          sender ! CreatingDocumentFailed(e.getMessage)
+          sender ! UpdatingDocumentFailed(e.getMessage)
       }
+    } else {
+      sender ! UpdatingDocumentFailed("id's do not match")
+    }
   }
 
-  private def readInCleanState(): Receive = {
-    case ReadDocument =>
-      Try(persistence.read(id)) match {
-        case Success(doc) =>
-          sender ! ReadingDocumentSucceed(doc)
-          becomeCacheState(doc)
-        case Failure(e) =>
-          sender ! ReadingDocumentFailed(e.getMessage)
-      }
+  private def deleteDocument(): Unit = {
+    Try(persistence.delete(id)) match {
+      case Success(_) =>
+        sender ! DeletingDocumentSucceed
+        becomeCleanState()
+      case Failure(e) =>
+        sender ! DeletingDocumentFailed(e.getMessage)
+    }
   }
-
-  private def readInCacheState(doc: T): Receive = {
-    case ReadDocument =>
-      sender ! ReadingDocumentSucceed(doc)
-      becomeCacheState(doc)
-  }
-
-  private def updateDocument(): Receive = {
-    case UpdateDocument(doc: T) =>
-      if (id == doc.id()) {
-        Try(persistence.update(doc)) match {
-          case Success(_) =>
-            sender ! UpdatingDocumentSucceed
-            becomeCacheState(doc)
-          case Failure(e) =>
-            sender ! UpdatingDocumentFailed(e.getMessage)
-        }
-      } else {
-        sender ! UpdatingDocumentFailed("id's do not match")
-      }
-  }
-
-  private def deleteDocument(): Receive = {
-    case DeleteDocument =>
-      Try(persistence.delete(id)) match {
-        case Success(_) =>
-          sender ! DeletingDocumentSucceed
-          becomeCleanState()
-        case Failure(e) =>
-          sender ! DeletingDocumentFailed(e.getMessage)
-      }
-  }
-
 
   private def becomeCacheState(doc: T): Unit = {
     context.become(cacheState(doc, System.currentTimeMillis + keepInCacheTime))
@@ -144,21 +134,43 @@ class DocumentAccessor[T <: Document](persistence: Persistence[T]) extends Actor
 }
 
 /**
- * Companion object for [[DocumentAccessor]].
+ * Companion object for the DocumentAccessor.
  */
 object DocumentAccessor {
 
-  /** Message to invoke the cleaning process. */
+  /** Request-Message: Invoke the cleaning process. */
   private[persistence] case object CleanUp
 
-  /** Create a document.
+  /** Request-Message: Create the document.
    *
    * @param doc the document to create
    */
   case class CreateDocument(doc: Document)
 
-  /** Read the document. */
+  /** Response-Message: Creating of the document succeeded. */
+  case object CreatingDocumentSucceed
+
+  /** Response-Message: Creating of the document failed.
+   *
+   * @param error the error message
+   */
+  case class CreatingDocumentFailed(error: String)
+
+  /** Request-Message: Read the document. */
   case object ReadDocument
+
+  /** Response-Message: Reading of the document succeeded.
+   *
+   * @param doc the document
+   * @tparam T the type of the document
+   */
+  case class ReadingDocumentSucceed[T <: Document](doc: T) // scalastyle:ignore
+
+  /** Response-Message: Reading of the document failed.
+   *
+   * @param error the error message
+   */
+  case class ReadingDocumentFailed(error: String)
 
   /** Update the document.
    *
@@ -166,25 +178,25 @@ object DocumentAccessor {
    */
   case class UpdateDocument(doc: Document)
 
-  /** Delete the document. */
-  case object DeleteDocument
-
-
-  case object CreatingDocumentSucceed
-
-  case class CreatingDocumentFailed(error: String)
-
-  case class ReadingDocumentSucceed[T <: Document](doc: T)
-
-  case class ReadingDocumentFailed(error: String)
-
+  /** Response-Message: Updating of the document succeeded. */
   case object UpdatingDocumentSucceed
 
+  /** Response-Message: Updating of the document failed.
+   *
+   * @param error the error message
+   */
   case class UpdatingDocumentFailed(error: String)
 
+  /** Request-Message: Delete the document. */
+  case object DeleteDocument
+
+  /** Response-Message: Deleting of the document succeeded. */
   case object DeletingDocumentSucceed
 
+  /** Response-Message: Deleting of the document failed.
+   *
+   * @param error the error message
+   */
   case class DeletingDocumentFailed(error: String)
-
 
 }
