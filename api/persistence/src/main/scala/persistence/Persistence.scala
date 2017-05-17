@@ -1,4 +1,4 @@
-package models.persistence
+package persistence
 
 import models.document.Document
 

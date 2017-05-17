@@ -1,17 +1,16 @@
-package models.persistence
-
+package accessor
 
 import java.util.concurrent.TimeUnit
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.Future
 
-import akka.actor.ActorSystem
+import actor.DocumentAccessorActor
 import akka.actor.ActorRef
+import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
 import models.document.Document
-import models.persistence.actor.DocumentAccessorActor
 
 
 /**

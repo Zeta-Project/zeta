@@ -1,4 +1,4 @@
-package models.persistence.actor
+package actor
 
 import java.util.concurrent.TimeUnit
 
@@ -9,12 +9,12 @@ import scala.concurrent.duration.FiniteDuration
 import akka.actor.Actor
 import akka.actor.Cancellable
 import models.document.Document
-import models.persistence.Persistence
-import models.persistence.CachePersistence
-import models.persistence.actor.DocumentAccessorActor.CleanUp
-import models.persistence.actor.DocumentAccessorManagerActor.CacheDuration
-import models.persistence.actor.DocumentAccessorManagerActor.GetAccessor
-import models.persistence.actor.DocumentAccessorManagerActor.GetAllIds
+import actor.DocumentAccessorActor.CleanUp
+import actor.DocumentAccessorManagerActor.CacheDuration
+import actor.DocumentAccessorManagerActor.GetAccessor
+import actor.DocumentAccessorManagerActor.GetAllIds
+import persistence.CachePersistence
+import persistence.Persistence
 
 
 /** Manages all DocumentAccessors of type [[T]].

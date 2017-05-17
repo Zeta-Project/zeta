@@ -1,10 +1,10 @@
-package models.persistence
+package persistence
 
 import scala.collection.concurrent.TrieMap
 
 import models.document.Document
 
-/** Cache implementation of Persistence.
+/** Cache implementation of persistence.Persistence.
  *
  * @tparam T type of the document
  */

@@ -233,6 +233,15 @@ lazy val backend = projectT("backend", file("backend")).settings(
   )
 ).dependsOn(common)
 
+lazy val persistence = projectT("persistence", file("persistence")).settings(
+  Seq(
+    name                   := "persistence",
+    version                := "0.1",
+    // packageName in Docker  := "persistence",
+    // daemonUser in Docker   := "root",
+    libraryDependencies   ++= Seq()
+  )
+).dependsOn(common)
 
 def image(name: String, d: sbt.File) = baseProject(name, d).settings(
   Seq(
