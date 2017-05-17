@@ -1,29 +1,29 @@
-package actor
+package de.htwg.zeta.persistence.actor
 
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
-import actor.DocumentAccessorActor.DeletingDocumentFailed
-import actor.DocumentAccessorActor.DeletingDocumentSucceed
-import actor.DocumentAccessorActor.UpdatingDocumentFailed
-import actor.DocumentAccessorActor.UpdatingDocumentSucceed
-import actor.DocumentAccessorActor.ReadingDocumentSucceed
-import actor.DocumentAccessorActor.CreatingDocumentFailed
-import actor.DocumentAccessorActor.DeleteDocument
-import actor.DocumentAccessorActor.UpdateDocument
-import actor.DocumentAccessorActor.CreateDocument
-import actor.DocumentAccessorActor.ReadDocument
-import actor.DocumentAccessorActor.CleanUp
-import actor.DocumentAccessorActor.DocumentAccessorReceivedMessage
-import actor.DocumentAccessorActor.CreatingDocumentSucceed
-import actor.DocumentAccessorActor.ReadingDocumentFailed
-import actor.DocumentAccessorManagerActor.CacheDuration
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DeletingDocumentFailed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DeletingDocumentSucceed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.UpdatingDocumentFailed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.UpdatingDocumentSucceed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.ReadingDocumentSucceed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CreatingDocumentFailed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DeleteDocument
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.UpdateDocument
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CreateDocument
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.ReadDocument
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CleanUp
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DocumentAccessorReceivedMessage
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CreatingDocumentSucceed
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.ReadingDocumentFailed
+import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.CacheDuration
+import de.htwg.zeta.persistence.dbaccess.Persistence
 import models.document.Document
-import persistence.Persistence
 
 
 /** Access object for a single Document.

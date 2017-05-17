@@ -1,11 +1,11 @@
-package accessor
+package de.htwg.zeta.persistence.accessor
 
 import java.util.concurrent.TimeUnit
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.Future
 
-import actor.DocumentAccessorActor
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.pattern.ask

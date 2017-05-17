@@ -1,4 +1,4 @@
-package persistence
+package de.htwg.zeta.persistence.dbaccess
 
 import models.document.Document
 

@@ -1,10 +1,10 @@
-package persistence
+package de.htwg.zeta.persistence.dbaccess
 
 import scala.collection.concurrent.TrieMap
 
 import models.document.Document
 
-/** Cache implementation of persistence.Persistence.
+/** Cache implementation of [[Persistence]].
  *
  * @tparam T type of the document
  */

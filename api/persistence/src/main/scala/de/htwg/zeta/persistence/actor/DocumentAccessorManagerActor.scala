@@ -1,4 +1,4 @@
-package actor
+package de.htwg.zeta.persistence.actor
 
 import java.util.concurrent.TimeUnit
 
@@ -8,13 +8,13 @@ import scala.concurrent.duration.FiniteDuration
 
 import akka.actor.Actor
 import akka.actor.Cancellable
+import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CleanUp
+import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.CacheDuration
+import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.GetAccessor
+import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.GetAllIds
+import de.htwg.zeta.persistence.dbaccess.Persistence
+import de.htwg.zeta.persistence.dbaccess.CachePersistence
 import models.document.Document
-import actor.DocumentAccessorActor.CleanUp
-import actor.DocumentAccessorManagerActor.CacheDuration
-import actor.DocumentAccessorManagerActor.GetAccessor
-import actor.DocumentAccessorManagerActor.GetAllIds
-import persistence.CachePersistence
-import persistence.Persistence
 
 
 /** Manages all DocumentAccessors of type [[T]].
