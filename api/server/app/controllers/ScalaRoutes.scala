@@ -80,7 +80,7 @@ class ScalaRoutes @Inject()(
 
   def backendGenerator(id: String): WebSocket = BackendController.generator(id)
 
-  def backendController(model: String): WebSocket = BackendController.user(model)
+  def backendUser(model: String): WebSocket = BackendController.user(model)
 
 
   // # Home page
@@ -120,7 +120,7 @@ class ScalaRoutes @Inject()(
   // ### Webpage
   def webpageIndex(): Action[AnyContent] = WebpageController.index()
 
-  def diagramsOverview(): Action[AnyContent] = WebpageController.diagramsOverview(uuid = null)
+  def diagramsOverviewShortInfo(): Action[AnyContent] = WebpageController.diagramsOverviewShortInfo()
 
   def diagramsOverview(uuid: String): Action[AnyContent] = WebpageController.diagramsOverview(uuid)
 
@@ -146,75 +146,72 @@ class ScalaRoutes @Inject()(
   // # temporary
   def generate(metaModelUuid: String): Action[AnyContent] = GeneratorController.generate(metaModelUuid)
 
+  /* ### MetaModel REST API
+   * MMRA => MetaModelRestApi
+   */
+  private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
 
-  // ### MetaModel REST API
-  object MetaModelRest {
-    private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
+  def MMRAshowForUser: Action[AnyContent] = MetaModelRestApi.showForUser
 
+  def MMRAinsert: Action[JsValue] = MetaModelRestApi.insert
 
-    def showForUser: Action[AnyContent] = MetaModelRestApi.showForUser
+  def MMRAupdate(metaModelId: String): Action[JsValue] = MetaModelRestApi.update(metaModelId)
 
-    def insert: Action[JsValue] = MetaModelRestApi.insert
+  def MMRAget(metaModelId: String): Action[AnyContent] = MetaModelRestApi.get(metaModelId)
 
-    def update(metaModelId: String): Action[JsValue] = MetaModelRestApi.update(metaModelId)
+  def MMRAdelete(metaModelId: String): Action[AnyContent] = MetaModelRestApi.delete(metaModelId)
 
-    def get(metaModelId: String): Action[AnyContent] = MetaModelRestApi.get(metaModelId)
+  def MMRAgetMetaModelDefinition(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMetaModelDefinition(metaModelId)
 
-    def delete(metaModelId: String): Action[AnyContent] = MetaModelRestApi.delete(metaModelId)
+  def MMRAupdateMetaModelDefinition(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateMetaModelDefinition(metaModelId)
 
-    def getMetaModelDefinition(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMetaModelDefinition(metaModelId)
+  def MMRAgetMClasses(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMClasses(metaModelId)
 
-    def updateMetaModelDefinition(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateMetaModelDefinition(metaModelId)
+  def MMRAgetMReferences(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMReferences(metaModelId)
 
-    def getMClasses(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMClasses(metaModelId)
+  def MMRAgetMClass(metaModelId: String, mClassName: String): Action[AnyContent] = MetaModelRestApi.getMClass(metaModelId, mClassName)
 
-    def getMReferences(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMReferences(metaModelId)
+  def MMRAgetMReference(metaModelId: String, mReferenceName: String): Action[AnyContent] = MetaModelRestApi.getMReference(metaModelId, mReferenceName)
 
-    def getMClass(metaModelId: String, mClassName: String): Action[AnyContent] = MetaModelRestApi.getMClass(metaModelId, mClassName)
+  def MMRAgetShape(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getShape(metaModelId)
 
-    def getMReference(metaModelId: String, mReferenceName: String): Action[AnyContent] = MetaModelRestApi.getMReference(metaModelId, mReferenceName)
+  def MMRAupdateShape(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateShape(metaModelId)
 
-    def getShape(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getShape(metaModelId)
+  def MMRAgetStyle(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getStyle(metaModelId)
 
-    def updateShape(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateShape(metaModelId)
+  def MMRAupdateStyle(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateStyle(metaModelId)
 
-    def getStyle(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getStyle(metaModelId)
+  def MMRAgetDiagram(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getDiagram(metaModelId)
 
-    def updateStyle(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateStyle(metaModelId)
-
-    def getDiagram(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getDiagram(metaModelId)
-
-    def updateDiagram(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateDiagram(metaModelId)
-  }
+  def MMRAupdateDiagram(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateDiagram(metaModelId)
 
 
-  // ### Model REST API
-  object ModelsRest {
-    private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
+  /* ### Model REST API
+   * MRA => ModelRestApi
+   */
+  private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
 
+  def MRAshowForUser: Action[AnyContent] = ModelRestApi.showForUser
 
-    def showForUser: Action[AnyContent] = ModelRestApi.showForUser
+  def MRAinsert: Action[JsValue] = ModelRestApi.insert
 
-    def insert: Action[JsValue] = ModelRestApi.insert
+  def MRAupdate(modelId: String): Action[JsValue] = ModelRestApi.update(modelId)
 
-    def update(modelId: String): Action[JsValue] = ModelRestApi.update(modelId)
+  def MRAget(modelId: String): Action[AnyContent] = ModelRestApi.get(modelId)
 
-    def get(modelId: String): Action[AnyContent] = ModelRestApi.get(modelId)
+  def MRAgetModelDefinition(modelId: String): Action[AnyContent] = ModelRestApi.getModelDefinition(modelId)
 
-    def getModelDefinition(modelId: String): Action[AnyContent] = ModelRestApi.getModelDefinition(modelId)
+  def MRAupdateModel(modelId: String): Action[JsValue] = ModelRestApi.updateModel(modelId)
 
-    def updateModel(modelId: String): Action[JsValue] = ModelRestApi.updateModel(modelId)
+  def MRAgetNodes(modelId: String): Action[AnyContent] = ModelRestApi.getNodes(modelId)
 
-    def getNodes(modelId: String): Action[AnyContent] = ModelRestApi.getNodes(modelId)
+  def MRAgetNode(modelId: String, nodeName: String): Action[AnyContent] = ModelRestApi.getNode(modelId, nodeName)
 
-    def getNode(modelId: String, nodeName: String): Action[AnyContent] = ModelRestApi.getNode(modelId, nodeName)
+  def MRAgetEdges(modelId: String): Action[AnyContent] = ModelRestApi.getEdges(modelId)
 
-    def getEdges(modelId: String): Action[AnyContent] = ModelRestApi.getEdges(modelId)
+  def MRAgetEdge(modelId: String, edgeName: String): Action[AnyContent] = ModelRestApi.getEdge(modelId, edgeName)
 
-    def getEdge(modelId: String, edgeName: String): Action[AnyContent] = ModelRestApi.getEdge(modelId, edgeName)
-
-    def delete(modelId: String): Action[AnyContent] = ModelRestApi.delete(modelId)
-  }
+  def MRAdelete(modelId: String): Action[AnyContent] = ModelRestApi.delete(modelId)
 
 
   // ### Code Editor
