@@ -19,8 +19,8 @@ class AuthenticatedAction(messagesApi: MessagesApi, silhouette: Silhouette[ZetaE
 
 
   override protected[authentication] def handleSilhouetteRequest(
-      block: (SecuredRequest[ZetaEnv, AnyContent]) => Future[Result],
-      ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]] = {
+    block: (SecuredRequest[ZetaEnv, AnyContent]) => Future[Result],
+    ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]] = {
     def ret(request: Request[AnyContent]): Future[HandlerResult[Nothing]] =
       silhouette.SecuredRequestHandler(request)((req: SecuredRequest[ZetaEnv, AnyContent]) => {
         executeCheckedHandlerResult(() => block(req), ec)

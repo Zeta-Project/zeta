@@ -23,8 +23,8 @@ private[authentication] abstract class AbstractSilhouetteAction[REQ <: Request[A
   }
 
   protected[authentication] def handleSilhouetteRequest(
-      block: (REQ) => Future[Result],
-      ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]]
+    block: (REQ) => Future[Result],
+    ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]]
 
   override protected[authentication] def handleFutureRequest(block: (REQ) => Future[Result], ec: ExecutionContext)
     (request: Request[AnyContent]): Future[Result] = {

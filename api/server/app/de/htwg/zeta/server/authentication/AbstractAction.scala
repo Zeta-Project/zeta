@@ -37,8 +37,8 @@ private[authentication] abstract class AbstractAction[REQ <: Request[AnyContent]
   }
 
   protected[authentication] def handleFutureRequest(
-      block: (REQ) => Future[Result],
-      ec: ExecutionContext)
+    block: (REQ) => Future[Result],
+    ec: ExecutionContext)
     (request: Request[AnyContent]): Future[Result]
 
   protected[authentication] def doAction(block: (REQ) => Result): Action[AnyContent] =
@@ -60,74 +60,76 @@ private[authentication] abstract class AbstractAction[REQ <: Request[AnyContent]
    * All of those classes have to be implicit.
    *
    */
+  // scalastyle:off
 
-  implicit class ResultFunction(val fnc: () => Result) {}
+  implicit class ResultFunction(val fnc: () => Result)
 
   def apply(block: ResultFunction): Action[AnyContent] = doAction((_) => block.fnc())
 
-  implicit class REQ_Function(val fnc: (REQ) => Result) {}
+  implicit class REQ_Function(val fnc: (REQ) => Result)
 
   def apply(block: REQ_Function): Action[AnyContent] = doAction((r) => block.fnc(r))
 
-  implicit class EXC_Function(val fnc: (EXC) => Result) {}
+  implicit class EXC_Function(val fnc: (EXC) => Result)
 
   def apply(block: EXC_Function): Action[AnyContent] = doAction((_) => block.fnc(EXC()))
 
-  implicit class MSG_Function(val fnc: (MSG) => Result) {}
+  implicit class MSG_Function(val fnc: (MSG) => Result)
 
   def apply(block: MSG_Function): Action[AnyContent] = doAction((r) => block.fnc(MSG(r)))
 
-  implicit class REQ_EXC_Function(val fnc: (REQ, EXC) => Result) {}
+  implicit class REQ_EXC_Function(val fnc: (REQ, EXC) => Result)
 
   def apply(block: REQ_EXC_Function): Action[AnyContent] = doAction((r) => block.fnc(r, EXC()))
 
-  implicit class REQ_MSG_Function(val fnc: (REQ, MSG) => Result) {}
+  implicit class REQ_MSG_Function(val fnc: (REQ, MSG) => Result)
 
   def apply(block: REQ_MSG_Function): Action[AnyContent] = doAction((r) => block.fnc(r, MSG(r)))
 
-  implicit class EXC_MSG_Function(val fnc: (EXC, MSG) => Result) {}
+  implicit class EXC_MSG_Function(val fnc: (EXC, MSG) => Result)
 
   def apply(block: EXC_MSG_Function): Action[AnyContent] = doAction((r) => block.fnc(EXC(), MSG(r)))
 
-  implicit class REQ_EXC_MSG_Function(val fnc: (REQ, EXC, MSG) => Result) {}
+  implicit class REQ_EXC_MSG_Function(val fnc: (REQ, EXC, MSG) => Result)
 
   def apply(block: REQ_EXC_MSG_Function): Action[AnyContent] = doAction((r) => block.fnc(r, EXC(), MSG(r)))
 
 
   // future
 
-  implicit class FutureResultFunction(val fnc: () => Future[Result]) {}
+  implicit class FutureResultFunction(val fnc: () => Future[Result])
 
   def apply(block: FutureResultFunction): Action[AnyContent] = doActionFuture((_) => block.fnc())
 
-  implicit class Future_REQ_Function(val fnc: (REQ) => Future[Result]) {}
+  implicit class Future_REQ_Function(val fnc: (REQ) => Future[Result])
 
   def apply(block: Future_REQ_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(r))
 
-  implicit class Future_EXC_Function(val fnc: (EXC) => Future[Result]) {}
+  implicit class Future_EXC_Function(val fnc: (EXC) => Future[Result])
 
   def apply(block: Future_EXC_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(EXC()))
 
-  implicit class Future_MSG_Function(val fnc: (MSG) => Future[Result]) {}
+  implicit class Future_MSG_Function(val fnc: (MSG) => Future[Result])
 
   def apply(block: Future_MSG_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(MSG(r)))
 
-  implicit class Future_REQ_EXC_Function(val fnc: (REQ, EXC) => Future[Result]) {}
+  implicit class Future_REQ_EXC_Function(val fnc: (REQ, EXC) => Future[Result])
 
   def apply(block: Future_REQ_EXC_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(r, EXC()))
 
-  implicit class Future_REQ_MSG_Function(val fnc: (REQ, MSG) => Future[Result]) {}
+  implicit class Future_REQ_MSG_Function(val fnc: (REQ, MSG) => Future[Result])
 
   def apply(block: Future_REQ_MSG_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(r, MSG(r)))
 
-  implicit class Future_EXC_MSG_Function(val fnc: (EXC, MSG) => Future[Result]) {}
+  implicit class Future_EXC_MSG_Function(val fnc: (EXC, MSG) => Future[Result])
 
   def apply(block: Future_EXC_MSG_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(EXC(), MSG(r)))
 
-  implicit class Future_REQ_EXC_MSG_Function(val fnc: (REQ, EXC, MSG) => Future[Result]) {}
+  implicit class Future_REQ_EXC_MSG_Function(val fnc: (REQ, EXC, MSG) => Future[Result])
 
   def apply(block: Future_REQ_EXC_MSG_Function): Action[AnyContent] = doActionFuture((r) => block.fnc(r, EXC(), MSG(r)))
 
+  // scalastyle:on
 
   protected object Async extends ActionBuilder[Request] {
     override def executionContext: ExecutionContext = super.executionContext

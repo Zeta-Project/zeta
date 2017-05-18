@@ -19,8 +19,8 @@ class UnAuthenticatedAction(
 
 
   override protected[authentication] def handleSilhouetteRequest(
-      block: (Request[AnyContent]) => Future[Result],
-      ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]] = {
+    block: (Request[AnyContent]) => Future[Result],
+    ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]] = {
     (request: Request[AnyContent]) =>
       silhouette.UnsecuredRequestHandler(request)(req => {
         executeCheckedHandlerResult(() => block(req), ec)

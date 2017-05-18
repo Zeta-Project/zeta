@@ -47,11 +47,10 @@ trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logg
   private def getFlowEither(request: Request[AnyContent], getProps: (ActorRef, REQ) => Props): Future[Either[Result, Flow[String, String, _]]] = {
     handleRequest(request)(getFlowHandler(getProps)).map {
       case HandlerResult(_, Some(flow)) => Right(flow)
-      case HandlerResult(r, None) =>
-        r match {
-          case AbstractWebSocket.onFailure =>
-          case any => info(s"silhouette returned result: $any")
-        }
+      case HandlerResult(result, None) => result match {
+        case AbstractWebSocket.onFailure =>
+        case any: Any => info(s"silhouette returned result: $any")
+      }
         Left(AbstractWebSocket.onFailure)
     }(system.dispatcher)
   }
