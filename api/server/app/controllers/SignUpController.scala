@@ -77,7 +77,7 @@ class SignUpController @Inject() (
     SignUpForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.silhouette.signUp(form))),
       data => {
-        val result = Redirect(routes.SignUpController.view()).flashing("info" -> Messages("sign.up.email.sent", data.email))
+        val result = Redirect(routes.ScalaRoutes.signUpView()).flashing("info" -> Messages("sign.up.email.sent", data.email))
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
         userService.retrieve(loginInfo).flatMap {
           case Some(user) => processAlreadySignedUp(user, result, data, request)
@@ -88,7 +88,7 @@ class SignUpController @Inject() (
   }
 
   private def processAlreadySignedUp(user: User, result: Result, data: SignUpForm.Data, request: Request[AnyContent]) = {
-    val url = routes.SignInController.view().absoluteURL()(request)
+    val url = routes.ScalaRoutes.signInView().absoluteURL()(request)
     mailerClient.send(Email(
       subject = Messages("email.already.signed.up.subject"),
       from = Messages("email.from"),
@@ -118,7 +118,7 @@ class SignUpController @Inject() (
       authInfo <- authInfoRepository.add(loginInfo, authInfo)
       authToken <- authTokenService.create(user.userID)
     } yield {
-      val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()(request)
+      val url = routes.ScalaRoutes.activateAccount(authToken.id).absoluteURL()(request)
       mailerClient.send(Email(
         subject = Messages("email.sign.up.subject"),
         from = Messages("email.from"),

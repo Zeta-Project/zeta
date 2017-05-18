@@ -8,8 +8,9 @@ import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.mvc.RequestHeader
 import play.api.mvc.Results
-
 import scala.concurrent.Future
+
+import controllers.routes
 
 /**
  * Custom secured error handler.
@@ -27,7 +28,7 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
    * @return The result to send to the client.
    */
   override def onNotAuthenticated(implicit request: RequestHeader) = {
-    Future.successful(Results.Redirect(controllers.routes.SignInController.view()))
+    Future.successful(Results.Redirect(routes.ScalaRoutes.signInView()))
   }
 
   /**
@@ -39,6 +40,6 @@ class CustomSecuredErrorHandler @Inject() (val messagesApi: MessagesApi) extends
    * @return The result to send to the client.
    */
   override def onNotAuthorized(implicit request: RequestHeader) = {
-    Future.successful(Results.Redirect(controllers.routes.SignInController.view()).flashing("error" -> Messages("access.denied")))
+    Future.successful(Results.Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("access.denied")))
   }
 }

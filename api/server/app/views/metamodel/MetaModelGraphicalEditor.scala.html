@@ -21,23 +21,23 @@
     $('#metamodel-name').text("Metamodel: "+window.loadedMetaModel.name);
     </script>
 
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.freeTransform.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.selectionView.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.ui.paperScroller.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/joint.format.print.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("jointjs/css/wireframe.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("jointjs/css/joint.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("jointjs/css/joint.ui.freeTransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("jointjs/css/joint.ui.selectionView.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("jointjs/css/joint.ui.paperScroller.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("jointjs/css/joint.format.print.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("jointjs/css/wireframe.css")">
 
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/layout.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/paper.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/inspector.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/stencil.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/halo.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/selection.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/toolbar.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/freetransform.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/style.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.Assets.at("graphicalEditor/css/linkTypeSelector.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/layout.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/paper.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/inspector.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/stencil.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/halo.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/selection.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/toolbar.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/freetransform.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/style.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("graphicalEditor/css/linkTypeSelector.css")">
 
 
     <div class="toolbar-container panel panel-default">
@@ -79,10 +79,10 @@
                 <span class="glyphicon glyphicon-trash"></span>
             </button>
             <button id="btn-to-front" class="btn btn-default" data-tooltip="Bring current Element to Front">
-                <img class="level-icon" src="@routes.Assets.at("graphicalEditor/images/icon-to-front.svg")">
+                <img class="level-icon" src="@routes.ScalaRoutes.assetsAt("graphicalEditor/images/icon-to-front.svg")">
             </button>
             <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
-                <img class="level-icon" src="@routes.Assets.at("graphicalEditor/images/icon-to-back.svg")">
+                <img class="level-icon" src="@routes.ScalaRoutes.assetsAt("graphicalEditor/images/icon-to-back.svg")">
             </button>
         </div>
 
@@ -144,58 +144,58 @@
 
     <div id="contextMenuContainer"></div>
 
-    <script src="@routes.Assets.at("metaModelEditor/ext/mCoreUtil.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/edgeValidator.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/linkTypeSelector.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/mEnum.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/mCoreUtil.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/edgeValidator.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/linkTypeSelector.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/mEnum.js")"></script>
 
-    <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Constants.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/ExportedMetaModel.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Attribute.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/ValidationResult.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Graph.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/ext/exportMetaModel/Exporter.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/exportMetaModel/Constants.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/exportMetaModel/ExportedMetaModel.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/exportMetaModel/Attribute.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/exportMetaModel/ValidationResult.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/exportMetaModel/Graph.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/exportMetaModel/Exporter.js")"></script>
 
-    <script src="@routes.Assets.at("metaModelEditor/ext/collaboration.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/ext/collaboration.js")"></script>
 
-    <script src="@routes.Assets.at("jointjs/dist/lodash.min.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/backbone-min.new.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/lodash.min.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/backbone-min.new.js")"></script>
     <script type="text/javascript">var backboneNew = Backbone.noConflict();</script>
-    <script src="@routes.Assets.at("jointjs/dist/backbone-min.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.shapes.uml.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.halo.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.dia.freeTransform.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.freeTransform.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.inspector.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.selectionView.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.clipboard.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.stencil.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.paperScroller.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.ui.tooltip.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.format.svg.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.format.raster.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.format.print.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.dia.command.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.dia.validator.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.layout.ForceDirected.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.layout.GridLayout.js")"></script>
-    <script src="@routes.Assets.at("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/backbone-min.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.shapes.uml.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.halo.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.dia.freeTransform.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.freeTransform.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.inspector.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.selectionView.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.clipboard.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.stencil.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.paperScroller.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.ui.tooltip.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.format.svg.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.format.raster.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.format.print.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.dia.command.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.dia.validator.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.layout.ForceDirected.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.layout.GridLayout.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
 
-    <script src="@routes.Assets.at("jointjs/ext/guidelines.js")"></script>
-    <script src="@routes.Assets.at("jointjs/ext/distancelines.js")"></script>
-    <script src="@routes.Assets.at("jointjs/ext/de.htwg.group.js")"></script>
-    <script src="@routes.Assets.at("jointjs/ext/extendedSelectionView.js")"></script>
-    <script src="@routes.Assets.at("jointjs/ext/extendedElementView.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/ext/guidelines.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/ext/distancelines.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/ext/de.htwg.group.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/ext/extendedSelectionView.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/ext/extendedElementView.js")"></script>
 
-    <script src="@routes.Assets.at("jointjs/lib/keyboard.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("jointjs/lib/keyboard.js")"></script>
 
-    <script src="@routes.Assets.at("metaModelEditor/src/inspector.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/src/stencil.js")"></script>
-    <script src="@routes.Assets.at("metaModelEditor/src/main.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/src/inspector.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/src/stencil.js")"></script>
+    <script src="@routes.ScalaRoutes.assetsAt("metaModelEditor/src/main.js")"></script>
 
         <!--[if IE 9]>
-    <script src='    @routes.Assets.at("jointjs/lib/base64.js")
+    <script src='    @routes.ScalaRoutes.assetsAt("jointjs/lib/base64.js")
     '></script>
     <script type="text/javascript">
         window.btoa = base64.encode;

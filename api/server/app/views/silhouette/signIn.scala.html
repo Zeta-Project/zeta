@@ -27,7 +27,7 @@
                 <p>@Messages("or.use.social")</p>
                 <div>
                 @for(p <- socialProviders.providers if p.id != "clef") {
-                    <a href="@routes.SocialAuthController.authenticate(p.id)" class="provider @p.id" title="@Messages(p.id)"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@Messages(p.id)"></a>
+                    <a href="@routes.SocialAuthController.authenticate(p.id)" class="provider @p.id" title="@Messages(p.id)"><img src="@routes.ScalaRoutes.assetsAt(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@Messages(p.id)"></a>
                 }
                 </div>
                 @defining(socialProviders.get[ClefProvider]) { clef =>

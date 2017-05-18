@@ -3,26 +3,23 @@ package controllers
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
-
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-
 import forms.ChangePasswordForm
-
 import models.services.UserService
-
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
-
 import scala.concurrent.Future
 
+import play.api.mvc.Action
+import play.api.mvc.AnyContent
 import utils.auth.ZetaEnv
 import utils.auth.WithProvider
 
@@ -52,7 +49,7 @@ class ChangePasswordController @Inject() (
    *
    * @return The result to display.
    */
-  def view = silhouette.SecuredAction(WithProvider[ZetaEnv#A](CredentialsProvider.ID)) { implicit request =>
+  def view: Action[AnyContent] = silhouette.SecuredAction(WithProvider[ZetaEnv#A](CredentialsProvider.ID)) { implicit request =>
     Ok(views.html.silhouette.changePassword(ChangePasswordForm.form, request.identity))
   }
 
@@ -61,7 +58,7 @@ class ChangePasswordController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.SecuredAction(WithProvider[ZetaEnv#A](CredentialsProvider.ID)).async { implicit request =>
+  def submit: Action[AnyContent] = silhouette.SecuredAction(WithProvider[ZetaEnv#A](CredentialsProvider.ID)).async { implicit request =>
     ChangePasswordForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.silhouette.changePassword(form, request.identity))),
       password => {
@@ -70,11 +67,11 @@ class ChangePasswordController @Inject() (
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
           val passwordInfo = passwordHasherRegistry.current.hash(newPassword)
           authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
-            Redirect(routes.ChangePasswordController.view()).flashing("success" -> Messages("password.changed"))
+            Redirect(routes.ScalaRoutes.changePasswordView()).flashing("success" -> Messages("password.changed"))
           }
         }.recover {
-          case e: ProviderException =>
-            Redirect(routes.ChangePasswordController.view()).flashing("error" -> Messages("current.password.invalid"))
+          case _: ProviderException =>
+            Redirect(routes.ScalaRoutes.changePasswordView()).flashing("error" -> Messages("current.password.invalid"))
         }
       }
     )

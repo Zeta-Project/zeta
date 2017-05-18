@@ -51,12 +51,12 @@ class ActivateAccountController @Inject() (
   def send(email: String) = silhouette.UnsecuredAction.async { implicit request =>
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
-    val result = Redirect(routes.SignInController.view()).flashing("info" -> Messages("activation.email.sent", decodedEmail))
+    val result = Redirect(routes.ScalaRoutes.signInView()).flashing("info" -> Messages("activation.email.sent", decodedEmail))
 
     userService.retrieve(loginInfo).flatMap {
       case Some(user) if !user.activated =>
         authTokenService.create(user.userID).map { authToken =>
-          val url = routes.ActivateAccountController.activate(authToken.id).absoluteURL()
+          val url = routes.ScalaRoutes.activateAccount(authToken.id).absoluteURL()
 
           mailerClient.send(Email(
             subject = Messages("email.activate.account.subject"),
@@ -82,11 +82,11 @@ class ActivateAccountController @Inject() (
       case Some(authToken) => userService.retrieve(authToken.userID).flatMap {
         case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
           userService.save(user.copy(activated = true)).map { _ =>
-            Redirect(routes.SignInController.view()).flashing("success" -> Messages("account.activated"))
+            Redirect(routes.ScalaRoutes.signInView()).flashing("success" -> Messages("account.activated"))
           }
-        case _ => Future.successful(Redirect(routes.SignInController.view()).flashing("error" -> Messages("invalid.activation.link")))
+        case _ => Future.successful(Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.activation.link")))
       }
-      case None => Future.successful(Redirect(routes.SignInController.view()).flashing("error" -> Messages("invalid.activation.link")))
+      case None => Future.successful(Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.activation.link")))
     }
   }
 }
