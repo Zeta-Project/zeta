@@ -19,16 +19,16 @@
 
             <div class="tile lead col-xs-12 col-md-4">
                 <div class="tileBorder">
-                    <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
+                    <img class="backgroundImage" src="@routes.ScalaRoutes.assetsAt("webpage/images/petri_test.png")"/>
                     <div class="transparentBackground"></div>
                     <div class="linkText">Models</div>
-                    <a class="ecoreLink" href="@controllers.webpage.routes.WebpageController.diagramsOverview(null)"></a>
+                    <a class="ecoreLink" href="@routes.ScalaRoutes.diagramsOverviewShortInfo()"></a>
                 </div>
             </div>
 
             <div class="tile lead col-xs-12 col-md-4">
                 <div class="tileBorder">
-                    <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
+                    <img class="backgroundImage" src="@routes.ScalaRoutes.assetsAt("webpage/images/petri_test.png")"/>
                     <div class="transparentBackground"></div>
                     <div class="linkText">Generators</div>
                     <a class="ecoreLink" href="/app"></a>
@@ -37,10 +37,10 @@
 
             <div class="tile lead col-xs-12 col-md-4">
                 <div class="tileBorder">
-                    <img class="backgroundImage" src="@routes.Assets.at("webpage/images/petri_test.png")"/>
+                    <img class="backgroundImage" src="@routes.ScalaRoutes.assetsAt("webpage/images/petri_test.png")"/>
                     <div class="transparentBackground"></div>
                     <div class="linkText">Model Validator</div>
-                    <a class="ecoreLink" href="@routes.ModelController.modelValidator"></a>
+                    <a class="ecoreLink" href="@routes.ScalaRoutes.modelValidator"></a>
                 </div>
             </div>
         </div>

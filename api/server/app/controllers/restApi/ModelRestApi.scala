@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-
 import models.User
 import models.document.AllModels
 import models.document.MetaModelEntity
@@ -15,7 +14,6 @@ import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.Model
-
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
@@ -23,15 +21,14 @@ import play.api.mvc.BodyParsers
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
 import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
-
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+import controllers.routes
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
@@ -49,9 +46,9 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
     repository.query[ModelEntity](AllModels())
       .map { info =>
         info.copy(links = Some(Seq(
-          HLink.get("self", routes.ModelRestApi.get(info.id).absoluteURL),
-          HLink.get("meta_model", routes.MetaModelRestApi.get(info.metaModelId).absoluteURL),
-          HLink.delete("remove", routes.ModelRestApi.get(info.id).absoluteURL)
+          HLink.get("self", routes.ScalaRoutes.MRAget(info.id).absoluteURL),
+          HLink.get("meta_model", routes.ScalaRoutes.MMRAget(info.metaModelId).absoluteURL),
+          HLink.delete("remove", routes.ScalaRoutes.MRAget(info.id).absoluteURL)
         )))
       }
       .toList.materialize.subscribe(n => n match {
@@ -134,9 +131,9 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   def get(id: String) = silhouette.SecuredAction.async { implicit request =>
     protectedRead(id, (m: ModelEntity) => {
       val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ModelRestApi.get(m.id).absoluteURL),
-        HLink.get("meta_model", routes.MetaModelRestApi.get(m.metaModelId).absoluteURL),
-        HLink.delete("remove", routes.ModelRestApi.get(m.id).absoluteURL)
+        HLink.put("update", routes.ScalaRoutes.MRAget(m.id).absoluteURL),
+        HLink.get("meta_model", routes.ScalaRoutes.MMRAget(m.metaModelId).absoluteURL),
+        HLink.delete("remove", routes.ScalaRoutes.MRAget(m.id).absoluteURL)
       )))
       Results.Ok(Json.toJson(out))
     })

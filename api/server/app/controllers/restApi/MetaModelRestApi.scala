@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-
 import models.User
 import models.document.AllMetaModels
 import models.document.MetaModelEntity
@@ -18,22 +17,20 @@ import models.modelDefinitions.metaModel.Style
 import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-
 import play.api.libs.json.JsError
 import play.api.libs.json.Json
 import play.api.mvc.BodyParsers
 import play.api.mvc.Controller
 import play.api.mvc.Result
-
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-
 import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
+
+import controllers.routes
 
 /**
  * RESTful API for metamodel definitions
@@ -50,8 +47,8 @@ class MetaModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory,
     repository.query[MetaModelEntity](AllMetaModels())
       .map { mm =>
         new MetaModelShortInfo(id = mm.id, name = mm.name, links = Some(Seq(
-          HLink.get("self", routes.MetaModelRestApi.get(mm.id).absoluteURL),
-          HLink.delete("remove", routes.MetaModelRestApi.get(mm.id).absoluteURL)
+          HLink.get("self", routes.ScalaRoutes.MMRAget(mm.id).absoluteURL),
+          HLink.delete("remove", routes.ScalaRoutes.MMRAget(mm.id).absoluteURL)
         )))
       }
       .toList.materialize.subscribe(n => n match {
@@ -115,8 +112,8 @@ class MetaModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory,
   def get(id: String) = silhouette.SecuredAction.async { implicit request =>
     protectedRead(id, (m: MetaModelEntity) => {
       val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.MetaModelRestApi.get(m.id).absoluteURL),
-        HLink.delete("remove", routes.MetaModelRestApi.get(m.id).absoluteURL)
+        HLink.put("update", routes.ScalaRoutes.MMRAget(m.id).absoluteURL),
+        HLink.delete("remove", routes.ScalaRoutes.MMRAget(m.id).absoluteURL)
       )))
       Ok(Json.toJson(out))
     })
