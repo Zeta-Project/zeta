@@ -38,14 +38,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
 
 class BackendController @Inject() (
     implicit system: ActorSystem,
     mat: Materializer,
     repositoryFactory: RepositoryFactory,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     session: Session)
   extends Controller {
 
@@ -53,7 +53,7 @@ class BackendController @Inject() (
   implicit val userMsg = MessageFlowTransformer.jsonMessageFlowTransformer[UserRequest, UserResponse]
   implicit val generatorMsg = MessageFlowTransformer.jsonMessageFlowTransformer[GeneratorRequest, GeneratorResponse]
 
-  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   ClusterSharding(system).startProxy(

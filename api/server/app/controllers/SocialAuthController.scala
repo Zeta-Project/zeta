@@ -23,7 +23,7 @@ import play.api.mvc.Controller
 
 import scala.concurrent.Future
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * The social auth controller.
@@ -37,7 +37,7 @@ import utils.auth.DefaultEnv
  */
 class SocialAuthController @Inject() (
     val messagesApi: MessagesApi,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     authInfoRepository: AuthInfoRepository,
     socialProviderRegistry: SocialProviderRegistry,

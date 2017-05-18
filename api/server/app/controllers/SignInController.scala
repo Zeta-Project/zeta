@@ -31,7 +31,7 @@ import play.api.mvc.Controller
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * The `Sign In` controller.
@@ -48,7 +48,7 @@ import utils.auth.DefaultEnv
  */
 class SignInController @Inject() (
     val messagesApi: MessagesApi,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     authInfoRepository: AuthInfoRepository,
     credentialsProvider: CredentialsProvider,

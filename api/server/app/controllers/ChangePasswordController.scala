@@ -23,7 +23,7 @@ import play.api.mvc.Controller
 
 import scala.concurrent.Future
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.WithProvider
 
 /**
@@ -39,7 +39,7 @@ import utils.auth.WithProvider
  */
 class ChangePasswordController @Inject() (
     val messagesApi: MessagesApi,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     credentialsProvider: CredentialsProvider,
     authInfoRepository: AuthInfoRepository,
@@ -52,7 +52,7 @@ class ChangePasswordController @Inject() (
    *
    * @return The result to display.
    */
-  def view = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) { implicit request =>
+  def view = silhouette.SecuredAction(WithProvider[ZetaEnv#A](CredentialsProvider.ID)) { implicit request =>
     Ok(views.html.silhouette.changePassword(ChangePasswordForm.form, request.identity))
   }
 
@@ -61,7 +61,7 @@ class ChangePasswordController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)).async { implicit request =>
+  def submit = silhouette.SecuredAction(WithProvider[ZetaEnv#A](CredentialsProvider.ID)).async { implicit request =>
     ChangePasswordForm.form.bindFromRequest.fold(
       form => Future.successful(BadRequest(views.html.silhouette.changePassword(form, request.identity))),
       password => {

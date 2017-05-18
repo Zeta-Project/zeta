@@ -29,12 +29,12 @@ import models.result.Success
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
 
-class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
-  private def repository[A](request: SecuredRequest[DefaultEnv, A]): Repository =
+  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   def generate(metaModelUuid: String): Action[AnyContent] = silhouette.SecuredAction.async(req => {

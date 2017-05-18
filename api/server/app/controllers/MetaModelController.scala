@@ -23,7 +23,7 @@ import play.api.mvc.WebSocket
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
 
 /**
@@ -33,10 +33,10 @@ class MetaModelController @Inject() (
     implicit mat: Materializer,
     system: ActorSystem,
     repositoryFactory: RepositoryFactory,
-    silhouette: Silhouette[DefaultEnv])
+    silhouette: Silhouette[ZetaEnv])
   extends Controller {
 
-  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   def metaModelEditor(metaModelUuid: String) = silhouette.SecuredAction.async { implicit request =>

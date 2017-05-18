@@ -16,12 +16,12 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.WebSocket
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class CodeEditorController @Inject() (implicit mat: Materializer, system: ActorSystem, ws: WSClient, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class CodeEditorController @Inject() (implicit mat: Materializer, system: ActorSystem, ws: WSClient, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
   def codeEditor(metaModelUuid: String, dslType: String) = silhouette.SecuredAction { implicit request =>
     Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity), metaModelUuid, dslType))

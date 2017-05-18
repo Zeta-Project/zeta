@@ -7,7 +7,7 @@ import models.authenticators.SGCookieAuthenticator
 /**
  * The default env.
  */
-trait DefaultEnv extends Env {
+trait ZetaEnv extends Env {
   type I = User
   type A = SGCookieAuthenticator
 }

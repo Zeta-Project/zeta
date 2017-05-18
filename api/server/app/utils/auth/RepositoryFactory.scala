@@ -12,7 +12,7 @@ trait RepositoryFactory {
   /**
    * Get a repository to access the database from a provided session
    */
-  def fromSession[A](request: SecuredRequest[DefaultEnv, A]): Repository
+  def fromSession[A](request: SecuredRequest[ZetaEnv, A]): Repository
 
   /**
    * Get a repository with admin access
@@ -21,7 +21,7 @@ trait RepositoryFactory {
 }
 
 class HttpRepositoryFactory @Inject() (implicit ws: WSClient) extends RepositoryFactory {
-  override def fromSession[A](request: SecuredRequest[DefaultEnv, A]): Repository =
+  override def fromSession[A](request: SecuredRequest[ZetaEnv, A]): Repository =
     HttpRepository(request.cookies.get("SyncGatewaySession").get.value)
 
   private val admin = HttpRepository(Auth("system", "superSecretPassword"))

@@ -16,7 +16,7 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.WebSocket
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,12 +26,12 @@ class ModelController @Inject() (
     implicit mat: Materializer,
     system: ActorSystem,
     repositoryFactory: RepositoryFactory,
-    silhouette: Silhouette[DefaultEnv])
+    silhouette: Silhouette[ZetaEnv])
   extends Controller {
 
   val log = Logger(this getClass () getName ())
 
-  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   def modelEditor(metaModelUuid: String, modelUuid: String) = silhouette.SecuredAction.async { implicit request =>

@@ -82,7 +82,7 @@ import play.api.libs.openid.OpenIdClient
 import play.api.libs.ws.WSClient
 import utils.auth.CustomSecuredErrorHandler
 import utils.auth.CustomUnsecuredErrorHandler
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * The Guice module which wires all Silhouette dependencies.
@@ -93,7 +93,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * Configures the module.
    */
   def configure(): Unit = {
-    bind[Silhouette[DefaultEnv]].to[SilhouetteProvider[DefaultEnv]]
+    bind[Silhouette[ZetaEnv]].to[SilhouetteProvider[ZetaEnv]]
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[UserService].to[UserServiceImpl]
@@ -134,9 +134,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     userService: UserService,
     authenticatorService: AuthenticatorService[SGCookieAuthenticator],
     eventBus: EventBus
-  ): Environment[DefaultEnv] = {
+  ): Environment[ZetaEnv] = {
 
-    Environment[DefaultEnv](
+    Environment[ZetaEnv](
       userService,
       authenticatorService,
       Seq(),

@@ -21,7 +21,7 @@ import play.api.mvc.Controller
 
 import scala.concurrent.Future
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * The `Forgot Password` controller.
@@ -35,7 +35,7 @@ import utils.auth.DefaultEnv
  */
 class ForgotPasswordController @Inject() (
     val messagesApi: MessagesApi,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     authTokenService: AuthTokenService,
     mailerClient: MailerClient,

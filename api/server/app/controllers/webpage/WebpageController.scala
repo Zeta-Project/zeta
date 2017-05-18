@@ -24,20 +24,20 @@ import rx.lang.scala.Notification.OnNext
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
-class WebpageController @Inject() (implicit ws: WSClient, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class WebpageController @Inject() (implicit ws: WSClient, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
   val log = Logger(this getClass () getName ())
 
-  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
     new HttpRepository(request.cookies.get("SyncGatewaySession").get.value)
 
   def index() = silhouette.SecuredAction { implicit request =>
     Redirect("/overview")
   }
 
-  private def getMetaModels[A]()(implicit request: SecuredRequest[DefaultEnv, A]) = {
+  private def getMetaModels[A]()(implicit request: SecuredRequest[ZetaEnv, A]) = {
     val p = Promise[Seq[MetaModelShortInfo]]
 
     repository.query[MetaModelEntity](AllMetaModels())
@@ -52,7 +52,7 @@ class WebpageController @Inject() (implicit ws: WSClient, silhouette: Silhouette
     p.future
   }
 
-  private def getModels[A](metaModel: String)(implicit request: SecuredRequest[DefaultEnv, A]) = {
+  private def getModels[A](metaModel: String)(implicit request: SecuredRequest[ZetaEnv, A]) = {
     val p = Promise[Seq[ModelShortInfo]]
 
     if (metaModel != null) {

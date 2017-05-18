@@ -9,7 +9,7 @@ import models.User
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
 import play.api.mvc.Controller
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * The basic application controller.
@@ -21,7 +21,7 @@ import utils.auth.DefaultEnv
  */
 class ApplicationController @Inject() (
     val messagesApi: MessagesApi,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     socialProviderRegistry: SocialProviderRegistry,
     implicit val webJarAssets: WebJarAssets)
   extends Controller with I18nSupport {

@@ -28,7 +28,7 @@ import play.api.mvc.Result
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,9 +38,9 @@ import scala.concurrent.Promise
 /**
  * RESTful API for metamodel definitions
  */
-class MetaModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class MetaModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
-  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   /** Lists all metamodels for the requesting user, provides HATEOAS links */
@@ -209,7 +209,7 @@ class MetaModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory,
   }
 
   /** A helper method for less verbose reads from the database */
-  def protectedRead[A](id: String, trans: MetaModelEntity => Result)(implicit request: SecuredRequest[DefaultEnv, A]): Future[Result] = {
+  def protectedRead[A](id: String, trans: MetaModelEntity => Result)(implicit request: SecuredRequest[ZetaEnv, A]): Future[Result] = {
     repository.get[MetaModelEntity](id).map { mm =>
       trans(mm)
     }.recover {

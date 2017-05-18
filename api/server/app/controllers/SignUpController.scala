@@ -32,7 +32,7 @@ import play.api.mvc.Result
 
 import scala.concurrent.Future
 
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * The `Sign Up` controller.
@@ -49,7 +49,7 @@ import utils.auth.DefaultEnv
  */
 class SignUpController @Inject() (
     val messagesApi: MessagesApi,
-    silhouette: Silhouette[DefaultEnv],
+    silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     authInfoRepository: AuthInfoRepository,
     authTokenService: AuthTokenService,

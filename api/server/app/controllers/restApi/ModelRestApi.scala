@@ -26,7 +26,7 @@ import play.api.mvc.Results
 
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 import utils.auth.RepositoryFactory
 
 import scala.concurrent.Future
@@ -37,9 +37,9 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 /**
  * RESTful API for model definitions
  */
-class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[DefaultEnv]) extends Controller {
+class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
-  def repository[A]()(implicit request: SecuredRequest[DefaultEnv, A]): Repository =
+  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   /** Lists all models for the requesting user, provides HATEOAS links */
@@ -193,7 +193,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** A helper method for less verbose reads from the database */
-  def protectedRead[A](id: String, trans: ModelEntity => Result)(implicit request: SecuredRequest[DefaultEnv, A]): Future[Result] = {
+  def protectedRead[A](id: String, trans: ModelEntity => Result)(implicit request: SecuredRequest[ZetaEnv, A]): Future[Result] = {
     repository.get[ModelEntity](id).map { model =>
       trans(model)
     }.recover {
