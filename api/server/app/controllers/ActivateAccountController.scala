@@ -21,7 +21,7 @@ import play.api.mvc.Controller
 
 import scala.concurrent.Future
 
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 /**
  * The `Activate Account` controller.

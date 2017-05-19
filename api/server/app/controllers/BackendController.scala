@@ -38,8 +38,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
-import utils.auth.ZetaEnv
-import utils.auth.RepositoryFactory
+import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.RepositoryFactory
 
 class BackendController @Inject() (
     implicit system: ActorSystem,

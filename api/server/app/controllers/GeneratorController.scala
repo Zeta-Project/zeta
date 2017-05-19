@@ -9,13 +9,13 @@ import scala.concurrent.ExecutionContext.Implicits
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import generator.generators.diagram.DiagramGenerator
-import generator.generators.shape.ShapeGenerator
-import generator.generators.style.StyleGenerator
-import generator.model.diagram.Diagram
-import generator.model.style.Style
-import generator.parser.Cache
-import generator.parser.SprayParser
+import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
+import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
+import de.htwg.zeta.server.generator.generators.style.StyleGenerator
+import de.htwg.zeta.server.generator.model.diagram.Diagram
+import de.htwg.zeta.server.generator.model.style.Style
+import de.htwg.zeta.server.generator.parser.Cache
+import de.htwg.zeta.server.generator.parser.SprayParser
 import models.document.MetaModelEntity
 import models.document.Repository
 import models.file.File
@@ -29,8 +29,8 @@ import models.result.Success
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
-import utils.auth.ZetaEnv
-import utils.auth.RepositoryFactory
+import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.RepositoryFactory
 
 class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
 

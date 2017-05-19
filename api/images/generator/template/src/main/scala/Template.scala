@@ -2,8 +2,8 @@ import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import generator.Result
-import generator.Transformer
+import de.htwg.zeta.server.generator.Result
+import de.htwg.zeta.server.generator.Transformer
 import models.document.Filter
 import models.document.Generator
 import models.document.ModelEntity

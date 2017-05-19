@@ -16,8 +16,8 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.WebSocket
-import utils.auth.ZetaEnv
-import utils.auth.RepositoryFactory
+import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

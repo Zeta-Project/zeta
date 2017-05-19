@@ -7,7 +7,7 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import models.User
 import models.document.PasswordInfoEntity
-import utils.auth.RepositoryFactory
+import de.htwg.zeta.server.utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

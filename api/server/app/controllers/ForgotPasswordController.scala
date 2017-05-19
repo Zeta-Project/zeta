@@ -5,12 +5,8 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-
-import forms.ForgotPasswordForm
-
 import models.services.AuthTokenService
 import models.services.UserService
-
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
@@ -18,10 +14,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
 import play.api.mvc.Controller
-
 import scala.concurrent.Future
 
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.forms.ForgotPasswordForm
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 /**
  * The `Forgot Password` controller.

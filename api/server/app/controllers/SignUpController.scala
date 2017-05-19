@@ -6,19 +6,14 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.SignUpEvent
 import com.mohiva.play.silhouette.api.Silhouette
-
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-
-import forms.SignUpForm
-import forms.SignUpForm.Data
-
+import de.htwg.zeta.server.forms.SignUpForm.Data
 import models.User
 import models.services.AuthTokenService
 import models.services.UserService
-
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
@@ -29,10 +24,10 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Result
-
 import scala.concurrent.Future
 
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.forms.SignUpForm
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 /**
  * The `Sign Up` controller.

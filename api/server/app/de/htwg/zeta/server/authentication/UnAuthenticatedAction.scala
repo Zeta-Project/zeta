@@ -9,7 +9,7 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Request
 import play.api.mvc.AnyContent
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 /**
  */

@@ -23,8 +23,8 @@ import play.api.mvc.WebSocket
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import utils.auth.ZetaEnv
-import utils.auth.RepositoryFactory
+import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.RepositoryFactory
 
 /**
  * Created by mgt on 17.10.15.

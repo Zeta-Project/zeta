@@ -9,7 +9,6 @@ import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import forms.ChangePasswordForm
 import models.services.UserService
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
@@ -18,10 +17,11 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
 import scala.concurrent.Future
 
+import de.htwg.zeta.server.forms.ChangePasswordForm
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import utils.auth.ZetaEnv
-import utils.auth.WithProvider
+import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.WithProvider
 
 /**
  * The `Change Password` controller.

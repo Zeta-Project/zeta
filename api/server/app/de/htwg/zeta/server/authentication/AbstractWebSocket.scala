@@ -20,7 +20,7 @@ import play.api.mvc.Result
 import play.api.mvc.Request
 import play.api.mvc.WebSocket
 import play.api.mvc.AnyContentAsEmpty
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 
 trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logging {

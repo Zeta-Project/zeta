@@ -4,26 +4,21 @@ import java.util.UUID
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.Silhouette
-
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-
-import forms.ResetPasswordForm
-
 import models.services.AuthTokenService
 import models.services.UserService
-
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
-
 import scala.concurrent.Future
 
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.forms.ResetPasswordForm
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 /**
  * The `Reset Password` controller.

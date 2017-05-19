@@ -9,7 +9,7 @@ import models.User
 import play.api.i18n.I18nSupport
 import play.api.i18n.MessagesApi
 import play.api.mvc.Controller
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 /**
  * The basic application controller.

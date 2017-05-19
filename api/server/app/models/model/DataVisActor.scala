@@ -13,13 +13,13 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import shared.DiagramWSMessage.DataVisCodeMessage
 import shared.DiagramWSMessage.DataVisScopeQuery
-import util.MetamodelBuilder
-import util.datavis.domain.Conditional
-import util.datavis.generator.ListenersGenerator
-import util.datavis.parser.DataVisParsers
-import util.datavis.validator.ConstrainedDataVisValidator
-import util.domain.Metamodel
-import util.domain.ObjectWithAttributes
+import de.htwg.zeta.server.util.MetamodelBuilder
+import de.htwg.zeta.server.util.datavis.domain.Conditional
+import de.htwg.zeta.server.util.datavis.generator.ListenersGenerator
+import de.htwg.zeta.server.util.datavis.parser.DataVisParsers
+import de.htwg.zeta.server.util.datavis.validator.ConstrainedDataVisValidator
+import de.htwg.zeta.server.util.domain.Metamodel
+import de.htwg.zeta.server.util.domain.ObjectWithAttributes
 
 class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) extends Actor with DataVisParsers {
   val log = Logger(this getClass () getName ())

@@ -13,7 +13,7 @@ import models.session.SyncGatewayAccount
 import play.api.libs.ws.WSClient
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import utils.auth.RepositoryFactory
+import de.htwg.zeta.server.utils.auth.RepositoryFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

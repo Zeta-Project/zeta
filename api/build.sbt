@@ -58,7 +58,7 @@ lazy val server = baseProject("server", file("server")).settings(
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "controllers" / "javascript" / "JavaScriptReverseRoutes.scala",
 
   routesGenerator := InjectedRoutesGenerator,
-  routesImport += "utils.route.Binders._",
+  routesImport += "de.htwg.zeta.server.utils.route.Binders._",
 
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases",

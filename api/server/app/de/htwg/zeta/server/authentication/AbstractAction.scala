@@ -13,7 +13,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Action
 import play.api.mvc.ActionBuilder
 import play.api.mvc.Result
-import utils.auth.ZetaEnv
+import de.htwg.zeta.server.utils.auth.ZetaEnv
 
 
 /**
