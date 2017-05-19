@@ -12,7 +12,7 @@
             </button>
 
             <a class="navbar-brand" href="/">
-                <img src="@routes.Assets.at("webpage/images/modigen_logo.png")" style="max-height:40px ; padding-bottom:18px">
+                <img src="@routes.ScalaRoutes.assetsAt("webpage/images/modigen_logo.png")" style="max-height:40px ; padding-bottom:18px">
             </a>
             <div id="metamodel-name"></div>
         </div>
@@ -29,9 +29,8 @@
                                 <span class="caret"></span>
                             </a>
                             <ul class="dropdown-menu navbar-right" role="menu">
-                               <!-- <li><a href="controllers.webpage.routes.ProfileController.overview">Profile</a></li> -->
-                                <li><a href="@routes.ChangePasswordController.view">Change Password</a></li>
-                                <li><a href="@routes.ApplicationController.signOut">Logout</a></li>
+                                <li><a href="@routes.ScalaRoutes.changePasswordView()">Change Password</a></li>
+                                <li><a href="@routes.ScalaRoutes.signOut">Logout</a></li>
                             </ul>
                         </li>
                     }

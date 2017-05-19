@@ -1,7 +1,7 @@
-import generator.Error
-import generator.Result
-import generator.Success
-import generator.Transformer
+import de.htwg.zeta.server.generator.Error
+import de.htwg.zeta.server.generator.Result
+import de.htwg.zeta.server.generator.Success
+import de.htwg.zeta.server.generator.Transformer
 
 import models.document.Filter
 import models.document.Generator

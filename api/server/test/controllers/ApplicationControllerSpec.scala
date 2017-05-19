@@ -13,7 +13,7 @@ import org.specs2.specification.Scope
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.test.{FakeRequest, PlaySpecification, WithApplication}
-import utils.auth.DefaultEnv
+import utils.auth.ZetaEnv
 
 /**
  * Test case for the [[ApplicationController]] class.
@@ -25,7 +25,7 @@ class ApplicationControllerSpec extends PlaySpecification with Mockito {
     "redirect to login page if user is unauthorized" in new Context {
       new WithApplication(application) {
         val Some(redirectResult) = route(app, FakeRequest(routes.ApplicationController.index())
-          .withAuthenticator[DefaultEnv](LoginInfo("invalid", "invalid"))
+          .withAuthenticator[ZetaEnv](LoginInfo("invalid", "invalid"))
         )
 
         status(redirectResult) must be equalTo SEE_OTHER
@@ -44,7 +44,7 @@ class ApplicationControllerSpec extends PlaySpecification with Mockito {
     "return 200 if user is authorized" in new Context {
       new WithApplication(application) {
         val Some(result) = route(app, FakeRequest(routes.ApplicationController.index())
-          .withAuthenticator[DefaultEnv](identity.loginInfo)
+          .withAuthenticator[ZetaEnv](identity.loginInfo)
         )
 
         status(result) must beEqualTo(OK)
@@ -62,7 +62,7 @@ class ApplicationControllerSpec extends PlaySpecification with Mockito {
      */
     class FakeModule extends AbstractModule with ScalaModule {
       def configure() = {
-        bind[Environment[DefaultEnv]].toInstance(env)
+        bind[Environment[ZetaEnv]].toInstance(env)
       }
     }
 
@@ -83,7 +83,7 @@ class ApplicationControllerSpec extends PlaySpecification with Mockito {
     /**
      * A Silhouette fake environment.
      */
-    implicit val env: Environment[DefaultEnv] = new FakeEnvironment[DefaultEnv](Seq(identity.loginInfo -> identity))
+    implicit val env: Environment[ZetaEnv] = new FakeEnvironment[ZetaEnv](Seq(identity.loginInfo -> identity))
 
     /**
      * The application.

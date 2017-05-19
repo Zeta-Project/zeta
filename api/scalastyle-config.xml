@@ -35,7 +35,7 @@
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.ClassTypeParameterChecker" level="error">
   <parameters>
-   <parameter name="regex">^[A-Z_]$</parameter>
+   <parameter name="regex">^[A-Z_]{1,5}$</parameter>
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.CovariantEqualsChecker" level="error"/>
