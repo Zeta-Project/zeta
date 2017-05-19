@@ -6,9 +6,9 @@ import javax.inject.Inject
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
-import controllers.restApi.MetaModelRestApi
-import controllers.restApi.ModelRestApi
-import controllers.webpage.WebpageController
+import de.htwg.zeta.server.controllers.restApi.MetaModelRestApi
+import de.htwg.zeta.server.controllers.restApi.ModelRestApi
+import de.htwg.zeta.server.controllers.webpage.WebpageController
 import de.htwg.zeta.server.authentication.BasicAction
 import de.htwg.zeta.server.authentication.UnAuthenticatedAction
 import de.htwg.zeta.server.authentication.AuthenticatedAction

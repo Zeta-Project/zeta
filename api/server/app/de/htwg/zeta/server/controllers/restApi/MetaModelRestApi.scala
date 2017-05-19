@@ -1,4 +1,4 @@
-package controllers.restApi
+package de.htwg.zeta.server.controllers.restApi
 
 import javax.inject.Inject
 

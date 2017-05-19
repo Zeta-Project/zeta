@@ -1,4 +1,4 @@
-package controllers.webpage
+package de.htwg.zeta.server.controllers.webpage
 
 import javax.inject.Inject
 
