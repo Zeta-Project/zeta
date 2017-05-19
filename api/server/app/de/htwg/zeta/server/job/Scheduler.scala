@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.jobs
+package de.htwg.zeta.server.job
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem

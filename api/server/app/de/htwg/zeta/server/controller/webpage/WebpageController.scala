@@ -24,7 +24,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 
 class WebpageController @Inject()(implicit ws: WSClient, silhouette: Silhouette[ZetaEnv]) extends Controller {
 

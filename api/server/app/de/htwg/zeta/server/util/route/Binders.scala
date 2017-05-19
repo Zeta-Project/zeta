@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.utils.route
+package de.htwg.zeta.server.util.route
 
 import java.util.UUID
 

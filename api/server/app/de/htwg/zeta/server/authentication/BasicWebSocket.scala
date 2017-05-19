@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 
 /**
  */

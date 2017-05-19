@@ -1,7 +1,7 @@
 package de.htwg.zeta.server.module
 
-import de.htwg.zeta.server.jobs.AuthTokenCleaner
-import de.htwg.zeta.server.jobs.Scheduler
+import de.htwg.zeta.server.job.AuthTokenCleaner
+import de.htwg.zeta.server.job.Scheduler
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.concurrent.AkkaGuiceSupport
 

@@ -15,7 +15,7 @@ import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import controllers.WebJarAssets
 import controllers.routes
 import de.htwg.zeta.server.model.services.UserService
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi

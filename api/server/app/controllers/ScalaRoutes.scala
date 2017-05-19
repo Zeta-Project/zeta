@@ -36,7 +36,7 @@ import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 
 /**
  * All routes are managed in this class

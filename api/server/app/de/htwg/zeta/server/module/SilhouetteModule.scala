@@ -80,9 +80,9 @@ import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.openid.OpenIdClient
 import play.api.libs.ws.WSClient
-import de.htwg.zeta.server.utils.auth.CustomSecuredErrorHandler
-import de.htwg.zeta.server.utils.auth.CustomUnsecuredErrorHandler
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
+import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
+import de.htwg.zeta.server.util.auth.ZetaEnv
 
 /**
  * The Guice module which wires all Silhouette dependencies.

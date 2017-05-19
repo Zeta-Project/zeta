@@ -10,8 +10,8 @@ import models.session.Session
 import models.session.SyncGatewaySession
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
-import de.htwg.zeta.server.utils.auth.HttpRepositoryFactory
-import de.htwg.zeta.server.utils.auth.RepositoryFactory
+import de.htwg.zeta.server.util.auth.HttpRepositoryFactory
+import de.htwg.zeta.server.util.auth.RepositoryFactory
 
 /**
  * The base Guice module.

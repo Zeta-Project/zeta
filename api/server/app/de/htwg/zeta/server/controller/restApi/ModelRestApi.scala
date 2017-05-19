@@ -23,8 +23,8 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import de.htwg.zeta.server.utils.auth.ZetaEnv
-import de.htwg.zeta.server.utils.auth.RepositoryFactory
+import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.RepositoryFactory
 import scala.concurrent.Future
 import scala.concurrent.Promise
 

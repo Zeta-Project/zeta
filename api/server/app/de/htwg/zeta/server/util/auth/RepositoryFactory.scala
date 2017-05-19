@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.utils.auth
+package de.htwg.zeta.server.util.auth
 
 import javax.inject.Inject
 

@@ -19,7 +19,7 @@ import controllers.routes
 import controllers.WebJarAssets
 import de.htwg.zeta.server.forms.SignInForm
 import de.htwg.zeta.server.model.services.UserService
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader

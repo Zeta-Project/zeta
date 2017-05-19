@@ -19,8 +19,8 @@ import de.htwg.zeta.server.generator.parser.SprayParser
 import de.htwg.zeta.server.model.result.Failure
 import de.htwg.zeta.server.model.result.Result
 import de.htwg.zeta.server.model.result.Success
-import de.htwg.zeta.server.utils.auth.ZetaEnv
-import de.htwg.zeta.server.utils.auth.RepositoryFactory
+import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.RepositoryFactory
 import models.document.MetaModelEntity
 import models.document.Repository
 import models.file.File

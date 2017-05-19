@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.utils
+package de.htwg.zeta.server.util
 
 /**
  * Implement this to get a named logger in scope.

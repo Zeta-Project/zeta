@@ -11,7 +11,7 @@ import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.zeta.server.model.codeEditor.CodeDocManagingActor
 import de.htwg.zeta.server.model.codeEditor.CodeDocWsActor
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.document.Repository
 import models.document.http.HttpRepository
 import play.api.libs.streams.ActorFlow

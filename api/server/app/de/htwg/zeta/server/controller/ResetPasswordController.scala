@@ -15,7 +15,7 @@ import controllers.routes
 import de.htwg.zeta.server.forms.ResetPasswordForm
 import de.htwg.zeta.server.model.services.AuthTokenService
 import de.htwg.zeta.server.model.services.UserService
-import de.htwg.zeta.server.utils.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi

@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.utils.auth
+package de.htwg.zeta.server.util.auth
 
 import com.mohiva.play.silhouette.api.Env
 import models.User

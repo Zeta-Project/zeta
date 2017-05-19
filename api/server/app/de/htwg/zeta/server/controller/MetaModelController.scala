@@ -11,8 +11,8 @@ import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.server.model.metaModel.MetaModelWsActor
-import de.htwg.zeta.server.utils.auth.ZetaEnv
-import de.htwg.zeta.server.utils.auth.RepositoryFactory
+import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.RepositoryFactory
 import models.document.MetaModelEntity
 import models.document.Repository
 import play.api.libs.json.JsValue
