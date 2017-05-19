@@ -14,7 +14,7 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Wrapper
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import models.file.File
-import de.htwg.zeta.server.models.result.Result
+import de.htwg.zeta.server.model.result.Result
 
 
 object VrGeneratorShapeDefinition {

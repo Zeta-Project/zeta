@@ -13,7 +13,7 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Round
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.style.DASH
 import models.file.File
-import de.htwg.zeta.server.models.result.Result
+import de.htwg.zeta.server.model.result.Result
 
 
 object VrGeneratorConnectionDefinition {

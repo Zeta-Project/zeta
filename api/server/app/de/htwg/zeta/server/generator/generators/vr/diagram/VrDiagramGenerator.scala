@@ -4,7 +4,7 @@ import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.shapecontainer.connection.Connection
 import models.file.File
-import de.htwg.zeta.server.models.result.Result
+import de.htwg.zeta.server.model.result.Result
 
 
 object VrDiagramGenerator {

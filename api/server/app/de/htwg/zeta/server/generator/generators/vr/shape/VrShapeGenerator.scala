@@ -4,7 +4,7 @@ package de.htwg.zeta.server.generator.generators.vr.shape
 import de.htwg.zeta.server.generator.model.diagram.node.Node
 import de.htwg.zeta.server.generator.parser.Cache
 import models.file.File
-import de.htwg.zeta.server.models.result.Result
+import de.htwg.zeta.server.model.result.Result
 
 
 /**

@@ -2,7 +2,7 @@ package de.htwg.zeta.server.utils.auth
 
 import com.mohiva.play.silhouette.api.Env
 import models.User
-import de.htwg.zeta.server.models.authenticators.SGCookieAuthenticator
+import de.htwg.zeta.server.model.authenticators.SGCookieAuthenticator
 
 /**
  * The default env.

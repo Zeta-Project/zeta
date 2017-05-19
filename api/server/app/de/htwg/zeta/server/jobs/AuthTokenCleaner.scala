@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 import de.htwg.zeta.server.jobs.AuthTokenCleaner.Clean
 
-import de.htwg.zeta.server.models.services.AuthTokenService
+import de.htwg.zeta.server.model.services.AuthTokenService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
