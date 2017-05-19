@@ -98,11 +98,11 @@ class ScalaRoutes @Inject()(
 
 
   // # Home page
-  def appIndex(): Action[AnyContent] = ApplicationController.index
+  def appIndex(): Action[AnyContent] = AuthenticatedGet(ApplicationController.index _)
 
-  def user(): Action[AnyContent] = ApplicationController.user
+  def user(): Action[AnyContent] = AuthenticatedGet(ApplicationController.user _)
 
-  def signOut: Action[AnyContent] = ApplicationController.signOut
+  def signOut: Action[AnyContent] = AuthenticatedGet(ApplicationController.signOut _)
 
   def authenticate(provider: String): Action[AnyContent] = SocialAuthController.authenticate(provider)
 
