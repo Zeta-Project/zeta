@@ -104,7 +104,7 @@ class ScalaRoutes @Inject()(
 
   def signOut: Action[AnyContent] = AuthenticatedGet(ApplicationController.signOut _)
 
-  def authenticate(provider: String): Action[AnyContent] = SocialAuthController.authenticate(provider)
+  def authenticate(provider: String): Action[AnyContent] = UnAuthenticatedGet(SocialAuthController.authenticate(provider) _)
 
   def signUpView(): Action[AnyContent] = SignUpController.view
 
