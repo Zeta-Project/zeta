@@ -18,12 +18,12 @@ import play.api.mvc.Controller
 /**
  * The basic application controller.
  *
- * @param messagesApi The Play messages API.
- * @param silhouette The Silhouette stack.
+ * @param messagesApi            The Play messages API.
+ * @param silhouette             The Silhouette stack.
  * @param socialProviderRegistry The social provider registry.
- * @param webJarAssets The webjar assets implementation.
+ * @param webJarAssets           The webjar assets implementation.
  */
-class ApplicationController @Inject() (
+class ApplicationController @Inject()(
     val messagesApi: MessagesApi,
     silhouette: Silhouette[ZetaEnv],
     socialProviderRegistry: SocialProviderRegistry,

@@ -24,8 +24,6 @@ import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 
-import scala.concurrent.Future
-
 /**
  * The `Activate Account` controller.
  *
@@ -36,7 +34,7 @@ import scala.concurrent.Future
  * @param mailerClient     The mailer client.
  * @param webJarAssets     The WebJar assets locator.
  */
-class ActivateAccountController @Inject() (
+class ActivateAccountController @Inject()(
     val messagesApi: MessagesApi,
     silhouette: Silhouette[ZetaEnv],
     userService: UserService,

@@ -75,18 +75,18 @@ class SignUpController @Inject()(
    */
   def submit: Action[AnyContent] = {
     silhouette.UnsecuredAction.async { implicit request =>
-    SignUpForm.form.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.silhouette.signUp(form))),
-      data => {
-        val result = Redirect(routes.ScalaRoutes.signUpView()).flashing("info" -> Messages("sign.up.email.sent", data.email))
-        val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
-        userService.retrieve(loginInfo).flatMap {
-          case Some(user) => processAlreadySignedUp(user, result, data, request)
-          case None => processSignUp(result, data, loginInfo, request)
+      SignUpForm.form.bindFromRequest.fold(
+        form => Future.successful(BadRequest(views.html.silhouette.signUp(form))),
+        data => {
+          val result = Redirect(routes.ScalaRoutes.signUpView()).flashing("info" -> Messages("sign.up.email.sent", data.email))
+          val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
+          userService.retrieve(loginInfo).flatMap {
+            case Some(user) => processAlreadySignedUp(user, result, data, request)
+            case None => processSignUp(result, data, loginInfo, request)
+          }
         }
-      }
-    )
-  }
+      )
+    }
   }
 
   private def processAlreadySignedUp(user: User, result: Result, data: SignUpForm.Data, request: Request[AnyContent]) = {

@@ -2,11 +2,10 @@ package de.htwg.zeta.server.controller
 
 import javax.inject.Inject
 
-
-
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import actors.developer.Mediator
 import actors.frontend.DeveloperFrontend
 import actors.frontend.GeneratorFrontend
@@ -30,7 +29,6 @@ import models.frontend.GeneratorResponse
 import models.frontend.UserRequest
 import models.frontend.UserResponse
 import models.session.Session
-
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
