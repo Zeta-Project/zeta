@@ -1,4 +1,4 @@
-package models.services
+package de.htwg.zeta.server.models.services
 
 import java.util.UUID
 

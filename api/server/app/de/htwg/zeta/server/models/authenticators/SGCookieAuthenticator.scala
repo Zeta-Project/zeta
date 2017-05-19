@@ -1,4 +1,4 @@
-package models.authenticators
+package de.htwg.zeta.server.models.authenticators
 
 import java.util.concurrent.TimeUnit
 

@@ -1,4 +1,4 @@
-package models.codeEditor
+package de.htwg.zeta.server.models.codeEditor
 
 import akka.actor.Actor
 import akka.actor.ActorLogging

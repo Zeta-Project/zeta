@@ -1,4 +1,4 @@
-package models.services
+package de.htwg.zeta.server.models.services
 
 import java.util.UUID
 import javax.inject.Inject
@@ -7,7 +7,7 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 
 import models.User
-import models.daos.UserDAO
+import de.htwg.zeta.server.models.daos.UserDAO
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 

@@ -8,8 +8,8 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import models.services.AuthTokenService
-import models.services.UserService
+import de.htwg.zeta.server.models.services.AuthTokenService
+import de.htwg.zeta.server.models.services.UserService
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi

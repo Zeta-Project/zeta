@@ -1,13 +1,13 @@
-package models.services
+package de.htwg.zeta.server.models.services
 
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import models.AuthToken
-
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
+
+import de.htwg.zeta.server.models.AuthToken
 
 /**
  * Handles actions to auth tokens.

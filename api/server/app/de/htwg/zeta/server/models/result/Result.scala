@@ -1,4 +1,4 @@
-package models.result
+package de.htwg.zeta.server.models.result
 
 import grizzled.slf4j.Logging
 

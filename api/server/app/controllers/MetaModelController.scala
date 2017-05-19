@@ -11,7 +11,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 
 import models.document.MetaModelEntity
 import models.document.Repository
-import models.metaModel.MetaModelWsActor
+import de.htwg.zeta.server.models.metaModel.MetaModelWsActor
 
 import play.api.libs.json.JsValue
 import play.api.libs.streams.ActorFlow

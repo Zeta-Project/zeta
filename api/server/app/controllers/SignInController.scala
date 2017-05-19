@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-import models.services.UserService
+import de.htwg.zeta.server.models.services.UserService
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader

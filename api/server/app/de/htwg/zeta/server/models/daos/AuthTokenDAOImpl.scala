@@ -1,13 +1,12 @@
-package models.daos
+package de.htwg.zeta.server.models.daos
 
 import java.util.UUID
 
-import models.AuthToken
-
 import org.joda.time.DateTime
-
 import scala.collection.mutable
 import scala.concurrent.Future
+
+import de.htwg.zeta.server.models.AuthToken
 
 /**
  * Give access to the [[AuthToken]] object.

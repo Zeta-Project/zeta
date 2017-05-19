@@ -1,13 +1,13 @@
-package models.model
+package de.htwg.zeta.server.models.model
 
 import java.io.File
 
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.model.DataVisActor.MetamodelFailure
-import models.model.DataVisActor.MetamodelLoaded
-import models.model.ModelWsActor.DataVisInvalidError
+import de.htwg.zeta.server.models.model.DataVisActor.MetamodelFailure
+import de.htwg.zeta.server.models.model.DataVisActor.MetamodelLoaded
+import de.htwg.zeta.server.models.model.ModelWsActor.DataVisInvalidError
 import play.api.Logger
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json

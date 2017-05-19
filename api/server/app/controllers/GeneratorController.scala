@@ -23,9 +23,9 @@ import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.{Diagram => DslDiagram}
 import models.modelDefinitions.metaModel.{Style => DslStyle}
-import models.result.Failure
-import models.result.Result
-import models.result.Success
+import de.htwg.zeta.server.models.result.Failure
+import de.htwg.zeta.server.models.result.Result
+import de.htwg.zeta.server.models.result.Success
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller

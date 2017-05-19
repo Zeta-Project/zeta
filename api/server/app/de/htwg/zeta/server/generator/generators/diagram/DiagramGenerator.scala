@@ -2,7 +2,7 @@ package de.htwg.zeta.server.generator.generators.diagram
 
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import models.file.File
-import models.result.Result
+import de.htwg.zeta.server.models.result.Result
 
 /**
  * The DiagramGenerator Object

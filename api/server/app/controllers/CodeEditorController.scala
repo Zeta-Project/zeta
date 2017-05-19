@@ -6,8 +6,8 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
-import models.codeEditor.CodeDocManagingActor
-import models.codeEditor.CodeDocWsActor
+import de.htwg.zeta.server.models.codeEditor.CodeDocManagingActor
+import de.htwg.zeta.server.models.codeEditor.CodeDocWsActor
 import models.document.Repository
 import models.document.http.HttpRepository
 import play.api.libs.streams.ActorFlow

@@ -10,7 +10,7 @@ import de.htwg.zeta.server.generator.model.style.color.Transparent
 import de.htwg.zeta.server.generator.model.style.gradient.Gradient
 import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
 import models.file.File
-import models.result.Result
+import de.htwg.zeta.server.models.result.Result
 
 /**
  * The StyleGenerator object, responsible for generation of style.js

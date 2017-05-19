@@ -1,4 +1,4 @@
-package models.daos
+package de.htwg.zeta.server.models.daos
 
 import java.util.UUID
 import javax.inject.Inject

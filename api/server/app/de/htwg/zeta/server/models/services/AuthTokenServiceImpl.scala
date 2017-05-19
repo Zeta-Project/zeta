@@ -1,18 +1,18 @@
-package models.services
+package de.htwg.zeta.server.models.services
 
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.util.Clock
-import models.AuthToken
-import models.daos.AuthTokenDAO
+import de.htwg.zeta.server.models.daos.AuthTokenDAO
 import org.joda.time.DateTimeZone
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
+
+import de.htwg.zeta.server.models.AuthToken
 
 /**
  * Handles actions to auth tokens.

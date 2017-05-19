@@ -1,4 +1,4 @@
-package models.metaModel
+package de.htwg.zeta.server.models.metaModel
 
 import akka.actor.Actor
 import akka.actor.ActorRef
@@ -7,7 +7,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.pubsub.DistributedPubSubMediator.SubscribeAck
-import models.codeEditor.MediatorMessage
+import de.htwg.zeta.server.models.codeEditor.MediatorMessage
 import play.api.Logger
 import play.api.libs.json.JsValue
 

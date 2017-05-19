@@ -12,8 +12,8 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.zeta.server.forms.SignUpForm.Data
 import models.User
-import models.services.AuthTokenService
-import models.services.UserService
+import de.htwg.zeta.server.models.services.AuthTokenService
+import de.htwg.zeta.server.models.services.UserService
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi

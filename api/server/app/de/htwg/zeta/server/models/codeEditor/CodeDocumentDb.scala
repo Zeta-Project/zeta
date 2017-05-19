@@ -1,4 +1,4 @@
-package models.codeEditor
+package de.htwg.zeta.server.models.codeEditor
 
 import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports.DBObject

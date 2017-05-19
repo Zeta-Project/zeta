@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import models.document.ModelEntity
 import models.document.Repository
-import models.model.ModelWsActor
+import de.htwg.zeta.server.models.model.ModelWsActor
 import play.api.Logger
 import play.api.libs.streams.ActorFlow
 import play.api.mvc.AnyContentAsEmpty

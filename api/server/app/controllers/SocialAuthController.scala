@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.impl.providers.CommonSocialProfileBuilder
 import com.mohiva.play.silhouette.impl.providers.SocialProvider
 import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 
-import models.services.UserService
+import de.htwg.zeta.server.models.services.UserService
 
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages

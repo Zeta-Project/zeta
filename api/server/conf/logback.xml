@@ -12,7 +12,7 @@
  <logger name="application" level="DEBUG"/>
 
  <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF"/>
- <logger name="models.result.Result" level="DEBUG"/>
+ <logger name="de.htwg.zeta.server.models.result.Result" level="DEBUG"/>
 
  <root level="WARN">
   <appender-ref ref="STDOUT"/>

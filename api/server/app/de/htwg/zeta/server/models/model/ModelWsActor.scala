@@ -1,4 +1,4 @@
-package models.model
+package de.htwg.zeta.server.models.model
 
 import akka.actor.Actor
 import akka.actor.ActorRef
@@ -7,8 +7,8 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.pubsub.DistributedPubSubMediator.SubscribeAck
-import models.model.ModelWsActor.DataVisInvalidError
-import models.model.ModelWsActor.DataVisParseError
+import de.htwg.zeta.server.models.model.ModelWsActor.DataVisInvalidError
+import de.htwg.zeta.server.models.model.ModelWsActor.DataVisParseError
 import play.api.Logger
 import shared.DiagramWSMessage
 import shared.DiagramWSMessage.DataVisCodeMessage
