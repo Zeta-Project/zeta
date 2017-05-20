@@ -1,6 +1,6 @@
-package de.htwg.zeta.persistence.microService
+package de.htwg.zeta.persistence.service
 
-import de.htwg.zeta.persistence.dbaccess.CachePersistence
+import de.htwg.zeta.persistence.dbaccess.Persistence
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter
@@ -15,49 +15,48 @@ import models.document.PasswordInfoEntity
 import models.document.Settings
 import models.document.UserEntity
 
-
 /**
- * Cache-Implementation of the PersistenceService.
+ * Persistence Implementation for the different types of documents.
  */
-class CachePersistenceService extends PersistenceService {
+trait PersistenceService {
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
-  override val eventDrivenTask = new CachePersistence[EventDrivenTask]
+  val eventDrivenTask: Persistence[EventDrivenTask]
 
   /** Persistence for the [[models.document.BondedTask]] */
-  override val bondTask = new CachePersistence[BondedTask]
+  val bondTask: Persistence[BondedTask]
 
   /** Persistence for the [[models.document.Generator]] */
-  override val generator = new CachePersistence[Generator]
+  val generator: Persistence[Generator]
 
   /** Persistence for the [[models.document.Filter]] */
-  override val filter = new CachePersistence[Filter]
+  val filter: Persistence[Filter]
 
   /** Persistence for the [[models.document.GeneratorImage]] */
-  override val generatorImage = new CachePersistence[GeneratorImage]
+  val generatorImage: Persistence[GeneratorImage]
 
   /** Persistence for the [[models.document.FilterImage]] */
-  override val filterImage = new CachePersistence[FilterImage]
+  val filterImage: Persistence[FilterImage]
 
   /** Persistence for the [[models.document.Settings]] */
-  override val settings = new CachePersistence[Settings]
+  val settings: Persistence[Settings]
 
   /** Persistence for the [[models.document.MetaModelEntity]] */
-  override val metaModelEntity = new CachePersistence[MetaModelEntity]
+  val metaModelEntity: Persistence[MetaModelEntity]
 
   /** Persistence for the [[models.document.MetaModelRelease]] */
-  override val metaModelRelease = new CachePersistence[MetaModelRelease]
+  val metaModelRelease: Persistence[MetaModelRelease]
 
   /** Persistence for the [[models.document.ModelEntity]] */
-  override val modelEntity = new CachePersistence[ModelEntity]
+  val modelEntity: Persistence[ModelEntity]
 
   /** Persistence for the [[models.document.Log]] */
-  override val log = new CachePersistence[Log]
+  val log: Persistence[Log]
 
   /** Persistence for the [[models.document.PasswordInfoEntity]] */
-  override val passwordInfoEntity = new CachePersistence[PasswordInfoEntity]
+  val passwordInfoEntity: Persistence[PasswordInfoEntity]
 
   /** Persistence for the [[models.document.UserEntity]] */
-  override val userEntity = new CachePersistence[UserEntity]
+  val userEntity: Persistence[UserEntity]
 
 }

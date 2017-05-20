@@ -26,6 +26,7 @@ import akka.http.scaladsl.server.StandardRoute
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.dbaccess.Persistence
+import de.htwg.zeta.persistence.service.PersistenceService
 import grizzled.slf4j.Logging
 import models.document.Document
 import spray.json.RootJsonFormat
