@@ -5,6 +5,7 @@ import java.nio.file.Paths
 import javax.inject.Inject
 
 import scala.annotation.tailrec
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits
 
 import com.mohiva.play.silhouette.api.Silhouette
@@ -17,7 +18,7 @@ import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.parser.Cache
 import de.htwg.zeta.server.generator.parser.SprayParser
 import de.htwg.zeta.server.model.result.Failure
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.model.result.Success
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.server.util.auth.RepositoryFactory
@@ -28,17 +29,17 @@ import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.{Diagram => DslDiagram}
 import models.modelDefinitions.metaModel.{Style => DslStyle}
-import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
+import play.api.mvc.Result
 
-class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
+class GeneratorController @Inject()(repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
   private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
-  def generate(metaModelUuid: String): Action[AnyContent] = silhouette.SecuredAction.async(req => {
-    repository(req).get[MetaModelEntity](metaModelUuid)
+  def generate(metaModelUuid: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    repository(request).get[MetaModelEntity](metaModelUuid)
       .map(createGenerators(_) match {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)
@@ -46,21 +47,21 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
       .recover {
         case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
       }(Implicits.global)
-  })
+  }
 
 
-  def createGenerators(metaModel: MetaModelEntity): Result[List[File]] = {
+  private def createGenerators(metaModel: MetaModelEntity): Unreliable[List[File]] = {
     val hierarchyContainer = Cache()
     parseMetaModel(metaModel, hierarchyContainer).flatMap(dia => createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer))
   }
 
-  private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Result[Diagram] = {
+  private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Unreliable[Diagram] = {
     val parser = new SprayParser(hierarchyContainer, metaModel)
 
-    def tryParse[E, R](get: Dsl => Option[E], parse: E => List[R], name: String): Result[List[R]] = {
+    def tryParse[E, R](get: Dsl => Option[E], parse: E => List[R], name: String): Unreliable[List[R]] = {
       get(metaModel.dsl) match {
         case None => Failure(s"$name not available")
-        case Some(e) => Result(() => parse(e), s"$name failed parsing")
+        case Some(e) => Unreliable(() => parse(e), s"$name failed parsing")
       }
     }
 
@@ -73,7 +74,7 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
       }
   }
 
-  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
+  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
     val metaModelUuid = metaModel._id
     val currentDir = s"${System.getenv("PWD")}/server/model_specific"
     val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
@@ -90,9 +91,9 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
     })
   }
 
-  private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
+  private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
     val styles = hierarchyContainer.styleHierarchy.nodeView.values.map(_.data).toList
-    val generators: List[() => Result[List[File]]] = List(
+    val generators: List[() => Unreliable[List[File]]] = List(
       () => StyleGenerator.doGenerateResult(styles).map(List(_)),
       () => ShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
       () => DiagramGenerator.doGenerateResult(diagram)
@@ -101,8 +102,8 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
     generate(generators)
   }
 
-  private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Result[List[File]] = {
-    val generators: List[() => Result[List[File]]] = List(
+  private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
+    val generators: List[() => Unreliable[List[File]]] = List(
       // Generate files for the VR - Editor
       // FIXME: VR generators are not working. If you want to enable them again, check the commit that introduced this message
       // Revision number: d60fbde380816a3a593a1bfdb4cdf72561977384
@@ -113,7 +114,7 @@ class GeneratorController @Inject()(implicit repositoryFactory: RepositoryFactor
 
 
   @tailrec
-  private def generate(generators: List[() => Result[List[File]]], carry: List[File] = Nil): Result[List[File]] =
+  private def generate(generators: List[() => Unreliable[List[File]]], carry: List[File] = Nil): Unreliable[List[File]] =
     generators match {
       case Nil => Success(carry)
       case head :: tail => head() match {

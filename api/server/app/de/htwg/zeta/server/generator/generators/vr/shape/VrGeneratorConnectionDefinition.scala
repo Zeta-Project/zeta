@@ -13,14 +13,14 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Round
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.style.DASH
 import models.file.File
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 
 
 object VrGeneratorConnectionDefinition {
 
 
-  def doGenerateResult(connections: Iterable[Connection]): Result[List[File]] = {
-    Result(() => doGenerateGenerators(connections), "failed trying to create the vr Connector generators")
+  def doGenerateResult(connections: Iterable[Connection]): Unreliable[List[File]] = {
+    Unreliable(() => doGenerateGenerators(connections), "failed trying to create the vr Connector generators")
   }
 
   private def doGenerateGenerators(connections: Iterable[Connection]): List[File] = {

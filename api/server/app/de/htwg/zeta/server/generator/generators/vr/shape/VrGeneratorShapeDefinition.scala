@@ -14,14 +14,14 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Wrapper
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
 import models.file.File
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 
 
 object VrGeneratorShapeDefinition {
 
 
-  def doGenerateResult(shapes: List[Shape]): Result[List[File]] = {
-    Result(() => doGenerateGenerators(shapes), "failed trying to create the vr Shape generators")
+  def doGenerateResult(shapes: List[Shape]): Unreliable[List[File]] = {
+    Unreliable(() => doGenerateGenerators(shapes), "failed trying to create the vr Shape generators")
   }
 
 

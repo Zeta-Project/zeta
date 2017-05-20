@@ -10,7 +10,7 @@ import de.htwg.zeta.server.generator.model.style.color.Transparent
 import de.htwg.zeta.server.generator.model.style.gradient.Gradient
 import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
 import models.file.File
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 
 /**
  * The StyleGenerator object, responsible for generation of style.js
@@ -24,8 +24,8 @@ object StyleGenerator {
    * @param styles the Styles
    * @return Generator as File
    */
-  def doGenerateResult(styles: List[Style]): Result[File] = {
-    Result(() => File(Filename, doGenerateContent(styles)), "failed trying to create the Style generators")
+  def doGenerateResult(styles: List[Style]): Unreliable[File] = {
+    Unreliable(() => File(Filename, doGenerateContent(styles)), "failed trying to create the Style generators")
   }
 
   /**
