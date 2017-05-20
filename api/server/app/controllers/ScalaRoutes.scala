@@ -149,7 +149,7 @@ class ScalaRoutes @Inject()(
 
 
   // # metamodel editor
-  def metaModelEditor(metaModelUuid: String): Action[AnyContent] = MetaModelController.metaModelEditor(metaModelUuid)
+  def metaModelEditor(metaModelUuid: String): Action[AnyContent] = AuthenticatedGet(MetaModelController.metaModelEditor(metaModelUuid) _)
 
   def metaModelSocket(metaModelUuid: String): WebSocket = MetaModelController.metaModelSocket(metaModelUuid)
 

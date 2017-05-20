@@ -21,29 +21,30 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.WebSocket
+import play.api.mvc.AnyContent
+import play.api.mvc.Result
 
 /**
- * Created by mgt on 17.10.15.
  */
-class MetaModelController @Inject() (
+class MetaModelController @Inject()(
     implicit mat: Materializer,
     system: ActorSystem,
     repositoryFactory: RepositoryFactory,
     silhouette: Silhouette[ZetaEnv])
   extends Controller {
 
-  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
+  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
-  def metaModelEditor(metaModelUuid: String) = silhouette.SecuredAction.async { implicit request =>
-    repository.get[MetaModelEntity](metaModelUuid).map { metaModelEntity =>
+  def metaModelEditor(metaModelUuid: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    repository(request).get[MetaModelEntity](metaModelUuid).map { metaModelEntity =>
       Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.identity), metaModelUuid, metaModelEntity))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
 
-  def metaModelSocket(metaModelUuid: String) = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
+  def metaModelSocket(metaModelUuid: String): WebSocket = WebSocket.acceptOrResult[JsValue, JsValue] { request =>
     implicit val req = Request(request, AnyContentAsEmpty)
     silhouette.SecuredRequestHandler { securedRequest =>
       Future.successful(HandlerResult(Ok, Some(securedRequest.identity)))
