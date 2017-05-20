@@ -155,15 +155,15 @@ class ScalaRoutes @Inject()(
 
 
   // ### model editor
-  def modelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = ModelController.modelEditor(metaModelUuid, modelUuid)
+  def modelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(metaModelUuid, modelUuid) _)
 
   def modelSocket(instanceId: String, graphType: String): WebSocket = ModelController.modelSocket(instanceId, graphType)
 
-  def modelValidator(): Action[AnyContent] = ModelController.modelValidator()
+  def modelValidator(): Action[AnyContent] = AuthenticatedGet(ModelController.modelValidator _)
 
 
   // ### vr
-  def vrModelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = ModelController.vrModelEditor(metaModelUuid, modelUuid)
+  def vrModelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = AuthenticatedGet(ModelController.vrModelEditor(metaModelUuid, modelUuid) _)
 
 
   // # temporary
