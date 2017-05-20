@@ -239,7 +239,10 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
     version                := "0.1",
     // packageName in Docker  := "persistence",
     // daemonUser in Docker   := "root",
-    libraryDependencies   ++= Seq()
+    libraryDependencies   ++= Seq(
+      "com.typesafe.akka" %% "akka-http" % "10.0.6",
+      "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.6"
+    )
   )
 ).dependsOn(common)
 
