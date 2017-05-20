@@ -6,6 +6,7 @@ import javax.inject.Inject
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.Silhouette
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
@@ -21,6 +22,9 @@ import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
+import play.api.mvc.Result
 
 /**
  * The `Reset Password` controller.
@@ -49,9 +53,9 @@ class ResetPasswordController @Inject() (
    * @param token The token to identify a user.
    * @return The result to display.
    */
-  def view(token: UUID) = silhouette.UnsecuredAction.async { implicit request =>
+  def view(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     authTokenService.validate(token).map {
-      case Some(authToken) => Ok(views.html.silhouette.resetPassword(ResetPasswordForm.form, token))
+      case Some(authToken) => Ok(views.html.silhouette.resetPassword(ResetPasswordForm.form, token, request, messages))
       case None => Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.reset.link"))
     }
   }
@@ -62,11 +66,11 @@ class ResetPasswordController @Inject() (
    * @param token The token to identify a user.
    * @return The result to display.
    */
-  def submit(token: UUID) = silhouette.UnsecuredAction.async { implicit request =>
+  def submit(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] ={
     authTokenService.validate(token).flatMap {
       case Some(authToken) =>
-        ResetPasswordForm.form.bindFromRequest.fold(
-          form => Future.successful(BadRequest(views.html.silhouette.resetPassword(form, token))),
+        ResetPasswordForm.form.bindFromRequest()(request).fold(
+          form => Future.successful(BadRequest(views.html.silhouette.resetPassword(form, token, request, messages))),
           password => userService.retrieve(authToken.userID).flatMap {
             case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
               val passwordInfo = passwordHasherRegistry.current.hash(password)

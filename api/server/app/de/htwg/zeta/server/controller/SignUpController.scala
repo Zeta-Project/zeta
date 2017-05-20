@@ -20,7 +20,6 @@ import de.htwg.zeta.server.model.services.AuthTokenService
 import de.htwg.zeta.server.model.services.UserService
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
-import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -44,7 +43,7 @@ import play.api.mvc.Result
  * @param mailerClient           The mailer client.
  * @param webJarAssets           The webjar assets implementation.
  */
-class SignUpController @Inject() (
+class SignUpController @Inject()(
     val messagesApi: MessagesApi,
     silhouette: Silhouette[ZetaEnv],
     userService: UserService,
@@ -54,15 +53,15 @@ class SignUpController @Inject() (
     passwordHasherRegistry: PasswordHasherRegistry,
     mailerClient: MailerClient,
     implicit val webJarAssets: WebJarAssets)
-  extends Controller with I18nSupport {
+  extends Controller {
 
   /**
    * Views the `Sign Up` page.
    *
    * @return The result to display.
    */
-  def view = silhouette.UnsecuredAction.async { implicit request =>
-    Future.successful(Ok(views.html.silhouette.signUp(SignUpForm.form)))
+  def view(request: Request[AnyContent], messages: Messages): Future[Result] = {
+    Future.successful(Ok(views.html.silhouette.signUp(SignUpForm.form, request, messages)))
   }
 
   /**
@@ -70,34 +69,34 @@ class SignUpController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.UnsecuredAction.async { implicit request =>
-    SignUpForm.form.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.silhouette.signUp(form))),
+  def submit(request: Request[AnyContent], messages: Messages): Future[Result] = {
+    SignUpForm.form.bindFromRequest()(request).fold(
+      form => Future.successful(BadRequest(views.html.silhouette.signUp(form, request, messages))),
       data => {
-        val result = Redirect(routes.ScalaRoutes.signUpView()).flashing("info" -> Messages("sign.up.email.sent", data.email))
+        val result = Redirect(routes.ScalaRoutes.signUpView()).flashing("info" -> messages("sign.up.email.sent", data.email))
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
         userService.retrieve(loginInfo).flatMap {
-          case Some(user) => processAlreadySignedUp(user, result, data, request)
-          case None => processSignUp(result, data, loginInfo, request)
+          case Some(user) => processAlreadySignedUp(user, result, data, request, messages)
+          case None => processSignUp(result, data, loginInfo, request, messages)
         }
       }
     )
   }
 
-  private def processAlreadySignedUp(user: User, result: Result, data: SignUpForm.Data, request: Request[AnyContent]) = {
+  private def processAlreadySignedUp(user: User, result: Result, data: SignUpForm.Data, request: Request[AnyContent], messages: Messages): Future[Result] = {
     val url = routes.ScalaRoutes.signInView().absoluteURL()(request)
     mailerClient.send(Email(
-      subject = Messages("email.already.signed.up.subject"),
-      from = Messages("email.from"),
+      subject = messages("email.already.signed.up.subject"),
+      from = messages("email.from"),
       to = Seq(data.email),
-      bodyText = Some(views.txt.silhouette.emails.alreadySignedUp(user, url).body),
-      bodyHtml = Some(views.html.silhouette.emails.alreadySignedUp(user, url).body)
+      bodyText = Some(views.txt.silhouette.emails.alreadySignedUp(user, url, messages).body),
+      bodyHtml = Some(views.html.silhouette.emails.alreadySignedUp(user, url, messages).body)
     ))
 
     Future.successful(result)
   }
 
-  private def processSignUp(result: Result, data: Data, loginInfo: LoginInfo, request: Request[AnyContent]) = {
+  private def processSignUp(result: Result, data: Data, loginInfo: LoginInfo, request: Request[AnyContent], messages: Messages): Future[Result] = {
     val authInfo = passwordHasherRegistry.current.hash(data.password)
     val user = User(
       userID = UUID.randomUUID(),
@@ -112,16 +111,16 @@ class SignUpController @Inject() (
     for {
       avatar <- avatarService.retrieveURL(data.email)
       user <- userService.save(user.copy(avatarURL = avatar))
-      authInfo <- authInfoRepository.add(loginInfo, authInfo)
+      _ <- authInfoRepository.add(loginInfo, authInfo)
       authToken <- authTokenService.create(user.userID)
     } yield {
       val url = routes.ScalaRoutes.activateAccount(authToken.id).absoluteURL()(request)
       mailerClient.send(Email(
-        subject = Messages("email.sign.up.subject"),
-        from = Messages("email.from"),
+        subject = messages("email.sign.up.subject"),
+        from = messages("email.from"),
         to = Seq(data.email),
-        bodyText = Some(views.txt.silhouette.emails.signUp(user, url).body),
-        bodyHtml = Some(views.html.silhouette.emails.signUp(user, url).body)
+        bodyText = Some(views.txt.silhouette.emails.signUp(user, url, messages).body),
+        bodyHtml = Some(views.html.silhouette.emails.signUp(user, url, messages).body)
       ))
 
       silhouette.env.eventBus.publish(SignUpEvent(user, request))

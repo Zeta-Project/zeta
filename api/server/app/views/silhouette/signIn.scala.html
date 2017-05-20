@@ -1,34 +1,34 @@
 @import de.htwg.zeta.server.forms.SignInForm
-@(signInForm: Form[SignInForm.Data], socialProviders: com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry)(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+@(signInForm: Form[SignInForm.Data], socialProviders: com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry, request: RequestHeader, messages: Messages)
 
 @import com.mohiva.play.silhouette.impl.providers.oauth2.ClefProvider
 @import b3.inline.fieldConstructor
 
-@main(Messages("sign.in.title")) {
+@main(messages("sign.in.title"))(request, messages) {
     <fieldset class="col-md-6 col-md-offset-3">
-        <legend>@Messages("sign.in.credentials")</legend>
+        <legend>@messages("sign.in.credentials")</legend>
         @helper.form(action = routes.ScalaRoutes.signIn()) {
-            @helper.CSRF.formField
-            @b3.email(signInForm("email"), '_hiddenLabel -> Messages("email"), 'placeholder -> Messages("email"), 'class -> "form-control input-lg")
-            @b3.password(signInForm("password"), '_hiddenLabel -> Messages("password"), 'placeholder -> Messages("password"), 'class -> "form-control input-lg")
-            @b3.checkbox(signInForm("rememberMe"), '_text -> Messages("remember.me"), 'checked -> true)
+            @helper.CSRF.formField(request)
+            @b3.email(signInForm("email"), '_hiddenLabel -> messages("email"), 'placeholder -> messages("email"), 'class -> "form-control input-lg")(fieldConstructor, messages)
+            @b3.password(signInForm("password"), '_hiddenLabel -> messages("password"), 'placeholder -> messages("password"), 'class -> "form-control input-lg")(fieldConstructor, messages)
+            @b3.checkbox(signInForm("rememberMe"), '_text -> messages("remember.me"), 'checked -> true)(fieldConstructor, messages)
             <div class="form-group">
                 <div>
-                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.in")</button>
+                    <button id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@messages("sign.in")</button>
                 </div>
             </div>
         }
 
         <div>
-            <p class="not-a-member">@Messages("not.a.member") <a href="@routes.ScalaRoutes.signUpView()">@Messages("sign.up.now")</a> | <a href="@routes.ScalaRoutes.forgotPasswordView()" title="@Messages("forgot.your.password")">@Messages("forgot.your.password")</a></p>
+            <p class="not-a-member">@messages("not.a.member") <a href="@routes.ScalaRoutes.signUpView()">@messages("sign.up.now")</a> | <a href="@routes.ScalaRoutes.forgotPasswordView()" title="@messages("forgot.your.password")">@messages("forgot.your.password")</a></p>
         </div>
 <!--
         @if(socialProviders.providers.nonEmpty) {
             <div class="social-providers">
-                <p>@Messages("or.use.social")</p>
+                <p>@messages("or.use.social")</p>
                 <div>
                 @for(p <- socialProviders.providers if p.id != "clef") {
-                    <a href="@routes.ScalaRoutes.authenticate(p.id)" class="provider @p.id" title="@Messages(p.id)"><img src="@routes.ScalaRoutes.assetsAt(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@Messages(p.id)"></a>
+                    <a href="@routes.ScalaRoutes.authenticate(p.id)" class="provider @p.id" title="@messages(p.id)"><img src="@routes.ScalaRoutes.assetsAt(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@messages(p.id)"></a>
                 }
                 </div>
                 @defining(socialProviders.get[ClefProvider]) { clef =>

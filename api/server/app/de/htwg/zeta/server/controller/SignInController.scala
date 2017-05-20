@@ -29,21 +29,24 @@ import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
+import play.api.mvc.AnyContent
+import play.api.mvc.Request
+import play.api.mvc.Result
 
 /**
  * The `Sign In` controller.
  *
- * @param messagesApi The Play messages API.
- * @param silhouette The Silhouette stack.
- * @param userService The user service implementation.
- * @param authInfoRepository The auth info repository implementation.
- * @param credentialsProvider The credentials provider.
+ * @param messagesApi            The Play messages API.
+ * @param silhouette             The Silhouette stack.
+ * @param userService            The user service implementation.
+ * @param authInfoRepository     The auth info repository implementation.
+ * @param credentialsProvider    The credentials provider.
  * @param socialProviderRegistry The social provider registry.
- * @param configuration The Play configuration.
- * @param clock The clock instance.
- * @param webJarAssets The webjar assets implementation.
+ * @param configuration          The Play configuration.
+ * @param clock                  The clock instance.
+ * @param webJarAssets           The webjar assets implementation.
  */
-class SignInController @Inject() (
+class SignInController @Inject()(
     val messagesApi: MessagesApi,
     silhouette: Silhouette[ZetaEnv],
     userService: UserService,
@@ -60,8 +63,8 @@ class SignInController @Inject() (
    *
    * @return The result to display.
    */
-  def view = silhouette.UnsecuredAction.async { implicit request =>
-    Future.successful(Ok(views.html.silhouette.signIn(SignInForm.form, socialProviderRegistry)))
+  def view(request: Request[AnyContent], messages: Messages): Future[Result] = {
+    Future.successful(Ok(views.html.silhouette.signIn(SignInForm.form, socialProviderRegistry, request, messages)))
   }
 
   /**
@@ -69,19 +72,19 @@ class SignInController @Inject() (
    *
    * @return The result to display.
    */
-  def submit = silhouette.UnsecuredAction.async { implicit request =>
-    SignInForm.form.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.silhouette.signIn(form, socialProviderRegistry))),
+  def submit(request: Request[AnyContent], messages: Messages): Future[Result] = {
+    SignInForm.form.bindFromRequest()(request).fold(
+      form => Future.successful(BadRequest(views.html.silhouette.signIn(form, socialProviderRegistry, request, messages))),
       data => {
         val credentials = Credentials(data.email, data.password)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
           val result = Redirect("/")
           userService.retrieve(loginInfo).flatMap {
             case Some(user) if !user.activated =>
-              Future.successful(Ok(views.html.silhouette.activateAccount(data.email)))
+              Future.successful(Ok(views.html.silhouette.activateAccount(data.email, request, messages)))
             case Some(user) =>
               val c = configuration.underlying
-              silhouette.env.authenticatorService.create(loginInfo).map { authenticator =>
+              silhouette.env.authenticatorService.create(loginInfo)(request).map { authenticator =>
                 if (data.rememberMe) {
                   authenticator.copy(
                     expirationDateTime = clock.now + c.as[FiniteDuration]("silhouette.authenticator.rememberMe.authenticatorExpiry"),
@@ -93,15 +96,15 @@ class SignInController @Inject() (
                 }
               }.flatMap { authenticator =>
                 silhouette.env.eventBus.publish(LoginEvent(user, request))
-                silhouette.env.authenticatorService.init(authenticator).flatMap { v =>
-                  silhouette.env.authenticatorService.embed(v, result)
+                silhouette.env.authenticatorService.init(authenticator)(request).flatMap { v =>
+                  silhouette.env.authenticatorService.embed(v, result)(request)
                 }
               }
             case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
           }
         }.recover {
           case e: ProviderException =>
-            Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.credentials"))
+            Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> messages("invalid.credentials"))
         }
       }
     )

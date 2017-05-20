@@ -6,9 +6,8 @@ import javax.inject.Inject
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
-import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
-import de.htwg.zeta.server.controller.restApi.ModelRestApi
-import de.htwg.zeta.server.controller.webpage.WebpageController
+import com.mohiva.play.silhouette.api.Authorization
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.zeta.server.authentication.BasicAction
 import de.htwg.zeta.server.authentication.UnAuthenticatedAction
 import de.htwg.zeta.server.authentication.AuthenticatedAction
@@ -29,6 +28,11 @@ import de.htwg.zeta.server.controller.ResetPasswordController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.SocialAuthController
+import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
+import de.htwg.zeta.server.controller.restApi.ModelRestApi
+import de.htwg.zeta.server.controller.webpage.WebpageController
+import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.WithProvider
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import play.api.libs.json.JsValue
@@ -36,7 +40,6 @@ import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import de.htwg.zeta.server.util.auth.ZetaEnv
 
 /**
  * All routes are managed in this class
@@ -54,6 +57,12 @@ class ScalaRoutes @Inject()(
   private object AuthenticatedPost extends AuthenticatedAction(messagesApi, silhouette)
 
   private object AuthenticatedSocket extends AuthenticatedWebSocket(system, silhouette, mat)
+
+  private lazy val authorization: Option[Authorization[ZetaEnv#I, ZetaEnv#A]] = Some(WithProvider[ZetaEnv#A](CredentialsProvider.ID))
+
+  private object AuthenticatedWithProviderGet extends AuthenticatedAction(messagesApi, silhouette, authorization)
+
+  private object AuthenticatedWithProviderPost extends AuthenticatedAction(messagesApi, silhouette, authorization)
 
 
   private object UnAuthenticatedGet extends UnAuthenticatedAction(messagesApi, silhouette)
@@ -106,29 +115,29 @@ class ScalaRoutes @Inject()(
 
   def authenticate(provider: String): Action[AnyContent] = UnAuthenticatedGet(SocialAuthController.authenticate(provider) _)
 
-  def signUpView(): Action[AnyContent] = SignUpController.view
+  def signUpView(): Action[AnyContent] = UnAuthenticatedGet(SignUpController.view _)
 
-  def signUp(): Action[AnyContent] = SignUpController.submit
+  def signUp(): Action[AnyContent] = UnAuthenticatedPost(SignUpController.submit _)
 
-  def signInView(): Action[AnyContent] = SignInController.view
+  def signInView(): Action[AnyContent] = UnAuthenticatedGet(SignInController.view _)
 
-  def signIn(): Action[AnyContent] = SignInController.submit
+  def signIn(): Action[AnyContent] = UnAuthenticatedPost(SignInController.submit _)
 
-  def forgotPasswordView(): Action[AnyContent] = ForgotPasswordController.view
+  def forgotPasswordView(): Action[AnyContent] = UnAuthenticatedGet(ForgotPasswordController.view _)
 
-  def forgotPassword(): Action[AnyContent] = ForgotPasswordController.submit
+  def forgotPassword(): Action[AnyContent] = UnAuthenticatedPost(ForgotPasswordController.submit _)
 
-  def resetPasswordView(token: UUID): Action[AnyContent] = ResetPasswordController.view(token: java.util.UUID)
+  def resetPasswordView(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ResetPasswordController.view(token: java.util.UUID) _)
 
-  def resetPassword(token: UUID): Action[AnyContent] = ResetPasswordController.submit(token: java.util.UUID)
+  def resetPassword(token: UUID): Action[AnyContent] = UnAuthenticatedPost(ResetPasswordController.submit(token: java.util.UUID) _)
 
-  def changePasswordView(): Action[AnyContent] = ChangePasswordController.view
+  def changePasswordView(): Action[AnyContent] = AuthenticatedWithProviderGet(ChangePasswordController.view _)
 
-  def changePassword(): Action[AnyContent] = ChangePasswordController.submit
+  def changePassword(): Action[AnyContent] = AuthenticatedWithProviderPost(ChangePasswordController.submit _)
 
-  def sendActivateAccount(email: String): Action[AnyContent] = ActivateAccountController.send(email) // TODO send email per API??
+  def sendActivateAccount(email: String): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.send(email) _) // TODO send email per API??
 
-  def activateAccount(token: UUID): Action[AnyContent] = ActivateAccountController.activate(token: java.util.UUID)
+  def activateAccount(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.activate(token: java.util.UUID) _)
 
 
   // ### Webpage
