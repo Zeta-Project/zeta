@@ -6,8 +6,9 @@ import scala.concurrent.Promise
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import controllers.routes
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.document.AllMetaModels
 import models.document.AllModels
 import models.document.MetaModelEntity
@@ -16,33 +17,28 @@ import models.document.Repository
 import models.document.http.HttpRepository
 import models.modelDefinitions.metaModel.MetaModelShortInfo
 import models.modelDefinitions.model.ModelShortInfo
-import play.api.Logger
 import play.api.libs.ws.WSClient
 import play.api.mvc.Controller
-import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import de.htwg.zeta.server.util.auth.ZetaEnv
 
-class WebpageController @Inject()(implicit ws: WSClient, silhouette: Silhouette[ZetaEnv]) extends Controller {
+class WebpageController @Inject()(ws: WSClient) extends Controller {
 
-  val log = Logger(this getClass() getName())
+  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
+    new HttpRepository(request.cookies.get("SyncGatewaySession").get.value)(ws)
 
-  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
-    new HttpRepository(request.cookies.get("SyncGatewaySession").get.value)
-
-  def index() = silhouette.SecuredAction { implicit request =>
-    Redirect("/overview")
+  def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+    Redirect(routes.ScalaRoutes.diagramsOverviewShortInfo())
   }
 
-  private def getMetaModels[A]()(implicit request: SecuredRequest[ZetaEnv, A]) = {
+  private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[MetaModelShortInfo]] = {
     val p = Promise[Seq[MetaModelShortInfo]]
 
-    repository.query[MetaModelEntity](AllMetaModels())
+    repository(request).query[MetaModelEntity](AllMetaModels())
       .map { entity =>
-        MetaModelShortInfo(entity.id, entity.name, entity.links)
+        MetaModelShortInfo(entity.id(), entity.name, entity.links)
       }
       .toSeq.materialize.subscribe(n => n match {
       case OnError(err) => p.failure(err)
@@ -52,16 +48,16 @@ class WebpageController @Inject()(implicit ws: WSClient, silhouette: Silhouette[
     p.future
   }
 
-  private def getModels[A](metaModel: String)(implicit request: SecuredRequest[ZetaEnv, A]) = {
+  private def getModels[A](metaModel: String, request: SecuredRequest[ZetaEnv, A]): Future[Seq[ModelShortInfo]] = {
     val p = Promise[Seq[ModelShortInfo]]
 
     if (metaModel != null) {
-      repository.query[ModelEntity](AllModels())
+      repository(request).query[ModelEntity](AllModels())
         .filter { entity =>
           entity.metaModelId == metaModel
         }
         .map { entity =>
-          ModelShortInfo(entity.id, entity.metaModelId, entity.model.name)
+          ModelShortInfo(entity.id(), entity.metaModelId, entity.model.name)
         }
         .toSeq.materialize.subscribe(n => n match {
         case OnError(err) => p.failure(err)
@@ -73,9 +69,9 @@ class WebpageController @Inject()(implicit ws: WSClient, silhouette: Silhouette[
     p.future
   }
 
-  def diagramsOverviewShortInfo(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request =>
+  def diagramsOverviewShortInfo(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val result = for {
-      metaModels <- getMetaModels
+      metaModels <- getMetaModels(request)
     } yield {
       Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, None, Seq[ModelShortInfo]()))
     }
@@ -86,23 +82,20 @@ class WebpageController @Inject()(implicit ws: WSClient, silhouette: Silhouette[
 
   }
 
-  def diagramsOverview(uuid: String): Action[AnyContent] = {
+  def diagramsOverview(uuid: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     if (uuid == null) {
-      diagramsOverviewShortInfo()
+      diagramsOverviewShortInfo(request)
     } else {
-      silhouette.SecuredAction.async { implicit request =>
+      val result: Future[Result] = for {
+        metaModels <- getMetaModels(request)
+        models <- getModels(uuid, request)
+        metaModel <- repository(request).get[MetaModelEntity](uuid)
+      } yield {
+        Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, Some(metaModel), models))
+      }
 
-        val result: Future[Result] = for {
-          metaModels <- getMetaModels
-          models <- getModels(uuid)
-          metaModel <- repository.get[MetaModelEntity](uuid)
-        } yield {
-          Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, Some(metaModel), models))
-        }
-
-        result.recover {
-          case e: Exception => BadRequest(e.getMessage)
-        }
+      result.recover {
+        case e: Exception => BadRequest(e.getMessage)
       }
     }
   }

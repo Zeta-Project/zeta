@@ -141,11 +141,11 @@ class ScalaRoutes @Inject()(
 
 
   // ### Webpage
-  def webpageIndex(): Action[AnyContent] = WebpageController.index()
+  def webpageIndex(): Action[AnyContent] = AuthenticatedGet(WebpageController.index _)
 
-  def diagramsOverviewShortInfo(): Action[AnyContent] = WebpageController.diagramsOverviewShortInfo()
+  def diagramsOverviewShortInfo(): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverviewShortInfo _)
 
-  def diagramsOverview(uuid: String): Action[AnyContent] = WebpageController.diagramsOverview(uuid)
+  def diagramsOverview(uuid: String): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverview(uuid) _)
 
 
   // # metamodel editor
