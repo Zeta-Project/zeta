@@ -12,7 +12,6 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.WebJarAssets
 import controllers.routes
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
@@ -21,7 +20,6 @@ import de.htwg.zeta.server.model.services.UserService
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
 import play.api.i18n.Messages
-import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
@@ -33,7 +31,6 @@ import play.api.mvc.Result
 /**
  * The `Sign Up` controller.
  *
- * @param messagesApi            The Play messages API.
  * @param silhouette             The Silhouette stack.
  * @param userService            The user service implementation.
  * @param authInfoRepository     The auth info repository implementation.
@@ -41,18 +38,15 @@ import play.api.mvc.Result
  * @param avatarService          The avatar service implementation.
  * @param passwordHasherRegistry The password hasher registry.
  * @param mailerClient           The mailer client.
- * @param webJarAssets           The webjar assets implementation.
  */
 class SignUpController @Inject()(
-    val messagesApi: MessagesApi,
     silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     authInfoRepository: AuthInfoRepository,
     authTokenService: AuthTokenService,
     avatarService: AvatarService,
     passwordHasherRegistry: PasswordHasherRegistry,
-    mailerClient: MailerClient,
-    implicit val webJarAssets: WebJarAssets)
+    mailerClient: MailerClient)
   extends Controller {
 
   /**

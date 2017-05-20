@@ -5,21 +5,15 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 
-import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.WebJarAssets
 import controllers.routes
 import de.htwg.zeta.server.forms.ResetPasswordForm
 import de.htwg.zeta.server.model.services.AuthTokenService
 import de.htwg.zeta.server.model.services.UserService
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
-import play.api.i18n.MessagesApi
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent
@@ -29,23 +23,17 @@ import play.api.mvc.Result
 /**
  * The `Reset Password` controller.
  *
- * @param messagesApi            The Play messages API.
- * @param silhouette             The Silhouette stack.
  * @param userService            The user service implementation.
  * @param authInfoRepository     The auth info repository.
  * @param passwordHasherRegistry The password hasher registry.
  * @param authTokenService       The auth token service implementation.
- * @param webJarAssets           The WebJar assets locator.
  */
-class ResetPasswordController @Inject() (
-    val messagesApi: MessagesApi,
-    silhouette: Silhouette[ZetaEnv],
+class ResetPasswordController @Inject()(
     userService: UserService,
     authInfoRepository: AuthInfoRepository,
     passwordHasherRegistry: PasswordHasherRegistry,
-    authTokenService: AuthTokenService,
-    implicit val webJarAssets: WebJarAssets)
-  extends Controller with I18nSupport {
+    authTokenService: AuthTokenService)
+  extends Controller {
 
   /**
    * Views the `Reset Password` page.
@@ -56,7 +44,7 @@ class ResetPasswordController @Inject() (
   def view(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     authTokenService.validate(token).map {
       case Some(authToken) => Ok(views.html.silhouette.resetPassword(ResetPasswordForm.form, token, request, messages))
-      case None => Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.reset.link"))
+      case None => Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> messages("invalid.reset.link"))
     }
   }
 
@@ -66,7 +54,7 @@ class ResetPasswordController @Inject() (
    * @param token The token to identify a user.
    * @return The result to display.
    */
-  def submit(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] ={
+  def submit(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     authTokenService.validate(token).flatMap {
       case Some(authToken) =>
         ResetPasswordForm.form.bindFromRequest()(request).fold(
@@ -75,12 +63,12 @@ class ResetPasswordController @Inject() (
             case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
               val passwordInfo = passwordHasherRegistry.current.hash(password)
               authInfoRepository.update[PasswordInfo](user.loginInfo, passwordInfo).map { _ =>
-                Redirect(routes.ScalaRoutes.signInView()).flashing("success" -> Messages("password.reset"))
+                Redirect(routes.ScalaRoutes.signInView()).flashing("success" -> messages("password.reset"))
               }
-            case _ => Future.successful(Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.reset.link")))
+            case _ => Future.successful(Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> messages("invalid.reset.link")))
           }
         )
-      case None => Future.successful(Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> Messages("invalid.reset.link")))
+      case None => Future.successful(Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> messages("invalid.reset.link")))
     }
   }
 }
