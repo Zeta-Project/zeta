@@ -48,7 +48,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol {
   private implicit val userFormat: RootJsonFormat[User] = jsonFormat8(User.apply)
 
   /** Spray-Json conversion protocol for [[models.document.UserEntity]] */
-  implicit val passwordInfoEntity: RootJsonFormat[PasswordInfoEntity] = jsonFormat3(PasswordInfoEntity.apply)
+  implicit val passwordInfoEntityFormat: RootJsonFormat[PasswordInfoEntity] = jsonFormat3(PasswordInfoEntity.apply)
 
   /** Spray-Json conversion protocol for [[models.document.UserEntity]] */
   implicit val userEntityFormat: RootJsonFormat[UserEntity] = jsonFormat3(UserEntity.apply)

@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.accessor
+package de.htwg.zeta.persistence.actorCache
 
 import java.util.concurrent.TimeUnit
 
@@ -9,7 +9,6 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
-import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor
 import models.document.Document
 
 /**

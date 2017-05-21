@@ -1,29 +1,28 @@
-package de.htwg.zeta.persistence.actor
+package de.htwg.zeta.persistence.actorCache
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
-import scala.util.Try
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DeletingDocumentFailed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DeletingDocumentSucceed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.UpdatingDocumentFailed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.UpdatingDocumentSucceed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.ReadingDocumentSucceed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CreatingDocumentFailed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DeleteDocument
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.UpdateDocument
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CreateDocument
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.ReadDocument
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CleanUp
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.DocumentAccessorReceivedMessage
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CreatingDocumentSucceed
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.ReadingDocumentFailed
-import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.CacheDuration
-import de.htwg.zeta.persistence.dbaccess.Persistence
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DocumentAccessorReceivedMessage
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.CleanUp
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.ReadDocument
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.CreateDocument
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.UpdateDocument
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeleteDocument
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.CreatingDocumentFailed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.CreatingDocumentSucceed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.ReadingDocumentSucceed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.ReadingDocumentFailed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.UpdatingDocumentSucceed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.UpdatingDocumentFailed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumentSucceed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumentFailed
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDuration
+import de.htwg.zeta.persistence.general.Persistence
 import models.document.Document
 
 
@@ -182,7 +181,7 @@ object DocumentAccessorActor {
   sealed trait DocumentAccessorReceivedMessage
 
   /** Request-Message: Invoke the cleaning process. */
-  private[actor] case object CleanUp extends DocumentAccessorReceivedMessage
+  private[actorCache] case object CleanUp extends DocumentAccessorReceivedMessage
 
   /** Request-Message: Create the document.
    *

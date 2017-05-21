@@ -15,24 +15,28 @@ import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.dbaccess.Persistence
+import de.htwg.zeta.persistence.general.Persistence
 import models.document.Document
 import spray.json.pimpAny
 import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.DefaultJsonProtocol.StringJsonFormat
 import spray.json.RootJsonFormat
 
+
 /** MicroService-Client Implementation of Persistence.
  *
+ * @param address      ip-address
+ * @param port         port
+ * @param format       Spray-Json Protocol
+ * @param system       ActorSystem
+ * @param materializer ActorMaterializer
  * @tparam T type of the document
  */
-class PersistenceClient[T <: Document](address: String, port: Int, docType: String)(implicit format: RootJsonFormat[T]) extends Persistence[T] { // scalastyle:ignore
+class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle:ignore
+  (implicit format: RootJsonFormat[T], system: ActorSystem, materializer: ActorMaterializer, manifest: Manifest[T]) extends Persistence[T] {
 
-  private implicit val system = ActorSystem()
-  private implicit val materializer = ActorMaterializer()
   private val http = Http()
-  private val uri = s"http://$address:$port/$docType" // scalastyle:ignore
-
+  private val uri = s"http://$address:$port/$name" // scalastyle:ignore
 
   /** Create a new document.
    *

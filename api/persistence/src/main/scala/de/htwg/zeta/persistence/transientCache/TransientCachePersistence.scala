@@ -1,15 +1,16 @@
-package de.htwg.zeta.persistence.dbaccess
+package de.htwg.zeta.persistence.transientCache
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
+import de.htwg.zeta.persistence.general.Persistence
 import models.document.Document
 
 /** Cache implementation of [[Persistence]].
  *
  * @tparam T type of the document
  */
-class CachePersistence[T <: Document] extends Persistence[T] { // scalastyle:ignore
+class TransientCachePersistence[T <: Document] extends Persistence[T] { // scalastyle:ignore
 
   private val cache: TrieMap[String, T] = TrieMap.empty[String, T]
 
@@ -32,11 +33,10 @@ class CachePersistence[T <: Document] extends Persistence[T] { // scalastyle:ign
    * @return Future which resolve with the document and can fail
    */
   override def read(id: String): Future[T] = {
-    val doc = cache.get(id)
-    if (doc.isDefined) {
-      Future.successful(doc.get)
-    } else {
+    cache.get(id).fold[Future[T]] {
       Future.failed(new IllegalArgumentException("can't read the document, a document with the id doesn't exist"))
+    } {
+      Future.successful
     }
   }
 
@@ -73,4 +73,5 @@ class CachePersistence[T <: Document] extends Persistence[T] { // scalastyle:ign
   override def readAllIds: Future[Seq[String]] = {
     Future.successful(cache.keys.toSeq)
   }
+
 }

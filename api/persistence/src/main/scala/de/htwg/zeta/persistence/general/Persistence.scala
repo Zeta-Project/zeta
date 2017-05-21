@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.dbaccess
+package de.htwg.zeta.persistence.general
 
 import scala.concurrent.Future
 
@@ -9,6 +9,15 @@ import models.document.Document
  * @tparam T type of the document
  */
 trait Persistence[T <: Document] { // scalastyle:ignore
+
+  /** The name of the document-type.
+   *
+   * @param m manifest
+   * @return name
+   */
+  final def name(implicit m: Manifest[T]): String = {
+    m.runtimeClass.getSimpleName
+  }
 
   /** Create a new document.
    *

@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.actor
+package de.htwg.zeta.persistence.actorCache
 
 import java.util.concurrent.TimeUnit
 
@@ -8,12 +8,12 @@ import scala.concurrent.duration.FiniteDuration
 
 import akka.actor.Actor
 import akka.actor.Cancellable
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor.CleanUp
-import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.CacheDuration
-import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.GetAccessor
-import de.htwg.zeta.persistence.actor.DocumentAccessorManagerActor.GetAllIds
-import de.htwg.zeta.persistence.dbaccess.Persistence
-import de.htwg.zeta.persistence.dbaccess.CachePersistence
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.CleanUp
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDuration
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAccessor
+import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAllIds
+import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.transientCache.TransientCachePersistence
 import models.document.Document
 
 
@@ -34,7 +34,7 @@ class DocumentAccessorManagerActor[T <: Document] extends Actor { // scalastyle:
     CacheDuration(cleanUpInterval, keepInCacheTime, keepActorAliveTime, keepActorAliveAfterDeleteTime)
   }
 
-  private val persistence: Persistence[T] = new CachePersistence[T] // TODO inject
+  private val persistence: Persistence[T] = new TransientCachePersistence[T] // TODO inject
   private val documentAccessorFactory: DocumentAccessorFactory = DocumentAccessorFactoryDefaultImpl // TODO inject
 
   private val cleanUpJob: Cancellable = {

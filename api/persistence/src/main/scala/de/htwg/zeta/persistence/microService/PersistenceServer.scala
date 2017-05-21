@@ -1,9 +1,9 @@
 package de.htwg.zeta.persistence.microService
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
-import scala.util.Try
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.sprayJsonMarshaller
@@ -27,8 +27,10 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.StandardRoute
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.dbaccess.Persistence
-import de.htwg.zeta.persistence.service.PersistenceService
+import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.passwordInfoEntityFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.userEntityFormat
 import grizzled.slf4j.Logging
 import models.document.Document
 import spray.json.RootJsonFormat
@@ -36,12 +38,13 @@ import spray.json.pimpAny
 import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.DefaultJsonProtocol.StringJsonFormat
 
+
 /**
  * A Micro-Service for the persistence-layer.
  */
 object PersistenceServer extends Logging {
 
-  private implicit val system = ActorSystem("persistence")
+  private implicit val system = ActorSystem("persistenceServer")
   private implicit val materializer = ActorMaterializer()
 
   /** Start a new Persistence Server.
@@ -49,39 +52,41 @@ object PersistenceServer extends Logging {
    * @param address IP-Address
    * @param port    port
    * @param service underlaying persistence
+   * @return Future, which can fail
    */
-  def start(address: String, port: Int, service: PersistenceService): Unit = {
+  def start(address: String, port: Int, service: PersistenceService): Future[Unit] = {
     val route: Route =
-      persistenceRoutes("passwordInfoEntity", service.passwordInfoEntity)(PersistenceJsonProtocol.passwordInfoEntity) ~
-        persistenceRoutes("userEntity", service.userEntity)(PersistenceJsonProtocol.userEntityFormat)
+      persistenceRoutes(service.passwordInfoEntity) ~
+        persistenceRoutes(service.userEntity)
 
-    Http().bindAndHandle(route, address, port) onSuccess {
-      case _ => info(s"PersistenceServer running at http://$address:$port/")
+    Http().bindAndHandle(route, address, port).flatMap { _ =>
+      info(s"PersistenceServer running at http://$address:$port/")
+      Future.successful(())
     }
   }
 
-  private def persistenceRoutes[T <: Document](name: String, service: Persistence[T])(implicit format: RootJsonFormat[T]): Route = {
-    pathPrefix(name / "id" /
+  private def persistenceRoutes[T <: Document](service: Persistence[T])(implicit jsonFormat: RootJsonFormat[T], manifest: Manifest[T]): Route = {
+    pathPrefix(service.name / "id" /
       """\w+""".r) { id =>
       get {
         onComplete(service.read(id)) {
           case Success(doc) => complete((StatusCodes.OK, doc.toJson))
-          case Failure(e) => completeWithError(e, "reading", name, id)
+          case Failure(e) => completeWithError(e, "reading", service.name, id)
         }
       } ~
         delete {
           onComplete(service.delete(id)) {
             case Success(_) => complete(StatusCodes.OK)
-            case Failure(e) => completeWithError(e, "deleting", name, id)
+            case Failure(e) => completeWithError(e, "deleting", service.name, id)
           }
         }
     } ~
-      pathPrefix(name) {
+      pathPrefix(service.name) {
         put {
           entity(as[T]) { doc =>
             onComplete(service.create(doc)) {
               case Success(_) => complete(StatusCodes.OK)
-              case Failure(e) => completeWithError(e, "creating", name, doc.id())
+              case Failure(e) => completeWithError(e, "creating", service.name, doc.id())
             }
           }
         } ~
@@ -89,15 +94,15 @@ object PersistenceServer extends Logging {
             entity(as[T]) { doc =>
               onComplete(service.update(doc)) {
                 case Success(_) => complete(StatusCodes.OK)
-                case Failure(e) => completeWithError(e, "updating", name, doc.id())
+                case Failure(e) => completeWithError(e, "updating", service.name, doc.id())
               }
             }
           }
       } ~
       get {
-        path(name / "all") {
+        path(service.name / "all") {
           onSuccess(service.readAllIds) { allIds =>
-            complete(StatusCodes.OK, allIds)
+            complete((StatusCodes.OK, allIds))
           }
         }
       }
@@ -107,7 +112,6 @@ object PersistenceServer extends Logging {
     val msg = s"$action failed (docType: $docType | id: $id)"
     error(s"$msg - ${e.getMessage}")
     complete((StatusCodes.BadRequest, msg))
-
   }
 
 }

@@ -1,11 +1,10 @@
-package de.htwg.zeta.persistence.accessor
+package de.htwg.zeta.persistence.actorCache
 
 import java.util.concurrent.TimeUnit
 
 import scala.concurrent.ExecutionContextExecutor
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.actor.DocumentAccessorActor
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.pattern.ask

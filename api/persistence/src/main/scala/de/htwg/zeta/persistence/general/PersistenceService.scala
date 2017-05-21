@@ -1,6 +1,5 @@
-package de.htwg.zeta.persistence.service
+package de.htwg.zeta.persistence.general
 
-import de.htwg.zeta.persistence.dbaccess.Persistence
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter

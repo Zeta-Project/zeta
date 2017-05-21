@@ -1,6 +1,6 @@
-package de.htwg.zeta.persistence.service
+package de.htwg.zeta.persistence.transientCache
 
-import de.htwg.zeta.persistence.dbaccess.CachePersistence
+import de.htwg.zeta.persistence.general.PersistenceService
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter
@@ -19,45 +19,45 @@ import models.document.UserEntity
 /**
  * Cache-Implementation of the PersistenceService.
  */
-class CachePersistenceService extends PersistenceService {
+class PersistenceTransientCacheService extends PersistenceService {
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
-  override val eventDrivenTask = new CachePersistence[EventDrivenTask]
+  override val eventDrivenTask = new TransientCachePersistence[EventDrivenTask]
 
   /** Persistence for the [[models.document.BondedTask]] */
-  override val bondTask = new CachePersistence[BondedTask]
+  override val bondTask = new TransientCachePersistence[BondedTask]
 
   /** Persistence for the [[models.document.Generator]] */
-  override val generator = new CachePersistence[Generator]
+  override val generator = new TransientCachePersistence[Generator]
 
   /** Persistence for the [[models.document.Filter]] */
-  override val filter = new CachePersistence[Filter]
+  override val filter = new TransientCachePersistence[Filter]
 
   /** Persistence for the [[models.document.GeneratorImage]] */
-  override val generatorImage = new CachePersistence[GeneratorImage]
+  override val generatorImage = new TransientCachePersistence[GeneratorImage]
 
   /** Persistence for the [[models.document.FilterImage]] */
-  override val filterImage = new CachePersistence[FilterImage]
+  override val filterImage = new TransientCachePersistence[FilterImage]
 
   /** Persistence for the [[models.document.Settings]] */
-  override val settings = new CachePersistence[Settings]
+  override val settings = new TransientCachePersistence[Settings]
 
   /** Persistence for the [[models.document.MetaModelEntity]] */
-  override val metaModelEntity = new CachePersistence[MetaModelEntity]
+  override val metaModelEntity = new TransientCachePersistence[MetaModelEntity]
 
   /** Persistence for the [[models.document.MetaModelRelease]] */
-  override val metaModelRelease = new CachePersistence[MetaModelRelease]
+  override val metaModelRelease = new TransientCachePersistence[MetaModelRelease]
 
   /** Persistence for the [[models.document.ModelEntity]] */
-  override val modelEntity = new CachePersistence[ModelEntity]
+  override val modelEntity = new TransientCachePersistence[ModelEntity]
 
   /** Persistence for the [[models.document.Log]] */
-  override val log = new CachePersistence[Log]
+  override val log = new TransientCachePersistence[Log]
 
   /** Persistence for the [[models.document.PasswordInfoEntity]] */
-  override val passwordInfoEntity = new CachePersistence[PasswordInfoEntity]
+  override val passwordInfoEntity = new TransientCachePersistence[PasswordInfoEntity]
 
   /** Persistence for the [[models.document.UserEntity]] */
-  override val userEntity = new CachePersistence[UserEntity]
+  override val userEntity = new TransientCachePersistence[UserEntity]
 
 }
