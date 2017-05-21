@@ -27,13 +27,6 @@ sealed trait Document {
 
   def isUpdated(): Boolean = !_rev.startsWith("1-")
 
-  override def equals(that: Any): Boolean =
-    that match {
-      case that: Document => this.isInstanceOf[Document] && this.hashCode == that.hashCode
-      case _ => false
-    }
-
-  override def hashCode: Int = Objects.hashCode(_id)
 }
 
 sealed trait Task extends Document
