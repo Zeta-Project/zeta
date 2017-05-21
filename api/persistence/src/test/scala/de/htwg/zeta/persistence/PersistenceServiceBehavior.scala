@@ -194,7 +194,7 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "fail the future with any Exception, when loading a non-existent document" in {
+    it should "fail the future with any Exception, when reading a non-existent document" in {
       recoverToSucceededIf[Exception] {
         persistence.read("id4")
       }

@@ -26,10 +26,20 @@ import akka.http.scaladsl.server.Directives.put
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.StandardRoute
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.ContentTypes.`application/json`
+import akka.http.scaladsl.model.HttpEntity
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterImageFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorImageFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.logFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.passwordInfoEntityFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.settingsFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.userEntityFormat
 import grizzled.slf4j.Logging
 import models.document.Document
@@ -56,8 +66,16 @@ object PersistenceServer extends Logging {
    */
   def start(address: String, port: Int, service: PersistenceService): Future[Unit] = {
     val route: Route =
+      persistenceRoutes(service.bondTask) ~
+      persistenceRoutes(service.eventDrivenTask) ~
+      persistenceRoutes(service.filter) ~
+      persistenceRoutes(service.filterImage) ~
+      persistenceRoutes(service.generator) ~
+      persistenceRoutes(service.generatorImage) ~
+      persistenceRoutes(service.log) ~
       persistenceRoutes(service.passwordInfoEntity) ~
-        persistenceRoutes(service.userEntity)
+      persistenceRoutes(service.settings) ~
+      persistenceRoutes(service.userEntity)
 
     Http().bindAndHandle(route, address, port).flatMap { _ =>
       info(s"PersistenceServer running at http://$address:$port/")
@@ -70,7 +88,10 @@ object PersistenceServer extends Logging {
       """\w+""".r) { id =>
       get {
         onComplete(service.read(id)) {
-          case Success(doc) => complete((StatusCodes.OK, doc.toJson))
+          case Success(doc) => complete(
+            StatusCodes.OK,
+            HttpEntity(`application/json`, doc.toJson.toString)
+          )
           case Failure(e) => completeWithError(e, "reading", service.name, id)
         }
       } ~
@@ -102,7 +123,10 @@ object PersistenceServer extends Logging {
       get {
         path(service.name / "all") {
           onSuccess(service.readAllIds) { allIds =>
-            complete((StatusCodes.OK, allIds))
+            complete(
+              StatusCodes.OK,
+              HttpEntity(`application/json`, allIds.toJson.toString)
+            )
           }
         }
       }

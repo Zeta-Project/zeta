@@ -12,7 +12,7 @@ import de.htwg.zeta.persistence.transientCache.PersistenceTransientCacheService
 /**
  * PersistenceMicroServiceTest.
  */
-class PersistenceMicroServiceTest extends PersistenceServiceBehavior {
+class PersistenceMicroServiceSpec extends PersistenceServiceBehavior {
 
   private val address = "localhost"
   private val port = 39239

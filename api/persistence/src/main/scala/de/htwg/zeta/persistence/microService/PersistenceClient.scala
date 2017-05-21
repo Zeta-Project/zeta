@@ -14,6 +14,7 @@ import akka.http.scaladsl.model.HttpMethods.PUT
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.Http
+import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.general.Persistence
 import models.document.Document
@@ -48,13 +49,13 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
       HttpRequest(
         method = PUT,
         uri = uri,
-        entity = HttpEntity(
-          `application/json`,
-          doc.toJson.toString
-        )
+        entity = HttpEntity(`application/json`, doc.toJson.toString)
       )
-    ).flatMap { _ =>
-      Future.successful(Unit)
+    ).flatMap { response =>
+      response.status match {
+        case StatusCodes.OK => Future(())
+        case _ => Future.failed(new IllegalStateException(response.status.toString))
+      }
     }
   }
 
@@ -70,7 +71,10 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
         uri = s"$uri/id/$id"
       )
     ).flatMap { response =>
-      Unmarshal(response.entity).to[T]
+      response.status match {
+        case StatusCodes.OK => Unmarshal(response.entity).to[T]
+        case _ => Future.failed(new IllegalStateException(response.status.toString))
+      }
     }
   }
 
@@ -84,13 +88,13 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
       HttpRequest(
         method = POST,
         uri = uri,
-        entity = HttpEntity(
-          `application/json`,
-          doc.toJson.toString
-        )
+        entity = HttpEntity(`application/json`, doc.toJson.toString)
       )
-    ).flatMap { _ =>
-      Future.successful(Unit)
+    ).flatMap { response =>
+      response.status match {
+        case StatusCodes.OK => Future.successful(())
+        case _ => Future.failed(new IllegalStateException(response.status.toString))
+      }
     }
   }
 
@@ -100,13 +104,14 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
    * @return Future, which can fail
    */
   override def delete(id: String): Future[Unit] = {
-    http.singleRequest(
-      HttpRequest(
-        method = DELETE,
-        uri = s"$uri/id/$id"
-      )
-    ).flatMap { _ =>
-      Future.successful(Unit)
+    http.singleRequest(HttpRequest(
+      method = DELETE,
+      uri = s"$uri/id/$id"
+    )).flatMap { response =>
+      response.status match {
+        case StatusCodes.OK => Future.successful(())
+        case _ => Future.failed(new IllegalStateException(response.status.toString))
+      }
     }
   }
 
@@ -117,7 +122,7 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
   override def readAllIds: Future[Seq[String]] = {
     http.singleRequest(
       HttpRequest(
-        method = POST,
+        method = GET,
         uri = s"$uri/all"
       )
     ).flatMap { response =>
