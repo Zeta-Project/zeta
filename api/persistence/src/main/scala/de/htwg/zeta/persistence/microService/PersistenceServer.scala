@@ -17,6 +17,8 @@ import akka.http.scaladsl.server.Directives.complete
 import akka.http.scaladsl.server.Directives.delete
 import akka.http.scaladsl.server.Directives.entity
 import akka.http.scaladsl.server.Directives.get
+import akka.http.scaladsl.server.Directives.onComplete
+import akka.http.scaladsl.server.Directives.onSuccess
 import akka.http.scaladsl.server.Directives.path
 import akka.http.scaladsl.server.Directives.pathPrefix
 import akka.http.scaladsl.server.Directives.post
@@ -35,7 +37,7 @@ import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.DefaultJsonProtocol.StringJsonFormat
 
 /**
- *  A Micro-Service for the persistence-layer.
+ * A Micro-Service for the persistence-layer.
  */
 object PersistenceServer extends Logging {
 
@@ -45,13 +47,13 @@ object PersistenceServer extends Logging {
   /** Start a new Persistence Server.
    *
    * @param address IP-Address
-   * @param port port
+   * @param port    port
    * @param service underlaying persistence
    */
   def start(address: String, port: Int, service: PersistenceService): Unit = {
     val route: Route =
-    persistenceRoutes("passwordInfoEntity", service.passwordInfoEntity)(PersistenceJsonProtocol.passwordInfoEntity) ~
-      persistenceRoutes("userEntity", service.userEntity)(PersistenceJsonProtocol.userEntityFormat)
+      persistenceRoutes("passwordInfoEntity", service.passwordInfoEntity)(PersistenceJsonProtocol.passwordInfoEntity) ~
+        persistenceRoutes("userEntity", service.userEntity)(PersistenceJsonProtocol.userEntityFormat)
 
     Http().bindAndHandle(route, address, port) onSuccess {
       case _ => info(s"PersistenceServer running at http://$address:$port/")
@@ -62,13 +64,13 @@ object PersistenceServer extends Logging {
     pathPrefix(name / "id" /
       """\w+""".r) { id =>
       get {
-        Try(service.read(id)) match {
+        onComplete(service.read(id)) {
           case Success(doc) => complete((StatusCodes.OK, doc.toJson))
           case Failure(e) => completeWithError(e, "reading", name, id)
         }
       } ~
         delete {
-          Try(service.delete(id)) match {
+          onComplete(service.delete(id)) {
             case Success(_) => complete(StatusCodes.OK)
             case Failure(e) => completeWithError(e, "deleting", name, id)
           }
@@ -77,7 +79,7 @@ object PersistenceServer extends Logging {
       pathPrefix(name) {
         put {
           entity(as[T]) { doc =>
-            Try(service.create(doc)) match {
+            onComplete(service.create(doc)) {
               case Success(_) => complete(StatusCodes.OK)
               case Failure(e) => completeWithError(e, "creating", name, doc.id())
             }
@@ -85,7 +87,7 @@ object PersistenceServer extends Logging {
         } ~
           post {
             entity(as[T]) { doc =>
-              Try(service.update(doc)) match {
+              onComplete(service.update(doc)) {
                 case Success(_) => complete(StatusCodes.OK)
                 case Failure(e) => completeWithError(e, "updating", name, doc.id())
               }
@@ -94,7 +96,9 @@ object PersistenceServer extends Logging {
       } ~
       get {
         path(name / "all") {
-          complete(service.readAllIds)
+          onSuccess(service.readAllIds) { allIds =>
+            complete(StatusCodes.OK, allIds)
+          }
         }
       }
   }

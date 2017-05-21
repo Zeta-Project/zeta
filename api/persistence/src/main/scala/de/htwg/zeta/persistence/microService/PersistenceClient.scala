@@ -1,8 +1,10 @@
 package de.htwg.zeta.persistence.microService
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import akka.http.scaladsl.Http
+import akka.actor.ActorSystem
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.sprayJsonUnmarshaller
 import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.HttpMethods.DELETE
@@ -11,27 +13,34 @@ import akka.http.scaladsl.model.HttpMethods.POST
 import akka.http.scaladsl.model.HttpMethods.PUT
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.unmarshalling.Unmarshal
+import akka.http.scaladsl.Http
+import akka.stream.ActorMaterializer
+import de.htwg.zeta.persistence.dbaccess.Persistence
 import models.document.Document
 import spray.json.pimpAny
-
+import spray.json.DefaultJsonProtocol.seqFormat
+import spray.json.DefaultJsonProtocol.StringJsonFormat
+import spray.json.RootJsonFormat
 
 /** MicroService-Client Implementation of Persistence.
  *
  * @tparam T type of the document
  */
-class PersistenceClient[T <: Document](address: String, port: Int, docType: String) { // scalastyle:ignore
+class PersistenceClient[T <: Document](address: String, port: Int, docType: String)(implicit format: RootJsonFormat[T]) extends Persistence[T] { // scalastyle:ignore
 
+  private implicit val system = ActorSystem()
+  private implicit val materializer = ActorMaterializer()
+  private val http = Http()
   private val uri = s"http://$address:$port/$docType" // scalastyle:ignore
+
 
   /** Create a new document.
    *
-   * Throws an exception if the document already exists
-   *
-   * @param doc The Document to save
-   * @return Unit-Future
+   * @param doc the document to save
+   * @return Future, which can fail
    */
-  def create(doc: T): Future[Unit] = {
-    Http().singleRequest(
+  override def create(doc: T): Future[Unit] = {
+    http.singleRequest(
       HttpRequest(
         method = PUT,
         uri = uri,
@@ -41,17 +50,17 @@ class PersistenceClient[T <: Document](address: String, port: Int, docType: Stri
         )
       )
     ).flatMap { _ =>
-      Future.successful()
+      Future.successful(Unit)
     }
   }
 
   /** Get a single document.
    *
    * @param id The id of the entity
-   * @return Future which resolve with the document
+   * @return Future which resolve with the document and can fail
    */
-  def read(id: String): Future[T] = {
-    Http().singleRequest(
+  override def read(id: String): Future[T] = {
+    http.singleRequest(
       HttpRequest(
         method = GET,
         uri = s"$uri/id/$id"
@@ -64,10 +73,10 @@ class PersistenceClient[T <: Document](address: String, port: Int, docType: Stri
   /** Update a document.
    *
    * @param doc The document to update
-   * @return Unit-Future
+   * @return Future, which can fail
    */
-  def update(doc: T): Future[Unit] = {
-    Http().singleRequest(
+  override def update(doc: T): Future[Unit] = {
+    http.singleRequest(
       HttpRequest(
         method = POST,
         uri = uri,
@@ -77,32 +86,32 @@ class PersistenceClient[T <: Document](address: String, port: Int, docType: Stri
         )
       )
     ).flatMap { _ =>
-      Future.successful()
+      Future.successful(Unit)
     }
   }
 
   /** Delete a document.
    *
    * @param id The id of the document to delete
-   * @return Unit-Future
+   * @return Future, which can fail
    */
-  def delete(id: String): Future[Unit] = {
-    Http().singleRequest(
+  override def delete(id: String): Future[Unit] = {
+    http.singleRequest(
       HttpRequest(
         method = DELETE,
         uri = s"$uri/id/$id"
       )
     ).flatMap { _ =>
-      Future.successful()
+      Future.successful(Unit)
     }
   }
 
   /** Get the id's of all documents.
    *
-   * @return all id's of the document type
+   * @return Future containing all id's of the document type, can fail
    */
-  def readAllIds: Future[Seq[String]] = {
-    Http().singleRequest(
+  override def readAllIds: Future[Seq[String]] = {
+    http.singleRequest(
       HttpRequest(
         method = POST,
         uri = s"$uri/all"

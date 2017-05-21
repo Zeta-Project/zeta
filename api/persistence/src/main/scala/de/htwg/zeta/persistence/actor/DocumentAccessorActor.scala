@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence.actor
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
@@ -39,12 +40,14 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
   private trait StatefulReceive extends Receive {
     override def isDefinedAt(x: Any): Boolean = x.isInstanceOf[DocumentAccessorReceivedMessage]
 
-    override def apply(v: Any): Unit = v match {
-      case CleanUp => statefulCleanUp()
-      case ReadDocument => statefulRead()
-      case CreateDocument(doc: T) => statefulCreate(doc)
-      case UpdateDocument(doc: T) => updateDocument(doc)
-      case DeleteDocument => deleteDocument()
+    override def apply(v: Any): Unit = {
+      v match {
+        case CleanUp => statefulCleanUp()
+        case ReadDocument => statefulRead()
+        case CreateDocument(doc: T) => statefulCreate(doc)
+        case UpdateDocument(doc: T) => updateDocument(doc)
+        case DeleteDocument => deleteDocument()
+      }
     }
 
     def statefulCreate(doc: T): Unit
@@ -76,7 +79,9 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
    *
    * @return Receive
    */
-  override def receive: Receive = CleanState
+  override def receive: Receive = {
+    CleanState
+  }
 
   private def id: String = {
     context.self.path.name
@@ -111,7 +116,7 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
 
   private def createDocumentInCleanState(doc: T): Unit = {
     if (id == doc.id()) {
-      Try(persistence.create(doc)) match {
+      persistence.create(doc) onComplete {
         case Success(_) =>
           becomeCacheState(doc)
           sender ! CreatingDocumentSucceed
@@ -124,7 +129,7 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
   }
 
   private def readDocumentInCleanState(): Unit = {
-    Try(persistence.read(id)) match {
+    persistence.read(id) onComplete {
       case Success(doc) =>
         becomeCacheState(doc)
         sender ! ReadingDocumentSucceed(doc)
@@ -140,7 +145,7 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
 
   private def updateDocument(doc: T): Unit = {
     if (id == doc.id()) {
-      Try(persistence.update(doc)) match {
+      persistence.update(doc) onComplete {
         case Success(_) =>
           sender ! UpdatingDocumentSucceed
           becomeCacheState(doc)
@@ -153,7 +158,7 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
   }
 
   private def deleteDocument(): Unit = {
-    Try(persistence.delete(id)) match {
+    persistence.delete(id) onComplete {
       case Success(_) =>
         sender ! DeletingDocumentSucceed
         becomeCleanState(cacheDuration.keepActorAliveAfterDeleteTime)
@@ -244,6 +249,7 @@ trait DocumentAccessorFactory {
 }
 
 object DocumentAccessorFactoryDefaultImpl extends DocumentAccessorFactory {
-  override def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props =
+  override def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props = {
     Props(new DocumentAccessorActor[T](persistence, cacheDuration))
+  }
 }
