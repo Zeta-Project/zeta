@@ -4,23 +4,20 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.Silhouette
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.i18n.MessagesApi
 import play.api.mvc.Request
-import play.api.mvc.AnyContent
 import play.api.mvc.Result
-import de.htwg.zeta.server.util.auth.ZetaEnv
 
 
 /**
  */
-class BasicAction(
-    messagesApi: MessagesApi, silhouette: Silhouette[ZetaEnv]
-) extends AbstractAction[Request[AnyContent]](messagesApi, silhouette) {
+class BasicAction(messagesApi: MessagesApi, silhouette: Silhouette[ZetaEnv]) extends AbstractAction[Request](messagesApi, silhouette) {
 
-
-  override protected[authentication] def handleFutureRequest(block: (Request[AnyContent]) => Future[Result], ec: ExecutionContext)
-    (request: Request[AnyContent]): Future[Result] = {
+  override protected[authentication] def handleFutureRequest[C](block: (Request[C]) => Future[Result], ec: ExecutionContext)
+    (request: Request[C]): Future[Result] = {
     executeChecked(() => block(request))
   }
 
+  override protected[authentication] def reqToRequest[C](r: Request[C]): Request[C] = r
 }

@@ -5,26 +5,26 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.i18n.MessagesApi
 import play.api.mvc.Result
 import play.api.mvc.Request
-import play.api.mvc.AnyContent
-import de.htwg.zeta.server.util.auth.ZetaEnv
 
 /**
  */
 class UnAuthenticatedAction(
     messagesApi: MessagesApi, silhouette: Silhouette[ZetaEnv]
-) extends AbstractSilhouetteAction[Request[AnyContent]](messagesApi, silhouette) {
+) extends AbstractSilhouetteAction[Request](messagesApi, silhouette) {
 
-
-  override protected[authentication] def handleSilhouetteRequest(
-    block: (Request[AnyContent]) => Future[Result],
-    ec: ExecutionContext): (Request[AnyContent]) => Future[HandlerResult[Nothing]] = {
-    (request: Request[AnyContent]) =>
+  override protected[authentication] def handleSilhouetteRequest[C](
+    block: (Request[C]) => Future[Result],
+    ec: ExecutionContext
+  ): (Request[C]) => Future[HandlerResult[Nothing]] = {
+    (request: Request[C]) =>
       silhouette.UnsecuredRequestHandler(request)(req => {
         executeCheckedHandlerResult(() => block(req), ec)
       })
   }
 
+  override protected[authentication] def reqToRequest[C](r: Request[C]): Request[C] = r
 }
