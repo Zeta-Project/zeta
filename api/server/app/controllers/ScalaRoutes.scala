@@ -40,6 +40,7 @@ import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
+import play.api.mvc.BodyParsers
 
 /**
  * All routes are managed in this class
@@ -55,6 +56,10 @@ class ScalaRoutes @Inject()(
   private object AuthenticatedGet extends AuthenticatedAction(messagesApi, silhouette)
 
   private object AuthenticatedPost extends AuthenticatedAction(messagesApi, silhouette)
+
+  private object AuthenticatedPut extends AuthenticatedAction(messagesApi, silhouette)
+
+  private object AuthenticatedDelete extends AuthenticatedAction(messagesApi, silhouette)
 
   private object AuthenticatedSocket extends AuthenticatedWebSocket(system, silhouette, mat)
 
@@ -174,39 +179,41 @@ class ScalaRoutes @Inject()(
    */
   private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
 
-  def MMRAshowForUser: Action[AnyContent] = MetaModelRestApi.showForUser
+  def MMRAshowForUser: Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.showForUser _)
 
-  def MMRAinsert: Action[JsValue] = MetaModelRestApi.insert
+  def MMRAinsert: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, MetaModelRestApi.insert _)
 
-  def MMRAupdate(metaModelId: String): Action[JsValue] = MetaModelRestApi.update(metaModelId)
+  def MMRAupdate(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
 
-  def MMRAget(metaModelId: String): Action[AnyContent] = MetaModelRestApi.get(metaModelId)
+  def MMRAget(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.get(metaModelId) _)
 
-  def MMRAdelete(metaModelId: String): Action[AnyContent] = MetaModelRestApi.delete(metaModelId)
+  def MMRAdelete(metaModelId: String): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.delete(metaModelId) _)
 
-  def MMRAgetMetaModelDefinition(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMetaModelDefinition(metaModelId)
+  def MMRAgetMetaModelDefinition(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
 
-  def MMRAupdateMetaModelDefinition(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateMetaModelDefinition(metaModelId)
+  def MMRAupdateMetaModelDefinition(metaModelId: String): Action[JsValue] =
+    AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateMetaModelDefinition(metaModelId) _)
 
-  def MMRAgetMClasses(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMClasses(metaModelId)
+  def MMRAgetMClasses(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
 
-  def MMRAgetMReferences(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMReferences(metaModelId)
+  def MMRAgetMReferences(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMReferences(metaModelId) _)
 
-  def MMRAgetMClass(metaModelId: String, mClassName: String): Action[AnyContent] = MetaModelRestApi.getMClass(metaModelId, mClassName)
+  def MMRAgetMClass(metaModelId: String, mClassName: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClass(metaModelId, mClassName) _)
 
-  def MMRAgetMReference(metaModelId: String, mReferenceName: String): Action[AnyContent] = MetaModelRestApi.getMReference(metaModelId, mReferenceName)
+  def MMRAgetMReference(metaModelId: String, mReferenceName: String): Action[AnyContent] =
+    AuthenticatedGet(MetaModelRestApi.getMReference(metaModelId, mReferenceName) _)
 
-  def MMRAgetShape(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getShape(metaModelId)
+  def MMRAgetShape(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getShape(metaModelId) _)
 
-  def MMRAupdateShape(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateShape(metaModelId)
+  def MMRAupdateShape(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateShape(metaModelId) _)
 
-  def MMRAgetStyle(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getStyle(metaModelId)
+  def MMRAgetStyle(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getStyle(metaModelId) _)
 
-  def MMRAupdateStyle(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateStyle(metaModelId)
+  def MMRAupdateStyle(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateStyle(metaModelId) _)
 
-  def MMRAgetDiagram(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getDiagram(metaModelId)
+  def MMRAgetDiagram(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getDiagram(metaModelId) _)
 
-  def MMRAupdateDiagram(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateDiagram(metaModelId)
+  def MMRAupdateDiagram(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
 
 
   /* ### Model REST API
@@ -214,31 +221,31 @@ class ScalaRoutes @Inject()(
    */
   private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
 
-  def MRAshowForUser: Action[AnyContent] = ModelRestApi.showForUser
+  def MRAshowForUser: Action[AnyContent] = AuthenticatedGet(ModelRestApi.showForUser() _)
 
-  def MRAinsert: Action[JsValue] = ModelRestApi.insert
+  def MRAinsert: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.insert() _)
 
-  def MRAupdate(modelId: String): Action[JsValue] = ModelRestApi.update(modelId)
+  def MRAupdate(modelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, ModelRestApi.update(modelId) _)
 
-  def MRAget(modelId: String): Action[AnyContent] = ModelRestApi.get(modelId)
+  def MRAget(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.get(modelId) _)
 
-  def MRAgetModelDefinition(modelId: String): Action[AnyContent] = ModelRestApi.getModelDefinition(modelId)
+  def MRAgetModelDefinition(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getModelDefinition(modelId) _)
 
-  def MRAupdateModel(modelId: String): Action[JsValue] = ModelRestApi.updateModel(modelId)
+  def MRAupdateModel(modelId: String): Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.updateModel(modelId) _)
 
-  def MRAgetNodes(modelId: String): Action[AnyContent] = ModelRestApi.getNodes(modelId)
+  def MRAgetNodes(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNodes(modelId) _)
 
-  def MRAgetNode(modelId: String, nodeName: String): Action[AnyContent] = ModelRestApi.getNode(modelId, nodeName)
+  def MRAgetNode(modelId: String, nodeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeName) _)
 
-  def MRAgetEdges(modelId: String): Action[AnyContent] = ModelRestApi.getEdges(modelId)
+  def MRAgetEdges(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdges(modelId) _)
 
-  def MRAgetEdge(modelId: String, edgeName: String): Action[AnyContent] = ModelRestApi.getEdge(modelId, edgeName)
+  def MRAgetEdge(modelId: String, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
 
-  def MRAdelete(modelId: String): Action[AnyContent] = ModelRestApi.delete(modelId)
+  def MRAdelete(modelId: String): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
 
 
   // ### Code Editor
-  def codeEditor(metaModelUuid: String, dslType: String): Action[AnyContent] = CodeEditorController.codeEditor(metaModelUuid, dslType)
+  def codeEditor(metaModelUuid: String, dslType: String): Action[AnyContent] = AuthenticatedGet(CodeEditorController.codeEditor(metaModelUuid, dslType) _)
 
   def codeEditorSocket(metaModelUuid: String, dslType: String): WebSocket = CodeEditorController.codeSocket(metaModelUuid, dslType)
 
@@ -248,7 +255,6 @@ class ScalaRoutes @Inject()(
 
   def webJarAssetsAt(file: String): Action[AnyContent] = WebJarAssets.at(file)
 
-  def serveDynamicFile(file: String): Action[AnyContent] = DynamicFileController.serveFile(file)
-
+  def serveDynamicFile(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
 
 }

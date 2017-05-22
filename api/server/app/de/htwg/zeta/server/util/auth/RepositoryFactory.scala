@@ -8,6 +8,7 @@ import models.document.http.Auth
 import models.document.http.HttpRepository
 import play.api.libs.ws.WSClient
 
+// TODO move to new persistence layer
 trait RepositoryFactory {
   /**
    * Get a repository to access the database from a provided session

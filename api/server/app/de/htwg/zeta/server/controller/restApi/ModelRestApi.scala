@@ -2,64 +2,66 @@ package de.htwg.zeta.server.controller.restApi
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.Silhouette
+import scala.concurrent.Future
+import scala.concurrent.Promise
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import controllers.routes
+import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.util.auth.RepositoryFactory
 import models.User
 import models.document.AllModels
 import models.document.MetaModelEntity
 import models.document.ModelEntity
 import models.document.Repository
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
-import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.Model
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.Node
+import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
-import play.api.mvc.BodyParsers
+import play.api.libs.json.JsValue
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
+import play.api.mvc.AnyContent
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.RepositoryFactory
-import scala.concurrent.Future
-import scala.concurrent.Promise
-
-import controllers.routes
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for model definitions
  */
-class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
+class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Controller {
 
-  def repository[A]()(implicit request: SecuredRequest[ZetaEnv, A]): Repository =
+  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
     repositoryFactory.fromSession(request)
 
   /** Lists all models for the requesting user, provides HATEOAS links */
-  def showForUser = silhouette.SecuredAction.async { implicit request =>
+  def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val p = Promise[Result]
 
-    repository.query[ModelEntity](AllModels())
+    repository(request).query[ModelEntity](AllModels())
       .map { info =>
         info.copy(links = Some(Seq(
-          HLink.get("self", routes.ScalaRoutes.MRAget(info.id).absoluteURL),
-          HLink.get("meta_model", routes.ScalaRoutes.MMRAget(info.metaModelId).absoluteURL),
-          HLink.delete("remove", routes.ScalaRoutes.MRAget(info.id).absoluteURL)
+          HLink.get("self", routes.ScalaRoutes.MRAget(info.id()).absoluteURL()(request)),
+          HLink.get("meta_model", routes.ScalaRoutes.MMRAget(info.metaModelId).absoluteURL()(request)),
+          HLink.delete("remove", routes.ScalaRoutes.MRAget(info.id()).absoluteURL()(request))
         )))
       }
-      .toList.materialize.subscribe(n => n match {
-        case OnError(err) => p.success(Results.BadRequest(err.getMessage))
-        case OnNext(list) => p.success(Results.Ok(Json.toJson(list)))
-      })
+      .toList.materialize.subscribe(_ match {
+      case OnError(err) => p.success(Results.BadRequest(err.getMessage))
+      case OnNext(list) => p.success(Results.Ok(Json.toJson(list)))
+    })
     p.future
   }
 
   /** inserts whole model structure */
-  def insert = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+  def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+
+    val repo =  repository(request)
     (request.body \ "metaModelId").validate[String].fold(
       error => Future.successful(Results.BadRequest(JsError.toJson(error))),
       metaModelId => {
@@ -70,9 +72,11 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
           },
           model => {
             val op = for {
-              mm <- repository.get[MetaModelEntity](metaModelId)
-              insert <- repository.create[ModelEntity](ModelEntity(User.getUserId(request.identity.loginInfo), model.copy(metaModel = mm.metaModel), mm))
-            } yield insert
+              mm <- repo.get[MetaModelEntity](metaModelId)
+              insert <- repo.create[ModelEntity](ModelEntity(User.getUserId(request.identity.loginInfo), model.copy(metaModel = mm.metaModel), mm))
+            } yield {
+              insert
+            }
 
             op.map { value =>
               Results.Ok(Json.toJson(value))
@@ -86,7 +90,7 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** updates whole model structure */
-  def update(id: String) = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+  def update(id: String)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
     val in = request.body.validate[Model]
     in.fold(
       errors => {
@@ -94,9 +98,11 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
       },
       model => {
         val op = for {
-          saved <- repository.get[ModelEntity](id)
-          updated <- repository.update[ModelEntity](saved.copy(model = model))
-        } yield updated
+          saved <- repository(request).get[ModelEntity](id)
+          updated <- repository(request).update[ModelEntity](saved.copy(model = model))
+        } yield {
+          updated
+        }
 
         op.map { value =>
           Results.Ok(Json.toJson(value.model))
@@ -108,18 +114,18 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** updates model definition only */
-  def updateModel(id: String) = silhouette.SecuredAction.async(BodyParsers.parse.json) { implicit request =>
+  def updateModel(id: String)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
     val p = Promise[Result]
-    repository.get[ModelEntity](id).map { saved =>
+    repository(request).get[ModelEntity](id).map { saved =>
       Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
         case JsSuccess(model, path) => {
-          repository.update[ModelEntity](saved.copy(model = model)).map { updated =>
+          repository(request).update[ModelEntity](saved.copy(model = model)).map { updated =>
             p.success(Results.Ok(Json.toJson(updated)))
           }.recover {
             case e: Exception => p.success(Results.BadRequest(e.getMessage))
           }
         }
-        case JsError(errors) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET ${id}"))
+        case JsError(_) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET ${id}"))
       }
     }.recover {
       case e: Exception => p.success(Results.BadRequest(e.getMessage))
@@ -128,25 +134,25 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** returns whole model structure incl. HATEOS links */
-  def get(id: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => {
+  def get(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (m: ModelEntity) => {
       val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ScalaRoutes.MRAget(m.id).absoluteURL),
-        HLink.get("meta_model", routes.ScalaRoutes.MMRAget(m.metaModelId).absoluteURL),
-        HLink.delete("remove", routes.ScalaRoutes.MRAget(m.id).absoluteURL)
+        HLink.put("update", routes.ScalaRoutes.MRAget(m.id()).absoluteURL()(request)),
+        HLink.get("meta_model", routes.ScalaRoutes.MMRAget(m.metaModelId).absoluteURL()(request)),
+        HLink.delete("remove", routes.ScalaRoutes.MRAget(m.id()).absoluteURL()(request))
       )))
       Results.Ok(Json.toJson(out))
     })
   }
 
   /** returns model definition only */
-  def getModelDefinition(id: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
+  def getModelDefinition(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
-  def getNodes(id: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => {
+  def getNodes(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
       Results.Ok(Json.toJson(reduced.elements.values))
@@ -154,8 +160,8 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** returns specific node of a specific model as json object */
-  def getNode(id: String, name: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => {
+  def getNode(id: String, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
       reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
@@ -163,8 +169,8 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** returns all edges of a model as json array */
-  def getEdges(id: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => {
+  def getEdges(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
       Results.Ok(Json.toJson(reduced.elements.values))
@@ -172,8 +178,8 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** returns specific edge of a specific model as json object */
-  def getEdge(id: String, name: String) = silhouette.SecuredAction.async { implicit request =>
-    protectedRead(id, (m: ModelEntity) => {
+  def getEdge(id: String, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
       reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
@@ -181,8 +187,8 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** deletes a whole model */
-  def delete(id: String) = silhouette.SecuredAction.async { implicit request =>
-    repository.delete(id).map { value =>
+  def delete(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    repository(request).delete(id).map { _ =>
       Results.Ok("")
     }.recover {
       case e: Exception => Results.BadRequest(e.getMessage)
@@ -190,8 +196,8 @@ class ModelRestApi @Inject() (implicit repositoryFactory: RepositoryFactory, sil
   }
 
   /** A helper method for less verbose reads from the database */
-  def protectedRead[A](id: String, trans: ModelEntity => Result)(implicit request: SecuredRequest[ZetaEnv, A]): Future[Result] = {
-    repository.get[ModelEntity](id).map { model =>
+  private def protectedRead[A](id: String, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
+    repository(request).get[ModelEntity](id).map { model =>
       trans(model)
     }.recover {
       case e: Exception => Results.BadRequest(e.getMessage)
