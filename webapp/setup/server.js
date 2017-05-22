@@ -2,49 +2,52 @@ const request = require('requestretry');
 const Database = require('./src/database');
 const data = require('./src/mock');
 
-const USER_PORT = 4984;
-const ADDRESS = 'http://database'
+function main() {
+  var couchdbSyncGateway = process.env.npm_package_config_couchdbSyncGateway;
+  setupGenerator(couchdbSyncGateway);
+}
 
-// database configuration
-const userAddress = `${ADDRESS}:${USER_PORT}/db/`;
+function setupGenerator(dbConnectString) {
+  request.get({
+    uri: dbConnectString + '_all_docs',
+    auth: {
+      username: data.user.name,
+      password: data.user.password,
+    },
+    headers: {
+      'Accept': 'application/json',
+    },
+    json: true,
+    maxAttempts: 5,
+    retryDelay: 5000,
+    retryStrategy: request.RetryStrategies.HTTPOrNetworkError
+  }, createGenerator);
+}
 
-// create all docs
-let sequence = Promise.resolve();
-
-// create the database connections
-const db = new Database(userAddress, data.user);
-
-request.get({
-  uri: userAddress + '_all_docs',
-  auth: {
-    username: data.user.name,
-    password: data.user.password,
-  },
-  headers: {
-    'Accept': 'application/json',
-  },
-  json: true,
-  maxAttempts: 5,
-  retryDelay: 5000,
-  retryStrategy: request.RetryStrategies.HTTPOrNetworkError
-}, function (error, response, body) {
+function createGenerator(error, response, body) {
   if (error) {
-    console.error('Setup - request error:', userAddress + '_add_docs', error);
+    console.error('Setup generator - request error:', userAddress + '_add_docs', error);
     process.exit(1);
   }
   if (!response || !response.statusCode === 200) {
-    console.error('Setup - response failed:', response);
+    console.error('Setup generator - response failed:', response);
     process.exit(1);
   }
   if (body.error) {
-    console.error('Setup - error in response:', body);
+    console.error('Setup generator - error in response:', body);
     process.exit(1);
   }
 
   if (body.total_rows > 0) {
-    console.log('Setup - data already exists. No setup needed.');
+    console.log('Setup generator - data already exists. No setup needed.');
     process.exit(0);
   }
+
+  // create all docs
+  let sequence = Promise.resolve();
+
+  // create the database connections
+  const db = new Database(userAddress, data.user);
 
   data.docs.forEach((cur) => {
     // Add these actions to the end of the sequence
@@ -56,5 +59,7 @@ request.get({
       console.log(err);
     });
   });
-});
+}
+
+main();
 

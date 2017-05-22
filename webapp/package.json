@@ -17,5 +17,8 @@
     "pouchdb": "^5.0.0",
     "requestretry": "^1.12.0",
     "request-promise": "^1.0.2"
+  },
+  "config": {
+    "couchdbSyncGateway": "http://database:4984/db/"
   }
 }
