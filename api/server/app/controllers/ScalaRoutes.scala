@@ -104,11 +104,11 @@ class ScalaRoutes @Inject()(
   private lazy val DynamicFileController: DynamicFileController = injector.instanceOf[DynamicFileController]
 
 
-  def backendDeveloper: WebSocket = BackendController.developer
+  def backendDeveloper: WebSocket = AuthenticatedSocket(BackendController.developer() _)
 
-  def backendGenerator(id: String): WebSocket = BackendController.generator(id)
+  def backendGenerator(id: String): WebSocket = AuthenticatedSocket(BackendController.generator(id) _)
 
-  def backendUser(model: String): WebSocket = BackendController.user(model)
+  def backendUser(model: String): WebSocket = AuthenticatedSocket(BackendController.user(model) _)
 
 
   // # Home page
