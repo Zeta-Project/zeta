@@ -19,6 +19,10 @@
     "request-promise": "^1.0.2"
   },
   "config": {
-    "couchdbSyncGateway": "http://database:4984/db/"
+    "couchdbSyncGateway": "http://database:4984/db/",
+    "couchdbServer": "http://couchbase-server:8091",
+    "couchdbServerBucket": "db",
+    "couchdbServerUsername": "Administrator",
+    "couchdbServerPassword": "admin1234"
   }
 }

@@ -1,15 +1,23 @@
 const request = require('requestretry');
 const Database = require('./src/database');
 const data = require('./src/mock');
+const couchbaseServer = require('./couchbase-server.js');
 
 function main() {
   var couchdbSyncGateway = process.env.npm_package_config_couchdbSyncGateway;
-  setupGenerator(couchdbSyncGateway);
+
+  couchbaseServer({
+    address: process.env.npm_package_config_couchdbServer,
+    bucket: process.env.npm_package_config_couchdbServerBucket,
+    username: process.env.npm_package_config_couchdbServerUsername,
+    password: process.env.npm_package_config_couchdbServerPassword,
+  }, () => setupGenerator(couchdbSyncGateway));
 }
+
 
 function setupGenerator(dbConnectString) {
   request.get({
-    uri: dbConnectString + '_all_docs',
+    url: dbConnectString + '_all_docs',
     auth: {
       username: data.user.name,
       password: data.user.password,
@@ -26,7 +34,7 @@ function setupGenerator(dbConnectString) {
 
 function createGenerator(error, response, body) {
   if (error) {
-    console.error('Setup generator - request error:', userAddress + '_add_docs', error);
+    console.error('Setup generator - request error:', error);
     process.exit(1);
   }
   if (!response || !response.statusCode === 200) {
