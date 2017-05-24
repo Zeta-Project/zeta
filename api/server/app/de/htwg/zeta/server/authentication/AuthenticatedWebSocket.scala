@@ -17,7 +17,7 @@ class AuthenticatedWebSocket(
     override val system: ActorSystem,
     override val silhouette: Silhouette[ZetaEnv],
     override val mat: Materializer
-) extends AbstractWebSocket[SecuredRequest[ZetaEnv, AnyContent]] {
+) extends AbstractWebSocketAPI[SecuredRequest[ZetaEnv, AnyContent]] {
 
   override protected[authentication] def handleRequest[T](request: Request[AnyContent])
     (buildFlow: (SecuredRequest[ZetaEnv, AnyContent]) => Future[HandlerResult[T]]): Future[HandlerResult[T]] = {

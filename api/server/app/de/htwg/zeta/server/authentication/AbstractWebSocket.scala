@@ -81,85 +81,12 @@ trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logg
     }(system.dispatcher)
   }
 
-  private def toFutureFunction[T](func: REQ => T): REQ => Future[T] = (r: REQ) => Future(func(r))(system.dispatcher)
-
-
-  private def getPropsAndTrans(getProps: (ActorRef, REQ) => Props): (REQ) => (ActorRef) => (Props, MessageFlowTransformer[String, String]) = {
-    getPropsAndTrans(getProps, AbstractWebSocket.defaultTans)
-  }
-
-  private def getPropsAndTrans[IN, OUT](
-    getProps: (ActorRef, REQ) => Props, trans: MessageFlowTransformer[IN, OUT]
-  ): (REQ) => (ActorRef) => (Props, MessageFlowTransformer[IN, OUT]) = {
-    (req: REQ) => (out: ActorRef) => (getProps(out, req), trans)
-  }
-
-
-  private def buildWebSocket[IN, OUT](func: (REQ) => Future[(ActorRef) => (Props, MessageFlowTransformer[IN, OUT])]): WebSocket = {
+  protected[authentication] def buildWebSocket[IN, OUT](func: (REQ) => Future[(ActorRef) => (Props, MessageFlowTransformer[IN, OUT])]): WebSocket = {
     WebSocket(requestHeader => {
       val request = Request(requestHeader, AnyContentAsEmpty)
       getFlowEither(request, func)
     })
   }
-
-  private def toPropsAndTransFunction[IN, OUT](
-    func: (REQ) => Future[((ActorRef) => Props, MessageFlowTransformer[IN, OUT])]
-  ): (REQ) => Future[(ActorRef) => (Props, MessageFlowTransformer[IN, OUT])] = {
-    (req: REQ) =>
-      func(req).map(tuple => {
-        (ref: ActorRef) => (tuple._1(ref), tuple._2)
-      })(system.dispatcher)
-  }
-
-  implicit class IF1[IN, OUT](val func: (REQ) => Future[((ActorRef) => Props, MessageFlowTransformer[IN, OUT])]) // scalastyle:ignore
-
-  def apply[IN, OUT](func: IF1[IN, OUT]): WebSocket = buildWebSocket(toPropsAndTransFunction(func.func))
-
-  implicit class IF2[IN, OUT](val func: (REQ) => (Future[(ActorRef) => Props], Future[MessageFlowTransformer[IN, OUT]])) // scalastyle:ignore
-
-  def apply[IN, OUT](cont: IF2[IN, OUT]): WebSocket = {
-    val propsAndTrans = (r: REQ) => {
-      val t = cont.func(r)
-      t._1.flatMap(props => t._2.map(trans => (props, trans))(system.dispatcher))(system.dispatcher)
-    }
-    buildWebSocket(toPropsAndTransFunction(propsAndTrans))
-  }
-
-  implicit class IF3[IN, OUT](val func: (REQ) => (Future[(ActorRef) => Props], MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
-
-  def apply[IN, OUT](cont: IF3[IN, OUT]): WebSocket = {
-    val propsAndTrans: (REQ) => Future[((ActorRef) => Props, MessageFlowTransformer[IN, OUT])] = (r: REQ) => {
-      val t = cont.func(r)
-      t._1.map(props => (props, t._2))(system.dispatcher)
-    }
-    buildWebSocket(toPropsAndTransFunction(propsAndTrans))
-  }
-
-  implicit class IF4(val func: (ActorRef, REQ) => Props) // scalastyle:ignore
-
-  def apply(getProps: IF4): WebSocket = buildWebSocket(toFutureFunction(getPropsAndTrans(getProps.func)))
-
-  implicit class IF5[IN, OUT](val func: (ActorRef, REQ) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
-
-  def apply[IN, OUT](getProps: IF5[IN, OUT]): WebSocket = {
-    val func = (req: REQ) => (out: ActorRef) => getProps.func(out, req)
-    buildWebSocket(toFutureFunction(func))
-  }
-
-  implicit class IF6(val func: (ActorRef) => Props) // scalastyle:ignore
-
-  def apply(getProps: IF6): WebSocket = apply((out: ActorRef, _: REQ) => getProps.func(out))
-
-  implicit class IF7[IN, OUT](val func: (REQ, ActorRef) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
-
-  def apply[IN, OUT](getProps: IF7[IN, OUT]): WebSocket = {
-    val func = (req: REQ) => (out: ActorRef) => getProps.func(req, out)
-    buildWebSocket(toFutureFunction(func))
-  }
-
-  implicit class IF8(val func: (REQ, ActorRef) => (Props)) // scalastyle:ignore
-
-  def apply(getProps: IF8): WebSocket = apply((out: ActorRef, req: REQ) => getProps.func(req, out))
 
 }
 

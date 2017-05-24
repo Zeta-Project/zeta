@@ -6,14 +6,7 @@ import javax.inject.Inject
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.api.Authorization
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import de.htwg.zeta.server.authentication.BasicAction
-import de.htwg.zeta.server.authentication.UnAuthenticatedAction
-import de.htwg.zeta.server.authentication.AuthenticatedAction
-import de.htwg.zeta.server.authentication.BasicWebSocket
-import de.htwg.zeta.server.authentication.AuthenticatedWebSocket
-import de.htwg.zeta.server.authentication.UnAuthenticatedWebSocket
+import de.htwg.zeta.server.authentication.RouteController
 import de.htwg.zeta.server.controller.ActivateAccountController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.BackendController
@@ -32,11 +25,9 @@ import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.WithProvider
 import play.api.i18n.MessagesApi
 import play.api.inject.Injector
 import play.api.libs.json.JsValue
-import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
@@ -46,42 +37,12 @@ import play.api.mvc.BodyParsers
  * All routes are managed in this class
  */
 class ScalaRoutes @Inject()(
-    messagesApi: MessagesApi,
-    silhouette: Silhouette[ZetaEnv],
-    system: ActorSystem,
-    mat: Materializer,
+    override protected val messagesApi: MessagesApi,
+    override protected val silhouette: Silhouette[ZetaEnv],
+    override protected val system: ActorSystem,
+    override protected val mat: Materializer,
     injector: Injector // TODO don't inject Injector. Replace with multiple provider
-) extends Controller {
-
-  private object AuthenticatedGet extends AuthenticatedAction(messagesApi, silhouette)
-
-  private object AuthenticatedPost extends AuthenticatedAction(messagesApi, silhouette)
-
-  private object AuthenticatedPut extends AuthenticatedAction(messagesApi, silhouette)
-
-  private object AuthenticatedDelete extends AuthenticatedAction(messagesApi, silhouette)
-
-  private object AuthenticatedSocket extends AuthenticatedWebSocket(system, silhouette, mat)
-
-  private lazy val authorization: Option[Authorization[ZetaEnv#I, ZetaEnv#A]] = Some(WithProvider[ZetaEnv#A](CredentialsProvider.ID))
-
-  private object AuthenticatedWithProviderGet extends AuthenticatedAction(messagesApi, silhouette, authorization)
-
-  private object AuthenticatedWithProviderPost extends AuthenticatedAction(messagesApi, silhouette, authorization)
-
-
-  private object UnAuthenticatedGet extends UnAuthenticatedAction(messagesApi, silhouette)
-
-  private object UnAuthenticatedPost extends UnAuthenticatedAction(messagesApi, silhouette)
-
-  private object UnAuthenticatedSocket extends UnAuthenticatedWebSocket(system, silhouette, mat)
-
-
-  private object BasicGet extends BasicAction(messagesApi, silhouette)
-
-  private object BasicPost extends BasicAction(messagesApi, silhouette)
-
-  private object BasicSocket extends BasicWebSocket(system, silhouette, mat)
+) extends RouteController {
 
 
   // TODO replace injector with provider
@@ -102,6 +63,8 @@ class ScalaRoutes @Inject()(
   private lazy val CodeEditorController: CodeEditorController = injector.instanceOf[CodeEditorController]
   private lazy val WebJarAssets: WebJarAssets = injector.instanceOf[WebJarAssets]
   private lazy val DynamicFileController: DynamicFileController = injector.instanceOf[DynamicFileController]
+  private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
+  private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
 
 
   def backendDeveloper: WebSocket = AuthenticatedSocket(BackendController.developer() _)
@@ -177,7 +140,6 @@ class ScalaRoutes @Inject()(
   /* ### MetaModel REST API
    * MMRA => MetaModelRestApi
    */
-  private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
 
   def MMRAshowForUser: Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.showForUser _)
 
@@ -219,7 +181,6 @@ class ScalaRoutes @Inject()(
   /* ### Model REST API
    * MRA => ModelRestApi
    */
-  private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
 
   def MRAshowForUser: Action[AnyContent] = AuthenticatedGet(ModelRestApi.showForUser() _)
 
