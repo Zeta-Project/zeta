@@ -150,6 +150,17 @@ trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logg
 
   def apply(getProps: IF6): WebSocket = apply((out: ActorRef, _: REQ) => getProps.func(out))
 
+  implicit class IF7[IN, OUT](val func: (REQ, ActorRef) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
+
+  def apply[IN, OUT](getProps: IF7[IN, OUT]): WebSocket = {
+    val func = (req: REQ) => (out: ActorRef) => getProps.func(req, out)
+    buildWebSocket(toFutureFunction(func))
+  }
+
+  implicit class IF8(val func: (REQ, ActorRef) => (Props)) // scalastyle:ignore
+
+  def apply(getProps: IF8): WebSocket = apply((out: ActorRef, req: REQ) => getProps.func(req, out))
+
 }
 
 

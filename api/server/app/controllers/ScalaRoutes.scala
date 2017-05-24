@@ -156,13 +156,13 @@ class ScalaRoutes @Inject()(
   // # metamodel editor
   def metaModelEditor(metaModelUuid: String): Action[AnyContent] = AuthenticatedGet(MetaModelController.metaModelEditor(metaModelUuid) _)
 
-  def metaModelSocket(metaModelUuid: String): WebSocket = MetaModelController.metaModelSocket(metaModelUuid)
+  def metaModelSocket(metaModelUuid: String): WebSocket = AuthenticatedSocket(MetaModelController.metaModelSocket(metaModelUuid) _)
 
 
   // ### model editor
   def modelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(metaModelUuid, modelUuid) _)
 
-  def modelSocket(instanceId: String, graphType: String): WebSocket = ModelController.modelSocket(instanceId, graphType)
+  def modelSocket(instanceId: String, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
 
   def modelValidator(): Action[AnyContent] = AuthenticatedGet(ModelController.modelValidator _)
 
@@ -247,7 +247,7 @@ class ScalaRoutes @Inject()(
   // ### Code Editor
   def codeEditor(metaModelUuid: String, dslType: String): Action[AnyContent] = AuthenticatedGet(CodeEditorController.codeEditor(metaModelUuid, dslType) _)
 
-  def codeEditorSocket(metaModelUuid: String, dslType: String): WebSocket = CodeEditorController.codeSocket(metaModelUuid, dslType)
+  def codeEditorSocket(metaModelUuid: String, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelUuid, dslType) _)
 
 
   // # Map static resources from the /public folder to the /assets URL path

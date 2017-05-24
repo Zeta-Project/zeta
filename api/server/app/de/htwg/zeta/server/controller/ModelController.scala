@@ -6,8 +6,9 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.ActorSystem
+import akka.actor.ActorRef
+import akka.actor.Props
 import akka.stream.Materializer
-import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.server.model.model.ModelWsActor
@@ -15,11 +16,7 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.server.util.auth.RepositoryFactory
 import models.document.ModelEntity
 import models.document.Repository
-import play.api.libs.streams.ActorFlow
-import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Controller
-import play.api.mvc.Request
-import play.api.mvc.WebSocket
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
 
@@ -53,13 +50,7 @@ class ModelController @Inject()(
     Ok(views.html.model.ModelValidator(Some(request.identity)))
   }
 
-  def modelSocket(instanceId: String, graphType: String) = WebSocket.acceptOrResult[String, String] { request =>
-    implicit val req = Request(request, AnyContentAsEmpty)
-    silhouette.SecuredRequestHandler { securedRequest =>
-      Future.successful(HandlerResult(Ok, Some(securedRequest.identity)))
-    }.map {
-      case HandlerResult(r, Some(user)) => Right(ActorFlow.actorRef(out => ModelWsActor.props(out, instanceId, graphType)))
-      case HandlerResult(r, None) => Left(r)
-    }
+  def modelSocket(instanceId: String, graphType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
+    ModelWsActor.props(out, instanceId, graphType)
   }
 }
