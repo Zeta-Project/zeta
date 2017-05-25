@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence.microService
 
+import java.time.Instant
 import java.util.UUID
 
 import akka.http.scaladsl.marshalling.Marshal
@@ -24,6 +25,7 @@ import models.document.GeneratorImage
 import models.document.FilterImage
 import models.document.Settings
 import models.document.DockerSettings
+import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MAttribute
@@ -35,6 +37,8 @@ import models.modelDefinitions.metaModel.elements.MBounds
 import models.modelDefinitions.metaModel.elements.ClassOrRef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MEnum
+import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.model.ModelEntity
 import spray.json.DefaultJsonProtocol
 import spray.json.JsString
@@ -48,6 +52,7 @@ import spray.json.JsNumber
 import spray.json.RootJsonFormat
 import spray.json.pimpAny
 import spray.json.JsonWriter
+import spray.json.JsArray
 import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.DefaultJsonProtocol.StringJsonFormat
 
@@ -81,6 +86,8 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   private val sTargetDeletionDeletesSource = "targetDeletionDeletesSource"
   private val sSource = "source"
   private val sTarget = "target"
+
+  private val sValues = "values"
 
 
   /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType]] */
@@ -242,7 +249,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MReference]] */
   private implicit object MReferenceFormat extends RootJsonFormat[MReference] {
 
-    /** Write a MClass.
+    /** Write a MReference.
      *
      * @param mReference MReference
      * @return JsObject
@@ -279,6 +286,84 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   }
 
+  private def forwardRefMClassToJson(mClass: MClass): JsValue = {
+    mClass.toJson
+  }
+
+  private def forwardRefMReferenceToJson(mReference: MReference): JsValue = {
+    mReference.toJson
+  }
+
+  private def forwardRefMClassConvertTo(mClass: JsValue): MClass = {
+    mClass.convertTo[MClass]
+  }
+
+  private def forwardRefMReferenceConvertTo(mReference: JsValue): MClass = {
+    mReference.convertTo[MClass]
+  }
+
+
+  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MReference]] */
+  private implicit object MEnumFormat extends RootJsonFormat[MEnum] {
+
+    /** Write a MEnum.
+     *
+     * @param mEnum MEnum
+     * @return JsObject
+     */
+    def write(mEnum: MEnum): JsObject = {
+      JsObject(
+        sName -> JsString(mEnum.name),
+        sValues -> JsArray(mEnum.values.map(value => JsString(value.name)).toVector)
+      )
+    }
+
+    /** Read a MEnum.
+     *
+     * @param value JsValue
+     * @return MEnum
+     */
+    def read(value: JsValue): MEnum = {
+      value.asJsObject.getFields(sName, sValues) match {
+        case Seq(JsString(name), JsArray(values)) =>
+          val enum = MEnum(name, null) // scalastyle:ignore
+          MEnum(
+            name,
+            values.map {
+              case JsString(v) => EnumSymbol(v, enum)
+            }
+          )
+      }
+    }
+
+  }
+
+
+  /** Spray-Json conversion protocol for [[java.time.Instant]] */
+  private implicit object InstantFormat extends RootJsonFormat[Instant] {
+
+    /** Write a Instant.
+     *
+     * @param instant Instant
+     * @return JsObject
+     */
+    def write(instant: Instant): JsString = {
+      JsString(instant.toString)
+    }
+
+    /** Read a Instant.
+     *
+     * @param value JsValue
+     * @return Instant
+     */
+    def read(value: JsValue): Instant = {
+      Instant.parse(value.toString)
+    }
+
+  }
+
+  // private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)
+
 
   /** Spray-Json conversion protocol for [[models.document.EventDrivenTask]] */
   implicit val eventDrivenTaskFormat: RootJsonFormat[EventDrivenTask] = jsonFormat6(EventDrivenTask.apply)
@@ -312,7 +397,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   // TODO: implicit val metaModelReleaseFormat: RootJsonFormat[MetaModelRelease] = jsonFormat6(MetaModelRelease.apply)
 
   /** Spray-Json conversion protocol for [[models.document.ModelEntity]] */
-  // implicit val modelEntityFormat: RootJsonFormat[ModelEntity] = jsonFormat7(ModelEntity.apply)
+  //implicit val modelEntityFormat: RootJsonFormat[ModelEntity] = jsonFormat7(ModelEntity.apply)
 
   /** Spray-Json conversion protocol for [[models.document.Log]] */
   implicit val logFormat: RootJsonFormat[Log] = jsonFormat5(Log.apply)
@@ -355,23 +440,6 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
     jsonFormat3(UserEntity.apply)
 
 
-  }
-
-  private def forwardRefMClassToJson(mClass: MClass): JsValue = {
-    mClass.toJson
-  }
-
-
-  private def forwardRefMReferenceToJson(mReference: MReference): JsValue = {
-    mReference.toJson
-  }
-
-  private def forwardRefMClassConvertTo(mClass: JsValue): MClass = {
-    mClass.convertTo[MClass]
-  }
-
-  private def forwardRefMReferenceConvertTo(mReference: JsValue): MClass = {
-    mReference.convertTo[MClass]
   }
 
 
