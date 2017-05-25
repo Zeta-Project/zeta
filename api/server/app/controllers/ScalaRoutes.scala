@@ -3,30 +3,8 @@ package controllers
 import java.util.UUID
 import javax.inject.Inject
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
-import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.zeta.server.authentication.RouteController
-import de.htwg.zeta.server.controller.ActivateAccountController
-import de.htwg.zeta.server.controller.ApplicationController
-import de.htwg.zeta.server.controller.BackendController
-import de.htwg.zeta.server.controller.ChangePasswordController
-import de.htwg.zeta.server.controller.CodeEditorController
-import de.htwg.zeta.server.controller.DynamicFileController
-import de.htwg.zeta.server.controller.ForgotPasswordController
-import de.htwg.zeta.server.controller.GeneratorController
-import de.htwg.zeta.server.controller.MetaModelController
-import de.htwg.zeta.server.controller.ModelController
-import de.htwg.zeta.server.controller.ResetPasswordController
-import de.htwg.zeta.server.controller.SignInController
-import de.htwg.zeta.server.controller.SignUpController
-import de.htwg.zeta.server.controller.SocialAuthController
-import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
-import de.htwg.zeta.server.controller.restApi.ModelRestApi
-import de.htwg.zeta.server.controller.webpage.WebpageController
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import play.api.i18n.MessagesApi
-import play.api.inject.Injector
+import de.htwg.zeta.server.authentication.RouteControllerContainer
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
@@ -37,34 +15,9 @@ import play.api.mvc.BodyParsers
  * All routes are managed in this class
  */
 class ScalaRoutes @Inject()(
-    override protected val messagesApi: MessagesApi,
-    override protected val silhouette: Silhouette[ZetaEnv],
-    override protected val system: ActorSystem,
-    override protected val mat: Materializer,
-    injector: Injector // TODO don't inject Injector. Replace with multiple provider
-) extends RouteController {
-
-
-  // TODO replace injector with provider
-
-  private lazy val BackendController: BackendController = injector.instanceOf[BackendController]
-  private lazy val ApplicationController: ApplicationController = injector.instanceOf[ApplicationController]
-  private lazy val SocialAuthController: SocialAuthController = injector.instanceOf[SocialAuthController]
-  private lazy val SignUpController: SignUpController = injector.instanceOf[SignUpController]
-  private lazy val SignInController: SignInController = injector.instanceOf[SignInController]
-  private lazy val ForgotPasswordController: ForgotPasswordController = injector.instanceOf[ForgotPasswordController]
-  private lazy val ResetPasswordController: ResetPasswordController = injector.instanceOf[ResetPasswordController]
-  private lazy val ChangePasswordController: ChangePasswordController = injector.instanceOf[ChangePasswordController]
-  private lazy val ActivateAccountController: ActivateAccountController = injector.instanceOf[ActivateAccountController]
-  private lazy val WebpageController: WebpageController = injector.instanceOf[WebpageController]
-  private lazy val MetaModelController: MetaModelController = injector.instanceOf[MetaModelController]
-  private lazy val ModelController: ModelController = injector.instanceOf[ModelController]
-  private lazy val GeneratorController: GeneratorController = injector.instanceOf[GeneratorController]
-  private lazy val CodeEditorController: CodeEditorController = injector.instanceOf[CodeEditorController]
-  private lazy val WebJarAssets: WebJarAssets = injector.instanceOf[WebJarAssets]
-  private lazy val DynamicFileController: DynamicFileController = injector.instanceOf[DynamicFileController]
-  private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
-  private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
+    protected val routeCont: RouteControllerContainer,
+    protected val webCont: WebControllerContainer
+) extends RouteController with WebController {
 
 
   def backendDeveloper: WebSocket = AuthenticatedSocket(BackendController.developer() _)
@@ -219,3 +172,6 @@ class ScalaRoutes @Inject()(
   def serveDynamicFile(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
 
 }
+
+
+

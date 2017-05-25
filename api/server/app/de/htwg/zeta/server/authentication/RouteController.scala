@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.authentication
 
+import javax.inject.Inject
+
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
@@ -13,41 +15,44 @@ import play.api.mvc.Controller
 /**
  */
 trait RouteController extends Controller {
-  protected val messagesApi: MessagesApi
-  protected val silhouette: Silhouette[ZetaEnv]
-  protected val system: ActorSystem
-  protected val mat: Materializer
 
+  protected val routeCont: RouteControllerContainer
 
-  protected object AuthenticatedGet extends AuthenticatedAction(messagesApi, silhouette)
+  protected object AuthenticatedGet extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
-  protected object AuthenticatedPost extends AuthenticatedAction(messagesApi, silhouette)
+  protected object AuthenticatedPost extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
-  protected object AuthenticatedPut extends AuthenticatedAction(messagesApi, silhouette)
+  protected object AuthenticatedPut extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
-  protected object AuthenticatedDelete extends AuthenticatedAction(messagesApi, silhouette)
+  protected object AuthenticatedDelete extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
-  protected object AuthenticatedSocket extends AuthenticatedWebSocket(system, silhouette, mat)
+  protected object AuthenticatedSocket extends AuthenticatedWebSocket(routeCont.system, routeCont.silhouette, routeCont.mat)
+
 
   private lazy val authorization: Option[Authorization[ZetaEnv#I, ZetaEnv#A]] = Some(WithProvider[ZetaEnv#A](CredentialsProvider.ID))
 
-  protected object AuthenticatedWithProviderGet extends AuthenticatedAction(messagesApi, silhouette, authorization)
+  protected object AuthenticatedWithProviderGet extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette, authorization)
 
-  protected object AuthenticatedWithProviderPost extends AuthenticatedAction(messagesApi, silhouette, authorization)
-
-
-  protected object UnAuthenticatedGet extends UnAuthenticatedAction(messagesApi, silhouette)
-
-  protected object UnAuthenticatedPost extends UnAuthenticatedAction(messagesApi, silhouette)
-
-  protected object UnAuthenticatedSocket extends UnAuthenticatedWebSocket(system, silhouette, mat)
+  protected object AuthenticatedWithProviderPost extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette, authorization)
 
 
-  protected object BasicGet extends BasicAction(messagesApi, silhouette)
+  protected object UnAuthenticatedGet extends UnAuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
-  protected object BasicPost extends BasicAction(messagesApi, silhouette)
+  protected object UnAuthenticatedPost extends UnAuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
-  protected object BasicSocket extends BasicWebSocket(system, silhouette, mat)
+  protected object UnAuthenticatedSocket extends UnAuthenticatedWebSocket(routeCont.system, routeCont.silhouette, routeCont.mat)
 
+
+  protected object BasicGet extends BasicAction(routeCont.messagesApi, routeCont.silhouette)
+
+  protected object BasicPost extends BasicAction(routeCont.messagesApi, routeCont.silhouette)
+
+  protected object BasicSocket extends BasicWebSocket(routeCont.system, routeCont.silhouette, routeCont.mat)
 
 }
+
+class RouteControllerContainer @Inject() private(
+    val messagesApi: MessagesApi,
+    val silhouette: Silhouette[ZetaEnv],
+    val system: ActorSystem,
+    val mat: Materializer)
