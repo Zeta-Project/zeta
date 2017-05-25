@@ -3,15 +3,8 @@ package de.htwg.zeta.persistence.microService
 import java.time.Instant
 import java.util.UUID
 
-import akka.http.scaladsl.marshalling.Marshal
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.sAbstractness
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.sInputs
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.sOutputs
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.sAttributes
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.sSourceDeletionDeletesTarget
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.sTargetDeletionDeletesSource
 import models.User
 import models.document.PasswordInfoEntity
 import models.document.UserEntity
@@ -33,25 +26,19 @@ import models.modelDefinitions.metaModel.elements.AttributeType
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.AttributeValue
 import models.modelDefinitions.metaModel.elements.ScalarValue
-import models.modelDefinitions.metaModel.elements.MBounds
-import models.modelDefinitions.metaModel.elements.ClassOrRef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.EnumSymbol
-import models.modelDefinitions.model.ModelEntity
+import models.modelDefinitions.model.elements.Attribute
 import spray.json.DefaultJsonProtocol
 import spray.json.JsString
 import spray.json.JsValue
-import spray.json.RootJsonFormat
-import spray.json.deserializationError
 import spray.json.JsObject
-import spray.json.DeserializationException
 import spray.json.JsBoolean
 import spray.json.JsNumber
 import spray.json.RootJsonFormat
 import spray.json.pimpAny
-import spray.json.JsonWriter
 import spray.json.JsArray
 import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.DefaultJsonProtocol.StringJsonFormat
@@ -89,6 +76,9 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   private val sValues = "values"
 
+  private val sMObject = "mObject"
+  private val sMAttribute = "mAttribute"
+  private val sMEnum = "mEnum"
 
   /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType]] */
   private implicit object AttributeTypeFormat extends RootJsonFormat[AttributeType] {
@@ -303,7 +293,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MReference]] */
+  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MEnum]] */
   private implicit object MEnumFormat extends RootJsonFormat[MEnum] {
 
     /** Write a MEnum.
@@ -339,6 +329,47 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
+  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MEnum]] */
+  private implicit object MObjectFormat extends RootJsonFormat[MObject] {
+
+    /** Write a MObject.
+     *
+     * @param mObject MObject
+     * @return JsObject
+     */
+    def write(mObject: MObject): JsObject = {
+
+      JsObject(
+        sType -> JsString(
+          mObject match {
+            case _: MClass => sMClass
+            case _: MReference => sMReference
+            case _: MAttribute => sMAttribute
+            case _: MEnum => sMEnum
+          }
+        ),
+        sMObject -> mObject.toJson)
+    }
+
+
+    /** Read a MObject.
+     *
+     * @param value JsValue
+     * @return MObject
+     */
+    def read(value: JsValue): MObject = {
+      value.asJsObject.getFields(sName, sMObject) match {
+        case Seq(JsString(`sMClass`), obj) => obj.convertTo[MClass]
+        case Seq(JsString(`sMReference`), obj) => obj.convertTo[MReference]
+        case Seq(JsString(`sMAttribute`), obj) => obj.convertTo[MAttribute]
+        case Seq(JsString(`sMEnum`), obj) => obj.convertTo[MEnum]
+
+      }
+    }
+
+  }
+
+
   /** Spray-Json conversion protocol for [[java.time.Instant]] */
   private implicit object InstantFormat extends RootJsonFormat[Instant] {
 
@@ -362,7 +393,13 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   }
 
-  // private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)
+
+  private implicit val attributeFormat: RootJsonFormat[Attribute] = jsonFormat2(Attribute.apply)
+
+
+  private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)
+
+  // private implicit val modelFormat: RootJsonFormat[Model] = jsonFormat4(Model.apply)
 
 
   /** Spray-Json conversion protocol for [[models.document.EventDrivenTask]] */
@@ -397,7 +434,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   // TODO: implicit val metaModelReleaseFormat: RootJsonFormat[MetaModelRelease] = jsonFormat6(MetaModelRelease.apply)
 
   /** Spray-Json conversion protocol for [[models.document.ModelEntity]] */
-  //implicit val modelEntityFormat: RootJsonFormat[ModelEntity] = jsonFormat7(ModelEntity.apply)
+  // implicit val modelEntityFormat: RootJsonFormat[ModelEntity] = jsonFormat7(ModelEntity.apply)
 
   /** Spray-Json conversion protocol for [[models.document.Log]] */
   implicit val logFormat: RootJsonFormat[Log] = jsonFormat5(Log.apply)
