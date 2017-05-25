@@ -6,7 +6,7 @@
             <hr class="col-md-12" />
             <h4 class="col-md-8">@messages("welcome.signed.in")</h4>
             <div class="col-md-4 text-right">
-                <img src="@user.avatarURL.getOrElse(routes.ScalaRoutes.assetsAt("images/silhouette.png"))" height="40px" />
+                <img src="@user.avatarURL.getOrElse(routes.ScalaRoutes.getAssets("images/silhouette.png"))" height="40px" />
             </div>
             <hr class="col-md-12" />
         </div>

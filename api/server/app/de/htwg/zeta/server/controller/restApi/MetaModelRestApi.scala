@@ -48,8 +48,8 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
     repository(request).query[MetaModelEntity](AllMetaModels())
       .map { mm =>
         new MetaModelShortInfo(id = mm.id(), name = mm.name, links = Some(Seq(
-          HLink.get("self", routes.ScalaRoutes.MMRAget(mm.id()).absoluteURL()(request)),
-          HLink.delete("remove", routes.ScalaRoutes.MMRAget(mm.id()).absoluteURL()(request))
+          HLink.get("self", routes.ScalaRoutes.getMetamodels(mm.id()).absoluteURL()(request)),
+          HLink.delete("remove", routes.ScalaRoutes.getMetamodels(mm.id()).absoluteURL()(request))
         )))
       }
       .toList.materialize.subscribe(n => n match {
@@ -115,8 +115,8 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
   def get(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
       val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ScalaRoutes.MMRAget(m.id()).absoluteURL()(request)),
-        HLink.delete("remove", routes.ScalaRoutes.MMRAget(m.id()).absoluteURL()(request))
+        HLink.put("update", routes.ScalaRoutes.getMetamodels(m.id()).absoluteURL()(request)),
+        HLink.delete("remove", routes.ScalaRoutes.getMetamodels(m.id()).absoluteURL()(request))
       )))
       Ok(Json.toJson(out))
     })

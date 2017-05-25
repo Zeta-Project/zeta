@@ -7,7 +7,7 @@
             <p>@messages("activate.account.text1")</p>
             <p><b>@email</b></p>
             <p>@messages("activate.account.text2")</p>
-            <p>@Html(messages("activate.account.text3", routes.ScalaRoutes.sendActivateAccount(helper.urlEncode(email))))</p>
+            <p>@Html(messages("activate.account.text3", routes.ScalaRoutes.getAccountEmail(helper.urlEncode(email))))</p>
         </div>
     </fieldset>
 }

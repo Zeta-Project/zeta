@@ -54,11 +54,11 @@ class ForgotPasswordController @Inject()(
       form => Future.successful(BadRequest(views.html.silhouette.forgotPassword(form, request, messages))),
       email => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, email)
-        val result = Redirect(routes.ScalaRoutes.signInView()).flashing("info" -> messages("reset.email.sent"))
+        val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
         userService.retrieve(loginInfo).flatMap {
           case Some(user) if user.email.isDefined =>
             authTokenService.create(user.userID).map { authToken =>
-              val url = routes.ScalaRoutes.resetPasswordView(authToken.id).absoluteURL()(request)
+              val url = routes.ScalaRoutes.getPasswordReset(authToken.id).absoluteURL()(request)
 
               mailerClient.send(Email(
                 subject = messages("email.reset.password.subject"),

@@ -7,7 +7,7 @@
 @main(messages("sign.in.title"))(request, messages) {
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>@messages("sign.in.credentials")</legend>
-        @helper.form(action = routes.ScalaRoutes.signIn()) {
+        @helper.form(action = routes.ScalaRoutes.postSignIn()) {
             @helper.CSRF.formField(request)
             @b3.email(signInForm("email"), '_hiddenLabel -> messages("email"), 'placeholder -> messages("email"), 'class -> "form-control input-lg")(fieldConstructor, messages)
             @b3.password(signInForm("password"), '_hiddenLabel -> messages("password"), 'placeholder -> messages("password"), 'class -> "form-control input-lg")(fieldConstructor, messages)
@@ -20,7 +20,7 @@
         }
 
         <div>
-            <p class="not-a-member">@messages("not.a.member") <a href="@routes.ScalaRoutes.signUpView()">@messages("sign.up.now")</a> | <a href="@routes.ScalaRoutes.forgotPasswordView()" title="@messages("forgot.your.password")">@messages("forgot.your.password")</a></p>
+            <p class="not-a-member">@messages("not.a.member") <a href="@routes.ScalaRoutes.getSignUp()">@messages("sign.up.now")</a> | <a href="@routes.ScalaRoutes.getPasswordForgot()" title="@messages("forgot.your.password")">@messages("forgot.your.password")</a></p>
         </div>
 <!--
         @if(socialProviders.providers.nonEmpty) {
@@ -28,7 +28,7 @@
                 <p>@messages("or.use.social")</p>
                 <div>
                 @for(p <- socialProviders.providers if p.id != "clef") {
-                    <a href="@routes.ScalaRoutes.authenticate(p.id)" class="provider @p.id" title="@messages(p.id)"><img src="@routes.ScalaRoutes.assetsAt(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@messages(p.id)"></a>
+                    <a href="@routes.ScalaRoutes.getAuthenticate(p.id)" class="provider @p.id" title="@messages(p.id)"><img src="@routes.ScalaRoutes.getAssets(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@messages(p.id)"></a>
                 }
                 </div>
                 @defining(socialProviders.get[ClefProvider]) { clef =>

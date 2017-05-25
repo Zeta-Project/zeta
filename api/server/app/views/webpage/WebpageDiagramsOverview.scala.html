@@ -11,7 +11,7 @@
                 window.metaModelId = "@metaModel.get.id";
         </script>
     }
-    <script src="@routes.ScalaRoutes.assetsAt("webpage/javascripts/diagramOverview.js")"></script>
+    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/diagramOverview.js")"></script>
 
     <div class="row">
         <div class="col-md-4">
@@ -23,7 +23,7 @@
                 @if(metaModels.nonEmpty) {
                     <div>
                     @for(metamodel <- metaModels) {
-                        <a href="@routes.ScalaRoutes.diagramsOverview(metamodel.id)" class="list-group-item list-item-container
+                        <a href="@routes.ScalaRoutes.getOverview(metamodel.id)" class="list-group-item list-item-container
                                     @if(metaModel.isDefined && metamodel.id == metaModel.get.id) {
                             active
                         }
@@ -64,7 +64,7 @@
                     <div class="text-center">
                         <div class="row no-margin" >
                             <div class="col-md-6">
-                                <a href="@routes.ScalaRoutes.codeEditor(metaModel.get.id, "style")">
+                                <a href="@routes.ScalaRoutes.getCodeeditorEditor(metaModel.get.id, "style")">
                                     <div class="panel panel-default">
                                         <div class="panel-body">
                                             <strong>Style</strong>
@@ -73,7 +73,7 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <a href="@routes.ScalaRoutes.codeEditor(metaModel.get.id, "shape")">
+                                <a href="@routes.ScalaRoutes.getCodeeditorEditor(metaModel.get.id, "shape")">
                                     <div class="panel panel-default">
                                         <div class="panel-body">
                                             <strong>Shape</strong>
@@ -84,7 +84,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="@routes.ScalaRoutes.codeEditor(metaModel.get.id, "diagram")">
+                                <a href="@routes.ScalaRoutes.getCodeeditorEditor(metaModel.get.id, "diagram")">
                                     <div class="panel panel-default">
                                         <div class="panel-body">
                                             <strong>Diagram</strong>
@@ -95,7 +95,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="@routes.ScalaRoutes.metaModelEditor(metaModel.get.id)">
+                                <a href="@routes.ScalaRoutes.getMetamodelEditor(metaModel.get.id)">
                                     <div class="panel panel-default">
                                         <div class="panel-body">
                                             <strong>Meta Model Editor</strong>
@@ -137,7 +137,7 @@
                         </div>
                     }
                     @for(model <- modelInstances) {
-                        <a href="@controllers.routes.ScalaRoutes.modelEditor(metaModel.get.id, model.id)" class="list-group-item list-item-container">
+                        <a href="@controllers.routes.ScalaRoutes.getModelEditor(metaModel.get.id, model.id)" class="list-group-item list-item-container">
                             @model.name
                         <div data-model-id="@model.id" class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete model instace"></div>
                         </a>

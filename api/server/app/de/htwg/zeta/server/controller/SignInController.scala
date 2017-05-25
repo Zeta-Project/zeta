@@ -94,7 +94,7 @@ class SignInController @Inject()(
           }
         }.recover {
           case e: ProviderException =>
-            Redirect(routes.ScalaRoutes.signInView()).flashing("error" -> messages("invalid.credentials"))
+            Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> messages("invalid.credentials"))
         }
       }
     )

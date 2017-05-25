@@ -30,7 +30,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
     new HttpRepository(request.cookies.get("SyncGatewaySession").get.value)(ws)
 
   def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Redirect(routes.ScalaRoutes.diagramsOverviewShortInfo())
+    Redirect(routes.ScalaRoutes.getOverviewNoArgs())
   }
 
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[MetaModelShortInfo]] = {
