@@ -3,243 +3,181 @@ package controllers
 import java.util.UUID
 import javax.inject.Inject
 
-import akka.actor.ActorSystem
-import akka.stream.Materializer
-import com.mohiva.play.silhouette.api.Silhouette
-import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
-import de.htwg.zeta.server.controller.restApi.ModelRestApi
-import de.htwg.zeta.server.controller.webpage.WebpageController
-import de.htwg.zeta.server.authentication.BasicAction
-import de.htwg.zeta.server.authentication.UnAuthenticatedAction
-import de.htwg.zeta.server.authentication.AuthenticatedAction
-import de.htwg.zeta.server.authentication.BasicWebSocket
-import de.htwg.zeta.server.authentication.AuthenticatedWebSocket
-import de.htwg.zeta.server.authentication.UnAuthenticatedWebSocket
-import de.htwg.zeta.server.controller.ActivateAccountController
-import de.htwg.zeta.server.controller.ApplicationController
-import de.htwg.zeta.server.controller.BackendController
-import de.htwg.zeta.server.controller.ChangePasswordController
-import de.htwg.zeta.server.controller.CodeEditorController
-import de.htwg.zeta.server.controller.DynamicFileController
-import de.htwg.zeta.server.controller.ForgotPasswordController
-import de.htwg.zeta.server.controller.GeneratorController
-import de.htwg.zeta.server.controller.MetaModelController
-import de.htwg.zeta.server.controller.ModelController
-import de.htwg.zeta.server.controller.ResetPasswordController
-import de.htwg.zeta.server.controller.SignInController
-import de.htwg.zeta.server.controller.SignUpController
-import de.htwg.zeta.server.controller.SocialAuthController
-import play.api.i18n.MessagesApi
-import play.api.inject.Injector
+import de.htwg.zeta.server.routing.WebController
+import de.htwg.zeta.server.routing.WebControllerContainer
+import de.htwg.zeta.server.routing.RouteController
+import de.htwg.zeta.server.routing.RouteControllerContainer
 import play.api.libs.json.JsValue
-import play.api.mvc.Controller
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import play.api.mvc.BodyParsers
 
 /**
  * All routes are managed in this class
  */
 class ScalaRoutes @Inject()(
-    messagesApi: MessagesApi,
-    silhouette: Silhouette[ZetaEnv],
-    system: ActorSystem,
-    mat: Materializer,
-    injector: Injector // TODO don't inject Injector. Replace with multiple provider
-) extends Controller {
-
-  private object AuthenticatedGet extends AuthenticatedAction(messagesApi, silhouette)
-
-  private object AuthenticatedPost extends AuthenticatedAction(messagesApi, silhouette)
-
-  private object AuthenticatedSocket extends AuthenticatedWebSocket(system, silhouette, mat)
+    protected val routeCont: RouteControllerContainer,
+    protected val webCont: WebControllerContainer
+) extends RouteController with WebController {
 
 
-  private object UnAuthenticatedGet extends UnAuthenticatedAction(messagesApi, silhouette)
+  def getSocketDeveloper: WebSocket = AuthenticatedSocket(BackendController.developer() _)
 
-  private object UnAuthenticatedPost extends UnAuthenticatedAction(messagesApi, silhouette)
+  def getSocketGenerator(id: String): WebSocket = AuthenticatedSocket(BackendController.generator(id) _)
 
-  private object UnAuthenticatedSocket extends UnAuthenticatedWebSocket(system, silhouette, mat)
-
-
-  private object BasicGet extends BasicAction(messagesApi, silhouette)
-
-  private object BasicPost extends BasicAction(messagesApi, silhouette)
-
-  private object BasicSocket extends BasicWebSocket(system, silhouette, mat)
-
-
-  // TODO replace injector with provider
-
-  private lazy val BackendController: BackendController = injector.instanceOf[BackendController]
-  private lazy val ApplicationController: ApplicationController = injector.instanceOf[ApplicationController]
-  private lazy val SocialAuthController: SocialAuthController = injector.instanceOf[SocialAuthController]
-  private lazy val SignUpController: SignUpController = injector.instanceOf[SignUpController]
-  private lazy val SignInController: SignInController = injector.instanceOf[SignInController]
-  private lazy val ForgotPasswordController: ForgotPasswordController = injector.instanceOf[ForgotPasswordController]
-  private lazy val ResetPasswordController: ResetPasswordController = injector.instanceOf[ResetPasswordController]
-  private lazy val ChangePasswordController: ChangePasswordController = injector.instanceOf[ChangePasswordController]
-  private lazy val ActivateAccountController: ActivateAccountController = injector.instanceOf[ActivateAccountController]
-  private lazy val WebpageController: WebpageController = injector.instanceOf[WebpageController]
-  private lazy val MetaModelController: MetaModelController = injector.instanceOf[MetaModelController]
-  private lazy val ModelController: ModelController = injector.instanceOf[ModelController]
-  private lazy val GeneratorController: GeneratorController = injector.instanceOf[GeneratorController]
-  private lazy val CodeEditorController: CodeEditorController = injector.instanceOf[CodeEditorController]
-  private lazy val WebJarAssets: WebJarAssets = injector.instanceOf[WebJarAssets]
-  private lazy val DynamicFileController: DynamicFileController = injector.instanceOf[DynamicFileController]
-
-
-  def backendDeveloper: WebSocket = BackendController.developer
-
-  def backendGenerator(id: String): WebSocket = BackendController.generator(id)
-
-  def backendUser(model: String): WebSocket = BackendController.user(model)
+  def getSocketUser(model: String): WebSocket = AuthenticatedSocket(BackendController.user(model) _)
 
 
   // # Home page
-  def appIndex(): Action[AnyContent] = ApplicationController.index
+  def getIndex(): Action[AnyContent] = AuthenticatedGet(ApplicationController.index _)
 
-  def user(): Action[AnyContent] = ApplicationController.user
+  def getUser(): Action[AnyContent] = AuthenticatedGet(ApplicationController.user _)
 
-  def signOut: Action[AnyContent] = ApplicationController.signOut
+  def getSignout: Action[AnyContent] = AuthenticatedGet(ApplicationController.signOut _)
 
-  def authenticate(provider: String): Action[AnyContent] = SocialAuthController.authenticate(provider)
+  def getAuthenticate(provider: String): Action[AnyContent] = UnAuthenticatedGet(SocialAuthController.authenticate(provider) _)
 
-  def signUpView(): Action[AnyContent] = SignUpController.view
+  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(SignUpController.view _)
 
-  def signUp(): Action[AnyContent] = SignUpController.submit
+  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(SignUpController.submit _)
 
-  def signInView(): Action[AnyContent] = SignInController.view
+  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(SignInController.view _)
 
-  def signIn(): Action[AnyContent] = SignInController.submit
+  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(SignInController.submit _)
 
-  def forgotPasswordView(): Action[AnyContent] = ForgotPasswordController.view
+  def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(ForgotPasswordController.view _)
 
-  def forgotPassword(): Action[AnyContent] = ForgotPasswordController.submit
+  def postPasswordForgot(): Action[AnyContent] = UnAuthenticatedPost(ForgotPasswordController.submit _)
 
-  def resetPasswordView(token: UUID): Action[AnyContent] = ResetPasswordController.view(token: java.util.UUID)
+  def getPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ResetPasswordController.view(token: java.util.UUID) _)
 
-  def resetPassword(token: UUID): Action[AnyContent] = ResetPasswordController.submit(token: java.util.UUID)
+  def postPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedPost(ResetPasswordController.submit(token: java.util.UUID) _)
 
-  def changePasswordView(): Action[AnyContent] = ChangePasswordController.view
+  def getPasswordChange(): Action[AnyContent] = AuthenticatedWithProviderGet(ChangePasswordController.view _)
 
-  def changePassword(): Action[AnyContent] = ChangePasswordController.submit
+  def postPasswordChange(): Action[AnyContent] = AuthenticatedWithProviderPost(ChangePasswordController.submit _)
 
-  def sendActivateAccount(email: String): Action[AnyContent] = ActivateAccountController.send(email) // TODO send email per API??
+  def getAccountEmail(email: String): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.send(email) _) // TODO send email per API??
 
-  def activateAccount(token: UUID): Action[AnyContent] = ActivateAccountController.activate(token: java.util.UUID)
+  def getAccountActivate(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.activate(token: java.util.UUID) _)
 
 
   // ### Webpage
-  def webpageIndex(): Action[AnyContent] = WebpageController.index()
+  def getWebpage(): Action[AnyContent] = AuthenticatedGet(WebpageController.index _)
 
-  def diagramsOverviewShortInfo(): Action[AnyContent] = WebpageController.diagramsOverviewShortInfo()
+  def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverviewShortInfo _)
 
-  def diagramsOverview(uuid: String): Action[AnyContent] = WebpageController.diagramsOverview(uuid)
+  def getOverview(uuid: String): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverview(uuid) _)
 
 
   // # metamodel editor
-  def metaModelEditor(metaModelUuid: String): Action[AnyContent] = MetaModelController.metaModelEditor(metaModelUuid)
+  def getMetamodelEditor(metaModelUuid: String): Action[AnyContent] = AuthenticatedGet(MetaModelController.metaModelEditor(metaModelUuid) _)
 
-  def metaModelSocket(metaModelUuid: String): WebSocket = MetaModelController.metaModelSocket(metaModelUuid)
+  def getMetamodelSocket(metaModelUuid: String): WebSocket = AuthenticatedSocket(MetaModelController.metaModelSocket(metaModelUuid) _)
 
 
   // ### model editor
-  def modelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = ModelController.modelEditor(metaModelUuid, modelUuid)
+  def getModelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(metaModelUuid, modelUuid) _)
 
-  def modelSocket(instanceId: String, graphType: String): WebSocket = ModelController.modelSocket(instanceId, graphType)
+  def getModelSocket(instanceId: String, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
 
-  def modelValidator(): Action[AnyContent] = ModelController.modelValidator()
+  def getModelValidator(): Action[AnyContent] = AuthenticatedGet(ModelController.modelValidator _)
 
 
   // ### vr
-  def vrModelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = ModelController.vrModelEditor(metaModelUuid, modelUuid)
+  def getModelVrEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] =
+    AuthenticatedGet(ModelController.vrModelEditor(metaModelUuid, modelUuid) _)
 
 
   // # temporary
-  def generate(metaModelUuid: String): Action[AnyContent] = GeneratorController.generate(metaModelUuid)
+  def getGenerate(metaModelUuid: String): Action[AnyContent] = AuthenticatedGet(GeneratorController.generate(metaModelUuid) _)
 
   /* ### MetaModel REST API
    * MMRA => MetaModelRestApi
    */
-  private lazy val MetaModelRestApi: MetaModelRestApi = injector.instanceOf[MetaModelRestApi]
 
-  def MMRAshowForUser: Action[AnyContent] = MetaModelRestApi.showForUser
+  def getMetamodelsNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.showForUser _)
 
-  def MMRAinsert: Action[JsValue] = MetaModelRestApi.insert
+  def postMetamodels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, MetaModelRestApi.insert _)
 
-  def MMRAupdate(metaModelId: String): Action[JsValue] = MetaModelRestApi.update(metaModelId)
+  def putMetamodels(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
 
-  def MMRAget(metaModelId: String): Action[AnyContent] = MetaModelRestApi.get(metaModelId)
+  def getMetamodels(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.get(metaModelId) _)
 
-  def MMRAdelete(metaModelId: String): Action[AnyContent] = MetaModelRestApi.delete(metaModelId)
+  def deleteMetamodels(metaModelId: String): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.delete(metaModelId) _)
 
-  def MMRAgetMetaModelDefinition(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMetaModelDefinition(metaModelId)
+  def getMetamodelsDefinition(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
 
-  def MMRAupdateMetaModelDefinition(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateMetaModelDefinition(metaModelId)
+  def putMetamodelsDefinition(metaModelId: String): Action[JsValue] =
+    AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateMetaModelDefinition(metaModelId) _)
 
-  def MMRAgetMClasses(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMClasses(metaModelId)
+  def getMetamodelsDefinitionMclassesNoArgs(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
 
-  def MMRAgetMReferences(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getMReferences(metaModelId)
+  def getMetamodelsDefinitionMreferencesNoArgs(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMReferences(metaModelId) _)
 
-  def MMRAgetMClass(metaModelId: String, mClassName: String): Action[AnyContent] = MetaModelRestApi.getMClass(metaModelId, mClassName)
+  def getMetamodelsDefinitionMclasses(metaModelId: String, mClassName: String): Action[AnyContent] =
+    AuthenticatedGet(MetaModelRestApi.getMClass(metaModelId, mClassName) _)
 
-  def MMRAgetMReference(metaModelId: String, mReferenceName: String): Action[AnyContent] = MetaModelRestApi.getMReference(metaModelId, mReferenceName)
+  def getMetamodelsDefinitionMReferences(metaModelId: String, mReferenceName: String): Action[AnyContent] =
+    AuthenticatedGet(MetaModelRestApi.getMReference(metaModelId, mReferenceName) _)
 
-  def MMRAgetShape(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getShape(metaModelId)
+  def getMetamodelsShape(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getShape(metaModelId) _)
 
-  def MMRAupdateShape(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateShape(metaModelId)
+  def putMetamodelsShape(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateShape(metaModelId) _)
 
-  def MMRAgetStyle(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getStyle(metaModelId)
+  def getMetamodelsStyle(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getStyle(metaModelId) _)
 
-  def MMRAupdateStyle(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateStyle(metaModelId)
+  def putMetamodelsStyle(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateStyle(metaModelId) _)
 
-  def MMRAgetDiagram(metaModelId: String): Action[AnyContent] = MetaModelRestApi.getDiagram(metaModelId)
+  def getMetamodelsDiagram(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getDiagram(metaModelId) _)
 
-  def MMRAupdateDiagram(metaModelId: String): Action[JsValue] = MetaModelRestApi.updateDiagram(metaModelId)
+  def putMetamodelsDiagram(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
 
 
   /* ### Model REST API
    * MRA => ModelRestApi
    */
-  private lazy val ModelRestApi: ModelRestApi = injector.instanceOf[ModelRestApi]
 
-  def MRAshowForUser: Action[AnyContent] = ModelRestApi.showForUser
 
-  def MRAinsert: Action[JsValue] = ModelRestApi.insert
+  def getModelsNoArgs: Action[AnyContent] = AuthenticatedGet(ModelRestApi.showForUser() _)
 
-  def MRAupdate(modelId: String): Action[JsValue] = ModelRestApi.update(modelId)
+  def postModels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.insert() _)
 
-  def MRAget(modelId: String): Action[AnyContent] = ModelRestApi.get(modelId)
+  def putModels(modelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, ModelRestApi.update(modelId) _)
 
-  def MRAgetModelDefinition(modelId: String): Action[AnyContent] = ModelRestApi.getModelDefinition(modelId)
+  def getModels(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.get(modelId) _)
 
-  def MRAupdateModel(modelId: String): Action[JsValue] = ModelRestApi.updateModel(modelId)
+  def getModelsDefinition(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getModelDefinition(modelId) _)
 
-  def MRAgetNodes(modelId: String): Action[AnyContent] = ModelRestApi.getNodes(modelId)
+  def putModelsDefinition(modelId: String): Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.updateModel(modelId) _)
 
-  def MRAgetNode(modelId: String, nodeName: String): Action[AnyContent] = ModelRestApi.getNode(modelId, nodeName)
+  def getModelsDefinitionNodesNoArgs(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNodes(modelId) _)
 
-  def MRAgetEdges(modelId: String): Action[AnyContent] = ModelRestApi.getEdges(modelId)
+  def getModelsDefinitionNodes(modelId: String, nodeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeName) _)
 
-  def MRAgetEdge(modelId: String, edgeName: String): Action[AnyContent] = ModelRestApi.getEdge(modelId, edgeName)
+  def getModelDefinitionEdgesNoArgs(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdges(modelId) _)
 
-  def MRAdelete(modelId: String): Action[AnyContent] = ModelRestApi.delete(modelId)
+  def getModelDefinitionEdges(modelId: String, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
+
+  def deleteModels(modelId: String): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
 
 
   // ### Code Editor
-  def codeEditor(metaModelUuid: String, dslType: String): Action[AnyContent] = CodeEditorController.codeEditor(metaModelUuid, dslType)
+  def getCodeeditorEditor(metaModelUuid: String, dslType: String): Action[AnyContent] =
+    AuthenticatedGet(CodeEditorController.codeEditor(metaModelUuid, dslType) _)
 
-  def codeEditorSocket(metaModelUuid: String, dslType: String): WebSocket = CodeEditorController.codeSocket(metaModelUuid, dslType)
+  def getCodeeditorSocket(metaModelUuid: String, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelUuid, dslType) _)
 
 
   // # Map static resources from the /public folder to the /assets URL path
-  def assetsAt(file: String): Action[AnyContent] = Assets.at(path = "/public", file)
+  def getAssets(file: String): Action[AnyContent] = Assets.at(path = "/public", file)
 
-  def webJarAssetsAt(file: String): Action[AnyContent] = WebJarAssets.at(file)
+  def getWebjars(file: String): Action[AnyContent] = WebJarAssets.at(file)
 
-  def serveDynamicFile(file: String): Action[AnyContent] = DynamicFileController.serveFile(file)
-
+  def getMode_specific(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
 
 }
+
+
+

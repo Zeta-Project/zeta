@@ -4,7 +4,7 @@ import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.shapecontainer.connection.Connection
 import models.file.File
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 
 
 object VrDiagramGenerator {
@@ -13,8 +13,8 @@ object VrDiagramGenerator {
   private val SCENE = "vr-scene.html"
   private val SAVE_BEHAVIOR = "vr-save.html"
 
-  def doGenerateResult(diagram: Diagram): Result[List[File]] = {
-    Result(() => doGenerateGenerators(diagram), "failed trying to create the vr Diagram generators")
+  def doGenerateResult(diagram: Diagram): Unreliable[List[File]] = {
+    Unreliable(() => doGenerateGenerators(diagram), "failed trying to create the vr Diagram generators")
   }
 
   private def doGenerateGenerators(diagram: Diagram): List[File] = {

@@ -3,17 +3,17 @@
 @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
     @playscalajs.html.scripts("client", "/assets")
 
-    <script type="text/javascript" src="@routes.ScalaRoutes.assetsAt("codeEditor/ace/ace.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.assetsAt("codeEditor/ace/ext-language_tools.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.assetsAt("lib/bootstrap/js/bootstrap.min.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.assetsAt("codeEditor/ace-grammar/ace_grammar.min.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.assetsAt("lib/bootbox.js/bootbox.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.assetsAt("lib/jquery-ui/jquery-ui.min.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ext-language_tools.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootstrap/js/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace-grammar/ace_grammar.min.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootbox.js/bootbox.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/jquery-ui/jquery-ui.min.js")"></script>
 
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("codeEditor/codeEditor.css")">
-    <link rel='stylesheet' type="text/css" href="@routes.ScalaRoutes.assetsAt("lib/typicons/typicons.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("lib/jquery-ui/jquery-ui.min.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.assetsAt("lib/jquery-ui-themes/flick/jquery-ui.min.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("codeEditor/codeEditor.css")">
+    <link rel='stylesheet' type="text/css" href="@routes.ScalaRoutes.getAssets("lib/typicons/typicons.css")"/>
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/jquery-ui/jquery-ui.min.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/jquery-ui-themes/flick/jquery-ui.min.css")">
 
     <div class="row">
         <div class="col-md-offset-2 col-md-5" id="editor">

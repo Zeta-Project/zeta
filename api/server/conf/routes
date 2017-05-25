@@ -3,91 +3,91 @@
 # ~~~~
 
 # backend connection
-GET           /socket/developer                                                      controllers.ScalaRoutes.backendDeveloper
-GET           /socket/generator/:id                                                  controllers.ScalaRoutes.backendGenerator(id: String)
-GET           /socket/user/:model                                                    controllers.ScalaRoutes.backendUser(model: String)
+GET           /socket/developer                                                      controllers.ScalaRoutes.getSocketDeveloper
+GET           /socket/generator/:id                                                  controllers.ScalaRoutes.getSocketGenerator(id: String)
+GET           /socket/user/:model                                                    controllers.ScalaRoutes.getSocketUser(model: String)
 
 # Home page
-GET           /                                                                      controllers.ScalaRoutes.appIndex
-GET           /user                                                                  controllers.ScalaRoutes.user
-GET           /signOut                                                               controllers.ScalaRoutes.signOut
-GET           /authenticate/:provider                                                controllers.ScalaRoutes.authenticate(provider)
+GET           /                                                                      controllers.ScalaRoutes.getIndex
+GET           /user                                                                  controllers.ScalaRoutes.getUser
+GET           /signOut                                                               controllers.ScalaRoutes.getSignout
+GET           /authenticate/:provider                                                controllers.ScalaRoutes.getAuthenticate(provider)
 
-GET           /signUp                                                                controllers.ScalaRoutes.signUpView
-POST          /signUp                                                                controllers.ScalaRoutes.signUp
+GET           /signUp                                                                controllers.ScalaRoutes.getSignUp
+POST          /signUp                                                                controllers.ScalaRoutes.postSignUp
 
-GET           /signIn                                                                controllers.ScalaRoutes.signInView
-POST          /signIn                                                                controllers.ScalaRoutes.signIn
+GET           /signIn                                                                controllers.ScalaRoutes.getSignIn
+POST          /signIn                                                                controllers.ScalaRoutes.postSignIn
 
-GET           /password/forgot                                                       controllers.ScalaRoutes.forgotPasswordView
-POST          /password/forgot                                                       controllers.ScalaRoutes.forgotPassword
-GET           /password/reset/:token                                                 controllers.ScalaRoutes.resetPasswordView(token: java.util.UUID)
-POST          /password/reset/:token                                                 controllers.ScalaRoutes.resetPassword(token: java.util.UUID)
-GET           /password/change                                                       controllers.ScalaRoutes.changePasswordView
-POST          /password/change                                                       controllers.ScalaRoutes.changePassword
+GET           /password/forgot                                                       controllers.ScalaRoutes.getPasswordForgot
+POST          /password/forgot                                                       controllers.ScalaRoutes.postPasswordForgot
+GET           /password/reset/:token                                                 controllers.ScalaRoutes.getPasswordReset(token: java.util.UUID)
+POST          /password/reset/:token                                                 controllers.ScalaRoutes.postPasswordReset(token: java.util.UUID)
+GET           /password/change                                                       controllers.ScalaRoutes.getPasswordChange
+POST          /password/change                                                       controllers.ScalaRoutes.postPasswordChange
 
-GET           /account/email/:email                                                  controllers.ScalaRoutes.sendActivateAccount(email: String)
-GET           /account/activate/:token                                               controllers.ScalaRoutes.activateAccount(token: java.util.UUID)
+GET           /account/email/:email                                                  controllers.ScalaRoutes.getAccountEmail(email: String)
+GET           /account/activate/:token                                               controllers.ScalaRoutes.getAccountActivate(token: java.util.UUID)
 
 
 ### Webpage
-GET           /                                                                      controllers.ScalaRoutes.webpageIndex
-GET           /overview                                                              controllers.ScalaRoutes.diagramsOverviewShortInfo
-GET           /overview/:uuid                                                        controllers.ScalaRoutes.diagramsOverview(uuid: String)
+GET           /webpage                                                               controllers.ScalaRoutes.getWebpage
+GET           /overview                                                              controllers.ScalaRoutes.getOverviewNoArgs
+GET           /overview/:uuid                                                        controllers.ScalaRoutes.getOverview(uuid: String)
 
 
 # metamodel editor
-GET           /metamodel/editor/:metaModelUuid                                       controllers.ScalaRoutes.metaModelEditor(metaModelUuid: String)
-GET           /metamodel/socket/:metaModelUuid                                       controllers.ScalaRoutes.metaModelSocket(metaModelUuid: String)
+GET           /metamodel/editor/:metaModelUuid                                       controllers.ScalaRoutes.getMetamodelEditor(metaModelUuid: String)
+GET           /metamodel/socket/:metaModelUuid                                       controllers.ScalaRoutes.getMetamodelSocket(metaModelUuid: String)
 
 ### model editor
-GET           /model/editor/:metaModelUuid/:modelUuid                                controllers.ScalaRoutes.modelEditor(metaModelUuid: String, modelUuid: String)
-GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.modelSocket(instanceId:String, graphType:String)
-GET           /model/validator                                                       controllers.ScalaRoutes.modelValidator
+GET           /model/editor/:metaModelUuid/:modelUuid                                controllers.ScalaRoutes.getModelEditor(metaModelUuid: String, modelUuid: String)
+GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:String, graphType:String)
+GET           /model/validator                                                       controllers.ScalaRoutes.getModelValidator
 
 ### vr
-GET           /model/vreditor/:metaModelUuid/:modelUuid                              controllers.ScalaRoutes.vrModelEditor(metaModelUuid: String, modelUuid: String)
+GET           /model/vreditor/:metaModelUuid/:modelUuid                              controllers.ScalaRoutes.getModelVrEditor(metaModelUuid: String, modelUuid: String)
 
 # temporary
-GET           /generator/:metaModelUuid                                              controllers.ScalaRoutes.generate(metaModelUuid: String)
+GET           /generator/:metaModelUuid                                              controllers.ScalaRoutes.getGenerate(metaModelUuid: String)
 
 ### MetaModel REST API
-GET           /metamodels                                                            controllers.ScalaRoutes.MMRAshowForUser
-POST          /metamodels                                                            controllers.ScalaRoutes.MMRAinsert
-PUT           /metamodels/:metaModelId                                               controllers.ScalaRoutes.MMRAupdate(metaModelId: String)
-GET           /metamodels/:metaModelId                                               controllers.ScalaRoutes.MMRAget(metaModelId: String)
-DELETE        /metamodels/:metaModelId                                               controllers.ScalaRoutes.MMRAdelete(metaModelId: String)
-GET           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.MMRAgetMetaModelDefinition(metaModelId: String)
-PUT           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.MMRAupdateMetaModelDefinition(metaModelId: String)
-GET           /metamodels/:metaModelId/definition/mclasses                           controllers.ScalaRoutes.MMRAgetMClasses(metaModelId: String)
-GET           /metamodels/:metaModelId/definition/mreferences                        controllers.ScalaRoutes.MMRAgetMReferences(metaModelId: String)
-GET           /metamodels/:metaModelId/definition/mclasses/:mClassName               controllers.ScalaRoutes.MMRAgetMClass(metaModelId: String, mClassName: String)
-GET           /metamodels/:metaModelId/definition/mreferences/:mReferenceName        controllers.ScalaRoutes.MMRAgetMReference(metaModelId: String, mReferenceName: String)
-GET           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.MMRAgetShape(metaModelId: String)
-PUT           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.MMRAupdateShape(metaModelId: String)
-GET           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.MMRAgetStyle(metaModelId: String)
-PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.MMRAupdateStyle(metaModelId: String)
-GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.MMRAgetDiagram(metaModelId: String)
-PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.MMRAupdateDiagram(metaModelId: String)
+GET           /metamodels                                                            controllers.ScalaRoutes.getMetamodelsNoArgs
+POST          /metamodels                                                            controllers.ScalaRoutes.postMetamodels
+PUT           /metamodels/:metaModelId                                               controllers.ScalaRoutes.putMetamodels(metaModelId: String)
+GET           /metamodels/:metaModelId                                               controllers.ScalaRoutes.getMetamodels(metaModelId: String)
+DELETE        /metamodels/:metaModelId                                               controllers.ScalaRoutes.deleteMetamodels(metaModelId: String)
+GET           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.getMetamodelsDefinition(metaModelId: String)
+PUT           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.putMetamodelsDefinition(metaModelId: String)
+GET           /metamodels/:metaModelId/definition/mclasses                           controllers.ScalaRoutes.getMetamodelsDefinitionMclassesNoArgs(metaModelId: String)
+GET           /metamodels/:metaModelId/definition/mreferences                        controllers.ScalaRoutes.getMetamodelsDefinitionMreferencesNoArgs(metaModelId: String)
+GET           /metamodels/:metaModelId/definition/mclasses/:mClassName               controllers.ScalaRoutes.getMetamodelsDefinitionMclasses(metaModelId: String, mClassName: String)
+GET           /metamodels/:metaModelId/definition/mreferences/:mReferenceName        controllers.ScalaRoutes.getMetamodelsDefinitionMReferences(metaModelId: String, mReferenceName: String)
+GET           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.getMetamodelsShape(metaModelId: String)
+PUT           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.putMetamodelsShape(metaModelId: String)
+GET           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.getMetamodelsStyle(metaModelId: String)
+PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: String)
+GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: String)
+PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: String)
 
 ### Model REST API
-GET           /models                                                                controllers.ScalaRoutes.MRAshowForUser
-POST          /models                                                                controllers.ScalaRoutes.MRAinsert
-PUT           /models/:modelId                                                       controllers.ScalaRoutes.MRAupdate(modelId: String)
-GET           /models/:modelId                                                       controllers.ScalaRoutes.MRAget(modelId: String)
-GET           /models/:modelId/definition                                            controllers.ScalaRoutes.MRAgetModelDefinition(modelId: String)
-PUT           /models/:modelId/definition                                            controllers.ScalaRoutes.MRAupdateModel(modelId: String)
-GET           /models/:modelId/definition/nodes                                      controllers.ScalaRoutes.MRAgetNodes(modelId: String)
-GET           /models/:modelId/definition/nodes/:nodeName                            controllers.ScalaRoutes.MRAgetNode(modelId: String, nodeName: String)
-GET           /models/:modelId/definition/edges                                      controllers.ScalaRoutes.MRAgetEdges(modelId: String)
-GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.MRAgetEdge(modelId: String, edgeName: String)
-DELETE        /models/:modelId                                                       controllers.ScalaRoutes.MRAdelete(modelId: String)
+GET           /models                                                                controllers.ScalaRoutes.getModelsNoArgs
+POST          /models                                                                controllers.ScalaRoutes.postModels
+PUT           /models/:modelId                                                       controllers.ScalaRoutes.putModels(modelId: String)
+GET           /models/:modelId                                                       controllers.ScalaRoutes.getModels(modelId: String)
+GET           /models/:modelId/definition                                            controllers.ScalaRoutes.getModelsDefinition(modelId: String)
+PUT           /models/:modelId/definition                                            controllers.ScalaRoutes.putModelsDefinition(modelId: String)
+GET           /models/:modelId/definition/nodes                                      controllers.ScalaRoutes.getModelsDefinitionNodesNoArgs(modelId: String)
+GET           /models/:modelId/definition/nodes/:nodeName                            controllers.ScalaRoutes.getModelsDefinitionNodes(modelId: String, nodeName: String)
+GET           /models/:modelId/definition/edges                                      controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: String)
+GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: String, edgeName: String)
+DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: String)
 
 ### Code Editor
-GET           /codeeditor/editor/:metaModelUuid/:dslType                             controllers.ScalaRoutes.codeEditor(metaModelUuid: String, dslType: String)
-GET           /codeeditor/socket/:metaModelUuid/:dslType                             controllers.ScalaRoutes.codeEditorSocket(metaModelUuid: String, dslType: String)
+GET           /codeeditor/editor/:metaModelUuid/:dslType                             controllers.ScalaRoutes.getCodeeditorEditor(metaModelUuid: String, dslType: String)
+GET           /codeeditor/socket/:metaModelUuid/:dslType                             controllers.ScalaRoutes.getCodeeditorSocket(metaModelUuid: String, dslType: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                                          controllers.ScalaRoutes.assetsAt(file)
-GET           /webjars/*file                                                         controllers.ScalaRoutes.webJarAssetsAt(file)
-GET           /model_specific/*file                                                  controllers.ScalaRoutes.serveDynamicFile(file)
+GET           /assets/*file                                                          controllers.ScalaRoutes.getAssets(file)
+GET           /webjars/*file                                                         controllers.ScalaRoutes.getWebjars(file)
+GET           /model_specific/*file                                                  controllers.ScalaRoutes.getMode_specific(file)

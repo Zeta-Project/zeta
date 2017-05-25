@@ -2,7 +2,7 @@ package de.htwg.zeta.server.generator.generators.diagram
 
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import models.file.File
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 
 /**
  * The DiagramGenerator Object
@@ -15,8 +15,8 @@ object DiagramGenerator {
   /**
    * generates the files stencil.js, validator.js and linkhelper.js
    */
-  def doGenerateResult(diagram: Diagram): Result[List[File]] = {
-    Result(() => doGenerateGenerators(diagram), "failed trying to create the Diagram generators")
+  def doGenerateResult(diagram: Diagram): Unreliable[List[File]] = {
+    Unreliable(() => doGenerateGenerators(diagram), "failed trying to create the Diagram generators")
   }
 
   /**

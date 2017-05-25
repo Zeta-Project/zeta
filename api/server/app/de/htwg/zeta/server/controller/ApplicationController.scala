@@ -2,40 +2,34 @@ package de.htwg.zeta.server.controller
 
 import javax.inject.Inject
 
+import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.LogoutEvent
 import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
-import controllers.WebJarAssets
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import controllers.routes
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
-import play.api.i18n.I18nSupport
-import play.api.i18n.MessagesApi
-import play.api.mvc.Action
-import play.api.mvc.AnyContent
 import play.api.mvc.Controller
+import play.api.mvc.AnyContent
+import play.api.mvc.Result
 
 /**
  * The basic application controller.
  *
- * @param messagesApi            The Play messages API.
- * @param silhouette             The Silhouette stack.
- * @param socialProviderRegistry The social provider registry.
- * @param webJarAssets           The webjar assets implementation.
+ * @param silhouette  The Silhouette stack.
  */
 class ApplicationController @Inject()(
-    val messagesApi: MessagesApi,
-    silhouette: Silhouette[ZetaEnv],
-    socialProviderRegistry: SocialProviderRegistry,
-    implicit val webJarAssets: WebJarAssets)
-  extends Controller with I18nSupport {
+    silhouette: Silhouette[ZetaEnv])
+  extends Controller {
 
   /**
    * Handles the index action.
    *
    * @return The result to display.
    */
-  def index = silhouette.SecuredAction { implicit request =>
+  def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
     Ok(views.html.webpage.WebpageIndex(Some(request.identity)))
   }
 
@@ -44,7 +38,7 @@ class ApplicationController @Inject()(
    *
    * @return The user id
    */
-  def user: Action[AnyContent] = silhouette.SecuredAction { implicit request =>
+  def user(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
     Ok(User.getUserId(request.identity.loginInfo))
   }
 
@@ -53,9 +47,9 @@ class ApplicationController @Inject()(
    *
    * @return The result to display.
    */
-  def signOut: Action[AnyContent] = silhouette.SecuredAction.async { implicit request =>
-    val result = Redirect(routes.ScalaRoutes.appIndex())
+  def signOut(request: SecuredRequest[ZetaEnv, AnyContent]): Future[AuthenticatorResult] = {
+    val result = Redirect(routes.ScalaRoutes.getIndex())
     silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
-    silhouette.env.authenticatorService.discard(request.authenticator, result)
+    silhouette.env.authenticatorService.discard(request.authenticator, result)(request)
   }
 }

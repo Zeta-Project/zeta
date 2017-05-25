@@ -3,7 +3,7 @@ package de.htwg.zeta.server.generator.generators.shape
 import de.htwg.zeta.server.generator.model.diagram.node.Node
 import de.htwg.zeta.server.generator.parser.Cache
 import models.file.File
-import de.htwg.zeta.server.model.result.Result
+import de.htwg.zeta.server.model.result.Unreliable
 
 /**
  * The ShapeGenerator Object
@@ -19,8 +19,8 @@ object ShapeGenerator {
   /**
    * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js as Result
    */
-  def doGenerateResult(cache: Cache, nodes: List[Node]): Result[List[File]] = {
-    Result(() => doGenerateGenerators(cache, nodes), "failed trying to create the Shape generators")
+  def doGenerateResult(cache: Cache, nodes: List[Node]): Unreliable[List[File]] = {
+    Unreliable(() => doGenerateGenerators(cache, nodes), "failed trying to create the Shape generators")
   }
 
   /**
