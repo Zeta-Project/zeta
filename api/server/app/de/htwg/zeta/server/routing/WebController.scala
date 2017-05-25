@@ -1,5 +1,6 @@
-package controllers
+package de.htwg.zeta.server.routing
 
+import controllers.WebJarAssets
 import de.htwg.zeta.server.controller.BackendController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.SocialAuthController

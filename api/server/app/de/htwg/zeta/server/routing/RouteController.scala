@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.routing.authentication
+package de.htwg.zeta.server.routing
 
 import javax.inject.Inject
 
@@ -7,6 +7,12 @@ import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.Authorization
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import de.htwg.zeta.server.routing.authentication.UnAuthenticatedWebSocket
+import de.htwg.zeta.server.routing.authentication.UnAuthenticatedAction
+import de.htwg.zeta.server.routing.authentication.AuthenticatedWebSocket
+import de.htwg.zeta.server.routing.authentication.AuthenticatedAction
+import de.htwg.zeta.server.routing.authentication.BasicAction
+import de.htwg.zeta.server.routing.authentication.BasicWebSocket
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.server.util.auth.WithProvider
 import play.api.i18n.MessagesApi

@@ -1,8 +1,9 @@
-package controllers
+package de.htwg.zeta.server.routing
 
 import javax.inject.Inject
 
 import com.google.inject.Provider
+import controllers.WebJarAssets
 import de.htwg.zeta.server.controller.CodeEditorController
 import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.GeneratorController
