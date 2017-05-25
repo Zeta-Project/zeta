@@ -39,13 +39,13 @@ trait AbstractWebSocketAPI[REQ <: Request[AnyContent]] extends AbstractWebSocket
   }
 
 
-  implicit class IF1[IN, OUT](val func: (REQ) => Future[((ActorRef) => Props, MessageFlowTransformer[IN, OUT])]) // scalastyle:ignore
+  implicit class ReqToFutureOfBothRefToPropsAndTrans[IN, OUT](val func: (REQ) => Future[((ActorRef) => Props, MessageFlowTransformer[IN, OUT])]) // scalastyle:ignore
 
-  def apply[IN, OUT](func: IF1[IN, OUT]): WebSocket = buildWebSocket(toResultTuple[IN, OUT](func.func))
+  def apply[IN, OUT](func: ReqToFutureOfBothRefToPropsAndTrans[IN, OUT]): WebSocket = buildWebSocket(toResultTuple[IN, OUT](func.func))
 
-  implicit class IF2[IN, OUT](val func: (REQ) => (Future[(ActorRef) => Props], Future[MessageFlowTransformer[IN, OUT]])) // scalastyle:ignore
+  implicit class ReqToFutureOfRefToPropsAndTrans[IN, OUT](val func: (REQ) => (Future[(ActorRef) => Props], Future[MessageFlowTransformer[IN, OUT]])) // scalastyle:ignore
 
-  def apply[IN, OUT](cont: IF2[IN, OUT]): WebSocket = {
+  def apply[IN, OUT](cont: ReqToFutureOfRefToPropsAndTrans[IN, OUT]): WebSocket = {
     val propsAndTrans = (r: REQ) => {
       val t = cont.func(r)
       t._1.flatMap(props => t._2.map(trans => (props, trans))(system.dispatcher))(system.dispatcher)
@@ -53,9 +53,9 @@ trait AbstractWebSocketAPI[REQ <: Request[AnyContent]] extends AbstractWebSocket
     buildWebSocket(toResultTuple[IN, OUT](propsAndTrans))
   }
 
-  implicit class IF3[IN, OUT](val func: (REQ) => (Future[(ActorRef) => Props], MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
+  implicit class ReqToFutureOfRefToProps[IN, OUT](val func: (REQ) => (Future[(ActorRef) => Props], MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
 
-  def apply[IN, OUT](cont: IF3[IN, OUT]): WebSocket = {
+  def apply[IN, OUT](cont: ReqToFutureOfRefToProps[IN, OUT]): WebSocket = {
     val propsAndTrans: (REQ) => Future[((ActorRef) => Props, MessageFlowTransformer[IN, OUT])] = (r: REQ) => {
       val t = cont.func(r)
       t._1.map(props => (props, t._2))(system.dispatcher)
@@ -63,31 +63,31 @@ trait AbstractWebSocketAPI[REQ <: Request[AnyContent]] extends AbstractWebSocket
     buildWebSocket(toResultTuple[IN, OUT](propsAndTrans))
   }
 
-  implicit class IF4(val func: (ActorRef, REQ) => Props) // scalastyle:ignore
+  implicit class RefAndReqToProps(val func: (ActorRef, REQ) => Props) // scalastyle:ignore
 
-  def apply(getProps: IF4): WebSocket = buildWebSocket(toFutureFunction(getPropsAndTrans(getProps.func)))
+  def apply(getProps: RefAndReqToProps): WebSocket = buildWebSocket(toFutureFunction(getPropsAndTrans(getProps.func)))
 
-  implicit class IF5[IN, OUT](val func: (ActorRef, REQ) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
+  implicit class RefAndReqToPropsAndTrans[IN, OUT](val func: (ActorRef, REQ) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
 
-  def apply[IN, OUT](getProps: IF5[IN, OUT]): WebSocket = {
+  def apply[IN, OUT](getProps: RefAndReqToPropsAndTrans[IN, OUT]): WebSocket = {
     val func = (req: REQ) => (out: ActorRef) => getProps.func(out, req)
     buildWebSocket(toFutureFunction(func))
   }
 
-  implicit class IF6(val func: (ActorRef) => Props) // scalastyle:ignore
+  implicit class RefToProps(val func: (ActorRef) => Props) // scalastyle:ignore
 
-  def apply(getProps: IF6): WebSocket = apply((out: ActorRef, _: REQ) => getProps.func(out))
+  def apply(getProps: RefToProps): WebSocket = apply((out: ActorRef, _: REQ) => getProps.func(out))
 
-  implicit class IF7[IN, OUT](val func: (REQ, ActorRef) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
+  implicit class ReqAndRefToPropsAndTrans[IN, OUT](val func: (REQ, ActorRef) => (Props, MessageFlowTransformer[IN, OUT])) // scalastyle:ignore
 
-  def apply[IN, OUT](getProps: IF7[IN, OUT]): WebSocket = {
+  def apply[IN, OUT](getProps: ReqAndRefToPropsAndTrans[IN, OUT]): WebSocket = {
     val func = (req: REQ) => (out: ActorRef) => getProps.func(req, out)
     buildWebSocket(toFutureFunction(func))
   }
 
-  implicit class IF8(val func: (REQ, ActorRef) => (Props)) // scalastyle:ignore
+  implicit class ReqAndRefToProps(val func: (REQ, ActorRef) => (Props)) // scalastyle:ignore
 
-  def apply(getProps: IF8): WebSocket = apply((out: ActorRef, req: REQ) => getProps.func(req, out))
+  def apply(getProps: ReqAndRefToProps): WebSocket = apply((out: ActorRef, req: REQ) => getProps.func(req, out))
 
 
 }
