@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.authentication
+package de.htwg.zeta.server.routing.authentication
 
 import scala.concurrent.Future
 import scala.concurrent.Promise
@@ -12,7 +12,7 @@ import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
-import de.htwg.zeta.server.authentication
+import de.htwg.zeta.server.routing.authentication
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.http.websocket.Message

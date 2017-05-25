@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.authentication
+package de.htwg.zeta.server.routing.authentication
 
 import scala.concurrent.Future
 
@@ -6,21 +6,20 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
-import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 
 /**
  */
-class AuthenticatedWebSocket(
+class BasicWebSocket(
     override val system: ActorSystem,
     override val silhouette: Silhouette[ZetaEnv],
     override val mat: Materializer
-) extends AbstractWebSocketAPI[SecuredRequest[ZetaEnv, AnyContent]] {
+) extends AbstractWebSocketAPI[Request[AnyContent]] {
 
   override protected[authentication] def handleRequest[T](request: Request[AnyContent])
-    (buildFlow: (SecuredRequest[ZetaEnv, AnyContent]) => Future[HandlerResult[T]]): Future[HandlerResult[T]] = {
-    silhouette.SecuredRequestHandler(buildFlow)(request)
+    (buildFlow: (Request[AnyContent]) => Future[HandlerResult[T]]): Future[HandlerResult[T]] = {
+    buildFlow(request)
   }
 }

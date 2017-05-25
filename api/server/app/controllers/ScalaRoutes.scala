@@ -3,8 +3,8 @@ package controllers
 import java.util.UUID
 import javax.inject.Inject
 
-import de.htwg.zeta.server.authentication.RouteController
-import de.htwg.zeta.server.authentication.RouteControllerContainer
+import de.htwg.zeta.server.routing.authentication.RouteController
+import de.htwg.zeta.server.routing.authentication.RouteControllerContainer
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
 import play.api.mvc.Action

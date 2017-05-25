@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.authentication
+package de.htwg.zeta.server.routing.authentication
 
 import javax.inject.Inject
 
