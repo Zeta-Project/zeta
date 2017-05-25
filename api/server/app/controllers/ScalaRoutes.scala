@@ -7,7 +7,6 @@ import de.htwg.zeta.server.routing.WebController
 import de.htwg.zeta.server.routing.WebControllerContainer
 import de.htwg.zeta.server.routing.RouteController
 import de.htwg.zeta.server.routing.RouteControllerContainer
-import de.htwg.zeta.server.routing.authentication.RouteControllerContainer
 import play.api.libs.json.JsValue
 import play.api.mvc.WebSocket
 import play.api.mvc.Action
