@@ -157,7 +157,7 @@
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.RedundantIfChecker" level="error"/>
  <check enabled="true" class="org.scalastyle.scalariform.ReturnChecker" level="error"/>
- <check enabled="true" class="org.scalastyle.scalariform.ScalaDocChecker" level="warning">
+ <check enabled="false" class="org.scalastyle.scalariform.ScalaDocChecker" level="warning">
   <parameters>
    <parameter name="ignoreRegex">(.*Spec$)|(.*SpecIT$)</parameter>
   </parameters>
