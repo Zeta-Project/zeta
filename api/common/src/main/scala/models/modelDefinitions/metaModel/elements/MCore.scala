@@ -59,16 +59,14 @@ class MClass(
     _superTypes: => Seq[MClass] = superTypes,
     _inputs: => Seq[MLinkDef] = inputs,
     _outputs: => Seq[MLinkDef] = outputs
-  ) =
-    new MClass(name, abstractness, _superTypes, _inputs, _outputs, attributes)
+  ): MClass = new MClass(name, abstractness, _superTypes, _inputs, _outputs, attributes)
 
   /**
    * convenience method for updating attributes
    * @param _attributes the updated attributes
    * @return the new MClass
    */
-  def updateAttributes(_attributes: Seq[MAttribute]) =
-    new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
+  def updateAttributes(_attributes: Seq[MAttribute]): MClass = new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
 
   /**
    * @return String
@@ -106,7 +104,7 @@ class MClass(
    * @param inputName the name of the incoming relationship
    * @return true if the relationship is defined within the type hierarchy
    */
-  def typeHasInput(inputName: String) = typeHierarchy.exists(
+  def typeHasInput(inputName: String): Boolean = typeHierarchy.exists(
     cls => cls.inputs.exists(link => link.mType.name == inputName)
   )
 
@@ -115,7 +113,7 @@ class MClass(
    * @param outputName the name of the outgoing relationship
    * @return true if the relationship is defined within the type hierarchy
    */
-  def typeHasOutput(outputName: String) = typeHierarchy.exists(
+  def typeHasOutput(outputName: String): Boolean = typeHierarchy.exists(
     cls => cls.outputs.exists(link => link.mType.name == outputName)
   )
 
@@ -124,7 +122,7 @@ class MClass(
    * @param superName the name of the supertype in question
    * @return true if the given name belongs to a supertype
    */
-  def typeHasSuperType(superName: String) = typeHierarchy.exists(
+  def typeHasSuperType(superName: String): Boolean = typeHierarchy.exists(
     cls => cls.name == superName
   )
 
@@ -139,7 +137,7 @@ class MClass(
    * @param attributeName the name of the attribute to find
    * @return the MAttribute, if present
    */
-  def findMAttribute(attributeName: String) = {
+  def findMAttribute(attributeName: String): Option[MAttribute] = {
     @tailrec
     def find(remaining: List[MClass]): Option[MAttribute] = remaining match {
       case Nil => None
@@ -163,7 +161,7 @@ object MClass {
     inputs: Seq[MLinkDef],
     outputs: Seq[MLinkDef],
     attributes: Seq[MAttribute]
-  ) = new MClass(name, abstractness, superTypes, inputs, outputs, attributes)
+  ): MClass = new MClass(name, abstractness, superTypes, inputs, outputs, attributes)
 
   def unapply(m: MClass): Option[(String, Boolean, Seq[MClass], Seq[MLinkDef], Seq[MLinkDef], Seq[MAttribute])] =
     Some((m.name, m.abstractness, m.superTypes, m.inputs, m.outputs, m.attributes))
@@ -195,11 +193,11 @@ class MReference(
    * @param _target possible update for target
    * @return the new MReference
    */
-  def updateLinks(_source: => Seq[MLinkDef] = source, _target: => Seq[MLinkDef] = target) =
+  def updateLinks(_source: => Seq[MLinkDef] = source, _target: => Seq[MLinkDef] = target): MReference =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, _source, _target, attributes)
 
   /** convenience method for updating attributes */
-  def updateAttributes(_attributes: Seq[MAttribute]) =
+  def updateAttributes(_attributes: Seq[MAttribute]): MReference =
     new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, _attributes)
 
   /**
@@ -222,7 +220,7 @@ object MReference {
     source: Seq[MLinkDef],
     target: Seq[MLinkDef],
     attributes: Seq[MAttribute]
-  ) = new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes)
+  ): MReference = new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes)
 
   def unapply(m: MReference): Option[(String, Boolean, Boolean, Seq[MLinkDef], Seq[MLinkDef], Seq[MAttribute])] =
     Some((m.name, m.sourceDeletionDeletesTarget, m.targetDeletionDeletesSource, m.source, m.target, m.attributes))
@@ -293,11 +291,11 @@ class EnumSymbol(val name: String, _attributeType: => MEnum) extends AttributeVa
 
   override def hashCode: Int = 41 * (41 + name.hashCode) // + attributeType.hashCode
 
-  override def toString = s"EnumSymbol($name)"
+  override def toString: String = s"EnumSymbol($name)"
 }
 
 object EnumSymbol {
-  def apply(name: String, attributeType: MEnum) = new EnumSymbol(name, attributeType)
+  def apply(name: String, attributeType: MEnum): EnumSymbol = new EnumSymbol(name, attributeType)
 
   def unapply(e: EnumSymbol): Option[(String, MEnum)] = Some((e.name, e.attributeType))
 }

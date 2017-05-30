@@ -5,12 +5,12 @@ import java.time.Instant
 import models.modelDefinitions.helper.HLink
 import play.api.libs.functional.syntax
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.__
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
+import play.api.libs.json.__
 
 /**
  * The container that is used to persist metamodel definitions, contains additional metadata
@@ -32,7 +32,7 @@ case class MetaModelEntity(
     links: Option[Seq[HLink]] = None
 ) {
   // sets initial data for insert
-  def asNew(userId: String) = {
+  def asNew(userId: String): MetaModelEntity = {
     val now = Instant.now
     copy(
       id = s"MetaModel-modigen-${java.util.UUID.randomUUID().toString}",
@@ -42,7 +42,7 @@ case class MetaModelEntity(
     )
   }
   // overrides unchanging data for update
-  def asUpdate(id: String, userId: String) = {
+  def asUpdate(id: String, userId: String): MetaModelEntity = {
     copy(
       id = id,
       userId = userId,
@@ -54,7 +54,7 @@ case class MetaModelEntity(
 
 object MetaModelEntity {
 
-  implicit val reads = Json.reads[MetaModelEntity]
+  implicit val reads: Reads[MetaModelEntity] = Json.reads[MetaModelEntity]
 
   implicit val writes: OWrites[MetaModelEntity] = (
     (__ \ "id").write[String] and
@@ -108,6 +108,6 @@ object MetaModelShortInfo {
     (__ \ "links").readNullable[Seq[HLink]]
   )(MetaModelShortInfo.apply _)
 
-  implicit val writes = Json.writes[MetaModelShortInfo]
+  implicit val writes: OWrites[MetaModelShortInfo] = Json.writes[MetaModelShortInfo]
 }
 

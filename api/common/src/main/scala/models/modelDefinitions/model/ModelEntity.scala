@@ -10,10 +10,10 @@ import play.api.libs.functional.syntax
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
-import play.api.libs.json.__
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
+import play.api.libs.json.__
 
 /**
  * The container that is used to persist model definitions, contains additional metadata
@@ -35,7 +35,7 @@ case class ModelEntity(
     links: Option[Seq[HLink]] = None
 ) {
   // sets initial data for insert
-  def asNew(userId: String, metaModelId: String) = {
+  def asNew(userId: String, metaModelId: String): ModelEntity = {
     val now = Instant.now
     copy(
       id = java.util.UUID.randomUUID().toString,
@@ -46,7 +46,7 @@ case class ModelEntity(
     )
   }
   // overrides unchanging data for update
-  def asUpdate(id: String) = {
+  def asUpdate(id: String): ModelEntity = {
     copy(
       id = id,
       updated = Instant.now
@@ -130,5 +130,5 @@ object ModelShortInfo {
     (__ \ "links").readNullable[Seq[HLink]]
   )(ModelShortInfo.apply _)
 
-  implicit val writes = Json.writes[ModelShortInfo]
+  implicit val writes: OWrites[ModelShortInfo] = Json.writes[ModelShortInfo]
 }

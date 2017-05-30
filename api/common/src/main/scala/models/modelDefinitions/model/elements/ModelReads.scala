@@ -1,5 +1,8 @@
 package models.modelDefinitions.model.elements
 
+import scala.annotation.tailrec
+import scala.collection.immutable.Seq
+
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
@@ -8,7 +11,6 @@ import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue
-
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.JsError
@@ -19,9 +21,6 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.__
 
-import scala.annotation.tailrec
-import scala.collection.immutable.Seq
-
 /**
  * Reads[T] for Model structures (bottom of file)
  * Contains also the necessary logic for graph initialization
@@ -29,12 +28,12 @@ import scala.collection.immutable.Seq
 
 object ModelReads {
 
-  def emtpyNode(id: String) = {
+  def emtpyNode(id: String): Node = {
     val mclass = MClass("", false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
     Node(id, mclass, Seq[ToEdges](), Seq[ToEdges](), Seq[Attribute]())
   }
 
-  def emtpyEdge(id: String) = {
+  def emtpyEdge(id: String): Edge = {
     val mReference = MReference("", false, false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
     new Edge(id, mReference, Seq[ToNodes](), Seq[ToNodes](), Seq[Attribute]())
   }
@@ -43,8 +42,8 @@ object ModelReads {
     val message: String
   }
 
-  def elementMapReads(implicit meta: MetaModel) = new Reads[Map[String, ModelElement]] {
-    implicit val elementReads = modelElementReads(meta)
+  def elementMapReads(implicit meta: MetaModel): Reads[Map[String, ModelElement]] = new Reads[Map[String, ModelElement]] {
+    implicit val elementReads: Reads[ModelElement] = modelElementReads(meta)
 
     override def reads(json: JsValue): JsResult[Map[String, ModelElement]] = {
       json.validate[Seq[ModelElement]] match {
@@ -76,16 +75,14 @@ object ModelReads {
     def wire(mapping: Map[String, ModelElement]): Map[String, ModelElement] = {
       val builder = new {
         val finalMap: Map[String, ModelElement] = mapping.mapValues {
-          _ match {
-            case n: Node => n.updateLinks(
-              wireEdges(finalMap, n.outputs),
-              wireEdges(finalMap, n.inputs)
-            )
-            case e: Edge => e.updateLinks(
-              wireNodes(finalMap, e.source),
-              wireNodes(finalMap, e.target)
-            )
-          }
+          case n: Node => n.updateLinks(
+            wireEdges(finalMap, n.outputs),
+            wireEdges(finalMap, n.inputs)
+          )
+          case e: Edge => e.updateLinks(
+            wireNodes(finalMap, e.source),
+            wireNodes(finalMap, e.target)
+          )
         }
       }
       builder.finalMap
@@ -97,8 +94,8 @@ object ModelReads {
 
     def checkEdgeLinks(source: String, links: Seq[ToEdges]): List[String] = {
       for {
-        toEdges <- links.toList;
-        edge <- toEdges.edges;
+        toEdges <- links.toList
+        edge <- toEdges.edges
         target = edge.id if !mapping.contains(target) || !mapping(target).isInstanceOf[Edge]
       } yield {
         s"invalid link to edge: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
@@ -107,8 +104,8 @@ object ModelReads {
 
     def checkNodeLinks(source: String, links: Seq[ToNodes]): List[String] = {
       for {
-        toNodes <- links.toList;
-        node <- toNodes.nodes;
+        toNodes <- links.toList
+        node <- toNodes.nodes
         target = node.id if !mapping.contains(target) || !mapping(target).isInstanceOf[Node]
       } yield {
         s"invalid link to node: '$source' -> '$target' ('$target' is missing or doesn't match expected type)"
@@ -144,7 +141,7 @@ object ModelReads {
 
   def modelElementReads(implicit meta: MetaModel) = new Reads[ModelElement] {
 
-    def hasKey(name: String, json: JsValue) = (json \ name).toOption.isDefined
+    def hasKey(name: String, json: JsValue): Boolean = (json \ name).toOption.isDefined
 
     override def reads(json: JsValue): JsResult[ModelElement] = {
       if (hasKey("mClass", json)) {
@@ -177,9 +174,9 @@ object ModelReads {
     }
   }.toList
 
-  def attributesReads(mAttributes: Seq[MAttribute]) = Reads { json =>
+  def attributesReads(mAttributes: Seq[MAttribute]): Reads[List[Attribute]] = Reads { json =>
 
-    def locate(e: scala.Seq[(JsPath, scala.Seq[ValidationError])], idx: Int) = e.map { case (p, valerr) => (JsPath(idx)) ++ p -> valerr }
+    def locate(e: scala.Seq[(JsPath, scala.Seq[ValidationError])], idx: Int) = e.map { case (p, valerr) => JsPath(idx) ++ p -> valerr }
 
     buildAttributeMap(mAttributes, json)
       .iterator.zipWithIndex.foldLeft(Right(Vector.empty): Either[scala.Seq[(JsPath, scala.Seq[ValidationError])], Vector[Attribute]]) {

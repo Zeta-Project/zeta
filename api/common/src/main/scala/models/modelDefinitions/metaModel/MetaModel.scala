@@ -1,5 +1,7 @@
 package models.modelDefinitions.metaModel
 
+import scala.collection.immutable.List
+
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MCoreReads.mObjectMapReads
 import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
@@ -7,14 +9,12 @@ import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
-import play.api.libs.json.__
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.Reads.functorReads
 import play.api.libs.json.Writes
-
-import scala.collection.immutable.List
+import play.api.libs.json.__
 
 /**
  * Immutable container for metamodel definitions
@@ -60,9 +60,9 @@ case class MetaModel(
   /**
    * Some convenience methods that check the presence of certain elements...
    */
-  def containsMClass(name: String) = getMClass(name).isDefined
-  def containsMReference(name: String) = getMReference(name).isDefined
-  def containsMEnum(name: String) = getMEnum(name).isDefined
+  def containsMClass(name: String): Boolean = getMClass(name).isDefined
+  def containsMReference(name: String): Boolean = getMReference(name).isDefined
+  def containsMEnum(name: String): Boolean = getMEnum(name).isDefined
 
   /**
    * Checks if MClass is subtype of another MClass
