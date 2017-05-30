@@ -4,19 +4,34 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.server.model.modelValidator.generator.{ValidatorGenerator, ValidatorGeneratorResult}
-import de.htwg.zeta.server.util.auth.{RepositoryFactory, ZetaEnv}
+import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
+import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
+import de.htwg.zeta.server.util.auth.RepositoryFactory
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
-import models.document.{AllMetaModels, MetaModelEntity, Repository}
+import models.document.AllMetaModels
+import models.document.MetaModelEntity
+import models.document.Repository
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel._
-import models.modelDefinitions.metaModel.elements.{MClass, MReference}
+import models.modelDefinitions.metaModel.MetaModelShortInfo
+import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.Shape
+import models.modelDefinitions.metaModel.Style
+import models.modelDefinitions.metaModel.Diagram
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
-import play.api.libs.json.{JsError, Json, JsValue}
-import play.api.mvc.{AnyContent, Controller, Result}
-import rx.lang.scala.Notification.{OnError, OnNext}
+import play.api.libs.json.JsError
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.mvc.AnyContent
+import play.api.mvc.Controller
+import play.api.mvc.Result
+import rx.lang.scala.Notification.OnError
+import rx.lang.scala.Notification.OnNext
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.concurrent.ExecutionContext.Implicits.global
 
 /**

@@ -1,13 +1,15 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl
 
-import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.{D19_NodesNoAttributes, D22_NodesNoInputs, D23_NodesNoOutputs}
+import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodesNoAttributes
+import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodesNoInputs
+import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodesNoOutputs
 
 class NodesOfType(nodeType: String) {
 
-  def haveNoAttributes() = new D19_NodesNoAttributes(nodeType)
+  def haveNoAttributes() = new NodesNoAttributes(nodeType)
 
-  def haveNoInputs() = new D22_NodesNoInputs(nodeType)
+  def haveNoInputs() = new NodesNoInputs(nodeType)
 
-  def haveNoOutputs() = new D23_NodesNoOutputs(nodeType)
+  def haveNoOutputs() = new NodesNoOutputs(nodeType)
 
 }

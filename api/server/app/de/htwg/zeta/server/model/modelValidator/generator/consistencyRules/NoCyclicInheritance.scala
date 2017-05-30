@@ -3,7 +3,8 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 import de.htwg.zeta.server.model.modelValidator.Util
 import models.modelDefinitions.metaModel.MetaModel
 
-import scala.collection.{breakOut, mutable}
+import scala.collection.breakOut
+import scala.collection.mutable
 
 class NoCyclicInheritance extends MetaModelRule {
 
@@ -24,14 +25,19 @@ class NoCyclicInheritance extends MetaModelRule {
         visited(current) = true
         inStack(current) = true
 
-        for (adj <- adjacencyMap(current)) {
-          if (!visited(adj) && isCyclicRec(adj)) return true
-          if (inStack(adj)) return true
-        }
-      }
+        val cycleFound = adjacencyMap(current).exists(adj => (!visited(adj) && isCyclicRec(adj)) || inStack(adj))
 
-      inStack(current) = false
-      false
+        if (cycleFound) {
+          true
+        } else {
+          inStack(current) = false
+          false
+        }
+
+      } else {
+        inStack(current) = false
+        false
+      }
 
     }
 

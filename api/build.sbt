@@ -111,7 +111,10 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.reactivemongo" %% "play2-reactivemongo" % "0.11.9",
     "org.scala-lang" % "scala-swing" % "2.11.0-M7",
 
-    "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion
+    "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
+
+    "org.scala-lang"            % "scala-reflect"             % "2.11.8",
+    "org.scala-lang"            % "scala-compiler"            % "2.11.8"
   )
 ).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend)
 

@@ -1,9 +1,16 @@
 package de.htwg.zeta.server.model.modelValidator
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements._
+import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.MObject
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.AttributeType
+import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.model.Model
-import models.modelDefinitions.model.elements.{Edge, ModelElement, Node}
+import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.ModelElement
+import models.modelDefinitions.model.elements.Node
 
 import scala.annotation.tailrec
 
@@ -35,9 +42,30 @@ object Util {
 
   def getAttributeTypeClassName(attributeType: AttributeType): String = attributeType.getClass.getSimpleName.split("\\$").last
 
-  case class Att(name: String, `type`: AttributeType, lowerBound: Int, upperBound: Int, localUnique: Boolean, globalUnique: Boolean, constant: Boolean, ordered: Boolean, singleAssignment: Boolean, transient: Boolean, expression: String, default: String)
+  case class Att(
+      name: String,
+      `type`: AttributeType,
+      lowerBound: Int,
+      upperBound: Int,
+      localUnique: Boolean,
+      globalUnique: Boolean,
+      constant: Boolean,
+      ordered: Boolean,
+      singleAssignment: Boolean,
+      transient: Boolean,
+      expression: String,
+      default: String
+    )
 
-  case class El(name: String, superTypes: Seq[String], subTypes: Seq[String], attributes: Seq[Att], abstractness: Boolean, inputs: Seq[LinkDef], outputs: Seq[LinkDef])
+  case class El(
+      name: String,
+      superTypes: Seq[String],
+      subTypes: Seq[String],
+      attributes: Seq[Att],
+      abstractness: Boolean,
+      inputs: Seq[LinkDef],
+      outputs: Seq[LinkDef]
+    )
 
   case class LinkDef(name: String, lowerBound: Int, upperBound: Int)
 
@@ -151,14 +179,16 @@ object Util {
 
     @tailrec
     def mapGraphElementsTopDownRec(elements: Seq[El], intermediateGraph: Seq[El]): Seq[El] = {
-      if (elements.isEmpty) return intermediateGraph
+      if (elements.isEmpty) {
+        intermediateGraph
+      } else {
+        val filteredElements = elements.filterNot(el => intermediateGraph.map(_.name).contains(el.name))
 
-      val filteredElements = elements.filterNot(el => intermediateGraph.map(_.name).contains(el.name))
+        val newIntermediateGraph = intermediateGraph ++ filteredElements.map(mappingFn(_, intermediateGraph))
+        val subElements = filteredElements.flatMap(_.subTypes).map(elementName => graph.find(_.name == elementName).get)
 
-      val newIntermediateGraph = intermediateGraph ++ filteredElements.map(mappingFn(_, intermediateGraph))
-      val subElements = filteredElements.flatMap(_.subTypes).map(elementName => graph.find(_.name == elementName).get)
-
-      mapGraphElementsTopDownRec(subElements, newIntermediateGraph)
+        mapGraphElementsTopDownRec(subElements, newIntermediateGraph)
+      }
     }
 
     val topElements = graph.filter(_.superTypes.isEmpty)

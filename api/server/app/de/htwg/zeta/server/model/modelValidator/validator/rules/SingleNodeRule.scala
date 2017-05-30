@@ -2,7 +2,8 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules
 
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
-import models.modelDefinitions.model.elements.{ModelElement, Node}
+import models.modelDefinitions.model.elements.ModelElement
+import models.modelDefinitions.model.elements.Node
 
 trait SingleNodeRule extends ElementsRule {
 

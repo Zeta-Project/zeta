@@ -1,7 +1,9 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
-import java.io.{File, PrintWriter}
-import java.nio.file.{Files, Paths}
+import java.io.File
+import java.io.PrintWriter
+import java.nio.file.Files
+import java.nio.file.Paths
 
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
@@ -9,6 +11,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.MetaModel
 
+import scala.reflect.runtime.universe
+import scala.tools.reflect.ToolBox
 import scala.util.Try
 
 case class ValidatorGeneratorResult(success: Boolean, result: String, created: Boolean)
@@ -54,10 +58,9 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
 
   def doGenerate(): String =
     s"""override val metaModelId = "${metaModelEntity.id()}"
-       |override val metaModelRevision = "${metaModelEntity._rev}"
-       |
-       |override val metaModelDependentRules = ${generateRules(metaModelEntity.metaModel).mkString("Seq(\n    ", ",\n    ", "\n  )")}
-     """.stripMargin
+      |override val metaModelRevision = "${metaModelEntity._rev}"
+      |
+      |override val metaModelDependentRules = ${generateRules(metaModelEntity.metaModel).mkString("Seq(\n    ", ",\n    ", "\n  )")}""".stripMargin
 
   def generateRules(metaModel: MetaModel): Seq[String] = rules(metaModel).map(_.dslStatement)
 
@@ -89,9 +92,6 @@ object ValidatorGenerator {
 
   def load(metaModelId: String): Option[ModelValidator] = {
 
-    import reflect.runtime.universe
-    import scala.tools.reflect.ToolBox
-
     if (validatorExists(metaModelId)) {
 
       val fileContents = readFile(filePath(metaModelId))
@@ -105,15 +105,16 @@ object ValidatorGenerator {
         case _ => None
       }
 
-    } else None
+    } else {
+      None
+    }
   }
 
   def addBoilerplate(fileContents: String): String =
     s"""import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
-       |import de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl._
-       |new ModelValidator {
-       |$fileContents
-       |}
-       |""".stripMargin
+      |import de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl._
+      |new ModelValidator {
+      |$fileContents
+      |}""".stripMargin
 
 }
