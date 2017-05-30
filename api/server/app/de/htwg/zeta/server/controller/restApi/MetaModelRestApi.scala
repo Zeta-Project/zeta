@@ -2,36 +2,22 @@ package de.htwg.zeta.server.controller.restApi
 
 import javax.inject.Inject
 
-import scala.concurrent.Future
-import scala.concurrent.Promise
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.RepositoryFactory
+import de.htwg.zeta.server.model.modelValidator.generator.{ValidatorGenerator, ValidatorGeneratorResult}
+import de.htwg.zeta.server.util.auth.{RepositoryFactory, ZetaEnv}
 import models.User
-import models.document.AllMetaModels
-import models.document.MetaModelEntity
-import models.document.Repository
+import models.document.{AllMetaModels, MetaModelEntity, Repository}
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.Diagram
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.MetaModelShortInfo
-import models.modelDefinitions.metaModel.Shape
-import models.modelDefinitions.metaModel.Style
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel._
+import models.modelDefinitions.metaModel.elements.{MClass, MReference}
 import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
-import play.api.libs.json.JsError
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
-import play.api.mvc.Controller
-import play.api.mvc.Result
-import play.api.mvc.AnyContent
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
+import play.api.libs.json.{JsError, Json, JsValue}
+import play.api.mvc.{AnyContent, Controller, Result}
+import rx.lang.scala.Notification.{OnError, OnNext}
+
+import scala.concurrent.{Future, Promise}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * RESTful API for metamodel definitions
@@ -290,4 +276,26 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
       }
     )
   }
+
+  def getValidator(id: String, regenerateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (metaModelEntity: MetaModelEntity) => {
+      val validatorGenerator = new ValidatorGenerator(metaModelEntity)
+      val regenerate = regenerateOpt.getOrElse(false)
+      val noContent = noContentOpt.getOrElse(false)
+
+      validatorGenerator.getGenerator(regenerate) match {
+        case ValidatorGeneratorResult(false, msg, _) => BadRequest(msg)
+        case ValidatorGeneratorResult(_, validator, true) => if (noContent) NoContent else Created(validator)
+        case ValidatorGeneratorResult(_, validator, false) => if (noContent) NoContent else Ok(validator)
+      }
+
+    })
+  }
+
+  def deleteValidator(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    Future.successful {
+      if (ValidatorGenerator.deleteValidator(id)) NoContent else NotFound
+    }
+  }
+
 }

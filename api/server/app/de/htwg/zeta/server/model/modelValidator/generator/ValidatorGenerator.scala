@@ -109,8 +109,8 @@ object ValidatorGenerator {
   }
 
   def addBoilerplate(fileContents: String): String =
-    s"""import models.modelValidator.validator.ModelValidator
-       |import models.modelValidator.validator.rules.validatorDsl._
+    s"""import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
+       |import de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl._
        |new ModelValidator {
        |$fileContents
        |}
