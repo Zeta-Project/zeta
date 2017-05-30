@@ -6,10 +6,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 
 class EdgesOfType(edgeType: String) {
 
-  def haveNoAttributes() = new EdgesNoAttributes(edgeType)
+  def haveNoAttributes(): EdgesNoAttributes = new EdgesNoAttributes(edgeType)
 
-  def haveNoSources() = new EdgesNoSources(edgeType)
+  def haveNoSources(): EdgesNoSources = new EdgesNoSources(edgeType)
 
-  def haveNoTargets() = new EdgesNoTargets(edgeType)
+  def haveNoTargets(): EdgesNoTargets = new EdgesNoTargets(edgeType)
 
 }

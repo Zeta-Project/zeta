@@ -4,8 +4,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 
 class OutputsOfNodes(nodeType: String) {
 
-  def areOfTypes(outputTypes: Seq[String]) = new NodeOutputEdges(nodeType, outputTypes)
+  def areOfTypes(outputTypes: Seq[String]): NodeOutputEdges = new NodeOutputEdges(nodeType, outputTypes)
 
-  def toEdges(edgeType: String) = new OutputsOfNodesToEdges(nodeType, edgeType)
+  def toEdges(edgeType: String): OutputsOfNodesToEdges = new OutputsOfNodesToEdges(nodeType, edgeType)
 
 }

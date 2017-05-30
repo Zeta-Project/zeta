@@ -5,15 +5,15 @@ import java.io.PrintWriter
 import java.nio.file.Files
 import java.nio.file.Paths
 
+import scala.reflect.runtime.universe
+import scala.tools.reflect.ToolBox
+import scala.util.Try
+
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.MetaModelDependent
 import models.document.MetaModelEntity
 import models.modelDefinitions.metaModel.MetaModel
-
-import scala.reflect.runtime.universe
-import scala.tools.reflect.ToolBox
-import scala.util.Try
 
 case class ValidatorGeneratorResult(success: Boolean, result: String, created: Boolean)
 

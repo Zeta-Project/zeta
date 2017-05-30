@@ -4,6 +4,6 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 
 class AttributesOfTypeInMultipleNodes(attributeType: String, nodeTypes: Seq[String]) {
 
-  def areGlobalUnique() = new NodeAttributesGlobalUnique(nodeTypes, attributeType)
+  def areGlobalUnique(): NodeAttributesGlobalUnique = new NodeAttributesGlobalUnique(nodeTypes, attributeType)
 
 }

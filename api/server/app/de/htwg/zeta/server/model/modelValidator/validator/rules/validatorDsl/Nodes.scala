@@ -4,8 +4,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 
 object Nodes {
 
-  def areOfTypes(nodeTypes: Seq[String]) = new Nodes(nodeTypes)
+  def areOfTypes(nodeTypes: Seq[String]): Nodes = new Nodes(nodeTypes)
 
-  def ofType(nodeType: String) = new NodesOfType(nodeType)
+  def ofType(nodeType: String): NodesOfType = new NodesOfType(nodeType)
 
 }

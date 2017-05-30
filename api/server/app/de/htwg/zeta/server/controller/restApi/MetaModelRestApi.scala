@@ -2,6 +2,10 @@ package de.htwg.zeta.server.controller.restApi
 
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
@@ -13,14 +17,14 @@ import models.document.AllMetaModels
 import models.document.MetaModelEntity
 import models.document.Repository
 import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.MetaModelShortInfo
+import models.modelDefinitions.metaModel.Diagram
 import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.MetaModelShortInfo
 import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.Style
-import models.modelDefinitions.metaModel.Diagram
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
+import models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -29,10 +33,6 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-
-import scala.concurrent.Future
-import scala.concurrent.Promise
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * RESTful API for metamodel definitions

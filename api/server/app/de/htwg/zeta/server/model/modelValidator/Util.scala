@@ -1,18 +1,18 @@
 package de.htwg.zeta.server.model.modelValidator
 
+import scala.annotation.tailrec
+
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.MObject
-import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.AttributeType
 import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MObject
+import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
-
-import scala.annotation.tailrec
 
 object Util {
 

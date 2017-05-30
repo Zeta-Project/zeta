@@ -6,8 +6,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.AttributeType
-import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.AttributeValue
+import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
 import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
 import models.modelDefinitions.metaModel.elements.ScalarValue.MInt

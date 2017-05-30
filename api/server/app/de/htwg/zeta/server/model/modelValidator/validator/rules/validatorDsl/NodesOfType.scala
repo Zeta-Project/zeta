@@ -6,10 +6,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 
 class NodesOfType(nodeType: String) {
 
-  def haveNoAttributes() = new NodesNoAttributes(nodeType)
+  def haveNoAttributes(): NodesNoAttributes = new NodesNoAttributes(nodeType)
 
-  def haveNoInputs() = new NodesNoInputs(nodeType)
+  def haveNoInputs(): NodesNoInputs = new NodesNoInputs(nodeType)
 
-  def haveNoOutputs() = new NodesNoOutputs(nodeType)
+  def haveNoOutputs(): NodesNoOutputs = new NodesNoOutputs(nodeType)
 
 }

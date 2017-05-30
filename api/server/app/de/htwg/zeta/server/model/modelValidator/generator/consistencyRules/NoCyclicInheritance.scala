@@ -1,10 +1,10 @@
 package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
-import de.htwg.zeta.server.model.modelValidator.Util
-import models.modelDefinitions.metaModel.MetaModel
-
 import scala.collection.breakOut
 import scala.collection.mutable
+
+import de.htwg.zeta.server.model.modelValidator.Util
+import models.modelDefinitions.metaModel.MetaModel
 
 class NoCyclicInheritance extends MetaModelRule {
 

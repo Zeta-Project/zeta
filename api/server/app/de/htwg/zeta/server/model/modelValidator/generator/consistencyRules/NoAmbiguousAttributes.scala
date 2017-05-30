@@ -1,9 +1,9 @@
 package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
+import scala.util.Try
+
 import de.htwg.zeta.server.model.modelValidator.Util
 import models.modelDefinitions.metaModel.MetaModel
-
-import scala.util.Try
 
 class NoAmbiguousAttributes extends MetaModelRule {
 

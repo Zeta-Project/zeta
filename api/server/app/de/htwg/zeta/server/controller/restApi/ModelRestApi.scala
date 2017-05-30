@@ -2,6 +2,10 @@ package de.htwg.zeta.server.controller.restApi
 
 import javax.inject.Inject
 
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
@@ -15,8 +19,8 @@ import models.document.Repository
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
+import models.modelDefinitions.model.elements.Node
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
@@ -27,10 +31,6 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
-
-import scala.concurrent.Future
-import scala.concurrent.Promise
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for model definitions

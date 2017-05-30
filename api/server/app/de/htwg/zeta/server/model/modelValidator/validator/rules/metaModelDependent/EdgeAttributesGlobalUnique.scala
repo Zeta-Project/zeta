@@ -12,8 +12,8 @@ import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
 import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
 import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Edge
+import models.modelDefinitions.model.elements.ModelElement
 
 class EdgeAttributesGlobalUnique(edgeType: String, attributeType: String) extends ElementsRule with DslRule {
   override val name: String = getClass.getSimpleName

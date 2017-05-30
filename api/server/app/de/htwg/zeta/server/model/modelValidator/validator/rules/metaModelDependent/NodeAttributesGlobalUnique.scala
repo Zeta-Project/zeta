@@ -1,11 +1,13 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.mutable.ListBuffer
+
 import de.htwg.zeta.server.model.modelValidator.Util
+import de.htwg.zeta.server.model.modelValidator.Util.El
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
-import de.htwg.zeta.server.model.modelValidator.Util.El
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.AttributeValue
 import models.modelDefinitions.metaModel.elements.EnumSymbol
@@ -16,8 +18,6 @@ import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
-
-import scala.collection.mutable.ListBuffer
 
 class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) extends ElementsRule with DslRule {
   override val name: String = getClass.getSimpleName

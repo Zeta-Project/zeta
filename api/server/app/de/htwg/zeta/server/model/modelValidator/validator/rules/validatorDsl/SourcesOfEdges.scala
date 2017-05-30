@@ -4,8 +4,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 
 class SourcesOfEdges(edgeType: String) {
 
-  def areOfTypes(sourceTypes: Seq[String]) = new EdgeSourceNodes(edgeType, sourceTypes)
+  def areOfTypes(sourceTypes: Seq[String]): EdgeSourceNodes = new EdgeSourceNodes(edgeType, sourceTypes)
 
-  def toNodes(nodeType: String) = new SourcesOfEdgesToNodes(edgeType, nodeType)
+  def toNodes(nodeType: String): SourcesOfEdgesToNodes = new SourcesOfEdgesToNodes(edgeType, nodeType)
 
 }
