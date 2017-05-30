@@ -84,6 +84,7 @@ GET           /models/:modelId/definition/nodes/:nodeName                       
 GET           /models/:modelId/definition/edges                                      controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: String)
 GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: String, edgeName: String)
 DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: String)
+GET           /models/:modelId/validation                                            controllers.ScalaRoutes.getModelsValidation(modelId: String)
 
 ### Code Editor
 GET           /codeeditor/editor/:metaModelUuid/:dslType                             controllers.ScalaRoutes.getCodeeditorEditor(metaModelUuid: String, dslType: String)

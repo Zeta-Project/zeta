@@ -165,6 +165,8 @@ class ScalaRoutes @Inject()(
 
   def deleteModels(modelId: String): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
 
+  def getModelsValidation(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
+
 
   // ### Code Editor
   def getCodeeditorEditor(metaModelUuid: String, dslType: String): Action[AnyContent] =

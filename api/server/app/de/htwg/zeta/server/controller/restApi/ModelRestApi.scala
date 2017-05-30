@@ -2,38 +2,26 @@ package de.htwg.zeta.server.controller.restApi
 
 import javax.inject.Inject
 
-import scala.concurrent.Future
-import scala.concurrent.Promise
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.RepositoryFactory
+import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
+import de.htwg.zeta.server.util.auth.{RepositoryFactory, ZetaEnv}
 import models.User
-import models.document.AllModels
-import models.document.MetaModelEntity
-import models.document.ModelEntity
-import models.document.Repository
+import models.document.{AllModels, MetaModelEntity, ModelEntity, Repository}
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.Node
+import models.modelDefinitions.model.elements.{Edge, Node}
 import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
-import play.api.libs.json.JsError
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
-import play.api.mvc.Controller
-import play.api.mvc.Result
-import play.api.mvc.Results
-import play.api.mvc.AnyContent
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
+import play.api.libs.json.{JsError, Json, JsSuccess, JsValue}
+import play.api.mvc.{AnyContent, Controller, Result, Results}
+import rx.lang.scala.Notification.{OnError, OnNext}
+
+import scala.concurrent.{Future, Promise}
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for model definitions
- */
+  * RESTful API for model definitions
+  */
 class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Controller {
 
   private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
@@ -61,7 +49,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
 
-    val repo =  repository(request)
+    val repo = repository(request)
     (request.body \ "metaModelId").validate[String].fold(
       error => Future.successful(Results.BadRequest(JsError.toJson(error))),
       metaModelId => {
@@ -193,6 +181,23 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
     }.recover {
       case e: Exception => Results.BadRequest(e.getMessage)
     }
+  }
+
+  def getValidation(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, (modelEntity: ModelEntity) => {
+
+      val metaModelId = modelEntity.metaModelId
+
+      if (ValidatorGenerator.validatorExists(metaModelId)) {
+        ValidatorGenerator.load(metaModelId) match {
+          case Some(modelValidator) => Ok(modelValidator.validate(modelEntity.model).map(_.rule.description).mkString("\n"))
+          case None => InternalServerError("Error loading model validator")
+        }
+      } else {
+        Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/$metaModelId/validator?noContent=true first.")
+      }
+
+    })
   }
 
   /** A helper method for less verbose reads from the database */
