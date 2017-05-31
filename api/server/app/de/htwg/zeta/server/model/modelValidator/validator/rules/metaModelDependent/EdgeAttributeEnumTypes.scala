@@ -27,7 +27,7 @@ class EdgeAttributeEnumTypes(edgeType: String, attributeType: String, enumName: 
     }
   }
 
-  override val dslStatement: String = s"""Attributes ofType "$attributeType" inEdges "$edgeType" areOfEnumType $enumName"""
+  override val dslStatement: String = s"""Attributes ofType "$attributeType" inEdges "$edgeType" areOfEnumType "$enumName""""
 }
 
 object EdgeAttributeEnumTypes extends GeneratorRule {
