@@ -1,7 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator
 
 import scala.collection.immutable.Seq
-import scala.util.Try
 
 import de.htwg.zeta.server.model.modelValidator.Util.Att
 import models.modelDefinitions.metaModel.MetaModel
@@ -189,9 +188,8 @@ class UtilTest extends FlatSpec with Matchers {
 
     val validAttributesInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
 
-    if (Try(Util.inheritAttributes(validAttributesInherited)).isFailure) {
-      fail("Exception was thrown on valid attributes inheritance.")
-    }
+    noException should be thrownBy Util.inheritAttributes(validAttributesInherited)
+
   }
 
   it should "fail on ambiguous attributes" in {
@@ -242,9 +240,7 @@ class UtilTest extends FlatSpec with Matchers {
 
     val validInputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
 
-    if (Try(Util.inheritInputs(validInputsInherited)).isFailure) {
-      fail("Exception was thrown on valid input inheritance")
-    }
+    noException should be thrownBy Util.inheritInputs(validInputsInherited)
   }
 
   it should "fail on ambiguous inputs" in {
@@ -277,11 +273,10 @@ class UtilTest extends FlatSpec with Matchers {
     val abstractSuperClassOneOutput = simplifiedGraph.find(_.name == "abstractSuperClassOne").get.outputs.head.copy()
     val elToAdd = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.copy(outputs = Seq(abstractSuperClassOneOutput))
 
-    val validInputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
+    val validOutputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
 
-    if (Try(Util.inheritOutputs(validInputsInherited)).isFailure) {
-      fail("Exception was thrown on valid input inheritance")
-    }
+    noException should be thrownBy(Util.inheritOutputs(validOutputsInherited))
+
   }
 
   it should "fail on ambiguous outputs" in {
