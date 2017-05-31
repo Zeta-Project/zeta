@@ -113,7 +113,7 @@ lazy val server = baseProject("server", file("server")).settings(
 
     "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion
   )
-).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend)
+).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend).dependsOn(persistence)
 
 lazy val client = baseProject("client", file("client")).settings(
   fork := false,

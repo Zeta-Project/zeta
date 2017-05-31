@@ -1,5 +1,7 @@
 package de.htwg.zeta.persistence.transientCache
 
+import java.util.UUID
+
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
@@ -8,19 +10,19 @@ import models.document.Document
 
 /** Cache implementation of [[Persistence]].
  *
- * @tparam T type of the document
+ * @tparam V type of the document
  */
-class TransientCachePersistence[T <: Document] extends Persistence[T] { // scalastyle:ignore
+class TransientCachePersistence[K, V <: Document] extends Persistence[K, V] { // scalastyle:ignore
 
-  private val cache: TrieMap[String, T] = TrieMap.empty[String, T]
+  private val cache: TrieMap[UUID, V] = TrieMap.empty[UUID, V]
 
   /** Create a new document.
    *
    * @param doc the document to save
    * @return Future, which can fail
    */
-  override def create(doc: T): Future[Unit] = {
-    if (cache.putIfAbsent(doc.id(), doc).isEmpty) {
+  override def create(doc: V): Future[Unit] = {
+    if (cache.putIfAbsent(doc.id, doc).isEmpty) {
       Future.successful(Unit)
     } else {
       Future.failed(new IllegalArgumentException("cant't create the document, a document with same id already exists"))
@@ -32,8 +34,8 @@ class TransientCachePersistence[T <: Document] extends Persistence[T] { // scala
    * @param id The id of the entity
    * @return Future which resolve with the document and can fail
    */
-  override def read(id: String): Future[T] = {
-    cache.get(id).fold[Future[T]] {
+  override def read(id: UUID): Future[V] = {
+    cache.get(id).fold[Future[V]] {
       Future.failed(new IllegalArgumentException("can't read the document, a document with the id doesn't exist"))
     } {
       Future.successful
@@ -45,8 +47,8 @@ class TransientCachePersistence[T <: Document] extends Persistence[T] { // scala
    * @param doc The document to update
    * @return Future, which can fail
    */
-  override def update(doc: T): Future[Unit] = {
-    if (cache.replace(doc.id(), doc).isDefined) {
+  override def update(doc: V): Future[Unit] = {
+    if (cache.replace(doc.id, doc).isDefined) {
       Future.successful(Unit)
     } else {
       Future.failed(new IllegalArgumentException("can't update the document, a document with the id doesn't exist"))
@@ -58,7 +60,7 @@ class TransientCachePersistence[T <: Document] extends Persistence[T] { // scala
    * @param id The id of the document to delete
    * @return Future, which can fail
    */
-  override def delete(id: String): Future[Unit] = {
+  override def delete(id: UUID): Future[Unit] = {
     if (cache.remove(id).isDefined) {
       Future.successful(Unit)
     } else {
@@ -70,7 +72,7 @@ class TransientCachePersistence[T <: Document] extends Persistence[T] { // scala
    *
    * @return Future containing all id's of the document type, can fail
    */
-  override def readAllIds: Future[Seq[String]] = {
+  override def readAllIds: Future[Seq[UUID]] = {
     Future.successful(cache.keys.toSeq)
   }
 

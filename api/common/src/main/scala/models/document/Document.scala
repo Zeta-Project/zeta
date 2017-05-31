@@ -21,22 +21,20 @@ import play.api.libs.json.__
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-sealed trait Document {
-  val _id: String
-  val _rev: String
+sealed trait Document extends Identifiable{
 
-  def id(): String = _id
+  val _rev: String
 
   def isUpdated(): Boolean = !_rev.startsWith("1-")
 
 }
 
-sealed trait Task extends Document
-sealed trait Image extends Document {
+sealed trait Task
+sealed trait Image {
   def dockerImage: String
 }
 
-sealed trait Entity extends Document
+sealed trait Entity
 
 case class TimedTask(_id: String, _rev: String, name: String, generator: String, filter: String, interval: Int, start: String) extends Task {
   def delay: Int = {
@@ -46,19 +44,20 @@ case class TimedTask(_id: String, _rev: String, name: String, generator: String,
     if (diff > 0) diff else 1
   }
 }
-case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String) extends Task
-case class BondedTask(_id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String) extends Task
-case class Generator(_id: String, _rev: String, name: String, image: String) extends Document
-case class Filter(_id: String, _rev: String, name: String, description: String, instances: List[String]) extends Document
-case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
-case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
-case class Settings(_id: String, _rev: String, owner: UUID, jobSettings: JobSettings) extends Document
-case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None) extends Entity
-case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends Document
-case class ModelEntity(_id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity
-case class Log(_id: String, _rev: String, log: String, status: Int, date: String) extends Document
-case class PasswordInfoEntity(_id: String, _rev: String, passwordInfo: PasswordInfo) extends Entity
-case class UserEntity(_id: String, _rev: String, user: User) extends Entity
+case class EventDrivenTask(id: String, _rev: String, name: String, generator: String, filter: String, event: String) extends Task with Document
+case class BondedTask(id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String) extends Task with Document
+case class Generator(id: String, _rev: String, name: String, image: String) extends  Document
+case class Filter(id: String, _rev: String, name: String, description: String, instances: List[String]) extends Document
+case class GeneratorImage(id: String, _rev: String, name: String, dockerImage: String) extends Image with Document
+case class FilterImage(id: String, _rev: String, name: String, dockerImage: String) extends Image with Document
+case class Settings(id: String, _rev: String, owner: UUID, jobSettings: JobSettings) extends  Document
+case class MetaModelEntity(id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None)
+  extends Entity with Document
+case class MetaModelRelease(id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends  Document
+case class ModelEntity(id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity with Document
+case class Log(id: String, _rev: String, log: String, status: Int, date: String) extends Document
+case class PasswordInfoEntity(id: String, _rev: String, passwordInfo: PasswordInfo) extends Entity with Document
+case class UserEntity(id: String, _rev: String, user: User) extends Entity with Document
 
 object Settings {
   def apply(owner: UUID): Settings = {
@@ -90,13 +89,13 @@ object PasswordInfoEntity {
 object Generator {
   def apply(owner: String, name: String, image: GeneratorImage): Generator = {
     val id = s"Generator-${owner}-${Helper.random()}"
-    Generator(id, null, name, image.id())
+    Generator(id, null, name, image.id)
   }
 }
 
 object MetaModelRelease {
   def apply(from: MetaModelEntity, version: String): MetaModelRelease = {
-    val id = s"${from._id.replace("MetaModel", "MetaModelRelease")}-${version}"
+    val id = s"${from.id.replace("MetaModel", "MetaModelRelease")}-${version}"
     val name = s"${from.name} ${version}"
     val meta = from.metaModel
     MetaModelRelease(id, null, name, meta, from.dsl, version)

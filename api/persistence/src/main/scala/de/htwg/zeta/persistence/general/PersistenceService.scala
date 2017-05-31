@@ -1,5 +1,8 @@
 package de.htwg.zeta.persistence.general
 
+import java.util.UUID
+
+import com.mohiva.play.silhouette.api.LoginInfo
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter
@@ -19,43 +22,46 @@ import models.document.UserEntity
  */
 trait PersistenceService {
 
-  /** Persistence for the [[models.document.EventDrivenTask]] */
-  val eventDrivenTask: Persistence[EventDrivenTask]
+  /** Persistence for [[models.document.EventDrivenTask]] */
+  val eventDrivenTask: Persistence[UUID, EventDrivenTask]
 
-  /** Persistence for the [[models.document.BondedTask]] */
-  val bondTask: Persistence[BondedTask]
+  /** Persistence for [[models.document.BondedTask]] */
+  val bondTask: Persistence[UUID, BondedTask]
 
-  /** Persistence for the [[models.document.Generator]] */
-  val generator: Persistence[Generator]
+  /** Persistence for [[models.document.Generator]] */
+  val generator: Persistence[UUID, Generator]
 
-  /** Persistence for the [[models.document.Filter]] */
-  val filter: Persistence[Filter]
+  /** Persistence for [[models.document.Filter]] */
+  val filter: Persistence[UUID, Filter]
 
-  /** Persistence for the [[models.document.GeneratorImage]] */
-  val generatorImage: Persistence[GeneratorImage]
+  /** Persistence for [[models.document.GeneratorImage]] */
+  val generatorImage: Persistence[UUID, GeneratorImage]
 
-  /** Persistence for the [[models.document.FilterImage]] */
-  val filterImage: Persistence[FilterImage]
+  /** Persistence for [[models.document.FilterImage]] */
+  val filterImage: Persistence[UUID, FilterImage]
 
-  /** Persistence for the [[models.document.Settings]] */
-  val settings: Persistence[Settings]
+  /** Persistence for [[models.document.Settings]] */
+  val settings: Persistence[UUID, Settings]
 
-  /** Persistence for the [[models.document.MetaModelEntity]] */
-  val metaModelEntity: Persistence[MetaModelEntity]
+  /** Persistence for [[models.document.MetaModelEntity]] */
+  val metaModelEntity: Persistence[UUID, MetaModelEntity]
 
-  /** Persistence for the [[models.document.MetaModelRelease]] */
-  val metaModelRelease: Persistence[MetaModelRelease]
+  /** Persistence for [[models.document.MetaModelRelease]] */
+  val metaModelRelease: Persistence[UUID, MetaModelRelease]
 
-  /** Persistence for the [[models.document.ModelEntity]] */
-  val modelEntity: Persistence[ModelEntity]
+  /** Persistence for [[models.document.ModelEntity]] */
+  val modelEntity: Persistence[UUID, ModelEntity]
 
-  /** Persistence for the [[models.document.Log]] */
-  val log: Persistence[Log]
+  /** Persistence for [[models.document.Log]] */
+  val log: Persistence[UUID, Log]
 
-  /** Persistence for the [[models.document.PasswordInfoEntity]] */
-  val passwordInfoEntity: Persistence[PasswordInfoEntity]
+  /** Persistence for [[models.document.PasswordInfoEntity]] */
+  val passwordInfoEntity: Persistence[UUID, PasswordInfoEntity]
 
-  /** Persistence for the [[models.document.UserEntity]] */
-  val userEntity: Persistence[UserEntity]
+  /** Persistence for [[models.document.UserEntity]] */
+  val userEntity: Persistence[UUID, UserEntity]
+
+  /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
+  val loginInfo: Persistence[LoginInfo, UUID]
 
 }
