@@ -1,9 +1,9 @@
 package models.document
 
 import java.util.Objects
+import java.util.UUID
 
 import com.mohiva.play.silhouette.api.util.PasswordInfo
-import julienrf.json.derived
 import models.User
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Dsl
@@ -102,14 +102,14 @@ object MetaModelRelease {
 }
 
 object MetaModelEntity {
-  def apply(owner: String, metaModel: MetaModel): MetaModelEntity = {
+  def apply(owner: UUID, metaModel: MetaModel): MetaModelEntity = {
     val id = s"MetaModelEntity-${owner}-${Helper.random()}"
     MetaModelEntity(id, null, metaModel.name, metaModel, Dsl(), None)
   }
 }
 
 object ModelEntity {
-  def apply(owner: String, model: Model, release: MetaModelEntity): ModelEntity = {
+  def apply(owner: UUID, model: Model, release: MetaModelEntity): ModelEntity = {
     val id = s"ModelEntity-${owner}-${Helper.random()}"
     val entity = ModelEntity(id, null, model, release.id, None)
     entity

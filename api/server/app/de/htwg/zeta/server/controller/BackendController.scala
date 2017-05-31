@@ -1,5 +1,6 @@
 package de.htwg.zeta.server.controller
 
+import java.util.UUID
 import javax.inject.Inject
 
 import scala.concurrent.Future
@@ -84,7 +85,7 @@ class BackendController @Inject()(
    * @return WebSocket
    */
   def developer()(out: ActorRef, request: SecuredRequest[ZetaEnv, AnyContent]): (Props, MessageFlowTransformer[DeveloperRequest, DeveloperResponse]) = {
-    (DeveloperFrontend.props(out, backend, User.getUserId(request.identity)), developerMsg)
+    (DeveloperFrontend.props(out, backend, request.identity.id), developerMsg)
   }
 
 
@@ -95,11 +96,11 @@ class BackendController @Inject()(
    * @return WebSocket
    */
   def user(model: String)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-    val futureProps = repository(request).get[ModelEntity](model).map(_ => userProps(User.getUserId(request.identity), model) _)(system.dispatcher)
+    val futureProps = repository(request).get[ModelEntity](model).map(_ => userProps(request.identity.id, model) _)(system.dispatcher)
     (futureProps, userMsg)
   }
 
-  private def userProps(userId: String, model: String)(out: ActorRef): Props = {
+  private def userProps(userId: UUID, model: String)(out: ActorRef): Props = {
     UserFrontend.props(out, backend, userId, model)
   }
 
@@ -112,6 +113,6 @@ class BackendController @Inject()(
   def generator(id: String)
     (out: ActorRef, request: SecuredRequest[ZetaEnv, AnyContent]): (Props, MessageFlowTransformer[GeneratorRequest, GeneratorResponse]) = {
     // Extract the user from the request and connect to the endpoint of that user
-    (GeneratorFrontend.props(out, backend, User.getUserId(request.identity), id), generatorMsg)
+    (GeneratorFrontend.props(out, backend, request.identity.id, id), generatorMsg)
   }
 }

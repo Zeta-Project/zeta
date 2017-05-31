@@ -70,7 +70,7 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
         Future.successful(BadRequest(JsError.toJson(errors)))
       },
       entity => {
-        repository(request).create[MetaModelEntity](MetaModelEntity(User.getUserId(request.identity.loginInfo), entity)).map { value =>
+        repository(request).create[MetaModelEntity](MetaModelEntity(request.identity.id, entity)).map { value =>
           Created(Json.toJson(value))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)

@@ -6,7 +6,7 @@
             <hr class="col-md-12" />
             <h4 class="col-md-8">@messages("welcome.signed.in")</h4>
             <div class="col-md-4 text-right">
-                <img src="@user.avatarURL.getOrElse(routes.ScalaRoutes.getAssets("images/silhouette.png"))" height="40px" />
+                <img src="@routes.ScalaRoutes.getAssets("images/silhouette.png")" height="40px" />
             </div>
             <hr class="col-md-12" />
         </div>
@@ -19,7 +19,7 @@
                     <p class="col-md-6"><strong>@messages("last.name"):</strong></p><p class="col-md-6">@user.lastName.getOrElse("None")</p>
                 </div>
                 <div class="row">
-                    <p class="col-md-6"><strong>@messages("full.name"):</strong></p><p class="col-md-6">@user.fullName.getOrElse("None")</p>
+                    <p class="col-md-6"><strong>@messages("full.name"):</strong></p><p class="col-md-6">@user.fullName</p>
                 </div>
                 <div class="row">
                     <p class="col-md-6"><strong>@messages("email"):</strong></p><p class="col-md-6">@user.email.getOrElse("None")</p>

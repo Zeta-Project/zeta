@@ -1,5 +1,6 @@
 package actors.frontend
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.actor.Actor
@@ -12,7 +13,6 @@ import models.frontend.DeveloperResponse
 import models.frontend.Disconnected
 import models.frontend.MessageEnvelope
 import models.frontend.ToolDeveloper
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -23,10 +23,10 @@ private case object RegisterDeveloperFrontend
  */
 
 object DeveloperFrontend {
-  def props(out: ActorRef, backend: ActorRef, userId: String) = Props(new DeveloperFrontend(out, backend, userId))
+  def props(out: ActorRef, backend: ActorRef, userId: UUID) = Props(new DeveloperFrontend(out, backend, userId))
 }
 
-class DeveloperFrontend(out: ActorRef, backend: ActorRef, userId: String) extends Actor with ActorLogging {
+class DeveloperFrontend(out: ActorRef, backend: ActorRef, userId: UUID) extends Actor with ActorLogging {
   private val instance = ToolDeveloper(out, userId)
   private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterDeveloperFrontend)
 

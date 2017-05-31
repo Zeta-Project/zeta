@@ -21,7 +21,7 @@ case class Account(name: String, admin_channels: List[String], password: String 
 object Account {
   implicit val formatAccount = Json.format[Account]
 
-  def apply(name: String): Account = new Account(name, admin_channels = List(s"ch-dev-${name}", "ch-public"))
+  def apply(name: UUID): Account = new Account(name.toString, admin_channels = List(s"ch-dev-${name}", "ch-public"))
 }
 
 object SyncGatewayAccount {

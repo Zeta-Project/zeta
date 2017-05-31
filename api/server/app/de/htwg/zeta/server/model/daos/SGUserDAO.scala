@@ -89,7 +89,7 @@ class SGUserDAO @Inject() (implicit wSClient: WSClient, repositoryFactory: Repos
   def createUser(user: User): Future[User] = {
     val p = Promise[User]
 
-    val id = User.getUserId(user)
+    val id = user.id
     val account = Account(name = id)
 
     val op = for {

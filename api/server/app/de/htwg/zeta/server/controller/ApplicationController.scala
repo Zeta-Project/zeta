@@ -39,7 +39,7 @@ class ApplicationController @Inject()(
    * @return The user id
    */
   def user(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(User.getUserId(request.identity.loginInfo))
+    Ok(request.identity.id)
   }
 
   /**

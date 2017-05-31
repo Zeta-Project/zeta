@@ -1,5 +1,7 @@
 package models.frontend
 
+import java.util.UUID
+
 import akka.actor.ActorRef
 import models.document.Settings
 
@@ -25,7 +27,7 @@ sealed trait Client extends Message {
  * @param out The ActorRef to send messages back to the client
  * @param id The identifier for the logged in user
  */
-case class ToolDeveloper(out: ActorRef, id: String) extends Client
+case class ToolDeveloper(out: ActorRef, id: UUID) extends Client
 
 /**
  * Represents a user of a model
@@ -34,7 +36,7 @@ case class ToolDeveloper(out: ActorRef, id: String) extends Client
  * @param id The identifier for the logged in user
  * @param model The id of the model
  */
-case class ModelUser(out: ActorRef, id: String, model: String) extends Client
+case class ModelUser(out: ActorRef, id: UUID, model: String) extends Client
 
 /**
  * Represents a connected generator instance
@@ -81,4 +83,4 @@ case class Init(developer: Settings) extends Message
  * @param id The internal actor id
  * @param message The message to send
  */
-case class MessageEnvelope(id: String, message: Message)
+case class MessageEnvelope(id: UUID, message: Message)

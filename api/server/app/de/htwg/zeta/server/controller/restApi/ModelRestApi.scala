@@ -73,7 +73,8 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
           model => {
             val op = for {
               mm <- repo.get[MetaModelEntity](metaModelId)
-              insert <- repo.create[ModelEntity](ModelEntity(User.getUserId(request.identity.loginInfo), model.copy(metaModel = mm.metaModel), mm))
+              insert <- repo.create[ModelEntity](ModelEntity(request.identity.id, model.copy(metaModel = mm
+                .metaModel), mm))
             } yield {
               insert
             }
