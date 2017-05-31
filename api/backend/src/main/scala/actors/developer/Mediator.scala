@@ -1,5 +1,6 @@
 package actors.developer
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import actors.common.AllDocsFromDeveloper
@@ -21,7 +22,6 @@ import actors.worker.MasterWorkerProtocol.MasterToDeveloper
 import actors.worker.MasterWorkerProtocol.ToDeveloper
 import actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
 import actors.worker.MasterWorkerProtocol.WorkerToDeveloper
-
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
@@ -29,7 +29,6 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
-
 import models.document.BondedTask
 import models.document.Changed
 import models.document.Filter
@@ -60,9 +59,7 @@ import models.frontend.ToolDeveloper
 import models.frontend.UserRequest
 import models.session.SyncGatewaySession
 import models.worker.RunBondedTask
-
 import play.api.libs.ws.ahc.AhcWSClient
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -72,7 +69,7 @@ object Mediator {
   val shardRegionName = "developerMediator"
 
   val extractEntityId: ShardRegion.ExtractEntityId = {
-    case MessageEnvelope(id, message) => (id, message)
+    case MessageEnvelope(id, message) => (id.toString, message)
   }
 
   val numberOfShards = 10
@@ -121,8 +118,8 @@ class Mediator() extends Actor with ActorLogging {
   val listeners = List(self, bondedTasks, eventDrivenTasks, timedTasks, manualExecution, modelRelease, filters, generators, workQueue)
   val changeFeed = context.actorOf(ChangeFeed.props(conf, channels, listeners))
 
-  var developers: Map[String, ToolDeveloper] = Map()
-  var users: Map[String, ModelUser] = Map()
+  var developers: Map[UUID, ToolDeveloper] = Map()
+  var users: Map[UUID, ModelUser] = Map()
 
   val registerTask = context.system.scheduler.schedule(Duration(ttl / 10, TimeUnit.SECONDS), Duration(ttl / 10, TimeUnit.SECONDS), self, Refresh)
 

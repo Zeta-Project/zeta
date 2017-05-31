@@ -57,7 +57,7 @@ class SGUserDAO @Inject() (implicit wSClient: WSClient, repositoryFactory: Repos
     val p = Promise[Option[User]]
 
     repository.query[UserEntity](AllUsers()).filter { entity =>
-      entity.user.userID == userID
+      entity.user.id == userID
     }.first.materialize.subscribe(n => n match {
       case OnError(err) => p.success(None)
       case OnNext(entity) => p.success(Some(entity.user))

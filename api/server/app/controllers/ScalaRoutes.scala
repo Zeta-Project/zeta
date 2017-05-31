@@ -24,7 +24,7 @@ class ScalaRoutes @Inject()(
 
   def getSocketDeveloper: WebSocket = AuthenticatedSocket(BackendController.developer() _)
 
-  def getSocketGenerator(id: String): WebSocket = AuthenticatedSocket(BackendController.generator(id) _)
+  def getSocketGenerator(id: UUID): WebSocket = AuthenticatedSocket(BackendController.generator(id) _)
 
   def getSocketUser(model: String): WebSocket = AuthenticatedSocket(BackendController.user(model) _)
 

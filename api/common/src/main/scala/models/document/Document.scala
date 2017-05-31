@@ -4,7 +4,9 @@ import java.util.Objects
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.util.PasswordInfo
+import julienrf.json.derived
 import models.User
+import models.Identifiable
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.MetaModel
@@ -23,7 +25,7 @@ sealed trait Document {
   val _id: String
   val _rev: String
 
-  def id() = _id
+  def id(): String = _id
 
   def isUpdated(): Boolean = !_rev.startsWith("1-")
 
@@ -50,7 +52,7 @@ case class Generator(_id: String, _rev: String, name: String, image: String) ext
 case class Filter(_id: String, _rev: String, name: String, description: String, instances: List[String]) extends Document
 case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
 case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
-case class Settings(_id: String, _rev: String, owner: String, jobSettings: JobSettings) extends Document
+case class Settings(_id: String, _rev: String, owner: UUID, jobSettings: JobSettings) extends Document
 case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None) extends Entity
 case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends Document
 case class ModelEntity(_id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity
@@ -59,7 +61,7 @@ case class PasswordInfoEntity(_id: String, _rev: String, passwordInfo: PasswordI
 case class UserEntity(_id: String, _rev: String, user: User) extends Entity
 
 object Settings {
-  def apply(owner: String): Settings = {
+  def apply(owner: UUID): Settings = {
     val id = s"Settings-${owner}"
     Settings(id, null, owner, JobSettings.default())
   }
@@ -70,7 +72,7 @@ private case object Helper {
 }
 
 object UserEntity {
-  def apply(owner: String, user: User): UserEntity = {
+  def apply(owner: UUID, user: User): UserEntity = {
     val id = s"UserEntity-${owner}"
     UserEntity(id, null, user)
   }

@@ -46,7 +46,7 @@ class ActivateAccountController @Inject()(
 
     userService.retrieve(loginInfo).flatMap {
       case Some(user) if !user.activated =>
-        authTokenService.create(user.userID).map { authToken =>
+        authTokenService.create(user.id).map { authToken =>
           val url = routes.ScalaRoutes.getAccountActivate(authToken.id).absoluteURL()(request)
 
           mailerClient.send(Email(

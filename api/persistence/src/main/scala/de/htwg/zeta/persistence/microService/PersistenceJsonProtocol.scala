@@ -80,6 +80,30 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   private val sMAttribute = "mAttribute"
   private val sMEnum = "mEnum"
 
+  private implicit object UuidJsonFormat extends RootJsonFormat[UUID] {
+
+    /** Write a UUID.
+     *
+     * @param x UUID
+     * @return JsValue
+     */
+    def write(x: UUID): JsValue = {
+      JsString(x.toString)
+    }
+
+    /** Read a UUID.
+     *
+     * @param value JsValue
+     * @return UUID
+     */
+    def read(value: JsValue): UUID = {
+      value match { // TODO pattern match not needed for single value
+        case JsString(x) => UUID.fromString(x)
+      }
+    }
+
+  }
+
   /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType]] */
   private implicit object AttributeTypeFormat extends RootJsonFormat[AttributeType] {
 
@@ -447,36 +471,9 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   /** Spray-Json conversion protocol for [[models.document.UserEntity]] */
   implicit val userEntityFormat: RootJsonFormat[UserEntity] = {
-
-    implicit object UuidJsonFormat extends RootJsonFormat[UUID] {
-
-      /** Write a UUID.
-       *
-       * @param x UUID
-       * @return JsValue
-       */
-      def write(x: UUID): JsValue = {
-        JsString(x.toString)
-      }
-
-      /** Read a UUID.
-       *
-       * @param value JsValue
-       * @return UUID
-       */
-      def read(value: JsValue): UUID = {
-        value match { // TODO pattern match not needed for single value
-          case JsString(x) => UUID.fromString(x)
-        }
-      }
-
-    }
-
     implicit val loginInfoFormat: RootJsonFormat[LoginInfo] = jsonFormat2(LoginInfo)
-    implicit val userFormat: RootJsonFormat[User] = jsonFormat8(User.apply)
+    implicit val userFormat: RootJsonFormat[User] = jsonFormat6(User.apply)
     jsonFormat3(UserEntity.apply)
-
-
   }
 
 

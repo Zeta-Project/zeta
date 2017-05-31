@@ -1,5 +1,7 @@
 package actors.developer.manager
 
+import java.util.UUID
+
 import actors.developer.Event
 import actors.developer.WorkCompleted
 import actors.worker.MasterWorkerProtocol.Work
@@ -20,7 +22,7 @@ object GeneratorConnectionManager {
 }
 
 class GeneratorConnectionManager() extends Actor with ActorLogging {
-  var connections: Map[String, GeneratorClient] = Map()
+  var connections: Map[UUID, GeneratorClient] = Map()
 
   def receive = {
     // handle the connections of generators which started another generator
@@ -50,7 +52,7 @@ class GeneratorConnectionManager() extends Actor with ActorLogging {
   }
 
   private def streamResultToGenerator(toGenerator: ToGenerator) = {
-    connections.get(toGenerator.receiver) match {
+    connections.get(UUID.fromString(toGenerator.receiver)) match {
       case Some(receiver) => {
         receiver.out ! FromGenerator(index = toGenerator.index, key = toGenerator.key, message = toGenerator.message)
       }
@@ -61,7 +63,7 @@ class GeneratorConnectionManager() extends Actor with ActorLogging {
   private def processWork(work: Work, result: Int) = {
     work.job match {
       case job: RunGeneratorFromGeneratorJob => {
-        connections.get(job.parentId) match {
+        connections.get(UUID.fromString(job.parentId)) match {
           case Some(receiver) => receiver.out ! GeneratorCompleted(job.key, result)
           case None => log.warning("Work {} completed but parent was not available", work)
         }

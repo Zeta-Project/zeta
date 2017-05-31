@@ -14,7 +14,7 @@ sealed trait Client extends Message {
   /**
    * The identifier for the logged in user
    */
-  val id: String
+  val id: UUID
   /**
    * The reference to send messages back to the client
    */
@@ -46,7 +46,7 @@ case class ModelUser(out: ActorRef, id: UUID, model: String) extends Client
  * @param out The ActorRef to send messages back to the generator
  * @param workId The Work id (where the generator is running)
  */
-case class GeneratorClient(out: ActorRef, workId: String) extends Client {
+case class GeneratorClient(out: ActorRef, workId: UUID) extends Client {
   val id = workId
 }
 

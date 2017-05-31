@@ -92,12 +92,12 @@ class SignUpController @Inject()(
 
   private def processSignUp(result: Result, data: Data, loginInfo: LoginInfo, request: Request[AnyContent], messages: Messages): Future[Result] = {
     val authInfo = passwordHasherRegistry.current.hash(data.password)
-    val user = User(id = UUID.randomUUID(), loginInfo = loginInfo, firstName = Some(data.firstName), lastName = Some(data.lastName), email = Some(data.email), activated = false)
+    val user = User(id = UUID.randomUUID(), loginInfo = loginInfo, firstName = data.firstName, lastName = data.lastName, email = data.email, activated = false)
     for {
       avatar <- avatarService.retrieveURL(data.email)
       user <- userService.save(user)
       _ <- authInfoRepository.add(loginInfo, authInfo)
-      authToken <- authTokenService.create(user.userID)
+      authToken <- authTokenService.create(user.id)
     } yield {
       val url = routes.ScalaRoutes.getAccountActivate(authToken.id).absoluteURL()(request)
       mailerClient.send(Email(

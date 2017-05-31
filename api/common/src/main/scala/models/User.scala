@@ -17,7 +17,14 @@ import play.api.libs.json.Json
  * @param email     The email of the authenticated provider.
  * @param activated Indicates that the user has activated its registration.
  */
-case class User(id: UUID, loginInfo: LoginInfo, firstName: String, lastName: String, email: String, activated: Boolean) extends Identity {
+case class User(
+    id: UUID,
+    loginInfo: LoginInfo,
+    firstName: String,
+    lastName: String,
+    email: String,
+    activated: Boolean
+) extends Identity with Identifiable {
 
   /** The full name of the user. */
   lazy val fullName = s"$firstName $lastName"

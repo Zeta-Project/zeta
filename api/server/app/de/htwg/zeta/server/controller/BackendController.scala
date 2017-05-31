@@ -110,7 +110,7 @@ class BackendController @Inject()(
    * @param id The id of the work object where the generator is executed in
    * @return WebSocket
    */
-  def generator(id: String)
+  def generator(id: UUID)
     (out: ActorRef, request: SecuredRequest[ZetaEnv, AnyContent]): (Props, MessageFlowTransformer[GeneratorRequest, GeneratorResponse]) = {
     // Extract the user from the request and connect to the endpoint of that user
     (GeneratorFrontend.props(out, backend, request.identity.id, id), generatorMsg)

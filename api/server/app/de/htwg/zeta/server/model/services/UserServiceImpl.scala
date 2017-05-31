@@ -18,7 +18,7 @@ import scala.concurrent.Future
  *
  * @param userDAO The user DAO implementation.
  */
-class UserServiceImpl @Inject() (userDAO: UserDAO) extends UserService {
+class UserServiceImpl @Inject()(userDAO: UserDAO) extends UserService {
 
   /**
    * Retrieves a user that matches the specified ID.
@@ -26,7 +26,9 @@ class UserServiceImpl @Inject() (userDAO: UserDAO) extends UserService {
    * @param id The ID to retrieve a user.
    * @return The retrieved user or None if no user could be retrieved for the given ID.
    */
-  def retrieve(id: UUID) = userDAO.find(id)
+  def retrieve(id: UUID) = {
+    userDAO.find(id)
+  }
 
   /**
    * Retrieves a user that matches the specified login info.
@@ -34,7 +36,9 @@ class UserServiceImpl @Inject() (userDAO: UserDAO) extends UserService {
    * @param loginInfo The login info to retrieve a user.
    * @return The retrieved user or None if no user could be retrieved for the given login info.
    */
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.find(loginInfo)
+  def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
+    userDAO.find(loginInfo)
+  }
 
   /**
    * Saves a user.
@@ -42,7 +46,9 @@ class UserServiceImpl @Inject() (userDAO: UserDAO) extends UserService {
    * @param user The user to save.
    * @return The saved user.
    */
-  def save(user: User) = userDAO.save(user)
+  def save(user: User) = {
+    userDAO.save(user)
+  }
 
   /**
    * Saves the social profile for a user.
@@ -57,7 +63,15 @@ class UserServiceImpl @Inject() (userDAO: UserDAO) extends UserService {
       case Some(user) => // Update user with profile
         userDAO.save(user.copy())
       case None => // Insert a new user
-        userDAO.save(User(id = UUID.randomUUID(), loginInfo = profile.loginInfo, firstName = profile.firstName, lastName = profile.lastName, email = profile.email, activated = true))
+        userDAO.save(
+          User(
+            id = UUID.randomUUID(),
+            loginInfo = profile.loginInfo,
+            firstName = profile.firstName.get,
+            lastName = profile.lastName.get,
+            email = profile.email.get,
+            activated = true)
+        )
     }
   }
 }

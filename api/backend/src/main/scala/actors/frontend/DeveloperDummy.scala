@@ -1,5 +1,6 @@
 package actors.frontend
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import actors.developer.Mediator
@@ -7,16 +8,15 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-
 import models.frontend.Connected
 import models.frontend.DeveloperRequest
 import models.frontend.DeveloperResponse
 import models.frontend.Disconnected
 import models.frontend.MessageEnvelope
 import models.frontend.ToolDeveloper
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.cluster.sharding.ClusterSharding
 
 private case object RegisterDeveloperDummy
@@ -30,7 +30,7 @@ object DeveloperDummy {
 }
 
 class DeveloperDummy() extends Actor with ActorLogging {
-  private val userId = "modigen"
+  private val userId = UUID.randomUUID()
 
   private val backend: ActorRef = ClusterSharding(context.system).shardRegion(Mediator.shardRegionName)
 

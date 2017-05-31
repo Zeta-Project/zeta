@@ -23,10 +23,10 @@ private case object RegisterGeneratorFrontend
  */
 
 object GeneratorFrontend {
-  def props(out: ActorRef, backend: ActorRef, userId: UUID, workId: String) = Props(new GeneratorFrontend(out, backend, userId, workId))
+  def props(out: ActorRef, backend: ActorRef, userId: UUID, workId: UUID) = Props(new GeneratorFrontend(out, backend, userId, workId))
 }
 
-class GeneratorFrontend(out: ActorRef, backend: ActorRef, userId: UUID, workId: String) extends Actor with ActorLogging {
+class GeneratorFrontend(out: ActorRef, backend: ActorRef, userId: UUID, workId: UUID) extends Actor with ActorLogging {
   private val instance = GeneratorClient(out, workId)
   private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterGeneratorFrontend)
 

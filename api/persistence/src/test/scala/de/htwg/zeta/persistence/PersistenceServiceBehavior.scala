@@ -92,19 +92,17 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
     _id = "userEntity1Id1",
     _rev = "userEntity1Rev",
     user = User(
-      userID = UUID.randomUUID(),
+      id = UUID.randomUUID(),
       loginInfo = LoginInfo("provId", "provKey"),
-      firstName = Some("FirstName"),
-      lastName = Some("LastName"),
-      fullName = None,
-      email = None,
-      avatarURL = Some("avatarUrl"),
+      firstName = "FirstName",
+      lastName = "LastName",
+      email = "test@zeta.com",
       activated = true
     )
   )
   private val userEntity2: UserEntity = userEntity1.copy(_id = "userEntity1Id2")
   private val userEntity3: UserEntity = userEntity1.copy(_id = "userEntity1Rev3")
-  private val userEntity2Updated: UserEntity = userEntity2.copy(user = userEntity2.user.copy(fullName = Some("FullName")))
+  private val userEntity2Updated: UserEntity = userEntity2.copy(user = userEntity2.user.copy(firstName = "AnOtherFirstName"))
 
   /** Behavior for a PersistenceService.
    *

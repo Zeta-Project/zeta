@@ -56,8 +56,8 @@ class ForgotPasswordController @Inject()(
         val loginInfo = LoginInfo(CredentialsProvider.ID, email)
         val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
         userService.retrieve(loginInfo).flatMap {
-          case Some(user) if user.email.isDefined =>
-            authTokenService.create(user.userID).map { authToken =>
+          case Some(user) =>
+            authTokenService.create(user.id).map { authToken =>
               val url = routes.ScalaRoutes.getPasswordReset(authToken.id).absoluteURL()(request)
 
               mailerClient.send(Email(
