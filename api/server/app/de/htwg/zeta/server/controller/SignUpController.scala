@@ -13,9 +13,10 @@ import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
+import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
-import de.htwg.zeta.server.model.services.AuthTokenService
 import de.htwg.zeta.server.model.services.UserService
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
@@ -34,7 +35,6 @@ import play.api.mvc.Result
  * @param silhouette             The Silhouette stack.
  * @param userService            The user service implementation.
  * @param authInfoRepository     The auth info repository implementation.
- * @param authTokenService       The auth token service implementation.
  * @param avatarService          The avatar service implementation.
  * @param passwordHasherRegistry The password hasher registry.
  * @param mailerClient           The mailer client.
@@ -43,11 +43,12 @@ class SignUpController @Inject()(
     silhouette: Silhouette[ZetaEnv],
     userService: UserService,
     authInfoRepository: AuthInfoRepository,
-    authTokenService: AuthTokenService,
     avatarService: AvatarService,
     passwordHasherRegistry: PasswordHasherRegistry,
     mailerClient: MailerClient)
   extends Controller {
+
+  private val tokenCache: TokenCache = Persistence.tokenCache
 
   /**
    * Views the `Sign Up` page.
@@ -94,12 +95,11 @@ class SignUpController @Inject()(
     val authInfo = passwordHasherRegistry.current.hash(data.password)
     val user = User(id = UUID.randomUUID(), loginInfo = loginInfo, firstName = data.firstName, lastName = data.lastName, email = data.email, activated = false)
     for {
-      avatar <- avatarService.retrieveURL(data.email)
       user <- userService.save(user)
       _ <- authInfoRepository.add(loginInfo, authInfo)
-      authToken <- authTokenService.create(user.id)
+      token <- tokenCache.create(user.id)
     } yield {
-      val url = routes.ScalaRoutes.getAccountActivate(authToken.id).absoluteURL()(request)
+      val url = routes.ScalaRoutes.getAccountActivate(token).absoluteURL()(request)
       mailerClient.send(Email(
         subject = messages("email.sign.up.subject"),
         from = messages("email.from"),

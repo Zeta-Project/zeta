@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.general
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
+import models.User
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter
@@ -58,8 +59,8 @@ trait PersistenceService {
   /** Persistence for [[models.document.PasswordInfoEntity]] */
   val passwordInfoEntity: Persistence[UUID, PasswordInfoEntity]
 
-  /** Persistence for [[models.document.UserEntity]] */
-  val userEntity: Persistence[UUID, UserEntity]
+  /** Persistence for [[models.User]] */
+  val user: Persistence[UUID, User]
 
   /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
   val loginInfo: Persistence[LoginInfo, UUID]

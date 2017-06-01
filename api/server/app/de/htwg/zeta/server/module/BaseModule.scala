@@ -2,10 +2,8 @@ package de.htwg.zeta.server.module
 
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
-import de.htwg.zeta.server.model.daos.AuthTokenDAO
-import de.htwg.zeta.server.model.daos.AuthTokenDAOImpl
-import de.htwg.zeta.server.model.services.AuthTokenService
-import de.htwg.zeta.server.model.services.AuthTokenServiceImpl
+
+
 import models.session.Session
 import models.session.SyncGatewaySession
 import net.codingwell.scalaguice.ScalaModule
@@ -21,10 +19,7 @@ class BaseModule extends AbstractModule with ScalaModule {
   /**
    * Configures the module.
    */
-  def configure(): Unit = {
-    bind[AuthTokenDAO].to[AuthTokenDAOImpl]
-    bind[AuthTokenService].to[AuthTokenServiceImpl]
-  }
+  def configure(): Unit = {}
 
   /**
    * Provides the Session handler implementation.

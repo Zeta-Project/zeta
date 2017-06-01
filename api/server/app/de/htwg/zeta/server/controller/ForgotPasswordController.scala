@@ -7,8 +7,9 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
+import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.forms.ForgotPasswordForm
-import de.htwg.zeta.server.model.services.AuthTokenService
 import de.htwg.zeta.server.model.services.UserService
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -23,14 +24,14 @@ import play.api.mvc.Request
  * The `Forgot Password` controller.
  *
  * @param userService      The user service implementation.
- * @param authTokenService The auth token service implementation.
  * @param mailerClient     The mailer client.
  */
 class ForgotPasswordController @Inject()(
     userService: UserService,
-    authTokenService: AuthTokenService,
     mailerClient: MailerClient)
   extends Controller {
+
+  private val tokenCache: TokenCache = Persistence.tokenCache
 
   /**
    * Views the `Forgot Password` page.
@@ -57,9 +58,8 @@ class ForgotPasswordController @Inject()(
         val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
         userService.retrieve(loginInfo).flatMap {
           case Some(user) =>
-            authTokenService.create(user.id).map { authToken =>
-              val url = routes.ScalaRoutes.getPasswordReset(authToken.id).absoluteURL()(request)
-
+            tokenCache.create(user.id).map { token =>
+              val url = routes.ScalaRoutes.getPasswordReset(token).absoluteURL()(request)
               mailerClient.send(Email(
                 subject = messages("email.reset.password.subject"),
                 from = messages("email.from"),
