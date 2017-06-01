@@ -14,7 +14,7 @@ import org.scalatest.Matchers
 class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-  def rule = new EdgeAttributesGlobalUnique("edgeType", "attributeType")
+  val rule = new EdgeAttributesGlobalUnique("edgeType", "attributeType")
 
   "check" should "return success validation results on correct attributes" in {
 
