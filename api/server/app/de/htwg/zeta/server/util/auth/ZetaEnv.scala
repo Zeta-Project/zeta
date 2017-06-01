@@ -1,13 +1,18 @@
 package de.htwg.zeta.server.util.auth
 
 import com.mohiva.play.silhouette.api.Env
+import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import models.User
-import de.htwg.zeta.server.model.authenticators.SGCookieAuthenticator
 
 /**
- * The default env.
+ * The default environment.
  */
 trait ZetaEnv extends Env {
+
+  /** The Identity. */
   type I = User
-  type A = SGCookieAuthenticator
+
+  /** The Authenticator. */
+  type A = CookieAuthenticator
+
 }

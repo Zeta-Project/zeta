@@ -3,7 +3,6 @@ package de.htwg.zeta.server.routing
 import controllers.WebJarAssets
 import de.htwg.zeta.server.controller.BackendController
 import de.htwg.zeta.server.controller.ApplicationController
-import de.htwg.zeta.server.controller.SocialAuthController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.ForgotPasswordController
@@ -27,7 +26,6 @@ trait WebController {
 
   protected lazy val BackendController: BackendController = webCont.backendController.get()
   protected lazy val ApplicationController: ApplicationController = webCont.applicationController.get()
-  protected lazy val SocialAuthController: SocialAuthController = webCont.socialAuthController.get()
   protected lazy val SignUpController: SignUpController = webCont.signUpController.get()
   protected lazy val SignInController: SignInController = webCont.signInController.get()
   protected lazy val ForgotPasswordController: ForgotPasswordController = webCont.forgotPasswordController.get()

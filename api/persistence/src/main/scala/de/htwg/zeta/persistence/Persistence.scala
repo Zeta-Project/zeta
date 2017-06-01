@@ -1,16 +1,24 @@
 package de.htwg.zeta.persistence
 
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.transientCache.PersistenceTransientCacheService
+import de.htwg.zeta.persistence.transientCache.TransientLoginInfoPersistence
 import de.htwg.zeta.persistence.transientCache.TransientTokenCache
+
 
 
 /** Persistence. */
 object Persistence extends App {
 
   /** The current implementation of the PersistenceService. */
-  lazy val service = new PersistenceTransientCacheService
+  lazy val service: PersistenceService = new PersistenceTransientCacheService
 
-  /** The current implementation of the TokenCache. */
-  lazy val tokenCache = new TransientTokenCache
+  /** The current implementation of TokenCache. */
+  lazy val tokenCache: TokenCache = new TransientTokenCache
+
+  /** The current implementation of LoginInfoPersistence. */
+  lazy val loginInfoPersistence: LoginInfoPersistence = new TransientLoginInfoPersistence
 
 }

@@ -10,9 +10,9 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.server.model.services.UserService
+import de.htwg.zeta.persistence.general.TokenCache
 import models.User
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -26,16 +26,15 @@ import play.api.mvc.Result
 /**
  * The `Activate Account` controller.
  *
- * @param userService      The user service implementation.
- * @param mailerClient     The mailer client.
+ * @param mailerClient The mailer client.
  */
 class ActivateAccountController @Inject()(
-    userService: UserService,
     mailerClient: MailerClient)
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
   private val userPersistence: Persistence[UUID, User] = Persistence.service.user
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
 
   /** Sends an account activation email to the user with the given email.
    *
@@ -49,11 +48,13 @@ class ActivateAccountController @Inject()(
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
     val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("activation.email.sent", decodedEmail))
 
-    userService.retrieve(loginInfo).flatMap {
-      case Some(user) if !user.activated =>
+    val userId = loginInfoPersistence.read(loginInfo)
+    val user = userId.flatMap(userId => userPersistence.read(userId))
+
+    user.map { user =>
+      if (!user.activated) {
         tokenCache.create(user.id).map { id =>
           val url = routes.ScalaRoutes.getAccountActivate(id).absoluteURL()(request)
-
           mailerClient.send(Email(
             subject = messages("email.activate.account.subject"),
             from = messages("email.from"),
@@ -61,22 +62,23 @@ class ActivateAccountController @Inject()(
             bodyText = Some(views.txt.silhouette.emails.activateAccount(user, url, messages).body),
             bodyHtml = Some(views.html.silhouette.emails.activateAccount(user, url, messages).body)
           ))
-          result
         }
-      case None => Future.successful(result)
+      }
+      result
+    }.recover {
+      case _ => result
     }
+
   }
 
   /** Activates an account.
    *
-   * @param token  token The token to identify a user.
-   * @param request request
+   * @param token    token The token to identify a user.
+   * @param request  request
    * @param messages messages
    * @return The result to display.
    */
   def activate(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
-
-
     val userId = tokenCache.read(token)
     val user = userId.flatMap(userId => userPersistence.read(userId))
     val updated = user.flatMap(user => userPersistence.update(user.copy(activated = true)))
@@ -87,17 +89,5 @@ class ActivateAccountController @Inject()(
       case _ => Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> messages("invalid.activation.link"))
     }
 
-
-    /* Old version, TODO remove when new version is working
-    authTokenService.validate(token).flatMap {
-      case Some(authToken) => userService.retrieve(authToken.userID).flatMap {
-        case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
-          userService.save(user.copy(activated = true)).map { _ =>
-            Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("account.activated"))
-          }
-        case _ => Future.successful(Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> messages("invalid.activation.link")))
-      }
-      case None => Future.successful(Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> messages("invalid.activation.link")))
-    } */
   }
 }
