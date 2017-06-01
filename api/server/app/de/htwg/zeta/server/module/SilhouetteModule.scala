@@ -1,5 +1,9 @@
 package de.htwg.zeta.server.module
 
+import java.util.UUID
+
+import scala.concurrent.Future
+
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.name.Named
@@ -7,6 +11,7 @@ import com.mohiva.play.silhouette.api.Environment
 import com.mohiva.play.silhouette.api.EventBus
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.SilhouetteProvider
+import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
 import com.mohiva.play.silhouette.api.crypto.CookieSigner
@@ -14,6 +19,7 @@ import com.mohiva.play.silhouette.api.crypto.Crypter
 import com.mohiva.play.silhouette.api.crypto.CrypterAuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
+import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.api.util.CacheLayer
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.FingerprintGenerator
@@ -41,15 +47,13 @@ import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.transientCache.TransientPasswordInfoPersistence
-import de.htwg.zeta.server.model.daos.SGUserDAO
-import de.htwg.zeta.server.model.daos.UserDAO
-import de.htwg.zeta.server.model.services.UserService
-import de.htwg.zeta.server.model.services.UserServiceImpl
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.session.Session
+import models.User
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
@@ -70,8 +74,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Silhouette[ZetaEnv]].to[SilhouetteProvider[ZetaEnv]]
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
-    bind[UserService].to[UserServiceImpl]
-    bind[UserDAO].to[SGUserDAO]
     bind[CacheLayer].to[PlayCacheLayer]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
@@ -93,21 +95,45 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @return The HTTP layer implementation.
    */
   @Provides
-  def provideHTTPLayer(client: WSClient): HTTPLayer = new PlayHTTPLayer(client)
+  def provideHTTPLayer(client: WSClient): HTTPLayer = {
+    new PlayHTTPLayer(client)
+  }
+
+  /** Provides the UserIdentityService
+   *
+   * @param loginInfoPersistence The loginInfoPersistence
+   * @param userPersistence      The userPersistence
+   * @return UserIdentityService
+   */
+  @Provides
+  def provideUserIdentityService(
+      loginInfoPersistence: LoginInfoPersistence, // scalastyle:ignore
+      userPersistence: Persistence[UUID, User]): IdentityService[User] = {
+    new IdentityService[User] {
+      override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
+        val userId = loginInfoPersistence.read(loginInfo)
+        val user = userId.flatMap { userId => userPersistence.read(userId) }
+        user.map { user => Some(user)
+        }.recover {
+          case _ => None
+        }
+      }
+    }
+  }
 
   /**
    * Provides the Silhouette environment.
    *
-   * @param userService The user service implementation.
+   * @param userService          The user service implementation.
    * @param authenticatorService The authentication service implementation.
-   * @param eventBus The event bus instance.
+   * @param eventBus             The event bus instance.
    * @return The Silhouette environment.
    */
   @Provides
   def provideEnvironment(
-    userService: UserService,
-    authenticatorService: AuthenticatorService[CookieAuthenticator],
-    eventBus: EventBus
+      userService: IdentityService[User], // scalastyle:ignore
+      authenticatorService: AuthenticatorService[CookieAuthenticator],
+      eventBus: EventBus
   ): Environment[ZetaEnv] = {
 
     Environment[ZetaEnv](
@@ -124,7 +150,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @param configuration The Play configuration.
    * @return The cookie signer for the OAuth1 token secret provider.
    */
-  @Provides @Named("oauth1-token-secret-cookie-signer")
+  @Provides
+  @Named("oauth1-token-secret-cookie-signer")
   def provideOAuth1TokenSecretCookieSigner(configuration: Configuration): CookieSigner = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader
@@ -138,7 +165,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @param configuration The Play configuration.
    * @return The crypter for the OAuth1 token secret provider.
    */
-  @Provides @Named("oauth1-token-secret-crypter")
+  @Provides
+  @Named("oauth1-token-secret-crypter")
   def provideOAuth1TokenSecretCrypter(configuration: Configuration): Crypter = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader
@@ -152,7 +180,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @param configuration The Play configuration.
    * @return The cookie signer for the OAuth2 state provider.
    */
-  @Provides @Named("oauth2-state-cookie-signer")
+  @Provides
+  @Named("oauth2-state-cookie-signer")
   def provideOAuth2StageCookieSigner(configuration: Configuration): CookieSigner = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader
@@ -166,7 +195,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @param configuration The Play configuration.
    * @return The cookie signer for the authenticator.
    */
-  @Provides @Named("authenticator-cookie-signer")
+  @Provides
+  @Named("authenticator-cookie-signer")
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader
@@ -180,7 +210,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @param configuration The Play configuration.
    * @return The crypter for the authenticator.
    */
-  @Provides @Named("authenticator-crypter")
+  @Provides
+  @Named("authenticator-crypter")
   def provideAuthenticatorCrypter(configuration: Configuration): Crypter = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader
@@ -192,17 +223,17 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * Provides the auth info repository.
    *
    * @param passwordInfoDAO The implementation of the delegable password auth info DAO.
-   * @param oauth1InfoDAO The implementation of the delegable OAuth1 auth info DAO.
-   * @param oauth2InfoDAO The implementation of the delegable OAuth2 auth info DAO.
-   * @param openIDInfoDAO The implementation of the delegable OpenID auth info DAO.
+   * @param oauth1InfoDAO   The implementation of the delegable OAuth1 auth info DAO.
+   * @param oauth2InfoDAO   The implementation of the delegable OAuth2 auth info DAO.
+   * @param openIDInfoDAO   The implementation of the delegable OpenID auth info DAO.
    * @return The auth info repository instance.
    */
   @Provides
   def provideAuthInfoRepository(
-    passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo],
-    oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
-    oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info],
-    openIDInfoDAO: DelegableAuthInfoDAO[OpenIDInfo]
+      passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo], // scalastyle:ignore
+      oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
+      oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info],
+      openIDInfoDAO: DelegableAuthInfoDAO[OpenIDInfo]
   ): AuthInfoRepository = {
 
     new DelegableAuthInfoRepository(passwordInfoDAO, oauth1InfoDAO, oauth2InfoDAO, openIDInfoDAO)
@@ -211,30 +242,29 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   /**
    * Provides the authenticator service.
    *
-   * @param cookieSigner The cookie signer implementation.
-   * @param crypter The crypter implementation.
+   * @param cookieSigner         The cookie signer implementation.
+   * @param crypter              The crypter implementation.
    * @param fingerprintGenerator The fingerprint generator implementation.
-   * @param idGenerator The ID generator implementation.
-   * @param configuration The Play configuration.
-   * @param clock The clock instance.
+   * @param idGenerator          The ID generator implementation.
+   * @param configuration        The Play configuration.
+   * @param clock                The clock instance.
    * @return The authenticator service.
    */
   @Provides
   def provideAuthenticatorService(
-    @Named("authenticator-cookie-signer") cookieSigner: CookieSigner,
-    @Named("authenticator-crypter") crypter: Crypter,
-    fingerprintGenerator: FingerprintGenerator,
-    idGenerator: IDGenerator,
-    session: Session,
-    configuration: Configuration,
-    clock: Clock
+      @Named("authenticator-cookie-signer") cookieSigner: CookieSigner, // scalastyle:ignore
+      @Named("authenticator-crypter") crypter: Crypter,
+      fingerprintGenerator: FingerprintGenerator,
+      idGenerator: IDGenerator,
+      configuration: Configuration,
+      clock: Clock
   ): AuthenticatorService[CookieAuthenticator] = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader
     val config = configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
     val encoder = new CrypterAuthenticatorEncoder(crypter)
 
-    new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock, session)
+    new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock)
   }
 
 
@@ -252,14 +282,14 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   /**
    * Provides the credentials provider.
    *
-   * @param authInfoRepository The auth info repository implementation.
+   * @param authInfoRepository     The auth info repository implementation.
    * @param passwordHasherRegistry The password hasher registry.
    * @return The credentials provider.
    */
   @Provides
   def provideCredentialsProvider(
-    authInfoRepository: AuthInfoRepository,
-    passwordHasherRegistry: PasswordHasherRegistry
+      authInfoRepository: AuthInfoRepository, // scalastyle:ignore
+      passwordHasherRegistry: PasswordHasherRegistry
   ): CredentialsProvider = {
 
     new CredentialsProvider(authInfoRepository, passwordHasherRegistry)

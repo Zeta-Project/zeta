@@ -9,15 +9,15 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.SignUpEvent
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
-import de.htwg.zeta.server.model.services.UserService
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
 import play.api.i18n.Messages
@@ -33,35 +33,35 @@ import play.api.mvc.Result
  * The `Sign Up` controller.
  *
  * @param silhouette             The Silhouette stack.
- * @param userService            The user service implementation.
  * @param authInfoRepository     The auth info repository implementation.
- * @param avatarService          The avatar service implementation.
  * @param passwordHasherRegistry The password hasher registry.
  * @param mailerClient           The mailer client.
  */
 class SignUpController @Inject()(
     silhouette: Silhouette[ZetaEnv],
-    userService: UserService,
     authInfoRepository: AuthInfoRepository,
-    avatarService: AvatarService,
     passwordHasherRegistry: PasswordHasherRegistry,
     mailerClient: MailerClient)
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
+  private val userPersistence: Persistence[UUID, User] = Persistence.service.user
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
 
-  /**
-   * Views the `Sign Up` page.
+  /** Views the `Sign Up` page.
    *
+   * @param request  The request.
+   * @param messages The messages.
    * @return The result to display.
    */
   def view(request: Request[AnyContent], messages: Messages): Future[Result] = {
     Future.successful(Ok(views.html.silhouette.signUp(SignUpForm.form, request, messages)))
   }
 
-  /**
-   * Handles the submitted form.
+  /** Handles the submitted form.
    *
+   * @param request  The request
+   * @param messages The message
    * @return The result to display.
    */
   def submit(request: Request[AnyContent], messages: Messages): Future[Result] = {
@@ -70,9 +70,12 @@ class SignUpController @Inject()(
       data => {
         val result = Redirect(routes.ScalaRoutes.getSignUp()).flashing("info" -> messages("sign.up.email.sent", data.email))
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
-        userService.retrieve(loginInfo).flatMap {
-          case Some(user) => processAlreadySignedUp(user, result, data, request, messages)
-          case None => processSignUp(result, data, loginInfo, request, messages)
+        val userId = loginInfoPersistence.read(loginInfo)
+        userId.flatMap(userId =>
+          userPersistence.read(userId).flatMap(user =>
+            processAlreadySignedUp(user, result, data, request, messages)
+          )).recoverWith {
+          case _ => processSignUp(result, data, loginInfo, request, messages)
         }
       }
     )
@@ -93,9 +96,11 @@ class SignUpController @Inject()(
 
   private def processSignUp(result: Result, data: Data, loginInfo: LoginInfo, request: Request[AnyContent], messages: Messages): Future[Result] = {
     val authInfo = passwordHasherRegistry.current.hash(data.password)
-    val user = User(id = UUID.randomUUID(), loginInfo = loginInfo, firstName = data.firstName, lastName = data.lastName, email = data.email, activated = false)
+    val user = User(id = UUID.randomUUID(), firstName = data.firstName, lastName = data.lastName, email = data.email, activated = false)
+
     for {
-      user <- userService.save(user)
+      _ <- userPersistence.create(user)
+      _ <- loginInfoPersistence.create(loginInfo, user.id)
       _ <- authInfoRepository.add(loginInfo, authInfo)
       token <- tokenCache.create(user.id)
     } yield {
