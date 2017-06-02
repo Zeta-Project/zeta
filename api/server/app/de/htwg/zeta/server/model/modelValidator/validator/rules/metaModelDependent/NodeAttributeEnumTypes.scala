@@ -27,7 +27,7 @@ class NodeAttributeEnumTypes(nodeType: String, attributeType: String, enumName: 
     }
   }
 
-  override val dslStatement: String = s"""Attributes ofType "$attributeType" inNodes "$nodeType" areOfEnumType $enumName"""
+  override val dslStatement: String = s"""Attributes ofType "$attributeType" inNodes "$nodeType" areOfEnumType "$enumName""""
 }
 
 object NodeAttributeEnumTypes extends GeneratorRule {

@@ -40,6 +40,12 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
     rule.isValid(edge).get should be(false)
   }
 
+  it should "be None for non-matching edges" in {
+    val differentReference = MReference("differentRef", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val edge = Edge.apply2("", differentReference, Seq(), Seq(), Seq())
+    rule.isValid(edge) should be (None)
+  }
+
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Attributes ofType "attributeType" inEdges "reference" areOfEnumType "enumName"""")
   }

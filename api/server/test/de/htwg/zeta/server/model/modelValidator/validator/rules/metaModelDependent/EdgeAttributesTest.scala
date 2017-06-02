@@ -22,9 +22,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     val attributes = Seq(
       Attribute(name = "stringAttribute", value = Seq(MString("test"))),
       Attribute(name = "boolAttribute", value = Seq(MBool(true)))
-
     )
-
     val edge = Edge.apply2("edgeId", mReference, Seq(), Seq(), attributes)
 
     rule.isValid(edge).get should be (true)

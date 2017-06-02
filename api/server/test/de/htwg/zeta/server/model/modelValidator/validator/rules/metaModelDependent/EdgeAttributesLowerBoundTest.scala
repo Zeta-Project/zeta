@@ -16,7 +16,7 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
   val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
   val rule = new EdgeAttributesLowerBound("edgeType", "attributeType", 2)
 
-  "check" should "return true on edges with 2 or more attributes of type attributeType" in {
+  "isValid" should "return true on edges with 2 or more attributes of type attributeType" in {
     val twoAttributes = Attribute(name = "attributeType", value = Seq(MString("att1"), MString("att2")))
     val twoAttributesEdge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(twoAttributes))
 
