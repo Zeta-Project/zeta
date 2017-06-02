@@ -14,9 +14,7 @@ import models.document.Log
 import models.document.MetaModelEntity
 import models.document.MetaModelRelease
 import models.document.ModelEntity
-import models.document.PasswordInfoEntity
 import models.document.Settings
-import models.document.UserEntity
 
 /**
  * Persistence Implementation for the different types of documents.
@@ -55,9 +53,6 @@ trait PersistenceService {
 
   /** Persistence for [[models.document.Log]] */
   val log: Persistence[UUID, Log]
-
-  /** Persistence for [[models.document.PasswordInfoEntity]] */
-  val passwordInfoEntity: Persistence[UUID, PasswordInfoEntity]
 
   /** Persistence for [[models.User]] */
   val user: Persistence[UUID, User]

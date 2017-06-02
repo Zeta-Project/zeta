@@ -6,7 +6,6 @@ import java.util.UUID
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import models.User
-import models.document.PasswordInfoEntity
 import models.document.UserEntity
 import models.document.Log
 import models.document.JobSettings
@@ -463,11 +462,6 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   /** Spray-Json conversion protocol for [[models.document.Log]] */
   implicit val logFormat: RootJsonFormat[Log] = jsonFormat5(Log.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.UserEntity]] */
-  implicit val passwordInfoEntityFormat: RootJsonFormat[PasswordInfoEntity] = {
-    implicit val passwordInfo: RootJsonFormat[PasswordInfo] = jsonFormat3(PasswordInfo)
-    jsonFormat3(PasswordInfoEntity.apply)
-  }
 
   /** Spray-Json conversion protocol for [[models.document.UserEntity]] */
   implicit val userEntityFormat: RootJsonFormat[UserEntity] = {

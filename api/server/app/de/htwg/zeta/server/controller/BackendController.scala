@@ -27,7 +27,6 @@ import models.frontend.GeneratorRequest
 import models.frontend.GeneratorResponse
 import models.frontend.UserRequest
 import models.frontend.UserResponse
-import models.session.Session
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent
 import play.api.mvc.WebSocket.MessageFlowTransformer
@@ -40,14 +39,12 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
  * @param mat               Materializer
  * @param repositoryFactory RepositoryFactory
  * @param silhouette        Silhouette
- * @param session           Session
  */
 class BackendController @Inject()(
     implicit system: ActorSystem,
     mat: Materializer,
     repositoryFactory: RepositoryFactory,
-    silhouette: Silhouette[ZetaEnv],
-    session: Session)
+    silhouette: Silhouette[ZetaEnv])
   extends Controller {
 
   private val developerMsg: MessageFlowTransformer[DeveloperRequest, DeveloperResponse] =

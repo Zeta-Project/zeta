@@ -24,7 +24,6 @@ import models.document.Log
 import models.document.MetaModelEntity
 import models.document.MetaModelRelease
 import models.document.ModelEntity
-import models.document.PasswordInfoEntity
 import models.document.Settings
 import models.document.UserEntity
 
@@ -71,9 +70,6 @@ class PersistenceMicroService(address: String, port: Int) extends PersistenceSer
 
   /** Persistence for the [[models.document.Log]] */
   override val log: Persistence[Log] = new PersistenceClient[Log](address, port)
-
-  /** Persistence for the [[models.document.PasswordInfoEntity]] */
-  override val passwordInfoEntity = new PersistenceClient[PasswordInfoEntity](address, port)
 
   /** Persistence for the [[models.document.UserEntity]] */
   override val userEntity = new PersistenceClient[UserEntity](address, port)

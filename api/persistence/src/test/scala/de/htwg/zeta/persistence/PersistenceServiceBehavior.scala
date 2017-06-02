@@ -5,14 +5,12 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.PersistenceService
 import models.User
 import models.document.Document
 import models.document.Log
 import models.document.ModelEntity
-import models.document.PasswordInfoEntity
 import models.document.UserEntity
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.Model
@@ -75,18 +73,6 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
   private val log3: Log = log1.copy(_id = "logId3")
   private val log2Updated: Log = log2.copy(status = 2)
 
-  private val pwInfoEntity1 = PasswordInfoEntity(
-    _id = "pwInfoEntity1Id1",
-    _rev = "pwInfoEntity1Rev",
-    passwordInfo = PasswordInfo(
-      hasher = "hash1",
-      password = "pw1",
-      salt = Some("salt1")
-    )
-  )
-  private val pwInfoEntity2: PasswordInfoEntity = pwInfoEntity1.copy(_id = "pwInfoEntity1Id2")
-  private val pwInfoEntity3: PasswordInfoEntity = pwInfoEntity1.copy(_id = "pwInfoEntity1Id3")
-  private val pwInfoEntity2Updated: PasswordInfoEntity = pwInfoEntity2.copy(passwordInfo = pwInfoEntity2.passwordInfo.copy(salt = None))
 
   private val userEntity1 = UserEntity(
     _id = "userEntity1Id1",
@@ -118,9 +104,6 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
       service.log, log1, log2, log3, log2Updated
     )
 
-    "PasswordInfoEntity" should behave like docBehavior[PasswordInfoEntity](
-      service.passwordInfoEntity, pwInfoEntity1, pwInfoEntity2, pwInfoEntity3, pwInfoEntity2Updated
-    )
 
     "UserEntity" should behave like docBehavior[UserEntity](
       service.userEntity, userEntity1, userEntity2, userEntity3, userEntity2Updated

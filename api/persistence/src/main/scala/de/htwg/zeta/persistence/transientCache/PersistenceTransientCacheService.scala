@@ -13,7 +13,6 @@ import models.document.Log
 import models.document.MetaModelEntity
 import models.document.MetaModelRelease
 import models.document.ModelEntity
-import models.document.PasswordInfoEntity
 import models.document.Settings
 import models.document.UserEntity
 
@@ -56,11 +55,8 @@ class PersistenceTransientCacheService extends PersistenceService {
   /** Persistence for the [[models.document.Log]] */
   override val log = new TransientCachePersistence[UUID, Log]
 
-  /** Persistence for the [[models.document.PasswordInfoEntity]] */
-  override val passwordInfoEntity = new TransientCachePersistence[UUID, PasswordInfoEntity]
-
   /** Persistence for the [[models.document.UserEntity]] */
-  override val userEntity = new TransientCachePersistence[UUID, UserEntity]
+  override val user = new TransientCachePersistence[UUID, UserEntity]
 
 
 

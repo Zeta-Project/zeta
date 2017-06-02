@@ -38,4 +38,5 @@ class BaseModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideRepositoryFactory(implicit client: WSClient): RepositoryFactory = new HttpRepositoryFactory()
+
 }

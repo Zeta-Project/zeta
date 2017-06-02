@@ -1,6 +1,5 @@
 package models.document
 
-import java.util.Objects
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.util.PasswordInfo
@@ -56,7 +55,6 @@ case class MetaModelEntity(id: String, _rev: String, name: String, metaModel: Me
 case class MetaModelRelease(id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends  Document
 case class ModelEntity(id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity with Document
 case class Log(id: String, _rev: String, log: String, status: Int, date: String) extends Document
-case class PasswordInfoEntity(id: String, _rev: String, passwordInfo: PasswordInfo) extends Entity with Document
 case class UserEntity(id: String, _rev: String, user: User) extends Entity with Document
 
 object Settings {
@@ -77,14 +75,6 @@ object UserEntity {
   }
 }
 
-object PasswordInfoEntity {
-  implicit lazy val formatPasswordInfo: OFormat[PasswordInfo] = derived.oformat
-
-  def apply(owner: String, info: PasswordInfo): PasswordInfoEntity = {
-    val id = s"PasswordInfoEntity-${owner}"
-    PasswordInfoEntity(id, null, info)
-  }
-}
 
 object Generator {
   def apply(owner: String, name: String, image: GeneratorImage): Generator = {
@@ -154,7 +144,6 @@ object Document {
     e match {
       case d: MetaModelEntity => d.copy(_rev = rev)
       case d: ModelEntity => d.copy(_rev = rev)
-      case d: PasswordInfoEntity => d.copy(_rev = rev)
       case d: UserEntity => d.copy(_rev = rev)
     }
   }
