@@ -13,7 +13,7 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDur
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAccessor
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAllIds
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.transientCache.TransientCachePersistence
+import de.htwg.zeta.persistence.transientCache.TransientPersistence
 import models.document.Document
 
 
@@ -34,7 +34,7 @@ class DocumentAccessorManagerActor[T <: Document] extends Actor { // scalastyle:
     CacheDuration(cleanUpInterval, keepInCacheTime, keepActorAliveTime, keepActorAliveAfterDeleteTime)
   }
 
-  private val persistence: Persistence[T] = new TransientCachePersistence[T] // TODO inject
+  private val persistence: Persistence[T] = new TransientPersistence[T] // TODO inject
   private val documentAccessorFactory: DocumentAccessorFactory = DocumentAccessorFactoryDefaultImpl // TODO inject
 
   private val cleanUpJob: Cancellable = {

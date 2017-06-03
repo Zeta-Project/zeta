@@ -6,12 +6,10 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.server.util.auth.RepositoryFactory
-import models.User
 import models.document.AllMetaModels
 import models.document.MetaModelEntity
 import models.document.Repository
@@ -48,8 +46,8 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
     repository(request).query[MetaModelEntity](AllMetaModels())
       .map { mm =>
         new MetaModelShortInfo(id = mm.id(), name = mm.name, links = Some(Seq(
-          HLink.get("self", routes.ScalaRoutes.getMetamodels(mm.id()).absoluteURL()(request)),
-          HLink.delete("remove", routes.ScalaRoutes.getMetamodels(mm.id()).absoluteURL()(request))
+          HLink.get("self", routes.ScalaRoutes.getMetamodels(mm.id).absoluteURL()(request)),
+          HLink.delete("remove", routes.ScalaRoutes.getMetamodels(mm.id).absoluteURL()(request))
         )))
       }
       .toList.materialize.subscribe(n => n match {
@@ -115,8 +113,8 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
   def get(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
       val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ScalaRoutes.getMetamodels(m.id()).absoluteURL()(request)),
-        HLink.delete("remove", routes.ScalaRoutes.getMetamodels(m.id()).absoluteURL()(request))
+        HLink.put("update", routes.ScalaRoutes.getMetamodels(m.id).absoluteURL()(request)),
+        HLink.delete("remove", routes.ScalaRoutes.getMetamodels(m.id).absoluteURL()(request))
       )))
       Ok(Json.toJson(out))
     })

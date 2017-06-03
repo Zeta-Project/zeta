@@ -38,7 +38,7 @@ class ResetPasswordController @Inject()(
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: Persistence[UUID, User] = Persistence.service.user
+  private val userPersistence: Persistence[User] = Persistence.service.users
 
   /** Views the `Reset Password` page.
    *
@@ -63,9 +63,10 @@ class ResetPasswordController @Inject()(
    * @return The result to display.
    */
   def submit(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    tokenCache.read(token).map(userId => {
+
+    tokenCache.read(token).flatMap[Result](userId => {
       ResetPasswordForm.form.bindFromRequest()(request).fold(
-        form => BadRequest(views.html.silhouette.resetPassword(form, token, request, messages)),
+        form => Future(BadRequest(views.html.silhouette.resetPassword(form, token, request, messages))),
         password => {
           userPersistence.read(userId).flatMap(user => {
             val loginInfo = LoginInfo(CredentialsProvider.ID, user.email)

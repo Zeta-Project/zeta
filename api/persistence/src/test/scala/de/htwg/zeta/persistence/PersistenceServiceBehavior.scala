@@ -42,7 +42,7 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
 
 
   private val modelEntity1 = ModelEntity(
-    _id = "modelEntityId1",
+    id = "modelEntityId1",
     _rev = "modelEntityRev",
     model = Model(
       name = "modelEntity1.model.name",
@@ -63,7 +63,7 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
   private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = "metaModelIdUpdated")
 
   private val log1 = Log(
-    _id = "logId1",
+    id = "logId1",
     _rev = "logRev",
     log = "logMsg1",
     status = 1,
@@ -75,7 +75,7 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
 
 
   private val userEntity1 = UserEntity(
-    _id = "userEntity1Id1",
+    id = "userEntity1Id1",
     _rev = "userEntity1Rev",
     user = User(
       id = UUID.randomUUID(),

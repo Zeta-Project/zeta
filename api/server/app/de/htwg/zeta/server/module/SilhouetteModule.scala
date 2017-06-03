@@ -108,7 +108,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   def provideUserIdentityService(
       loginInfoPersistence: LoginInfoPersistence, // scalastyle:ignore
-      userPersistence: Persistence[UUID, User]): IdentityService[User] = {
+      userPersistence: Persistence[User]): IdentityService[User] = {
     new IdentityService[User] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
         val userId = loginInfoPersistence.read(loginInfo)

@@ -10,7 +10,7 @@ import models.Identifiable
  *
  * @tparam V type of the document
  */
-trait Persistence[K, V <: Identifiable] { // scalastyle:ignore
+trait Persistence[V <: Identifiable] { // scalastyle:ignore
 
   /** The name of the document-type.
    *

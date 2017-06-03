@@ -9,7 +9,6 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.server.util.auth.RepositoryFactory
-import models.User
 import models.document.AllModels
 import models.document.MetaModelEntity
 import models.document.ModelEntity
@@ -46,9 +45,9 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
     repository(request).query[ModelEntity](AllModels())
       .map { info =>
         info.copy(links = Some(Seq(
-          HLink.get("self", routes.ScalaRoutes.getModels(info.id()).absoluteURL()(request)),
+          HLink.get("self", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request)),
           HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(info.metaModelId).absoluteURL()(request)),
-          HLink.delete("remove", routes.ScalaRoutes.getModels(info.id()).absoluteURL()(request))
+          HLink.delete("remove", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request))
         )))
       }
       .toList.materialize.subscribe(_ match {
@@ -138,9 +137,9 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   def get(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ScalaRoutes.getModels(m.id()).absoluteURL()(request)),
+        HLink.put("update", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request)),
         HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(m.metaModelId).absoluteURL()(request)),
-        HLink.delete("remove", routes.ScalaRoutes.getModels(m.id()).absoluteURL()(request))
+        HLink.delete("remove", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request))
       )))
       Results.Ok(Json.toJson(out))
     })

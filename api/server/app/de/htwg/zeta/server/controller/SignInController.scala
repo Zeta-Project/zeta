@@ -1,6 +1,5 @@
 package de.htwg.zeta.server.controller
 
-import java.util.UUID
 import javax.inject.Inject
 
 import scala.concurrent.Future
@@ -47,7 +46,7 @@ class SignInController @Inject()(
   extends Controller {
 
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
-  private val userPersistence: Persistence[UUID, User] = Persistence.service.user
+  private val userPersistence: Persistence[User] = Persistence.service.users
 
   /** Views the `Sign In` page.
    *

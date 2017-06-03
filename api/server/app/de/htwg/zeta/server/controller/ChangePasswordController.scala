@@ -16,8 +16,8 @@ import de.htwg.zeta.server.forms.ChangePasswordForm
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.mvc.Controller
 import play.api.mvc.AnyContent
+import play.api.mvc.Controller
 import play.api.mvc.Result
 
 
@@ -37,6 +37,8 @@ class ChangePasswordController @Inject()(
   /**
    * Views the `Change Password` page.
    *
+   * @param request  The request
+   * @param messages The messages
    * @return The result to display.
    */
   def view(request: SecuredRequest[ZetaEnv, AnyContent], messages: Messages): Result = {
@@ -46,13 +48,15 @@ class ChangePasswordController @Inject()(
   /**
    * Changes the password.
    *
+   * @param request  The request
+   * @param messages The messages
    * @return The result to display.
    */
   def submit(request: SecuredRequest[ZetaEnv, AnyContent], messages: Messages): Future[Result] = {
     ChangePasswordForm.form.bindFromRequest()(request).fold(
       form => Future.successful(BadRequest(views.html.silhouette.changePassword(form, request.identity, request, messages))),
       password => {
-        val (currentPassword, newPassword) = password
+        val (currentPassword, newPassword) = password // scalastyle:ignore
         val credentials = Credentials(request.identity.email, currentPassword)
         credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
           val passwordInfo = passwordHasherRegistry.current.hash(newPassword)
@@ -66,4 +70,5 @@ class ChangePasswordController @Inject()(
       }
     )
   }
+
 }

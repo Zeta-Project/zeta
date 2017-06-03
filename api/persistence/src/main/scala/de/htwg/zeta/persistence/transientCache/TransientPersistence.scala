@@ -12,7 +12,7 @@ import models.document.Document
  *
  * @tparam V type of the document
  */
-class TransientCachePersistence[K, V <: Document] extends Persistence[K, V] { // scalastyle:ignore
+class TransientPersistence[V <: Document] extends Persistence[V] { // scalastyle:ignore
 
   private val cache: TrieMap[UUID, V] = TrieMap.empty[UUID, V]
 
