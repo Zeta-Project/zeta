@@ -30,7 +30,9 @@ class ScalaRoutes @Inject()(
 
 
   // # Home page
-  def getIndex(): Action[AnyContent] = AuthenticatedGet(ApplicationController.index _)
+  def getIndex(): Action[AnyContent] = {
+    AuthenticatedGet(ApplicationController.index _)
+  }
 
   def getUser(): Action[AnyContent] = AuthenticatedGet(ApplicationController.user _)
 
@@ -62,7 +64,9 @@ class ScalaRoutes @Inject()(
 
 
   // ### Webpage
-  def getWebpage(): Action[AnyContent] = AuthenticatedGet(WebpageController.index _)
+  def getWebpage(): Action[AnyContent] = {
+    AuthenticatedGet(WebpageController.index _)
+  }
 
   def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverviewShortInfo _)
 
@@ -70,13 +74,17 @@ class ScalaRoutes @Inject()(
 
 
   // # metamodel editor
-  def getMetamodelEditor(metaModelUuid: String): Action[AnyContent] = AuthenticatedGet(MetaModelController.metaModelEditor(metaModelUuid) _)
+  def getMetamodelEditor(metaModelId: UUID): Action[AnyContent] = {
+    AuthenticatedGet(MetaModelController.metaModelEditor(metaModelId) _)
+  }
 
-  def getMetamodelSocket(metaModelUuid: String): WebSocket = AuthenticatedSocket(MetaModelController.metaModelSocket(metaModelUuid) _)
+  def getMetamodelSocket(metaModelId: UUID): WebSocket = AuthenticatedSocket(MetaModelController.metaModelSocket(metaModelId) _)
 
 
   // ### model editor
-  def getModelEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(metaModelUuid, modelUuid) _)
+  def getModelEditor(modelId: UUID): Action[AnyContent] = {
+    AuthenticatedGet(ModelController.modelEditor(modelId) _)
+  }
 
   def getModelSocket(instanceId: String, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
 
@@ -84,12 +92,15 @@ class ScalaRoutes @Inject()(
 
 
   // ### vr
-  def getModelVrEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] =
-    AuthenticatedGet(ModelController.vrModelEditor(metaModelUuid, modelUuid) _)
+  def getModelVrEditor(modelUuid: UUID): Action[AnyContent] = {
+    AuthenticatedGet(ModelController.vrModelEditor(modelUuid) _)
+  }
 
 
   // # temporary
-  def getGenerate(metaModelUuid: String): Action[AnyContent] = AuthenticatedGet(GeneratorController.generate(metaModelUuid) _)
+  def getGenerate(metaModelUuid: UUID): Action[AnyContent] = {
+    AuthenticatedGet(GeneratorController.generate(metaModelUuid) _)
+  }
 
   /* ### MetaModel REST API
    * MMRA => MetaModelRestApi
@@ -99,38 +110,41 @@ class ScalaRoutes @Inject()(
 
   def postMetamodels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, MetaModelRestApi.insert _)
 
-  def putMetamodels(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
+  def putMetamodels(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
 
-  def getMetamodels(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.get(metaModelId) _)
+  def getMetamodels(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.get(metaModelId) _)
 
-  def deleteMetamodels(metaModelId: String): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.delete(metaModelId) _)
+  def deleteMetamodels(metaModelId: UUID): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.delete(metaModelId) _)
 
-  def getMetamodelsDefinition(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
+  def getMetamodelsDefinition(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
 
-  def putMetamodelsDefinition(metaModelId: String): Action[JsValue] =
+  def putMetamodelsDefinition(metaModelId: UUID): Action[JsValue] = {
     AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateMetaModelDefinition(metaModelId) _)
+  }
 
-  def getMetamodelsDefinitionMclassesNoArgs(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
+  def getMetamodelsDefinitionMclassesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
 
-  def getMetamodelsDefinitionMreferencesNoArgs(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMReferences(metaModelId) _)
+  def getMetamodelsDefinitionMreferencesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMReferences(metaModelId) _)
 
-  def getMetamodelsDefinitionMclasses(metaModelId: String, mClassName: String): Action[AnyContent] =
+  def getMetamodelsDefinitionMclasses(metaModelId: UUID, mClassName: String): Action[AnyContent] = {
     AuthenticatedGet(MetaModelRestApi.getMClass(metaModelId, mClassName) _)
+  }
 
-  def getMetamodelsDefinitionMReferences(metaModelId: String, mReferenceName: String): Action[AnyContent] =
+  def getMetamodelsDefinitionMReferences(metaModelId: UUID, mReferenceName: String): Action[AnyContent] = {
     AuthenticatedGet(MetaModelRestApi.getMReference(metaModelId, mReferenceName) _)
+  }
 
-  def getMetamodelsShape(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getShape(metaModelId) _)
+  def getMetamodelsShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getShape(metaModelId) _)
 
-  def putMetamodelsShape(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateShape(metaModelId) _)
+  def putMetamodelsShape(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateShape(metaModelId) _)
 
-  def getMetamodelsStyle(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getStyle(metaModelId) _)
+  def getMetamodelsStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getStyle(metaModelId) _)
 
-  def putMetamodelsStyle(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateStyle(metaModelId) _)
+  def putMetamodelsStyle(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateStyle(metaModelId) _)
 
-  def getMetamodelsDiagram(metaModelId: String): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getDiagram(metaModelId) _)
+  def getMetamodelsDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getDiagram(metaModelId) _)
 
-  def putMetamodelsDiagram(metaModelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
+  def putMetamodelsDiagram(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
 
 
   /* ### Model REST API
@@ -142,34 +156,37 @@ class ScalaRoutes @Inject()(
 
   def postModels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.insert() _)
 
-  def putModels(modelId: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, ModelRestApi.update(modelId) _)
+  def putModels(modelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, ModelRestApi.update(modelId) _)
 
-  def getModels(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.get(modelId) _)
+  def getModels(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.get(modelId) _)
 
-  def getModelsDefinition(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getModelDefinition(modelId) _)
+  def getModelsDefinition(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getModelDefinition(modelId) _)
 
-  def putModelsDefinition(modelId: String): Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.updateModel(modelId) _)
+  def putModelsDefinition(modelId: UUID): Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.updateModel(modelId) _)
 
-  def getModelsDefinitionNodesNoArgs(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNodes(modelId) _)
+  def getModelsDefinitionNodesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNodes(modelId) _)
 
-  def getModelsDefinitionNodes(modelId: String, nodeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeName) _)
+  def getModelsDefinitionNodes(modelId: UUID, nodeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeName) _)
 
-  def getModelDefinitionEdgesNoArgs(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdges(modelId) _)
+  def getModelDefinitionEdgesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdges(modelId) _)
 
-  def getModelDefinitionEdges(modelId: String, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
+  def getModelDefinitionEdges(modelId: UUID, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
 
-  def deleteModels(modelId: String): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
+  def deleteModels(modelId: UUID): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
 
 
   // ### Code Editor
-  def getCodeeditorEditor(metaModelUuid: String, dslType: String): Action[AnyContent] =
-    AuthenticatedGet(CodeEditorController.codeEditor(metaModelUuid, dslType) _)
+  def getCodeeditorEditor(metaModelId: UUID, dslType: String): Action[AnyContent] = {
+    AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
+  }
 
-  def getCodeeditorSocket(metaModelUuid: String, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelUuid, dslType) _)
+  def getCodeeditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
 
 
   // # Map static resources from the /public folder to the /assets URL path
-  def getAssets(file: String): Action[AnyContent] = Assets.at(path = "/public", file)
+  def getAssets(file: String): Action[AnyContent] = {
+    Assets.at(path = "/public", file)
+  }
 
   def getWebjars(file: String): Action[AnyContent] = WebJarAssets.at(file)
 

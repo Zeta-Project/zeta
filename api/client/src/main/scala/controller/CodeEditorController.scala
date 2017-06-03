@@ -37,7 +37,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
   }
 
   def docNotFoundMessage(msg: DocNotFound) = {
-    addDocument(msg.metaModelUuid, msg.dslType)
+    addDocument(msg.metaModelId, msg.dslType)
     view.displayDoc(document)
   }
 

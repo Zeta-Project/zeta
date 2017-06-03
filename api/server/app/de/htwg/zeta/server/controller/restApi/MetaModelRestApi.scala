@@ -63,6 +63,7 @@ class MetaModelRestApi @Inject()() extends Controller {
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       entity => {
         val repo = restrictedRepository(request.identity)
+        val repo = restrictedRepository(request.identity)
         val metaModelEntity = MetaModelEntity(request.identity.id, entity)
         repo.metaModelEntity.create(MetaModelEntity(request.identity.id, entity)).flatMap { _ =>
           repo.users.update(modify(request.identity)(_.accessAuthorisation.metaModelEntity).using(_ + metaModelEntity.id)).map { _ =>
@@ -107,9 +108,8 @@ class MetaModelRestApi @Inject()() extends Controller {
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedRepository(request.identity)
     repo.users.update(modify(request.identity)(_.accessAuthorisation.metaModelEntity).using(_ - id)).flatMap { _ =>
-      repo.metaModelEntity.delete(id).map { _ => {
+      repo.metaModelEntity.delete(id).map { _ =>
         Ok("")
-      }
       }
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -199,7 +199,6 @@ class MetaModelRestApi @Inject()() extends Controller {
 
   /** A helper method for less verbose reads from the database */
   private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: MetaModelEntity => Result): Future[Result] = {
-    restrictedRepository(request.identity).metaModelEntity.read(id)
     restrictedRepository(request.identity).metaModelEntity.read(id).map { mm =>
       trans(mm)
     }.recover {

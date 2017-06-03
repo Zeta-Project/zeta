@@ -137,7 +137,7 @@
                         </div>
                     }
                     @for(model <- modelInstances) {
-                        <a href="@controllers.routes.ScalaRoutes.getModelEditor(metaModel.get.id, model.id)" class="list-group-item list-item-container">
+                        <a href="@controllers.routes.ScalaRoutes.getModelEditor(model.id)" class="list-group-item list-item-container">
                             @model.name
                         <div data-model-id="@model.id" class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete model instace"></div>
                         </a>

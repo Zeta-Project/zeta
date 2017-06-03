@@ -1,18 +1,17 @@
 package de.htwg.zeta.server.controller.restApi
 
+import java.util.UUID
 import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import com.softwaremill.quicklens.modify
 import controllers.routes
+import de.htwg.zeta.persistence.Persistence.restrictedRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.RepositoryFactory
-import models.document.AllModels
-import models.document.MetaModelEntity
 import models.document.ModelEntity
-import models.document.Repository
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
@@ -26,61 +25,46 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
 import play.api.mvc.AnyContent
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for model definitions
  */
-class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Controller {
-
-  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
-    repositoryFactory.fromSession(request)
+class ModelRestApi @Inject()() extends Controller {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val p = Promise[Result]
-
-    repository(request).query[ModelEntity](AllModels())
-      .map { info =>
+    val repo = restrictedRepository(request.identity).modelEntity
+    repo.readAllIds.flatMap { ids =>
+      Future.sequence(ids.map(repo.read)).map(_.map(info =>
         info.copy(links = Some(Seq(
           HLink.get("self", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request)),
           HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(info.metaModelId).absoluteURL()(request)),
           HLink.delete("remove", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request))
         )))
-      }
-      .toList.materialize.subscribe(_ match {
-      case OnError(err) => p.success(Results.BadRequest(err.getMessage))
-      case OnNext(list) => p.success(Results.Ok(Json.toJson(list)))
-    })
-    p.future
+      ))
+    }.map(list => Ok(Json.toJson(list))).recover {
+      case e: Exception => BadRequest(e.getMessage)
+    }
   }
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-
-    val repo =  repository(request)
-    (request.body \ "metaModelId").validate[String].fold(
+    (request.body \ "metaModelId").validate[UUID].fold(
       error => Future.successful(Results.BadRequest(JsError.toJson(error))),
       metaModelId => {
-        val in = (request.body \ "model").validate[Model]
-        in.fold(
-          errors => {
-            Future.successful(Results.BadRequest(JsError.toJson(errors)))
-          },
+        (request.body \ "model").validate[Model].fold(
+          errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
           model => {
-            val op = for {
-              mm <- repo.get[MetaModelEntity](metaModelId)
-              insert <- repo.create[ModelEntity](ModelEntity(request.identity.id, model.copy(metaModel = mm
-                .metaModel), mm))
-            } yield {
-              insert
-            }
-
-            op.map { value =>
-              Results.Ok(Json.toJson(value))
-            }.recover {
+            val repo = restrictedRepository(request.identity)
+            repo.metaModelEntity.read(metaModelId).flatMap(metaModel => {
+              val modelEntity = ModelEntity(request.identity.id, model.copy(metaModel = metaModel.metaModel), metaModel)
+              repo.modelEntity.create(modelEntity).flatMap { _ =>
+                repo.users.update(modify(request.identity)(_.accessAuthorisation.modelEntity).using(_ + modelEntity.id)).map {
+                  _ => Results.Ok(Json.toJson(modelEntity))
+                }
+              }
+            }).recover {
               case e: Exception => Results.BadRequest(e.getMessage)
             }
           }
@@ -90,22 +74,18 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** updates whole model structure */
-  def update(id: String)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+  def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
     val in = request.body.validate[Model]
     in.fold(
-      errors => {
-        Future.successful(Results.BadRequest(JsError.toJson(errors)))
-      },
+      errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
       model => {
-        val op = for {
-          saved <- repository(request).get[ModelEntity](id)
-          updated <- repository(request).update[ModelEntity](saved.copy(model = model))
-        } yield {
-          updated
+        val repo = restrictedRepository(request.identity).modelEntity
+        repo.read(id).flatMap { saved => {
+          val updated = saved.copy(model = model)
+          repo.update(updated).map { _ =>
+            Results.Ok(Json.toJson(updated))
+          }
         }
-
-        op.map { value =>
-          Results.Ok(Json.toJson(value.model))
         }.recover {
           case e: Exception => Results.BadRequest(e.getMessage)
         }
@@ -114,12 +94,14 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** updates model definition only */
-  def updateModel(id: String)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+  def updateModel(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+    val repo = restrictedRepository(request.identity).modelEntity
+
     val p = Promise[Result]
-    repository(request).get[ModelEntity](id).map { saved =>
+    repo.read(id).map { saved =>
       Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
         case JsSuccess(model, path) => {
-          repository(request).update[ModelEntity](saved.copy(model = model)).map { updated =>
+          repo.update(saved.copy(model = model)).map { updated =>
             p.success(Results.Ok(Json.toJson(updated)))
           }.recover {
             case e: Exception => p.success(Results.BadRequest(e.getMessage))
@@ -134,7 +116,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** returns whole model structure incl. HATEOS links */
-  def get(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val out = m.copy(links = Some(Seq(
         HLink.put("update", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request)),
@@ -146,12 +128,12 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** returns model definition only */
-  def getModelDefinition(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
-  def getNodes(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
@@ -160,7 +142,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** returns specific node of a specific model as json object */
-  def getNode(id: String, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getNode(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
@@ -169,7 +151,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** returns all edges of a model as json array */
-  def getEdges(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
@@ -178,7 +160,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** returns specific edge of a specific model as json object */
-  def getEdge(id: String, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getEdge(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
@@ -187,17 +169,21 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   }
 
   /** deletes a whole model */
-  def delete(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    repository(request).delete(id).map { _ =>
-      Results.Ok("")
+  def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    val repo = restrictedRepository(request.identity)
+    repo.users.update(modify(request.identity)(_.accessAuthorisation.modelEntity).using(_ - id)).flatMap { _ =>
+      repo.modelEntity.delete(id).map { _ =>
+        Ok("")
+      }
     }.recover {
-      case e: Exception => Results.BadRequest(e.getMessage)
+      case e: Exception => BadRequest(e.getMessage)
     }
+
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedRead[A](id: String, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
-    repository(request).get[ModelEntity](id).map { model =>
+  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
+    restrictedRepository(request.identity).modelEntity.read(id).map { model =>
       trans(model)
     }.recover {
       case e: Exception => Results.BadRequest(e.getMessage)

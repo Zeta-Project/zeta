@@ -41,25 +41,19 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
   case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) */
 
 
-  private val modelEntity1 = ModelEntity(
-    id = "modelEntityId1",
-    _rev = "modelEntityRev",
-    model = Model(
-      name = "modelEntity1.model.name",
-      metaModel = MetaModel(
-        name = "modelEntity1.model.metaModel.name",
+  private val modelEntity1 = ModelEntity(id = "modelEntityId1", _rev = "modelEntityRev", model = Model(
+        name = "modelEntity1.model.name",
+        metaModel = MetaModel(
+          name = "modelEntity1.model.metaModel.name",
+          elements = Map.empty,
+          uiState = "modelEntity1.model.metaModel.uiState"
+        ),
         elements = Map.empty,
-        uiState = "modelEntity1.model.metaModel.uiState"
-      ),
-      elements = Map.empty,
-      uiState = "modelEntity.model.uiState"
+        uiState = "modelEntity.model.uiState"
 
-    ),
-    metaModelId = "metaModelId",
-    links = None
-  )
-  private val modelEntity2: ModelEntity = modelEntity1.copy(_id = "modelEntityId2")
-  private val modelEntity3: ModelEntity = modelEntity1.copy(_id = "modelEntityId3")
+      ), metaModelId = "metaModelId", links = None)
+  private val modelEntity2: ModelEntity = modelEntity1.copy()
+  private val modelEntity3: ModelEntity = modelEntity1.copy()
   private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = "metaModelIdUpdated")
 
   private val log1 = Log(

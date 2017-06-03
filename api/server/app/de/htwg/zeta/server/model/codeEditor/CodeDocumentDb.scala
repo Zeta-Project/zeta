@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.codeEditor
 
+import java.util.UUID
+
 import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports.DBObject
 import com.mongodb.casbah.Imports.wrapDBObj
@@ -13,7 +15,7 @@ import play.api.Logger
 import play.api.Play
 
 /** Represents a Serverside CodeDocument which is stored in the Database */
-case class DbCodeDocument(docId: String, dslType: String, metaModelUuid: String, doc: scalot.Server)
+case class DbCodeDocument(docId: UUID, dslType: String, metaModelUuid: String, doc: scalot.Server)
 
 /**
  * Code Database Responsible for persisting and retrieving the CodeDocuments.
@@ -44,8 +46,8 @@ object CodeDocumentDb {
     case _ => None
   }
 
-  def getDocWithUuidAndDslType(metaModelUuid: String, dslType: String): Option[DbCodeDocument] =
-    coll.find((x: DBObject) => x.metaModelUuid == metaModelUuid && x.dslType == dslType) match {
+  def getDocWithUuidAndDslType(metaModelId: UUID, dslType: String): Option[DbCodeDocument] =
+    coll.find((x: DBObject) => x.metaModelUuid == metaModelId.toString && x.dslType == dslType) match {
       case Some(doc) => Some(salat.grater[DbCodeDocument].asObject(doc))
       case _ => None
     }

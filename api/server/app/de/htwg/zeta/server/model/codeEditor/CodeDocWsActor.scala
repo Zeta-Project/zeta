@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.codeEditor
 
+import java.util.UUID
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
@@ -8,16 +10,13 @@ import akka.cluster.client.ClusterClient.Publish
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.event.Logging
-
 import scalot.Server
-
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage.DocAdded
 import shared.CodeEditorMessage.DocDeleted
 import shared.CodeEditorMessage.DocLoaded
 import shared.CodeEditorMessage.DocNotFound
 import shared.CodeEditorMessage.TextOperation
-
 import upickle.default
 
 case class MediatorMessage(msg: Any, broadcaster: ActorRef)
@@ -82,13 +81,13 @@ object CodeDocManagingActor {
 /**
  * This Actor is responsible of the communictaion with the users browser
  */
-class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) extends Actor with ActorLogging {
+class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String) extends Actor with ActorLogging {
 
   val mediator = DistributedPubSub(context.system).mediator
   mediator ! Subscribe(dslType, self)
 
   /** Tell the client about the existing document */
-  CodeDocumentDb.getDocWithUuidAndDslType(metaModelUuid, dslType) match {
+  CodeDocumentDb.getDocWithUuidAndDslType(metaModelId, dslType) match {
     case doc: Some[DbCodeDocument] => out ! default.write[CodeEditorMessage](
       DocLoaded(
         str = doc.get.doc.str,
@@ -103,7 +102,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
     case None => out ! default.write[CodeEditorMessage](
       DocNotFound(
         dslType = dslType,
-        metaModelUuid = metaModelUuid
+        metaModelId = metaModelId
       )
     )
   }
@@ -145,5 +144,5 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelUuid: String,
 }
 
 object CodeDocWsActor {
-  def props(out: ActorRef, docManager: ActorRef, metaModelUuid: String, dslType: String) = Props(new CodeDocWsActor(out, docManager, metaModelUuid, dslType))
+  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String) = Props(new CodeDocWsActor(out, docManager, metaModelId, dslType))
 }

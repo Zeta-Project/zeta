@@ -36,55 +36,55 @@ GET           /overview/:uuid                                                   
 
 
 # metamodel editor
-GET           /metamodel/editor/:metaModelUuid                                       controllers.ScalaRoutes.getMetamodelEditor(metaModelUuid: String)
-GET           /metamodel/socket/:metaModelUuid                                       controllers.ScalaRoutes.getMetamodelSocket(metaModelUuid: String)
+GET           /metamodel/editor/:metaModelId                                         controllers.ScalaRoutes.getMetamodelEditor(metaModelId: java.util.UUID)
+GET           /metamodel/socket/:metaModelId                                         controllers.ScalaRoutes.getMetamodelSocket(metaModelId: java.util.UUID)
 
 ### model editor
-GET           /model/editor/:metaModelUuid/:modelUuid                                controllers.ScalaRoutes.getModelEditor(metaModelUuid: String, modelUuid: String)
+GET           /model/editor/:modelId                                                 controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
 GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:String, graphType:String)
 GET           /model/validator                                                       controllers.ScalaRoutes.getModelValidator
 
 ### vr
-GET           /model/vreditor/:metaModelUuid/:modelUuid                              controllers.ScalaRoutes.getModelVrEditor(metaModelUuid: String, modelUuid: String)
+GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: UUID)
 
 # temporary
-GET           /generator/:metaModelUuid                                              controllers.ScalaRoutes.getGenerate(metaModelUuid: String)
+GET           /generator/:metaModelUuid                                              controllers.ScalaRoutes.getGenerate(metaModelUuid: java.util.UUID)
 
 ### MetaModel REST API
 GET           /metamodels                                                            controllers.ScalaRoutes.getMetamodelsNoArgs
 POST          /metamodels                                                            controllers.ScalaRoutes.postMetamodels
-PUT           /metamodels/:metaModelId                                               controllers.ScalaRoutes.putMetamodels(metaModelId: String)
-GET           /metamodels/:metaModelId                                               controllers.ScalaRoutes.getMetamodels(metaModelId: String)
-DELETE        /metamodels/:metaModelId                                               controllers.ScalaRoutes.deleteMetamodels(metaModelId: String)
-GET           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.getMetamodelsDefinition(metaModelId: String)
-PUT           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.putMetamodelsDefinition(metaModelId: String)
-GET           /metamodels/:metaModelId/definition/mclasses                           controllers.ScalaRoutes.getMetamodelsDefinitionMclassesNoArgs(metaModelId: String)
-GET           /metamodels/:metaModelId/definition/mreferences                        controllers.ScalaRoutes.getMetamodelsDefinitionMreferencesNoArgs(metaModelId: String)
-GET           /metamodels/:metaModelId/definition/mclasses/:mClassName               controllers.ScalaRoutes.getMetamodelsDefinitionMclasses(metaModelId: String, mClassName: String)
-GET           /metamodels/:metaModelId/definition/mreferences/:mReferenceName        controllers.ScalaRoutes.getMetamodelsDefinitionMReferences(metaModelId: String, mReferenceName: String)
-GET           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.getMetamodelsShape(metaModelId: String)
-PUT           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.putMetamodelsShape(metaModelId: String)
-GET           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.getMetamodelsStyle(metaModelId: String)
-PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: String)
-GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: String)
-PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: String)
+PUT           /metamodels/:metaModelId                                               controllers.ScalaRoutes.putMetamodels(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId                                               controllers.ScalaRoutes.getMetamodels(metaModelId: java.util.UUID)
+DELETE        /metamodels/:metaModelId                                               controllers.ScalaRoutes.deleteMetamodels(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.getMetamodelsDefinition(metaModelId: java.util.UUID)
+PUT           /metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.putMetamodelsDefinition(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/definition/mclasses                           controllers.ScalaRoutes.getMetamodelsDefinitionMclassesNoArgs(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/definition/mreferences                        controllers.ScalaRoutes.getMetamodelsDefinitionMreferencesNoArgs(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/definition/mclasses/:mClassName               controllers.ScalaRoutes.getMetamodelsDefinitionMclasses(metaModelId: java.util.UUID, mClassName: String)
+GET           /metamodels/:metaModelId/definition/mreferences/:mReferenceName        controllers.ScalaRoutes.getMetamodelsDefinitionMReferences(metaModelId: java.util.UUID, mReferenceName: String)
+GET           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.getMetamodelsShape(metaModelId: java.util.UUID)
+PUT           /metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.putMetamodelsShape(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.getMetamodelsStyle(metaModelId: java.util.UUID)
+PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
+PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
 
 ### Model REST API
 GET           /models                                                                controllers.ScalaRoutes.getModelsNoArgs
 POST          /models                                                                controllers.ScalaRoutes.postModels
-PUT           /models/:modelId                                                       controllers.ScalaRoutes.putModels(modelId: String)
-GET           /models/:modelId                                                       controllers.ScalaRoutes.getModels(modelId: String)
-GET           /models/:modelId/definition                                            controllers.ScalaRoutes.getModelsDefinition(modelId: String)
-PUT           /models/:modelId/definition                                            controllers.ScalaRoutes.putModelsDefinition(modelId: String)
-GET           /models/:modelId/definition/nodes                                      controllers.ScalaRoutes.getModelsDefinitionNodesNoArgs(modelId: String)
-GET           /models/:modelId/definition/nodes/:nodeName                            controllers.ScalaRoutes.getModelsDefinitionNodes(modelId: String, nodeName: String)
-GET           /models/:modelId/definition/edges                                      controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: String)
-GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: String, edgeName: String)
-DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: String)
+PUT           /models/:modelId                                                       controllers.ScalaRoutes.putModels(modelId: java.util.UUID)
+GET           /models/:modelId                                                       controllers.ScalaRoutes.getModels(modelId: java.util.UUID)
+GET           /models/:modelId/definition                                            controllers.ScalaRoutes.getModelsDefinition(modelId: java.util.UUID)
+PUT           /models/:modelId/definition                                            controllers.ScalaRoutes.putModelsDefinition(modelId: java.util.UUID)
+GET           /models/:modelId/definition/nodes                                      controllers.ScalaRoutes.getModelsDefinitionNodesNoArgs(modelId: java.util.UUID)
+GET           /models/:modelId/definition/nodes/:nodeName                            controllers.ScalaRoutes.getModelsDefinitionNodes(modelId: java.util.UUID, nodeName: String)
+GET           /models/:modelId/definition/edges                                      controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: java.util.UUID)
+GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: java.util.UUID, edgeName: String)
+DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
 
 ### Code Editor
-GET           /codeeditor/editor/:metaModelUuid/:dslType                             controllers.ScalaRoutes.getCodeeditorEditor(metaModelUuid: String, dslType: String)
-GET           /codeeditor/socket/:metaModelUuid/:dslType                             controllers.ScalaRoutes.getCodeeditorSocket(metaModelUuid: String, dslType: String)
+GET           /codeeditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorEditor(metaModelId: String, dslType: String)
+GET           /codeeditor/socket/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorSocket(metaModelId: String, dslType: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                                          controllers.ScalaRoutes.getAssets(file)

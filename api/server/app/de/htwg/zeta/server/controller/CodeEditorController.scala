@@ -1,5 +1,6 @@
 package de.htwg.zeta.server.controller
 
+import java.util.UUID
 import javax.inject.Inject
 
 import akka.actor.ActorSystem
@@ -18,13 +19,13 @@ import play.api.mvc.Result
 
 class CodeEditorController @Inject()(implicit mat: Materializer, system: ActorSystem, ws: WSClient, silhouette: Silhouette[ZetaEnv]) extends Controller {
 
-  def codeEditor(metaModelUuid: String, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity), metaModelUuid, dslType))
+  def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+    Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity), metaModelId, dslType))
   }
 
   private val codeDocManager: ActorRef = system.actorOf(CodeDocManagingActor.props())
 
-  def codeSocket(metaModelUuid: String, dslType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
-    CodeDocWsActor.props(out, codeDocManager, metaModelUuid, dslType)
+  def codeSocket(metaModelId: UUID, dslType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
+    CodeDocWsActor.props(out, codeDocManager, metaModelId, dslType)
   }
 }

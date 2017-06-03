@@ -53,7 +53,7 @@ case class Settings(id: String, _rev: String, owner: UUID, jobSettings: JobSetti
 case class MetaModelEntity(id: UUID, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None)
   extends Entity with Document
 case class MetaModelRelease(id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends  Document
-case class ModelEntity(id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity with Document
+case class ModelEntity(id: UUID, _rev: String, model: Model, metaModelId: UUID, links: Option[Seq[HLink]] = None) extends Entity with Document
 case class Log(id: String, _rev: String, log: String, status: Int, date: String) extends Document
 case class UserEntity(id: String, _rev: String, user: User) extends Entity with Document
 
