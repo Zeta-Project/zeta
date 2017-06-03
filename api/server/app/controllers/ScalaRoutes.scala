@@ -26,7 +26,7 @@ class ScalaRoutes @Inject()(
 
   def getSocketGenerator(id: UUID): WebSocket = AuthenticatedSocket(BackendController.generator(id) _)
 
-  def getSocketUser(model: String): WebSocket = AuthenticatedSocket(BackendController.user(model) _)
+  def getSocketUser(modelId: UUID): WebSocket = AuthenticatedSocket(BackendController.user(modelId) _)
 
 
   // # Home page
@@ -35,8 +35,6 @@ class ScalaRoutes @Inject()(
   def getUser(): Action[AnyContent] = AuthenticatedGet(ApplicationController.user _)
 
   def getSignout: Action[AnyContent] = AuthenticatedGet(ApplicationController.signOut _)
-
-  def getAuthenticate(provider: String): Action[AnyContent] = UnAuthenticatedGet(SocialAuthController.authenticate(provider) _)
 
   def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(SignUpController.view _)
 

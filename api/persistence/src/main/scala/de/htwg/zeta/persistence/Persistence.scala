@@ -1,11 +1,11 @@
 package de.htwg.zeta.persistence
 
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedPersistenceService
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
-import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.transientCache.TransientLoginInfoPersistence
-import de.htwg.zeta.persistence.transientCache.TransientPersistenceService
+import de.htwg.zeta.persistence.transientCache.TransientRepository
 import de.htwg.zeta.persistence.transientCache.TransientTokenCache
 import models.User
 
@@ -14,15 +14,15 @@ import models.User
 object Persistence extends App {
 
   /** The current implementation of the PersistenceService. */
-  lazy val service: PersistenceService = new TransientPersistenceService
+  lazy val service: Repository = new TransientRepository
 
   /** The current implementation of the PersistenceService with a overlaying Access-Restriction Layer.
    *
    * @param user The assigned user to the restriction
    * @return PersistenceService
    */
-  def restrictedService(user: User): PersistenceService = {
-    AccessRestrictedPersistenceService(user, service)
+  def restrictedRepository(user: User): Repository = {
+    AccessRestrictedRepository(user, service)
   }
 
   /** The current implementation of TokenCache. */

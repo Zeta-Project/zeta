@@ -1,6 +1,6 @@
 package de.htwg.zeta.persistence.transientCache
 
-import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.Repository
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter
@@ -16,7 +16,7 @@ import models.document.UserEntity
 
 
 /** Cache-Implementation of the PersistenceService. */
-class TransientPersistenceService extends PersistenceService {
+class TransientRepository extends Repository {
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
   override val eventDrivenTask = new TransientPersistence[EventDrivenTask]

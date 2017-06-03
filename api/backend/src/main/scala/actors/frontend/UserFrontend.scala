@@ -23,10 +23,10 @@ private case object RegisterUserFrontend
  */
 
 object UserFrontend {
-  def props(out: ActorRef, backend: ActorRef, userId: UUID, model: String) = Props(new UserFrontend(out, backend, userId, model))
+  def props(out: ActorRef, backend: ActorRef, userId: UUID, modelId: UUID) = Props(new UserFrontend(out, backend, userId, modelId))
 }
 
-class UserFrontend(out: ActorRef, backend: ActorRef, userId: UUID, model: String) extends Actor with ActorLogging {
+class UserFrontend(out: ActorRef, backend: ActorRef, userId: UUID, model: UUID) extends Actor with ActorLogging {
   private val instance = ModelUser(self, userId, model)
   private val registerTask = context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterUserFrontend)
 

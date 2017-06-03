@@ -5,13 +5,12 @@
 # backend connection
 GET           /socket/developer                                                      controllers.ScalaRoutes.getSocketDeveloper
 GET           /socket/generator/:id                                                  controllers.ScalaRoutes.getSocketGenerator(id: java.util.UUID)
-GET           /socket/user/:model                                                    controllers.ScalaRoutes.getSocketUser(model: String)
+GET           /socket/user/:modelId                                                  controllers.ScalaRoutes.getSocketUser(modelId: java.util.UUID)
 
 # Home page
 GET           /                                                                      controllers.ScalaRoutes.getIndex
 GET           /user                                                                  controllers.ScalaRoutes.getUser
 GET           /signOut                                                               controllers.ScalaRoutes.getSignout
-GET           /authenticate/:provider                                                controllers.ScalaRoutes.getAuthenticate(provider)
 
 GET           /signUp                                                                controllers.ScalaRoutes.getSignUp
 POST          /signUp                                                                controllers.ScalaRoutes.postSignUp

@@ -3,7 +3,7 @@ package de.htwg.zeta.persistence.microService
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterFormat
@@ -33,7 +33,7 @@ import models.document.UserEntity
  * @param address ip-address of the server
  * @param port port of the server
  */
-class PersistenceMicroService(address: String, port: Int) extends PersistenceService {
+class PersistenceMicroService(address: String, port: Int) extends Repository {
 
   private implicit val system = ActorSystem("persistenceClient")
   private implicit val materializer = ActorMaterializer()

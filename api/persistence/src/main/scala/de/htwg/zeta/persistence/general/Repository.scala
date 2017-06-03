@@ -1,6 +1,5 @@
 package de.htwg.zeta.persistence.general
 
-import models.AccessAuthorisation
 import models.User
 import models.document.BondedTask
 import models.document.EventDrivenTask
@@ -17,7 +16,7 @@ import models.document.Settings
 /**
  * Persistence Implementation for the different types of documents.
  */
-trait PersistenceService {
+trait Repository {
 
   /** Persistence for [[models.document.EventDrivenTask]] */
   val eventDrivenTask: Persistence[EventDrivenTask]

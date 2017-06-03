@@ -2,6 +2,7 @@ package de.htwg.zeta.server.controller
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.UUID
 import javax.inject.Inject
 
 import scala.annotation.tailrec
@@ -10,6 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
 import de.htwg.zeta.server.generator.generators.style.StyleGenerator
@@ -21,9 +23,7 @@ import de.htwg.zeta.server.model.result.Failure
 import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.model.result.Success
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.RepositoryFactory
 import models.document.MetaModelEntity
-import models.document.Repository
 import models.file.File
 import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.Shape
@@ -33,13 +33,10 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 
-class GeneratorController @Inject()(repositoryFactory: RepositoryFactory, silhouette: Silhouette[ZetaEnv]) extends Controller {
+class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
 
-  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository =
-    repositoryFactory.fromSession(request)
-
-  def generate(metaModelUuid: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    repository(request).get[MetaModelEntity](metaModelUuid)
+  def generate(metaModelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    Persistence.restrictedRepository(request.identity).metaModelEntity.read(metaModelUuid)
       .map(createGenerators(_) match {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)

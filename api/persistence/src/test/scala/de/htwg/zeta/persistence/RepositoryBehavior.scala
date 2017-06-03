@@ -6,7 +6,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.Repository
 import models.User
 import models.document.Document
 import models.document.Log
@@ -19,7 +19,7 @@ import org.scalatest.Matchers
 
 
 /** PersistenceBehavior. */
-trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
+trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
 
   /** TODO add tests for this case classes
   case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String)
@@ -94,7 +94,7 @@ trait PersistenceServiceBehavior extends AsyncFlatSpec with Matchers {
    *
    * @param service PersistenceService
    */
-  def serviceBehavior(service: PersistenceService): Unit = {
+  def serviceBehavior(service: Repository): Unit = {
 
     "ModelEntity" should behave like docBehavior[ModelEntity](
       service.modelEntity, modelEntity1, modelEntity2, modelEntity3, modelEntity2Updated

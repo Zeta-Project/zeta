@@ -1,12 +1,12 @@
 package de.htwg.zeta.persistence
 
-import de.htwg.zeta.persistence.transientCache.TransientPersistenceService
+import de.htwg.zeta.persistence.transientCache.TransientRepository
 
 /**
  * PersistenceMicroServiceTest.
  */
-class PersistenceTransientCacheSpec extends PersistenceServiceBehavior {
+class PersistenceTransientCacheSpec extends RepositoryBehavior {
 
-  "persistenceMicroService" should behave like serviceBehavior(new TransientPersistenceService)
+  "persistenceMicroService" should behave like serviceBehavior(new TransientRepository)
 
 }

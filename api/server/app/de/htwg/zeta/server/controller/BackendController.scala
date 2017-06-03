@@ -16,11 +16,8 @@ import akka.cluster.sharding.ClusterSharding
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.persistence.Persistence.restrictedRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.RepositoryFactory
-import models.User
-import models.document.ModelEntity
-import models.document.Repository
 import models.frontend.DeveloperRequest
 import models.frontend.DeveloperResponse
 import models.frontend.GeneratorRequest
@@ -37,13 +34,11 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
  *
  * @param system            ActorSystem
  * @param mat               Materializer
- * @param repositoryFactory RepositoryFactory
  * @param silhouette        Silhouette
  */
 class BackendController @Inject()(
     implicit system: ActorSystem,
     mat: Materializer,
-    repositoryFactory: RepositoryFactory,
     silhouette: Silhouette[ZetaEnv])
   extends Controller {
 
@@ -56,16 +51,6 @@ class BackendController @Inject()(
   private val generatorMsg: MessageFlowTransformer[GeneratorRequest, GeneratorResponse] =
     MessageFlowTransformer.jsonMessageFlowTransformer[GeneratorRequest, GeneratorResponse]
 
-  /**
-   * Repository.
-   *
-   * @param request Request
-   * @tparam A A
-   * @return Repository
-   */
-  private def repository[A](request: SecuredRequest[ZetaEnv, A]): Repository = {
-    repositoryFactory.fromSession(request)
-  }
 
   ClusterSharding(system).startProxy(
     typeName = Mediator.shardRegionName,
@@ -86,19 +71,19 @@ class BackendController @Inject()(
   }
 
 
-  /**
-   * Connect from a model editor
+  /** Connect from a model editor.
    *
-   * @param model The id of the model editor
-   * @return WebSocket
+   * @param modelId The modelId
+   * @param request The request
+   * @return (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse])
    */
-  def user(model: String)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-    val futureProps = repository(request).get[ModelEntity](model).map(_ => userProps(request.identity.id, model) _)(system.dispatcher)
+  def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
+    val futureProps = restrictedRepository(request.identity).modelEntity.read(modelId).map(_ => userProps(request.identity.id, modelId) _)(system.dispatcher)
     (futureProps, userMsg)
   }
 
-  private def userProps(userId: UUID, model: String)(out: ActorRef): Props = {
-    UserFrontend.props(out, backend, userId, model)
+  private def userProps(userId: UUID, modelId: UUID)(out: ActorRef): Props = {
+    UserFrontend.props(out, backend, userId, modelId)
   }
 
   /**

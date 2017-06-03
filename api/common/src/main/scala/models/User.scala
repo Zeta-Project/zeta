@@ -56,15 +56,15 @@ object User {
  * @param log              id's of the [[models.document.Log]]
  */
 case class AccessAuthorisation(
-    eventDrivenTask: Seq[UUID] = Seq.empty,
-    bondTask: Seq[UUID] = Seq.empty,
-    generator: Seq[UUID] = Seq.empty,
-    filter: Seq[UUID] = Seq.empty,
-    generatorImage: Seq[UUID] = Seq.empty,
-    filterImage: Seq[UUID] = Seq.empty,
-    settings: Seq[UUID] = Seq.empty,
-    metaModelEntity: Seq[UUID] = Seq.empty,
-    metaModelRelease: Seq[UUID] = Seq.empty,
-    modelEntity: Seq[UUID] = Seq.empty,
-    log: Seq[UUID] = Seq.empty
+    eventDrivenTask: Set[UUID] = Set.empty,
+    bondTask: Set[UUID] = Set.empty,
+    generator: Set[UUID] = Set.empty,
+    filter: Set[UUID] = Set.empty,
+    generatorImage: Set[UUID] = Set.empty,
+    filterImage: Set[UUID] = Set.empty,
+    settings: Set[UUID] = Set.empty,
+    metaModelEntity: Set[UUID] = Set.empty,
+    metaModelRelease: Set[UUID] = Set.empty,
+    modelEntity: Set[UUID] = Set.empty,
+    log: Set[UUID] = Set.empty
 )

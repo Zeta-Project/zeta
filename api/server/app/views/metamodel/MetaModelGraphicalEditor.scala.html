@@ -1,6 +1,7 @@
 @import play.api.libs.json.Json
 @import models.document.MetaModelEntity
-@(user: Option[User], uuid: String, metaModel: MetaModelEntity)
+@import java.util.UUID
+@(user: Option[User], uuid: UUID, metaModel: MetaModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {
 
@@ -12,7 +13,7 @@
             };
 
     window.loadedMetaModel = {};
-    window.loadedMetaModel.uuid = "@uuid";
+    window.loadedMetaModel.uuid = "@uuid.toString";
     window.loadedMetaModel.name = "@metaModel.metaModel.name";
     @if(metaModel.metaModel.uiState.nonEmpty) {
     window.loadedMetaModel.loadOnStart = true;

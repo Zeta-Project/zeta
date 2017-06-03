@@ -1,6 +1,6 @@
 package de.htwg.zeta.persistence.accessRestricted
 
-import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.Repository
 import models.User
 
 
@@ -9,7 +9,7 @@ import models.User
  * @param owner       The assigned user to the restriction
  * @param underlaying The underlaying persistence Service
  */
-case class AccessRestrictedPersistenceService(owner: User, underlaying: PersistenceService) extends PersistenceService {
+case class AccessRestrictedRepository(owner: User, underlaying: Repository) extends Repository {
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
   override lazy val eventDrivenTask = AccessRestrictedPersistence(owner.accessAuthorisation.eventDrivenTask, underlaying.eventDrivenTask)

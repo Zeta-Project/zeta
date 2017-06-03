@@ -30,7 +30,7 @@ import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model.HttpEntity
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.general.PersistenceService
+import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterFormat
@@ -64,7 +64,7 @@ object PersistenceServer extends Logging {
    * @param service underlaying persistence
    * @return Future, which can fail
    */
-  def start(address: String, port: Int, service: PersistenceService): Future[Unit] = {
+  def start(address: String, port: Int, service: Repository): Future[Unit] = {
     val route: Route =
       persistenceRoutes(service.bondTask) ~
       persistenceRoutes(service.eventDrivenTask) ~

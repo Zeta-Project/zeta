@@ -34,9 +34,9 @@ case class ToolDeveloper(out: ActorRef, id: UUID) extends Client
  *
  * @param out The ActorRef to send messages back to the client
  * @param id The identifier for the logged in user
- * @param model The id of the model
+ * @param modelId The id of the model
  */
-case class ModelUser(out: ActorRef, id: UUID, model: String) extends Client
+case class ModelUser(out: ActorRef, id: UUID, modelId: UUID) extends Client
 
 /**
  * Represents a connected generator instance
