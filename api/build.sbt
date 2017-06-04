@@ -232,7 +232,7 @@ lazy val backend = projectT("backend", file("backend")).settings(
       "com.neovisionaries"        % "nv-websocket-client"       % "1.30"
     )
   )
-).dependsOn(common)
+).dependsOn(common).dependsOn(persistence)
 
 lazy val persistence = projectT("persistence", file("persistence")).settings(
   Seq(

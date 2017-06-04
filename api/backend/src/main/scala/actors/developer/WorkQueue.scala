@@ -1,5 +1,6 @@
 package actors.developer
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import actors.worker.MasterWorkerProtocol.CancelWork
@@ -7,13 +8,11 @@ import actors.worker.MasterWorkerProtocol.DeveloperReceivedCompletedWork
 import actors.worker.MasterWorkerProtocol.MasterAcceptedWork
 import actors.worker.MasterWorkerProtocol.MasterCompletedWork
 import actors.worker.MasterWorkerProtocol.Work
-
 import akka.actor.ActorLogging
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.persistence.PersistentActor
-
 import models.document.Changed
 import models.document.Created
 import models.document.JobSettings
@@ -32,7 +31,6 @@ import models.worker.RunFilterManually
 import models.worker.RunGeneratorFromGeneratorJob
 import models.worker.RunGeneratorManually
 import models.worker.RunTimedTask
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -42,10 +40,10 @@ private case object CheckTick
 private case object NextWork
 
 object WorkQueue {
-  def props(developer: String) = Props(new WorkQueue(developer: String))
+  def props(developer: UUID) = Props(new WorkQueue(developer))
 }
 
-class WorkQueue(developer: String) extends PersistentActor with ActorLogging {
+class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
   private val PENDING_JOB = "pending"
   private val WAITING_JOB = "waiting"
   private val RUNNING_JOB = "running"

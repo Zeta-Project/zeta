@@ -48,8 +48,8 @@ case class EventDrivenTask(
 case class BondedTask(
     id: UUID = UUID.randomUUID,
     name: String,
-    generator: String,
-    filter: String,
+    generatorId: UUID,
+    filterId: UUID,
     menu: String,
     item: String
 ) extends Identifiable
@@ -64,7 +64,7 @@ case class Filter(
     id: UUID = UUID.randomUUID,
     name: String,
     description: String,
-    instances: List[String]
+    instanceIds: List[UUID]
 ) extends Identifiable
 
 case class GeneratorImage(
@@ -129,7 +129,7 @@ object Log {
       case job: RunTimedTask =>
         prefix + job.task.split("-").tail.mkString("-", "-", "-") + now
       case job: RunBondedTask =>
-        prefix + job.task.split("-").tail.mkString("-", "-", "-") + now
+        prefix + job.taskId.split("-").tail.mkString("-", "-", "-") + now
       case _ => throw new IllegalArgumentException(s"Creating Log(..) Object failed. Job type '${job.getClass.getName}' cannot be persisted.")
     }
     Log(UUID.randomUUID, task, log, status, now)

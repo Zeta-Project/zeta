@@ -155,8 +155,8 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val p = Promise[Result]
     logger.info("run the generator")
 
-    val start: Future[Transformer] = generator.prepare(filter.instances)
-    val futures = filter.instances.foldLeft(start) {
+    val start: Future[Transformer] = generator.prepare(filter.instanceIds)
+    val futures = filter.instanceIds.foldLeft(start) {
       case (future, model) => future.flatMap { generator =>
         documents.get[ModelEntity](model).flatMap { entity =>
           generator.transform(entity)
@@ -200,7 +200,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   }
 
   def checkFilter(filter: Filter): Future[Boolean] = {
-    if (filter.instances.size > 0) {
+    if (filter.instanceIds.size > 0) {
       Future.successful(true)
     } else {
       Future.failed(new Exception("No Models are available with the selected filter."))

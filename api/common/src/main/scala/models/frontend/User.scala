@@ -1,5 +1,7 @@
 package models.frontend
 
+import java.util.UUID
+
 import julienrf.json.derived
 import play.api.libs.json.__
 import play.api.libs.json.OFormat
@@ -14,18 +16,18 @@ sealed trait UserRequest extends Request {
   /**
    * The model from which the request was send
    */
-  val model: String
+  val modelId: UUID
 }
-case class ExecuteBondedTask(model: String, task: String) extends UserRequest
-case class SavedModel(model: String) extends UserRequest with ModelChanged
+case class ExecuteBondedTask(modelId: UUID, taskId: UUID) extends UserRequest
+case class SavedModel(modelId: UUID) extends UserRequest with ModelChanged
 
 object UserRequest {
   implicit val format: OFormat[UserRequest] = derived.flat.oformat((__ \ "action").format[String])
 }
 
 sealed trait UserResponse extends Response
-case class BondedTaskNotExecutable(task: String, reason: String) extends UserResponse
-case class Entry(task: String, menu: String, item: String)
+case class BondedTaskNotExecutable(taskId: UUID, reason: String) extends UserResponse
+case class Entry(taskId: UUID, menu: String, item: String)
 case class BondedTaskList(tasks: List[Entry]) extends UserResponse
 case class BondedTaskCompleted(task: String, status: Int) extends UserResponse
 case class BondedTaskStarted(task: String) extends UserResponse

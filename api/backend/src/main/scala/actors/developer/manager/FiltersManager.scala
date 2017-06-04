@@ -4,39 +4,37 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-
-import models.document.AllFilters
-import models.document.Change
+import de.htwg.zeta.persistence.general.Persistence
 import models.document.Changed
 import models.document.Created
 import models.document.Deleted
 import models.document.Filter
 import models.document.ModelEntity
-import models.document.Repository
 import models.document.Updated
 import models.worker.RerunFilterJob
 
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
-
 object FiltersManager {
-  def props(worker: ActorRef, repository: Repository) = Props(new FiltersManager(worker, repository))
+  def props(worker: ActorRef, repository: Persistence[Filter]) = Props(new FiltersManager(worker, repository))
 }
 
-class FiltersManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
-  def rerunFilter = {
-    repository.query[Filter](AllFilters()).materialize.subscribe(n => n match {
-      case OnError(err) => log.error(err.toString)
-      case OnNext(filter) => worker ! RerunFilterJob(filter.id())
-    })
+class FiltersManager(worker: ActorRef, repository: Persistence[Filter]) extends Actor with ActorLogging {
+
+  private def rerunFilter = {
+    repository.readAllIds().map(ids =>
+      ids.foreach(id =>
+        repository.read(id).map(filter =>
+          worker ! RerunFilterJob(filter.id)
+        ).recover {
+          case e: Exception => log.error(e.toString)
+        }
+      )
+    )
   }
 
-  def receive = {
-    case Changed(model: ModelEntity, change: Change) => change match {
-      case Created => rerunFilter
-      case Updated => // filter don't need to be rerun on model update
-      case Deleted => rerunFilter
-    }
-    case _ =>
+  def receive: Receive = {
+    case Changed(model: ModelEntity, Created) => rerunFilter
+    case Changed(model: ModelEntity, Updated) => // filter don't need to be rerun on model update
+    case Changed(model: ModelEntity, Deleted) => rerunFilter
   }
+
 }

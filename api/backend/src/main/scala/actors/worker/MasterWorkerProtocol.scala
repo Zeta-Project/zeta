@@ -24,7 +24,7 @@ object MasterWorkerProtocol {
   trait DeveloperToMaster
   case class Work(
       job: Job,
-      owner: String,
+      owner: UUID,
       dockerSettings: DockerSettings,
       session: String = "",
       id: String = UUID.randomUUID().toString)

@@ -1,6 +1,8 @@
 package models.worker
 
 import java.util.Objects
+import java.util.UUID
+
 import julienrf.json.derived
 import play.api.libs.json.__
 import play.api.libs.json.OFormat
@@ -87,7 +89,7 @@ case class RunGeneratorManually(generator: String, image: String, filter: String
   override val cmd: List[String] = List("--filter", filter, "--generator", generator)
 }
 
-case class CreateGeneratorJob(image: String, imageId: String, options: String) extends Job {
+case class CreateGeneratorJob(image: String, imageId: UUID, options: String) extends Job {
   override val stream: Boolean = true
 
   override def equals(that: Any): Boolean =
@@ -101,7 +103,7 @@ case class CreateGeneratorJob(image: String, imageId: String, options: String) e
   override val cmd: List[String] = List("--create", options, "--image", imageId)
 }
 
-case class RunBondedTask(task: String, generator: String, filter: String, model: String, image: String) extends Job {
+case class RunBondedTask(taskId: UUID, generatorId: UUID, filterId: UUID, modelId: UUID, image: String) extends Job {
   override val persist: Boolean = true
 
   override def equals(that: Any): Boolean =
@@ -112,7 +114,7 @@ case class RunBondedTask(task: String, generator: String, filter: String, model:
 
   override def hashCode: Int = Objects.hashCode("RunBondedTask-${generator}-${model}")
 
-  override val cmd: List[String] = List("--model", model, "--filter", filter, "--generator", generator)
+  override val cmd: List[String] = List("--model", modelId, "--filter", filterId, "--generator", generatorId)
 }
 
 case class RunEventDrivenTask(task: String, generator: String, filter: String, model: String, image: String) extends Job {
@@ -159,7 +161,7 @@ case class CreateMetaModelReleaseJob(metaModelId: String) extends Job {
   override val cmd: List[String] = List("--id", metaModelId)
 }
 
-case class RerunFilterJob(filter: String) extends Job {
+case class RerunFilterJob(filterId: UUID) extends Job {
   override val persist: Boolean = false
 
   override def equals(that: Any): Boolean =
@@ -168,11 +170,11 @@ case class RerunFilterJob(filter: String) extends Job {
       case _ => false
     }
 
-  override def hashCode: Int = Objects.hashCode("RerunFilterJob" + filter)
+  override def hashCode: Int = Objects.hashCode("RerunFilterJob" + filterId)
 
   override val image: String = "modigen/filter/scala:0.1"
 
-  override val cmd: List[String] = List("--filter", filter)
+  override val cmd: List[String] = List("--filter", filterId)
 }
 
 object Job {

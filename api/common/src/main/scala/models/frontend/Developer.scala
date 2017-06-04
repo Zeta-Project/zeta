@@ -1,6 +1,9 @@
 package models.frontend
 
+import java.util.UUID
+
 import scala.collection.immutable.Queue
+
 import julienrf.json.derived
 import models.worker.Job
 import play.api.libs.json.__
@@ -16,7 +19,7 @@ import play.api.libs.json.Writes
 sealed trait DeveloperRequest extends Request
 case class RunGenerator(generator: String, filter: String) extends DeveloperRequest
 case class RunFilter(filter: String) extends DeveloperRequest
-case class CreateGenerator(image: String, options: String) extends DeveloperRequest
+case class CreateGenerator(imageId: UUID, options: String) extends DeveloperRequest
 case class RunModelRelease(model: String) extends DeveloperRequest
 case class CancelWorkByUser(id: String) extends DeveloperRequest
 

@@ -13,7 +13,7 @@ import actors.developer.manager.EventDrivenTasksManager
 import actors.developer.manager.FiltersManager
 import actors.developer.manager.GeneratorConnectionManager
 import actors.developer.manager.GeneratorRequestManager
-import actors.developer.manager.GeneratorsManager
+import actors.developer.manager.GeneratorManager
 import actors.developer.manager.GetBondedTaskList
 import actors.developer.manager.ManualExecutionManager
 import actors.developer.manager.ModelReleaseManager
@@ -57,12 +57,19 @@ import models.frontend.SavedModel
 import models.frontend.ToGenerator
 import models.frontend.ToolDeveloper
 import models.frontend.UserRequest
-import models.session.SyncGatewaySession
 import models.worker.RunBondedTask
 import play.api.libs.ws.ahc.AhcWSClient
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+
+import de.htwg.zeta.persistence.Persistence
+
+
+
+
+
+
 
 object Mediator {
   val locatedOnNode = "developer"
@@ -91,8 +98,8 @@ class Mediator() extends Actor with ActorLogging {
   val ttl = 3600
 
   val mediator = DistributedPubSub(context.system).mediator
-  val developerId = self.path.name
-  mediator ! Subscribe(developerId, self)
+  val developerId = UUID.fromString(self.path.name)
+  mediator ! Subscribe(developerId.toString, self)
 
   // Get a session from the database. Blocking should be ok here because we need to initialize the actor
   // and if we don't get a session from the database we should stop the actor
@@ -101,12 +108,14 @@ class Mediator() extends Actor with ActorLogging {
   val remote = HttpRepository(session)
   val repository = CachedRepository(remote)
 
+  val repo = Persistence.restrictedRepository(developerId)
+
   val workQueue = context.actorOf(WorkQueue.props(developerId), "workQueue")
 
-  val filters = context.actorOf(FiltersManager.props(workQueue, repository), "filters")
-  val generators = context.actorOf(GeneratorsManager.props(workQueue, repository), "generators")
+  val filters = context.actorOf(FiltersManager.props(workQueue, repo.filter), "filters")
+  val generators = context.actorOf(GeneratorManager.props(workQueue, repo.generatorImage), "generators")
   val modelRelease = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
-  val bondedTasks = context.actorOf(BondedTasksManager.props(workQueue, repository), "bondedTasks")
+  val bondedTasks = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
   val eventDrivenTasks = context.actorOf(EventDrivenTasksManager.props(workQueue, repository), "eventDrivenTasks")
   val timedTasks = context.actorOf(TimedTasksManager.props(workQueue, repository), "timedTasks")
   val manualExecution = context.actorOf(ManualExecutionManager.props(workQueue, repository), "manuealExeuction")

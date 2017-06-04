@@ -113,11 +113,11 @@ object Main extends App {
   }
 
   def saveResult(filter: Filter, instances: List[String]): Future[Any] = {
-    if (filter.instances.toSet == instances.toSet) {
+    if (filter.instanceIds.toSet == instances.toSet) {
       logger.info("Filter result is equal to saved result")
       Future.successful(true)
     } else {
-      val newFilter = filter.copy(instances = instances)
+      val newFilter = filter.copy(instanceIds = instances)
       logger.info("Filter need to be saved")
       documents.update[Filter](newFilter)
     }
