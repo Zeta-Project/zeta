@@ -3,6 +3,7 @@ package models
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.Identity
+import models.document.TimedTask
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
@@ -43,6 +44,7 @@ object User {
  *
  * @param eventDrivenTask  id's of the [[models.document.EventDrivenTask]]
  * @param bondTask         id's of the [[models.document.BondedTask]]
+ * @param timedTask        id's of the [[models.document.TimedTask]]
  * @param generator        id's of the [[models.document.Generator]]
  * @param filter           id's of the [[models.document.Filter]]
  * @param generatorImage   id's of the [[models.document.GeneratorImage]]
@@ -56,6 +58,7 @@ object User {
 case class AccessAuthorisation(
     eventDrivenTask: Set[UUID] = Set.empty,
     bondTask: Set[UUID] = Set.empty,
+    timedTask: Set[UUID] = Set.empty,
     generator: Set[UUID] = Set.empty,
     filter: Set[UUID] = Set.empty,
     generatorImage: Set[UUID] = Set.empty,

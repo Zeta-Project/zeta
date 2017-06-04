@@ -1,22 +1,18 @@
 package actors.developer.manager
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-
-import models.document.GeneratorImage
-import models.document.Repository
-import models.document.Filter
-import models.document.Generator
+import de.htwg.zeta.persistence.general.Repository
 import models.frontend.ExecuteFilterError
 import models.frontend.ExecuteGeneratorError
 import models.frontend.RunFilter
 import models.frontend.RunGenerator
 import models.worker.RunFilterManually
 import models.worker.RunGeneratorManually
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object ManualExecutionManager {
   def props(worker: ActorRef, repository: Repository) = Props(new ManualExecutionManager(worker, repository))
@@ -28,9 +24,9 @@ class ManualExecutionManager(worker: ActorRef, repository: Repository) extends A
     val reply = sender
 
     val result = for {
-      generator <- repository.get[Generator](run.generator)
-      filter <- repository.get[Filter](run.filter)
-      image <- repository.get[GeneratorImage](generator.imageId)
+      generator <- repository.generator.read(run.generatorId)
+      filter <- repository.filter.read(run.filterId)
+      image <- repository.generatorImage.read(generator.imageId)
     } yield RunGeneratorManually(generator.id, image.dockerImage, filter.id)
 
     result.map { job =>
@@ -45,7 +41,7 @@ class ManualExecutionManager(worker: ActorRef, repository: Repository) extends A
     val reply = sender
 
     val result = for {
-      filter <- repository.get[Filter](run.filter)
+      filter <- repository.filter.read(run.filterId)
     } yield RunFilterManually(filter.id)
 
     result.map { job =>

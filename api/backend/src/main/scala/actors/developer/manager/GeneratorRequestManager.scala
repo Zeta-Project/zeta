@@ -1,18 +1,15 @@
 package actors.developer.manager
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Repository
+import de.htwg.zeta.persistence.general.Repository
 import models.frontend.RunGeneratorFromGenerator
 import models.frontend.StartGeneratorError
 import models.worker.RunGeneratorFromGeneratorJob
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object GeneratorRequestManager {
   def props(workQueue: ActorRef, repository: Repository) = Props(new GeneratorRequestManager(workQueue, repository))
@@ -24,12 +21,12 @@ class GeneratorRequestManager(workQueue: ActorRef, repository: Repository) exten
     val reply = sender
 
     val result = for {
-      generator <- repository.get[Generator](run.generator)
-      image <- repository.get[GeneratorImage](generator.imageId)
+      generator <- repository.generator.read(run.generatorId)
+      image <- repository.generatorImage.read(generator.imageId)
     } yield RunGeneratorFromGeneratorJob(
       parentId = run.parent,
       key = run.key,
-      generator = run.generator,
+      generatorId = run.generatorId,
       image = image.dockerImage,
       options = run.options
     )

@@ -1,6 +1,7 @@
 package de.htwg.zeta.persistence.transient
 
 import de.htwg.zeta.persistence.general.Repository
+import models.User
 import models.document.BondedTask
 import models.document.EventDrivenTask
 import models.document.Filter
@@ -12,7 +13,7 @@ import models.document.MetaModelEntity
 import models.document.MetaModelRelease
 import models.document.ModelEntity
 import models.document.Settings
-import models.document.UserEntity
+import models.document.TimedTask
 
 
 /** Cache-Implementation of the PersistenceService. */
@@ -23,6 +24,9 @@ class TransientRepository extends Repository {
 
   /** Persistence for the [[models.document.BondedTask]] */
   override val bondTask = new TransientPersistence[BondedTask]
+
+  /** Persistence for [[models.document.TimedTask]] */
+  override val timedTask = new TransientPersistence[TimedTask]
 
   /** Persistence for the [[models.document.Generator]] */
   override val generator = new TransientPersistence[Generator]
@@ -51,7 +55,7 @@ class TransientRepository extends Repository {
   /** Persistence for the [[models.document.Log]] */
   override val log = new TransientPersistence[Log]
 
-  /** Persistence for the [[models.document.UserEntity]] */
-  override val users = new TransientPersistence[UserEntity]
+  /** Persistence for the [[models.User]] */
+  override val users = new TransientPersistence[User]
 
 }

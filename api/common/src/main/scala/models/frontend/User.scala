@@ -29,8 +29,8 @@ sealed trait UserResponse extends Response
 case class BondedTaskNotExecutable(taskId: UUID, reason: String) extends UserResponse
 case class Entry(taskId: UUID, menu: String, item: String)
 case class BondedTaskList(tasks: List[Entry]) extends UserResponse
-case class BondedTaskCompleted(task: String, status: Int) extends UserResponse
-case class BondedTaskStarted(task: String) extends UserResponse
+case class BondedTaskCompleted(taskId: UUID, status: Int) extends UserResponse
+case class BondedTaskStarted(taskId: UUID) extends UserResponse
 
 object UserResponse {
   implicit val formatEntry: OFormat[Entry] = derived.oformat

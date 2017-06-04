@@ -22,8 +22,8 @@ import play.api.libs.json.OFormat
 case class TimedTask(
     id: UUID,
     name: String,
-    generator: String,
-    filter: String,
+    generatorId: UUID,
+    filterId: UUID,
     interval: Int,
     start: String
 ) extends Identifiable {
@@ -40,8 +40,8 @@ case class TimedTask(
 case class EventDrivenTask(
     id: UUID = UUID.randomUUID,
     name: String,
-    generator: String,
-    filter: String,
+    generatorId: UUID,
+    filterId: UUID,
     event: String
 ) extends Identifiable
 
@@ -125,11 +125,11 @@ object Log {
     val prefix = "Log"
     val task = job match {
       case job: RunEventDrivenTask =>
-        prefix + job.task.split("-").tail.mkString("-", "-", "-") + now
+        prefix + job.taskId.toString + " - " + now
       case job: RunTimedTask =>
-        prefix + job.task.split("-").tail.mkString("-", "-", "-") + now
+        prefix + job.taskId.toString + " - " + now
       case job: RunBondedTask =>
-        prefix + job.taskId.split("-").tail.mkString("-", "-", "-") + now
+        prefix + job.taskId.toString + " - " + now
       case _ => throw new IllegalArgumentException(s"Creating Log(..) Object failed. Job type '${job.getClass.getName}' cannot be persisted.")
     }
     Log(UUID.randomUUID, task, log, status, now)

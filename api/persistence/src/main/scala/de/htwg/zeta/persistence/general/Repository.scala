@@ -12,6 +12,7 @@ import models.document.MetaModelEntity
 import models.document.MetaModelRelease
 import models.document.ModelEntity
 import models.document.Settings
+import models.document.TimedTask
 
 /**
  * Persistence Implementation for the different types of documents.
@@ -23,6 +24,9 @@ trait Repository {
 
   /** Persistence for [[models.document.BondedTask]] */
   val bondTask: Persistence[BondedTask]
+
+  /** Persistence for [[models.document.TimedTask]] */
+  val timedTask: Persistence[TimedTask]
 
   /** Persistence for [[models.document.Generator]] */
   val generator: Persistence[Generator]

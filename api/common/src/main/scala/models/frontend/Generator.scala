@@ -1,11 +1,13 @@
 package models.frontend
 
+import java.util.UUID
+
 import julienrf.json.derived
 import play.api.libs.json.__
 import play.api.libs.json.OFormat
 
 sealed trait GeneratorRequest extends Request
-case class RunGeneratorFromGenerator(parent: String, key: String, generator: String, options: String) extends GeneratorRequest
+case class RunGeneratorFromGenerator(parent: String, key: String, generatorId: UUID, options: String) extends GeneratorRequest
 case class ToGenerator(index: Int, key: String, receiver: String, message: String) extends GeneratorRequest
 
 object GeneratorRequest {

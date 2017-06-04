@@ -6,7 +6,6 @@ import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
 import de.htwg.zeta.persistence.general.Repository
-import AccessRestrictedPersistence
 import models.User
 
 
@@ -22,6 +21,9 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
 
   /** Persistence for the [[models.document.BondedTask]] */
   override lazy val bondTask = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.bondTask), underlaying.bondTask)
+
+  /** Persistence for [[models.document.TimedTask]] */
+  override val timedTask = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.timedTask), underlaying.timedTask)
 
   /** Persistence for the [[models.document.Generator]] */
   override lazy val generator = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generator), underlaying.generator)

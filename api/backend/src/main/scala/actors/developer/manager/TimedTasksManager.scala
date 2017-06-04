@@ -1,27 +1,24 @@
 package actors.developer.manager
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
+
+import scala.concurrent.duration.Duration
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
-
+import de.htwg.zeta.persistence.general.Repository
 import models.document.Change
 import models.document.Changed
 import models.document.Created
 import models.document.Deleted
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Repository
 import models.document.TimedTask
 import models.document.Updated
 import models.worker.RunTimedTask
-
-import scala.concurrent.duration.Duration
-import scala.concurrent.ExecutionContext.Implicits.global
 
 private case class ExecuteTask(task: TimedTask)
 
@@ -30,7 +27,7 @@ object TimedTasksManager {
 }
 
 class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
-  private var schedules: Map[String, Cancellable] = Map()
+  private var schedules: Map[UUID, Cancellable] = Map()
 
   def create(task: TimedTask) = {
     val taskDelay = Duration(task.delay, TimeUnit.MINUTES)
@@ -57,10 +54,10 @@ class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor 
 
   def executeTask(task: TimedTask) = {
     val result = for {
-      task <- repository.get[TimedTask](task.id)
-      filter <- repository.get[Filter](task.filter)
-      generator <- repository.get[Generator](task.generator)
-      image <- repository.get[GeneratorImage](generator.imageId)
+      task <- repository.timedTask.read(task.id)
+      filter <- repository.filter.read(task.filterId)
+      generator <- repository.generator.read(task.generatorId)
+      image <- repository.generatorImage.read(generator.imageId)
     } yield RunTimedTask(task.id, generator.id, filter.id, image.dockerImage)
 
     result.map {

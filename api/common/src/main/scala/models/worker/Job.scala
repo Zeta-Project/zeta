@@ -41,7 +41,7 @@ sealed trait Job {
 /**
  * A Generator which was called from a generator
  */
-case class RunGeneratorFromGeneratorJob(parentId: String, key: String, generator: String, image: String, options: String) extends Job {
+case class RunGeneratorFromGeneratorJob(parentId: String, key: String, generatorId: UUID, image: String, options: String) extends Job {
 
   override def equals(that: Any): Boolean =
     that match {
@@ -51,7 +51,7 @@ case class RunGeneratorFromGeneratorJob(parentId: String, key: String, generator
 
   override def hashCode: Int = Objects.hashCode("RunGeneratorFromGeneratorJob-${parentId}-${secret}")
 
-  override val cmd: List[String] = List("--key", key, "--parent", parentId, "--generator", generator, "--options", options)
+  override val cmd: List[String] = List("--key", key, "--parent", parentId, "--generator", generatorId.toString, "--options", options)
 
   override val parent: Option[String] = Some(parentId)
 }
@@ -59,7 +59,7 @@ case class RunGeneratorFromGeneratorJob(parentId: String, key: String, generator
 /**
  * This section contain all types of jobs which can be scheduled by the system or a user.
  */
-case class RunFilterManually(filter: String) extends Job {
+case class RunFilterManually(filterId: UUID) extends Job {
   override val stream: Boolean = true
 
   override def equals(that: Any): Boolean =
@@ -68,14 +68,14 @@ case class RunFilterManually(filter: String) extends Job {
       case _ => false
     }
 
-  override def hashCode: Int = Objects.hashCode(s"RunFilter-${filter}")
+  override def hashCode: Int = Objects.hashCode(s"RunFilter-${filterId}")
 
   override val image: String = "modigen/filter/scala:0.1"
 
-  override val cmd: List[String] = List("--filter", filter)
+  override val cmd: List[String] = List("--filter", filterId.toString)
 }
 
-case class RunGeneratorManually(generator: String, image: String, filter: String) extends Job {
+case class RunGeneratorManually(generatorId: UUID, image: String, filterId: UUID) extends Job {
   override val stream: Boolean = true
 
   override def equals(that: Any): Boolean =
@@ -84,9 +84,9 @@ case class RunGeneratorManually(generator: String, image: String, filter: String
       case _ => false
     }
 
-  override def hashCode: Int = Objects.hashCode(s"RunGenerator-${generator}-${filter}-${image}")
+  override def hashCode: Int = Objects.hashCode(s"RunGenerator-${generatorId}-${filterId}-${image}")
 
-  override val cmd: List[String] = List("--filter", filter, "--generator", generator)
+  override val cmd: List[String] = List("--filter", filterId.toString, "--generator", generatorId.toString)
 }
 
 case class CreateGeneratorJob(image: String, imageId: UUID, options: String) extends Job {
@@ -100,7 +100,7 @@ case class CreateGeneratorJob(image: String, imageId: UUID, options: String) ext
 
   override def hashCode: Int = Objects.hashCode("CreateGeneratorJob" + image.hashCode)
 
-  override val cmd: List[String] = List("--create", options, "--image", imageId)
+  override val cmd: List[String] = List("--create", options, "--image", imageId.toString)
 }
 
 case class RunBondedTask(taskId: UUID, generatorId: UUID, filterId: UUID, modelId: UUID, image: String) extends Job {
@@ -114,10 +114,10 @@ case class RunBondedTask(taskId: UUID, generatorId: UUID, filterId: UUID, modelI
 
   override def hashCode: Int = Objects.hashCode("RunBondedTask-${generator}-${model}")
 
-  override val cmd: List[String] = List("--model", modelId, "--filter", filterId, "--generator", generatorId)
+  override val cmd: List[String] = List("--model", modelId.toString, "--filter", filterId.toString, "--generator", generatorId.toString)
 }
 
-case class RunEventDrivenTask(task: String, generator: String, filter: String, model: String, image: String) extends Job {
+case class RunEventDrivenTask(taskId: UUID, generatorId: UUID, filterId: UUID, modelId: UUID, image: String) extends Job {
   override val persist: Boolean = true
 
   override def equals(that: Any): Boolean =
@@ -128,10 +128,10 @@ case class RunEventDrivenTask(task: String, generator: String, filter: String, m
 
   override def hashCode: Int = Objects.hashCode("RunEventDrivenTask-${generator}-${model}")
 
-  override val cmd: List[String] = List("--model", model, "--filter", filter, "--generator", generator)
+  override val cmd: List[String] = List("--model", modelId.toString, "--filter", filterId.toString, "--generator", generatorId.toString)
 }
 
-case class RunTimedTask(task: String, generator: String, filter: String, image: String) extends Job {
+case class RunTimedTask(taskId: UUID, generatorId: UUID, filterId: UUID, image: String) extends Job {
   override val persist: Boolean = true
 
   override def equals(that: Any): Boolean =
@@ -140,9 +140,9 @@ case class RunTimedTask(task: String, generator: String, filter: String, image: 
       case _ => false
     }
 
-  override def hashCode: Int = Objects.hashCode(s"RunTimedTask-${generator}-${filter}")
+  override def hashCode: Int = Objects.hashCode(s"RunTimedTask-${generatorId}-${filterId}")
 
-  override val cmd: List[String] = List("--filter", filter, "--generator", generator)
+  override val cmd: List[String] = List("--filter", filterId.toString, "--generator", generatorId.toString)
 }
 
 case class CreateMetaModelReleaseJob(metaModelId: String) extends Job {
@@ -174,7 +174,7 @@ case class RerunFilterJob(filterId: UUID) extends Job {
 
   override val image: String = "modigen/filter/scala:0.1"
 
-  override val cmd: List[String] = List("--filter", filterId)
+  override val cmd: List[String] = List("--filter", filterId.toString)
 }
 
 object Job {

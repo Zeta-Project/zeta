@@ -1,13 +1,7 @@
 package actors.developer
 
 import java.util.UUID
-import java.util.concurrent.TimeUnit
 
-import actors.common.AllDocsFromDeveloper
-import actors.common.ChangeFeed
-import actors.common.Configuration
-import actors.common.Images
-import actors.developer.Mediator.Refresh
 import actors.developer.manager.BondedTasksManager
 import actors.developer.manager.EventDrivenTasksManager
 import actors.developer.manager.FiltersManager
@@ -29,11 +23,10 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
+import de.htwg.zeta.persistence.Persistence
 import models.document.BondedTask
 import models.document.Changed
 import models.document.Filter
-import models.document.http.CachedRepository
-import models.document.http.HttpRepository
 import models.frontend.BondedTaskCompleted
 import models.frontend.BondedTaskStarted
 import models.frontend.CancelWorkByUser
@@ -59,14 +52,6 @@ import models.frontend.ToolDeveloper
 import models.frontend.UserRequest
 import models.worker.RunBondedTask
 import play.api.libs.ws.ahc.AhcWSClient
-import scala.concurrent.duration.Duration
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import de.htwg.zeta.persistence.Persistence
-
-
-
 
 
 
@@ -87,7 +72,6 @@ object Mediator {
 
   def props() = Props(new Mediator())
 
-  private case object Refresh
 }
 
 class Mediator() extends Actor with ActorLogging {
@@ -101,52 +85,31 @@ class Mediator() extends Actor with ActorLogging {
   val developerId = UUID.fromString(self.path.name)
   mediator ! Subscribe(developerId.toString, self)
 
-  // Get a session from the database. Blocking should be ok here because we need to initialize the actor
-  // and if we don't get a session from the database we should stop the actor
-  val sessionManager = SyncGatewaySession()
-  val session = Await.result(sessionManager.getSession(developerId, ttl), Duration(10, TimeUnit.SECONDS))
-  val remote = HttpRepository(session)
-  val repository = CachedRepository(remote)
-
   val repo = Persistence.restrictedRepository(developerId)
 
   val workQueue = context.actorOf(WorkQueue.props(developerId), "workQueue")
 
-  val filters = context.actorOf(FiltersManager.props(workQueue, repo.filter), "filters")
-  val generators = context.actorOf(GeneratorManager.props(workQueue, repo.generatorImage), "generators")
+  val filters = context.actorOf(FiltersManager.props(workQueue, repo), "filters")
+  val generators = context.actorOf(GeneratorManager.props(workQueue, repo), "generators")
   val modelRelease = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
   val bondedTasks = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
-  val eventDrivenTasks = context.actorOf(EventDrivenTasksManager.props(workQueue, repository), "eventDrivenTasks")
-  val timedTasks = context.actorOf(TimedTasksManager.props(workQueue, repository), "timedTasks")
-  val manualExecution = context.actorOf(ManualExecutionManager.props(workQueue, repository), "manuealExeuction")
-  val generatorRequest = context.actorOf(GeneratorRequestManager.props(workQueue, repository), "generatorRequest")
+  val eventDrivenTasks = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")
+  val timedTasks = context.actorOf(TimedTasksManager.props(workQueue, repo), "timedTasks")
+  val manualExecution = context.actorOf(ManualExecutionManager.props(workQueue, repo), "manualExecution")
+  val generatorRequest = context.actorOf(GeneratorRequestManager.props(workQueue, repo), "generatorRequest")
   val generatorConnection = context.actorOf(GeneratorConnectionManager.props(), "generatorConnection")
 
-  val conf = Configuration()
-  val channels = List(AllDocsFromDeveloper(developerId), Images())
+
   val listeners = List(self, bondedTasks, eventDrivenTasks, timedTasks, manualExecution, modelRelease, filters, generators, workQueue)
-  val changeFeed = context.actorOf(ChangeFeed.props(conf, channels, listeners))
+
 
   var developers: Map[UUID, ToolDeveloper] = Map()
   var users: Map[UUID, ModelUser] = Map()
 
-  val registerTask = context.system.scheduler.schedule(Duration(ttl / 10, TimeUnit.SECONDS), Duration(ttl / 10, TimeUnit.SECONDS), self, Refresh)
 
-  override def postStop() = {
-    registerTask.cancel()
-  }
 
-  private def refreshSession() = {
-    sessionManager.getSession(developerId, ttl).map { session =>
-      remote.session = session
-    }.recover {
-      case e: Exception => log.error(e.getMessage)
-    }
-  }
 
   def receive: Receive = {
-    // refresh the session to access the db
-    case Refresh => refreshSession
     // Handle job messages from the Master or the Worker
     case response: ToDeveloper => processToDeveloper(response)
     // Handle any request from a client to this actor
@@ -263,11 +226,11 @@ class Mediator() extends Actor with ActorLogging {
 
   def checkForBondedTask(request: Event) = request match {
     case WorkEnqueued(work) => work.job match {
-      case RunBondedTask(task, generator, filter, model, image) => sendToUserClients(BondedTaskStarted(task))
+      case RunBondedTask(taskId, generatorId, filterId, modelId, image) => sendToUserClients(BondedTaskStarted(taskId))
       case _ => // no bonded task
     }
     case WorkCompleted(work, result) => work.job match {
-      case RunBondedTask(task, generator, filter, model, image) => sendToUserClients(BondedTaskCompleted(task, result))
+      case RunBondedTask(taskId, generatorId, filterId, modelId, image) => sendToUserClients(BondedTaskCompleted(taskId, result))
       case _ => // no bonded task
     }
     case _ => // no work completed

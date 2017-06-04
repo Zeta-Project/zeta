@@ -1,8 +1,7 @@
 package actors.developer.manager
 
-import java.util.UUID
-
 import scala.concurrent.Future
+import scala.concurrent.Promise
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.Actor
@@ -10,7 +9,7 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import de.htwg.zeta.persistence.general.Repository
-import models.document.Filter
+import models.document.BondedTask
 import models.frontend.BondedTaskList
 import models.frontend.BondedTaskNotExecutable
 import models.frontend.Entry
@@ -25,6 +24,7 @@ object BondedTasksManager {
 }
 
 class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
+
   // 1. check if the bonded task exist
   // 2. get the filter attached to the bonded task
   // 3. check if the user (which triggered the task) can execute the task.
@@ -42,29 +42,35 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
     job.map {
       job => worker ! job
     }.recover {
-      case e: Exception => {
+      case e: Exception =>
         log.error(e.toString)
         sender ! BondedTaskNotExecutable(request.taskId, e.toString)
-      }
     }
   }
 
+  def entry(task: BondedTask, model: ModelUser): Future[Option[Entry]] = {
+    val p = Promise[Option[Entry]]
+
+    repository.filter.read(task.filterId).map { filter =>
+      if (filter.instanceIds.contains(model.modelId)) {
+        p.success(Some(Entry(task.id, task.menu, task.item)))
+      } else {
+        p.success(None)
+      }
+    }.recover {
+      case e: Exception => {
+        log.error(e.getMessage)
+        p.success(None)
+      }
+    }
+    p.future
+  }
 
   def getBondedTaskList(user: ModelUser): Unit = {
-
-    repository.bondTask.readAllIds().flatMap(ids => {
-      Future.sequence(ids.map(repository.bondTask.read)).map(bondedTasks => {
-        val filters = bondedTasks.map(bondTask =>
-          (bondTask.id, repository.filter.read(bondTask.filterId))
-        ).map {
-          case (id, filter) => filter.map(filter => (id, filter))
-        }.toMap[UUID, Filter]
-        val taskList = bondedTasks.filter(bondTask =>
-          filters(bondTask.id).instanceIds.contains(user.modelId)).map(task =>
-          Entry(task.id, task.menu, task.item)).toList
-        user.out ! BondedTaskList(taskList)
-      })
-    })
+    val allTaskIds = repository.bondTask.readAllIds()
+    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.bondTask.read)) }
+    val filteredTasks = allTasks.flatMap(x => Future.sequence(x.map(i => entry(i, user))).map(_.flatten))
+    filteredTasks.map(tasks => user.out ! BondedTaskList(tasks.toList))
   }
 
   def receive = {

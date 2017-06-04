@@ -17,8 +17,8 @@ import play.api.libs.json.Writes
  * Request messages which can be send by a Tool-Developer
  */
 sealed trait DeveloperRequest extends Request
-case class RunGenerator(generator: String, filter: String) extends DeveloperRequest
-case class RunFilter(filter: String) extends DeveloperRequest
+case class RunGenerator(generatorId: UUID, filterId: UUID) extends DeveloperRequest
+case class RunFilter(filterId: UUID) extends DeveloperRequest
 case class CreateGenerator(imageId: UUID, options: String) extends DeveloperRequest
 case class RunModelRelease(model: String) extends DeveloperRequest
 case class CancelWorkByUser(id: String) extends DeveloperRequest
