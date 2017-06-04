@@ -1,3 +1,4 @@
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
@@ -14,7 +15,6 @@ import models.file.{Repository => Files}
 import models.file.http.{HttpRepository => FileRepository}
 import models.remote.Remote
 import models.remote.RemoteGenerator
-import models.session.SyncGatewaySession
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError
@@ -22,7 +22,6 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
-
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -76,7 +75,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val files = FileRepository(cmd.session.getOrElse(""))
   implicit val session = SyncGatewaySession()
 
-  val user = Await.result(session.getUser(cmd.session.getOrElse("")), Duration(10, TimeUnit.SECONDS))
+  val user: UUID = Await.result(session.getUser(cmd.session.getOrElse("")), Duration(10, TimeUnit.SECONDS)) // FIXME, make sure user is a UUID
 
   if (cmd.options.supplied) {
     val raw = cmd.options.getOrElse("")

@@ -6,71 +6,77 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
-import models.document.Document
+import models.Identifiable
 
 /** Cache implementation of [[Persistence]].
  *
- * @tparam V type of the document
+ * @tparam E type of the entity
  */
-class TransientPersistence[V <: Document] extends Persistence[V] { // scalastyle:ignore
+class TransientPersistence[E <: Identifiable] extends Persistence[E] { // scalastyle:ignore
 
-  private val cache: TrieMap[UUID, V] = TrieMap.empty[UUID, V]
+  private val cache: TrieMap[UUID, E] = TrieMap.empty[UUID, E]
 
-  /** Create a new document.
+  /** Create a new entity.
    *
-   * @param doc the document to save
-   * @return Future, which can fail
+   * @param entity the entity to save
+   * @return Future, with the created entity
    */
-  override def create(doc: V): Future[Unit] = {
-    if (cache.putIfAbsent(doc.id, doc).isEmpty) {
-      Future.successful(Unit)
+  override def create(entity: E): Future[E] = {
+    if (cache.putIfAbsent(entity.id, entity).isEmpty) {
+      Future.successful(entity)
     } else {
-      Future.failed(new IllegalArgumentException("cant't create the document, a document with same id already exists"))
+      Future.failed(new IllegalArgumentException("cant't create the entity, a entity with same id already exists"))
     }
   }
 
-  /** Get a single document.
+  /** Get a single entity.
    *
    * @param id The id of the entity
-   * @return Future which resolve with the document and can fail
+   * @return Future which resolve with the entity and can fail
    */
-  override def read(id: UUID): Future[V] = {
-    cache.get(id).fold[Future[V]] {
-      Future.failed(new IllegalArgumentException("can't read the document, a document with the id doesn't exist"))
+  override def read(id: UUID): Future[E] = {
+    cache.get(id).fold[Future[E]] {
+      Future.failed(new IllegalArgumentException("can't read the entity, a entity with the id doesn't exist"))
     } {
       Future.successful
     }
   }
 
-  /** Update a document.
+  /** Update a entity.
    *
-   * @param doc The document to update
-   * @return Future, which can fail
+   * @param id           The id of the entity
+   * @param updateEntity Function, to build the updated entity from the existing
+   * @return Future containing the updated entity
    */
-  override def update(doc: V): Future[Unit] = {
-    if (cache.replace(doc.id, doc).isDefined) {
-      Future.successful(Unit)
-    } else {
-      Future.failed(new IllegalArgumentException("can't update the document, a document with the id doesn't exist"))
+  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
+    cache.get(id).fold[Future[E]] {
+      Future.failed(new IllegalArgumentException("can't update the entity, a entity with the id doesn't exist"))
+    } { saved =>
+      val updated = updateEntity(saved)
+      if(updated.id == saved.id) {
+        Future.successful(updated)
+      } else {
+        Future.failed(new IllegalArgumentException("can't update the entity, updating the id is not allowed"))
+      }
     }
   }
 
-  /** Delete a document.
+  /** Delete a entity.
    *
-   * @param id The id of the document to delete
+   * @param id The id of the entity to delete
    * @return Future, which can fail
    */
   override def delete(id: UUID): Future[Unit] = {
     if (cache.remove(id).isDefined) {
       Future.successful(Unit)
     } else {
-      Future.failed(new IllegalArgumentException("can't delete the document, a document with the id doesn't exist"))
+      Future.failed(new IllegalArgumentException("can't delete the entity, a entity with the id doesn't exist"))
     }
   }
 
-  /** Get the id's of all documents.
+  /** Get the id's of all entitys.
    *
-   * @return Future containing all id's of the document type, can fail
+   * @return Future containing all id's of the entity type, can fail
    */
   override def readAllIds: Future[Seq[UUID]] = {
     Future.successful(cache.keys.toSeq)

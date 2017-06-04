@@ -66,7 +66,12 @@ object Main extends App {
 
     documents.query[MetaModelRelease](AllMetaModelReleases(current))
       .doOnCompleted {
-        val release = MetaModelRelease(current, version.toString)
+        val release = MetaModelRelease(
+          name = s"${current.metaModel.name} $version",
+          metaModel = current.metaModel,
+          dsl = current.dsl,
+          version = version.toString
+        )
         p.success(release)
       }
       .foreach { release =>
@@ -76,4 +81,3 @@ object Main extends App {
     p.future
   }
 }
-

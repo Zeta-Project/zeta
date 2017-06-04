@@ -60,7 +60,7 @@ class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor 
       task <- repository.get[TimedTask](task.id)
       filter <- repository.get[Filter](task.filter)
       generator <- repository.get[Generator](task.generator)
-      image <- repository.get[GeneratorImage](generator.image)
+      image <- repository.get[GeneratorImage](generator.imageId)
     } yield RunTimedTask(task.id, generator.id, filter.id, image.dockerImage)
 
     result.map {

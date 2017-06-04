@@ -25,7 +25,7 @@ class GeneratorRequestManager(workQueue: ActorRef, repository: Repository) exten
 
     val result = for {
       generator <- repository.get[Generator](run.generator)
-      image <- repository.get[GeneratorImage](generator.image)
+      image <- repository.get[GeneratorImage](generator.imageId)
     } yield RunGeneratorFromGeneratorJob(
       parentId = run.parent,
       key = run.key,

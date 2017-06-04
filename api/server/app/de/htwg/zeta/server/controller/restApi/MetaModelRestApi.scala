@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import com.softwaremill.quicklens.modify
+import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -63,10 +63,13 @@ class MetaModelRestApi @Inject()() extends Controller {
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       entity => {
         val repo = restrictedRepository(request.identity)
-        val repo = restrictedRepository(request.identity)
-        val metaModelEntity = MetaModelEntity(request.identity.id, entity)
-        repo.metaModelEntity.create(MetaModelEntity(request.identity.id, entity)).flatMap { _ =>
-          repo.users.update(modify(request.identity)(_.accessAuthorisation.metaModelEntity).using(_ + metaModelEntity.id)).map { _ =>
+        repo.metaModelEntity.create(
+          MetaModelEntity(
+            name = entity.name,
+            metaModel = entity
+          )
+        ).flatMap { metaModelEntity =>
+          repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.metaModelEntity).using(_ + metaModelEntity.id)).map { _ =>
             Created(Json.toJson(metaModelEntity))
           }
         }.recover {
@@ -88,10 +91,8 @@ class MetaModelRestApi @Inject()() extends Controller {
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       metaModel => {
         val repo = restrictedRepository(request.identity).metaModelEntity
-        repo.read(id).flatMap { saved =>
-          repo.update(saved.copy(metaModel = metaModel)).map { _ =>
-            Ok(Json.toJson(metaModel))
-          }
+        repo.update(id, _.copy(metaModel = metaModel)).map { _ =>
+          Ok(Json.toJson(metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -107,7 +108,7 @@ class MetaModelRestApi @Inject()() extends Controller {
    */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedRepository(request.identity)
-    repo.users.update(modify(request.identity)(_.accessAuthorisation.metaModelEntity).using(_ - id)).flatMap { _ =>
+    repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.metaModelEntity).using(_ - id)).flatMap { _ =>
       repo.metaModelEntity.delete(id).map { _ =>
         Ok("")
       }
@@ -211,12 +212,8 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[Shape].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       shape => {
-        val repo = restrictedRepository(request.identity).metaModelEntity
-        repo.read(id).flatMap { saved =>
-          val updated = modify(saved)(_.dsl.shape).setTo(Some(shape))
-          repo.update(updated).map { _ =>
-            Ok(Json.toJson(updated.metaModel))
-          }
+        restrictedRepository(request.identity).metaModelEntity.update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
+          Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -229,12 +226,8 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[Style].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       style => {
-        val repo = restrictedRepository(request.identity).metaModelEntity
-        repo.read(id).flatMap { saved =>
-          val updated = modify(saved)(_.dsl.style).setTo(Some(style))
-          repo.update(updated).map { _ =>
-            Ok(Json.toJson(updated.metaModel))
-          }
+        restrictedRepository(request.identity).metaModelEntity.update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
+          Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -247,12 +240,8 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[Diagram].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       diagram => {
-        val repo = restrictedRepository(request.identity).metaModelEntity
-        repo.read(id).flatMap { saved =>
-          val updated = modify(saved)(_.dsl.diagram).setTo(Some(diagram))
-          repo.update(updated).map { _ =>
-            Ok(Json.toJson(updated.metaModel))
-          }
+        restrictedRepository(request.identity).metaModelEntity.update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
+          Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }

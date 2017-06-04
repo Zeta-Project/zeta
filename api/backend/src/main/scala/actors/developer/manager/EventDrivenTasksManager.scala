@@ -38,7 +38,7 @@ class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends 
       filter <- repository.get[Filter](task.filter)
       if filter.instances.contains(saved.model)
       generator <- repository.get[Generator](task.generator)
-      image <- repository.get[GeneratorImage](generator.image)
+      image <- repository.get[GeneratorImage](generator.imageId)
     } yield Some(RunEventDrivenTask(task.id, generator.id, filter.id, saved.model, image.dockerImage))
 
     op.map { task =>

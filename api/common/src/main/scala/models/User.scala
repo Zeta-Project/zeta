@@ -3,8 +3,6 @@ package models
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.Identity
-import de.htwg.zeta.persistence.transientCache.TransientCachePersistence
-import models.document.EventDrivenTask
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 

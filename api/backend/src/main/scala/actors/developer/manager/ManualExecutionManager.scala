@@ -30,7 +30,7 @@ class ManualExecutionManager(worker: ActorRef, repository: Repository) extends A
     val result = for {
       generator <- repository.get[Generator](run.generator)
       filter <- repository.get[Filter](run.filter)
-      image <- repository.get[GeneratorImage](generator.image)
+      image <- repository.get[GeneratorImage](generator.imageId)
     } yield RunGeneratorManually(generator.id, image.dockerImage, filter.id)
 
     result.map { job =>

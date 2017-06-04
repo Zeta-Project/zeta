@@ -7,7 +7,7 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import com.softwaremill.quicklens.modify
+import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -58,10 +58,14 @@ class ModelRestApi @Inject()() extends Controller {
           model => {
             val repo = restrictedRepository(request.identity)
             repo.metaModelEntity.read(metaModelId).flatMap(metaModel => {
-              val modelEntity = ModelEntity(request.identity.id, model.copy(metaModel = metaModel.metaModel), metaModel)
-              repo.modelEntity.create(modelEntity).flatMap { _ =>
-                repo.users.update(modify(request.identity)(_.accessAuthorisation.modelEntity).using(_ + modelEntity.id)).map {
-                  _ => Results.Ok(Json.toJson(modelEntity))
+              repo.modelEntity.create(
+                ModelEntity(
+                  model = model.copy(metaModel = metaModel.metaModel),
+                  metaModelId = metaModel.id
+                )
+              ).flatMap { modelEntity =>
+                repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.modelEntity).using(_ + modelEntity.id)).map { _ =>
+                  Results.Ok(Json.toJson(modelEntity))
                 }
               }
             }).recover {
@@ -79,13 +83,8 @@ class ModelRestApi @Inject()() extends Controller {
     in.fold(
       errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
       model => {
-        val repo = restrictedRepository(request.identity).modelEntity
-        repo.read(id).flatMap { saved => {
-          val updated = saved.copy(model = model)
-          repo.update(updated).map { _ =>
-            Results.Ok(Json.toJson(updated))
-          }
-        }
+        restrictedRepository(request.identity).modelEntity.update(id, _.copy(model = model)).map { updated =>
+          Results.Ok(Json.toJson(updated))
         }.recover {
           case e: Exception => Results.BadRequest(e.getMessage)
         }
@@ -101,7 +100,7 @@ class ModelRestApi @Inject()() extends Controller {
     repo.read(id).map { saved =>
       Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
         case JsSuccess(model, path) => {
-          repo.update(saved.copy(model = model)).map { updated =>
+          repo.update(id, _.copy(model = model)).map { updated =>
             p.success(Results.Ok(Json.toJson(updated)))
           }.recover {
             case e: Exception => p.success(Results.BadRequest(e.getMessage))
@@ -171,7 +170,7 @@ class ModelRestApi @Inject()() extends Controller {
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedRepository(request.identity)
-    repo.users.update(modify(request.identity)(_.accessAuthorisation.modelEntity).using(_ - id)).flatMap { _ =>
+    repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.modelEntity).using(_ - id)).flatMap { _ =>
       repo.modelEntity.delete(id).map { _ =>
         Ok("")
       }

@@ -4,7 +4,6 @@ import java.util.UUID
 
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import julienrf.json.derived
-import models.User
 import models.Identifiable
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Dsl
@@ -16,102 +15,115 @@ import models.worker.RunEventDrivenTask
 import models.worker.RunTimedTask
 import org.joda.time.DateTime
 import org.joda.time.Minutes
-import play.api.libs.json.__
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-sealed trait Document extends Identifiable{
 
-  val _rev: String
+case class TimedTask(
+    id: UUID,
+    name: String,
+    generator: String,
+    filter: String,
+    interval: Int,
+    start: String
+) extends Identifiable {
 
-  def isUpdated(): Boolean = !_rev.startsWith("1-")
-
-}
-
-sealed trait Task
-sealed trait Image {
-  def dockerImage: String
-}
-
-sealed trait Entity
-
-case class TimedTask(_id: String, _rev: String, name: String, generator: String, filter: String, interval: Int, start: String) extends Task {
   def delay: Int = {
     val first = DateTime.parse(start)
     val now = new DateTime()
     val diff = Minutes.minutesBetween(now, first).getMinutes
     if (diff > 0) diff else 1
   }
-}
-case class EventDrivenTask(id: String, _rev: String, name: String, generator: String, filter: String, event: String) extends Task with Document
-case class BondedTask(id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String) extends Task with Document
-case class Generator(id: String, _rev: String, name: String, image: String) extends  Document
-case class Filter(id: String, _rev: String, name: String, description: String, instances: List[String]) extends Document
-case class GeneratorImage(id: String, _rev: String, name: String, dockerImage: String) extends Image with Document
-case class FilterImage(id: String, _rev: String, name: String, dockerImage: String) extends Image with Document
-case class Settings(id: String, _rev: String, owner: UUID, jobSettings: JobSettings) extends  Document
-case class MetaModelEntity(id: UUID, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None)
-  extends Entity with Document
-case class MetaModelRelease(id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends  Document
-case class ModelEntity(id: UUID, _rev: String, model: Model, metaModelId: UUID, links: Option[Seq[HLink]] = None) extends Entity with Document
-case class Log(id: String, _rev: String, log: String, status: Int, date: String) extends Document
-case class UserEntity(id: String, _rev: String, user: User) extends Entity with Document
 
-object Settings {
-  def apply(owner: UUID): Settings = {
-    val id = s"Settings-${owner}"
-    Settings(id, null, owner, JobSettings.default())
-  }
 }
 
-private case object Helper {
-  def random(): String = java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16)
-}
+case class EventDrivenTask(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    generator: String,
+    filter: String,
+    event: String
+) extends Identifiable
 
-object UserEntity {
-  def apply(owner: UUID, user: User): UserEntity = {
-    val id = s"UserEntity-${owner}"
-    UserEntity(id, null, user)
-  }
-}
+case class BondedTask(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    generator: String,
+    filter: String,
+    menu: String,
+    item: String
+) extends Identifiable
+
+case class Generator(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    imageId: UUID
+) extends Identifiable
+
+case class Filter(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    description: String,
+    instances: List[String]
+) extends Identifiable
+
+case class GeneratorImage(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    dockerImage: String
+) extends Identifiable
+
+case class FilterImage(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    dockerImage: String
+) extends Identifiable
 
 
-object Generator {
-  def apply(owner: String, name: String, image: GeneratorImage): Generator = {
-    val id = s"Generator-${owner}-${Helper.random()}"
-    Generator(id, null, name, image.id)
-  }
-}
+case class Settings(
+    id: UUID = UUID.randomUUID,
+    owner: UUID,
+    jobSettings: JobSettings
+) extends Identifiable
 
-object MetaModelRelease {
-  def apply(from: MetaModelEntity, version: String): MetaModelRelease = {
-    val id = s"${from.id.replace("MetaModel", "MetaModelRelease")}-${version}"
-    val name = s"${from.name} ${version}"
-    val meta = from.metaModel
-    MetaModelRelease(id, null, name, meta, from.dsl, version)
-  }
-}
+case class MetaModelEntity(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    metaModel: MetaModel,
+    dsl: Dsl = Dsl(),
+    links: Option[Seq[HLink]] = None
+) extends Identifiable
 
-object MetaModelEntity {
-  def apply(owner: UUID, metaModel: MetaModel): MetaModelEntity = {
-    val id = s"MetaModelEntity-${owner}-${Helper.random()}"
-    MetaModelEntity(id, null, metaModel.name, metaModel, Dsl(), None)
-  }
-}
+case class MetaModelRelease(
+    id: UUID = UUID.randomUUID,
+    name: String,
+    metaModel: MetaModel,
+    dsl: Dsl,
+    version: String
+) extends Identifiable
 
-object ModelEntity {
-  def apply(owner: UUID, model: Model, release: MetaModelEntity): ModelEntity = {
-    val id = s"ModelEntity-${owner}-${Helper.random()}"
-    val entity = ModelEntity(id, null, model, release.id, None)
-    entity
-  }
-}
+case class ModelEntity(
+    id: UUID = UUID.randomUUID,
+    model: Model,
+    metaModelId: UUID,
+    links: Option[Seq[HLink]] = None
+) extends Identifiable
+
+case class Log(
+    id: UUID = UUID.randomUUID,
+    task: String,
+    log: String,
+    status: Int,
+    date: String
+) extends Identifiable
+
 
 object Log {
+
   def apply(job: Job, log: String, status: Int): Log = {
     val now = new DateTime().toDateTimeISO.toString
     val prefix = "Log"
-    val id = job match {
+    val task = job match {
       case job: RunEventDrivenTask =>
         prefix + job.task.split("-").tail.mkString("-", "-", "-") + now
       case job: RunTimedTask =>
@@ -120,46 +132,12 @@ object Log {
         prefix + job.task.split("-").tail.mkString("-", "-", "-") + now
       case _ => throw new IllegalArgumentException(s"Creating Log(..) Object failed. Job type '${job.getClass.getName}' cannot be persisted.")
     }
-    Log(id, null, log, status, now)
+    Log(UUID.randomUUID, task, log, status, now)
   }
+
 }
 
 object Document {
   implicit lazy val formatPasswordInfo: OFormat[PasswordInfo] = derived.oformat
   implicit lazy val readJobSettings = Json.reads[JobSettings]
-  implicit lazy val formatDocument: OFormat[Document] = derived.flat.oformat((__ \ "type").format[String])
-
-  def update(doc: Document, rev: String): Document = doc match {
-    case t: Task => updateTask(rev, t)
-    case i: Image => updateImage(rev, i)
-    case e: Entity => updateEntity(rev, e)
-    case d: Generator => d.copy(_rev = rev)
-    case d: Filter => d.copy(_rev = rev)
-    case d: Settings => d.copy(_rev = rev)
-    case d: MetaModelRelease => d.copy(_rev = rev)
-    case d: Log => d.copy(_rev = rev)
-  }
-
-  private def updateEntity(rev: String, e: Entity) = {
-    e match {
-      case d: MetaModelEntity => d.copy(_rev = rev)
-      case d: ModelEntity => d.copy(_rev = rev)
-      case d: UserEntity => d.copy(_rev = rev)
-    }
-  }
-
-  private def updateImage(rev: String, i: Image) = {
-    i match {
-      case d: GeneratorImage => d.copy(_rev = rev)
-      case d: FilterImage => d.copy(_rev = rev)
-    }
-  }
-
-  private def updateTask(rev: String, t: Task) = {
-    t match {
-      case d: TimedTask => d.copy(_rev = rev)
-      case d: EventDrivenTask => d.copy(_rev = rev)
-      case d: BondedTask => d.copy(_rev = rev)
-    }
-  }
 }

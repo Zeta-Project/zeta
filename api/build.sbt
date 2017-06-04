@@ -248,7 +248,8 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
       "com.mohiva" %% "play-silhouette" % "4.0.0",
       "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
       "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
-      "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0"
+      "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
+      "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
     )
   )
 ).dependsOn(common)

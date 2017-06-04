@@ -39,7 +39,7 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
       filter <- repository.get[Filter](task.filter)
       if filter.instances.contains(request.model)
       generator <- repository.get[Generator](task.generator)
-      image <- repository.get[GeneratorImage](generator.image)
+      image <- repository.get[GeneratorImage](generator.imageId)
     } yield RunBondedTask(task.id, task.generator, filter.id, request.model, image.dockerImage)
 
     job.map {
