@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.transientCache
+package de.htwg.zeta.persistence.transient
 
 import java.util.UUID
 
@@ -78,7 +78,7 @@ class TransientPersistence[E <: Identifiable] extends Persistence[E] { // scalas
    *
    * @return Future containing all id's of the entity type, can fail
    */
-  override def readAllIds: Future[Seq[UUID]] = {
+  override def readAllIds(): Future[Set[UUID]] = {
     Future.successful(cache.keys.toSeq)
   }
 

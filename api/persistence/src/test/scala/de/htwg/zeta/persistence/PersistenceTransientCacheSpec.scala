@@ -1,6 +1,6 @@
 package de.htwg.zeta.persistence
 
-import de.htwg.zeta.persistence.transientCache.TransientRepository
+import de.htwg.zeta.persistence.transient.TransientRepository
 
 /**
  * PersistenceMicroServiceTest.

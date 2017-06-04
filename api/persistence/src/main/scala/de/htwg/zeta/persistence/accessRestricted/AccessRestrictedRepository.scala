@@ -6,6 +6,7 @@ import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
 import de.htwg.zeta.persistence.general.Repository
+import AccessRestrictedPersistence
 import models.User
 
 

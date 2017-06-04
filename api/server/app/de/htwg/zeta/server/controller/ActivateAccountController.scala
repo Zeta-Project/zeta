@@ -79,15 +79,13 @@ class ActivateAccountController @Inject()(
    * @return The result to display.
    */
   def activate(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
-    val userId = tokenCache.read(token)
-    val user = userId.flatMap(userId => userPersistence.read(userId))
-    val updated = user.flatMap(user => userPersistence.update(user.copy(activated = true)))
-
-    updated.map(_ => {
-      Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("account.activated"))
-    }).recover {
+    tokenCache.read(token).flatMap(userId =>
+      userPersistence.update(userId, _.copy(activated = true)).map(_ =>
+        Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("account.activated"))
+      )
+    ).recover {
       case _ => Redirect(routes.ScalaRoutes.getSignIn()).flashing("error" -> messages("invalid.activation.link"))
     }
-
   }
+
 }

@@ -1,5 +1,7 @@
 package de.htwg.zeta.persistence.microService
 
+import java.util.UUID
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -119,7 +121,7 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
    *
    * @return Future containing all id's of the document type, can fail
    */
-  override def readAllIds: Future[Seq[String]] = {
+  override def readAllIds(): Future[Set[UUID]] = {
     http.singleRequest(
       HttpRequest(
         method = GET,

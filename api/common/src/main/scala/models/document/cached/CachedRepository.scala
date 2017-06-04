@@ -18,6 +18,7 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.reflect.ClassTag
 
+
 object CachedRepository {
   def apply(remote: Repository): Repository with Cache = {
     new CachedRepository(remote)
@@ -63,11 +64,11 @@ class CachedRepository(remote: Repository) extends Repository with Cache {
    */
   override def update[T: ClassTag](doc: Document)(implicit w: Writes[Document]): Future[T] = {
     // update the cache entry
+
     cache.getIfPresent(doc.id) match {
       case Some(x) => cache.put(doc.id, doc)
       case None => // ignore
     }
-
     remote.update(doc)
   }
 

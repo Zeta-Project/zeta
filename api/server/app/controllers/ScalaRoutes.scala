@@ -70,7 +70,7 @@ class ScalaRoutes @Inject()(
 
   def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverviewShortInfo _)
 
-  def getOverview(uuid: String): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverview(uuid) _)
+  def getOverview(id: UUID): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverview(id) _)
 
 
   // # metamodel editor
@@ -86,7 +86,7 @@ class ScalaRoutes @Inject()(
     AuthenticatedGet(ModelController.modelEditor(modelId) _)
   }
 
-  def getModelSocket(instanceId: String, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
+  def getModelSocket(instanceId: UUID, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
 
   def getModelValidator(): Action[AnyContent] = AuthenticatedGet(ModelController.modelValidator _)
 

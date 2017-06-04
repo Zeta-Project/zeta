@@ -2,6 +2,7 @@ package de.htwg.zeta.server.util.datavis.generator
 
 import java.io.File
 import java.io.FileWriter
+import java.util.UUID
 
 import de.htwg.zeta.server.util.datavis.domain.Assignment
 import de.htwg.zeta.server.util.datavis.domain.Conditional
@@ -15,7 +16,7 @@ class ListenersGenerator {
   val public = "server" + File.separator + "public" + File.separator
   val path = "javascripts" + File.separator + "generated" + File.separator
 
-  def generate(diagramId: String, objectId: String, conditionals: List[Conditional]) = {
+  def generate(diagramId: UUID, objectId: UUID, conditionals: List[Conditional]) = {
     val content = generateContents(objectId, conditionals).stripMargin(' ')
     mkDir(diagramId)
     val fileName = path + diagramId + File.separator + objectId + filesuffix
@@ -26,7 +27,7 @@ class ListenersGenerator {
     fileName
   }
 
-  def generateContents(objectId: String, conditionals: List[Conditional]) = {
+  def generateContents(objectId: UUID, conditionals: List[Conditional]) = {
     generateHead + generateListenerObject(objectId) + generateListeners(objectId, conditionals)
   }
 
@@ -37,17 +38,17 @@ class ListenersGenerator {
       | */
     """.stripMargin
 
-  def generateListenerObject(objectId: String) =
+  def generateListenerObject(objectId: UUID) =
     s"""
       | dataVisListeners["$objectId"] = {};
       | _.extend(dataVisListeners["$objectId"], Backbone.Events);
     """.stripMargin
 
-  def generateListeners(objectId: String, conditional: List[Conditional]) = {
+  def generateListeners(objectId: UUID, conditional: List[Conditional]) = {
     conditional.foldLeft("")((listeners, next) => listeners + generateListener(objectId, next))
   }
 
-  def generateListener(objectId: String, conditional: Conditional) = {
+  def generateListener(objectId: UUID, conditional: Conditional) = {
     val comparisonLeft = generateComparisonOperand(conditional.condition.x)
     val comparisonRight = generateComparisonOperand(conditional.condition.y)
     val comparison = conditional.condition.comparison
@@ -74,5 +75,5 @@ class ListenersGenerator {
     case style: StyleIdentifier => "cell.attr(\"" + style.selector + "/" + style.identifier + "\", " + assignment.value + ");"
   }
 
-  private def mkDir(diagramId: String) = new File(public + path + diagramId).mkdirs()
+  private def mkDir(diagramId: UUID) = new File(public + path + diagramId.toString).mkdirs()
 }

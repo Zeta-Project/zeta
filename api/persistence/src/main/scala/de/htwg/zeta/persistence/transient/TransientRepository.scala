@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.transientCache
+package de.htwg.zeta.persistence.transient
 
 import de.htwg.zeta.persistence.general.Repository
 import models.document.BondedTask

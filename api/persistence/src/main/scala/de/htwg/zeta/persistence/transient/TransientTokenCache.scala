@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.transientCache
+package de.htwg.zeta.persistence.transient
 
 import java.util.UUID
 import java.util.concurrent.TimeUnit

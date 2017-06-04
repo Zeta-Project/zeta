@@ -26,7 +26,7 @@ class ModelController @Inject()(
   extends Controller {
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedRepository(request.identity).modelEntity.read(modelId).map { model =>
+    restrictedRepository(request.identity.id).modelEntity.read(modelId).map { model =>
       Ok(views.html.model.ModelGraphicalEditor(model.metaModelId, model.id, Some(request.identity), model))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -34,7 +34,7 @@ class ModelController @Inject()(
   }
 
   def vrModelEditor(modelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedRepository(request.identity).modelEntity.read(modelUuid).map { model =>
+    restrictedRepository(request.identity.id).modelEntity.read(modelUuid).map { model =>
       Ok(views.html.VrEditor(model.metaModelId))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -45,7 +45,7 @@ class ModelController @Inject()(
     Ok(views.html.model.ModelValidator(Some(request.identity)))
   }
 
-  def modelSocket(instanceId: String, graphType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
+  def modelSocket(instanceId: UUID, graphType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
     ModelWsActor.props(out, instanceId, graphType)
   }
 }

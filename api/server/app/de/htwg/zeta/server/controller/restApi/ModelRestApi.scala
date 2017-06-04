@@ -34,7 +34,7 @@ class ModelRestApi @Inject()() extends Controller {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedRepository(request.identity).modelEntity
+    val repo = restrictedRepository(request.identity.id).modelEntity
     repo.readAllIds.flatMap { ids =>
       Future.sequence(ids.map(repo.read)).map(_.map(info =>
         info.copy(links = Some(Seq(
@@ -56,7 +56,7 @@ class ModelRestApi @Inject()() extends Controller {
         (request.body \ "model").validate[Model].fold(
           errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
           model => {
-            val repo = restrictedRepository(request.identity)
+            val repo = restrictedRepository(request.identity.id)
             repo.metaModelEntity.read(metaModelId).flatMap(metaModel => {
               repo.modelEntity.create(
                 ModelEntity(
@@ -83,7 +83,7 @@ class ModelRestApi @Inject()() extends Controller {
     in.fold(
       errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
       model => {
-        restrictedRepository(request.identity).modelEntity.update(id, _.copy(model = model)).map { updated =>
+        restrictedRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map { updated =>
           Results.Ok(Json.toJson(updated))
         }.recover {
           case e: Exception => Results.BadRequest(e.getMessage)
@@ -94,7 +94,7 @@ class ModelRestApi @Inject()() extends Controller {
 
   /** updates model definition only */
   def updateModel(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    val repo = restrictedRepository(request.identity).modelEntity
+    val repo = restrictedRepository(request.identity.id).modelEntity
 
     val p = Promise[Result]
     repo.read(id).map { saved =>
@@ -169,7 +169,7 @@ class ModelRestApi @Inject()() extends Controller {
 
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedRepository(request.identity)
+    val repo = restrictedRepository(request.identity.id)
     repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.modelEntity).using(_ - id)).flatMap { _ =>
       repo.modelEntity.delete(id).map { _ =>
         Ok("")
@@ -182,7 +182,7 @@ class ModelRestApi @Inject()() extends Controller {
 
   /** A helper method for less verbose reads from the database */
   private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
-    restrictedRepository(request.identity).modelEntity.read(id).map { model =>
+    restrictedRepository(request.identity.id).modelEntity.read(id).map { model =>
       trans(model)
     }.recover {
       case e: Exception => Results.BadRequest(e.getMessage)

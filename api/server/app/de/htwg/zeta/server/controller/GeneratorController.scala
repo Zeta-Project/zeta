@@ -36,7 +36,7 @@ import play.api.mvc.Result
 class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
 
   def generate(metaModelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Persistence.restrictedRepository(request.identity).metaModelEntity.read(metaModelUuid)
+    Persistence.restrictedRepository(request.identity.id).metaModelEntity.read(metaModelUuid)
       .map(createGenerators(_) match {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)
@@ -72,10 +72,9 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
   }
 
   private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
-    val metaModelUuid = metaModel._id
     val currentDir = s"${System.getenv("PWD")}/server/model_specific"
-    val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
-    val vrGeneratorOutputLocation = s"$currentDir/vr/$metaModelUuid/"
+    val generatorOutputLocation: String = s"$currentDir/${metaModel.id}/"
+    val vrGeneratorOutputLocation = s"$currentDir/vr/${metaModel.id}/"
 
     createGeneratorFiles(diagram, hierarchyContainer).flatMap(gen => {
       createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {

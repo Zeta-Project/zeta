@@ -7,7 +7,7 @@ import scala.concurrent.duration.Duration
 
 import de.htwg.zeta.persistence.microService.PersistenceMicroService
 import de.htwg.zeta.persistence.microService.PersistenceServer
-import de.htwg.zeta.persistence.transientCache.TransientRepository
+import de.htwg.zeta.persistence.transient.TransientRepository
 
 /**
  * PersistenceMicroServiceTest.

@@ -40,7 +40,7 @@ class MetaModelRestApi @Inject()() extends Controller {
    * @return The result
    */
   def showForUser(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedRepository(request.identity).metaModelEntity
+    val repo = restrictedRepository(request.identity.id).metaModelEntity
     repo.readAllIds.flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
         new MetaModelShortInfo(id = mm.id, name = mm.name, links = Some(Seq(
@@ -62,7 +62,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[MetaModel].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       entity => {
-        val repo = restrictedRepository(request.identity)
+        val repo = restrictedRepository(request.identity.id)
         repo.metaModelEntity.create(
           MetaModelEntity(
             name = entity.name,
@@ -90,7 +90,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     in.fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       metaModel => {
-        val repo = restrictedRepository(request.identity).metaModelEntity
+        val repo = restrictedRepository(request.identity.id).metaModelEntity
         repo.update(id, _.copy(metaModel = metaModel)).map { _ =>
           Ok(Json.toJson(metaModel))
         }.recover {
@@ -107,7 +107,7 @@ class MetaModelRestApi @Inject()() extends Controller {
    * @return result
    */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedRepository(request.identity)
+    val repo = restrictedRepository(request.identity.id)
     repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.metaModelEntity).using(_ - id)).flatMap { _ =>
       repo.metaModelEntity.delete(id).map { _ =>
         Ok("")
@@ -200,7 +200,7 @@ class MetaModelRestApi @Inject()() extends Controller {
 
   /** A helper method for less verbose reads from the database */
   private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: MetaModelEntity => Result): Future[Result] = {
-    restrictedRepository(request.identity).metaModelEntity.read(id).map { mm =>
+    restrictedRepository(request.identity.id).metaModelEntity.read(id).map { mm =>
       trans(mm)
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -212,7 +212,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[Shape].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       shape => {
-        restrictedRepository(request.identity).metaModelEntity.update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
+        restrictedRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
           Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
@@ -226,7 +226,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[Style].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       style => {
-        restrictedRepository(request.identity).metaModelEntity.update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
+        restrictedRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
           Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
@@ -240,7 +240,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[Diagram].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       diagram => {
-        restrictedRepository(request.identity).metaModelEntity.update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
+        restrictedRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
           Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)

@@ -1,13 +1,14 @@
 package de.htwg.zeta.persistence
 
+import java.util.UUID
+
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.TokenCache
-import de.htwg.zeta.persistence.transientCache.TransientLoginInfoPersistence
-import de.htwg.zeta.persistence.transientCache.TransientRepository
-import de.htwg.zeta.persistence.transientCache.TransientTokenCache
-import models.User
+import de.htwg.zeta.persistence.transient.TransientLoginInfoPersistence
+import de.htwg.zeta.persistence.transient.TransientRepository
+import de.htwg.zeta.persistence.transient.TransientTokenCache
 
 
 /** Persistence. */
@@ -18,11 +19,11 @@ object Persistence extends App {
 
   /** The current implementation of the PersistenceService with a overlaying Access-Restriction Layer.
    *
-   * @param user The assigned user to the restriction
+   * @param ownerID The id of the assigned user to the restriction
    * @return PersistenceService
    */
-  def restrictedRepository(user: User): Repository = {
-    AccessRestrictedRepository(user, service)
+  def restrictedRepository(ownerID: UUID): Repository = {
+    AccessRestrictedRepository(ownerID, service)
   }
 
   /** The current implementation of TokenCache. */

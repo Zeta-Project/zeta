@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.transientCache
+package de.htwg.zeta.persistence.transient
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future

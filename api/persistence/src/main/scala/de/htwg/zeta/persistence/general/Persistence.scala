@@ -55,6 +55,6 @@ trait Persistence[E <: Identifiable] { // scalastyle:ignore
    *
    * @return Future containing all id's of the entity type
    */
-  def readAllIds: Future[Seq[UUID]]
+  def readAllIds(): Future[Set[UUID]]
 
 }

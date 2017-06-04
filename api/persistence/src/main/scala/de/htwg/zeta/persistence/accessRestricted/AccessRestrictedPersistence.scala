@@ -65,7 +65,7 @@ case class AccessRestrictedPersistence[E <: Identifiable](access: AccessHelper, 
    *
    * @return Future containing all id's of the entity type, can fail
    */
-  override def readAllIds: Future[Set[UUID]] = {
+  override def readAllIds(): Future[Set[UUID]] = {
     access.listAccess
   }
 

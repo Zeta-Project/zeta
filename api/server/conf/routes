@@ -32,7 +32,7 @@ GET           /account/activate/:token                                          
 ### Webpage
 GET           /webpage                                                               controllers.ScalaRoutes.getWebpage
 GET           /overview                                                              controllers.ScalaRoutes.getOverviewNoArgs
-GET           /overview/:uuid                                                        controllers.ScalaRoutes.getOverview(uuid: String)
+GET           /overview/:id                                                          controllers.ScalaRoutes.getOverview(id: java.util.UUID)
 
 
 # metamodel editor
@@ -41,7 +41,7 @@ GET           /metamodel/socket/:metaModelId                                    
 
 ### model editor
 GET           /model/editor/:modelId                                                 controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
-GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:String, graphType:String)
+GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId: java.util.UUID, graphType:String)
 GET           /model/validator                                                       controllers.ScalaRoutes.getModelValidator
 
 ### vr
@@ -83,8 +83,8 @@ GET           /models/:modelId/definition/edges/:edgeName                       
 DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
 
 ### Code Editor
-GET           /codeeditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorEditor(metaModelId: String, dslType: String)
-GET           /codeeditor/socket/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorSocket(metaModelId: String, dslType: String)
+GET           /codeeditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorEditor(metaModelId: java.util.UUID, dslType: String)
+GET           /codeeditor/socket/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorSocket(metaModelId: java.util.UUID, dslType: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                                          controllers.ScalaRoutes.getAssets(file)

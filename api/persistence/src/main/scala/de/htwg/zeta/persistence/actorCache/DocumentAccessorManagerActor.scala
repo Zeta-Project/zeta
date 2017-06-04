@@ -13,7 +13,7 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDur
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAccessor
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAllIds
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.transientCache.TransientPersistence
+import de.htwg.zeta.persistence.transient.TransientPersistence
 import models.document.Document
 
 

@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.model
 
+import java.util.UUID
+
 import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
@@ -18,16 +20,16 @@ import shared.DiagramWSOutMessage.DataVisScope
 import shared.DiagramWSOutMessage.NewScriptFile
 import upickle.default
 
-class ModelWsActor(out: ActorRef, instanceId: String, graphType: String) extends Actor {
+class ModelWsActor(out: ActorRef, instanceId: UUID, graphType: String) extends Actor {
   val mediator = DistributedPubSub(context.system).mediator
   val log = Logger(this getClass () getName ())
   val dataVisActor = context.actorOf(DataVisActor.props(self, instanceId, graphType))
 
-  mediator ! Subscribe(instanceId, self)
+  mediator ! Subscribe(instanceId.toString, self)
 
   override def receive: Actor.Receive = {
     case webSocketMsg: String => processMessage(webSocketMsg)
-    case ModelWsActor.PublishFile(objectId, path) => mediator ! Publish(instanceId, NewScriptFile(objectId, path))
+    case ModelWsActor.PublishFile(objectId, path) => mediator ! Publish(instanceId.toString, NewScriptFile(objectId, path))
     case newFile: NewScriptFile => out ! default.write(newFile)
     case scope: DataVisScope => out ! default.write(scope)
     case DataVisParseError(error, objectId) =>
@@ -59,7 +61,7 @@ class ModelWsActor(out: ActorRef, instanceId: String, graphType: String) extends
 }
 
 object ModelWsActor {
-  def props(out: ActorRef, instanceId: String, graphType: String) = Props(new ModelWsActor(out, instanceId, graphType))
+  def props(out: ActorRef, instanceId: UUID, graphType: String) = Props(new ModelWsActor(out, instanceId, graphType))
   case class PublishFile(context: String, path: String)
   case class DataVisParseError(msg: String, context: String)
   case class DataVisInvalidError(msg: List[String], context: String)

@@ -49,7 +49,7 @@ import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
-import de.htwg.zeta.persistence.transientCache.TransientPasswordInfoPersistence
+import de.htwg.zeta.persistence.transient.TransientPasswordInfoPersistence
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv

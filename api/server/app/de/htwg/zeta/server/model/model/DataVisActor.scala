@@ -1,6 +1,7 @@
 package de.htwg.zeta.server.model.model
 
 import java.io.File
+import java.util.UUID
 
 import akka.actor.Actor
 import akka.actor.ActorRef
@@ -21,7 +22,7 @@ import de.htwg.zeta.server.util.datavis.validator.ConstrainedDataVisValidator
 import de.htwg.zeta.server.util.domain.Metamodel
 import de.htwg.zeta.server.util.domain.ObjectWithAttributes
 
-class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) extends Actor with DataVisParsers {
+class DataVisActor(socket: ActorRef, instanceId: UUID, graphType: String) extends Actor with DataVisParsers {
   val log = Logger(this getClass () getName ())
   var metamodel: Metamodel = null
   val generator = new ListenersGenerator
@@ -66,7 +67,7 @@ class DataVisActor(socket: ActorRef, instanceId: String, graphType: String) exte
 }
 
 object DataVisActor {
-  def props(socket: ActorRef, instanceId: String, graphType: String) = Props(new DataVisActor(socket, instanceId, graphType))
+  def props(socket: ActorRef, instanceId: UUID, graphType: String) = Props(new DataVisActor(socket, instanceId, graphType))
   case class MetamodelLoaded(json: String)
   case class MetamodelFailure()
 }
