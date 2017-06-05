@@ -17,8 +17,12 @@ import de.htwg.zeta.server.generator.model.style.HasStyle
 object GeneratorInspectorDefinition {
   val attrCounterMap: mutable.HashMap[String, Int] = mutable.HashMap()
 
-  /**
-   * generates the inspector definition, with input definitions for the JointJS Shapes
+  /** generates the inspector definition, with input definitions for the JointJS Shapes
+   *  @param attrs additional attributes
+   *  @param nodes all nodes
+   *  @param packageName mostly zeta
+   *  @param shapes all shapes
+   *  @return returns generated File as String
    */
   def generate(
     shapes: Iterable[Shape],
@@ -34,7 +38,7 @@ object GeneratorInspectorDefinition {
       |""".stripMargin
   }
 
-  def generateDefinition(
+  private def generateDefinition(
     shape: Shape,
     packageName: String,
     attrs: mutable.HashMap[String, mutable.HashMap[GeometricModel, String]],
@@ -43,7 +47,6 @@ object GeneratorInspectorDefinition {
     var boundWidth = 0
     var boundHeight = 0
     val node = nodes.find(n => n.shape.get.referencedShape.name == shape.name)
-
 
     boundWidth = GeneratorShapeDefinition.calculateWidth(shape)
     boundHeight = GeneratorShapeDefinition.calculateHeight(shape)
@@ -60,8 +63,7 @@ object GeneratorInspectorDefinition {
             getRightAttributes(k, atts(k), boundWidth, boundHeight)
           }).mkString(",")
         }
-          |    },
-          |    ${if (node.isDefined && node.get.mcoreElement.attributes.nonEmpty) generateMClassAttributeInputs(node.get) else ""}
+          |    }
           |  }, CommonInspectorInputs),
           |  groups: CommonInspectorGroups
           |},
@@ -167,8 +169,13 @@ object GeneratorInspectorDefinition {
     s"""
       |'text${if (hasStyle(shape)) "." + shapeClass}' : inp({
       |  text: {
-      |    group: 'Text',
+      |    type: 'list',
+      |    item: {
+      |      type: 'text'
+      |    },
+      |    group: 'Text ${shape.id}',
       |    index: 1
+      |
       |  },
       |  x: {
       |    group: 'Text Geometry ${attrCounterMap(shape.getClass.getSimpleName)}',
@@ -520,34 +527,5 @@ object GeneratorInspectorDefinition {
       case s: HasStyle if s.style.isDefined => true
       case _ => false
     }
-  }
-
-  private def generateMClassAttributeInputs(node: Node): String = {
-    val attributeNames = node.mcoreElement.attributes.map(a => "'" + a.name + "'")
-    s"""
-      |mClassAttributes: {
-      |  type: 'list',
-      |  group: 'data',
-      |  item: {
-      |    type : 'object',
-      |    label : 'Custom Atributes',
-      |    properties : {
-      |      type : {
-      |        type : 'select',
-      |        label : 'Type',
-      |        options : [
-      |          ${attributeNames.mkString(",")}
-      |        ],
-      |        defaultValue : ${attributeNames.toList.head},
-      |        index : 1
-      |      },
-      |      value : {
-      |        type : 'text',
-      |        label: 'Value'
-      |      }
-      |    }
-      |  }
-      |}
-      |""".stripMargin
   }
 }
