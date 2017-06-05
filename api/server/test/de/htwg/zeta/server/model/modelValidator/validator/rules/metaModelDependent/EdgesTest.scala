@@ -16,7 +16,7 @@ class EdgesTest extends FlatSpec with Matchers {
   val mReference3 = MReference("edgeType3", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
   val rule = new Edges(Seq("edgeType1", "edgeType2"))
 
-  "check" should "return true on valid edges" in {
+  "isValid" should "return true on valid edges" in {
     val edge1 = Edge.apply2("edgeId", mReference1, Seq(), Seq(), Seq())
     rule.isValid(edge1).get should be (true)
 
@@ -24,7 +24,7 @@ class EdgesTest extends FlatSpec with Matchers {
     rule.isValid(edge2).get should be (true)
   }
 
-  "check" should "return false on invalid edges" in {
+  it should "return false on invalid edges" in {
     val edge3 = Edge.apply2("edgeId", mReference3, Seq(), Seq(), Seq())
     rule.isValid(edge3).get should be (false)
   }

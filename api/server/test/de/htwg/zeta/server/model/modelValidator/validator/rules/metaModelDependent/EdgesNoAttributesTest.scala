@@ -15,7 +15,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
   val rule = new EdgesNoAttributes("edgeType")
 
-  "check" should "return true on edges of type edgeType with no attributes" in {
+  "isValid" should "return true on edges of type edgeType with no attributes" in {
     val edge = Edge.apply2("", mReference, Seq(), Seq(), Seq())
     rule.isValid(edge).get should be (true)
   }

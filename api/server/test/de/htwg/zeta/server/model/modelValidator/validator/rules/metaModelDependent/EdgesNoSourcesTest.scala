@@ -17,7 +17,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
   val rule = new EdgesNoSources("edgeType")
 
-  "check" should "return true on edges of type edgeType with no sources" in {
+  "isValid" should "return true on edges of type edgeType with no sources" in {
     val edge = Edge.apply2("", mReference, Seq(), Seq(), Seq())
     rule.isValid(edge).get should be (true)
   }

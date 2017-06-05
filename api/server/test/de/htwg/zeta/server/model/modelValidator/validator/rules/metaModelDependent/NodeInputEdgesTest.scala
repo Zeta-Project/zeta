@@ -35,7 +35,7 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
     rule.isValid(node2).get should be (true)
   }
 
-  it should "return false on nodes of type nodeType with invalid inpu edges" in {
+  it should "return false on nodes of type nodeType with invalid input edges" in {
 
     val input = MReference("invalid", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
     val toEdges = ToEdges(`type` = input, edges = Seq(
