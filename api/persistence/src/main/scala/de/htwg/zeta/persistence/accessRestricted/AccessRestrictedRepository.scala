@@ -2,6 +2,7 @@ package de.htwg.zeta.persistence.accessRestricted
 
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
@@ -139,7 +140,7 @@ private[accessRestricted] case class DefaultAccessHelper(repo: AccessRestrictedR
    */
   def listAccess: Future[Set[UUID]] = {
     repo.users.read(repo.ownerId).flatMap(user =>
-      Future.successful(path(user.accessAuthorisation))
+      Future.successful(path(user))
     )
   }
 

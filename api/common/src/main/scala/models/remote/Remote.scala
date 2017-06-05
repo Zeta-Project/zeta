@@ -1,5 +1,7 @@
 package models.remote
 
+import java.util.UUID
+
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 import rx.lang.scala.Observable
@@ -13,13 +15,13 @@ trait Remote {
    * by the id of the generator and subscribe to a stream to which
    * the started generator will send it's results
    *
-   * @param generator The id of the generator
+   * @param generatorId The id of the generator
    * @param options The input options to pass to the remote call
    * @tparam Input The input type for the parameters
    * @tparam Output The output type of the generator stream
    * @return A observable with the stream to the generator
    */
-  def call[Input, Output](generator: String, options: Input)(implicit writes: Writes[Input], reads: Reads[Output]): Observable[Output]
+  def call[Input, Output](generatorId: UUID, options: Input)(implicit writes: Writes[Input], reads: Reads[Output]): Observable[Output]
 
   /**
    * Publish streams some output to the parent

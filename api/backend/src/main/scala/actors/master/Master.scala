@@ -13,7 +13,6 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.persistence.PersistentActor
-import models.session.Session
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -33,11 +32,11 @@ private case object WorkerTimeoutTick
 private case object CompletedWorkTick
 
 object Master {
-  def props(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, sessionManager: Session): Props =
-    Props(classOf[Master], workerTimeout, sessionDuration, sessionManager)
+  def props(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration): Props =
+    Props(classOf[Master], workerTimeout, sessionDuration)
 }
 
-class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, sessionManager: Session) extends PersistentActor with ActorLogging {
+class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration) extends PersistentActor with ActorLogging {
   val numberOfWorkersToNotify = 4
   val mediator = DistributedPubSub(context.system).mediator
   mediator ! Subscribe("Master", self)
@@ -133,13 +132,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
           persist(WorkStarted(work.id)) { event =>
             workState = workState.updated(event)
             workers += (workerId -> worker.copy(status = Busy(work.id, Deadline.now + workerTimeout)))
-            sessionManager.getSession(work.owner, sessionDuration.toSeconds).map { session =>
-              workerRef ! work.copy(session = session)
-            }.recover {
-              case e: Exception =>
-                log.error(s"Master failed on loading a session for ${work.owner}")
-                self ! work
-            }
+            workerRef ! work
           }
         case _ =>
       }
@@ -158,7 +151,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
         workState.completedWorkById(workId) match {
           case Some(completed) =>
             log.info("Sending work {} as completed to the work creator {}", workerId, completed.work.owner)
-            mediator ! DistributedPubSubMediator.Publish(completed.work.owner, MasterWorkerProtocol.MasterCompletedWork(workId, result))
+            mediator ! DistributedPubSubMediator.Publish(completed.work.owner.toString, MasterWorkerProtocol.MasterCompletedWork(workId, result))
           case None =>
             // should not happen
             log.error("Completed work {} was not available as expected", workId)
@@ -248,7 +241,7 @@ class Master(workerTimeout: FiniteDuration, sessionDuration: FiniteDuration, ses
   private def processWorkCompleted() = {
     workState.completedWorkList foreach { completed =>
       log.info(s"Re-send work completed : '${completed.work.job}' to ${completed.work.owner}")
-      mediator ! DistributedPubSubMediator.Publish(completed.work.owner, MasterWorkerProtocol.MasterCompletedWork(completed.work.id, completed.result))
+      mediator ! DistributedPubSubMediator.Publish(completed.work.owner.toString, MasterWorkerProtocol.MasterCompletedWork(completed.work.id, completed.result))
     }
   }
 

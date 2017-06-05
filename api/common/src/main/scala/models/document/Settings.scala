@@ -26,4 +26,4 @@ object JobSettings {
   def default(): JobSettings = JobSettings(10, 100, DockerSettings())
 }
 
-case class ContainerSettings()
+

@@ -2,6 +2,7 @@ package de.htwg.zeta.persistence.accessRestricted
 
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence

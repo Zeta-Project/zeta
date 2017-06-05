@@ -1,23 +1,18 @@
 package actors.developer.manager
 
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.document.AllEventDrivenTasks
+import de.htwg.zeta.persistence.general.Repository
 import models.document.EventDrivenTask
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
 import models.frontend.ModelChanged
 import models.frontend.SavedModel
 import models.worker.RunEventDrivenTask
-import rx.lang.scala.Observable
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.Promise
-
-import de.htwg.zeta.persistence.general.Repository
 
 object EventDrivenTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new EventDrivenTasksManager(worker, repository))

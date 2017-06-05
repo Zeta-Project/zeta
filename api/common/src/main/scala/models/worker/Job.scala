@@ -140,7 +140,7 @@ case class RunTimedTask(taskId: UUID, generatorId: UUID, filterId: UUID, image: 
       case _ => false
     }
 
-  override def hashCode: Int = Objects.hashCode(s"RunTimedTask-${generatorId}-${filterId}")
+  override def hashCode: Int = Objects.hashCode(s"RunTimedTask-$generatorId-$filterId")
 
   override val cmd: List[String] = List("--filter", filterId.toString, "--generator", generatorId.toString)
 }

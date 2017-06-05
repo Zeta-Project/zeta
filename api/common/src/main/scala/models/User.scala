@@ -58,7 +58,7 @@ object User {
  * @param metaModelReleases id's of the [[models.document.MetaModelRelease]]
  * @param modelEntities     id's of the [[models.document.ModelEntity]]
  * @param logs              id's of the [[models.document.Log]]
- * @param files       id's of the fileIndices
+ * @param files             id's of the fileIndices
  */
 case class AccessAuthorisation(
     eventDrivenTasks: Set[UUID] = Set.empty,

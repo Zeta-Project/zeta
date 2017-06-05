@@ -23,7 +23,6 @@ import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import cluster.ClusterManager
 import com.typesafe.config.ConfigFactory
-import models.session.SyncGatewaySession
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -125,11 +124,10 @@ protected class MasterStarter extends Starter {
     implicit val system = createActorSystem(MasterStarter.ActorRole, config.seeds, config.port)
     implicit val mat = ActorMaterializer()
     implicit val client = AhcWSClient()
-    val sessionManager = SyncGatewaySession()
 
     system.actorOf(
       ClusterSingletonManager.props(
-        Master.props(MasterStarter.WorkerTimeout, MasterStarter.SessionDuration, sessionManager),
+        Master.props(MasterStarter.WorkerTimeout, MasterStarter.SessionDuration),
         PoisonPill,
         ClusterSingletonManagerSettings(system).withRole(MasterStarter.ActorRole)
       ),

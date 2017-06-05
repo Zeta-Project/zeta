@@ -7,7 +7,6 @@ import scala.concurrent.Future
 import scala.concurrent.Promise
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -63,10 +62,8 @@ class ModelRestApi @Inject()() extends Controller {
                   model = model.copy(metaModel = metaModel.metaModel),
                   metaModelId = metaModel.id
                 )
-              ).flatMap { modelEntity =>
-                repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.modelEntities).using(_ + modelEntity.id)).map { _ =>
-                  Results.Ok(Json.toJson(modelEntity))
-                }
+              ).map { modelEntity =>
+                Results.Ok(Json.toJson(modelEntity))
               }
             }).recover {
               case e: Exception => Results.BadRequest(e.getMessage)
@@ -169,15 +166,11 @@ class ModelRestApi @Inject()() extends Controller {
 
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id)
-    repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.modelEntities).using(_ - id)).flatMap { _ =>
-      repo.modelEntities.delete(id).map { _ =>
-        Ok("")
-      }
+    restrictedAccessRepository(request.identity.id).modelEntities.delete(id).map { _ =>
+      Ok("")
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }
-
   }
 
   /** A helper method for less verbose reads from the database */

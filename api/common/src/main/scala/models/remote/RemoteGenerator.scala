@@ -61,9 +61,9 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
     }
   })
 
-  private def sendRunGenerator[Input](key: String, generator: String, options: Input)(implicit writes: Writes[Input]) = {
+  private def sendRunGenerator[Input](key: String, generatorId: UUID, options: Input)(implicit writes: Writes[Input]) = {
     val message = Json.toJson(options).toString()
-    val json = Json.toJson(RunGeneratorFromGenerator(work, key, generator, message))
+    val json = Json.toJson(RunGeneratorFromGenerator(work, key, generatorId, message))
     ws.sendText(json.toString())
   }
 
@@ -71,11 +71,11 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
   // This method blocks until the opening handshake is finished.
   ws.connect()
 
-  def call[Input, Output](generator: String, options: Input)(implicit writes: Writes[Input], reads: Reads[Output]): Observable[Output] = {
+  def call[Input, Output](generatorId: UUID, options: Input)(implicit writes: Writes[Input], reads: Reads[Output]): Observable[Output] = {
     val subscriptionKey = UUID.randomUUID().toString
 
     // start the generator with the provided options
-    sendRunGenerator(subscriptionKey, generator, options)
+    sendRunGenerator(subscriptionKey, generatorId, options)
 
     Observable[Output](subscriber => {
       val i = new AtomicInteger(0)
@@ -90,14 +90,14 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
                 case JsSuccess(value, path) =>
                   processMessageSuccess(subscriber, value)
                 case JsError(errors) =>
-                  createError(subscriber, generator, options.toString, s"Unable to parse message '${message}' from generator to expected Output format.")
+                  createError(subscriber, generatorId, options.toString, s"Unable to parse message '${message}' from generator to expected Output format.")
               }
             } else {
-              createError(subscriber, generator, options.toString, "Sequence number was not as expected. Lost messages.")
+              createError(subscriber, generatorId, options.toString, "Sequence number was not as expected. Lost messages.")
             }
           }
           case GeneratorCompleted(key, result) => if (key == subscriptionKey) {
-            processComplete(generator, options, subscriber, result)
+            processComplete(generatorId, options, subscriber, result)
           }
         }
       })
@@ -110,8 +110,8 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
     }
   }
 
-  private def createError[Output](subscriber: Subscriber[Output], generator: String, options: String, message: String) = {
-    subscriber.onError(new Exception(s"Remote generator call of ${generator} with options ${options} fired an error : ${message}"))
+  private def createError[Output](subscriber: Subscriber[Output], generatorId: UUID, options: String, message: String) = {
+    subscriber.onError(new Exception(s"Remote generator call of $generatorId with options $options fired an error : $message"))
   }
 
   private def processMessageSuccess[Output](subscriber: Subscriber[Output], value: Output) = {
@@ -120,11 +120,11 @@ class RemoteGenerator(session: String, work: String, parent: Option[String] = No
     }
   }
 
-  private def processComplete[Input, Output](generator: String, options: Input, subscriber: Subscriber[Output], result: Int) = {
+  private def processComplete[Input, Output](generatorId: UUID, options: Input, subscriber: Subscriber[Output], result: Int) = {
     if (result == 0) {
       subscriber.onCompleted()
     } else {
-      createError(subscriber, generator, options.toString, s"Generator completed with status code ${result}")
+      createError(subscriber, generatorId, options.toString, s"Generator completed with status code ${result}")
     }
   }
 

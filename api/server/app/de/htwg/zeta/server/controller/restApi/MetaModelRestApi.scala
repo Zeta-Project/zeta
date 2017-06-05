@@ -41,7 +41,7 @@ class MetaModelRestApi @Inject()() extends Controller {
    */
   def showForUser(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedAccessRepository(request.identity.id).metaModelEntities
-    repo.readAllIds.flatMap(ids => {
+    repo.readAllIds().flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
         new MetaModelShortInfo(id = mm.id, name = mm.name, links = Some(Seq(
           HLink.get("self", routes.ScalaRoutes.getMetamodels(mm.id).absoluteURL()(request)),
@@ -62,16 +62,13 @@ class MetaModelRestApi @Inject()() extends Controller {
     request.body.validate[MetaModel].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       entity => {
-        val repo = restrictedAccessRepository(request.identity.id)
-        repo.metaModelEntities.create(
+        restrictedAccessRepository(request.identity.id).metaModelEntities.create(
           MetaModelEntity(
             name = entity.name,
             metaModel = entity
           )
-        ).flatMap { metaModelEntity =>
-          repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.metaModelEntities).using(_ + metaModelEntity.id)).map { _ =>
-            Created(Json.toJson(metaModelEntity))
-          }
+        ).map { metaModelEntity =>
+          Created(Json.toJson(metaModelEntity))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -107,11 +104,8 @@ class MetaModelRestApi @Inject()() extends Controller {
    * @return result
    */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id)
-    repo.users.update(request.identity.id, _.modify(_.accessAuthorisation.metaModelEntities).using(_ - id)).flatMap { _ =>
-      repo.metaModelEntities.delete(id).map { _ =>
-        Ok("")
-      }
+    restrictedAccessRepository(request.identity.id).metaModelEntities.delete(id).map { _ =>
+      Ok("")
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }
