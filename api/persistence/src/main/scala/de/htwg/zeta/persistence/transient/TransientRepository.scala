@@ -1,8 +1,7 @@
 package de.htwg.zeta.persistence.transient
 
-import de.htwg.zeta.persistence.general.Repository
-import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.EntityVersion
+import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.VersionIndex
 import models.User
 import models.document.BondedTask
@@ -50,8 +49,11 @@ class TransientRepository extends Repository {
   /** Persistence for the [[models.document.MetaModelEntity]] */
   override val metaModelEntities = new TransientPersistence[MetaModelEntity]
 
-  /** Persistence for the [[models.document.MetaModelRelease]] */
-  override val metaModelReleases = new TransientPersistence[MetaModelRelease]
+  /** Persistence for the metaModelReleases indices */
+  override private[persistence] val metaModelReleasesIndices = new TransientPersistence[VersionIndex[Int]]
+
+  /** Persistence for the metaModelReleases versions */
+  override private[persistence] val metaModelReleasesVersions = new TransientPersistence[EntityVersion[MetaModelRelease]]
 
   /** Persistence for the [[models.document.ModelEntity]] */
   override val modelEntities = new TransientPersistence[ModelEntity]

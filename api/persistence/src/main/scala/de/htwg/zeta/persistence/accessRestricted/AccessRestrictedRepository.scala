@@ -5,10 +5,11 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
-import de.htwg.zeta.persistence.general.Repository
-import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.EntityVersion
+import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.Repository
 import models.User
+import models.document.MetaModelRelease
 import models.file.File
 
 
@@ -20,49 +21,68 @@ import models.file.File
 case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) extends Repository {
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
-  override lazy val eventDrivenTasks = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.eventDrivenTasks), underlaying.eventDrivenTasks)
+  override lazy val eventDrivenTasks =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.eventDrivenTasks), underlaying.eventDrivenTasks)
 
   /** Persistence for the [[models.document.BondedTask]] */
-  override lazy val bondTasks = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.bondTasks), underlaying.bondTasks)
+  override lazy val bondTasks =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.bondTasks), underlaying.bondTasks)
 
   /** Persistence for [[models.document.TimedTask]] */
-  override val timedTasks = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.timedTasks), underlaying.timedTasks)
+  override val timedTasks =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.timedTasks), underlaying.timedTasks)
 
   /** Persistence for the [[models.document.Generator]] */
-  override lazy val generators = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generators), underlaying.generators)
+  override lazy val generators =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generators), underlaying.generators)
 
   /** Persistence for the [[models.document.Filter]] */
-  override lazy val filters = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filters), underlaying.filters)
+  override lazy val filters =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filters), underlaying.filters)
 
   /** Persistence for the [[models.document.GeneratorImage]] */
-  override lazy val generatorImages = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generatorImages), underlaying.generatorImages)
+  override lazy val generatorImages =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generatorImages), underlaying.generatorImages)
 
   /** Persistence for the [[models.document.FilterImage]] */
-  override lazy val filterImages = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filterImages), underlaying.filterImages)
+  override lazy val filterImages =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filterImages), underlaying.filterImages)
 
   /** Persistence for the [[models.document.Settings]] */
-  override lazy val settings = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.settings), underlaying.settings)
+  override lazy val settings =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.settings), underlaying.settings)
 
   /** Persistence for the [[models.document.MetaModelEntity]] */
-  override lazy val metaModelEntities = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelEntities), underlaying.metaModelEntities)
+  override lazy val metaModelEntities =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelEntities), underlaying.metaModelEntities)
 
-  /** Persistence for the [[models.document.MetaModelRelease]] */
-  override lazy val metaModelReleases = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelReleases), underlaying.metaModelReleases)
+  /** Persistence for the metaModelReleases indices */
+  override private[persistence] val metaModelReleasesIndices =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelReleases), underlaying.metaModelReleasesIndices)
+
+  /** Persistence for the metaModelReleases versions */
+  override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] =
+    underlaying.metaModelReleasesVersions
 
   /** Persistence for the [[models.document.ModelEntity]] */
-  override lazy val modelEntities = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.modelEntities), underlaying.modelEntities)
+  override lazy val modelEntities =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.modelEntities), underlaying.modelEntities)
 
   /** Persistence for the [[models.document.Log]] */
-  override lazy val logs = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.logs), underlaying.logs)
+  override lazy val logs =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.logs), underlaying.logs)
 
   /** Persistence for the [[models.User]] */
-  override lazy val users = AccessRestrictedPersistence(UserAccessHelper(ownerId), underlaying.users)
+  override lazy val users =
+    AccessRestrictedPersistence(UserAccessHelper(ownerId), underlaying.users)
 
   /** Persistence for the file indices */
-  override private[persistence] val fileIndices = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.fileIndices), underlaying.fileIndices)
+  override private[persistence] val fileIndices =
+    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.files), underlaying.fileIndices)
 
   /** Persistence for the file versions */
-  override private[persistence] val fileVersions: Persistence[EntityVersion[File]] = underlaying.fileVersions
+  override private[persistence] val fileVersions: Persistence[EntityVersion[File]] =
+    underlaying.fileVersions
 
 }
 

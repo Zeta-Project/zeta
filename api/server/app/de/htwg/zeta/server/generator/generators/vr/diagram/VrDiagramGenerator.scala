@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.generator.generators.vr.diagram
 
+import java.util.UUID
+
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.shapecontainer.connection.Connection
@@ -22,10 +24,10 @@ object VrDiagramGenerator {
     val connections = diagram.edges.map(getConnection).groupBy(_.name).map(_._2.head)
 
     List(
-      File(EXTENDED_NEW_BEHAVIOR, VrGeneratorNewBehavior.generate(nodes)),
-      File(EXTENDED_CONNECT_BEHAVIOR, VrGeneratorConnectBehavior.generate(connections, diagram.edges)),
-      File(SCENE, VrGeneratorScene.generate(nodes, connections)),
-      File(SAVE_BEHAVIOR, VrGeneratorSaveBehavior.generate(nodes, connections, diagram))
+      File(UUID.randomUUID, EXTENDED_NEW_BEHAVIOR, VrGeneratorNewBehavior.generate(nodes)),
+      File(UUID.randomUUID, EXTENDED_CONNECT_BEHAVIOR, VrGeneratorConnectBehavior.generate(connections, diagram.edges)),
+      File(UUID.randomUUID, SCENE, VrGeneratorScene.generate(nodes, connections)),
+      File(UUID.randomUUID, SAVE_BEHAVIOR, VrGeneratorSaveBehavior.generate(nodes, connections, diagram))
     )
   }
 

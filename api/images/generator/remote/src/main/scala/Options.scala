@@ -1,3 +1,5 @@
+import java.util.UUID
+
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
@@ -17,7 +19,7 @@ object CreateOptions {
 /**
  * Options which will be passed to a remote generator call
  */
-case class RemoteOptions(nodeType: String, modelId: String)
+case class RemoteOptions(nodeType: String, modelId: UUID)
 
 object RemoteOptions {
   implicit lazy val reads: Reads[RemoteOptions] = Json.reads[RemoteOptions]

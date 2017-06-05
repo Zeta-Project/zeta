@@ -1,18 +1,20 @@
 import java.util.UUID
-import java.util.concurrent.TimeUnit
+
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.reflect.ClassTag
+import scala.reflect.runtime
+import scala.tools.reflect.ToolBox
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Transformer
 import models.document.Filter
-import models.document.Generator
 import models.document.ModelEntity
-import models.document.{Repository => Documents}
-import models.document.http.{HttpRepository => DocumentRepository}
 import models.file.File
-import models.file.{Repository => Files}
-import models.file.http.{HttpRepository => FileRepository}
 import models.remote.Remote
 import models.remote.RemoteGenerator
 import org.rogach.scallop.ScallopConf
@@ -22,14 +24,6 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
-import scala.concurrent.duration.Duration
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.Promise
-import scala.reflect.ClassTag
-import scala.reflect.runtime
-import scala.tools.reflect.ToolBox
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session = opt[String]()
@@ -71,11 +65,10 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val client = AhcWSClient()
 
   implicit val remote: Remote = RemoteGenerator(cmd.session.getOrElse(""), cmd.work.getOrElse(""), cmd.parent.toOption, cmd.key.toOption)
-  implicit val documents: Documents = DocumentRepository(cmd.session.getOrElse(""))
-  implicit val files = FileRepository(cmd.session.getOrElse(""))
-  implicit val session = SyncGatewaySession()
 
-  val user: UUID = Await.result(session.getUser(cmd.session.getOrElse("")), Duration(10, TimeUnit.SECONDS)) // FIXME, make sure user is a UUID
+  val repository = Persistence.fullAccessRepository
+
+  val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 
   if (cmd.options.supplied) {
     val raw = cmd.options.getOrElse("")
@@ -90,9 +83,9 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
       }
     }
   } else if (cmd.model.supplied) {
-    val model = cmd.model.getOrElse("")
-    val generator = cmd.generator.getOrElse("")
-    runGeneratorForSingleModel(generator, model).map { result =>
+    val modelId = cmd.model.toOption.fold(UUID.randomUUID)(UUID.fromString)
+    val generatorId = cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)
+    runGeneratorForSingleModel(generatorId, modelId).map { result =>
       logger.info(result.message)
       System.exit(result.status)
     }.recover {
@@ -101,9 +94,9 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
         System.exit(1)
     }
   } else if (cmd.filter.supplied) {
-    val filter = cmd.filter.getOrElse("")
-    val generator = cmd.generator.getOrElse("")
-    runGeneratorWithFilter(generator, filter).map { result =>
+    val filterId = cmd.filter.toOption.fold(UUID.randomUUID)(UUID.fromString)
+    val generatorId = cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)
+    runGeneratorWithFilter(generatorId, filterId).map { result =>
       logger.info(result.message)
       System.exit(result.status)
     }.recover {
@@ -113,8 +106,8 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     }
   } else if (cmd.create.supplied) {
     val options = cmd.create.getOrElse("")
-    val image = cmd.image.getOrElse("")
-    parseGeneratorCreateOptions(options, image).map { result =>
+    val imageId = cmd.image.toOption.fold(UUID.randomUUID)(UUID.fromString)
+    parseGeneratorCreateOptions(options, imageId).map { result =>
       logger.info(result.message)
       System.exit(result.status)
     }.recover {
@@ -134,9 +127,9 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     }
   }
 
-  private def parseGeneratorCreateOptions(rawOptions: String, image: String): Future[Result] = {
+  private def parseGeneratorCreateOptions(rawOptions: String, imageId: UUID): Future[Result] = {
     Json.parse(rawOptions).validate[S] match {
-      case s: JsSuccess[S] => createTransformer(s.get, image)
+      case s: JsSuccess[S] => createTransformer(s.get, imageId)
       case e: JsError => Future.failed(new Exception(e.toString))
     }
   }
@@ -157,8 +150,8 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
 
     val start: Future[Transformer] = generator.prepare(filter.instanceIds)
     val futures = filter.instanceIds.foldLeft(start) {
-      case (future, model) => future.flatMap { generator =>
-        documents.get[ModelEntity](model).flatMap { entity =>
+      case (future, modelId) => future.flatMap { generator =>
+        repository.modelEntities.read(modelId).flatMap { entity =>
           generator.transform(entity)
         }
       }
@@ -212,16 +205,14 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    *
    * @param generatorId
    * @param filterId
-   * @param documents
-   * @param files
    * @return
    */
-  def runGeneratorWithFilter(generatorId: String, filterId: String)(implicit documents: Documents, files: Files): Future[Result] = {
+  def runGeneratorWithFilter(generatorId: UUID, filterId: UUID): Future[Result] = {
     for {
-      generator <- documents.get[Generator](generatorId)
-      filter <- documents.get[Filter](filterId)
+      generator <- repository.generators.read(generatorId)
+      filter <- repository.filters.read(filterId)
       ok <- checkFilter(filter)
-      file <- files.get(generator, Settings.generatorFile)
+      file <- repository.files.readVersion(generator.id, Settings.generatorFile)
       fn <- getTransformer(file, filter)
       end <- executeTransformation(fn, filter)
     } yield {
@@ -234,15 +225,13 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    *
    * @param generatorId The generator which to use
    * @param modelId     The model for which to run the generator
-   * @param documents   Access to the Documents repository
-   * @param files       Access to the Files repository
    * @return The result of the generator
    */
-  def runGeneratorForSingleModel(generatorId: String, modelId: String)(implicit documents: Documents, files: Files): Future[Result] = {
+  def runGeneratorForSingleModel(generatorId: UUID, modelId: UUID): Future[Result] = {
     for {
-      generator <- documents.get[Generator](generatorId)
-      model <- documents.get[ModelEntity](modelId)
-      file <- files.get(generator, Settings.generatorFile)
+      generator <- repository.generators.read(generatorId)
+      model <- repository.modelEntities.read(modelId)
+      file <- repository.files.readVersion(generator.id, Settings.generatorFile)
       fn <- getTransformer(file, model)
       end <- executeTransformation(fn, model)
     } yield {
@@ -254,46 +243,39 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    * Call the generator (called by another generator) to run with options
    *
    * @param remote    Access to docker container
-   * @param files     Access to the Files repository
-   * @param documents Access to the Documents repository
    * @param options   the options for the generator
    * @return The Result of the generator
    */
-  def runGeneratorWithOptions(options: T)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
+  def runGeneratorWithOptions(options: T)(implicit remote: Remote): Future[Result]
 
   /**
    * Initialize the generator
    *
    * @param file      The file which was loaded for the generator
-   * @param documents Access to the Documents repository
    * @param remote    Access to docker container
-   * @param files     Access to the Files repository
    * @param filter    the Filter
    * @return A Generator
    */
-  def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer]
+  def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer]
 
   /**
    * Initialize the model transformer
    *
    * @param file      The file which was loaded for the generator
-   * @param documents Access to the Documents repository
    * @param remote    Access to docker container
-   * @param files     Access to the Files repository
    * @param model     the modelEntity
    * @return A Generator
    */
-  def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer]
+  def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer]
 
   /**
    * Create assets for the model transformer
    *
    * @param options   The Options for the creation of the generator
-   * @param image     The id of the image for the generator
-   * @param documents Access to the Documents repository
-   * @param files     Access to the Files repository
+   * @param imageId     The id of the image for the generator
    * @param remote    Access to docker container
    * @return The result of the generator creation
    */
-  def createTransformer(options: S, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result]
+  def createTransformer(options: S, imageId: UUID)(implicit remote: Remote): Future[Result]
+
 }

@@ -1,20 +1,15 @@
 import java.util.UUID
 
-import de.htwg.zeta.persistence.Persistence
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import models.document.AllMetaModelReleases
-import models.document.MetaModelEntity
+import de.htwg.zeta.persistence.Persistence
 import models.document.MetaModelRelease
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.Promise
-
-
 
 
 /**
@@ -46,8 +41,17 @@ object Main extends App {
 
     val result = for {
       from <- documents.metaModelEntities.read(UUID.fromString(id))
-      doc <- getRelease(from)
-      release <- documents.metaModelReleases.create(doc)
+      version <- documents.metaModelReleases.readVersionKeys(from.id).map(_.last + 1)
+
+      release <- documents.metaModelReleases.createVersion(4,
+        MetaModelRelease(
+          name = s"${from.metaModel.name} $version",
+          metaModel = from.metaModel,
+          dsl = from.dsl,
+          version = version.toString
+        )
+      )
+
     } yield {
       release
     }
@@ -64,24 +68,4 @@ object Main extends App {
     }
   })
 
-  def getRelease(current: MetaModelEntity): Future[MetaModelRelease] = {
-    val p = Promise[MetaModelRelease]
-    var version = 1
-
-    documents.query[MetaModelRelease](AllMetaModelReleases(current))
-      .doOnCompleted {
-        val release = MetaModelRelease(
-          name = s"${current.metaModel.name} $version",
-          metaModel = current.metaModel,
-          dsl = current.dsl,
-          version = version.toString
-        )
-        p.success(release)
-      }
-      .foreach { release =>
-        version += 1
-      }
-
-    p.future
-  }
 }
