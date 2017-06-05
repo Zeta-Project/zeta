@@ -84,7 +84,7 @@ object PersistenceServer extends Logging {
   }
 
   private def persistenceRoutes[T <: Document](service: Persistence[T])(implicit jsonFormat: RootJsonFormat[T], manifest: Manifest[T]): Route = {
-    pathPrefix(service.name / "id" /
+    pathPrefix(service.entityTypeName / "id" /
       """\w+""".r) { id =>
       get {
         onComplete(service.read(id)) {
@@ -92,22 +92,22 @@ object PersistenceServer extends Logging {
             StatusCodes.OK,
             HttpEntity(`application/json`, doc.toJson.toString)
           )
-          case Failure(e) => completeWithError(e, "reading", service.name, id)
+          case Failure(e) => completeWithError(e, "reading", service.entityTypeName, id)
         }
       } ~
         delete {
           onComplete(service.delete(id)) {
             case Success(_) => complete(StatusCodes.OK)
-            case Failure(e) => completeWithError(e, "deleting", service.name, id)
+            case Failure(e) => completeWithError(e, "deleting", service.entityTypeName, id)
           }
         }
     } ~
-      pathPrefix(service.name) {
+      pathPrefix(service.entityTypeName) {
         put {
           entity(as[T]) { doc =>
             onComplete(service.create(doc)) {
               case Success(_) => complete(StatusCodes.OK)
-              case Failure(e) => completeWithError(e, "creating", service.name, doc.id())
+              case Failure(e) => completeWithError(e, "creating", service.entityTypeName, doc.id())
             }
           }
         } ~
@@ -115,13 +115,13 @@ object PersistenceServer extends Logging {
             entity(as[T]) { doc =>
               onComplete(service.update(doc)) {
                 case Success(_) => complete(StatusCodes.OK)
-                case Failure(e) => completeWithError(e, "updating", service.name, doc.id())
+                case Failure(e) => completeWithError(e, "updating", service.entityTypeName, doc.id())
               }
             }
           }
       } ~
       get {
-        path(service.name / "all") {
+        path(service.entityTypeName / "all") {
           onSuccess(service.readAllIds) { allIds =>
             complete(
               StatusCodes.OK,

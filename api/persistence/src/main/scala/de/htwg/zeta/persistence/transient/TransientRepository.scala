@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence.transient
 
+import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
 import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.VersionIndex
@@ -21,6 +22,9 @@ import models.file.File
 
 /** Cache-Implementation of the PersistenceService. */
 class TransientRepository extends Repository {
+
+  /** Persistence for AccessAuthorisation */
+  override private[persistence] val accessAuthorisations = new TransientPersistence[AccessAuthorisation]
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
   override val eventDrivenTasks = new TransientPersistence[EventDrivenTask]

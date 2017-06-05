@@ -39,7 +39,7 @@ class PersistenceClient[T <: Document](address: String, port: Int) // scalastyle
   (implicit format: RootJsonFormat[T], system: ActorSystem, materializer: ActorMaterializer, manifest: Manifest[T]) extends Persistence[T] {
 
   private val http = Http()
-  private val uri = s"http://$address:$port/$name" // scalastyle:ignore
+  private val uri = s"http://$address:$port/$entityTypeName" // scalastyle:ignore
 
   /** Create a new document.
    *

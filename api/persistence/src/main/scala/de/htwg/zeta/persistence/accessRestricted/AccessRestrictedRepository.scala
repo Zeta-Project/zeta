@@ -2,10 +2,6 @@ package de.htwg.zeta.persistence.accessRestricted
 
 import java.util.UUID
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
-import com.softwaremill.quicklens.ModifyPimp
 import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
@@ -21,45 +17,49 @@ import models.file.File
  */
 case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) extends Repository {
 
+  /** Persistence for AccessAuthorisation */
+  override private[persistence] val accessAuthorisations: Persistence[AccessAuthorisation] =
+    underlaying.accessAuthorisations
+
   /** Persistence for the [[models.document.EventDrivenTask]] */
   override lazy val eventDrivenTasks =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.eventDrivenTasks), underlaying.eventDrivenTasks)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.eventDrivenTasks)
 
   /** Persistence for the [[models.document.BondedTask]] */
   override lazy val bondTasks =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.bondTasks), underlaying.bondTasks)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.bondTasks)
 
   /** Persistence for [[models.document.TimedTask]] */
   override val timedTasks =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.timedTasks), underlaying.timedTasks)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.timedTasks)
 
   /** Persistence for the [[models.document.Generator]] */
   override lazy val generators =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generators), underlaying.generators)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.generators)
 
   /** Persistence for the [[models.document.Filter]] */
   override lazy val filters =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filters), underlaying.filters)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.filters)
 
   /** Persistence for the [[models.document.GeneratorImage]] */
   override lazy val generatorImages =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generatorImages), underlaying.generatorImages)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.generatorImages)
 
   /** Persistence for the [[models.document.FilterImage]] */
   override lazy val filterImages =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filterImages), underlaying.filterImages)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.filterImages)
 
   /** Persistence for the [[models.document.Settings]] */
   override lazy val settings =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.settings), underlaying.settings)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.settings)
 
   /** Persistence for the [[models.document.MetaModelEntity]] */
   override lazy val metaModelEntities =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelEntities), underlaying.metaModelEntities)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.metaModelEntities)
 
   /** Persistence for the metaModelReleases indices */
   override private[persistence] val metaModelReleasesIndices =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelReleases), underlaying.metaModelReleasesIndices)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.metaModelReleasesIndices)
 
   /** Persistence for the metaModelReleases versions */
   override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] =
@@ -67,19 +67,19 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
 
   /** Persistence for the [[models.document.ModelEntity]] */
   override lazy val modelEntities =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.modelEntities), underlaying.modelEntities)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.modelEntities)
 
   /** Persistence for the [[models.document.Log]] */
   override lazy val logs =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.logs), underlaying.logs)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.logs)
 
   /** Persistence for the [[models.User]] */
-  override lazy val users =
-    AccessRestrictedPersistence(UserAccessHelper(ownerId), underlaying.users)
+  override lazy val users: Persistence[User] =
+    underlaying.users
 
   /** Persistence for the file indices */
   override private[persistence] val fileIndices =
-    AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.files), underlaying.fileIndices)
+    AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.fileIndices)
 
   /** Persistence for the file versions */
   override private[persistence] val fileVersions: Persistence[EntityVersion[File]] =
@@ -87,117 +87,57 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
 
 }
 
-/** AccessHelper */
-private[accessRestricted] trait AccessHelper {
-
-  /** Check if a id is allowed to access.
-   *
-   * @return Unit-Future, failed when Access is denied.
-   */
-  def listAccess: Future[Set[UUID]]
-
-  /** Check if a id is allowed to access.
-   *
-   * @param id the id to access
-   * @return Unit-Future, failed when Access is denied.
-   */
-  final def checkAccess(id: UUID): Future[Unit] = {
-    listAccess.flatMap { ids =>
-      if (ids.contains(id)) {
-        Future.successful(())
-      } else {
-        Future.failed(new IllegalStateException("Access denied"))
-      }
-    }
-  }
-
-  /** Add a id to the accessible id's.
-   *
-   * @param id The id to add
-   * @return Future
-   */
-  def grantAccess(id: UUID): Future[Unit]
-
-  /** Add a id to the accessible id's.
-   *
-   * @param id The id to add
-   * @return Future
-   */
-  def revokeAccess(id: UUID): Future[Unit]
-
-}
-
-/** The default AccessHelper
+/** All entity id's a user is authorized to access.
  *
- * @param repo The repo
- * @param path Path to the accessible id's
+ * @param id               entity-id, same id as [[models.User]]
+ * @param authorizedAccess all authorized id's
  */
-private[accessRestricted] case class DefaultAccessHelper(repo: AccessRestrictedRepository, path: User => Set[UUID]) extends AccessHelper {
+private[persistence] case class AccessAuthorisation(id: UUID, authorizedAccess: Map[String, Set[UUID]]) {
 
-  /** List all accessible id's.
+  /** Add a id to the accessible id's.
    *
-   * @return Unit-Future
+   * @param entityType the name of the entity type
+   * @param entityId   the entity-id
+   * @return copy of this with the added id
    */
-  def listAccess: Future[Set[UUID]] = {
-    repo.users.read(repo.ownerId).flatMap(user =>
-      Future.successful(path(user))
+  def grantAccess(entityType: String, entityId: UUID): AccessAuthorisation = {
+    copy(authorizedAccess = authorizedAccess.updated(
+      entityType, authorizedAccess.getOrElse(entityType, Set.empty) + entityId)
     )
   }
 
-  /** Add a id to the accessible id's.
+  /** Remove a id to the accessible id's.
    *
-   * @param id The id to add
-   * @return Future
+   * @param entityType the name of the entity type
+   * @param entityId   the entity-id
+   * @return copy of this with the removed id
    */
-  def grantAccess(id: UUID): Future[Unit] = {
-    repo.users.update(repo.ownerId, _.modify(path).using(_ + UUID.randomUUID())).flatMap { _ =>
-      Future.successful(())
+  def revokeAccess(entityType: String, entityId: UUID): AccessAuthorisation = {
+    val authorizedIds = authorizedAccess.getOrElse(entityType, Set.empty) - entityId
+    if (authorizedIds.isEmpty) {
+      copy(authorizedAccess = authorizedAccess - entityType)
+    } else {
+      copy(authorizedAccess = authorizedAccess.updated(entityType, authorizedIds))
     }
   }
-
-  /** Add a id to the accessible id's.
-   *
-   * @param id The id to add
-   * @return Future
-   */
-  def revokeAccess(id: UUID): Future[Unit] = {
-    repo.users.update(repo.ownerId, _.modify(path).using(_ + UUID.randomUUID())).flatMap { _ =>
-      Future.successful(())
-    }
-  }
-
-}
-
-/** User AccessHelper, allow only to access himself.
- *
- * @param userId The id of the user
- */
-private[accessRestricted] case class UserAccessHelper(userId: UUID) extends AccessHelper {
 
   /** List all accessible id's.
    *
-   * @return Unit-Future
+   * @param entityType the name of the entity type
+   * @return List with the accessible id's
    */
-  def listAccess: Future[Set[UUID]] = {
-    Future.successful(Set(userId))
+  def listAccess(entityType: String): Set[UUID] = {
+    authorizedAccess.getOrElse(entityType, Set.empty)
   }
 
-  /** Add a id to the accessible id's.
+  /** Check if a id is authorised to access.
    *
-   * @param id The id to add
-   * @return Future
+   * @param entityType the name of the entity type
+   * @param entityId   the entity-id
+   * @return List with the accessible id's
    */
-  def grantAccess(id: UUID): Future[Unit] = {
-    Future.failed(new UnsupportedOperationException("Grant Access on User not allow"))
-  }
-
-  /** Add a id to the accessible id's.
-   *
-   * @param id The id to add
-   * @return Future
-   */
-  def revokeAccess(id: UUID): Future[Unit] = {
-    Future.failed(new UnsupportedOperationException("Revoke Access on User not allow"))
+  def checkAccess(entityType: String, entityId: UUID): Boolean = {
+    listAccess(entityType).contains(entityId)
   }
 
 }

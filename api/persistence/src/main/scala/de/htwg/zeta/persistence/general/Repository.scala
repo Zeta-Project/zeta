@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence.general
 
+import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
 import models.User
 import models.document.BondedTask
 import models.document.EventDrivenTask
@@ -19,6 +20,9 @@ import models.file.File
  * Persistence Implementation for the different types of documents.
  */
 trait Repository {
+
+  /** Persistence for AccessAuthorisation */
+  private[persistence] val accessAuthorisations: Persistence[AccessAuthorisation]
 
   /** Persistence for [[models.document.EventDrivenTask]] */
   val eventDrivenTasks: Persistence[EventDrivenTask]

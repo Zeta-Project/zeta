@@ -17,7 +17,7 @@ trait Persistence[E <: Entity] { // scalastyle:ignore
    * @param m manifest
    * @return name
    */
-  final def name(implicit m: Manifest[E]): String = {
+  final def entityTypeName(implicit m: Manifest[E]): String = {
     m.runtimeClass.getSimpleName
   }
 
