@@ -1,16 +1,14 @@
+import java.util.UUID
+
 import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
 import models.document.Filter
 import models.document.Generator
-import models.document.GeneratorImage
 import models.document.ModelEntity
-import models.document.{Repository => Documents}
 import models.file.File
-import models.file.{Repository => Files}
 import models.remote.Remote
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -23,17 +21,15 @@ object Main extends Template[CreateOptions, String] {
    * Create assets for the model transformer
    *
    * @param options   The Options for the creation of the generator
-   * @param image     The id of the image for the generator
-   * @param documents Access to the Documents repository
-   * @param files     Access to the Files repository
+   * @param imageId     The id of the image for the generator
    * @param remote    Access to docker container
    * @return The result of the generator creation
    */
-  override def createTransformer(options: CreateOptions, image: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {
+  override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
     for {
-      image <- documents.get[GeneratorImage](image)
-      generator <- documents.create[Generator](Generator(user, options.name, image.id))
-      created <- files.create(generator, createFile(Settings.generatorFile))
+      image <- repository.generatorImages.read(imageId)
+      _ <- repository.generators.create(Generator(user, options.name, image.id))
+      _ <- repository.files.createVersion(Settings.generatorFile, createFile(Settings.generatorFile))
     } yield {
       Success()
     }
@@ -61,7 +57,7 @@ object Main extends Template[CreateOptions, String] {
         |}
         |
       """.stripMargin
-    File(name, content)
+    File(UUID.randomUUID, name, content)
   }
 
   private def compiledGenerator(file: File): Future[Transformer] = {
@@ -87,12 +83,10 @@ object Main extends Template[CreateOptions, String] {
    *
    * @param file      The file which was loaded for the generator
    * @param filter    not used.
-   * @param documents Access to the Documents repository
-   * @param files     Access to the Files repository
    * @param remote    unused.
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -101,12 +95,10 @@ object Main extends Template[CreateOptions, String] {
    *
    * @param file      The file which was loaded for the generator
    * @param model     the modelEntity
-   * @param documents Access to the Documents repository
-   * @param files     Access to the Files repository
    * @param remote    Access to docker container
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -114,12 +106,10 @@ object Main extends Template[CreateOptions, String] {
    * Initialize the generator
    *
    * @param options   the options for the generator
-   * @param documents Access to the Documents repository
-   * @param files     Access to the Files repository
    * @param remote    Access to docker container
    * @return A Generator
    */
-  override def runGeneratorWithOptions(options: String)(implicit documents: Documents, files: Files, remote: Remote): Future[Result] = {
+  override def runGeneratorWithOptions(options: String)(implicit remote: Remote): Future[Result] = {
     Future.successful(Error(s"Call a generator from a generator is not supported in this example"))
   }
 }
