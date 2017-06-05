@@ -345,7 +345,7 @@ object GeneratorShapeDefinition {
     s"""
       |'width': ${shape.size_width},
       |'height': ${shape.size_height},
-      |text: ${shape.textBody} // Is overwritten in stencil, but needed here for scaling
+      |text: [${shape.textBody}] // Is overwritten in stencil, but needed here for scaling
       |""".stripMargin
   }
 
