@@ -72,7 +72,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
   }
 
   private class WorkProcessor(work: Work) {
-    val documents = Persistence.restrictedRepository(work.owner)
+    val documents = Persistence.restrictedAccessRepository(work.owner)
     log.info("DockerWorkExecutor received job {}", work.id)
     var jobStream = JobLog(job = work.id)
     var jobPersist = JobLog(job = work.id)
@@ -239,7 +239,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
     private def processLogs(p: Promise[Int], status: Integer) = {
       val logs = Log(work.job, jobPersist.toString(), status)
 
-      documents.log.create(logs).map {
+      documents.logs.create(logs).map {
         result => p.success(status)
       }.recover {
         case e: Exception =>

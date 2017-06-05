@@ -66,13 +66,13 @@ object PersistenceServer extends Logging {
    */
   def start(address: String, port: Int, service: Repository): Future[Unit] = {
     val route: Route =
-      persistenceRoutes(service.bondTask) ~
-      persistenceRoutes(service.eventDrivenTask) ~
-      persistenceRoutes(service.filter) ~
-      persistenceRoutes(service.filterImage) ~
-      persistenceRoutes(service.generator) ~
-      persistenceRoutes(service.generatorImage) ~
-      persistenceRoutes(service.log) ~
+      persistenceRoutes(service.bondTasks) ~
+      persistenceRoutes(service.eventDrivenTasks) ~
+      persistenceRoutes(service.filters) ~
+      persistenceRoutes(service.filterImages) ~
+      persistenceRoutes(service.generators) ~
+      persistenceRoutes(service.generatorImages) ~
+      persistenceRoutes(service.logs) ~
       persistenceRoutes(service.passwordInfoEntity) ~
       persistenceRoutes(service.settings) ~
       persistenceRoutes(service.userEntity)

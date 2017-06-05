@@ -6,13 +6,13 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
-import models.Identifiable
+import models.Entity
 
 /** Cache implementation of [[Persistence]].
  *
  * @tparam E type of the entity
  */
-class TransientPersistence[E <: Identifiable] extends Persistence[E] { // scalastyle:ignore
+class TransientPersistence[E <: Entity] extends Persistence[E] { // scalastyle:ignore
 
   private val cache: TrieMap[UUID, E] = TrieMap.empty[UUID, E]
 

@@ -48,7 +48,7 @@ object Main extends App {
   cmd.filter.foreach({ id =>
 
     val result = for {
-      filter <- repository.filter.read(UUID.fromString(id))
+      filter <- repository.filters.read(UUID.fromString(id))
       file <- files.get(filter, "filter.scala")
       fn <- compileFilter(file)
       instances <- checkInstances(fn)

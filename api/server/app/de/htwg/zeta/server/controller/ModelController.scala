@@ -12,7 +12,7 @@ import akka.actor.Props
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.persistence.Persistence.restrictedRepository
+import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.model.ModelWsActor
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.Controller
@@ -26,7 +26,7 @@ class ModelController @Inject()(
   extends Controller {
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedRepository(request.identity.id).modelEntity.read(modelId).map { model =>
+    restrictedAccessRepository(request.identity.id).modelEntities.read(modelId).map { model =>
       Ok(views.html.model.ModelGraphicalEditor(model.metaModelId, model.id, Some(request.identity), model))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -34,7 +34,7 @@ class ModelController @Inject()(
   }
 
   def vrModelEditor(modelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedRepository(request.identity.id).modelEntity.read(modelUuid).map { model =>
+    restrictedAccessRepository(request.identity.id).modelEntities.read(modelUuid).map { model =>
       Ok(views.html.VrEditor(model.metaModelId))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)

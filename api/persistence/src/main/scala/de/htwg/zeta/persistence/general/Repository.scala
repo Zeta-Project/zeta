@@ -13,6 +13,7 @@ import models.document.MetaModelRelease
 import models.document.ModelEntity
 import models.document.Settings
 import models.document.TimedTask
+import models.file.File
 
 /**
  * Persistence Implementation for the different types of documents.
@@ -20,42 +21,54 @@ import models.document.TimedTask
 trait Repository {
 
   /** Persistence for [[models.document.EventDrivenTask]] */
-  val eventDrivenTask: Persistence[EventDrivenTask]
+  val eventDrivenTasks: Persistence[EventDrivenTask]
 
   /** Persistence for [[models.document.BondedTask]] */
-  val bondTask: Persistence[BondedTask]
+  val bondTasks: Persistence[BondedTask]
 
   /** Persistence for [[models.document.TimedTask]] */
-  val timedTask: Persistence[TimedTask]
+  val timedTasks: Persistence[TimedTask]
 
   /** Persistence for [[models.document.Generator]] */
-  val generator: Persistence[Generator]
+  val generators: Persistence[Generator]
 
   /** Persistence for [[models.document.Filter]] */
-  val filter: Persistence[Filter]
+  val filters: Persistence[Filter]
 
   /** Persistence for [[models.document.GeneratorImage]] */
-  val generatorImage: Persistence[GeneratorImage]
+  val generatorImages: Persistence[GeneratorImage]
 
   /** Persistence for [[models.document.FilterImage]] */
-  val filterImage: Persistence[FilterImage]
+  val filterImages: Persistence[FilterImage]
 
   /** Persistence for [[models.document.Settings]] */
   val settings: Persistence[Settings]
 
   /** Persistence for [[models.document.MetaModelEntity]] */
-  val metaModelEntity: Persistence[MetaModelEntity]
+  val metaModelEntities: Persistence[MetaModelEntity]
 
   /** Persistence for [[models.document.MetaModelRelease]] */
-  val metaModelRelease: Persistence[MetaModelRelease]
+  val metaModelReleases: Persistence[MetaModelRelease]
 
   /** Persistence for [[models.document.ModelEntity]] */
-  val modelEntity: Persistence[ModelEntity]
+  val modelEntities: Persistence[ModelEntity]
 
   /** Persistence for [[models.document.Log]] */
-  val log: Persistence[Log]
+  val logs: Persistence[Log]
 
   /** Persistence for [[models.User]] */
   val users: Persistence[User]
+
+
+  /** Persistence for the file indices */
+  private[persistence] val fileIndices: Persistence[VersionIndex[String]]
+
+  /** Persistence for the file versions */
+  private[persistence] val fileVersions: Persistence[EntityVersion[File]]
+
+  /** Versioned Persistence for [[models.file.File]] */
+  final val files = new VersionSystem(fileIndices, fileVersions)
+
+
 
 }

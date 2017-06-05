@@ -6,7 +6,10 @@ import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
 import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityVersion
 import models.User
+import models.file.File
 
 
 /** PersistenceService-Layer to restrict the access to the persistence.
@@ -17,43 +20,49 @@ import models.User
 case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) extends Repository {
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
-  override lazy val eventDrivenTask = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.eventDrivenTask), underlaying.eventDrivenTask)
+  override lazy val eventDrivenTasks = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.eventDrivenTasks), underlaying.eventDrivenTasks)
 
   /** Persistence for the [[models.document.BondedTask]] */
-  override lazy val bondTask = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.bondTask), underlaying.bondTask)
+  override lazy val bondTasks = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.bondTasks), underlaying.bondTasks)
 
   /** Persistence for [[models.document.TimedTask]] */
-  override val timedTask = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.timedTask), underlaying.timedTask)
+  override val timedTasks = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.timedTasks), underlaying.timedTasks)
 
   /** Persistence for the [[models.document.Generator]] */
-  override lazy val generator = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generator), underlaying.generator)
+  override lazy val generators = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generators), underlaying.generators)
 
   /** Persistence for the [[models.document.Filter]] */
-  override lazy val filter = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filter), underlaying.filter)
+  override lazy val filters = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filters), underlaying.filters)
 
   /** Persistence for the [[models.document.GeneratorImage]] */
-  override lazy val generatorImage = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generatorImage), underlaying.generatorImage)
+  override lazy val generatorImages = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.generatorImages), underlaying.generatorImages)
 
   /** Persistence for the [[models.document.FilterImage]] */
-  override lazy val filterImage = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filterImage), underlaying.filterImage)
+  override lazy val filterImages = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.filterImages), underlaying.filterImages)
 
   /** Persistence for the [[models.document.Settings]] */
   override lazy val settings = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.settings), underlaying.settings)
 
   /** Persistence for the [[models.document.MetaModelEntity]] */
-  override lazy val metaModelEntity = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelEntity), underlaying.metaModelEntity)
+  override lazy val metaModelEntities = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelEntities), underlaying.metaModelEntities)
 
   /** Persistence for the [[models.document.MetaModelRelease]] */
-  override lazy val metaModelRelease = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelRelease), underlaying.metaModelRelease)
+  override lazy val metaModelReleases = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.metaModelReleases), underlaying.metaModelReleases)
 
   /** Persistence for the [[models.document.ModelEntity]] */
-  override lazy val modelEntity = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.modelEntity), underlaying.modelEntity)
+  override lazy val modelEntities = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.modelEntities), underlaying.modelEntities)
 
   /** Persistence for the [[models.document.Log]] */
-  override lazy val log = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.log), underlaying.log)
+  override lazy val logs = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.logs), underlaying.logs)
 
   /** Persistence for the [[models.User]] */
   override lazy val users = AccessRestrictedPersistence(UserAccessHelper(ownerId), underlaying.users)
+
+  /** Persistence for the file indices */
+  override private[persistence] val fileIndices = AccessRestrictedPersistence(DefaultAccessHelper(this, _.accessAuthorisation.fileIndices), underlaying.fileIndices)
+
+  /** Persistence for the file versions */
+  override private[persistence] val fileVersions: Persistence[EntityVersion[File]] = underlaying.fileVersions
 
 }
 

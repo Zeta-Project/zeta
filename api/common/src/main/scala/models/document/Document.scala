@@ -4,7 +4,7 @@ import java.util.UUID
 
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import julienrf.json.derived
-import models.Identifiable
+import models.Entity
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.MetaModel
@@ -26,7 +26,7 @@ case class TimedTask(
     filterId: UUID,
     interval: Int,
     start: String
-) extends Identifiable {
+) extends Entity {
 
   def delay: Int = {
     val first = DateTime.parse(start)
@@ -43,7 +43,7 @@ case class EventDrivenTask(
     generatorId: UUID,
     filterId: UUID,
     event: String
-) extends Identifiable
+) extends Entity
 
 case class BondedTask(
     id: UUID = UUID.randomUUID,
@@ -52,39 +52,39 @@ case class BondedTask(
     filterId: UUID,
     menu: String,
     item: String
-) extends Identifiable
+) extends Entity
 
 case class Generator(
     id: UUID = UUID.randomUUID,
     name: String,
     imageId: UUID
-) extends Identifiable
+) extends Entity
 
 case class Filter(
     id: UUID = UUID.randomUUID,
     name: String,
     description: String,
     instanceIds: List[UUID]
-) extends Identifiable
+) extends Entity
 
 case class GeneratorImage(
     id: UUID = UUID.randomUUID,
     name: String,
     dockerImage: String
-) extends Identifiable
+) extends Entity
 
 case class FilterImage(
     id: UUID = UUID.randomUUID,
     name: String,
     dockerImage: String
-) extends Identifiable
+) extends Entity
 
 
 case class Settings(
     id: UUID = UUID.randomUUID,
     owner: UUID,
     jobSettings: JobSettings
-) extends Identifiable
+) extends Entity
 
 case class MetaModelEntity(
     id: UUID = UUID.randomUUID,
@@ -92,7 +92,7 @@ case class MetaModelEntity(
     metaModel: MetaModel,
     dsl: Dsl = Dsl(),
     links: Option[Seq[HLink]] = None
-) extends Identifiable
+) extends Entity
 
 case class MetaModelRelease(
     id: UUID = UUID.randomUUID,
@@ -100,14 +100,14 @@ case class MetaModelRelease(
     metaModel: MetaModel,
     dsl: Dsl,
     version: String
-) extends Identifiable
+) extends Entity
 
 case class ModelEntity(
     id: UUID = UUID.randomUUID,
     model: Model,
     metaModelId: UUID,
     links: Option[Seq[HLink]] = None
-) extends Identifiable
+) extends Entity
 
 case class Log(
     id: UUID = UUID.randomUUID,
@@ -115,7 +115,7 @@ case class Log(
     log: String,
     status: Int,
     date: String
-) extends Identifiable
+) extends Entity
 
 
 object Log {

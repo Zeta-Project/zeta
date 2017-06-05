@@ -22,7 +22,7 @@ object Persistence extends App {
    * @param ownerID The id of the assigned user to the restriction
    * @return PersistenceService
    */
-  def restrictedRepository(ownerID: UUID): Repository = {
+  def restrictedAccessRepository(ownerID: UUID): Repository = {
     AccessRestrictedRepository(ownerID, fullAccessRepository)
   }
 

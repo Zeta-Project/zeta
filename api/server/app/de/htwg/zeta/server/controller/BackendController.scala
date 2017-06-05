@@ -16,7 +16,7 @@ import akka.cluster.sharding.ClusterSharding
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.persistence.Persistence.restrictedRepository
+import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.frontend.DeveloperRequest
 import models.frontend.DeveloperResponse
@@ -78,7 +78,7 @@ class BackendController @Inject()(
    * @return (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse])
    */
   def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-    val futureProps = restrictedRepository(request.identity.id).modelEntity.read(modelId).map(_ => userProps(request.identity.id, modelId) _)(system.dispatcher)
+    val futureProps = restrictedAccessRepository(request.identity.id).modelEntities.read(modelId).map(_ => userProps(request.identity.id, modelId) _)(system.dispatcher)
     (futureProps, userMsg)
   }
 

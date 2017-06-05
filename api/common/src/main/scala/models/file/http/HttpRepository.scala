@@ -12,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
-import models.Identifiable
+import models.Entity
 
 object HttpRepository {
   def apply(session: String)(implicit client: WSClient): HttpRepository = new HttpRepository(session)
@@ -33,7 +33,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The File to save
    * @return Future which resolve after create
    */
-  def create(doc: Identifiable, file: File): Future[Unit] = {
+  def create(doc: Entity, file: File): Future[Unit] = {
     val p = Promise[Unit]
 
     val address = s"http://database:4984/db/${doc.id}/${file.name}"
@@ -60,7 +60,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The File to update
    * @return Future which resolve after update
    */
-  def update(doc: Identifiable, file: File): Future[Unit] = Future {}
+  def update(doc: Entity, file: File): Future[Unit] = Future {}
 
   /**
    * Get a single file
@@ -69,7 +69,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param filename The name of the file
    * @return Future which resolve with the document
    */
-  def get(doc: Identifiable, filename: String): Future[File] = {
+  def get(doc: Entity, filename: String): Future[File] = {
     val p = Promise[File]
 
     val address = s"http://database:4984/db/${doc.id}/${filename}"
@@ -94,7 +94,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The file which to delete
    * @return Future which resolve after deletion
    */
-  def delete(doc: Identifiable, file: File): Future[Unit] = Future {}
+  def delete(doc: Entity, file: File): Future[Unit] = Future {}
 
   /**
    * Query files which match the specification

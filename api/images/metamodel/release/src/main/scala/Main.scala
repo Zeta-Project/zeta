@@ -45,9 +45,9 @@ object Main extends App {
     logger.info("Create Model Release for " + id)
 
     val result = for {
-      from <- documents.metaModelEntity.read(UUID.fromString(id))
+      from <- documents.metaModelEntities.read(UUID.fromString(id))
       doc <- getRelease(from)
-      release <- documents.metaModelRelease.create(doc)
+      release <- documents.metaModelReleases.create(doc)
     } yield {
       release
     }

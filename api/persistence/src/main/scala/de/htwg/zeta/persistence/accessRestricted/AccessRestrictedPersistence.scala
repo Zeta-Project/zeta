@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
-import models.Identifiable
+import models.Entity
 
 
 /** Persistence-Layer to restrict the access to the persistence.
@@ -14,7 +14,7 @@ import models.Identifiable
  * @param underlaying The underlaying Persistence
  * @tparam E type of the entity
  */
-case class AccessRestrictedPersistence[E <: Identifiable](access: AccessHelper, underlaying: Persistence[E]) extends Persistence[E] { // scalastyle:ignore
+case class AccessRestrictedPersistence[E <: Entity](access: AccessHelper, underlaying: Persistence[E]) extends Persistence[E] { // scalastyle:ignore
 
   /** Create a new entity.
    *

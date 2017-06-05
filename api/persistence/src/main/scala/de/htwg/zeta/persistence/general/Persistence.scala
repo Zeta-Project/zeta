@@ -4,13 +4,13 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import models.Identifiable
+import models.Entity
 
 /** Interface for the Persistence layer.
  *
  * @tparam E type of the entity
  */
-trait Persistence[E <: Identifiable] { // scalastyle:ignore
+trait Persistence[E <: Entity] { // scalastyle:ignore
 
   /** The name of the entity-type.
    *

@@ -9,7 +9,7 @@ import scala.concurrent.duration.Duration
 import com.github.blemale.scaffeine.Cache
 import com.github.blemale.scaffeine.Scaffeine
 import de.htwg.zeta.persistence.general.Persistence
-import models.Identifiable
+import models.Entity
 
 
 /** Cache-Layer for the persistence, implemented with Scaffeine-Caching library.
@@ -19,7 +19,7 @@ import models.Identifiable
  * @param maximumSize         the maximum size of the cache
  * @tparam E type of the entity
  */
-case class ScaffeineCachePersistence[E <: Identifiable]( // scalastyle:ignore
+case class ScaffeineCachePersistence[E <: Entity]( // scalastyle:ignore
     underlaying: Persistence[E],
     keepInCacheDuration: Duration = Duration(10, TimeUnit.MINUTES), // scalastyle:ignore
     maximumSize: Int = 1000 // scalastyle:ignore

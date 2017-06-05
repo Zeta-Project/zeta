@@ -85,7 +85,7 @@ class Mediator() extends Actor with ActorLogging {
   val developerId = UUID.fromString(self.path.name)
   mediator ! Subscribe(developerId.toString, self)
 
-  val repo = Persistence.restrictedRepository(developerId)
+  val repo = Persistence.restrictedAccessRepository(developerId)
 
   val workQueue = context.actorOf(WorkQueue.props(developerId), "workQueue")
 

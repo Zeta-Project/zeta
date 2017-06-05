@@ -36,7 +36,7 @@ import play.api.mvc.Result
 class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
 
   def generate(metaModelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Persistence.restrictedRepository(request.identity.id).metaModelEntity.read(metaModelUuid)
+    Persistence.restrictedAccessRepository(request.identity.id).metaModelEntities.read(metaModelUuid)
       .map(createGenerators(_) match {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)

@@ -17,7 +17,7 @@ object GeneratorManager {
 
 class GeneratorManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
 
-  private val generatorImageRepo: Persistence[GeneratorImage] = repository.generatorImage
+  private val generatorImageRepo: Persistence[GeneratorImage] = repository.generatorImages
 
   def createGenerator(create: CreateGenerator) = {
     val reply = sender

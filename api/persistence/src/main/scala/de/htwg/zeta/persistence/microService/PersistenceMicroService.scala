@@ -39,37 +39,37 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   private implicit val materializer = ActorMaterializer()
 
   /** Persistence for the [[models.document.EventDrivenTask]] */
-  override val eventDrivenTask: Persistence[EventDrivenTask] = new PersistenceClient[EventDrivenTask](address, port)
+  override val eventDrivenTasks: Persistence[EventDrivenTask] = new PersistenceClient[EventDrivenTask](address, port)
 
   /** Persistence for the [[models.document.BondedTask]] */
-  override val bondTask: Persistence[BondedTask] = new PersistenceClient[BondedTask](address, port)
+  override val bondTasks: Persistence[BondedTask] = new PersistenceClient[BondedTask](address, port)
 
   /** Persistence for the [[models.document.Generator]] */
-  override val generator: Persistence[Generator] = new PersistenceClient[Generator](address, port)
+  override val generators: Persistence[Generator] = new PersistenceClient[Generator](address, port)
 
   /** Persistence for the [[models.document.Filter]] */
-  override val filter: Persistence[Filter] = new PersistenceClient[Filter](address, port)
+  override val filters: Persistence[Filter] = new PersistenceClient[Filter](address, port)
 
   /** Persistence for the [[models.document.GeneratorImage]] */
-  override val generatorImage: Persistence[GeneratorImage] = new PersistenceClient[GeneratorImage](address, port)
+  override val generatorImages: Persistence[GeneratorImage] = new PersistenceClient[GeneratorImage](address, port)
 
   /** Persistence for the [[models.document.FilterImage]] */
-  override val filterImage: Persistence[FilterImage] = new PersistenceClient[FilterImage](address, port)
+  override val filterImages: Persistence[FilterImage] = new PersistenceClient[FilterImage](address, port)
 
   /** Persistence for the [[models.document.Settings]] */
   override val settings: Persistence[Settings] = new PersistenceClient[Settings](address, port)
 
   /** Persistence for the [[models.document.MetaModelEntity]] */
-  override val metaModelEntity: Persistence[MetaModelEntity] = null // TODO
+  override val metaModelEntities: Persistence[MetaModelEntity] = null // TODO
 
   /** Persistence for the [[models.document.MetaModelRelease]] */
-  override val metaModelRelease: Persistence[MetaModelRelease] = null // TODO
+  override val metaModelReleases: Persistence[MetaModelRelease] = null // TODO
 
   /** Persistence for the [[models.document.ModelEntity]] */
-  override val modelEntity: Persistence[ModelEntity] = null // TODO
+  override val modelEntities: Persistence[ModelEntity] = null // TODO
 
   /** Persistence for the [[models.document.Log]] */
-  override val log: Persistence[Log] = new PersistenceClient[Log](address, port)
+  override val logs: Persistence[Log] = new PersistenceClient[Log](address, port)
 
   /** Persistence for the [[models.document.UserEntity]] */
   override val userEntity = new PersistenceClient[UserEntity](address, port)

@@ -91,11 +91,11 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
   def serviceBehavior(service: Repository): Unit = {
 
     "ModelEntity" should behave like docBehavior[ModelEntity](
-      service.modelEntity, modelEntity1, modelEntity2, modelEntity3, modelEntity2Updated
+      service.modelEntities, modelEntity1, modelEntity2, modelEntity3, modelEntity2Updated
     )
 
     "Log" should behave like docBehavior[Log](
-      service.log, log1, log2, log3, log2Updated
+      service.logs, log1, log2, log3, log2Updated
     )
 
 

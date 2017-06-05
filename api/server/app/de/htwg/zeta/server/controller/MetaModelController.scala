@@ -12,7 +12,7 @@ import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.Persistence.restrictedRepository
+import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.metaModel.MetaModelWsActor
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsValue
@@ -30,7 +30,7 @@ class MetaModelController @Inject()(
   extends Controller {
 
   def metaModelEditor(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedRepository(request.identity.id).metaModelEntity.read(metaModelId).map { metaModelEntity =>
+    restrictedAccessRepository(request.identity.id).metaModelEntities.read(metaModelId).map { metaModelEntity =>
       Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.identity), metaModelId, metaModelEntity))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)

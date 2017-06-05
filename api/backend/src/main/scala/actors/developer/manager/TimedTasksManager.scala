@@ -54,10 +54,10 @@ class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor 
 
   def executeTask(task: TimedTask) = {
     val result = for {
-      task <- repository.timedTask.read(task.id)
-      filter <- repository.filter.read(task.filterId)
-      generator <- repository.generator.read(task.generatorId)
-      image <- repository.generatorImage.read(generator.imageId)
+      task <- repository.timedTasks.read(task.id)
+      filter <- repository.filters.read(task.filterId)
+      generator <- repository.generators.read(task.generatorId)
+      image <- repository.generatorImages.read(generator.imageId)
     } yield RunTimedTask(task.id, generator.id, filter.id, image.dockerImage)
 
     result.map {
