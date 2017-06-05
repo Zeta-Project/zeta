@@ -15,7 +15,7 @@ import de.htwg.zeta.persistence.transient.TransientTokenCache
 object Persistence extends App {
 
   /** The current implementation of the PersistenceService. */
-  lazy val service: Repository = new TransientRepository
+  lazy val fullAccessRepository: Repository = new TransientRepository
 
   /** The current implementation of the PersistenceService with a overlaying Access-Restriction Layer.
    *
@@ -23,7 +23,7 @@ object Persistence extends App {
    * @return PersistenceService
    */
   def restrictedRepository(ownerID: UUID): Repository = {
-    AccessRestrictedRepository(ownerID, service)
+    AccessRestrictedRepository(ownerID, fullAccessRepository)
   }
 
   /** The current implementation of TokenCache. */

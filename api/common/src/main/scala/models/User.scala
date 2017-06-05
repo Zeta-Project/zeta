@@ -34,6 +34,11 @@ case class User(
 object User {
 
   /**
+   * Play-Json conversion format for AccessAuthorisation.
+   */
+  implicit val accessAuthorisationFormat: OFormat[AccessAuthorisation] = Json.format[AccessAuthorisation]
+
+  /**
    * Play-Json conversion format.
    */
   implicit val jsonFormat: OFormat[User] = Json.format[User]

@@ -1,17 +1,21 @@
+import java.util.UUID
+
+import de.htwg.zeta.persistence.Persistence
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import models.document.AllMetaModelReleases
 import models.document.MetaModelEntity
 import models.document.MetaModelRelease
-import models.document.http.{HttpRepository => DocumentRepository}
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
+
+
+
 
 /**
  *
@@ -35,15 +39,15 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  val documents = DocumentRepository(cmd.session.getOrElse(""))
+  val documents = Persistence.fullAccessRepository
 
   cmd.id.foreach({ id =>
     logger.info("Create Model Release for " + id)
 
     val result = for {
-      from <- documents.get[MetaModelEntity](id)
+      from <- documents.metaModelEntity.read(UUID.fromString(id))
       doc <- getRelease(from)
-      release <- documents.create[MetaModelRelease](doc)
+      release <- documents.metaModelRelease.create(doc)
     } yield {
       release
     }

@@ -54,9 +54,9 @@ class ScalaRoutes @Inject()(
 
   def postPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedPost(ResetPasswordController.submit(token: java.util.UUID) _)
 
-  def getPasswordChange(): Action[AnyContent] = AuthenticatedWithProviderGet(ChangePasswordController.view _)
+  def getPasswordChange(): Action[AnyContent] = AuthenticatedGet(ChangePasswordController.view _)
 
-  def postPasswordChange(): Action[AnyContent] = AuthenticatedWithProviderPost(ChangePasswordController.submit _)
+  def postPasswordChange(): Action[AnyContent] = AuthenticatedPost(ChangePasswordController.submit _)
 
   def getAccountEmail(email: String): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.send(email) _) // TODO send email per API??
 

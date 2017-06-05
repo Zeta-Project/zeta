@@ -1,3 +1,5 @@
+import java.util.UUID
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import filter.BaseFilter
@@ -11,12 +13,13 @@ import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 import rx.lang.scala.Observable
-
 import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Promise
+
+import de.htwg.zeta.persistence.Persistence
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val filter = opt[String](required = true)
@@ -37,13 +40,15 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  val documents = DocumentRepository(cmd.session.getOrElse(""))
+  // val documents = DocumentRepository(cmd.session.getOrElse(""))
   val files = FileRepository(cmd.session.getOrElse(""))
+
+  val repository = Persistence.fullAccessRepository
 
   cmd.filter.foreach({ id =>
 
     val result = for {
-      filter <- documents.get[Filter](id)
+      filter <- repository.filter.read(UUID.fromString(id))
       file <- files.get(filter, "filter.scala")
       fn <- compileFilter(file)
       instances <- checkInstances(fn)

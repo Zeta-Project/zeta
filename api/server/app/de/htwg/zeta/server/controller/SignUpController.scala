@@ -45,7 +45,7 @@ class SignUpController @Inject()(
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: Persistence[User] = Persistence.service.users
+  private val userPersistence: Persistence[User] = Persistence.fullAccessRepository.users
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
 
   /** Views the `Sign Up` page.

@@ -20,8 +20,8 @@ case class AllModels() extends Specification {
 }
 
 case class AllMetaModelReleases(from: MetaModelEntity) extends Specification {
-  private val firstRelease = from._id.replace("MetaModelEntity", "MetaModelRelease")
-  private val lastRelease = from._id.replace("MetaModelEntity", "MetaModelRelease")
+  private val firstRelease = from.id.replace("MetaModelEntity", "MetaModelRelease")
+  private val lastRelease = from.id.replace("MetaModelEntity", "MetaModelRelease")
 
   val http = HttpAllDocsQuery(startkey = s"${firstRelease}-0", endkey = s"${lastRelease}-\uffff")
 }

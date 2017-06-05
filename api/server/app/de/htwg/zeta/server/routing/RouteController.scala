@@ -14,7 +14,6 @@ import de.htwg.zeta.server.routing.authentication.AuthenticatedAction
 import de.htwg.zeta.server.routing.authentication.BasicAction
 import de.htwg.zeta.server.routing.authentication.BasicWebSocket
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.server.util.auth.WithProvider
 import play.api.i18n.MessagesApi
 import play.api.mvc.Controller
 
@@ -33,13 +32,6 @@ trait RouteController extends Controller {
   protected object AuthenticatedDelete extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)
 
   protected object AuthenticatedSocket extends AuthenticatedWebSocket(routeCont.system, routeCont.silhouette, routeCont.mat)
-
-
-  private lazy val authorization: Option[Authorization[ZetaEnv#I, ZetaEnv#A]] = Some(WithProvider[ZetaEnv#A](CredentialsProvider.ID))
-
-  protected object AuthenticatedWithProviderGet extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette, authorization)
-
-  protected object AuthenticatedWithProviderPost extends AuthenticatedAction(routeCont.messagesApi, routeCont.silhouette, authorization)
 
 
   protected object UnAuthenticatedGet extends UnAuthenticatedAction(routeCont.messagesApi, routeCont.silhouette)

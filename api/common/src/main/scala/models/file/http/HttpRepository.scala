@@ -8,10 +8,11 @@ import org.slf4j.LoggerFactory
 import play.api.libs.ws.WSClient
 import play.api.libs.ws.WSRequest
 import rx.lang.scala.Observable
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
+
+import models.Identifiable
 
 object HttpRepository {
   def apply(session: String)(implicit client: WSClient): HttpRepository = new HttpRepository(session)
@@ -32,7 +33,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The File to save
    * @return Future which resolve after create
    */
-  def create(doc: Document, file: File): Future[Unit] = {
+  def create(doc: Identifiable, file: File): Future[Unit] = {
     val p = Promise[Unit]
 
     val address = s"http://database:4984/db/${doc.id}/${file.name}"
@@ -59,7 +60,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The File to update
    * @return Future which resolve after update
    */
-  def update(doc: Document, file: File): Future[Unit] = Future {}
+  def update(doc: Identifiable, file: File): Future[Unit] = Future {}
 
   /**
    * Get a single file
@@ -68,7 +69,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param filename The name of the file
    * @return Future which resolve with the document
    */
-  def get(doc: Document, filename: String): Future[File] = {
+  def get(doc: Identifiable, filename: String): Future[File] = {
     val p = Promise[File]
 
     val address = s"http://database:4984/db/${doc.id}/${filename}"
@@ -93,7 +94,7 @@ class HttpRepository(session: String)(implicit client: WSClient) extends Reposit
    * @param file The file which to delete
    * @return Future which resolve after deletion
    */
-  def delete(doc: Document, file: File): Future[Unit] = Future {}
+  def delete(doc: Identifiable, file: File): Future[Unit] = Future {}
 
   /**
    * Query files which match the specification

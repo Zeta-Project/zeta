@@ -2,6 +2,13 @@ package actors.worker
 
 import java.nio.charset.Charset
 
+import scala.collection.JavaConversions.asScalaIterator
+import scala.collection.JavaConversions.seqAsJavaList
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import actors.worker.MasterWorkerProtocol.CancelWork
 import actors.worker.MasterWorkerProtocol.Work
 import akka.actor.Actor
@@ -15,18 +22,11 @@ import com.spotify.docker.client.DockerClient.AttachParameter
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
 import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
+import de.htwg.zeta.persistence.Persistence
 import models.document.Log
-import models.document.http.HttpRepository
 import models.frontend.JobLog
 import models.frontend.JobLogMessage
 import play.api.libs.ws.ahc.AhcWSClient
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.collection.JavaConversions.asScalaIterator
-import scala.collection.JavaConversions.seqAsJavaList
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import scala.concurrent.Promise
 
 object DockerWorkExecutor {
   def props() = Props(new DockerWorkExecutor())
@@ -72,7 +72,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
   }
 
   private class WorkProcessor(work: Work) {
-    val documents = HttpRepository(work.session)
+    val documents = Persistence.restrictedRepository(work.owner)
     log.info("DockerWorkExecutor received job {}", work.id)
     var jobStream = JobLog(job = work.id)
     var jobPersist = JobLog(job = work.id)
@@ -239,13 +239,12 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
     private def processLogs(p: Promise[Int], status: Integer) = {
       val logs = Log(work.job, jobPersist.toString(), status)
 
-      documents.create[Log](logs).map {
+      documents.log.create(logs).map {
         result => p.success(status)
       }.recover {
-        case e: Exception => {
+        case e: Exception =>
           log.warning(s"Exception on saving log from docker execution ${e.getMessage}")
           p.failure(e)
-        }
       }
     }
   }

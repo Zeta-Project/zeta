@@ -16,14 +16,14 @@ def baseSettings = Revolver.settings ++ Seq(
   fork              := true,
   scalaVersion      := scalaV,
   libraryDependencies ++= Seq(
-    //logging
+    // logging
     "org.clapper" %% "grizzled-slf4j" % "1.2.0"
   ),
   scalacOptions    ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
     "-unchecked", // Enable additional warnings where generated code depends on assumptions.
-    //"-Xfatal-warnings", // Fail the compilation if there are any warnings.
+    // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
     "-Xlint", // Enable recommended additional warnings.
     "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
     "-Ywarn-dead-code", // Warn when dead code is identified.
@@ -66,7 +66,7 @@ lazy val server = baseProject("server", file("server")).settings(
   wartremoverErrors += Wart.AsInstanceOf,
 
   libraryDependencies ++= Seq(
-    //codec
+    // codec
     "commons-codec" % "commons-codec" % "1.9",
     // silhouette
     "com.mohiva" %% "play-silhouette" % "4.0.0",
@@ -85,7 +85,7 @@ lazy val server = baseProject("server", file("server")).settings(
     filters,
     ws,
 
-    //"com.github.jahoefne" % "scalot_2.11" % "1.0",
+    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
     "com.github.jahoefne" %% "scalot" % "0.4.4-SNAPSHOT",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
@@ -96,7 +96,7 @@ lazy val server = baseProject("server", file("server")).settings(
     "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
     "org.webjars" %% "webjars-play" % "2.4.0-1",
     "org.webjars" % "font-awesome" % "4.1.0",
-    //"org.webjars" % "bootstrap" % "3.3.5",
+    // "org.webjars" % "bootstrap" % "3.3.5",
     "org.webjars.bower" % "polymer" % "1.0.7",
     "org.webjars" % "jquery" % "2.1.4",
     "org.webjars" % "jquery-ui" % "1.11.4",
@@ -125,7 +125,7 @@ lazy val client = baseProject("client", file("client")).settings(
   resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
-    //"com.github.jahoefne" % "scalot_2.11" % "1.0",
+    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
     "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
     "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
@@ -142,7 +142,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).set
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
     "-feature", // Emit warning and location for usages of features that should be imported explicitly.
     "-unchecked", // Enable additional warnings where generated code depends on assumptions.
-    //"-Xfatal-warnings", // Fail the compilation if there are any warnings.
+    // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
     "-Xlint", // Enable recommended additional warnings.
     "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
     "-Ywarn-dead-code", // Warn when dead code is identified.
@@ -153,7 +153,7 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).set
 
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
-    "com.github.jahoefne" % "scalot_2.11" % "1.0" //"com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT"
+    "com.github.jahoefne" % "scalot_2.11" % "1.0" // "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT"
   ),
 
   scalastyleFailOnError := true,
@@ -262,7 +262,7 @@ def image(name: String, d: sbt.File) = baseProject(name, d).settings(
       "org.scala-lang"            % "scala-compiler"            % "2.11.8"
     )
   )
-).enablePlugins(JavaAppPackaging).dependsOn(common)
+).enablePlugins(JavaAppPackaging).dependsOn(common).dependsOn(persistence)
 
 
 lazy val scalaFilter = image("scalaFilter", file("./images/filter/scala")).settings(
