@@ -343,6 +343,7 @@ object GeneratorShapeDefinition {
 
   protected def getAttributes(shape: Text, parentClass: String): String = {
     s"""
+      |${generatePosition(shape)}
       |'id' : '${shape.id}',
       |'width': ${shape.size_width},
       |'height': ${shape.size_height},
