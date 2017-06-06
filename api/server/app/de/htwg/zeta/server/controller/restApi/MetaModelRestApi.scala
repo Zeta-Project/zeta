@@ -292,6 +292,22 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
     )
   }
 
+  /**
+   * Loads or generates the validator for a given meta model.
+   *
+   * The following HTTP status codes can be returned:
+   * * 200 OK - The validator was loaded from memory and is contained in the response.
+   * * 201 CREATED - The validator has been generated or regenerated and is contained in the response.
+   * * 204 NO_CONTENT - The validator has been successfully loaded or generated and is NOT contained in the response.
+   * * 400 BAD_REQUEST - There was an error loading or generating the validator OR you have no access to the meta model.
+   *
+   * @param id ID of the meta model to load or generate the validator.
+   * @param regenerateOpt Force a regeneration.
+   * @param noContentOpt Expect a NoContent result on success. Helpful, when you just want to generate the validator.
+   * @param request The HTTP-Request.
+   *
+   * @return The validator.
+   */
   def getValidator(id: String, regenerateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (metaModelEntity: MetaModelEntity) => {
       val validatorGenerator = new ValidatorGenerator(metaModelEntity)
@@ -307,6 +323,18 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
     })
   }
 
+  /**
+   * Deletes the validator of the given meta model.
+   *
+   * The following HTTP status codes can be returned:
+   * * 204 NO_CONTENT - The validator was deleted successfully.
+   * * 404 NOT_FOUND - There was an error deleting the validator or the validator has not been found (already deleted).
+   *
+   * @param id ID of the meta model to delete the validator.
+   * @param request The HTTP request.
+   *
+   * @return The successful or unsuccessful response.
+   */
   def deleteValidator(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     Future.successful {
       if (ValidatorGenerator.deleteValidator(id)) NoContent else NotFound

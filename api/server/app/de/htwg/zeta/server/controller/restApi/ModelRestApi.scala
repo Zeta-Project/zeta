@@ -196,6 +196,20 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
     }
   }
 
+  /**
+   * Validates a model against its meta model and returns the validation results.
+   *
+   * The following HTP status codes can be returned:
+   * * 200 OK - The model could be validated and the results are contained in the response.
+   * * 400 BAD_REQUEST - The model could not be found or the user does not have the permissions for this model.
+   * * 409 CONFLICT - No validator was found for the model.
+   * * 500 INTERNAL_SERVER_ERROR - The validator exists but could not be loaded.
+   *
+   * @param id ID of the model to validate.
+   * @param request The HTTP request.
+   *
+   * @return Results of the validation.
+   */
   def getValidation(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (modelEntity: ModelEntity) => {
 
@@ -207,7 +221,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
           case None => InternalServerError("Error loading model validator")
         }
       } else {
-        Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/$metaModelId/validator?noContent=true first.")
+        Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/$metaModelId/validator first.")
       }
 
     })
