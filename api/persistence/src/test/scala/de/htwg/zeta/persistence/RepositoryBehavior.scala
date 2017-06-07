@@ -4,14 +4,11 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
-import models.User
-import models.document.Document
+import models.Entity
 import models.document.Log
 import models.document.ModelEntity
-import models.document.UserEntity
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.Model
 import org.scalatest.AsyncFlatSpec
@@ -22,67 +19,53 @@ import org.scalatest.Matchers
 trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
 
   /** TODO add tests for this case classes
-  case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String)
+   * case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String)
+   * *
+   * case class BondedTask(_id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String)
+   * *
+   * case class Generator(_id: String, _rev: String, name: String, image: String)
+   * *
+   * case class Filter(_id: String, _rev: String, name: String, description: String, instances: List[String])
+   * *
+   * case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String)
+   * *
+   * case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String)
+   * *
+   * case class Settings(_id: String, _rev: String, owner: String, jobSettings: JobSettings)
+   * *
+   * case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None)
+   * *
+   * case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) */
 
-  case class BondedTask(_id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String)
 
-  case class Generator(_id: String, _rev: String, name: String, image: String)
+  private val modelEntity1 = ModelEntity(id = UUID.randomUUID, model = Model(
+    name = "modelEntity1.model.name",
+    metaModel = MetaModel(
+      name = "modelEntity1.model.metaModel.name",
+      elements = Map.empty,
+      uiState = "modelEntity1.model.metaModel.uiState"
+    ),
+    elements = Map.empty,
+    uiState = "modelEntity.model.uiState"
 
-  case class Filter(_id: String, _rev: String, name: String, description: String, instances: List[String])
-
-  case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String)
-
-  case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String)
-
-  case class Settings(_id: String, _rev: String, owner: String, jobSettings: JobSettings)
-
-  case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None)
-
-  case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) */
-
-
-  private val modelEntity1 = ModelEntity(id = "modelEntityId1", _rev = "modelEntityRev", model = Model(
-        name = "modelEntity1.model.name",
-        metaModel = MetaModel(
-          name = "modelEntity1.model.metaModel.name",
-          elements = Map.empty,
-          uiState = "modelEntity1.model.metaModel.uiState"
-        ),
-        elements = Map.empty,
-        uiState = "modelEntity.model.uiState"
-
-      ), metaModelId = "metaModelId", links = None)
+  ), metaModelId = UUID.randomUUID, links = None)
   private val modelEntity2: ModelEntity = modelEntity1.copy()
   private val modelEntity3: ModelEntity = modelEntity1.copy()
-  private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = "metaModelIdUpdated")
+  private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = UUID.randomUUID)
+
+
 
   private val log1 = Log(
-    id = "logId1",
-    _rev = "logRev",
+    id = UUID.randomUUID,
+    task = "task",
     log = "logMsg1",
     status = 1,
     date = "date"
   )
-  private val log2: Log = log1.copy(_id = "logId2")
-  private val log3: Log = log1.copy(_id = "logId3")
+  private val log2: Log = log1.copy(id =  UUID.randomUUID)
+  private val log3: Log = log1.copy(id =  UUID.randomUUID)
   private val log2Updated: Log = log2.copy(status = 2)
 
-
-  private val userEntity1 = UserEntity(
-    id = "userEntity1Id1",
-    _rev = "userEntity1Rev",
-    user = User(
-      id = UUID.randomUUID(),
-      loginInfo = LoginInfo("provId", "provKey"),
-      firstName = "FirstName",
-      lastName = "LastName",
-      email = "test@zeta.com",
-      activated = true
-    )
-  )
-  private val userEntity2: UserEntity = userEntity1.copy(_id = "userEntity1Id2")
-  private val userEntity3: UserEntity = userEntity1.copy(_id = "userEntity1Rev3")
-  private val userEntity2Updated: UserEntity = userEntity2.copy(user = userEntity2.user.copy(firstName = "AnOtherFirstName"))
 
   /** Behavior for a PersistenceService.
    *
@@ -98,24 +81,19 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       service.logs, log1, log2, log3, log2Updated
     )
 
-
-    "UserEntity" should behave like docBehavior[UserEntity](
-      service.userEntity, userEntity1, userEntity2, userEntity3, userEntity2Updated
-    )
-
   }
 
-  private def docBehavior[T <: Document](persistence: Persistence[T], doc1: T, doc2: T, doc3: T, doc2Updated: T): Unit = { // scalastyle:ignore
-    doc1._id shouldNot be(doc2._id)
-    doc1._id shouldNot be(doc3._id)
-    doc2._id shouldNot be(doc3._id)
-    doc2._id shouldBe doc2Updated._id
+  private def docBehavior[T <: Entity](persistence: Persistence[T], doc1: T, doc2: T, doc3: T, doc2Updated: T): Unit = { // scalastyle:ignore
+    doc1.id shouldNot be(doc2.id)
+    doc1.id shouldNot be(doc3.id)
+    doc2.id shouldNot be(doc3.id)
+    doc2.id shouldBe doc2Updated.id
     doc2 shouldNot be(doc2Updated)
 
     it should "remove all already existing documents" in {
-      persistence.readAllIds.flatMap { ids =>
+      persistence.readAllIds().flatMap { ids =>
         Future.sequence(ids.map(id => persistence.delete(id))).flatMap { _ =>
-          persistence.readAllIds.flatMap { ids =>
+          persistence.readAllIds().flatMap { ids =>
             ids shouldBe Seq.empty
           }
         }
@@ -124,29 +102,29 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
 
     it should "create a document" in {
       persistence.create(doc1).flatMap { _ =>
-        persistence.readAllIds.flatMap { ids =>
-          ids shouldBe Seq(doc1._id)
+        persistence.readAllIds().flatMap { ids =>
+          ids shouldBe Seq(doc1.id)
         }
       }
     }
 
     it should "create a second document" in {
       persistence.create(doc2).flatMap { _ =>
-        persistence.readAllIds.flatMap { ids =>
+        persistence.readAllIds().flatMap { ids =>
           ids.size shouldBe 2
-          ids should contain(doc1._id)
-          ids should contain(doc2._id)
+          ids should contain(doc1.id)
+          ids should contain(doc2.id)
         }
       }
     }
 
     it should "create a third document" in {
       persistence.create(doc3).flatMap { _ =>
-        persistence.readAllIds.flatMap { ids =>
+        persistence.readAllIds().flatMap { ids =>
           ids.size shouldBe 3
-          ids should contain(doc1._id)
-          ids should contain(doc2._id)
-          ids should contain(doc3._id)
+          ids should contain(doc1.id)
+          ids should contain(doc2.id)
+          ids should contain(doc3.id)
         }
       }
     }
@@ -158,9 +136,9 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     }
 
     it should "read the first, second and third document" in {
-      persistence.read(doc1._id).flatMap { d1 =>
-        persistence.read(doc2._id).flatMap { d2 =>
-          persistence.read(doc3._id).flatMap { d3 =>
+      persistence.read(doc1.id).flatMap { d1 =>
+        persistence.read(doc2.id).flatMap { d2 =>
+          persistence.read(doc3.id).flatMap { d3 =>
             d1 shouldBe doc1
             d2 shouldBe doc2
             d3 shouldBe doc3
@@ -171,31 +149,31 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
 
     it should "fail the future with any Exception, when reading a non-existent document" in {
       recoverToSucceededIf[Exception] {
-        persistence.read("id4")
+        persistence.read(UUID.randomUUID)
       }
     }
 
     it should "delete the first document" in {
-      persistence.delete(doc1._id).flatMap { _ =>
-        persistence.readAllIds.flatMap { ids =>
+      persistence.delete(doc1.id).flatMap { _ =>
+        persistence.readAllIds().flatMap { ids =>
           ids.size shouldBe 2
-          ids should contain(doc2._id)
-          ids should contain(doc3._id)
+          ids should contain(doc2.id)
+          ids should contain(doc3.id)
         }
       }
     }
 
     it should "fail the future with any Exception, when deleting a non-existent document" in {
       recoverToSucceededIf[Exception] {
-        persistence.delete(doc1._id)
+        persistence.delete(doc1.id)
       }
     }
 
     it should "update the second document" in {
       persistence.update(doc2Updated).flatMap { _ =>
-        persistence.read(doc2._id).flatMap { d2 =>
-          persistence.read(doc3._id).flatMap { d3 =>
-            persistence.readAllIds.flatMap { ids =>
+        persistence.read(doc2.id).flatMap { d2 =>
+          persistence.read(doc3.id).flatMap { d3 =>
+            persistence.readAllIds().flatMap { ids =>
               ids.size shouldBe 2
               d2 shouldBe doc2Updated
               d3 shouldBe doc3
@@ -212,9 +190,9 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     }
 
     it should "delete the second and third document" in {
-      persistence.delete(doc2._id).flatMap { _ =>
-        persistence.delete(doc3._id).flatMap { _ =>
-          persistence.readAllIds.flatMap { ids =>
+      persistence.delete(doc2.id).flatMap { _ =>
+        persistence.delete(doc3.id).flatMap { _ =>
+          persistence.readAllIds().flatMap { ids =>
             ids shouldBe Seq.empty
           }
         }

@@ -1,10 +1,11 @@
-@(user: Option[User], uuid: String, dslType: String)
+@import java.util.UUID
+@(user: Option[User], id: UUID, dslType: String)
 
     @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
         @playscalajs.html.selectScript("client", "/assets")
 
         <script type="text/javascript">
-                client.Main().main("@uuid", "@dslType");
+                client.Main().main("@id", "@dslType");
         </script>
 
         <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>

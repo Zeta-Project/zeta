@@ -1,5 +1,6 @@
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
@@ -26,8 +27,6 @@ object Main extends Template[CreateOptions, RemoteOptions] {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  private val repository = Persistence.fullAccessRepository
-
   override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
     for {
       image <- repository.generatorImages.read(imageId)
@@ -38,7 +37,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     }
   }
 
-  case class MyGenerator(generator: String = "") extends Transformer {
+  case class MyGenerator(generatorId: UUID = UUID.randomUUID) extends Transformer {
 
     def transformBasicActorNode(node: Node) = {
       val actorName = node.getAttribute[String]("name")
@@ -67,8 +66,8 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     def transform(entity: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
       val p = Promise[Transformer]
 
-      val r1 = remote.call[RemoteOptions, File](generator, RemoteOptions("BasicActor", entity.id))
-      val r2 = remote.call[RemoteOptions, File](generator, RemoteOptions("PersistentActor", entity.id))
+      val r1 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("BasicActor", entity.id))
+      val r2 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("PersistentActor", entity.id))
 
       val merged = r1.merge(r2)
 
@@ -91,7 +90,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     File(UUID.randomUUID, Settings.generatorFile, "This is a demo of the remote capabilities which doesn't require a template to configure.")
   }
 
-  def compiledGenerator(file: File) = Future.successful(MyGenerator(cmd.generator.getOrElse("")))
+  def compiledGenerator(file: File) = Future.successful(MyGenerator(cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)))
 
   /**
    * Initialize the generator

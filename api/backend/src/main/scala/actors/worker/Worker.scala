@@ -89,7 +89,7 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
       context.setReceiveTimeout(Duration(5, TimeUnit.SECONDS))
       context.become(waitForWorkIsDoneAck(result))
     case msg: MasterWorkerProtocol.WorkerStreamedMessage =>
-      mediator ! Publish(currentWork.owner, msg)
+      mediator ! Publish(currentWork.owner.toString, msg)
     case _: Work =>
       log.error("Master told working worker to execute other job.")
     case WorkTimeout => if (deadline.isOverdue()) {

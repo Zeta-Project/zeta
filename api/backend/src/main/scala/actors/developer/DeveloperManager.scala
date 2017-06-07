@@ -1,10 +1,5 @@
 package actors.developer
 
-import actors.common.ChangeFeed
-import actors.common.Channel
-import actors.common.Configuration
-import actors.common.Developers
-
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
@@ -25,10 +20,7 @@ object DeveloperManager {
 }
 
 class DeveloperManager() extends Actor with ActorLogging {
-  val conf = Configuration()
-  val channels: List[Channel] = List(Developers())
   val listeners: List[ActorRef] = List(self)
-  val changeFeed = context.actorOf(ChangeFeed.props(conf, channels, listeners), name = "changeFeed")
   val shard = ClusterSharding(context.system).shardRegion(Mediator.shardRegionName)
 
   /**

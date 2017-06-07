@@ -26,8 +26,8 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
 
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[MetaModelShortInfo]] = {
     val repo = restrictedAccessRepository(request.identity.id).metaModelEntities
-    repo.readAllIds.flatMap { ids =>
-      Future.sequence(ids.map(repo.read)).map(_.map(entity => {
+    repo.readAllIds().flatMap { ids =>
+      Future.sequence(ids.toList.map(repo.read)).map(_.map(entity => {
         MetaModelShortInfo(entity.id, entity.name, entity.links)
       }))
     }
@@ -36,7 +36,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
   private def getModels[A](metaModelId: UUID, request: SecuredRequest[ZetaEnv, A]): Future[Seq[ModelShortInfo]] = {
     val repo = restrictedAccessRepository(request.identity.id).modelEntities
     repo.readAllIds.flatMap { ids =>
-      Future.sequence(ids.map(repo.read)).map(_.filter(_.metaModelId == metaModelId).map(entity => {
+      Future.sequence(ids.toList.map(repo.read)).map(_.filter(_.metaModelId == metaModelId).map(entity => {
         ModelShortInfo(entity.id, entity.metaModelId, entity.model.name)
       }))
     }

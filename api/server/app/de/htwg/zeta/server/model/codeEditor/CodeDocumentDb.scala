@@ -15,7 +15,7 @@ import play.api.Logger
 import play.api.Play
 
 /** Represents a Serverside CodeDocument which is stored in the Database */
-case class DbCodeDocument(docId: UUID, dslType: String, metaModelUuid: String, doc: scalot.Server)
+case class DbCodeDocument(docId: UUID, dslType: String, metaModelId: UUID, doc: scalot.Server)
 
 /**
  * Code Database Responsible for persisting and retrieving the CodeDocuments.
@@ -47,7 +47,7 @@ object CodeDocumentDb {
   }
 
   def getDocWithUuidAndDslType(metaModelId: UUID, dslType: String): Option[DbCodeDocument] =
-    coll.find((x: DBObject) => x.metaModelUuid == metaModelId.toString && x.dslType == dslType) match {
+    coll.find((x: DBObject) => x.metaModelId == metaModelId && x.dslType == dslType) match {
       case Some(doc) => Some(salat.grater[DbCodeDocument].asObject(doc))
       case _ => None
     }
@@ -59,7 +59,7 @@ object CodeDocumentDb {
     .find(MongoDBObject())
     .map(DBObj2Doc).toSeq
 
-  def deleteDocWithId(docId: String) = coll.remove(MongoDBObject("docId" -> docId))
+  def deleteDocWithId(docId: UUID) = coll.remove(MongoDBObject("docId" -> docId))
 
   /** Implicit Salat Conversions */
   implicit def Doc2DBObj(u: DbCodeDocument): DBObject = salat.grater[DbCodeDocument].asDBObject(u)

@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.generator.generators.vr.shape
 
+import java.util.UUID
+
 import de.htwg.zeta.server.generator.model.shapecontainer.connection.Connection
 import de.htwg.zeta.server.generator.model.shapecontainer.connection.Placing
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Ellipse
@@ -32,7 +34,7 @@ object VrGeneratorConnectionDefinition {
     val filename = "vr-connection-" + conn.name + ".html"
     val polymerElement = generatePolymerElement(conn)
 
-    File(filename, polymerElement)
+    File(UUID.randomUUID, filename, polymerElement)
   }
 
 

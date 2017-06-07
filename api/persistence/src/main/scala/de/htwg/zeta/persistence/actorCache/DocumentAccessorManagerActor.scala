@@ -14,6 +14,7 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAcces
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAllIds
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.transient.TransientPersistence
+import models.Entity
 import models.document.Document
 
 
@@ -21,7 +22,7 @@ import models.document.Document
  *
  * @tparam T type of the document Describe param
  */
-class DocumentAccessorManagerActor[T <: Document] extends Actor { // scalastyle:ignore
+class DocumentAccessorManagerActor[T <: Entity] extends Actor { // scalastyle:ignore
 
 
   // TODO inject

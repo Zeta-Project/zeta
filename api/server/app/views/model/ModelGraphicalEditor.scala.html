@@ -1,6 +1,7 @@
 @import models.document.ModelEntity
 @import play.api.libs.json.Json
-@(metaModelUUID: String, id: String, user: Option[User], model: ModelEntity)
+@import java.util.UUID
+@(metaModelId: UUID, id: UUID, user: Option[User], model: ModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
     <script>
@@ -70,14 +71,14 @@
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/src/main.js")"></script>
 
         <!-- model specific files-->
-    <script src="@("/model_specific/" + metaModelUUID + "/inspector.js") "> </script>
-    <script src="@("/model_specific/" + metaModelUUID + "/style.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/shape.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/stencil.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/connectionstyle.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/linkhelper.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/validator.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/elementAndInlineStyle.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/inspector.js") "> </script>
+    <script src="@("/model_specific/" + metaModelId + "/style.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/shape.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/stencil.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/connectionstyle.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/linkhelper.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/validator.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/elementAndInlineStyle.js")"></script>
 
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/linkTypeSelector.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/exportModel.js")"></script>
@@ -253,7 +254,7 @@
 
     <script type="text/javascript">
     window._global_uuid = "@(id)";
-    window._global_graph_type = "@(metaModelUUID)";
+    window._global_graph_type = "@(metaModelId)";
     window._global_userID = "@(user.get.id)";
     window._global_userName = "@(user.get.fullName)";
     window._global_model_name = "@(model.model.name)";

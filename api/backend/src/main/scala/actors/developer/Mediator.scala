@@ -151,7 +151,6 @@ class Mediator() extends Actor with ActorLogging {
   }
 
   def documentChange(changed: Changed) = {
-    repository.invalidate(changed.doc.id())
     // Handle the update of bonded task lists to users
     changed.doc match {
       case _: BondedTask => resendBondedTasksToUsers

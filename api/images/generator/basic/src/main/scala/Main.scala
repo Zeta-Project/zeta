@@ -50,7 +50,7 @@ object Main extends Template[CreateOptions, String] {
         |    Future.successful(this)
         |  }
         |
-        |  def exit()(implicit documents: Documents, files: Files, remote: Remote) : Future[Result] = {
+        |  def exit()(implicit documents    : Documents, files: Files, remote: Remote) : Future[Result] = {
         |    val result = Success("The generator finished")
         |    Future.successful(result)
         |  }

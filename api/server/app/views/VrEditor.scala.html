@@ -1,4 +1,5 @@
-@(metaModelUUID: String)
+@import java.util.UUID
+@(metaModelId: UUID)
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,11 +19,11 @@
     </script>
 
     <!-- needed to adopt the style of the 2d editor -->
-    <script src="@("/model_specific/" + metaModelUUID + "/connectionstyle.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/elementAndInlineStyle.js")"></script>
-    <script src="@("/model_specific/" + metaModelUUID + "/style.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/connectionstyle.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/elementAndInlineStyle.js")"></script>
+    <script src="@("/model_specific/" + metaModelId + "/style.js")"></script>
 
-    <link rel="import" href="@("/model_specific/vr/" + metaModelUUID + "/vr-scene.html")">
+    <link rel="import" href="@("/model_specific/vr/" + metaModelId + "/vr-scene.html")">
 
     <style>
         body {

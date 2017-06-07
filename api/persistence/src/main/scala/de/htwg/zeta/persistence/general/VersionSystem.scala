@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.general
 import java.util.UUID
 
 import scala.collection.immutable.SortedMap
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
@@ -15,7 +16,9 @@ import models.Entity
  */
 class VersionSystem[K, E <: Entity]( // scalastyle:ignore
     versionPersistence: Persistence[VersionIndex[K]],
-    entityPersistence: Persistence[EntityVersion[E]]) {
+    entityPersistence: Persistence[EntityVersion[E]])
+  (implicit ordering: Ordering[K]) {
+
 
   /** Read the latest version of a entity.
    *

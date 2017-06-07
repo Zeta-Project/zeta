@@ -1,28 +1,30 @@
 package view
 
+import java.util.UUID
+
 import scala.scalajs.js
 import scala.scalajs.js.Any
 import scala.util.Random
+
 import controller.CodeEditorController
 import controller.ModeController
 import facade.Delta
 import facade.ace
 import facade.IEditSession
 import org.scalajs.dom
-
 import scalatags.JsDom.GenericAttr
 import scalatags.JsDom.all
 import scalatags.JsDom.all.bindJsAnyLike
 import scalot.Client
 import scalot.Operation
-
 import scala.scalajs.runtime.genTraversableOnce2jsArray
+
 import facade.Editor
 
-class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, dslType: String, autoSave: Boolean) {
+class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslType: String, autoSave: Boolean) {
 
   private val aceId: String = Random.alphanumeric.take(20).mkString
-  var selectedId: String = ""
+  var selectedId: UUID = UUID.randomUUID
 
   createSkeleton()
   if (autoSave) {
@@ -102,10 +104,10 @@ class CodeEditorView(controller: CodeEditorController, metaModelUuid: String, ds
   var session: IEditSession = null
 
   def displayDoc(doc: Client): js.Dynamic = {
-    selectedId = doc.id
+    selectedId = UUID.fromString(doc.id)
     session = ace.ace.createEditSession(
       Any.fromString(doc.str),
-      ModeController.getAllModesForModel(metaModelUuid)(doc.docType)
+      ModeController.getAllModesForModel(metaModelId)(doc.docType)
     )
     session.on("change", Any.fromFunction1((delta: js.Any) => {
       if (broadcast) {

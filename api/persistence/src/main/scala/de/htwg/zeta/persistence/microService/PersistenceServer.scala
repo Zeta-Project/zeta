@@ -1,5 +1,7 @@
 package de.htwg.zeta.persistence.microService
 
+import java.util.UUID
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Failure
@@ -38,11 +40,10 @@ import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterImage
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorImageFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.logFormat
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.passwordInfoEntityFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.settingsFormat
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.userEntityFormat
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.UuidJsonFormat
 import grizzled.slf4j.Logging
-import models.document.Document
+import models.Entity
 import spray.json.RootJsonFormat
 import spray.json.pimpAny
 import spray.json.DefaultJsonProtocol.seqFormat
@@ -73,9 +74,8 @@ object PersistenceServer extends Logging {
       persistenceRoutes(service.generators) ~
       persistenceRoutes(service.generatorImages) ~
       persistenceRoutes(service.logs) ~
-      persistenceRoutes(service.passwordInfoEntity) ~
-      persistenceRoutes(service.settings) ~
-      persistenceRoutes(service.userEntity)
+      persistenceRoutes(service.settings)
+
 
     Http().bindAndHandle(route, address, port).flatMap { _ =>
       info(s"PersistenceServer running at http://$address:$port/")
@@ -83,22 +83,22 @@ object PersistenceServer extends Logging {
     }
   }
 
-  private def persistenceRoutes[T <: Document](service: Persistence[T])(implicit jsonFormat: RootJsonFormat[T], manifest: Manifest[T]): Route = {
+  private def persistenceRoutes[T <: Entity](service: Persistence[T])(implicit jsonFormat: RootJsonFormat[T], manifest: Manifest[T]): Route = {
     pathPrefix(service.entityTypeName / "id" /
       """\w+""".r) { id =>
       get {
-        onComplete(service.read(id)) {
-          case Success(doc) => complete(
+        onComplete(service.read(UUID.fromString(id))) {
+          case Success(doc) => complete((
             StatusCodes.OK,
             HttpEntity(`application/json`, doc.toJson.toString)
-          )
-          case Failure(e) => completeWithError(e, "reading", service.entityTypeName, id)
+          ))
+          case Failure(e) => completeWithError(e, "reading", service.entityTypeName, UUID.fromString(id))
         }
       } ~
         delete {
-          onComplete(service.delete(id)) {
+          onComplete(service.delete(UUID.fromString(id))) {
             case Success(_) => complete(StatusCodes.OK)
-            case Failure(e) => completeWithError(e, "deleting", service.entityTypeName, id)
+            case Failure(e) => completeWithError(e, "deleting", service.entityTypeName, UUID.fromString(id))
           }
         }
     } ~
@@ -107,32 +107,32 @@ object PersistenceServer extends Logging {
           entity(as[T]) { doc =>
             onComplete(service.create(doc)) {
               case Success(_) => complete(StatusCodes.OK)
-              case Failure(e) => completeWithError(e, "creating", service.entityTypeName, doc.id())
+              case Failure(e) => completeWithError(e, "creating", service.entityTypeName, doc.id)
             }
           }
         } ~
           post {
             entity(as[T]) { doc =>
-              onComplete(service.update(doc)) {
+              onComplete(service.update(doc.id, _ => doc)) {
                 case Success(_) => complete(StatusCodes.OK)
-                case Failure(e) => completeWithError(e, "updating", service.entityTypeName, doc.id())
+                case Failure(e) => completeWithError(e, "updating", service.entityTypeName, doc.id)
               }
             }
           }
       } ~
       get {
         path(service.entityTypeName / "all") {
-          onSuccess(service.readAllIds) { allIds =>
-            complete(
+          onSuccess(service.readAllIds()) { allIds =>
+            complete((
               StatusCodes.OK,
-              HttpEntity(`application/json`, allIds.toJson.toString)
-            )
+              HttpEntity(`application/json`, allIds.toSeq.toJson.toString)
+            ))
           }
         }
       }
   }
 
-  private def completeWithError(e: Throwable, action: String, docType: String, id: String): StandardRoute = {
+  private def completeWithError(e: Throwable, action: String, docType: String, id: UUID): StandardRoute = {
     val msg = s"$action failed (docType: $docType | id: $id)"
     error(s"$msg - ${e.getMessage}")
     complete((StatusCodes.BadRequest, msg))

@@ -9,31 +9,31 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
-import models.document.Document
+import models.Entity
 
 
 /**
  */
-class DatabaseAccessor[T <: Document](private val actor: Future[ActorRef], private val system: ActorSystem) {
+class DatabaseAccessor[E <: Entity](private val actor: Future[ActorRef], private val system: ActorSystem) {
   private val timeout = Timeout(1, TimeUnit.SECONDS)
   private val dispatcher: ExecutionContextExecutor = system.dispatcher
 
 
-  def ReadDocument: Future[T] = {
+  def ReadDocument: Future[E] = {
     actor.flatMap(a => ask(a, DocumentAccessorActor.ReadDocument)(timeout).map {
-      case DocumentAccessorActor.ReadingDocumentSucceed(doc: T) => doc
+      case DocumentAccessorActor.ReadingDocumentSucceed(doc: E) => doc
       case DocumentAccessorActor.ReadingDocumentFailed(msg: String) => throw new IllegalArgumentException(msg) // TODO Change
     }(dispatcher))(dispatcher)
   }
 
-  def CreateDocument(doc: T): Future[Any] = {
+  def CreateDocument(doc: E): Future[Any] = {
     actor.flatMap(a => ask(a, DocumentAccessorActor.CreateDocument)(timeout).map {
       case DocumentAccessorActor.CreatingDocumentSucceed =>
       case DocumentAccessorActor.CreatingDocumentFailed(msg: String) => throw new IllegalArgumentException(msg) // TODO Change
     }(dispatcher))(dispatcher)
   }
 
-  def UpdateDocument(doc: T): Future[Any] = {
+  def UpdateDocument(doc: E): Future[Any] = {
     actor.flatMap(a => ask(a, DocumentAccessorActor.UpdateDocument)(timeout).map {
       case DocumentAccessorActor.UpdatingDocumentSucceed =>
       case DocumentAccessorActor.UpdatingDocumentFailed(msg: String) => throw new IllegalArgumentException(msg) // TODO Change

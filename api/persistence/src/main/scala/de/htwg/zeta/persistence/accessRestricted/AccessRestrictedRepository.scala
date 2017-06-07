@@ -6,6 +6,7 @@ import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
 import models.User
+import models.Entity
 import models.document.MetaModelRelease
 import models.file.File
 
@@ -92,7 +93,7 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
  * @param id               entity-id, same id as [[models.User]]
  * @param authorizedAccess all authorized id's
  */
-private[persistence] case class AccessAuthorisation(id: UUID, authorizedAccess: Map[String, Set[UUID]]) {
+private[persistence] case class AccessAuthorisation(id: UUID, authorizedAccess: Map[String, Set[UUID]]) extends Entity {
 
   /** Add a id to the accessible id's.
    *

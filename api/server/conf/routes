@@ -45,7 +45,7 @@ GET           /model/socket/:graphType/:instanceId                              
 GET           /model/validator                                                       controllers.ScalaRoutes.getModelValidator
 
 ### vr
-GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: UUID)
+GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: java.util.UUID)
 
 # temporary
 GET           /generator/:metaModelUuid                                              controllers.ScalaRoutes.getGenerate(metaModelUuid: java.util.UUID)

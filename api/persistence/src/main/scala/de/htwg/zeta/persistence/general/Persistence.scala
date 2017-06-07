@@ -2,6 +2,7 @@ package de.htwg.zeta.persistence.general
 
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import models.Entity
@@ -37,12 +38,20 @@ trait Persistence[E <: Entity] { // scalastyle:ignore
 
   /** Update a entity.
    *
-   * @param id The id of the entity
+   * @param id           The id of the entity
    * @param updateEntity Function, to build the updated entity from the existing
    * @return Future containing the updated entity
    */
-  def update(id: UUID, updateEntity: E => E): Future[E]
+  final def update(id: UUID, updateEntity: E => E): Future[E] = {
+    read(id).flatMap(entity => update(updateEntity(entity)))
+  }
 
+  /** Update a entity.
+   *
+   * @param entity The updated entity
+   * @return Future containing the updated entity
+   */
+  private[persistence] def update(entity: E): Future[E]
 
   /** Delete a entity.
    *

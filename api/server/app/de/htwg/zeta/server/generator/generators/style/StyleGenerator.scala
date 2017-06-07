@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.generator.generators.style
 
+import java.util.UUID
+
 import de.htwg.zeta.server.generator.model.style.DASH
 import de.htwg.zeta.server.generator.model.style.DASHDOT
 import de.htwg.zeta.server.generator.model.style.DASHDOTDOT
@@ -17,7 +19,7 @@ import de.htwg.zeta.server.model.result.Unreliable
  */
 object StyleGenerator {
 
-  private val Filename = "style.js"
+  private val fileName = "style.js"
 
 
   /**
@@ -25,7 +27,7 @@ object StyleGenerator {
    * @return Generator as File
    */
   def doGenerateResult(styles: List[Style]): Unreliable[File] = {
-    Unreliable(() => File(Filename, doGenerateContent(styles)), "failed trying to create the Style generators")
+    Unreliable(() => File(UUID.randomUUID, fileName, doGenerateContent(styles)), "failed trying to create the Style generators")
   }
 
   /**

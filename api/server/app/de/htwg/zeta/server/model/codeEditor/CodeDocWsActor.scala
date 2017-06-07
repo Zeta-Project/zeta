@@ -26,7 +26,7 @@ case class MediatorMessage(msg: Any, broadcaster: ActorRef)
  */
 class CodeDocManagingActor extends Actor {
 
-  var documents: Map[String, DbCodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.docId, x)).toMap
+  var documents: Map[UUID, DbCodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.docId, x)).toMap
 
   val mediator = DistributedPubSub(context.system).mediator
   val log = Logging(context.system, this)
@@ -48,15 +48,15 @@ class CodeDocManagingActor extends Actor {
           CodeDocumentDb.saveDocument(documents(docId))
 
         case newDoc: DocAdded =>
-          documents = documents + (newDoc.id -> new DbCodeDocument(
+          documents = documents + (newDoc.id -> DbCodeDocument(
             docId = newDoc.id,
             dslType = newDoc.dslType,
-            metaModelUuid = newDoc.metaModelUuid,
-            doc = new Server(
+            metaModelId = newDoc.metaModelId,
+            doc =  Server(
             str = "",
             title = newDoc.title,
             docType = newDoc.docType,
-            id = newDoc.id
+            id = newDoc.id.toString
           )
           ))
           CodeDocumentDb.saveDocument(documents(newDoc.id))
@@ -96,7 +96,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dsl
         title = doc.get.doc.title,
         id = doc.get.docId,
         dslType = doc.get.dslType,
-        metaModelUuid = doc.get.metaModelUuid
+        metaModelId = doc.get.metaModelId
       )
     )
     case None => out ! default.write[CodeEditorMessage](

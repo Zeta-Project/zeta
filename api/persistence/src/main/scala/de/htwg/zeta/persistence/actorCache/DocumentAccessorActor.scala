@@ -1,5 +1,7 @@
 package de.htwg.zeta.persistence.actorCache
 
+import java.util.UUID
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
@@ -23,14 +25,14 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumen
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumentFailed
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDuration
 import de.htwg.zeta.persistence.general.Persistence
-import models.document.Document
+import models.Entity
 
 
 /** Access object for a single Document.
  *
  * @tparam T type of the document
  */
-class DocumentAccessorActor[T <: Document](private val persistence: Persistence[T], private val cacheDuration: CacheDuration)
+class DocumentAccessorActor[T <: Entity](private val persistence: Persistence[T], private val cacheDuration: CacheDuration)
   extends Actor with ActorLogging { // scalastyle:ignore
 
   private var actorLifeExpireTime: Long = System.currentTimeMillis() + cacheDuration.keepActorAliveTime // scalastyle:ignore
@@ -82,8 +84,8 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
     CleanState
   }
 
-  private def id: String = {
-    context.self.path.name
+  private lazy val id: UUID = {
+    UUID.fromString(context.self.path.name)
   }
 
 
@@ -114,7 +116,7 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
   }
 
   private def createDocumentInCleanState(doc: T): Unit = {
-    if (id == doc.id()) {
+    if (id == doc.id) {
       persistence.create(doc) onComplete {
         case Success(_) =>
           becomeCacheState(doc)
@@ -143,8 +145,8 @@ class DocumentAccessorActor[T <: Document](private val persistence: Persistence[
   }
 
   private def updateDocument(doc: T): Unit = {
-    if (id == doc.id()) {
-      persistence.update(doc) onComplete {
+    if (id == doc.id) {
+      persistence.update(doc.id, _ => doc) onComplete {
         case Success(_) =>
           sender ! UpdatingDocumentSucceed
           becomeCacheState(doc)
@@ -187,7 +189,7 @@ object DocumentAccessorActor {
    *
    * @param doc the document to create
    */
-  case class CreateDocument(doc: Document) extends DocumentAccessorReceivedMessage
+  case class CreateDocument(doc: Entity) extends DocumentAccessorReceivedMessage
 
   /** Response-Message: Creating of the document succeeded. */
   case object CreatingDocumentSucceed
@@ -206,7 +208,7 @@ object DocumentAccessorActor {
    * @param doc the document
    * @tparam T the type of the document
    */
-  case class ReadingDocumentSucceed[T <: Document](doc: T) // scalastyle:ignore
+  case class ReadingDocumentSucceed[T <: Entity](doc: T) // scalastyle:ignore
 
   /** Response-Message: Reading of the document failed.
    *
@@ -218,7 +220,7 @@ object DocumentAccessorActor {
    *
    * @param doc the document to update
    */
-  case class UpdateDocument(doc: Document) extends DocumentAccessorReceivedMessage
+  case class UpdateDocument(doc: Entity) extends DocumentAccessorReceivedMessage
 
   /** Response-Message: Updating of the document succeeded. */
   case object UpdatingDocumentSucceed
@@ -244,11 +246,11 @@ object DocumentAccessorActor {
 }
 
 trait DocumentAccessorFactory {
-  def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props
+  def props[T <: Entity](persistence: Persistence[T], cacheDuration: CacheDuration): Props
 }
 
 object DocumentAccessorFactoryDefaultImpl extends DocumentAccessorFactory {
-  override def props[T <: Document](persistence: Persistence[T], cacheDuration: CacheDuration): Props = {
+  override def props[T <: Entity](persistence: Persistence[T], cacheDuration: CacheDuration): Props = {
     Props(new DocumentAccessorActor[T](persistence, cacheDuration))
   }
 }

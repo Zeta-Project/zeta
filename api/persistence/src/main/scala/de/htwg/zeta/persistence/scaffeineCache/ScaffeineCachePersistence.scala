@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.scaffeineCache
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
@@ -60,19 +61,6 @@ case class ScaffeineCachePersistence[E <: Entity]( // scalastyle:ignore
     )
   }
 
-  /** Update a entity.
-   *
-   * @param id           The id of the entity
-   * @param updateEntity Function, to build the updated entity from the existing
-   * @return Future containing the updated entity
-   */
-  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
-    underlaying.update(id, updateEntity).flatMap(entity => {
-      cache.put(entity.id, entity)
-      Future.successful(entity)
-    })
-  }
-
   /** Delete a entity.
    *
    * @param id The id of the entity to delete
@@ -91,6 +79,18 @@ case class ScaffeineCachePersistence[E <: Entity]( // scalastyle:ignore
    */
   override def readAllIds(): Future[Set[UUID]] = {
     underlaying.readAllIds()
+  }
+
+  /** Update a entity.
+   *
+   * @param entity The updated entity
+   * @return Future containing the updated entity
+   */
+  override private[persistence] def update(entity: E): Future[E] = {
+    underlaying.update(entity).flatMap(entity => {
+      cache.put(entity.id, entity)
+      Future.successful(entity)
+    })
   }
 
 }

@@ -1,5 +1,7 @@
 package actors.developer.manager
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef

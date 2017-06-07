@@ -3,6 +3,7 @@ package de.htwg.zeta.server.controller
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import actors.developer.Mediator
@@ -78,7 +79,8 @@ class BackendController @Inject()(
    * @return (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse])
    */
   def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-    val futureProps = restrictedAccessRepository(request.identity.id).modelEntities.read(modelId).map(_ => userProps(request.identity.id, modelId) _)(system.dispatcher)
+    val futureProps = restrictedAccessRepository(request.identity.id).modelEntities.read(modelId).map(_ => userProps(request.identity.id, modelId) _)
+    system.dispatcher
     (futureProps, userMsg)
   }
 

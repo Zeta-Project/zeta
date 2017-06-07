@@ -10,6 +10,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
+import models.document.Document.modelFormat
 import models.document.ModelEntity
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model

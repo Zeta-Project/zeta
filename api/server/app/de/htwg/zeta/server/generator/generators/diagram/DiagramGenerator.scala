@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.generator.generators.diagram
 
+import java.util.UUID
+
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import models.file.File
 import de.htwg.zeta.server.model.result.Unreliable
@@ -28,9 +30,9 @@ object DiagramGenerator {
     StencilGenerator.setPackageName(packageName)
 
     List(
-      File(JOINTJS_STENCIL_FILENAME, StencilGenerator.generate(diagram)),
-      File(JOINTJS_VALIDATOR_FILENAME, ValidatorGenerator.generate(diagram)),
-      File(JOINTJS_LINKHELPER_FILENAME, LinkhelperGenerator.generate(diagram))
+      File(UUID.randomUUID, JOINTJS_STENCIL_FILENAME, StencilGenerator.generate(diagram)),
+      File(UUID.randomUUID, JOINTJS_VALIDATOR_FILENAME, ValidatorGenerator.generate(diagram)),
+      File(UUID.randomUUID, JOINTJS_LINKHELPER_FILENAME, LinkhelperGenerator.generate(diagram))
     )
   }
 }

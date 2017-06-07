@@ -138,6 +138,8 @@ object Log {
 }
 
 object Document {
-  implicit lazy val formatPasswordInfo: OFormat[PasswordInfo] = derived.oformat
-  implicit lazy val readJobSettings = Json.reads[JobSettings]
+  implicit val formatPasswordInfo: OFormat[PasswordInfo] = derived.oformat
+  implicit val readJobSettings = Json.reads[JobSettings]
+  implicit val metaModelFormat = Json.format[MetaModelEntity]
+  implicit val modelFormat = Json.format[ModelEntity]
 }

@@ -1,10 +1,11 @@
 package controller
 
+import java.util.UUID
+
 import org.scalajs.dom.console
 import org.scalajs.jquery
 import org.scalajs.jquery.JQueryAjaxSettings
 import org.scalajs.jquery.JQueryXHR
-
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 import scala.scalajs.js.annotation.JSExport
@@ -63,7 +64,7 @@ class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {
   }
 }
 
-case class ModelLoader(modelId: String) {
+case class ModelLoader(modelId: UUID) {
 
   def mClasses: JsArray[String] = {
     /*

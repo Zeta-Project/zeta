@@ -44,20 +44,14 @@ class TransientPersistence[E <: Entity] extends Persistence[E] { // scalastyle:i
 
   /** Update a entity.
    *
-   * @param id           The id of the entity
-   * @param updateEntity Function, to build the updated entity from the existing
+   * @param entity The updated entity
    * @return Future containing the updated entity
    */
-  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
-    cache.get(id).fold[Future[E]] {
-      Future.failed(new IllegalArgumentException("can't update the entity, a entity with the id doesn't exist"))
-    } { saved =>
-      val updated = updateEntity(saved)
-      if(updated.id == saved.id) {
-        Future.successful(updated)
-      } else {
-        Future.failed(new IllegalArgumentException("can't update the entity, updating the id is not allowed"))
-      }
+  override private[persistence] def update(entity: E): Future[E] = {
+    if (cache.replace(entity.id, entity).isDefined) {
+      Future.successful(entity)
+    } else {
+      Future.failed(new IllegalArgumentException("can't update the document, a document with the id doesn't exist"))
     }
   }
 
@@ -79,7 +73,8 @@ class TransientPersistence[E <: Entity] extends Persistence[E] { // scalastyle:i
    * @return Future containing all id's of the entity type, can fail
    */
   override def readAllIds(): Future[Set[UUID]] = {
-    Future.successful(cache.keys.toSeq)
+    Future.successful(cache.keys.toSet)
   }
+
 
 }

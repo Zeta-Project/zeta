@@ -1,10 +1,12 @@
 package controller
 
+import java.util.UUID
+
 import scala.scalajs.js.Array
 import scala.scalajs.js.Dynamic.literal
 
 object TestLanguage {
-  def langForModel(id: String) = {
+  def langForModel(id: UUID) = {
     val model = ModelLoader(id)
     facade.aceGrammar.AceGrammar.getMode(
       literal(

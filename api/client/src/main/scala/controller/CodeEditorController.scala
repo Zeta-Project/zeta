@@ -22,33 +22,33 @@ import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 import scala.scalajs.js.JSON
 
-case class CodeEditorController(dslType: String, metaModelUuid: String) {
+case class CodeEditorController(dslType: String, metaModelId: UUID) {
 
   val autoSave = true
 
-  val view = new CodeEditorView(controller = this, metaModelUuid = metaModelUuid, dslType = dslType, autoSave = autoSave)
-  val ws = new WebSocketConnection(controller = this, metaModelUuid = metaModelUuid, dslType = dslType)
+  val view = new CodeEditorView(controller = this, metaModelId = metaModelId, dslType = dslType, autoSave = autoSave)
+  val ws = new WebSocketConnection(controller = this, metaModelId = metaModelId, dslType = dslType)
   val clientId = UUID.randomUUID().toString
   var document: Client = null
 
   def docLoadedMessage(msg: DocLoaded) = {
-    document = new Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id)
+    document = new Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id.toString)
     view.displayDoc(document)
   }
 
   def docNotFoundMessage(msg: DocNotFound) = {
-    addDocument(msg.metaModelId, msg.dslType)
+    addDocument(msg.metaModelId.toString, msg.dslType)
     view.displayDoc(document)
   }
 
   def addDocument(title: String, docType: String) = {
-    document = new Client(str = "", revision = 0, title = title, docType = docType)
+    document = Client(str = "", revision = 0, title = title, docType = docType, id = UUID.randomUUID.toString)
     ws.sendMessage(
-      DocAdded(str = "", revision = 0, docType = docType, title = title, id = document.id, dslType = dslType, metaModelUuid = metaModelUuid)
+      DocAdded(str = "", revision = 0, docType = docType, title = title, id = UUID.fromString(document.id), dslType = dslType, metaModelId = metaModelId)
     )
   }
 
-  def deleteDocument(id: String) = {
+  def deleteDocument(id: UUID) = {
     ws.sendMessage(DocDeleted(id, dslType))
   }
 
@@ -62,7 +62,7 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
   def saveCode() = {
     jquery.jQuery.ajax(literal(
       `type` = "PUT",
-      url = s"/metamodels/$metaModelUuid/$dslType",
+      url = s"/metamodels/$metaModelId/$dslType",
       contentType = "application/json; charset=utf-8",
       dataType = "json",
       data = JSON.stringify(js.Dictionary(
@@ -92,14 +92,13 @@ case class CodeEditorController(dslType: String, metaModelUuid: String) {
     }
   }
 
-  def operationFromLocal(op: scalot.Operation, docId: String) = {
+  def operationFromLocal(op: scalot.Operation, docId: UUID) = {
     document.applyLocal(op) match {
-      case ApplyResult(Some(send), _) => {
+      case ApplyResult(Some(send), _) =>
         ws.sendMessage(TextOperation(send, docId))
         if (autoSave) {
           saveCode()
         }
-      }
       case _ =>
     }
   }

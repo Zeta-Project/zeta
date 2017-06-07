@@ -6,7 +6,6 @@ import java.util.UUID
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import models.User
-import models.document.UserEntity
 import models.document.Log
 import models.document.JobSettings
 import models.document.EventDrivenTask
@@ -79,7 +78,8 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   private val sMAttribute = "mAttribute"
   private val sMEnum = "mEnum"
 
-  private implicit object UuidJsonFormat extends RootJsonFormat[UUID] {
+  /** Spray-Json conversion protocol for UUID */
+  implicit object UuidJsonFormat extends RootJsonFormat[UUID] {
 
     /** Write a UUID.
      *
@@ -426,28 +426,28 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
 
   /** Spray-Json conversion protocol for [[models.document.EventDrivenTask]] */
-  implicit val eventDrivenTaskFormat: RootJsonFormat[EventDrivenTask] = jsonFormat6(EventDrivenTask.apply)
+  implicit val eventDrivenTaskFormat: RootJsonFormat[EventDrivenTask] = jsonFormat5(EventDrivenTask.apply)
 
   /** Spray-Json conversion protocol for [[models.document.BondedTask]] */
-  implicit val bondedTaskFormat: RootJsonFormat[BondedTask] = jsonFormat7(BondedTask.apply)
+  implicit val bondedTaskFormat: RootJsonFormat[BondedTask] = jsonFormat6(BondedTask.apply)
 
   /** Spray-Json conversion protocol for [[models.document.Generator]] */
-  implicit val generatorFormat: RootJsonFormat[Generator] = jsonFormat4(Generator.apply)
+  implicit val generatorFormat: RootJsonFormat[Generator] = jsonFormat3(Generator.apply)
 
   /** Spray-Json conversion protocol for [[models.document.Filter]] */
-  implicit val filterFormat: RootJsonFormat[Filter] = jsonFormat5(Filter.apply)
+  implicit val filterFormat: RootJsonFormat[Filter] = jsonFormat4(Filter.apply)
 
   /** Spray-Json conversion protocol for [[models.document.GeneratorImage]] */
-  implicit val generatorImageFormat: RootJsonFormat[GeneratorImage] = jsonFormat4(GeneratorImage.apply)
+  implicit val generatorImageFormat: RootJsonFormat[GeneratorImage] = jsonFormat3(GeneratorImage.apply)
 
   /** Spray-Json conversion protocol for [[models.document.FilterImage]] */
-  implicit val filterImageFormat: RootJsonFormat[FilterImage] = jsonFormat4(FilterImage.apply)
+  implicit val filterImageFormat: RootJsonFormat[FilterImage] = jsonFormat3(FilterImage.apply)
 
   /** Spray-Json conversion protocol for [[models.document.Settings]] */
   implicit val settingsFormat: RootJsonFormat[Settings] = {
     implicit val dockerSettingsFormat: RootJsonFormat[DockerSettings] = jsonFormat2(DockerSettings.apply)
     implicit val jobSettingsInfoFormat: RootJsonFormat[JobSettings] = jsonFormat3(JobSettings.apply)
-    jsonFormat4(Settings.apply)
+    jsonFormat3(Settings.apply)
   }
 
   /** Spray-Json conversion protocol for [[models.document.MetaModelEntity]] */
@@ -461,14 +461,6 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   /** Spray-Json conversion protocol for [[models.document.Log]] */
   implicit val logFormat: RootJsonFormat[Log] = jsonFormat5(Log.apply)
-
-
-  /** Spray-Json conversion protocol for [[models.document.UserEntity]] */
-  implicit val userEntityFormat: RootJsonFormat[UserEntity] = {
-    implicit val loginInfoFormat: RootJsonFormat[LoginInfo] = jsonFormat2(LoginInfo)
-    implicit val userFormat: RootJsonFormat[User] = jsonFormat6(User.apply)
-    jsonFormat3(UserEntity.apply)
-  }
 
 
 }

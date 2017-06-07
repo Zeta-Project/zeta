@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.generator.generators.vr.shape
 
+import java.util.UUID
+
 import scala.annotation.tailrec
 
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.Shape
@@ -33,7 +35,7 @@ object VrGeneratorShapeDefinition {
   private def generateSingleFile(shape: Shape): File = {
     val FILENAME = "vr-" + shape.name + ".html"
     val polymerElement: String = generatePolymerElement(shape)
-    File(FILENAME, polymerElement)
+    File(UUID.randomUUID, FILENAME, polymerElement)
   }
 
 

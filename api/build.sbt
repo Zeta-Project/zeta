@@ -4,7 +4,7 @@ name := "zeta-api"
 
 version := "1.0.0"
 
-lazy val akkaVersion = "2.4.9"
+lazy val akkaVersion = "2.4.18"
 
 lazy val scalaV = "2.11.7"
 
@@ -222,7 +222,7 @@ lazy val backend = projectT("backend", file("backend")).settings(
       "com.typesafe.akka"         %% "akka-remote"              % akkaVersion,
       "com.typesafe.akka"         %% "akka-stream"              % akkaVersion,
       "com.typesafe.akka"         %% "akka-http-core"           % akkaVersion,
-      "com.typesafe.akka"         %% "akka-http-testkit"        % akkaVersion,
+      "com.typesafe.akka"         %% "akka-http-testkit"        % "10.0.7",
       "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
       "com.spotify"               % "docker-client"             % "6.1.1",
       "commons-io"                % "commons-io"                % "2.4"           % "test",

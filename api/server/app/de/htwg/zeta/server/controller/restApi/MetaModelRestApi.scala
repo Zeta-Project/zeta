@@ -11,6 +11,7 @@ import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
+import models.document.Document.metaModelFormat
 import models.document.MetaModelEntity
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Diagram

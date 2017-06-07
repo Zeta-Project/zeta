@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.module
 
-import java.util.UUID
-
 import scala.concurrent.Future
 
 import com.google.inject.AbstractModule
@@ -20,6 +18,7 @@ import com.mohiva.play.silhouette.api.crypto.CrypterAuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.services.IdentityService
+import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.CacheLayer
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.FingerprintGenerator
@@ -40,6 +39,13 @@ import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.providers.OAuth1Info
 import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import com.mohiva.play.silhouette.impl.providers.OpenIDInfo
+import com.mohiva.play.silhouette.impl.providers.OAuth1TokenSecretProvider
+import com.mohiva.play.silhouette.impl.providers.OAuth2StateProvider
+import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretSettings
+import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretProvider
+import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateProvider
+import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateSettings
+import com.mohiva.play.silhouette.impl.services.GravatarService
 import com.mohiva.play.silhouette.impl.util.DefaultFingerprintGenerator
 import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
@@ -47,15 +53,20 @@ import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.transient.TransientPasswordInfoPersistence
+import de.htwg.zeta.persistence.transient.TransientLoginInfoPersistence
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
+import net.ceedubs.ficus.Ficus.finiteDurationReader
+import net.ceedubs.ficus.Ficus.mapValueReader
+import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -86,6 +97,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1Info])
     bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
     bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])
+
   }
 
   /**
@@ -99,16 +111,18 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     new PlayHTTPLayer(client)
   }
 
+
+
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
+  private val userPersistence: Persistence[User] = Persistence.fullAccessRepository.users
+
+
   /** Provides the UserIdentityService
    *
-   * @param loginInfoPersistence The loginInfoPersistence
-   * @param userPersistence      The userPersistence
    * @return UserIdentityService
    */
   @Provides
-  def provideUserIdentityService(
-      loginInfoPersistence: LoginInfoPersistence, // scalastyle:ignore
-      userPersistence: Persistence[User]): IdentityService[User] = {
+  def provideUserIdentityService: IdentityService[User] = {
     new IdentityService[User] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
         val userId = loginInfoPersistence.read(loginInfo)
@@ -139,54 +153,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     Environment[ZetaEnv](
       userService,
       authenticatorService,
-      Seq(),
+      Seq.empty,
       eventBus
     )
-  }
-
-  /**
-   * Provides the cookie signer for the OAuth1 token secret provider.
-   *
-   * @param configuration The Play configuration.
-   * @return The cookie signer for the OAuth1 token secret provider.
-   */
-  @Provides
-  @Named("oauth1-token-secret-cookie-signer")
-  def provideOAuth1TokenSecretCookieSigner(configuration: Configuration): CookieSigner = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth1TokenSecretProvider.cookie.signer")
-    new JcaCookieSigner(config)
-  }
-
-  /**
-   * Provides the crypter for the OAuth1 token secret provider.
-   *
-   * @param configuration The Play configuration.
-   * @return The crypter for the OAuth1 token secret provider.
-   */
-  @Provides
-  @Named("oauth1-token-secret-crypter")
-  def provideOAuth1TokenSecretCrypter(configuration: Configuration): Crypter = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.oauth1TokenSecretProvider.crypter")
-    new JcaCrypter(config)
-  }
-
-  /**
-   * Provides the cookie signer for the OAuth2 state provider.
-   *
-   * @param configuration The Play configuration.
-   * @return The cookie signer for the OAuth2 state provider.
-   */
-  @Provides
-  @Named("oauth2-state-cookie-signer")
-  def provideOAuth2StageCookieSigner(configuration: Configuration): CookieSigner = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth2StateProvider.cookie.signer")
-    new JcaCookieSigner(config)
   }
 
   /**
@@ -294,5 +263,106 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
     new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
   }
+
+
+  /**
+   * Provides the cookie signer for the OAuth1 token secret provider.
+   *
+   * @param configuration The Play configuration.
+   * @return The cookie signer for the OAuth1 token secret provider.
+   */
+  @Provides
+  @Named("oauth1-token-secret-cookie-signer")
+  def provideOAuth1TokenSecretCookieSigner(configuration: Configuration): CookieSigner = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth1TokenSecretProvider.cookie.signer")
+    new JcaCookieSigner(config)
+  }
+
+  /**
+   * Provides the crypter for the OAuth1 token secret provider.
+   *
+   * @param configuration The Play configuration.
+   * @return The crypter for the OAuth1 token secret provider.
+   */
+  @Provides
+  @Named("oauth1-token-secret-crypter")
+  def provideOAuth1TokenSecretCrypter(configuration: Configuration): Crypter = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.oauth1TokenSecretProvider.crypter")
+    new JcaCrypter(config)
+  }
+
+  /**
+   * Provides the cookie signer for the OAuth2 state provider.
+   *
+   * @param configuration The Play configuration.
+   * @return The cookie signer for the OAuth2 state provider.
+   */
+  @Provides
+  @Named("oauth2-state-cookie-signer")
+  def provideOAuth2StageCookieSigner(configuration: Configuration): CookieSigner = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth2StateProvider.cookie.signer")
+    new JcaCookieSigner(config)
+  }
+
+  /**
+   * Provides the avatar service.
+   *
+   * @param httpLayer The HTTP layer implementation.
+   * @return The avatar service implementation.
+   */
+  @Provides
+  def provideAvatarService(httpLayer: HTTPLayer): AvatarService = {
+    new GravatarService(httpLayer)
+  }
+
+  /**
+   * Provides the OAuth1 token secret provider.
+   *
+   * @param cookieSigner  The cookie signer implementation.
+   * @param crypter       The crypter implementation.
+   * @param configuration The Play configuration.
+   * @param clock         The clock instance.
+   * @return The OAuth1 token secret provider implementation.
+   */
+  @Provides
+  def provideOAuth1TokenSecretProvider(
+      @Named("oauth1-token-secret-cookie-signer") cookieSigner: CookieSigner, // scalastyle:ignore
+      @Named("oauth1-token-secret-crypter") crypter: Crypter,
+      configuration: Configuration,
+      clock: Clock
+  ): OAuth1TokenSecretProvider = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val settings = configuration.underlying.as[CookieSecretSettings]("silhouette.oauth1TokenSecretProvider")
+    new CookieSecretProvider(settings, cookieSigner, crypter, clock)
+  }
+
+  /**
+   * Provides the OAuth2 state provider.
+   *
+   * @param idGenerator   The ID generator implementation.
+   * @param cookieSigner  The cookie signer implementation.
+   * @param configuration The Play configuration.
+   * @param clock         The clock instance.
+   * @return The OAuth2 state provider implementation.
+   */
+  @Provides
+  def provideOAuth2StateProvider(
+      idGenerator: IDGenerator, // scalastyle:ignore
+      @Named("oauth2-state-cookie-signer") cookieSigner: CookieSigner,
+      configuration: Configuration, clock: Clock
+  ): OAuth2StateProvider = {
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val settings = configuration.underlying.as[CookieStateSettings]("silhouette.oauth2StateProvider")
+    new CookieStateProvider(settings, idGenerator, cookieSigner, clock)
+  }
+
 
 }

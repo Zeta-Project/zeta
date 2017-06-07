@@ -61,7 +61,7 @@ class DataVisActor(socket: ActorRef, instanceId: UUID, graphType: String) extend
   }
 
   private def generateAndPublish(msg: DataVisCodeMessage, conditionals: List[Conditional]) = {
-    val fileName = generator.generate(instanceId, msg.context, conditionals)
+    val fileName = generator.generate(instanceId, UUID.fromString(msg.context), conditionals)
     socket ! ModelWsActor.PublishFile(msg.context, ("/assets/" + fileName).replace(File.separator, "/"))
   }
 }

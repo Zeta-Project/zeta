@@ -58,7 +58,7 @@ trait Repository {
   private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]]
 
   /** Persistence for [[models.document.MetaModelRelease]] */
-  final val metaModelReleases = new VersionSystem(metaModelReleasesIndices, metaModelReleasesVersions)
+  final val metaModelReleases = new VersionSystem(metaModelReleasesIndices, metaModelReleasesVersions)(Ordering.Int)
 
   /** Persistence for [[models.document.ModelEntity]] */
   val modelEntities: Persistence[ModelEntity]
@@ -76,6 +76,6 @@ trait Repository {
   private[persistence] val fileVersions: Persistence[EntityVersion[File]]
 
   /** Versioned Persistence for [[models.file.File]] */
-  final val files = new VersionSystem(fileIndices, fileVersions)
+  final val files = new VersionSystem(fileIndices, fileVersions)(Ordering.String)
 
 }

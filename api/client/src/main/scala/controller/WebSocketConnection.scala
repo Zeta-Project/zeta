@@ -1,5 +1,7 @@
 package controller
 
+import java.util.UUID
+
 import org.scalajs.dom
 import org.scalajs.dom.CloseEvent
 import org.scalajs.dom.ErrorEvent
@@ -8,22 +10,20 @@ import org.scalajs.dom.MessageEvent
 import org.scalajs.dom.WebSocket
 import org.scalajs.dom.console
 import org.scalajs.dom.window
-
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage.DocLoaded
 import shared.CodeEditorMessage.DocNotFound
 import shared.CodeEditorMessage.TextOperation
-
 import upickle.default
 
 case class WebSocketConnection(
     uri: String = s"ws://${window.location.host}/codeeditor/socket",
     controller: CodeEditorController,
-    metaModelUuid: String,
+    metaModelId: UUID,
     dslType: String) {
 
   /** Set up WebSocket connection */
-  val ws = new dom.WebSocket(uri + "/" + metaModelUuid + "/" + dslType)
+  val ws = new dom.WebSocket(uri + "/" + metaModelId + "/" + dslType)
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
   ws.onopen = (e: Event) => onOpen(e)
   ws.onerror = (e: ErrorEvent) => console.error(s"Websocket Error! ${e.message}")
