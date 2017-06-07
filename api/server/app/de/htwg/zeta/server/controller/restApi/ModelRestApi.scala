@@ -1,9 +1,12 @@
 package de.htwg.zeta.server.controller.restApi
 
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import scala.concurrent.duration.FiniteDuration
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -205,23 +208,22 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
    * * 409 CONFLICT - No validator was found for the model.
    * * 500 INTERNAL_SERVER_ERROR - The validator exists but could not be loaded.
    *
-   * @param id ID of the model to validate.
+   * @param id      ID of the model to validate.
    * @param request The HTTP request.
-   *
    * @return Results of the validation.
    */
   def getValidation(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (modelEntity: ModelEntity) => {
 
-      val metaModelId = modelEntity.metaModelId
+      val metaModelEntity = Await.result(repository(request).get[MetaModelEntity](modelEntity.metaModelId), FiniteDuration(5, TimeUnit.SECONDS))
 
-      if (ValidatorGenerator.validatorExists(metaModelId)) {
-        ValidatorGenerator.load(metaModelId) match {
-          case Some(modelValidator) => Ok(modelValidator.validate(modelEntity.model).map(_.rule.description).mkString("\n"))
-          case None => InternalServerError("Error loading model validator")
+      metaModelEntity.validator match {
+        case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
+          case Some(validator) => Ok(validator.validate(modelEntity.model).filterNot(_.valid).map(_.rule.description).mkString("\n"))
+          case None => InternalServerError("Error loading model validator.")
         }
-      } else {
-        Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/$metaModelId/validator first.")
+        case None => Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/${metaModelEntity.id()}/validator first.")
+
       }
 
     })

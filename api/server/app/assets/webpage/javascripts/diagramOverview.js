@@ -52,10 +52,10 @@
             },
             data: JSON.stringify(data),
             success: function (data, textStatus, jqXHR) {
-              window.location.replace("/overview/" + window.metaModelId);
+                window.location.replace("/overview/" + window.metaModelId);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              alert("failed creating model instance: " + textStatus);
+                alert("failed creating model instance: " + textStatus);
             }
         });
     };
@@ -72,7 +72,7 @@
                 window.location.replace("/overview/" + window.metaModelId);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              alert("failed deleting model instance: " + textStatus);
+                alert("failed deleting model instance: " + textStatus);
             }
         });
     };
@@ -105,7 +105,7 @@
                     window.location.replace("/overview");
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                  alert("Could not delete meta model: " + textStatus);
+                    alert("Could not delete meta model: " + textStatus);
                 }
             });
         });
@@ -120,7 +120,7 @@
                     showSuccess(data);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                  showError(jqXHR.responseText)
+                    showError(jqXHR.responseText)
                 }
             });
         });
@@ -128,7 +128,7 @@
         $('#validatorGenerate').click(function() {
             $.ajax({
                 type : 'GET',
-                url : '/metamodels/' + window.metaModelId + '/validator?regenerate=true&noContent=true',
+                url : '/metamodels/' + window.metaModelId + '/validator?generate=true&noContent=true',
                 success : function(data, textStatus, jqXHR) {
                     showSuccess("Validator successfully generated");
                 },
@@ -143,7 +143,7 @@
             win.document.body.innerHTML = "waiting for data...";
             $.ajax({
                 type : 'GET',
-                url : '/metamodels/' + window.metaModelId + '/validator?regenerate=false&noContent=false',
+                url : '/metamodels/' + window.metaModelId + '/validator?generate=false&noContent=false',
                 success : function(data, textStatus, jqXHR) {
                     switch (data.status) {
                         case 200:
@@ -158,23 +158,6 @@
                 error : function (jqXHR, textStatus, errorThrown) {
                     showError(jqXHR.responseText);
                     win.close();
-                }
-            });
-        });
-
-        $('#validatorDelete').click(function() {
-            $.ajax({
-                type : 'DELETE',
-                url : '/metamodels/' + window.metaModelId + '/validator',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                success : function (data, textStatus, jqXHR) {
-                    showSuccess("Validator successfully deleted.");
-                },
-                error : function(jqXHR, textStatus, errorThrown) {
-                    showError(jqXHR.responseText);
                 }
             });
         });

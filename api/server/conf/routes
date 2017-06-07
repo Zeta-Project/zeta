@@ -68,8 +68,7 @@ GET           /metamodels/:metaModelId/style                                    
 PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: String)
 GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: String)
 PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: String)
-GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: String, regenerate: Option[Boolean], noContent: Option[Boolean])
-DELETE        /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.deleteMetamodelsValidator(metaModelId: String)
+GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: String, generate: Option[Boolean], noContent: Option[Boolean])
 
 ### Model REST API
 GET           /models                                                                controllers.ScalaRoutes.getModelsNoArgs
