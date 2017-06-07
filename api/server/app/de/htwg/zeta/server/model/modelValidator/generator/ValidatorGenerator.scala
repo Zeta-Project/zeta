@@ -36,6 +36,7 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
         case ConsistencyCheckResult(valid, _) if valid =>
 
           val validator = doGenerate()
+          ValidatorGenerator.createRootIfNotExists()
           new PrintWriter(ValidatorGenerator.filePath(metaModelEntity.id())) {
             write(validator)
             close()
@@ -73,12 +74,23 @@ object ValidatorGenerator {
 
   def validatorExists(metaModelId: String): Boolean = Files.exists(Paths.get(filePath(metaModelId)))
 
-  def filePath(metaModelUuid: String): String = {
+  def generatedRootPath: String = {
     val root = {
       val pwd = System.getenv("PWD")
       if (pwd != null) pwd else System.getProperty("user.dir")
     }
-    s"$root/server/app/assets/modelValidator/generated/$metaModelUuid"
+    s"$root/server/target/modelValidatorGenerated"
+  }
+
+  def filePath(metaModelUuid: String): String = {
+    s"$generatedRootPath/$metaModelUuid"
+  }
+
+  def createRootIfNotExists(): Unit = {
+    val file = new File(generatedRootPath)
+    if (!file.exists()) {
+      file.mkdir()
+    }
   }
 
   def readFile(filePath: String): String = {
@@ -91,6 +103,8 @@ object ValidatorGenerator {
   def deleteFile(filePath: String): Boolean = new File(filePath).delete()
 
   def load(metaModelId: String): Option[ModelValidator] = {
+
+    createRootIfNotExists()
 
     if (validatorExists(metaModelId)) {
 

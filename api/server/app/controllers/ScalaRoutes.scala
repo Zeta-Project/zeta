@@ -82,8 +82,6 @@ class ScalaRoutes @Inject()(
 
   def getModelSocket(instanceId: String, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
 
-  def getModelValidator(): Action[AnyContent] = AuthenticatedGet(ModelController.modelValidator _)
-
 
   // ### vr
   def getModelVrEditor(metaModelUuid: String, modelUuid: String): Action[AnyContent] =
