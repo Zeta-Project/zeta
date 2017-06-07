@@ -43,7 +43,6 @@ GET           /metamodel/socket/:metaModelUuid                                  
 ### model editor
 GET           /model/editor/:metaModelUuid/:modelUuid                                controllers.ScalaRoutes.getModelEditor(metaModelUuid: String, modelUuid: String)
 GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:String, graphType:String)
-GET           /model/validator                                                       controllers.ScalaRoutes.getModelValidator
 
 ### vr
 GET           /model/vreditor/:metaModelUuid/:modelUuid                              controllers.ScalaRoutes.getModelVrEditor(metaModelUuid: String, modelUuid: String)
@@ -69,8 +68,7 @@ GET           /metamodels/:metaModelId/style                                    
 PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: String)
 GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: String)
 PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: String)
-GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: String, regenerate: Option[Boolean], noContent: Option[Boolean])
-DELETE        /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.deleteMetamodelsValidator(metaModelId: String)
+GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: String, generate: Option[Boolean], noContent: Option[Boolean])
 
 ### Model REST API
 GET           /models                                                                controllers.ScalaRoutes.getModelsNoArgs

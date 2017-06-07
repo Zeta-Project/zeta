@@ -52,10 +52,10 @@
             },
             data: JSON.stringify(data),
             success: function (data, textStatus, jqXHR) {
-              window.location.replace("/overview/" + window.metaModelId);
+                window.location.replace("/overview/" + window.metaModelId);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              alert("failed creating model instance: " + textStatus);
+                alert("failed creating model instance: " + textStatus);
             }
         });
     };
@@ -72,7 +72,7 @@
                 window.location.replace("/overview/" + window.metaModelId);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              alert("failed deleting model instance: " + textStatus);
+                alert("failed deleting model instance: " + textStatus);
             }
         });
     };
@@ -105,7 +105,7 @@
                     window.location.replace("/overview");
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                  alert("Could not delete meta model: " + textStatus);
+                    alert("Could not delete meta model: " + textStatus);
                 }
             });
         });
@@ -120,11 +120,47 @@
                     showSuccess(data);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                  showError(jqXHR.responseText)
+                    showError(jqXHR.responseText)
                 }
             });
         });
 
+        $('#validatorGenerate').click(function() {
+            $.ajax({
+                type : 'GET',
+                url : '/metamodels/' + window.metaModelId + '/validator?generate=true&noContent=true',
+                success : function(data, textStatus, jqXHR) {
+                    showSuccess("Validator successfully generated");
+                },
+                error : function (jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                }
+            });
+        });
+
+        $('#validatorShow').click(function() {
+            var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');
+            win.document.body.innerHTML = "waiting for data...";
+            $.ajax({
+                type : 'GET',
+                url : '/metamodels/' + window.metaModelId + '/validator?generate=false&noContent=false',
+                success : function(data, textStatus, jqXHR) {
+                    switch (data.status) {
+                        case 200:
+                            showSuccess("Validator successfully generated.");
+                            break;
+                        case 201:
+                            showSuccess("Existing validator successfully loaded.");
+                            break;
+                    }
+                    win.document.body.innerHTML = "<pre>" + data + "</pre>";
+                },
+                error : function (jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                    win.close();
+                }
+            });
+        });
 
         $("#inputModelName").keypress(function (e) {
             if (e.which == 13) {

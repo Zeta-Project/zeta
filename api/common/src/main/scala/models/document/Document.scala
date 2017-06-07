@@ -58,7 +58,15 @@ case class Filter(_id: String, _rev: String, name: String, description: String, 
 case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
 case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String) extends Image
 case class Settings(_id: String, _rev: String, owner: String, jobSettings: JobSettings) extends Document
-case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None) extends Entity
+case class MetaModelEntity(
+    _id: String,
+    _rev: String,
+    name: String,
+    metaModel: MetaModel,
+    dsl: Dsl,
+    validator: Option[String] = None,
+    links: Option[Seq[HLink]] = None
+) extends Entity
 case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) extends Document
 case class ModelEntity(_id: String, _rev: String, model: Model, metaModelId: String, links: Option[Seq[HLink]] = None) extends Entity
 case class Log(_id: String, _rev: String, log: String, status: Int, date: String) extends Document

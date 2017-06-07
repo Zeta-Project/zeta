@@ -136,3 +136,7 @@ paper-button::shadow #ripple {
 .alert {
     margin-top: 10px;
 }
+
+.validatorDropdown {
+    display: inline-block;
+}

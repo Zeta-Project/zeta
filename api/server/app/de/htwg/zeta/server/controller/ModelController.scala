@@ -46,10 +46,6 @@ class ModelController @Inject()(
     }
   }
 
-  def modelValidator(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.model.ModelValidator(Some(request.identity)))
-  }
-
   def modelSocket(instanceId: String, graphType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
     ModelWsActor.props(out, instanceId, graphType)
   }

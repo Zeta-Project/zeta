@@ -111,14 +111,26 @@
                         </button>
                     </div>
                 </div>
+
+                <div class="panel dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="btnValidator" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Validator
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="btnValidator">
+                        <li><a href="#" id="validatorGenerate">Generate</a></li>
+                        <li><a href="#" id="validatorShow">Show</a></li>
+                    </ul>
+                </div>
+
+
                 <div id="error-panel" class="alert alert-danger alert-dismissible collapse" role="alert">
                     <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <div></div>
                 </div>
                 <div id="success-panel" class="alert alert-success alert-dismissible collapse" role="alert">
                     <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <div>
-                    </div>
+                    <div></div>
                 </div>
             </div>
 
