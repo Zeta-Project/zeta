@@ -93,7 +93,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[Clock].toInstance(Clock())
 
     // Replace this with the bindings to your concrete DAOs
-    bind[DelegableAuthInfoDAO[PasswordInfo]].to[TransientPasswordInfoPersistence] // TODO move this into own Persistence Module
     bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1Info])
     bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
     bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])
@@ -110,7 +109,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideHTTPLayer(client: WSClient): HTTPLayer = {
     new PlayHTTPLayer(client)
   }
-
 
 
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
@@ -191,21 +189,11 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   /**
    * Provides the auth info repository.
    *
-   * @param passwordInfoDAO The implementation of the delegable password auth info DAO.
-   * @param oauth1InfoDAO   The implementation of the delegable OAuth1 auth info DAO.
-   * @param oauth2InfoDAO   The implementation of the delegable OAuth2 auth info DAO.
-   * @param openIDInfoDAO   The implementation of the delegable OpenID auth info DAO.
    * @return The auth info repository instance.
    */
   @Provides
-  def provideAuthInfoRepository(
-      passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo], // scalastyle:ignore
-      oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
-      oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info],
-      openIDInfoDAO: DelegableAuthInfoDAO[OpenIDInfo]
-  ): AuthInfoRepository = {
-
-    new DelegableAuthInfoRepository(passwordInfoDAO, oauth1InfoDAO, oauth2InfoDAO, openIDInfoDAO)
+  def provideAuthInfoRepository: AuthInfoRepository = {
+    new DelegableAuthInfoRepository(Persistence.passwordInfoPersistence)
   }
 
   /**
@@ -236,7 +224,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock)
   }
 
-
   /**
    * Provides the password hasher registry.
    *
@@ -247,122 +234,5 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def providePasswordHasherRegistry(passwordHasher: PasswordHasher): PasswordHasherRegistry = {
     PasswordHasherRegistry(passwordHasher)
   }
-
-  /**
-   * Provides the credentials provider.
-   *
-   * @param authInfoRepository     The auth info repository implementation.
-   * @param passwordHasherRegistry The password hasher registry.
-   * @return The credentials provider.
-   */
-  @Provides
-  def provideCredentialsProvider(
-      authInfoRepository: AuthInfoRepository, // scalastyle:ignore
-      passwordHasherRegistry: PasswordHasherRegistry
-  ): CredentialsProvider = {
-
-    new CredentialsProvider(authInfoRepository, passwordHasherRegistry)
-  }
-
-
-  /**
-   * Provides the cookie signer for the OAuth1 token secret provider.
-   *
-   * @param configuration The Play configuration.
-   * @return The cookie signer for the OAuth1 token secret provider.
-   */
-  @Provides
-  @Named("oauth1-token-secret-cookie-signer")
-  def provideOAuth1TokenSecretCookieSigner(configuration: Configuration): CookieSigner = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth1TokenSecretProvider.cookie.signer")
-    new JcaCookieSigner(config)
-  }
-
-  /**
-   * Provides the crypter for the OAuth1 token secret provider.
-   *
-   * @param configuration The Play configuration.
-   * @return The crypter for the OAuth1 token secret provider.
-   */
-  @Provides
-  @Named("oauth1-token-secret-crypter")
-  def provideOAuth1TokenSecretCrypter(configuration: Configuration): Crypter = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.oauth1TokenSecretProvider.crypter")
-    new JcaCrypter(config)
-  }
-
-  /**
-   * Provides the cookie signer for the OAuth2 state provider.
-   *
-   * @param configuration The Play configuration.
-   * @return The cookie signer for the OAuth2 state provider.
-   */
-  @Provides
-  @Named("oauth2-state-cookie-signer")
-  def provideOAuth2StageCookieSigner(configuration: Configuration): CookieSigner = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.oauth2StateProvider.cookie.signer")
-    new JcaCookieSigner(config)
-  }
-
-  /**
-   * Provides the avatar service.
-   *
-   * @param httpLayer The HTTP layer implementation.
-   * @return The avatar service implementation.
-   */
-  @Provides
-  def provideAvatarService(httpLayer: HTTPLayer): AvatarService = {
-    new GravatarService(httpLayer)
-  }
-
-  /**
-   * Provides the OAuth1 token secret provider.
-   *
-   * @param cookieSigner  The cookie signer implementation.
-   * @param crypter       The crypter implementation.
-   * @param configuration The Play configuration.
-   * @param clock         The clock instance.
-   * @return The OAuth1 token secret provider implementation.
-   */
-  @Provides
-  def provideOAuth1TokenSecretProvider(
-      @Named("oauth1-token-secret-cookie-signer") cookieSigner: CookieSigner, // scalastyle:ignore
-      @Named("oauth1-token-secret-crypter") crypter: Crypter,
-      configuration: Configuration,
-      clock: Clock
-  ): OAuth1TokenSecretProvider = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val settings = configuration.underlying.as[CookieSecretSettings]("silhouette.oauth1TokenSecretProvider")
-    new CookieSecretProvider(settings, cookieSigner, crypter, clock)
-  }
-
-  /**
-   * Provides the OAuth2 state provider.
-   *
-   * @param idGenerator   The ID generator implementation.
-   * @param cookieSigner  The cookie signer implementation.
-   * @param configuration The Play configuration.
-   * @param clock         The clock instance.
-   * @return The OAuth2 state provider implementation.
-   */
-  @Provides
-  def provideOAuth2StateProvider(
-      idGenerator: IDGenerator, // scalastyle:ignore
-      @Named("oauth2-state-cookie-signer") cookieSigner: CookieSigner,
-      configuration: Configuration, clock: Clock
-  ): OAuth2StateProvider = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val settings = configuration.underlying.as[CookieStateSettings]("silhouette.oauth2StateProvider")
-    new CookieStateProvider(settings, idGenerator, cookieSigner, clock)
-  }
-
 
 }
