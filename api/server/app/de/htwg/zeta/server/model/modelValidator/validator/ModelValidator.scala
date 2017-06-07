@@ -9,8 +9,6 @@ import models.modelDefinitions.model.Model
 
 trait ModelValidator {
 
-  val metaModelId: String
-  val metaModelRevision: String
   val metaModelDependentRules: Seq[ElementsRule]
 
   def validate(model: Model): Seq[ModelValidationResult] = NullChecks.check(model) match {
@@ -18,9 +16,5 @@ trait ModelValidator {
     case _ => (MetaModelIndependent.rules ++ metaModelDependentRules).flatMap(_.check(model.elements.values.toSeq))
   }
 
-  override def toString: String =
-    s"""Validator for: $metaModelId
-      |Database revision: $metaModelRevision
-      |
-      |${metaModelDependentRules.collect { case r: DslRule => r.dslStatement }.mkString("\n")}""".stripMargin
+  override def toString: String = metaModelDependentRules.collect { case r: DslRule => r.dslStatement }.mkString("\n")
 }

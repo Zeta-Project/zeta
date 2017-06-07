@@ -76,7 +76,11 @@ class GeneratorController @Inject()(repositoryFactory: RepositoryFactory, silhou
 
   private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
     val metaModelUuid = metaModel._id
-    val currentDir = s"${System.getenv("PWD")}/server/model_specific"
+
+    val currentDir = {
+      val root = if (System.getenv("PWD") != null) System.getenv("PWD") else System.getProperty("user.dir")
+      s"$root/server/model_specific"
+    }
     val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
     val vrGeneratorOutputLocation = s"$currentDir/vr/$metaModelUuid/"
 
