@@ -234,7 +234,7 @@ text: {
             |""".stripMargin
         case _ =>
           s"""
-            |'${value.getRGBValue}',
+            |stroke: '${value.getRGBValue}',
             |${processLineWidth(s.line_width)},
             |${processLineStyle(s.line_style)}
           """.stripMargin

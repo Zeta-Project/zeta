@@ -126,7 +126,9 @@ object GeneratorShapeAndInlineStyle {
       """
       """
     if (shape.style.isDefined) {
-      ret += """style['text.""" + shapeClass + """'] = getStyle('""" + shape.style.get.name + """').text;"""
+      ret += s"""style['text.$shapeClass'] = getStyle('${shape.style.get.name}').text;\n"""
+      // quickfix for inspector font-size bug
+      ret += s"""style['.$shapeClass'] = getStyle('${shape.style.get.name}').text;\n"""
     }
     ret
   }

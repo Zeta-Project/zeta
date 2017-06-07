@@ -53,21 +53,17 @@ var modelExporter = (function modelExporter () {
                 attributes: {}
             };
 
-            if(ele.attributes.hasOwnProperty('mClassAttributes')) {
-                ele.attributes.mClassAttributes.forEach(function (attr) {
-
-                    var attrInfo = ele.attributes.mClassAttributeInfo.find(function(info) {
-                        return info.name === attr.type;
-                    });
-                    var value = _getAttributeValue(attr.value, attrInfo.type);
-                    if (element.attributes.hasOwnProperty(attr.type)) {
-                        element.attributes[attr.type].push(value);
-                    } else {
-                        element.attributes[attr.type] = [value];
+            var attrs = ele.attributes.attrs;
+            for(var key in attrs) {
+                if(_.include(key, "text")) {
+                    var attrName = ele.attributes.mClassAttributeInfo.find(element => element.id === attrs[key].id);
+                    if(attrName !== undefined) {
+                        element.attributes[attrName.name] = attrs[key].text;
                     }
-                });
+                }
             }
 
+            // add all attributes that have no value
             ele.attributes.mClassAttributeInfo.forEach(function(info) {
                 if(!element.attributes.hasOwnProperty(info.name)) {
                     element.attributes[info.name] = [];
