@@ -125,6 +125,59 @@
             });
         });
 
+        $('#validatorGenerate').click(function() {
+            $.ajax({
+                type : 'GET',
+                url : '/metamodels/' + window.metaModelId + '/validator?regenerate=true&noContent=true',
+                success : function(data, textStatus, jqXHR) {
+                    showSuccess("Validator successfully generated");
+                },
+                error : function (jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                }
+            });
+        });
+
+        $('#validatorShow').click(function() {
+            var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');
+            win.document.body.innerHTML = "waiting for data...";
+            $.ajax({
+                type : 'GET',
+                url : '/metamodels/' + window.metaModelId + '/validator?regenerate=false&noContent=false',
+                success : function(data, textStatus, jqXHR) {
+                    switch (data.status) {
+                        case 200:
+                            showSuccess("Validator successfully generated.");
+                            break;
+                        case 201:
+                            showSuccess("Existing validator successfully loaded.");
+                            break;
+                    }
+                    win.document.body.innerHTML = "<pre>" + data + "</pre>";
+                },
+                error : function (jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                    win.close();
+                }
+            });
+        });
+
+        $('#validatorDelete').click(function() {
+            $.ajax({
+                type : 'DELETE',
+                url : '/metamodels/' + window.metaModelId + '/validator',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                success : function (data, textStatus, jqXHR) {
+                    showSuccess("Validator successfully deleted.");
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                }
+            });
+        });
 
         $("#inputModelName").keypress(function (e) {
             if (e.which == 13) {

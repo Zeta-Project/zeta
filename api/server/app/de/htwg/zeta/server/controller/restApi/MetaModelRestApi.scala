@@ -1,10 +1,13 @@
 package de.htwg.zeta.server.controller.restApi
 
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import scala.concurrent.duration.FiniteDuration
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
@@ -105,6 +108,7 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
 
   /** deletes whole metamodel incl. dsl definitions */
   def delete(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    Await.result(deleteValidator(id)(request), FiniteDuration(5, TimeUnit.SECONDS))
     repository(request).delete(id).map { _ =>
       Ok("")
     }.recover {
@@ -336,9 +340,9 @@ class MetaModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends C
    * @return The successful or unsuccessful response.
    */
   def deleteValidator(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Future.successful {
+    protectedRead(id, request, _ => {
       if (ValidatorGenerator.deleteValidator(id)) NoContent else NotFound
-    }
+    })
   }
 
 }

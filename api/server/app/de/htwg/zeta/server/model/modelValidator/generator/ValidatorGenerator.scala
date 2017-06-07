@@ -43,7 +43,7 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
           }
           ValidatorGeneratorResult(success = true, result = validator, created = true)
 
-        case ConsistencyCheckResult(_, Some(failedRule)) => ValidatorGeneratorResult(success = false, result = s"failed rule: $failedRule", created = false)
+        case ConsistencyCheckResult(_, Some(failedRule)) => ValidatorGeneratorResult(success = false, result = s"$failedRule", created = false)
 
         case _ => ValidatorGeneratorResult(success = false, result = "error checking meta model consistency", created = false)
 
@@ -79,7 +79,7 @@ object ValidatorGenerator {
       val pwd = System.getenv("PWD")
       if (pwd != null) pwd else System.getProperty("user.dir")
     }
-    s"$root/server/target/modelValidatorGenerated"
+    s"$root/server/app/de/htwg/zeta/server/model/modelValidator/generated"
   }
 
   def filePath(metaModelUuid: String): String = {
