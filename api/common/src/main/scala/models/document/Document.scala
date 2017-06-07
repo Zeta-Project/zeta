@@ -17,6 +17,7 @@ import org.joda.time.DateTime
 import org.joda.time.Minutes
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
+import play.api.libs.json.Reads
 
 
 case class TimedTask(
@@ -88,6 +89,7 @@ case class Settings(
 
 case class MetaModelEntity(
     id: UUID = UUID.randomUUID,
+    rev: String,
     name: String,
     metaModel: MetaModel,
     dsl: Dsl = Dsl(),
@@ -139,7 +141,7 @@ object Log {
 
 object Document {
   implicit val formatPasswordInfo: OFormat[PasswordInfo] = derived.oformat
-  implicit val readJobSettings = Json.reads[JobSettings]
-  implicit val metaModelFormat = Json.format[MetaModelEntity]
-  implicit val modelFormat = Json.format[ModelEntity]
+  implicit val readJobSettings: Reads[JobSettings] = Json.reads[JobSettings]
+  implicit val metaModelFormat: OFormat[MetaModelEntity] = Json.format[MetaModelEntity]
+  implicit val modelFormat: OFormat[ModelEntity] = Json.format[ModelEntity]
 }

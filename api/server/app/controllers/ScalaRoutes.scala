@@ -146,10 +146,10 @@ class ScalaRoutes @Inject()(
 
   def putMetamodelsDiagram(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
 
-  def getMetamodelsValidator(metaModelId: String, regenerate: Option[Boolean], noContent: Option[Boolean]): Action[AnyContent] =
+  def getMetamodelsValidator(metaModelId: UUID, regenerate: Option[Boolean], noContent: Option[Boolean]): Action[AnyContent] =
     AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, regenerate, noContent) _)
 
-  def deleteMetamodelsValidator(metaModelId: String): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.deleteValidator(metaModelId) _)
+  def deleteMetamodelsValidator(metaModelId: UUID): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.deleteValidator(metaModelId) _)
 
   /* ### Model REST API
    * MRA => ModelRestApi
@@ -178,7 +178,7 @@ class ScalaRoutes @Inject()(
 
   def deleteModels(modelId: UUID): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
 
-  def getModelsValidation(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
+  def getModelsValidation(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
 
 
   // ### Code Editor

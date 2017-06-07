@@ -5,35 +5,26 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.document.Document.modelFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
-import de.htwg.zeta.server.util.auth.RepositoryFactory
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.User
-import models.document.AllModels
-import models.document.MetaModelEntity
 import models.document.ModelEntity
+import models.document.Document.modelFormat
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
 import models.modelDefinitions.model.elements.Node
+import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
-import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
 import play.api.mvc.AnyContent
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
@@ -45,7 +36,7 @@ class ModelRestApi @Inject()() extends Controller {
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedAccessRepository(request.identity.id).modelEntities
-    repo.readAllIds.flatMap { ids =>
+    repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.map(repo.read)).map(_.map(info =>
         info.copy(links = Some(Seq(
           HLink.get("self", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request)),
@@ -107,14 +98,13 @@ class ModelRestApi @Inject()() extends Controller {
     val p = Promise[Result]
     repo.read(id).map { saved =>
       Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
-        case JsSuccess(model, path) => {
+        case JsSuccess(model, path) =>
           repo.update(id, _.copy(model = model)).map { updated =>
             p.success(Results.Ok(Json.toJson(updated)))
           }.recover {
             case e: Exception => p.success(Results.BadRequest(e.getMessage))
           }
-        }
-        case JsError(_) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET ${id}"))
+        case JsError(_) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET $id"))
       }
     }.recover {
       case e: Exception => p.success(Results.BadRequest(e.getMessage))
@@ -184,7 +174,7 @@ class ModelRestApi @Inject()() extends Controller {
     }
   }
 
-  def getValidation(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (modelEntity: ModelEntity) => {
 
       val metaModelId = modelEntity.metaModelId

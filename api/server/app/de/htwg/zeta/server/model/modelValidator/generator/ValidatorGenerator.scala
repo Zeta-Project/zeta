@@ -4,6 +4,7 @@ import java.io.File
 import java.io.PrintWriter
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.UUID
 
 import scala.reflect.runtime.universe
 import scala.tools.reflect.ToolBox
@@ -23,10 +24,10 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
 
   def getGenerator(forceRegenerate: Boolean): ValidatorGeneratorResult = {
 
-    val validatorExists = ValidatorGenerator.validatorExists(metaModelEntity.id())
+    val validatorExists = ValidatorGenerator.validatorExists(metaModelEntity.id)
 
-    lazy val validatorDeprecated = ValidatorGenerator.load(metaModelEntity.id()) match {
-      case Some(validator) => validator.metaModelRevision != metaModelEntity._rev
+    lazy val validatorDeprecated = ValidatorGenerator.load(metaModelEntity.id) match {
+      case Some(validator) => validator.metaModelRevision != metaModelEntity.rev
       case _ => true
     }
 
@@ -36,7 +37,7 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
         case ConsistencyCheckResult(valid, _) if valid =>
 
           val validator = doGenerate()
-          new PrintWriter(ValidatorGenerator.filePath(metaModelEntity.id())) {
+          new PrintWriter(ValidatorGenerator.filePath(metaModelEntity.id)) {
             write(validator)
             close()
           }
@@ -50,15 +51,15 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
 
     } else {
 
-      ValidatorGeneratorResult(success = true, ValidatorGenerator.readFile(ValidatorGenerator.filePath(metaModelEntity.id())), created = false)
+      ValidatorGeneratorResult(success = true, ValidatorGenerator.readFile(ValidatorGenerator.filePath(metaModelEntity.id)), created = false)
 
     }
 
   }
 
   def doGenerate(): String =
-    s"""override val metaModelId = "${metaModelEntity.id()}"
-      |override val metaModelRevision = "${metaModelEntity._rev}"
+    s"""override val metaModelId = "${metaModelEntity.id}"
+      |override val metaModelRevision = "${metaModelEntity.rev}"
       |
       |override val metaModelDependentRules = ${generateRules(metaModelEntity.metaModel).mkString("Seq(\n    ", ",\n    ", "\n  )")}""".stripMargin
 
@@ -69,16 +70,16 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
 
 object ValidatorGenerator {
 
-  def deleteValidator(metaModelId: String): Boolean = deleteFile(filePath(metaModelId))
+  def deleteValidator(metaModelId: UUID): Boolean = deleteFile(filePath(metaModelId))
 
-  def validatorExists(metaModelId: String): Boolean = Files.exists(Paths.get(filePath(metaModelId)))
+  def validatorExists(metaModelId: UUID): Boolean = Files.exists(Paths.get(filePath(metaModelId)))
 
-  def filePath(metaModelUuid: String): String = {
+  def filePath(metaModelId: UUID): String = {
     val root = {
       val pwd = System.getenv("PWD")
       if (pwd != null) pwd else System.getProperty("user.dir")
     }
-    s"$root/server/app/assets/modelValidator/generated/$metaModelUuid"
+    s"$root/server/app/assets/modelValidator/generated/$metaModelId"
   }
 
   def readFile(filePath: String): String = {
@@ -90,7 +91,7 @@ object ValidatorGenerator {
 
   def deleteFile(filePath: String): Boolean = new File(filePath).delete()
 
-  def load(metaModelId: String): Option[ModelValidator] = {
+  def load(metaModelId: UUID): Option[ModelValidator] = {
 
     if (validatorExists(metaModelId)) {
 

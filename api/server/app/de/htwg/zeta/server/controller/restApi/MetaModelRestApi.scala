@@ -3,24 +3,18 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Promise
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.document.Document.metaModelFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
-import de.htwg.zeta.server.util.auth.RepositoryFactory
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.User
-import models.document.AllMetaModels
 import models.document.MetaModelEntity
+import models.document.Document.metaModelFormat
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Diagram
 import models.modelDefinitions.metaModel.MetaModel
@@ -28,18 +22,14 @@ import models.modelDefinitions.metaModel.MetaModelShortInfo
 import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.Style
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
-import play.api.mvc.AnyContent
 import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-
-import rx.lang.scala.Notification.OnError
-import rx.lang.scala.Notification.OnNext
 
 /**
  * RESTful API for metamodel definitions
@@ -77,6 +67,7 @@ class MetaModelRestApi @Inject()() extends Controller {
         restrictedAccessRepository(request.identity.id).metaModelEntities.create(
           MetaModelEntity(
             name = entity.name,
+            rev = "1",
             metaModel = entity
           )
         ).map { metaModelEntity =>
@@ -255,7 +246,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     )
   }
 
-  def getValidator(id: String, regenerateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getValidator(id: UUID, regenerateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (metaModelEntity: MetaModelEntity) => {
       val validatorGenerator = new ValidatorGenerator(metaModelEntity)
       val regenerate = regenerateOpt.getOrElse(false)
@@ -270,7 +261,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     })
   }
 
-  def deleteValidator(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def deleteValidator(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     Future.successful {
       if (ValidatorGenerator.deleteValidator(id)) NoContent else NotFound
     }
