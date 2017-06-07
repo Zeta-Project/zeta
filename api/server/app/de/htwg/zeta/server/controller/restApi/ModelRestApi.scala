@@ -9,6 +9,8 @@ import scala.concurrent.Promise
 import scala.concurrent.duration.FiniteDuration
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
+import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResultContainer.modelValidationResultContainerWrites
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
@@ -219,7 +221,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
 
       metaModelEntity.validator match {
         case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
-          case Some(validator) => Ok(validator.validate(modelEntity.model).mkString)
+          case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model)))
           case None => InternalServerError("Error loading model validator.")
         }
         case None =>

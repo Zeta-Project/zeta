@@ -2,39 +2,60 @@ package de.htwg.zeta.server.model.modelValidator.validator
 
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsNull
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Writes
 
-case class ModelValidationResultContainer(results: Seq[ModelValidationResult]) {
+class ModelValidationResultContainer(val results: Seq[ModelValidationResult]) {
 
-  def validResults: ModelValidationResultContainer = ModelValidationResultContainer(results.filter(_.valid))
+  def invalidResults: Seq[ModelValidationResult] = results.filterNot(_.valid)
 
-  def invalidResults: ModelValidationResultContainer = ModelValidationResultContainer(results.filterNot(_.valid))
+}
 
-  def mkString: String = if (invalidResults.results.isEmpty) "Model instance is valid." else generateInvalidResultsString
-
-  private def generateInvalidResultsString: String =
-    s"""Model instance is invalid:
-      |
-      |${generateList.mkString("* ", "\n\n* ", "")}
-    """.stripMargin
-
-  private def generateList: Seq[String] = invalidResults.results.map { res =>
-    val sb = new StringBuilder
-    sb.append("Rule \"" + res.rule.name + "\" failed")
-
-    res.modelElement match {
-      case Some(el) => el match {
-        case edge: Edge => sb.append(" for edge of type \"" + edge.`type`.name + "\" (edge-id: " + edge.id + ")")
-        case node: Node => sb.append(" for node of type \"" + node.`type`.name + "\" (node-id: " + node.id + ")")
-        case _ =>
-      }
-      case None =>
-    }
-
-    sb.append(".\n")
-    sb.append("\tdescription: \"" + res.rule.description + "\"\n")
-    sb.append("\tpossible fix: \"" + res.rule.possibleFix + "\"")
-
-    sb.toString
+object ModelValidationResultContainer {
+  implicit val modelValidationResultContainerWrites: Writes[ModelValidationResultContainer] = new Writes[ModelValidationResultContainer] {
+    override def writes(o: ModelValidationResultContainer): JsValue = Json.toJson(o.invalidResults)
   }
 
+  implicit val modelValidationResultWrites: Writes[ModelValidationResult] = new Writes[ModelValidationResult] {
+    override def writes(o: ModelValidationResult): JsValue = {
+
+      val elementType = o.modelElement match {
+        case Some(_: Node) => JsString("node")
+        case Some(_: Edge) => JsString("edge")
+        case _ => JsNull
+      }
+
+      val elementTypeName = o.modelElement match {
+        case Some(node: Node) => JsString(node.`type`.name)
+        case Some(edge: Edge) => JsString(edge.`type`.name)
+        case _ => JsNull
+      }
+
+      val element = o.modelElement match {
+        case Some(el) => Json.obj(
+          "id" -> JsString(el.id),
+          "type" -> elementType,
+          "typeName" -> elementTypeName
+        )
+      }
+
+      val valid = JsBoolean(o.valid)
+
+      val rule = Json.obj(
+        "name" -> JsString(o.rule.name),
+        "description" -> JsString(o.rule.description),
+        "possibleFix" -> JsString(o.rule.possibleFix)
+      )
+
+      Json.obj(
+        "element" -> element,
+        "valid" -> valid,
+        "rule" -> rule
+      )
+    }
+  }
 }

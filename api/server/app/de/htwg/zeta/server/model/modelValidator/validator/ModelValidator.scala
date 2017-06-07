@@ -16,7 +16,7 @@ trait ModelValidator {
       case NullChecksResult(false, Some(rule)) => Seq(ModelValidationResult(rule, valid = false))
       case _ => (MetaModelIndependent.rules ++ metaModelDependentRules).flatMap(_.check(model.elements.values.toSeq))
     }
-    ModelValidationResultContainer(results)
+    new ModelValidationResultContainer(results)
   }
 
   override def toString: String = metaModelDependentRules.collect { case r: DslRule => r.dslStatement }.mkString("\n")
