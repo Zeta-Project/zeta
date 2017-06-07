@@ -16,39 +16,28 @@ case class ModelValidationResult(rule: Rule, valid: Boolean, modelElement: Optio
 object ModelValidationResult {
   implicit val modelValidationResultWrites: Writes[ModelValidationResult] = new Writes[ModelValidationResult] {
     override def writes(o: ModelValidationResult): JsValue = {
-
-      val elementType = o.modelElement match {
-        case Some(_: Node) => JsString("node")
-        case Some(_: Edge) => JsString("edge")
-        case _ => JsNull
-      }
-
-      val elementTypeName = o.modelElement match {
-        case Some(node: Node) => JsString(node.`type`.name)
-        case Some(edge: Edge) => JsString(edge.`type`.name)
-        case _ => JsNull
-      }
-
       val element = o.modelElement match {
-        case Some(el) => Json.obj(
-          "id" -> JsString(el.id),
-          "type" -> elementType,
-          "typeName" -> elementTypeName
+        case Some(node: Node) => Json.obj(
+          "id" -> JsString(node.id),
+          "type" -> JsString("node"),
+          "typeName" -> JsString(node.`type`.name)
         )
+        case Some(edge: Edge) => Json.obj(
+          "id" -> JsString(edge.id),
+          "type" -> JsString("edge"),
+          "typeName" -> JsString(edge.`type`.name)
+        )
+        case None => JsNull
       }
-
-      val valid = JsBoolean(o.valid)
-
-      val rule = Json.obj(
-        "name" -> JsString(o.rule.name),
-        "description" -> JsString(o.rule.description),
-        "possibleFix" -> JsString(o.rule.possibleFix)
-      )
 
       Json.obj(
         "element" -> element,
-        "valid" -> valid,
-        "rule" -> rule
+        "rule" -> Json.obj(
+          "name" -> JsString(o.rule.name),
+          "description" -> JsString(o.rule.description),
+          "possibleFix" -> JsString(o.rule.possibleFix)
+        ),
+        "valid" -> JsBoolean(o.valid)
       )
     }
   }

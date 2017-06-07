@@ -221,8 +221,8 @@
                     string += " for " + res.element.type + " of type \"" + res.element.typeName + "\" (" + res.element.type + "-id: " + res.element.id + ")"
                 }
                 string += ".\n";
-                string += "\tdescription: \"" + res.rule.description + "\"\n";
-                string += "\tpossible fix: \"" + res.rule.possibleFix + "\"";
+                string += "\t- description: \"" + res.rule.description + "\"\n";
+                string += "\t- possible fix: \"" + res.rule.possibleFix + "\"";
                 return string;
             });
 
