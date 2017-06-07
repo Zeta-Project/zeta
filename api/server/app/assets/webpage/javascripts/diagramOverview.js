@@ -126,26 +126,26 @@
             });
         });
 
-        $('#validatorGenerate').click(function() {
+        $('#validatorGenerate').click(function () {
             $.ajax({
-                type : 'GET',
-                url : '/metamodels/' + window.metaModelId + '/validator?generate=true&noContent=true',
-                success : function(data, textStatus, jqXHR) {
+                type: 'GET',
+                url: '/metamodels/' + window.metaModelId + '/validator?generate=true&noContent=true',
+                success: function (data, textStatus, jqXHR) {
                     showSuccess("Validator successfully generated");
                 },
-                error : function (jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     showError(jqXHR.responseText);
                 }
             });
         });
 
-        $('#validatorShow').click(function() {
+        $('#validatorShow').click(function () {
             var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');
             win.document.body.innerHTML = "waiting for data...";
             $.ajax({
-                type : 'GET',
-                url : '/metamodels/' + window.metaModelId + '/validator?generate=false&noContent=false',
-                success : function(data, textStatus, jqXHR) {
+                type: 'GET',
+                url: '/metamodels/' + window.metaModelId + '/validator?generate=false&noContent=false',
+                success: function (data, textStatus, jqXHR) {
                     switch (data.status) {
                         case 200:
                             showSuccess("Validator successfully generated.");
@@ -156,7 +156,7 @@
                     }
                     win.document.body.innerHTML = "<pre>" + data + "</pre>";
                 },
-                error : function (jqXHR, textStatus, errorThrown) {
+                error: function (jqXHR, textStatus, errorThrown) {
                     showError(jqXHR.responseText);
                     win.close();
                 }
@@ -194,27 +194,27 @@
             })
         });
 
-        var showError = function(text) {
-            $("#error-panel").fadeOut('slow', function() {
+        var showError = function (text) {
+            $("#error-panel").fadeOut('slow', function () {
                 $("#error-panel").find("div").text(text);
                 $("#error-panel").fadeIn('slow');
             });
         };
 
-        var showSuccess = function(text) {
-            $("#success-panel").fadeOut('slow', function() {
+        var showSuccess = function (text) {
+            $("#success-panel").fadeOut('slow', function () {
                 $("#success-panel").show();
                 $("#success-panel").find("div").text(text);
                 $("#success-panel").fadeIn('slow');
             });
         };
 
-        $("[data-hide]").on("click", function(){
+        $("[data-hide]").on("click", function () {
             $("." + $(this).attr("data-hide")).hide();
         });
 
         var validateModelInstance = function (modelId) {
-            var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');
+            var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1000, height=800');
             win.document.body.innerHTML = "waiting for data...";
             $.ajax({
                 type: 'GET',
@@ -224,14 +224,11 @@
                     'Content-Type': 'application/json'
                 },
                 success: function (data, textStatus, jqXHR) {
-                    if (data === "") {
-                        win.document.body.innerHTML = "no errors";
-                    } else {
-                        win.document.body.innerHTML = "<pre>" + data + "</pre>";
-                    }
+                    win.document.body.innerHTML = "<pre>" + data + "</pre>";
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    showError(jqXHR.responseText)
+                    showError(jqXHR.responseText);
+                    win.close();
                 }
             });
         };

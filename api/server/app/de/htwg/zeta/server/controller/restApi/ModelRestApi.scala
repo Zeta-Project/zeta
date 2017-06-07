@@ -219,7 +219,7 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
 
       metaModelEntity.validator match {
         case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
-          case Some(validator) => Ok(validator.validate(modelEntity.model).filterNot(_.valid).map(_.rule.description).mkString("\n"))
+          case Some(validator) => Ok(validator.validate(modelEntity.model).mkString)
           case None => InternalServerError("Error loading model validator.")
         }
         case None =>
