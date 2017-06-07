@@ -77,6 +77,7 @@
         });
     };
 
+
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
 
@@ -178,6 +179,12 @@
             deleteModelInstance(modelId);
         });
 
+        $(".validate-model-instance").click(function () {
+            event.preventDefault();
+            var modelId = this.dataset.modelId;
+            validateModelInstance(modelId);
+        });
+
         $("#btnDeleteAllModelInstances").click(function () {
             $("#model-instance-container").children().map(function () {
                 if ($(this).is('a')) {
@@ -205,5 +212,29 @@
         $("[data-hide]").on("click", function(){
             $("." + $(this).attr("data-hide")).hide();
         });
+
+        var validateModelInstance = function (modelId) {
+            var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=600');
+            win.document.body.innerHTML = "waiting for data...";
+            $.ajax({
+                type: 'GET',
+                url: '/models/' + modelId + '/validation',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if (data === "") {
+                        win.document.body.innerHTML = "no errors";
+                    } else {
+                        win.document.body.innerHTML = "<pre>" + data + "</pre>";
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText)
+                }
+            });
+        };
+
     });
 }(jQuery) );

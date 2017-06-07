@@ -222,7 +222,9 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
           case Some(validator) => Ok(validator.validate(modelEntity.model).filterNot(_.valid).map(_.rule.description).mkString("\n"))
           case None => InternalServerError("Error loading model validator.")
         }
-        case None => Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/${metaModelEntity.id()}/validator first.")
+        case None =>
+          val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
+          Conflict(s"""No validator generated yet. Try calling $url first.""")
 
       }
 

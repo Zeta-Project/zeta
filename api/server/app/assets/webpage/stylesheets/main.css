@@ -104,6 +104,18 @@ paper-button::shadow #ripple {
     display: block;
 }
 
+.validate-list-item {
+    float: right;
+    z-index: 2;
+    display: none;
+    padding: 5px;
+    position: relative;
+}
+
+.list-item-container:hover > .validate-list-item {
+    display: block;
+}
+
 .overlay-container {
     position: relative;
 }
