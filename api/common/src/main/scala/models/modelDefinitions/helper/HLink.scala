@@ -14,8 +14,8 @@ object HLink {
   implicit val reads = Json.reads[HLink]
   implicit val writes = Json.writes[HLink]
   // Helper methods for construction
-  def get(rel: String, href: String) = HLink(rel, href, "GET")
-  def post(rel: String, href: String) = HLink(rel, href, "POST")
-  def put(rel: String, href: String) = HLink(rel, href, "PUT")
-  def delete(rel: String, href: String) = HLink(rel, href, "DELETE")
+  def get(rel: String, href: String): HLink = HLink(rel, href, "GET")
+  def post(rel: String, href: String): HLink = HLink(rel, href, "POST")
+  def put(rel: String, href: String): HLink = HLink(rel, href, "PUT")
+  def delete(rel: String, href: String): HLink = HLink(rel, href, "DELETE")
 }

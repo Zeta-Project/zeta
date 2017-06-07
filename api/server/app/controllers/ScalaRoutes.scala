@@ -3,15 +3,15 @@ package controllers
 import java.util.UUID
 import javax.inject.Inject
 
-import de.htwg.zeta.server.routing.WebController
-import de.htwg.zeta.server.routing.WebControllerContainer
 import de.htwg.zeta.server.routing.RouteController
 import de.htwg.zeta.server.routing.RouteControllerContainer
+import de.htwg.zeta.server.routing.WebController
+import de.htwg.zeta.server.routing.WebControllerContainer
 import play.api.libs.json.JsValue
-import play.api.mvc.WebSocket
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.BodyParsers
+import play.api.mvc.WebSocket
 
 /**
  * All routes are managed in this class
@@ -146,6 +146,10 @@ class ScalaRoutes @Inject()(
 
   def putMetamodelsDiagram(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
 
+  def getMetamodelsValidator(metaModelId: String, regenerate: Option[Boolean], noContent: Option[Boolean]): Action[AnyContent] =
+    AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, regenerate, noContent) _)
+
+  def deleteMetamodelsValidator(metaModelId: String): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.deleteValidator(metaModelId) _)
 
   /* ### Model REST API
    * MRA => ModelRestApi
@@ -173,6 +177,8 @@ class ScalaRoutes @Inject()(
   def getModelDefinitionEdges(modelId: UUID, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
 
   def deleteModels(modelId: UUID): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
+
+  def getModelsValidation(modelId: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
 
 
   // ### Code Editor

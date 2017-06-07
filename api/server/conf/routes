@@ -68,6 +68,9 @@ GET           /metamodels/:metaModelId/style                                    
 PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: java.util.UUID)
 GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
+GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, regenerate: Option[Boolean], noContent: Option[Boolean])
+DELETE        /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.deleteMetamodelsValidator(metaModelId: java.util.UUID)
+
 
 ### Model REST API
 GET           /models                                                                controllers.ScalaRoutes.getModelsNoArgs
@@ -81,6 +84,8 @@ GET           /models/:modelId/definition/nodes/:nodeName                       
 GET           /models/:modelId/definition/edges                                      controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: java.util.UUID)
 GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: java.util.UUID, edgeName: String)
 DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
+GET           /models/:modelId/validation                                            controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
+
 
 ### Code Editor
 GET           /codeeditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorEditor(metaModelId: java.util.UUID, dslType: String)

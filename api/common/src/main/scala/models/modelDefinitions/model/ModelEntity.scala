@@ -15,6 +15,7 @@ import play.api.libs.json.__
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
+import play.api.libs.json.__
 
 /**
  * The container that is used to persist model definitions, contains additional metadata
@@ -33,8 +34,11 @@ case class ModelEntity(id: UUID, metaModelId: UUID, userId: UUID, created: Insta
     copy(id = UUID.randomUUID, metaModelId = metaModelId, userId = userId, created = now, updated = now)
   }
   // overrides unchanging data for update
-  def asUpdate(id: UUID) = {
-    copy(id = id, updated = Instant.now)
+  def asUpdate(id: UUID): ModelEntity = {
+    copy(
+      id = id,
+      updated = Instant.now
+    )
   }
 
 }
@@ -110,5 +114,5 @@ object ModelShortInfo {
     (__ \ "links").readNullable[Seq[HLink]]
   )(ModelShortInfo.apply _)
 
-  implicit val writes = Json.writes[ModelShortInfo]
+  implicit val writes: OWrites[ModelShortInfo] = Json.writes[ModelShortInfo]
 }

@@ -2,9 +2,11 @@ package de.htwg.zeta.server.generator.generators.diagram
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
-
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.node.Node
+
+import scala.util.Try
+import scala.util.Success
 
 /**
  * The StencilGenerator object, responsible for the generation of the String for stencil.js
@@ -69,13 +71,20 @@ object StencilGenerator {
           |  mClassAttributeInfo: [${
           node.mcoreElement.attributes.map(
             attr =>
-              s"""{ name: '${attr.name}', type: '${attr.`type`}'}"""
+              s"""{ name: '${attr.name}', type: '${attr.`type`}' ${textUUID(node, attr.name)}}"""
           ).mkString(",")
         }]
           |});
           |""".stripMargin
       }
     }.mkString
+  }
+
+  private def textUUID(node: Node, name: String): String = {
+    Try(node.shape.get.vars.filter{case (attribute, _) => attribute.name == name}.head) match {
+      case Success(i) => s""", id: '${i._2.id}'"""
+      case _ => ""
+    }
   }
 
   def generateGroupsToStencilMapping(mapping: mutable.HashMap[String, ListBuffer[Node]]): String = {

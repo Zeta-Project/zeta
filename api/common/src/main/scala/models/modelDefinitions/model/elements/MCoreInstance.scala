@@ -1,11 +1,11 @@
 package models.modelDefinitions.model.elements
 
+import scala.collection.immutable.Seq
+import scala.reflect.ClassTag
+
 import models.modelDefinitions.metaModel.elements.AttributeValue
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-
-import scala.collection.immutable.Seq
-import scala.reflect.ClassTag
 
 /**
  * Immutable domain model for representing models
@@ -60,15 +60,15 @@ class Node(
     _inputs: => Seq[ToEdges],
     val attributes: Seq[Attribute]
 ) extends ModelElement with HasAttributes {
-  lazy val outputs = _outputs
-  lazy val inputs = _inputs
+  lazy val outputs: Seq[ToEdges] = _outputs
+  lazy val inputs: Seq[ToEdges] = _inputs
 
-  override def toString = {
+  override def toString: String = {
     s"Node($id, ${`type`.name}, $outputs, $inputs, $attributes)"
   }
 
   // convenience method for updating links
-  def updateLinks(_outputs: => Seq[ToEdges], _inputs: => Seq[ToEdges]) =
+  def updateLinks(_outputs: => Seq[ToEdges], _inputs: => Seq[ToEdges]): Node =
     new Node(id, `type`, _outputs, _inputs, attributes)
 
   // getter for attributes
@@ -86,7 +86,7 @@ object Node {
     _outputs: => Seq[ToEdges],
     _inputs: => Seq[ToEdges],
     attributes: Seq[Attribute]
-  ) = new Node(id, `type`, _outputs, _inputs, attributes)
+  ): Node = new Node(id, `type`, _outputs, _inputs, attributes)
 
   def apply2(
     id: String,
@@ -94,7 +94,7 @@ object Node {
     outputs: Seq[ToEdges],
     inputs: Seq[ToEdges],
     attributes: Seq[Attribute]
-  ) = new Node(id, `type`, outputs, inputs, attributes)
+  ): Node = new Node(id, `type`, outputs, inputs, attributes)
 
 }
 
@@ -114,15 +114,15 @@ class Edge(
     val attributes: Seq[Attribute])
   extends ModelElement with HasAttributes {
 
-  lazy val source = _source
-  lazy val target = _target
+  lazy val source: Seq[ToNodes] = _source
+  lazy val target: Seq[ToNodes] = _target
 
-  override def toString = {
+  override def toString: String = {
     s"Node($id, ${`type`.name}, $source, $target, $attributes)"
   }
 
   // convenience method for updating links
-  def updateLinks(_source: => Seq[ToNodes], _target: => Seq[ToNodes]) =
+  def updateLinks(_source: => Seq[ToNodes], _target: => Seq[ToNodes]): Edge =
     new Edge(id, `type`, _source, _target, attributes)
 }
 
@@ -133,10 +133,7 @@ object Edge {
     source: Seq[ToNodes],
     target: Seq[ToNodes],
     attributes: Seq[Attribute]
-  ) = new Edge(id, `type`, source, target, attributes)
+  ): Edge = new Edge(id, `type`, source, target, attributes)
 }
 
-case class Attribute(
-    val name: String,
-    val value: Seq[AttributeValue])
-
+case class Attribute(name: String, value: Seq[AttributeValue])

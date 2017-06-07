@@ -110,8 +110,9 @@ lazy val server = baseProject("server", file("server")).settings(
     "net.codingwell" %% "scala-guice" % "4.0.0",
     "org.reactivemongo" %% "play2-reactivemongo" % "0.11.9",
     "org.scala-lang" % "scala-swing" % "2.11.0-M7",
-
     "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
+    "org.scala-lang"            % "scala-reflect"             % "2.11.8",
+    "org.scala-lang"            % "scala-compiler"            % "2.11.8",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   )
 ).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend).dependsOn(persistence)
@@ -253,6 +254,7 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
     )
   )
 ).dependsOn(common)
+
 
 def image(name: String, d: sbt.File) = baseProject(name, d).settings(
   Seq(

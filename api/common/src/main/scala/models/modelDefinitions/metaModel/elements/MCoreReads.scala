@@ -1,9 +1,11 @@
 package models.modelDefinitions.metaModel.elements
 
+import scala.annotation.tailrec
+import scala.collection.immutable.Seq
+
 import play.api.data.validation.ValidationError
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.JsBoolean
-import play.api.libs.json.__
 import play.api.libs.json.JsError
 import play.api.libs.json.JsNumber
 import play.api.libs.json.JsResult
@@ -11,9 +13,7 @@ import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
-
-import scala.annotation.tailrec
-import scala.collection.immutable.Seq
+import play.api.libs.json.__
 
 /**
  * Reads[T] for all MCore structures (bottom of file)
@@ -24,9 +24,9 @@ object MCoreReads {
   case class PlaceHolder(name: String) extends ClassOrRef
 
   val empty = new {
-    def mClass(name: String) = new MClass(name, false, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
+    def mClass(name: String): MClass = new MClass(name, false, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
 
-    def mRef(name: String) = new MReference(name, false, false, List.empty, List.empty, List.empty)
+    def mRef(name: String): MReference = new MReference(name, false, false, List.empty, List.empty, List.empty)
   }
 
   implicit val mObjectReads = new Reads[MObject] {
@@ -39,15 +39,15 @@ object MCoreReads {
   }
 
   def wireSuperTypes(newMap: => Map[String, MObject], old: Seq[MClass]): Seq[MClass] = {
-    old.map(m => newMap.get(m.name).get.asInstanceOf[MClass])
+    old.map(m => newMap(m.name).asInstanceOf[MClass])
   }
 
   def wireClassLinks(newMap: => Map[String, MObject], old: Seq[MLinkDef]): Seq[MLinkDef] = {
-    old.map(m => m.copy(mType = newMap.get(m.mType.name).get.asInstanceOf[MClass]))
+    old.map(m => m.copy(mType = newMap(m.mType.name).asInstanceOf[MClass]))
   }
 
   def wireRefLinks(newMap: => Map[String, MObject], old: Seq[MLinkDef]): Seq[MLinkDef] = {
-    old.map(m => m.copy(mType = newMap.get(m.mType.name).get.asInstanceOf[MReference]))
+    old.map(m => m.copy(mType = newMap(m.mType.name).asInstanceOf[MReference]))
   }
 
   implicit val mObjectMapReads = new Reads[Map[String, MObject]] {
@@ -65,18 +65,16 @@ object MCoreReads {
       def wireEnums(attributes: Seq[MAttribute]): Seq[MAttribute] = {
         attributes.map { a =>
           a.`type` match {
-            case MEnum(name, _) => a.copy(`type` = nameMapping.get(name).get.asInstanceOf[MEnum])
+            case MEnum(name, _) => a.copy(`type` = nameMapping(name).asInstanceOf[MEnum])
             case _ => a
           }
         }
       }
 
       nameMapping.mapValues {
-        _ match {
-          case c: MClass => c.updateAttributes(wireEnums(c.attributes))
-          case r: MReference => r.updateAttributes(wireEnums(r.attributes))
-          case e: MEnum => e
-        }
+        case c: MClass => c.updateAttributes(wireEnums(c.attributes))
+        case r: MReference => r.updateAttributes(wireEnums(r.attributes))
+        case e: MEnum => e
       }
 
     }
@@ -99,18 +97,16 @@ object MCoreReads {
     def wire(mapping: Map[String, MObject]): Map[String, MObject] = {
       val builder = new {
         val finalMap: Map[String, MObject] = mapping.mapValues {
-          _ match {
-            case c: MClass => c.updateLinks(
-              wireSuperTypes(finalMap, c.superTypes),
-              wireRefLinks(finalMap, c.inputs),
-              wireRefLinks(finalMap, c.outputs)
-            )
-            case r: MReference => r.updateLinks(
-              wireClassLinks(finalMap, r.source),
-              wireClassLinks(finalMap, r.target)
-            )
-            case e: MEnum => e
-          }
+          case c: MClass => c.updateLinks(
+            wireSuperTypes(finalMap, c.superTypes),
+            wireRefLinks(finalMap, c.inputs),
+            wireRefLinks(finalMap, c.outputs)
+          )
+          case r: MReference => r.updateLinks(
+            wireClassLinks(finalMap, r.source),
+            wireClassLinks(finalMap, r.target)
+          )
+          case e: MEnum => e
         }
       }
       builder.finalMap
@@ -122,7 +118,7 @@ object MCoreReads {
   val typeDefaultError = ValidationError("type definition and default value don't match")
   val enumSymbolError = ValidationError("Enum symbols must be unique and not empty")
 
-  def boundsCheck(bounds: MBounds) = {
+  def boundsCheck(bounds: MBounds): Boolean = {
     (bounds.upperBound > bounds.lowerBound) ||
       (bounds.upperBound == bounds.lowerBound && bounds.lowerBound != 0) ||
       (bounds.upperBound == -1)
@@ -145,7 +141,7 @@ object MCoreReads {
     boundsCheck(_)
   }
 
-  def detectType(name: String) = name match {
+  def detectType(name: String): AttributeType = name match {
     case "String" => ScalarType.String
     case "Bool" => ScalarType.Bool
     case "Int" => ScalarType.Int
@@ -216,7 +212,7 @@ object MCoreReads {
     (__ \ "name").read[String](Reads.minLength[String](1)) and
     (__ \ "symbols").read[Seq[String]].map(_.map(EnumSymbol(_, MEnum("", Seq.empty))))
   )(MEnum.apply _).filter(enumSymbolError) { enum =>
-    enum.values.size > 0 && enum.values.distinct.size == enum.values.size
+    enum.values.nonEmpty && enum.values.distinct.size == enum.values.size
   }.map { enum =>
     val builder = new {
       val finalEnum: MEnum = enum.copy(values = enum.values.map(s => new EnumSymbol(s.name, finalEnum)))
@@ -268,11 +264,11 @@ private class RefsValidator(private val mapping: Map[String, MObject]) {
     }
   }
 
-  private def classCheck(m: MObject) = {
+  private def classCheck(m: MObject): Boolean = {
     m.isInstanceOf[MClass]
   }
 
-  private def refCheck(m: MObject) = {
+  private def refCheck(m: MObject): Boolean = {
     m.isInstanceOf[MReference]
   }
 
