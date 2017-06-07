@@ -11,12 +11,11 @@ trait ModelValidator {
 
   val metaModelDependentRules: Seq[ElementsRule]
 
-  def validate(model: Model): ModelValidationResultContainer = {
-    val results = NullChecks.check(model) match {
+  def validate(model: Model): Seq[ModelValidationResult] = {
+    NullChecks.check(model) match {
       case NullChecksResult(false, Some(rule)) => Seq(ModelValidationResult(rule, valid = false))
       case _ => (MetaModelIndependent.rules ++ metaModelDependentRules).flatMap(_.check(model.elements.values.toSeq))
     }
-    new ModelValidationResultContainer(results)
   }
 
   override def toString: String = metaModelDependentRules.collect { case r: DslRule => r.dslStatement }.mkString("\n")

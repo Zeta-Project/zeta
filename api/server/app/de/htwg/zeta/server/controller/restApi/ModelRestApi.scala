@@ -6,14 +6,13 @@ import javax.inject.Inject
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.duration.Duration
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
-
-import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResultContainer.modelValidationResultContainerWrites
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
+import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult.modelValidationResultWrites
 import de.htwg.zeta.server.util.auth.RepositoryFactory
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.User
@@ -217,11 +216,11 @@ class ModelRestApi @Inject()(repositoryFactory: RepositoryFactory) extends Contr
   def getValidation(id: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (modelEntity: ModelEntity) => {
 
-      val metaModelEntity = Await.result(repository(request).get[MetaModelEntity](modelEntity.metaModelId), FiniteDuration(5, TimeUnit.SECONDS))
+      val metaModelEntity = Await.result(repository(request).get[MetaModelEntity](modelEntity.metaModelId), Duration(1, TimeUnit.SECONDS))
 
       metaModelEntity.validator match {
         case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
-          case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model)))
+          case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model).filterNot(_.valid)))
           case None => InternalServerError("Error loading model validator.")
         }
         case None =>
