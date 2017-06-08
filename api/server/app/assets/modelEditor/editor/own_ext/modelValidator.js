@@ -4,9 +4,11 @@
 (function ($) {
     'use strict';
 
-    var highlightInvalidCells, unhighlightCells;
+    var highlightInvalidCells, unhighlightCells, alertSuccess, alertError;
     var graph = window.globalGraph;
     var paper = window.globalPaper;
+    var successPanel = $("#success-panel");
+    var errorPanel = $("#error-panel");
 
     highlightInvalidCells = function (ids) {
 
@@ -39,6 +41,26 @@
         });
     };
 
+    alertSuccess = function (msg) {
+        successPanel.fadeOut('slow', function () {
+            errorPanel.fadeOut('slow', function () {
+                successPanel.show();
+                successPanel.find('div').text(msg);
+                successPanel.fadeIn('slow');
+            });
+        });
+    };
+
+    alertError = function (msg) {
+        successPanel.fadeOut('slow', function () {
+            errorPanel.fadeOut('slow', function () {
+                errorPanel.show();
+                errorPanel.find('div').text(msg);
+                errorPanel.fadeIn('slow');
+            });
+        });
+    };
+
     $('#validatorValidate').click(function () {
         modelValidatorUtil.validate(this.dataset.modelId, {
             openWindow: true,
@@ -58,26 +80,34 @@
 
                 highlightInvalidCells(invalidElementIds);
 
+                alertSuccess("Validation successful. Results will be shown in a separate window.");
+
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText);
+                alertError(jqXHR.responseText);
             }
         });
     });
 
     $('#validatorShow').click(function () {
         modelValidatorUtil.show(this.dataset.metaModelId, {
-            openWindow: true
+            openWindow: true,
+            success: function (data, textStatus, jqXHR) {
+                alertSuccess("Validation rules successfully loaded. Rules will be shown in a separate window.")
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alertError(jqXHR.responseText);
+            }
         })
     });
 
     $('#validatorGenerate').click(function () {
         modelValidatorUtil.generate(this.dataset.metaModelId, {
             success: function (data, textStatus, jqXHR) {
-                alert('Validator successfully generated.')
+                alertSuccess('Validator successfully generated.')
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert(jqXHR.responseText);
+                alertError(jqXHR.responseText);
             }
         })
     });
