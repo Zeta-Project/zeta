@@ -66,4 +66,29 @@ trait Persistence[E <: Entity] { // scalastyle:ignore
    */
   def readAllIds(): Future[Set[UUID]]
 
+  /** Read a entity by id. If it doesn't exist create it.
+   *
+   * @param id the id of the entity to read
+   * @param entity the entity to create, only evaluated when needed (call-by-name)
+   * @return The read or created entity
+   */
+  final def readOrCreate(id: UUID, entity: => E): Future[E] = {
+    read(id).recoverWith {
+      case _ => create(entity)
+    }
+  }
+
+  /** Update a entity. If it doesn't exist create it.
+   *
+   * @param id the id of the entity to read
+   * @param updateEntity Function, to build the updated entity from the existing
+   * @param entity the entity to create, only evaluated when needed (call-by-name)
+   * @return The updated or created entity
+   */
+  final def updateOrCreate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
+    update(id, updateEntity).recoverWith {
+      case _ => create(entity)
+    }
+  }
+
 }

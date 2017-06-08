@@ -49,8 +49,8 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     uiState = "modelEntity.model.uiState"
 
   ), metaModelId = UUID.randomUUID, links = None)
-  private val modelEntity2: ModelEntity = modelEntity1.copy()
-  private val modelEntity3: ModelEntity = modelEntity1.copy()
+  private val modelEntity2: ModelEntity = modelEntity1.copy(id = UUID.randomUUID)
+  private val modelEntity3: ModelEntity = modelEntity1.copy(id = UUID.randomUUID)
   private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = UUID.randomUUID)
 
 
@@ -94,7 +94,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       persistence.readAllIds().flatMap { ids =>
         Future.sequence(ids.map(id => persistence.delete(id))).flatMap { _ =>
           persistence.readAllIds().flatMap { ids =>
-            ids shouldBe Seq.empty
+            ids shouldBe Set.empty
           }
         }
       }
@@ -103,7 +103,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     it should "create a document" in {
       persistence.create(doc1).flatMap { _ =>
         persistence.readAllIds().flatMap { ids =>
-          ids shouldBe Seq(doc1.id)
+          ids shouldBe Set(doc1.id)
         }
       }
     }
@@ -193,7 +193,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       persistence.delete(doc2.id).flatMap { _ =>
         persistence.delete(doc3.id).flatMap { _ =>
           persistence.readAllIds().flatMap { ids =>
-            ids shouldBe Seq.empty
+            ids shouldBe Set.empty
           }
         }
       }

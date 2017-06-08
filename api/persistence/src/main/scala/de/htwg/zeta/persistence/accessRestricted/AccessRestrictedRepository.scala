@@ -142,3 +142,15 @@ private[persistence] case class AccessAuthorisation(id: UUID, authorizedAccess: 
   }
 
 }
+
+/** Companion-Object for AccessAuthorisation. */
+object AccessAuthorisation {
+
+  /** Create a AccessAuthorisation with no access set.
+   *
+   * @param id the ownerId
+   * @return
+   */
+  def empty(id: UUID): AccessAuthorisation = AccessAuthorisation(id, Map.empty)
+
+}
