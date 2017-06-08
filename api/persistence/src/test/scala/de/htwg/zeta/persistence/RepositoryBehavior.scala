@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
 import models.Entity
+import models.User
 import models.document.Log
 import models.document.ModelEntity
 import models.modelDefinitions.metaModel.MetaModel
@@ -66,6 +67,17 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
   private val log3: Log = log1.copy(id =  UUID.randomUUID)
   private val log2Updated: Log = log2.copy(status = 2)
 
+  private val user1 = User(
+    id = UUID.randomUUID,
+    firstName = "firstName",
+    lastName = "lastName",
+    email = "test@mail.com",
+    activated = false
+  )
+  private val user2: User = user1.copy(id =  UUID.randomUUID)
+  private val user3: User = user1.copy(id =  UUID.randomUUID)
+  private val user2Updated: User = user2.copy(activated = true)
+
 
   /** Behavior for a PersistenceService.
    *
@@ -73,12 +85,17 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
    */
   def serviceBehavior(service: Repository): Unit = {
 
+    /*
     "ModelEntity" should behave like docBehavior[ModelEntity](
       service.modelEntities, modelEntity1, modelEntity2, modelEntity3, modelEntity2Updated
     )
 
     "Log" should behave like docBehavior[Log](
       service.logs, log1, log2, log3, log2Updated
+    ) */
+
+    "User" should behave like docBehavior[User](
+      service.users, user1, user2, user3, user2Updated
     )
 
   }
