@@ -124,7 +124,7 @@ var modelValidatorUtil = (function ($) {
     };
 
     openWindow = function () {
-        var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1000, height=800');
+        var win = window.open('', '', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=300');
         win.document.body.innerHTML = "waiting for data...";
         return win;
     };

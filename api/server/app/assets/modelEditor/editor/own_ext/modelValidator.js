@@ -1,6 +1,6 @@
 (function ($) {
 
-    var highlightInvalidCells;
+    var highlightInvalidCells, unhighlightCells;
     var graph = window.globalGraph;
     var paper = window.globalPaper;
 
@@ -14,12 +14,25 @@
             return paper.findViewByModel(cell);
         });
 
+        unhighlightCells();
         invalidCellViews.forEach(function (cellView) {
             if (cellView) {
                 cellView.highlight();
             }
         });
 
+    };
+
+    unhighlightCells = function () {
+        var cellViews = graph.getCells().map(function (cell) {
+            return paper.findViewByModel(cell);
+        });
+
+        cellViews.forEach(function (cellView) {
+            if (cellView) {
+                cellView.unhighlight();
+            }
+        });
     };
 
     $('#validatorValidate').click(function () {
@@ -41,6 +54,9 @@
 
                 highlightInvalidCells(invalidElementIds);
 
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert(jqXHR.responseText);
             }
         });
     });
@@ -63,15 +79,7 @@
     });
 
     $('#validatorUnhighlight').click(function () {
-        var cellViews = graph.getCells().map(function (cell) {
-            return paper.findViewByModel(cell);
-        });
-
-        cellViews.forEach(function (cellView) {
-            if (cellView) {
-                cellView.unhighlight();
-            }
-        });
+        unhighlightCells();
     });
 
 })(jQuery);
