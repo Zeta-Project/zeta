@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeTargetsUpperBound(edgeType: String, targetType: String, upperBound: Int) extends SingleEdgeRule with DslRule {
+class EdgeTargetsUpperBound(val edgeType: String, val targetType: String, val upperBound: Int) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Edges of type $edgeType must have a maximum of $upperBound target nodes of type $targetType."
   override val possibleFix: String =

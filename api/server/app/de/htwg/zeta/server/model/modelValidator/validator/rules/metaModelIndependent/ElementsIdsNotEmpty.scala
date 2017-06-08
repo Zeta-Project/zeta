@@ -4,7 +4,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
 import models.modelDefinitions.model.elements.ModelElement
 
-private[metaModelIndependent] class ElementsIdsNotEmpty extends ElementsRule {
+class ElementsIdsNotEmpty extends ElementsRule {
   override val name: String = getClass.getSimpleName
   override val description: String = "Identifiers of elements must not be empty."
   override val possibleFix: String = "Add an non-empty identifier to every element."

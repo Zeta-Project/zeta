@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
-class NodeInputEdges(nodeType: String, inputTypes: Seq[String]) extends SingleNodeRule with DslRule {
+class NodeInputEdges(val nodeType: String, val inputTypes: Seq[String]) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Nodes of type $nodeType are only allowed to have input edges of types ${inputTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove all input edges that are not of types ${inputTypes.mkString("{", ", ", "}")} from nodes of type $nodeType."

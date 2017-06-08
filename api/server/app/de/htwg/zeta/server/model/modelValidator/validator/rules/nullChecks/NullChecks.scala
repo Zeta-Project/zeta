@@ -21,7 +21,7 @@ object NullChecks {
     }
   }
 
-  private val rules = Seq(
+  val rules: Seq[ModelRule] = Seq(
     new ElementsNotNull,
     new ElementsNoNullValues,
     new ElementsIdNotNull,

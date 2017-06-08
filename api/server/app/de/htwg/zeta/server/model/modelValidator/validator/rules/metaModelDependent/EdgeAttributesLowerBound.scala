@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeAttributesLowerBound(edgeType: String, attributeType: String, lowerBound: Int) extends SingleEdgeRule with DslRule {
+class EdgeAttributesLowerBound(val edgeType: String, val attributeType: String, val lowerBound: Int) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Edges of type $edgeType must have at least $lowerBound attributes of type $attributeType."
   override val possibleFix: String = s"Add attributes of type $attributeType to edges of type $edgeType until there are at least $lowerBound attributes."

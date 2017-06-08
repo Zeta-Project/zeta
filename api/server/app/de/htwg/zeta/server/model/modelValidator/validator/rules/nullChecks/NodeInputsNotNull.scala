@@ -4,7 +4,7 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
 import models.modelDefinitions.model.Model
 
-private[nullChecks] class NodeInputsNotNull extends ModelRule {
+class NodeInputsNotNull extends ModelRule {
   override val name: String = getClass.getSimpleName
   override val description: String = ""
   override val possibleFix: String = ""

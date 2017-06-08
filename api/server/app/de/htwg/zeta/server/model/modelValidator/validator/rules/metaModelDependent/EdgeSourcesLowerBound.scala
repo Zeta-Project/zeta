@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeSourcesLowerBound(edgeType: String, sourceType: String, lowerBound: Int) extends SingleEdgeRule with DslRule {
+class EdgeSourcesLowerBound(val edgeType: String, val sourceType: String, val lowerBound: Int) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Edges of type $edgeType must have at least $lowerBound source nodes of type $sourceType."
   override val possibleFix: String = s"Add source nodes of type $sourceType to edge of type $edgeType until there are at least $lowerBound source nodes."

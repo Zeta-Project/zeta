@@ -4,7 +4,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
 import models.modelDefinitions.model.elements.ModelElement
 
-private[metaModelIndependent] class ElementsIdsUnique extends ElementsRule {
+class ElementsIdsUnique extends ElementsRule {
   override val name: String = getClass.getSimpleName
   override val description: String = "Element Identifiers must be unique."
   override val possibleFix: String = "Make duplicate identifiers unique."

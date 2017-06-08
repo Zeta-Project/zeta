@@ -9,7 +9,7 @@ import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeAttributeEnumTypes(edgeType: String, attributeType: String, enumName: String) extends SingleEdgeRule with DslRule {
+class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, val enumName: String) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Attributes of type $attributeType in edges of type $edgeType must be of type enum $enumName."
   override val possibleFix: String = s"Remove attribute values of attribute $attributeType in edge $edgeType which are not of type enum $enumName."

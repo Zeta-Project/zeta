@@ -19,7 +19,7 @@ import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
 
-class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) extends ElementsRule with DslRule {
+class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: String) extends ElementsRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"Every value of attribute $attributeType in nodes of types ${Util.stringSeqToSeqString(nodeTypes)} must be globally unique."

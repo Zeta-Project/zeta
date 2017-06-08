@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
-class NodeInputsUpperBound(nodeType: String, inputType: String, upperBound: Int) extends SingleNodeRule with DslRule {
+class NodeInputsUpperBound(val nodeType: String, val inputType: String, val upperBound: Int) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Nodes of type $nodeType must have a maximum of $upperBound input edges of type $inputType."
   override val possibleFix: String = s"Remove input edges of type $inputType from nodes of type $nodeType until there are a maximum of $upperBound input edges."

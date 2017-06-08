@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 
-class EdgesNoTargets(edgeType: String) extends SingleEdgeRule with DslRule {
+class EdgesNoTargets(val edgeType: String) extends SingleEdgeRule with DslRule {
 
   override val name: String = getClass.getSimpleName
   override val description: String = s"Edges of type $edgeType must not have target nodes."

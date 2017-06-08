@@ -14,7 +14,7 @@ import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeAttributeScalarTypes(edgeType: String, attributeType: String, attributeDataType: AttributeType) extends SingleEdgeRule with DslRule {
+class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, val attributeDataType: AttributeType) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"""Attributes of type $attributeType in edges of type $edgeType must be of data type

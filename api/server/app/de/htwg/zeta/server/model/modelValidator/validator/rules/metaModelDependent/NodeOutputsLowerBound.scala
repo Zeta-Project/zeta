@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
-class NodeOutputsLowerBound(nodeType: String, outputType: String, lowerBound: Int) extends SingleNodeRule with DslRule {
+class NodeOutputsLowerBound(val nodeType: String, val outputType: String, val lowerBound: Int) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Nodes of type $nodeType must have at least $lowerBound output edges of type $outputType."
   override val possibleFix: String = s"Add output edges of type $outputType to nodes of type $nodeType until there are at least $lowerBound output edges."

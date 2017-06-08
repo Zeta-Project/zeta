@@ -1,8 +1,10 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
+
 object MetaModelDependent {
 
-  val rules = Seq(
+  val rules: Seq[GeneratorRule] = Seq(
     Edges,
     Nodes,
     EdgeAttributes,

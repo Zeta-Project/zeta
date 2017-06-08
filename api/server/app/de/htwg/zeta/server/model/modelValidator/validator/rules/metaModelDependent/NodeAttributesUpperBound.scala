@@ -7,7 +7,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
-class NodeAttributesUpperBound(nodeType: String, attributeType: String, upperBound: Int) extends SingleNodeRule with DslRule {
+class NodeAttributesUpperBound(val nodeType: String, val attributeType: String, val upperBound: Int) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"Nodes of type $nodeType must have a maximum of $upperBound attributes of type $attributeType."
