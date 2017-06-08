@@ -56,4 +56,23 @@ class NodeOutputsUpperBoundTest extends FlatSpec with Matchers {
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Outputs ofNodes "nodeType" toEdges "outputType" haveUpperBound 2""")
   }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val outputMLinkDef = MLinkDef(mReference, 7, 0, deleteIfLower = false)
+
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](outputMLinkDef), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeOutputsUpperBound.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeOutputsUpperBound =>
+        rule.nodeType should be ("class")
+        rule.outputType should be ("reference")
+        rule.upperBound should be (7)
+      case _ => fail
+    }
+
+  }
 }

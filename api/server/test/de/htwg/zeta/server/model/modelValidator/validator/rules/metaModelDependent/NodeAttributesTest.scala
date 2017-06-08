@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
 import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
@@ -48,6 +49,23 @@ class NodeAttributesTest extends FlatSpec with Matchers {
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Attributes inNodes "nodeType" areOfTypes Seq("att1", "att2")""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val attribute1 = MAttribute("attributeName1", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](attribute1, attribute2))
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeAttributes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeAttributes =>
+        rule.nodeType should be ("class")
+        rule.attributeTypes should be (Seq("attributeName1", "attributeName2"))
+      case _ => fail
+    }
+
   }
 
 }

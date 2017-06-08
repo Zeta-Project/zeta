@@ -109,4 +109,22 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
     rule.dslStatement should be ("""Sources ofEdges "edgeType" areOfTypes Seq("source1", "source2")""")
   }
 
+  "generateFor" should "generate this rule from the meta model" in {
+    val class1 = MClass("class1", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val class2 = MClass("class2", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val sourceLinkDef1 = MLinkDef(class1, -1, 0, deleteIfLower = false)
+    val sourceLinkDef2 = MLinkDef(class2, -1, 0, deleteIfLower = false)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](sourceLinkDef1, sourceLinkDef2), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgeSourceNodes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgeSourceNodes =>
+        rule.edgeType should be ("reference")
+        rule.sourceTypes should be (Seq("class1", "class2"))
+      case _ => fail
+    }
+  }
+
 }

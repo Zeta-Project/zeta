@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
@@ -40,5 +41,18 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Edges ofType "edgeType" haveNoAttributes ()""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgesNoAttributes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgesNoAttributes =>
+        rule.edgeType should be ("reference")
+      case _ => fail
+    }
   }
 }

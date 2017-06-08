@@ -60,4 +60,23 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
     rule.dslStatement should be ("""Inputs ofNodes "nodeType" toEdges "inputType" haveLowerBound 2""")
   }
 
+  "generateFor" should "generate this rule from the meta model" in {
+    val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val inputMLinkDef = MLinkDef(mReference, -1, 5, deleteIfLower = false)
+
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](inputMLinkDef), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeInputsLowerBound.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeInputsLowerBound =>
+        rule.nodeType should be ("class")
+        rule.inputType should be ("reference")
+        rule.lowerBound should be (5)
+      case _ => fail
+    }
+
+  }
+
 }

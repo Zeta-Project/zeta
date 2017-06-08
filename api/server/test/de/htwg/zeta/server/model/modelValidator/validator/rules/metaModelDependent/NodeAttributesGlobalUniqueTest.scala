@@ -2,9 +2,12 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
@@ -54,6 +57,23 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Attributes ofType "attributeType" inNodes Seq("nodeType1", "nodeType2") areGlobalUnique ()""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val globalUniqueAttribute = MAttribute("attributeName", globalUnique = true, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val nonGlobalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](nonGlobalUniqueAttribute, globalUniqueAttribute))
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeAttributesGlobalUnique.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeAttributesGlobalUnique =>
+        rule.nodeTypes should be (Seq("class"))
+        rule.attributeType should be ("attributeName")
+      case _ => fail
+    }
+
   }
 
 }

@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
@@ -53,6 +54,23 @@ class NodeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Attributes ofType "attributeType" inNodes "nodeType" haveUpperBound 2""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, 7, 0)
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](attribute))
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeAttributesUpperBound.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeAttributesUpperBound =>
+        rule.nodeType should be ("class")
+        rule.attributeType should be ("attributeName")
+        rule.upperBound should be (7)
+      case _ => fail
+    }
+
   }
 
 }

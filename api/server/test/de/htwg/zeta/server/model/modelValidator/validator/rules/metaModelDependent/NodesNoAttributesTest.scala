@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
@@ -41,6 +42,20 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Nodes ofType "nodeType" haveNoAttributes ()""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodesNoAttributes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodesNoAttributes =>
+        rule.nodeType should be ("class")
+      case _ => fail
+    }
+
   }
 
 }
