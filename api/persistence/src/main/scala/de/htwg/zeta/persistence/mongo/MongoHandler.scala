@@ -2,12 +2,9 @@ package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
 
-import scala.util.Success
-
 import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
-import de.htwg.zeta.persistence.general.VersionIndex
-import de.htwg.zeta.persistence.general.EntityVersion
 import models.User
+import models.Entity
 import models.document.EventDrivenTask
 import models.document.BondedTask
 import models.document.TimedTask
@@ -15,39 +12,36 @@ import models.document.Generator
 import models.document.Filter
 import models.document.GeneratorImage
 import models.document.FilterImage
-import models.document.Settings
-import models.document.MetaModelRelease
-import models.document.ModelEntity
-import models.document.Log
-import models.document.MetaModelEntity
-import models.file.File
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentWriter
 import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.Macros
 import reactivemongo.bson.BSONDocumentHandler
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.BSONString
+import reactivemongo.bson.BSONReader
+import reactivemongo.bson.BSONWriter
+import reactivemongo.bson.BSONBoolean
 
 
 object MongoHandler {
 
   private val sId = "_id"
 
-  implicit val idHandler = new BSONDocumentReader[UUID] with BSONDocumentWriter[UUID] {
+  implicit object IdHandler extends BSONReader[BSONString, UUID] with BSONWriter[UUID, BSONString] {
 
-    override def read(doc: BSONDocument): UUID = {
-      UUID.fromString(doc.getAs[BSONObjectID](sId).get.stringify)
+    def read(doc: BSONString): UUID = {
+      UUID.fromString(doc.value)
     }
 
-    override def write(id: UUID): BSONDocument = {
-      BSONObjectID.parse {
-        case Success(d) => BSONDocument(sId -> d.toString)
-      }
-
-
+    def write(id: UUID): BSONString = {
+      BSONString(id.toString)
     }
 
   }
+
+
+  implicit val reader: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
+  case class IdOnlyEntity(id: UUID) extends Entity
 
 
   implicit val mapStringSetIdHandler = new BSONDocumentReader[Map[String, Set[UUID]]] with BSONDocumentWriter[Map[String, Set[UUID]]] {
@@ -64,6 +58,11 @@ object MongoHandler {
     }
 
   }
+
+
+  //  case class IdOnlyEntity(id: UUID) extends Entity
+
+  //  implicit val idOnlyEntity: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
 
   implicit val accessAuthorisationHandler: BSONDocumentHandler[AccessAuthorisation] = Macros.handler[AccessAuthorisation]
 
@@ -93,7 +92,36 @@ object MongoHandler {
 
   // implicit val logHandler: BSONDocumentHandler[Log] = Macros.handler[Log]
 
-  implicit val userHandler: BSONDocumentHandler[User] = Macros.handler[User]
+  // implicit val userHandler: BSONDocumentHandler[User] = Macros.handler[User]
+  implicit object UserHandler extends BSONDocumentWriter[User] with BSONDocumentReader[User] {
+
+    private val sFirstName = "firstName"
+    private val sLastName = "lastName"
+    private val sEmail = "email"
+    private val sActivated = "activated"
+
+    override def write(user: User): BSONDocument = {
+      BSONDocument(
+        sId -> IdHandler.write(user.id),
+        sFirstName -> BSONString(user.firstName),
+        sLastName -> BSONString(user.lastName),
+        sEmail -> BSONString(user.email),
+        sActivated -> BSONBoolean(user.activated)
+      )
+    }
+
+    override def read(doc: BSONDocument): User = {
+      User(
+        id = doc.getAs[UUID](sId).get,
+        firstName = doc.getAs[String](sFirstName).get,
+        lastName = doc.getAs[String](sLastName).get,
+        email = doc.getAs[String](sEmail).get,
+        activated = doc.getAs[Boolean](sActivated).get
+      )
+    }
+
+  }
+
 
   // implicit val versionIndexStringHandler: BSONDocumentHandler[VersionIndex[String]] = Macros.handler[VersionIndex[String]]
 

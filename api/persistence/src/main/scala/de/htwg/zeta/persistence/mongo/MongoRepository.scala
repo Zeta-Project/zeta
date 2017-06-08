@@ -81,7 +81,7 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
 
   /** Persistence for [[models.User]] */
   override val users: Persistence[User] =
-    new MongoPersistence[User](uri, dbName, MongoHandler.userHandler)
+    new MongoPersistence[User](uri, dbName, null)
 
   /** Persistence for the file indices */
   override private[persistence] val fileIndices: Persistence[VersionIndex[String]] = null
