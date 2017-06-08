@@ -85,7 +85,7 @@
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/compartmentManager.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/share.min.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/zeta.link.js")"></script>
-
+    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/modelValidatorUtil.js")"></script>
 
     <div class="toolbar-container panel panel-default">
 
@@ -131,6 +131,20 @@
                 <span class="caret"></span>
             </button>
             <ul id="generators" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <button id="btnValidator" class="toolbar-gridsize btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                Validator
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="btnValidator">
+                <li><a href="#" id="validatorValidate" data-model-id="@(id)">Validate Model</a></li>
+                <li><a href="#" id="validatorShow" data-meta-model-id="@(metaModelUUID)">Show Validation Rules</a></li>
+                <li><a href="#" id="validatorUnhighlight">Unhighlight highlighted Cells</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(metaModelUUID)">Generate / Update Validator</a></li>
             </ul>
         </div>
 
@@ -263,7 +277,8 @@
     }
     </script>
 
-        <!-- Node Code Editor -->
+
+    <!-- Node Code Editor -->
         <!--<link rel="stylesheet" type="text/css" href=" @routes.ScalaRoutes.getAssets("modelEditor/editor/model_specific/nodeCodeEditor.css")
     " />-->
         <!--
@@ -294,6 +309,7 @@
 
 
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/chat.js")"></script>
+    <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/modelValidator.js")"></script>
 
         <!-- nodeCodeEditor -->
         <!--

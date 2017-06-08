@@ -11,6 +11,7 @@
                 window.metaModelId = "@metaModel.get.id";
         </script>
     }
+    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/modelValidatorUtil.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/diagramOverview.js")"></script>
 
     <div class="row">
@@ -118,8 +119,8 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="btnValidator">
-                        <li><a href="#" id="validatorGenerate">Update</a></li>
-                        <li><a href="#" id="validatorShow">Show</a></li>
+                        <li><a href="#" id="validatorGenerate">Generate / Update Validator</a></li>
+                        <li><a href="#" id="validatorShow">Show Validation Rules</a></li>
                     </ul>
                 </div>
 

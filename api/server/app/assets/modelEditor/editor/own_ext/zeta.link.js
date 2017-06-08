@@ -1,4 +1,4 @@
-joint.shapes.zeta.MLink = joint.dia.Link.extend({
+(function() {joint.shapes.zeta.MLink = joint.dia.Link.extend({
     //Override default markup to add placing
     markup: [
         '<path class="connection" stroke="black"/>',
@@ -244,4 +244,4 @@ joint.shapes.zeta.MLinkView = joint.dia.LinkView.extend({
     _floatEquals: function (f1, f2, delta) {
         return Math.abs(f1 - f2) < delta;
     }
-});
+});})();
