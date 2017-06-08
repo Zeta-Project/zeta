@@ -8,6 +8,9 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgeAttributesUpperBound
 import models.modelDefinitions.metaModel.elements.ScalarType
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 class AttributesOfTypeInEdges(attributeType: String, edgeType: String) {
 
   def haveUpperBound(upperBound: Int): EdgeAttributesUpperBound = new EdgeAttributesUpperBound(edgeType, attributeType, upperBound)

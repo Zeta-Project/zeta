@@ -11,9 +11,28 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Writes
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ *
+ * The result of the validation of one rule against one model element.
+ *
+ * @param rule         The rule.
+ * @param valid        Element is valid or invalid.
+ * @param modelElement The element.
+ */
 case class ModelValidationResult(rule: Rule, valid: Boolean, modelElement: Option[ModelElement] = None)
 
 object ModelValidationResult {
+
+  /**
+   * Implicit converter from ModelValidationResult to its JSON representation, so the following calls succeed:
+   *
+   * {{{
+   *   Json.toJson(modelValidationResult)
+   *
+   *   Json.toJson(Seq(modelValidationResult, ...))
+   * }}}
+   */
   implicit val modelValidationResultWrites: Writes[ModelValidationResult] = new Writes[ModelValidationResult] {
     override def writes(o: ModelValidationResult): JsValue = {
       val element = o.modelElement match {

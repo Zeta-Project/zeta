@@ -1,4 +1,8 @@
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 (function ($) {
+    'use strict';
 
     var highlightInvalidCells, unhighlightCells;
     var graph = window.globalGraph;

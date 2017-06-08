@@ -9,6 +9,9 @@ import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.model.elements.Edge
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, val enumName: String) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Attributes of type $attributeType in edges of type $edgeType must be of type enum $enumName."

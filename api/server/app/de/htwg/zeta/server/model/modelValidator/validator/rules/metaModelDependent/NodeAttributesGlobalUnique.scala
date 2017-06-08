@@ -19,6 +19,9 @@ import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: String) extends ElementsRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =

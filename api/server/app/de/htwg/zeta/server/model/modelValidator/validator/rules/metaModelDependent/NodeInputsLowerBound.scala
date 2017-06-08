@@ -7,6 +7,9 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 class NodeInputsLowerBound(val nodeType: String, val inputType: String, val lowerBound: Int) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Nodes of type $nodeType must have at least $lowerBound input edges of type $inputType."

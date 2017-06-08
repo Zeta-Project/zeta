@@ -2,8 +2,14 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 
+/**
+ * Collection of all the rules the model can be validated against which are dependent on the meta model.
+ */
 object MetaModelDependent {
 
+  /**
+   * All possible meta model dependent rules.
+   */
   val rules: Seq[GeneratorRule] = Seq(
     Edges,
     Nodes,
