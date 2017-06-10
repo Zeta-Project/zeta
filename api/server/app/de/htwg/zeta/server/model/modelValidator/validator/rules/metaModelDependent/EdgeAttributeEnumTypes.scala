@@ -21,7 +21,7 @@ class EdgeAttributeEnumTypes(edgeType: String, attributeType: String, enumName: 
     case Some(attribute) => attribute.value.headOption match {
       case None => true
       case Some(head) => head match {
-        case _: EnumSymbol => attribute.value.collect { case v: EnumSymbol => v }.forall(_.attributeType.name == enumName)
+        case _: EnumSymbol => attribute.value.collect { case v: EnumSymbol => v }.forall(_.enumName == enumName)
         case _ => true
       }
     }

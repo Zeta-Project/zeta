@@ -6,7 +6,7 @@ import java.util.UUID
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.ModelElement
-import models.modelDefinitions.model.elements.ModelReads
+// import models.modelDefinitions.model.elements.ModelReads
 import play.api.libs.functional.syntax
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json
@@ -19,13 +19,14 @@ import play.api.libs.json.__
 
 /**
  * The container that is used to persist model definitions, contains additional metadata
- * @param id the id of the model
+ *
+ * @param id          the id of the model
  * @param metaModelId the id of the corresponding metamodel
- * @param userId the user that created the model
- * @param created time of creation
- * @param updated time of last update
- * @param model the actual model
- * @param links optional attribute for HATEOAS links, only used when serving to clients
+ * @param userId      the user that created the model
+ * @param created     time of creation
+ * @param updated     time of last update
+ * @param model       the actual model
+ * @param links       optional attribute for HATEOAS links, only used when serving to clients
  */
 case class ModelEntity(id: UUID, metaModelId: UUID, userId: UUID, created: Instant, updated: Instant, model: Model, links: Option[Seq[HLink]] = None) {
   // sets initial data for insert
@@ -33,6 +34,7 @@ case class ModelEntity(id: UUID, metaModelId: UUID, userId: UUID, created: Insta
     val now = Instant.now
     copy(id = UUID.randomUUID, metaModelId = metaModelId, userId = userId, created = now, updated = now)
   }
+
   // overrides unchanging data for update
   def asUpdate(id: UUID): ModelEntity = {
     copy(
@@ -43,6 +45,7 @@ case class ModelEntity(id: UUID, metaModelId: UUID, userId: UUID, created: Insta
 
 }
 
+/*
 object ModelEntity {
 
   def reads(implicit meta: MetaModel): Reads[Model] = {
@@ -94,14 +97,16 @@ object ModelEntity {
       "links" -> m.links
     )
   }
-}
+} */
+
 
 /**
  * Represents concise information on a model, used for REST-API overview uri
- * @param id the id of the model
+ *
+ * @param id          the id of the model
  * @param metaModelId the name of the metamodel
- * @param name the name of themodel
- * @param links optional attribute for HATEOAS links, only used when serving to clients
+ * @param name        the name of themodel
+ * @param links       optional attribute for HATEOAS links, only used when serving to clients
  */
 case class ModelShortInfo(id: UUID, metaModelId: UUID, name: String, links: Option[Seq[HLink]] = None)
 
@@ -109,10 +114,10 @@ object ModelShortInfo {
 
   implicit val reads: Reads[ModelShortInfo] = (
     (__ \ "id").read[UUID] and
-    (__ \ "metaModelId").read[UUID] and
-    (__ \ "model" \ "name").read[String] and
-    (__ \ "links").readNullable[Seq[HLink]]
-  )(ModelShortInfo.apply _)
+      (__ \ "metaModelId").read[UUID] and
+      (__ \ "model" \ "name").read[String] and
+      (__ \ "links").readNullable[Seq[HLink]]
+    ) (ModelShortInfo.apply _)
 
   implicit val writes: OWrites[ModelShortInfo] = Json.writes[ModelShortInfo]
 }

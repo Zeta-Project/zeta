@@ -3,7 +3,6 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
@@ -13,7 +12,14 @@ import org.scalatest.Matchers
 
 class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference(
+    "edgeType",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
+  )
   val rule = new EdgeAttributesUpperBound("edgeType", "attributeType", 2)
 
   "check" should "return true on edges with 2 or less attributes of type attributeType" in {
@@ -48,7 +54,14 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching edges" in {
-    val differentReference = MReference("differentEdgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentReference = MReference(
+      "differentEdgeType",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
+    )
     val edge = Edge.apply2("edgeId", differentReference, Seq(), Seq(), Seq())
 
     rule.isValid(edge) should be (None)

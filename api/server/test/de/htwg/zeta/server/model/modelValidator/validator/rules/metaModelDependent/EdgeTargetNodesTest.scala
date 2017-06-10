@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
@@ -13,7 +12,13 @@ import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class EdgeTargetNodesTest extends FlatSpec with Matchers {
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference(
+    "edgeType",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    Seq.empty, Seq.empty,
+    Seq[MAttribute]()
+  )
   val rule = new EdgeTargetNodes("edgeType", Seq("target1", "target2"))
 
   "isValid" should "return true on edges of type edgeType with valid target nodes" in {
@@ -21,7 +26,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
     val target1 = MClass(
       name = "target1",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -44,7 +49,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
     val target2 = MClass(
       name = "target2",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -77,7 +82,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
     val invalidTarget = MClass(
       name = "invalidTarget",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -99,12 +104,19 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching edges" in {
-    val differentMReference = MReference("differentEdgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentMReference = MReference(
+      "differentEdgeType",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]())
     val edge = Edge.apply2("", differentMReference, Seq(), Seq(), Seq())
-    rule.isValid(edge) should be (None)
+    rule.isValid(edge) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Targets ofEdges "edgeType" areOfTypes Seq("target1", "target2")""")
+    rule.dslStatement should be(
+      """Targets ofEdges "edgeType" areOfTypes Seq("target1", "target2")""")
   }
 }

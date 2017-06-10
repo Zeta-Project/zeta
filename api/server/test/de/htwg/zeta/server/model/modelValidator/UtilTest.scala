@@ -7,10 +7,10 @@ import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
@@ -23,77 +23,147 @@ import org.scalatest.Matchers
 class UtilTest extends FlatSpec with Matchers {
 
 
-    val mClass = MClass(
-      name = "mClass",
-      abstractness = false,
-      superTypes = Seq[MClass](),
-      inputs = Seq[MLinkDef](),
-      outputs = Seq[MLinkDef](),
-      attributes = Seq[MAttribute]()
-    )
+  val mClass = MClass(
+    name = "mClass",
+    abstractness = false,
+    superTypeNames = Seq.empty,
+    inputs = Seq.empty,
+    outputs = Seq.empty,
+    attributes = Seq[MAttribute]()
+  )
 
-    val mReference = MReference(
-      name = "mReference",
+  val mReference = MReference(
+    name = "mReference",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    source = Seq.empty,
+    target = Seq.empty,
+    attributes = Seq[MAttribute]()
+  )
+
+  val modelElements = Seq(
+    Node.apply2(id = "node1", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
+    Node.apply2(id = "node2", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
+    Edge.apply2(id = "edge1", `type` = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Seq[Attribute]()),
+    Node.apply2(id = "node3", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
+    Edge.apply2(id = "edge2", `type` = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Seq[Attribute]())
+  )
+
+  val mObjects = Seq(
+    MReference(
+      name = "mReference1",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq[MLinkDef](),
-      target = Seq[MLinkDef](),
+      source = Seq.empty,
+      target = Seq.empty,
+      attributes = Seq[MAttribute]()
+    ),
+    MReference(
+      name = "mReference2",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      source = Seq.empty,
+      target = Seq.empty,
+      attributes = Seq[MAttribute]()
+    ),
+    MClass(
+      name = "mClass1",
+      abstractness = false,
+      superTypeNames = Seq.empty,
+      inputs = Seq.empty,
+      outputs = Seq.empty,
+      attributes = Seq[MAttribute]()
+    ),
+    MReference(
+      name = "mReference3",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      source = Seq.empty,
+      target = Seq.empty,
+      attributes = Seq[MAttribute]()
+    ),
+    MClass(
+      name = "mClass2",
+      abstractness = true,
+      superTypeNames = Seq.empty,
+      inputs = Seq.empty,
+      outputs = Seq.empty,
       attributes = Seq[MAttribute]()
     )
 
-    val modelElements = Seq(
-      Node.apply2(id = "node1", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
-      Node.apply2(id = "node2", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
-      Edge.apply2(id = "edge1", `type` = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Seq[Attribute]()),
-      Node.apply2(id = "node3", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
-      Edge.apply2(id = "edge2", `type` = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Seq[Attribute]())
+  )
+
+  val inheritanceMObjects: Seq[MObject] = {
+
+    val abstractSuperClassOneAttribute = MAttribute(
+      name = "abstractSuperClassOneAttribute",
+      globalUnique = false,
+      localUnique = false,
+      `type` = ScalarType.String,
+      default = MString(""),
+      constant = false,
+      singleAssignment = false,
+      expression = "",
+      ordered = false,
+      transient = false,
+      upperBound = -1,
+      lowerBound = 0
     )
 
-    val mObjects = Seq(
-      MReference(name = "mReference1", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, source = Seq[MLinkDef](), target = Seq[MLinkDef](), attributes = Seq[MAttribute]()),
-      MReference(name = "mReference2", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, source = Seq[MLinkDef](), target = Seq[MLinkDef](), attributes = Seq[MAttribute]()),
-      MClass(name = "mClass1", abstractness = false, superTypes = Seq[MClass](), inputs = Seq[MLinkDef](), outputs = Seq[MLinkDef](), attributes = Seq[MAttribute]()),
-      MReference(name = "mReference3", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, source = Seq[MLinkDef](), target = Seq[MLinkDef](), attributes = Seq[MAttribute]()),
-      MClass(name = "mClass2", abstractness = true, superTypes = Seq[MClass](), inputs = Seq[MLinkDef](), outputs = Seq[MLinkDef](), attributes = Seq[MAttribute]())
+    val superClassOneToSuperClassTwo = MReference(
+      name = "superClassOneToSuperClassTwo",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      source = Seq(),
+      target = Seq(),
+      attributes = Seq()
+    )
+    val superClassOneOutput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
+    val superClassTwoInput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
 
+    val abstractSuperClassOne = MClass(
+      name = "abstractSuperClassOne",
+      abstractness = true,
+      superTypeNames = Seq(),
+      inputs = Seq(),
+      outputs = Seq(superClassOneOutput),
+      attributes = Seq(abstractSuperClassOneAttribute)
+    )
+    val abstractSuperClassTwo = MClass(
+      name = "abstractSuperClassTwo",
+      abstractness = true,
+      superTypeNames = Seq(),
+      inputs = Seq(superClassTwoInput),
+      outputs = Seq(),
+      attributes = Seq()
+    )
+    val subClassOne = MClass(
+      name = "subClassOne",
+      abstractness = false,
+      superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
+      inputs = Seq(),
+      outputs = Seq(),
+      attributes = Seq()
+    )
+    val subClassTwo = MClass(
+      name = "subClassTwo",
+      abstractness = false,
+      superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
+      inputs = Seq(),
+      outputs = Seq(),
+      attributes = Seq()
     )
 
-    val inheritanceMObjects: Seq[MObject] = {
+    Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo, superClassOneToSuperClassTwo)
+  }
 
-      val abstractSuperClassOneAttribute = MAttribute(
-        name = "abstractSuperClassOneAttribute",
-        globalUnique = false,
-        localUnique = false,
-        `type` = ScalarType.String,
-        default = MString(""),
-        constant = false,
-        singleAssignment = false,
-        expression = "",
-        ordered = false,
-        transient = false,
-        upperBound = -1,
-        lowerBound = 0
-      )
+  val metaModel = MetaModel(
+    name = "metaModelTest",
+    elements = inheritanceMObjects.map(obj => obj.name -> obj).toMap,
+    uiState = ""
+  )
 
-      val superClassOneToSuperClassTwo = MReference(name = "superClassOneToSuperClassTwo", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, source = Seq(), target = Seq(), attributes = Seq())
-      val superClassOneOutput = MLinkDef(mType = superClassOneToSuperClassTwo, upperBound = -1, lowerBound = 0, deleteIfLower = false)
-      val superClassTwoInput = MLinkDef(mType = superClassOneToSuperClassTwo, upperBound = -1, lowerBound = 0, deleteIfLower = false)
-
-      val abstractSuperClassOne = MClass(name = "abstractSuperClassOne", abstractness = true, superTypes = Seq(), inputs = Seq(), outputs = Seq(superClassOneOutput), attributes = Seq(abstractSuperClassOneAttribute))
-      val abstractSuperClassTwo = MClass(name = "abstractSuperClassTwo", abstractness = true, superTypes = Seq(), inputs = Seq(superClassTwoInput), outputs = Seq(), attributes = Seq())
-      val subClassOne = MClass(name = "subClassOne", abstractness = false, superTypes = Seq(abstractSuperClassOne, abstractSuperClassTwo), inputs = Seq(), outputs = Seq(), attributes = Seq())
-      val subClassTwo = MClass(name = "subClassTwo", abstractness = false, superTypes = Seq(abstractSuperClassOne, abstractSuperClassTwo), inputs = Seq(), outputs = Seq(), attributes = Seq())
-
-      Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo, superClassOneToSuperClassTwo)
-    }
-
-    val metaModel = MetaModel(
-      name = "metaModelTest",
-      elements = inheritanceMObjects.map(obj => obj.name -> obj).toMap,
-      uiState = ""
-    )
-
-    val simplifiedGraph: scala.Seq[Util.El] = Util.simplifyMetaModelGraph(metaModel)
+  val simplifiedGraph: scala.Seq[Util.El] = Util.simplifyMetaModelGraph(metaModel)
 
 
   "getNodes" should "return all nodes" in {
@@ -113,7 +183,8 @@ class UtilTest extends FlatSpec with Matchers {
   "stringSeqToSeqString" should "return the correct string to use in DSL calls" in {
     val seq = Seq("a", "b", "c", "d")
     val seqString = Util.stringSeqToSeqString(seq)
-    seqString should be("""Seq("a", "b", "c", "d")""")
+    seqString should be(
+      """Seq("a", "b", "c", "d")""")
   }
 
   "getReferences" should "return all mReferences" in {
@@ -275,7 +346,7 @@ class UtilTest extends FlatSpec with Matchers {
 
     val validOutputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
 
-    noException should be thrownBy(Util.inheritOutputs(validOutputsInherited))
+    noException should be thrownBy Util.inheritOutputs(validOutputsInherited)
 
   }
 

@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
@@ -12,7 +11,7 @@ import org.scalatest.Matchers
 
 class NodesAttributeSetTest extends FlatSpec with Matchers {
   val rule = new NodesAttributeSet
-  val mClass = MClass("nodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
 
   "isValid" should "return true on valid nodes attribute sets" in {

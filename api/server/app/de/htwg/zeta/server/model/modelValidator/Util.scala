@@ -6,9 +6,9 @@ import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.AttributeType
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ModelElement
@@ -83,8 +83,8 @@ object Util {
 
     def mapElement(el: MClass): El = El(
       name = el.name,
-      superTypes = el.superTypes.map(_.name),
-      subTypes = allClasses.filter(_.superTypes.map(_.name).contains(el.name)).map(_.name),
+      superTypes = el.superTypeNames,
+      subTypes = allClasses.filter(_.superTypeNames.contains(el.name)).map(_.name),
       attributes = el.attributes.map(mapAttribute),
       abstractness = el.abstractness,
       inputs = el.inputs.map(mapLinkDef),
@@ -106,8 +106,8 @@ object Util {
       default = att.default.toString
     )
 
-    def mapLinkDef(linkDef: MLinkDef): LinkDef = LinkDef(
-      name = linkDef.mType.name,
+    def mapLinkDef(linkDef: MReferenceLinkDef): LinkDef = LinkDef(
+      name = linkDef.referenceName,
       lowerBound = linkDef.lowerBound,
       upperBound = linkDef.upperBound
     )

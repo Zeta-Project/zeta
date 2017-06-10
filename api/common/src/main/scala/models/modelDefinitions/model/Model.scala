@@ -2,8 +2,8 @@ package models.modelDefinitions.model
 
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.ModelElement
-import models.modelDefinitions.model.elements.ModelReads
-import models.modelDefinitions.model.elements.ModelWrites
+// import models.modelDefinitions.model.elements.ModelReads
+// import models.modelDefinitions.model.elements.ModelWrites
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
@@ -25,34 +25,37 @@ case class Model(
     elements: Map[String, ModelElement],
     uiState: String)
 
+/*
 object Model {
 
-  def readAndMergeWithMetaModel(json: JsValue, meta: MetaModel): JsResult[Model] = {
-    val mapReads = ModelReads.elementMapReads(meta)
-    val name = (json \ "name").as[String]
-    val elements = (json \ "elements").as[Map[String, ModelElement]](mapReads)
-    val uiState = (json \ "uiState").as[String]
-    val model = Model(name, meta, elements, uiState)
 
-    JsSuccess(model)
-  }
+ def readAndMergeWithMetaModel(json: JsValue, meta: MetaModel): JsResult[Model] = {
+   val mapReads = ModelReads.elementMapReads(meta)
+   val name = (json \ "name").as[String]
+   val elements = (json \ "elements").as[Map[String, ModelElement]](mapReads)
+   val uiState = (json \ "uiState").as[String]
+   val model = Model(name, meta, elements, uiState)
 
-  implicit val reads = new Reads[Model] {
-    def reads(json: JsValue): JsResult[Model] = {
-      val name = (json \ "name").as[String]
-      val uiState = (json \ "uiState").as[String]
-      val model = Model(name, null, Map[String, ModelElement](), uiState)
-      JsSuccess(model)
-    }
-  }
+   JsSuccess(model)
+ }
 
-  implicit val writes = new Writes[Model] {
-    private implicit val mObjectWrites = ModelWrites.mObjectWrites
-    def writes(d: Model): JsValue = Json.obj(
-      "name" -> d.name,
-      "elements" -> d.elements.values,
-      "uiState" -> d.uiState
-    )
-  }
+ implicit val reads = new Reads[Model] {
+   def reads(json: JsValue): JsResult[Model] = {
+     val name = (json \ "name").as[String]
+     val uiState = (json \ "uiState").as[String]
+     val model = Model(name, null, Map[String, ModelElement](), uiState)
+     JsSuccess(model)
+   }
+ }
+
+ implicit val writes = new Writes[Model] {
+   private implicit val mObjectWrites = ModelWrites.mObjectWrites
+   def writes(d: Model): JsValue = Json.obj(
+     "name" -> d.name,
+     "elements" -> d.elements.values,
+     "uiState" -> d.uiState
+   )
+ }
 
 }
+*/

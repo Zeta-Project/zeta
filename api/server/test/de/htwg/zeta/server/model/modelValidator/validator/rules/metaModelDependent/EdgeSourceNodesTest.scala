@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
@@ -14,7 +13,14 @@ import org.scalatest.Matchers
 
 class EdgeSourceNodesTest extends FlatSpec with Matchers {
 
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference(
+    "edgeType",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
+  )
   val rule = new EdgeSourceNodes("edgeType", Seq("source1", "source2"))
 
   "isValid" should "return true on edges of type edgeType with valid source nodes" in {
@@ -22,7 +28,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
     val source1 = MClass(
       name = "source1",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -45,7 +51,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
     val source2 = MClass(
       name = "source2",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -78,7 +84,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
     val invalidSource = MClass(
       name = "invalidSource",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -100,13 +106,21 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching edges" in {
-    val differentMReference = MReference("differentEdgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentMReference = MReference(
+      "differentEdgeType",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
+    )
     val edge = Edge.apply2("", differentMReference, Seq(), Seq(), Seq())
-    rule.isValid(edge) should be (None)
+    rule.isValid(edge) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Sources ofEdges "edgeType" areOfTypes Seq("source1", "source2")""")
+    rule.dslStatement should be(
+      """Sources ofEdges "edgeType" areOfTypes Seq("source1", "source2")""")
   }
 
 }

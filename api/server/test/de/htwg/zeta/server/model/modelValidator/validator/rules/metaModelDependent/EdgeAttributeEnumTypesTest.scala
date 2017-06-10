@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
@@ -14,40 +13,61 @@ import org.scalatest.Matchers
 
 class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
-  val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference(
+    "reference",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    Seq.empty, Seq.empty,
+    Seq[MAttribute]()
+  )
   val rule = new EdgeAttributeEnumTypes("reference", "attributeType", "enumName")
 
   "the rule" should "be true for valid edges" in {
     val mEnum = MEnum(name = "enumName", values = Seq())
-    val attribute = Attribute(name = "attributeType", value = Seq(new EnumSymbol("enumName", mEnum)))
+    val attribute = Attribute(name = "attributeType", value = Seq(EnumSymbol("enumName", mEnum.name)))
     val edge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(attribute))
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "return None for non-matching edge" in {
-    val differentMReference = MReference("differentMReference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentMReference = MReference(
+      "differentMReference",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
+    )
     val edge = Edge.apply2("edgeId", differentMReference, Seq(), Seq(), Seq())
 
-    rule.isValid(edge) should be (None)
+    rule.isValid(edge) should be(None)
   }
 
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", values = Seq())
-    val attribute = Attribute(name = "attributeType", value = Seq(new EnumSymbol("differentEnumName", differentEnum)))
+    val attribute = Attribute(name = "attributeType", value = Seq(EnumSymbol("differentEnumName", differentEnum.name)))
     val edge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(attribute))
 
     rule.isValid(edge).get should be(false)
   }
 
   it should "be None for non-matching edges" in {
-    val differentReference = MReference("differentRef", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentReference = MReference(
+      "differentRef",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
+    )
     val edge = Edge.apply2("", differentReference, Seq(), Seq(), Seq())
-    rule.isValid(edge) should be (None)
+    rule.isValid(edge) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Attributes ofType "attributeType" inEdges "reference" areOfEnumType "enumName"""")
+    rule.dslStatement should be(
+      """Attributes ofType "attributeType" inEdges "reference" areOfEnumType "enumName"""")
   }
 
 }

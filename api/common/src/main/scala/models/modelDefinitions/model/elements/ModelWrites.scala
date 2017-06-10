@@ -1,6 +1,6 @@
 package models.modelDefinitions.model.elements
 
-import models.modelDefinitions.metaModel.elements.MCoreWrites
+// import models.modelDefinitions.metaModel.elements.MCoreWrites
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Writes
@@ -9,6 +9,7 @@ import play.api.libs.json.Writes
  * Writes[T] for Model structures
  */
 
+/*
 object ModelWrites {
 
   implicit val mObjectWrites = new Writes[ModelElement] {
@@ -67,3 +68,4 @@ object ModelWrites {
   }
 
 }
+*/

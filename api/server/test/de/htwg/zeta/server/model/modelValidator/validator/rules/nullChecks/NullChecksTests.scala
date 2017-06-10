@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
@@ -23,8 +22,8 @@ class NullChecksTests extends FlatSpec with Matchers {
 
   def toModel(elements: Seq[ModelElement]): Model = Model("", MetaModel("", Map(), ""), elements.map(el => el.id -> el).toMap, "")
 
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-  val mClass = MClass("nodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty)
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
   "EdgeAttributesNamesNotNull" should "check for null in edge attributes names" in {
     val rule = new EdgeAttributesNamesNotNull

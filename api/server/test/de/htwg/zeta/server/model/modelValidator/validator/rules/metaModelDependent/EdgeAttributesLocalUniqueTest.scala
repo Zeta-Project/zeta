@@ -3,7 +3,6 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
@@ -14,7 +13,14 @@ import org.scalatest.Matchers
 class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
 
   val rule = new EdgeAttributesLocalUnique("edgeType", "attributeType")
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference(
+    "edgeType",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
+  )
 
   "isValid" should "return true on valid edges" in {
     val attribute = Attribute(name = "attributeType", value = Seq(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
@@ -31,7 +37,14 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching edges" in {
-    val mReference = MReference("differentEdgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val mReference = MReference(
+      "differentEdgeType",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
+    )
     val edge = Edge.apply2("edgeOneId", mReference, Seq(), Seq(), Seq())
 
     rule.isValid(edge) should be(None)

@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
@@ -15,7 +14,7 @@ import org.scalatest.Matchers
 class NodeInputEdgesTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputEdges("nodeType", Seq("input1", "input2"))
-  val mClass = MClass("nodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
@@ -46,7 +45,7 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentClass = MClass("differentNodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
     val node = Node("", differentClass, Seq(), Seq(), Seq())
     rule.isValid(node) should be (None)
   }

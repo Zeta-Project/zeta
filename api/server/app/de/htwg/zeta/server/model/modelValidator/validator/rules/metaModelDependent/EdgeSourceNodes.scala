@@ -27,7 +27,7 @@ object EdgeSourceNodes extends GeneratorRule {
       if (currentReference.source.isEmpty) {
         acc
       } else {
-        acc :+ new EdgeSourceNodes(currentReference.name, currentReference.source.map(_.mType.name))
+        acc :+ new EdgeSourceNodes(currentReference.name, currentReference.source.map(_.className))
       }
     }
 }

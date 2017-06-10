@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
@@ -13,8 +12,8 @@ import org.scalatest.Matchers
 
 class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
-  val mClass1 = MClass("nodeType1", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-  val mClass2 = MClass("nodeType2", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass1 = MClass("nodeType1", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass2 = MClass("nodeType2", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
   val rule = new NodeAttributesGlobalUnique(Seq("nodeType1", "nodeType2"), "attributeType")
 
   "check" should "return success validation results on correct attributes" in {
@@ -30,8 +29,8 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
     val results = rule.check(Seq(node1, node2, node3))
 
-    results.size should be (3)
-    results.forall(_.valid) should be (true)
+    results.size should be(3)
+    results.forall(_.valid) should be(true)
   }
 
   it should "return failure validation results on invalid attributes" in {
@@ -46,14 +45,15 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
     val results = rule.check(Seq(node1, node2, node3))
 
-    results.size should be (3)
-    results.head.valid should be (false)
-    results(1).valid should be (true)
-    results(2).valid should be (false)
+    results.size should be(3)
+    results.head.valid should be(false)
+    results(1).valid should be(true)
+    results(2).valid should be(false)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Attributes ofType "attributeType" inNodes Seq("nodeType1", "nodeType2") areGlobalUnique ()""")
+    rule.dslStatement should be(
+      """Attributes ofType "attributeType" inNodes Seq("nodeType1", "nodeType2") areGlobalUnique ()""")
   }
 
 }

@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
@@ -15,7 +14,7 @@ import org.scalatest.Matchers
 class NodeInputsUpperBoundTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputsUpperBound("nodeType", "inputType", 2)
-  val mClass = MClass("nodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
   "isValid" should "return true on nodes of type nodeType having 2 or less input edges of type inputType" in {
     val inputType = MReference("inputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
@@ -49,7 +48,7 @@ class NodeInputsUpperBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
     val node = Node.apply2("", differentMClass, Seq(), Seq(), Seq())
     rule.isValid(node) should be (None)
   }

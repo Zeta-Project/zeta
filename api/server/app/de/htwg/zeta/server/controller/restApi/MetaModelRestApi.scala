@@ -23,7 +23,7 @@ import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.Style
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
+// import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -143,7 +143,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: MetaModelEntity) => {
       val d = m.metaModel
       val classesDef = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[MClass]))
-      Ok(Json.toJson(classesDef.elements.values))
+      Ok // TODO Ok(Json.toJson(classesDef.elements.values))
     })
   }
 
@@ -152,7 +152,7 @@ class MetaModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: MetaModelEntity) => {
       val d = m.metaModel
       val refsDef = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[MReference]))
-      Ok(Json.toJson(refsDef.elements.values))
+      Ok // TODO Ok(Json.toJson(refsDef.elements.values))
     })
   }
 
@@ -161,7 +161,9 @@ class MetaModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: MetaModelEntity) => {
       val d = m.metaModel
       val classDef = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[MClass]))
-      classDef.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      classDef.elements.values.headOption.map(m =>
+        Ok // TODO Ok(Json.toJson(m))
+      ).getOrElse(NotFound)
     })
   }
 
@@ -170,7 +172,9 @@ class MetaModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: MetaModelEntity) => {
       val d = m.metaModel
       val refDef = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[MReference]))
-      refDef.elements.values.headOption.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      refDef.elements.values.headOption.map(m =>
+        Ok // TODO Ok(Json.toJson(m))
+      ).getOrElse(NotFound)
     })
   }
 

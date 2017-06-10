@@ -3,11 +3,11 @@ package de.htwg.zeta.server.generator.generators.diagram
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.diagram.node.Node
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MClass
-
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
+
+import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
 /**
  * ValidatorGenerator is responsible for the creation of the String for validator.js
@@ -69,11 +69,11 @@ object ValidatorGenerator {
     """
   }
 
-  def generateInOutMatrixForMClass(inputs: Seq[MLinkDef], mcName: String): String = {
+  def generateInOutMatrixForMClass(inputs: Seq[MReferenceLinkDef], mcName: String): String = {
     s"""
     $mcName: {
       ${
-        (for {input <- inputs} yield s"""${input.mType.name}: {
+        (for {input <- inputs} yield s"""${input.referenceName}: {
           upperBound: ${input.upperBound},
           lowerBound: ${input.lowerBound}}"""
         ).mkString(",")
@@ -229,7 +229,7 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for {edge <- edges} {
       val targetClass = edge.to
-      val superTypeIsValidTarget = nodeClass.superTypes.exists(mc => mc.name == targetClass.name)
+      val superTypeIsValidTarget = nodeClass.superTypeNames.contains(targetClass.name)
       edgeTargetMap.put(edge.name, nodeClass.name == targetClass.name || superTypeIsValidTarget)
     }
     edgeTargetMap
@@ -240,7 +240,7 @@ object ValidatorGenerator {
     val nodeClass = node.mcoreElement
     for {edge <- edges} {
       val sourceClass = edge.from
-      val superTypeIsValidSource = nodeClass.superTypes.exists(mc => mc.name == sourceClass.name)
+      val superTypeIsValidSource = nodeClass.superTypeNames.contains(sourceClass.name)
       edgeSourceMap.put(edge.name, nodeClass.name == sourceClass.name || superTypeIsValidSource)
     }
     edgeSourceMap

@@ -19,11 +19,14 @@ import play.api.libs.json.__
  * Reads[T] for all MCore structures (bottom of file)
  * Contains also the necessary logic for graph initialization
  */
+
+/*
 object MCoreReads {
 
-  case class PlaceHolder(name: String) extends ClassOrRef
 
-  val empty = new {
+  case class PlaceHolder(name: String)
+
+   val empty = new {
     def mClass(name: String): MClass = new MClass(name, false, Seq.empty, Seq.empty, Seq.empty, Seq.empty)
 
     def mRef(name: String): MReference = new MReference(name, false, false, List.empty, List.empty, List.empty)
@@ -307,3 +310,4 @@ private class RefsValidator(private val mapping: Map[String, MObject]) {
     walk(values, Nil)
   }
 }
+ */

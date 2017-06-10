@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
@@ -14,14 +13,21 @@ import org.scalatest.Matchers
 
 class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
 
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mReference = MReference(
+    "edgeType",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
+  )
   val rule = new EdgeSourcesUpperBound("edgeType", "sourceType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or less source nodes of type sourceType" in {
     val sourceType = MClass(
       name = "sourceType",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -46,7 +52,7 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
 
     val edgeTwoSourceNodes = Edge.apply2("", mReference, Seq(twoSourceNodes), Seq(), Seq())
 
-    rule.isValid(edgeTwoSourceNodes).get should be (true)
+    rule.isValid(edgeTwoSourceNodes).get should be(true)
 
 
     val oneSourceNode = ToNodes(`type` = sourceType, nodes = Seq(
@@ -61,19 +67,19 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
 
     val edgeOneSourceNode = Edge.apply2("", mReference, Seq(oneSourceNode), Seq(), Seq())
 
-    rule.isValid(edgeOneSourceNode).get should be (true)
+    rule.isValid(edgeOneSourceNode).get should be(true)
 
 
     val edgeNoSourceNodes = Edge.apply2("", mReference, Seq(), Seq(), Seq())
 
-    rule.isValid(edgeNoSourceNodes).get should be (true)
+    rule.isValid(edgeNoSourceNodes).get should be(true)
   }
 
   it should "return false on edges of type edgeType having more than 2 source nodes of type sourceType" in {
     val sourceType = MClass(
       name = "sourceType",
       abstractness = false,
-      superTypes = Seq(),
+      superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq()
@@ -105,17 +111,25 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
 
     val edgeThreeSourceNodes = Edge.apply2("", mReference, Seq(threeSourceNodes), Seq(), Seq())
 
-    rule.isValid(edgeThreeSourceNodes).get should be (false)
+    rule.isValid(edgeThreeSourceNodes).get should be(false)
   }
 
   it should "return None on non-matching edges" in {
-    val differentReference = MReference("differentEdgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentReference = MReference(
+      "differentEdgeType",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
+    )
     val edge = Edge.apply2("", differentReference, Seq(), Seq(), Seq())
-    rule.isValid(edge) should be (None)
+    rule.isValid(edge) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Sources ofEdges "edgeType" toNodes "sourceType" haveUpperBound 2""")
+    rule.dslStatement should be(
+      """Sources ofEdges "edgeType" toNodes "sourceType" haveUpperBound 2""")
   }
 
 }

@@ -15,6 +15,7 @@ import play.api.libs.json.Writes
  * Writes[T] for all MCore structures
  */
 
+/*
 object MCoreWrites {
 
   implicit val mObjectWrites = new Writes[MObject] {
@@ -122,3 +123,4 @@ object MCoreWrites {
   }
 
 }
+*/

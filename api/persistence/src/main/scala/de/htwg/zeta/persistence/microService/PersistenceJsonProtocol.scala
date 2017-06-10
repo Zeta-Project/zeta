@@ -25,7 +25,7 @@ import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.AttributeValue
 import models.modelDefinitions.metaModel.elements.ScalarValue
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.MLinkDef
+// import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.model.elements.Attribute
@@ -62,7 +62,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   private val sName = "name"
   private val sAbstractness = "abstractness"
-  private val sSuperTypes = "superTypes"
+  private val sSuperTypeNames = "superTypeNames"
   private val sInputs = "inputs"
   private val sOutputs = "outputs"
   private val sAttributes = "attributes"
@@ -171,52 +171,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   private implicit val mAttributeFormat: RootJsonFormat[MAttribute] = jsonFormat12(MAttribute.apply)
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MLinkDef]] */
-  private implicit object MLinkDefFormat extends RootJsonFormat[MLinkDef] {
 
-    /** Write a MLinkDef.
-     *
-     * @param mLinkDef MLinkDef
-     * @return JsObject
-     */
-    def write(mLinkDef: MLinkDef): JsObject = {
-
-      JsObject(
-        sType -> (mLinkDef.mType match {
-          case _: MClass => JsString(sMClass)
-          case _: MReference => JsString(sMReference)
-        }),
-        sMType -> (mLinkDef.mType match {
-          case mClass: MClass => forwardRefMClassToJson(mClass)
-          case mReference: MReference => forwardRefMReferenceToJson(mReference)
-        }),
-        sUpperBound -> JsNumber(mLinkDef.upperBound),
-        sLowerBound -> JsNumber(mLinkDef.lowerBound),
-        sDeleteIfLower -> JsBoolean(mLinkDef.deleteIfLower)
-      )
-    }
-
-    /** Read a MLinkDef.
-     *
-     * @param value JsValue
-     * @return MLinkDef
-     */
-    def read(value: JsValue): MLinkDef = {
-      value.asJsObject.getFields(sType, sMType, sUpperBound, sLowerBound, sDeleteIfLower) match {
-        case Seq(JsString(mType), mClassOrRef, JsNumber(upperBound), JsNumber(lowerBound), JsBoolean(deleteIfLower)) =>
-          MLinkDef(
-            mType match {
-              case `sMClass` => forwardRefMClassConvertTo(mClassOrRef)
-              case `sMReference` => forwardRefMReferenceConvertTo(mClassOrRef)
-            },
-            upperBound.toInt,
-            lowerBound.toInt,
-            deleteIfLower
-          )
-      }
-    }
-
-  }
 
   /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MClass]] */
   private implicit object MClassFormat extends RootJsonFormat[MClass] {
@@ -230,9 +185,9 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
       JsObject(
         sName -> JsString(mClass.name),
         sAbstractness -> JsBoolean(mClass.abstractness),
-        sSuperTypes -> mClass.superTypes.toJson,
-        sInputs -> mClass.inputs.toJson,
-        sOutputs -> mClass.outputs.toJson,
+        sSuperTypeNames -> mClass.superTypeNames.toJson,
+        sInputs -> null, // TODO mClass.inputs.toJson,
+        sOutputs -> null, // mClass.outputs.toJson,
         sAttributes -> mClass.attributes.toJson
       )
     }
@@ -243,14 +198,14 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      * @return MClass
      */
     def read(value: JsValue): MClass = {
-      value.asJsObject.getFields(sName, sAbstractness, sSuperTypes, sInputs, sOutputs, sAttributes) match {
+      value.asJsObject.getFields(sName, sAbstractness, sSuperTypeNames, sInputs, sOutputs, sAttributes) match {
         case Seq(JsString(name), JsBoolean(abstractness), superTypes, inputs, outputs, attributes) =>
           MClass(
             name,
             abstractness,
-            superTypes.convertTo[List[MClass]],
-            inputs.convertTo[List[MLinkDef]],
-            outputs.convertTo[List[MLinkDef]],
+            superTypes.convertTo[List[String]],
+            null, // TODO inputs.convertTo[List[MLinkDef]],
+            null, // TODO outputs.convertTo[List[MLinkDef]],
             attributes.convertTo[List[MAttribute]]
           )
       }
@@ -272,8 +227,8 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
         sName -> JsString(mReference.name),
         sSourceDeletionDeletesTarget -> JsBoolean(mReference.sourceDeletionDeletesTarget),
         sTargetDeletionDeletesSource -> JsBoolean(mReference.targetDeletionDeletesSource),
-        sSource -> mReference.source.toJson,
-        sTarget -> mReference.target.toJson,
+        sSource -> null, // TODO mReference.source.toJson,
+        sTarget -> null, // TODO mReference.target.toJson,
         sAttributes -> mReference.attributes.toJson
       )
     }
@@ -290,8 +245,8 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
             name,
             sourceDeletionDeletesTarget,
             targetDeletionDeletesSource,
-            source.convertTo[List[MLinkDef]],
-            target.convertTo[List[MLinkDef]],
+            null, // TODO source.convertTo[List[MLinkDef]],
+            null, // TODO target.convertTo[List[MLinkDef]],
             attributes.convertTo[List[MAttribute]]
           )
       }
@@ -343,7 +298,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
           MEnum(
             name,
             values.map {
-              case JsString(v) => EnumSymbol(v, enum)
+              case JsString(v) => null // TODO EnumSymbol(v, enum)
             }
           )
       }

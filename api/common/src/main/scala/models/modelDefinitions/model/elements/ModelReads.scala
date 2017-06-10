@@ -7,7 +7,7 @@ import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.MLinkDef
+// import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue
@@ -25,7 +25,7 @@ import play.api.libs.json.__
  * Reads[T] for Model structures (bottom of file)
  * Contains also the necessary logic for graph initialization
  */
-
+/*
 object ModelReads {
 
   def emtpyNode(id: String): Node = {
@@ -217,18 +217,18 @@ object ModelReads {
   def nodeReads(implicit meta: MetaModel): Reads[Node] = (
     (__ \ "id").read[String] and
     (__ \ "mClass").read[String].filter(unknownMClassError) {
-      s => meta.containsMClass(s)
+      s => meta.classes.contains(s)
     }.map {
-      s => meta.getMClass(s).get
+      s => meta.classes.get(s).get
     } and
     (__ \ "outputs").read[Map[String, Seq[String]]].filter(invalidToEdgesError) {
-      e => e.keys.forall(s => meta.containsMReference(s))
+      e => e.keys.forall(s => meta.references.contains(s))
     }.map(extractEdges) and
     (__ \ "inputs").read[Map[String, Seq[String]]].filter(invalidToEdgesError) {
-      e => e.keys.forall(s => meta.containsMReference(s))
+      e => e.keys.forall(s => meta.references.contains(s))
     }.map(extractEdges) and
     (__ \ "mClass").read[String].flatMap(name => (__ \ "attributes").read[List[Attribute]](attributesReads {
-      meta.getMClass(name).map(c => c.getTypeMAttributes).getOrElse(Seq[MAttribute]())
+      meta.classes.get(name).map(c => c.getTypeMAttributes).getOrElse(Seq[MAttribute]())
     }))
   )(Node.apply2 _).filter(invalidToEdgesError2) {
     validateNodeLinks
@@ -262,15 +262,15 @@ object ModelReads {
   def edgeReads(implicit meta: MetaModel): Reads[Edge] = (
     (__ \ "id").read[String] and
     (__ \ "mReference").read[String].filter(unknownMReferenceError) {
-      s => meta.containsMReference(s)
+      s => meta.references.contains(s)
     }.map {
-      s => meta.getMReference(s).get
+      s => meta.references(s)
     } and
     (__ \ "source").read[Map[String, Seq[String]]].filter(invalidToNodesError) {
-      n => n.keys.forall(s => meta.containsMClass(s))
+      n => n.keys.forall(s => meta.classes.contains(s))
     }.map(extractNodes) and
     (__ \ "target").read[Map[String, Seq[String]]].filter(invalidToNodesError) {
-      n => n.keys.forall(s => meta.containsMClass(s))
+      n => n.keys.forall(s => meta.classes.contains(s))
     }.map(extractNodes) and
     (__ \ "attributes").read(Seq[Attribute]())
   )(Edge.apply2 _).filter(invalidToNodesError2) {
@@ -280,3 +280,4 @@ object ModelReads {
   }
 
 }
+*/

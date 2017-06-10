@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -12,9 +11,9 @@ import org.scalatest.Matchers
 class NodesTest extends FlatSpec with Matchers {
 
   val rule = new Nodes(Seq("nodeType1", "nodeType2"))
-  val mClass1 = MClass("nodeType1", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-  val mClass2 = MClass("nodeType2", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-  val mClass3 = MClass("nodeType3", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass1 = MClass("nodeType1", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass2 = MClass("nodeType2", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass3 = MClass("nodeType3", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
   "isValid" should "return true on valid edges" in {
 

@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
@@ -14,7 +13,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
-  val mClass = MClass("nodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
   val rule = new NodeAttributeScalarTypes("nodeType", "attributeType", ScalarType.String)
 
   "isValid" should "be true for valid nodes" in {
@@ -32,7 +31,7 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
     val node = Node.apply2("", differentMClass, Seq(), Seq(), Seq())
 
     rule.isValid(node) should be (None)

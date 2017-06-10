@@ -3,7 +3,7 @@ package de.htwg.zeta.server.util.graph
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MCoreReads
+// import models.modelDefinitions.metaModel.elements.MCoreReads
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
@@ -126,14 +126,14 @@ object MetamodelGraphDiff {
       name = (attribute \ "name").as[String],
       globalUnique = (attribute \ "globalUnique").as[Boolean],
       localUnique = (attribute \ "localUnique").as[Boolean],
-      `type` = MCoreReads.detectType((attribute \ "type").as[String]),
-      default = MCoreReads.detectType((attribute \ "type").as[String]) match {
+      `type` = null, // TODO MCoreReads.detectType((attribute \ "type").as[String]),
+      default = null, /* TODO MCoreReads.detectType((attribute \ "type").as[String]) match {
         case ScalarType.String => ScalarValue.MString((attribute \ "default").as[String])
         case ScalarType.Bool => ScalarValue.MBool((attribute \ "default").as[Boolean])
         case ScalarType.Double => ScalarValue.MDouble((attribute \ "default").as[Double])
         case ScalarType.Int => ScalarValue.MInt((attribute \ "default").as[Int])
         case MEnum(_, _) => ScalarValue.MString((attribute \ "default").as[String])
-      },
+      }, */
       constant = (attribute \ "constant").as[Boolean],
       singleAssignment = (attribute \ "singleAssignment").as[Boolean],
       expression = (attribute \ "expression").as[String],

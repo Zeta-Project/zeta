@@ -11,7 +11,7 @@ class NoCyclicInheritance extends MetaModelRule {
   override val name: String = getClass.getSimpleName
   override val description: String = "MClasses in the meta model must not have cyclic inheritance relationships."
 
-  override def check(metaModel: MetaModel): Boolean = !isCyclic(Util.getClasses(metaModel).map(el => el.name -> el.superTypes.map(_.name)).toMap)
+  override def check(metaModel: MetaModel): Boolean = !isCyclic(Util.getClasses(metaModel).map(el => el.name -> el.superTypeNames).toMap)
 
   // http://www.geeksforgeeks.org/detect-cycle-in-a-graph/
   def isCyclic(adjacencyMap: Map[String, Seq[String]]): Boolean = {

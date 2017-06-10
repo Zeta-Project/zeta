@@ -3,14 +3,12 @@ package models.modelDefinitions.metaModel.elements
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.MetaModelTraverseWrapper
+
 /**
  * Immutable domain model for the MCore (meta)metamodel
  */
 
-/** a helper type to combine classes and refs */
-trait ClassOrRef {
-  val name: String
-}
 
 /**
  * the MObject trait
@@ -31,57 +29,30 @@ trait MBounds {
  * The MClass implementation
  * @param name the name of the MClass instance
  * @param abstractness defines if the MClass is abstract
- * @param _superTypes the supertypes of the MClass (by-Name)
- * @param _inputs the incoming MReferences (by-Name)
- * @param _outputs the outgoing MReferences (by-Name)
+ * @param superTypeNames the names of the supertypes of the MClass
+ * @param inputs the incoming MReferences
+ * @param outputs the outgoing MReferences
  * @param attributes the attributes of the MClass
  */
-class MClass(
-    val name: String,
-    val abstractness: Boolean,
-    _superTypes: => Seq[MClass],
-    _inputs: => Seq[MLinkDef],
-    _outputs: => Seq[MLinkDef],
-    val attributes: Seq[MAttribute]
-) extends MObject with ClassOrRef {
-  lazy val superTypes = _superTypes
-  lazy val inputs = _inputs
-  lazy val outputs = _outputs
+case class MClass(
+    name: String,
+    abstractness: Boolean,
+    superTypeNames: Seq[String],
+    inputs: Seq[MReferenceLinkDef],
+    outputs: Seq[MReferenceLinkDef],
+    attributes: Seq[MAttribute]
+) extends MObject
 
-  /**
-   * convenience method for updating relationships
-   * @param _superTypes possible update of supertypes
-   * @param _inputs possible update of inputs
-   * @param _outputs possible update of outputs
-   * @return the new MClass
-   */
-  def updateLinks(
-    _superTypes: => Seq[MClass] = superTypes,
-    _inputs: => Seq[MLinkDef] = inputs,
-    _outputs: => Seq[MLinkDef] = outputs
-  ): MClass = new MClass(name, abstractness, _superTypes, _inputs, _outputs, attributes)
+case class MClassTraverseWrapper(value: MClass, metaModel: MetaModelTraverseWrapper) {
 
-  /**
-   * convenience method for updating attributes
-   * @param _attributes the updated attributes
-   * @return the new MClass
-   */
-  def updateAttributes(_attributes: Seq[MAttribute]): MClass = new MClass(name, abstractness, superTypes, inputs, outputs, _attributes)
-
-  /**
-   * @return String
-   */
-  override def toString: String = {
-    val superNames = for {e <- superTypes} yield e.name
-    val inputsNames = for {e <- inputs} yield e.mType.name
-    val outputsNames = for {e <- outputs} yield e.mType.name
-    s"MClass($name, $abstractness, $superNames, $inputsNames, $outputsNames, $attributes)"
-  }
+  def superTypes: Seq[MClassTraverseWrapper] = value.superTypeNames.map(name =>
+    MClassTraverseWrapper(metaModel.classes(name).value, metaModel)
+  )
 
   /**
    * represents the supertype hierarchy of this particular MClass
    */
-  lazy val typeHierarchy: Seq[MClass] = getSuperHierarchy(Seq(this), this.superTypes)
+  lazy val typeHierarchy: Seq[MClassTraverseWrapper] = getSuperHierarchy(Seq(this), superTypes)
 
   /**
    * Determines the supertype hierarchy of this particular MClass
@@ -89,9 +60,9 @@ class MClass(
    * @param inspect the next MClass to check
    * @return MClasses that take part in the supertype hierarchy
    */
-  private def getSuperHierarchy(acc: Seq[MClass], inspect: Seq[MClass]): Seq[MClass] = {
+  private def getSuperHierarchy(acc: Seq[MClassTraverseWrapper], inspect: Seq[MClassTraverseWrapper]): Seq[MClassTraverseWrapper] = {
     inspect.foldLeft(acc) { (a, m) =>
-      if (a.exists(_.name == m.name)) {
+      if (a.exists(_.value.name == m.value.name)) {
         a
       } else {
         getSuperHierarchy(m +: acc, m.superTypes)
@@ -105,7 +76,7 @@ class MClass(
    * @return true if the relationship is defined within the type hierarchy
    */
   def typeHasInput(inputName: String): Boolean = typeHierarchy.exists(
-    cls => cls.inputs.exists(link => link.mType.name == inputName)
+    cls => cls.value.inputs.exists(link => link.referenceName == inputName)
   )
 
   /**
@@ -114,7 +85,7 @@ class MClass(
    * @return true if the relationship is defined within the type hierarchy
    */
   def typeHasOutput(outputName: String): Boolean = typeHierarchy.exists(
-    cls => cls.outputs.exists(link => link.mType.name == outputName)
+    cls => cls.value.outputs.exists(link => link.referenceName == outputName)
   )
 
   /**
@@ -123,14 +94,14 @@ class MClass(
    * @return true if the given name belongs to a supertype
    */
   def typeHasSuperType(superName: String): Boolean = typeHierarchy.exists(
-    cls => cls.name == superName
+    cls => cls.value.name == superName
   )
 
   /**
    * Returns all effective (inherited) MAttributes of this MClass
    * @return the MAttributes
    */
-  def getTypeMAttributes: Seq[MAttribute] = typeHierarchy.flatMap(_.attributes)
+  def getTypeMAttributes: Seq[MAttribute] = typeHierarchy.flatMap(_.value.attributes)
 
   /**
    * Finds an MAttribute within supertypes
@@ -139,32 +110,16 @@ class MClass(
    */
   def findMAttribute(attributeName: String): Option[MAttribute] = {
     @tailrec
-    def find(remaining: List[MClass]): Option[MAttribute] = remaining match {
+    def find(remaining: Seq[MClass]): Option[MAttribute] = remaining match {
       case Nil => None
-      case head :: tail => {
+      case head :: tail =>
         val attribute = head.attributes.find(_.name == attributeName)
         if (attribute.isDefined) attribute else find(tail)
-      }
     }
-    find(typeHierarchy.toList)
+    find(typeHierarchy.map(_.value))
   }
 
-}
 
-/** Companion / Extractor */
-object MClass {
-
-  def apply(
-    name: String,
-    abstractness: Boolean,
-    superTypes: Seq[MClass],
-    inputs: Seq[MLinkDef],
-    outputs: Seq[MLinkDef],
-    attributes: Seq[MAttribute]
-  ): MClass = new MClass(name, abstractness, superTypes, inputs, outputs, attributes)
-
-  def unapply(m: MClass): Option[(String, Boolean, Seq[MClass], Seq[MLinkDef], Seq[MLinkDef], Seq[MAttribute])] =
-    Some((m.name, m.abstractness, m.superTypes, m.inputs, m.outputs, m.attributes))
 }
 
 /**
@@ -172,59 +127,19 @@ object MClass {
  * @param name the name of the MReference instance
  * @param sourceDeletionDeletesTarget whether source deletion leads to removal of target
  * @param targetDeletionDeletesSource whether target deletion leads to removal of source
- * @param _source the incoming MClass relationships
- * @param _target the outgoing MClass relationships
+ * @param source the incoming MClass relationships
+ * @param target the outgoing MClass relationships
  * @param attributes the attributes of the MReference
  */
-class MReference(
-    val name: String,
-    val sourceDeletionDeletesTarget: Boolean,
-    val targetDeletionDeletesSource: Boolean,
-    _source: => Seq[MLinkDef],
-    _target: => Seq[MLinkDef],
-    val attributes: Seq[MAttribute]
-) extends MObject with ClassOrRef {
-  lazy val source = _source
-  lazy val target = _target
-
-  /**
-   * convenience method for updating relationships
-   * @param _source possible update for source
-   * @param _target possible update for target
-   * @return the new MReference
-   */
-  def updateLinks(_source: => Seq[MLinkDef] = source, _target: => Seq[MLinkDef] = target): MReference =
-    new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, _source, _target, attributes)
-
-  /** convenience method for updating attributes */
-  def updateAttributes(_attributes: Seq[MAttribute]): MReference =
-    new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, _attributes)
-
-  /**
-   * @return String
-   */
-  override def toString: String = {
-    val sourceNames = for {e <- source} yield e.mType.name
-    val targetNames = for {e <- target} yield e.mType.name
-    s"MReference($name, $sourceDeletionDeletesTarget, $targetDeletionDeletesSource, $sourceNames, $targetNames, $attributes)"
-  }
-}
-
-/** Companion / Extractor */
-object MReference {
-
-  def apply(
+case class MReference(
     name: String,
     sourceDeletionDeletesTarget: Boolean,
     targetDeletionDeletesSource: Boolean,
-    source: Seq[MLinkDef],
-    target: Seq[MLinkDef],
+    source: Seq[MClassLinkDef],
+    target: Seq[MClassLinkDef],
     attributes: Seq[MAttribute]
-  ): MReference = new MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes)
+) extends MObject
 
-  def unapply(m: MReference): Option[(String, Boolean, Boolean, Seq[MLinkDef], Seq[MLinkDef], Seq[MAttribute])] =
-    Some((m.name, m.sourceDeletionDeletesTarget, m.targetDeletionDeletesSource, m.source, m.target, m.attributes))
-}
 
 /**
  * The MAttribute implementation
@@ -257,12 +172,22 @@ case class MAttribute(
   extends MObject with MBounds
 
 /** MLinkDef implementation */
-case class MLinkDef(
-    mType: ClassOrRef,
+case class MClassLinkDef(
+    className: String,
     upperBound: Int,
     lowerBound: Int,
     deleteIfLower: Boolean)
   extends MBounds
+
+/** MLinkDef implementation */
+case class MReferenceLinkDef(
+    referenceName: String,
+    upperBound: Int,
+    lowerBound: Int,
+    deleteIfLower: Boolean)
+  extends MBounds
+
+
 
 /**
  * The MEnum implementation
@@ -274,31 +199,24 @@ case class MEnum(
     values: Seq[EnumSymbol])
   extends MObject with AttributeType
 
+object MEnum {
+
+  def buildFrom(name: String, values: Seq[String]): MEnum = {
+    MEnum(name, values.map(value => EnumSymbol(value, name)))
+  }
+
+}
+
+
+
 /**
  * An Enum Symbol
  * @param name name of the symbol
- * @param _attributeType backreference to the MEnum instance
+ * @param enumName name of the the belonging MEnum
  */
-class EnumSymbol(val name: String, _attributeType: => MEnum) extends AttributeValue {
+case class EnumSymbol(name: String, enumName: String) extends AttributeValue
 
-  lazy val attributeType = _attributeType
 
-  override def equals(other: Any): Boolean = other match {
-    case that: EnumSymbol =>
-      other.isInstanceOf[EnumSymbol] && name == that.name && attributeType == that.attributeType
-    case _ => false
-  }
-
-  override def hashCode: Int = 41 * (41 + name.hashCode) // + attributeType.hashCode
-
-  override def toString: String = s"EnumSymbol($name)"
-}
-
-object EnumSymbol {
-  def apply(name: String, attributeType: MEnum): EnumSymbol = new EnumSymbol(name, attributeType)
-
-  def unapply(e: EnumSymbol): Option[(String, MEnum)] = Some((e.name, e.attributeType))
-}
 
 sealed trait AttributeType
 

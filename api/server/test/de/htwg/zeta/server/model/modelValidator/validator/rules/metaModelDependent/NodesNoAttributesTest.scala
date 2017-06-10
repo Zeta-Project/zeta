@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
@@ -14,7 +13,7 @@ import org.scalatest.Matchers
 class NodesNoAttributesTest extends FlatSpec with Matchers {
 
   val rule = new NodesNoAttributes("nodeType")
-  val mClass = MClass("nodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
   "isValid" should "return true on nodes of type nodeType with no attributes" in {
     val node = Node.apply2("", mClass, Seq(), Seq(), Seq())
@@ -34,7 +33,7 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
     val node = Node.apply2("", differentMClass, Seq(), Seq(), Seq())
     rule.isValid(node) should be (None)
   }

@@ -12,12 +12,12 @@ import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.document.ModelEntity
-import models.document.Document.modelFormat
+// import models.document.Document.modelFormat
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
-import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
+// import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
@@ -44,7 +44,9 @@ class ModelRestApi @Inject()() extends Controller {
           HLink.delete("remove", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request))
         )))
       ))
-    }.map(list => Ok(Json.toJson(list))).recover {
+    }.map(list =>
+      Ok // TODO Ok(Json.toJson(list))
+    ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
@@ -54,41 +56,45 @@ class ModelRestApi @Inject()() extends Controller {
     (request.body \ "metaModelId").validate[UUID].fold(
       error => Future.successful(Results.BadRequest(JsError.toJson(error))),
       metaModelId => {
-        (request.body \ "model").validate[Model].fold(
-          errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-          model => {
-            val repo = restrictedAccessRepository(request.identity.id)
-            repo.metaModelEntities.read(metaModelId).flatMap(metaModel => {
-              repo.modelEntities.create(
-                ModelEntity(
-                  model = model.copy(metaModel = metaModel.metaModel),
-                  metaModelId = metaModel.id
-                )
-              ).map { modelEntity =>
-                Results.Ok(Json.toJson(modelEntity))
-              }
-            }).recover {
-              case e: Exception => Results.BadRequest(e.getMessage)
-            }
-          }
-        )
+        null
+        /* TODO
+               (request.body \ "model").validate[Model].fold(
+                 errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+                 model => {
+                   val repo = restrictedAccessRepository(request.identity.id)
+                   repo.metaModelEntities.read(metaModelId).flatMap(metaModel => {
+                     repo.modelEntities.create(
+                       ModelEntity(
+                         model = model.copy(metaModel = metaModel.metaModel),
+                         metaModelId = metaModel.id
+                       )
+                     ).map { modelEntity =>
+                       Results.Ok(Json.toJson(modelEntity))
+                     }
+                   }).recover {
+                     case e: Exception => Results.BadRequest(e.getMessage)
+                   }
+                 }
+               ) */
       }
     )
   }
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    val in = request.body.validate[Model]
-    in.fold(
-      errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-      model => {
-        restrictedAccessRepository(request.identity.id).modelEntities.update(id, _.copy(model = model)).map { updated =>
-          Results.Ok(Json.toJson(updated))
-        }.recover {
-          case e: Exception => Results.BadRequest(e.getMessage)
-        }
-      }
-    )
+
+    null
+    /* TODO
+       request.body.validate[Model].fold(
+         errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+         model => {
+           restrictedAccessRepository(request.identity.id).modelEntities.update(id, _.copy(model = model)).map { updated =>
+             Results.Ok(Json.toJson(updated))
+           }.recover {
+             case e: Exception => Results.BadRequest(e.getMessage)
+           }
+         }
+       ) */
   }
 
   /** updates model definition only */
@@ -97,7 +103,8 @@ class ModelRestApi @Inject()() extends Controller {
 
     val p = Promise[Result]
     repo.read(id).map { saved =>
-      Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
+      // TODO readAndMergeWithMetaModel is deleted due to refactoring
+      /* Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
         case JsSuccess(model, path) =>
           repo.update(id, _.copy(model = model)).map { updated =>
             p.success(Results.Ok(Json.toJson(updated)))
@@ -105,7 +112,7 @@ class ModelRestApi @Inject()() extends Controller {
             case e: Exception => p.success(Results.BadRequest(e.getMessage))
           }
         case JsError(_) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET $id"))
-      }
+      } */
     }.recover {
       case e: Exception => p.success(Results.BadRequest(e.getMessage))
     }
@@ -120,13 +127,13 @@ class ModelRestApi @Inject()() extends Controller {
         HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(m.metaModelId).absoluteURL()(request)),
         HLink.delete("remove", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request))
       )))
-      Results.Ok(Json.toJson(out))
+      null // TODO Results.Ok(Json.toJson(out))
     })
   }
 
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
+    null // TODO protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
@@ -134,7 +141,7 @@ class ModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
-      Results.Ok(Json.toJson(reduced.elements.values))
+      null // TODO Results.Ok(Json.toJson(reduced.elements.values))
     })
   }
 
@@ -143,7 +150,7 @@ class ModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
-      reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      null // TODO reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
@@ -152,7 +159,7 @@ class ModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
-      Results.Ok(Json.toJson(reduced.elements.values))
+      null // TODO Results.Ok(Json.toJson(reduced.elements.values))
     })
   }
 
@@ -161,7 +168,7 @@ class ModelRestApi @Inject()() extends Controller {
     protectedRead(id, request, (m: ModelEntity) => {
       val d = m.model
       val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
-      reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      null // TODO reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
