@@ -6,7 +6,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.mongo.MongoHandler.idHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
 import models.Entity
 import reactivemongo.api.Cursor
@@ -56,7 +55,7 @@ class MongoPersistence[E <: Entity](
    */
   override def read(id: UUID): Future[E] = {
     doDatabaseAction { collection =>
-      collection.find(BSONDocument(sId -> id)).requireOne[E]
+      collection.find(BSONDocument(sId -> id.toString)).requireOne[E]
     }
   }
 
@@ -80,7 +79,7 @@ class MongoPersistence[E <: Entity](
    */
   override def delete(id: UUID): Future[Unit] = {
     doDatabaseAction { collection =>
-      collection.remove(BSONDocument(sId -> id)).flatMap(_ =>
+      collection.remove(BSONDocument(sId -> id.toString)).flatMap(_ =>
         Future.successful(())
       )
     }
