@@ -2,6 +2,8 @@ package models.modelDefinitions.model
 
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.ModelElement
+import models.modelDefinitions.model.elements.Node
+import models.modelDefinitions.model.elements.Edge
 // import models.modelDefinitions.model.elements.ModelReads
 // import models.modelDefinitions.model.elements.ModelWrites
 import play.api.libs.json.JsResult
@@ -23,7 +25,12 @@ case class Model(
     name: String,
     metaModel: MetaModel,
     elements: Map[String, ModelElement],
-    uiState: String)
+    uiState: String) {
+
+  val nodes: Map[String, Node] = elements.collect { case(name: String, node: Node) => (name, node)}
+  val edges: Map[String, Edge] = elements.collect { case(name: String, edge: Edge) => (name, edge)}
+
+}
 
 /*
 object Model {

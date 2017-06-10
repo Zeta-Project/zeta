@@ -27,14 +27,11 @@ class MyTransformer() extends Transformer {
     logger.info("Start example")
     val p = Promise[Transformer]
 
-    val nodes = entity.model.elements.values.count(_.isInstanceOf[Node])
-    val edges = entity.model.elements.values.count(_.isInstanceOf[Edge])
-
     val filename = "example.txt"
     val content =
       s"""
-        |Number of nodes : $nodes
-        |Number of edges : $edges
+        |Number of nodes : ${entity.model.nodes.size}
+        |Number of edges : ${entity.model.edges.size}
       """.stripMargin
 
     val f = File(entity.id, filename, content)

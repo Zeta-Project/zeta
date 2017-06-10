@@ -118,17 +118,16 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    * @return The Result of the generator
    */
   override def runGeneratorWithOptions(options: RemoteOptions)(implicit remote: Remote): Future[Result] = {
-    logger.info(s"called with options ${options}")
+    logger.info(s"called with options $options")
     remote.emit[File](File(UUID.randomUUID, options.nodeType, "Started and sleep now"))
     Thread.sleep(10000)
     val p = Promise[Result]
 
     repository.modelEntities.read(options.modelId).map { entity =>
-      entity.model.elements.values.foreach {
-        case node: Node => if (node.`type`.name == options.nodeType) {
+      entity.model.nodes.values.foreach { node: Node =>
+        if (node.`type`.name == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.`type`.name))
         }
-        case edge: Edge => // ignore
       }
       p.success(Success())
     }

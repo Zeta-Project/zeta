@@ -82,7 +82,6 @@ class ModelRestApi @Inject()() extends Controller {
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-
     null
     /* TODO
        request.body.validate[Model].fold(
@@ -139,36 +138,32 @@ class ModelRestApi @Inject()() extends Controller {
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val d = m.model
-      val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Node]))
-      null // TODO Results.Ok(Json.toJson(reduced.elements.values))
+      val nodes = m.model.nodes.values
+      null // TODO Results.Ok(Json.toJson(nodes))
     })
   }
 
   /** returns specific node of a specific model as json object */
   def getNode(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val d = m.model
-      val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Node]))
-      null // TODO reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      val node = m.model.nodes.get(name) // TODO ese fold
+      null // TODO node.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
   /** returns all edges of a model as json array */
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val d = m.model
-      val reduced = d.copy(elements = d.elements.filter(t => t._2.isInstanceOf[Edge]))
-      null // TODO Results.Ok(Json.toJson(reduced.elements.values))
+      val edges = m.model.edges.values
+      null // TODO Results.Ok(Json.toJson(edges))
     })
   }
 
   /** returns specific edge of a specific model as json object */
   def getEdge(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val d = m.model
-      val reduced = d.copy(elements = d.elements.filter(p => p._1 == name && p._2.isInstanceOf[Edge]))
-      null // TODO reduced.elements.values.headOption.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      val edge = m.model.edges.get(name) // TODO use fold
+      null // TODO edge.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
