@@ -23,7 +23,7 @@ class EdgeTargetsLowerBound(edgeType: String, targetType: String, lowerBound: In
 }
 
 object EdgeTargetsLowerBound extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.target.map(target => new EdgeTargetsLowerBound(currentReference.name, target.className, target.lowerBound))
     }

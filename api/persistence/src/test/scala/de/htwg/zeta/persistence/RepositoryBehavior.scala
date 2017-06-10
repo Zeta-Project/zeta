@@ -43,7 +43,9 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     name = "modelEntity1.model.name",
     metaModel = MetaModel(
       name = "modelEntity1.model.metaModel.name",
-      elements = Map.empty,
+      classes = Map.empty,
+      references = Map.empty,
+      enums = Map.empty,
       uiState = "modelEntity1.model.metaModel.uiState"
     ),
     elements = Map.empty,

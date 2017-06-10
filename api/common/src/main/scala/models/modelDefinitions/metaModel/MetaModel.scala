@@ -5,7 +5,6 @@ import models.modelDefinitions.metaModel.elements.MClassTraverseWrapper
 // import models.modelDefinitions.metaModel.elements.MCoreReads.mObjectMapReads
 // import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json
@@ -16,51 +15,51 @@ import play.api.libs.json.Writes
 import play.api.libs.json.__
 
 /**
- * Immutable container for metamodel definitions
+ * Immutable container for MetaModel definitions
  *
- * @param name     the name of the metamodel
- * @param elements the object graph containing the actual metamodel data
- * @param uiState  the uistate of the browser client. Location is debatable
+ * @param name       the name of the MetaModel
+ * @param classes    the classes of the actual MetaModel data
+ * @param references the object graph containing the actual MetaModel data
+ * @param enums      the object graph containing the actual MetaModel data
+ * @param uiState    the ui-state of the browser client. Location is debatable
  */
 case class MetaModel(
     name: String,
-    elements: Map[String, MObject],
+    classes: Map[String, MClass],
+    references: Map[String, MReference],
+    enums: Map[String, MEnum],
     uiState: String
 ) {
-
-  /** Subset of elements, containing all classes. */
-  val classes: Map[String, MClass] = elements.collect { case (name: String, clazz: MClass) => (name, clazz) }
-
-  /** Subset of elements, containing all references. */
-  val references: Map[String, MReference] = elements.collect { case (name: String, reference: MReference) => (name, reference) }
-
-  /** Subset of elements, containing all enums. */
-  val enums: Map[String, MEnum] = elements.collect { case (name: String, enum: MEnum) => (name, enum) }
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)
 
 }
 
+/*
 object MetaModel {
 
-  implicit val reads: Reads[MetaModel] = null /* (
-    (__ \ "name").read[String] and
-      (__ \ "elements").read[Map[String, MObject]] and
-      (__ \ "uiState").read[String]
-    ) (MetaModel.apply _) */
+  implicit val reads: Reads[MetaModel] = null
 
-  implicit val writes = null /* new Writes[MetaModel] {
-    def writes(c: MetaModel): JsValue = {
-      Json.obj(
-        "name" -> c.name,
-        "elements" -> Json.toJson(c.elements.values.toList),
-        "uiState" -> c.uiState
-      )
-    }
-  } */
+   (
+     (__ \ "name").read[String] and
+       (__ \ "elements").read[Map[String, MObject]] and
+       (__ \ "uiState").read[String]
+     ) (MetaModel.apply _)
 
-}
+  implicit val writes = null
+
+  new Writes[MetaModel] {
+     def writes(c: MetaModel): JsValue = {
+       Json.obj(
+         "name" -> c.name,
+         "elements" -> Json.toJson(c.elements.values.toList),
+         "uiState" -> c.uiState
+       )
+     }
+   }
+
+} */
 
 case class MetaModelTraverseWrapper(value: MetaModel) {
 

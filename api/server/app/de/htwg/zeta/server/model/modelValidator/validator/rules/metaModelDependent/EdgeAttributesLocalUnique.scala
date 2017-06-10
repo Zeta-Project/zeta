@@ -52,7 +52,7 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
 }
 
 object EdgeAttributesLocalUnique extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes.filter(_.localUnique).map(attr => new EdgeAttributesLocalUnique(currentReference.name, attr.name))
     }

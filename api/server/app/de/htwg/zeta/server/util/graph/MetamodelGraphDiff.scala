@@ -4,7 +4,6 @@ import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 // import models.modelDefinitions.metaModel.elements.MCoreReads
-import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
@@ -30,7 +29,8 @@ object MetamodelGraphDiff {
    * @return MetaModel with uiState
    */
   def fixGraph(metaModel: MetaModel): MetaModel = {
-    val elements = metaModel.elements
+
+    val elements: Map[String, MObject] = metaModel.classes ++ metaModel.references ++ metaModel.enums
     if (metaModel.uiState.isEmpty) {
       metaModel
     } else {

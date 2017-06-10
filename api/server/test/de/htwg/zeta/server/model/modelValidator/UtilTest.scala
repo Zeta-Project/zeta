@@ -7,7 +7,6 @@ import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
@@ -93,73 +92,71 @@ class UtilTest extends FlatSpec with Matchers {
 
   )
 
-  val inheritanceMObjects: Seq[MObject] = {
 
-    val abstractSuperClassOneAttribute = MAttribute(
-      name = "abstractSuperClassOneAttribute",
-      globalUnique = false,
-      localUnique = false,
-      `type` = ScalarType.String,
-      default = MString(""),
-      constant = false,
-      singleAssignment = false,
-      expression = "",
-      ordered = false,
-      transient = false,
-      upperBound = -1,
-      lowerBound = 0
-    )
+  val abstractSuperClassOneAttribute = MAttribute(
+    name = "abstractSuperClassOneAttribute",
+    globalUnique = false,
+    localUnique = false,
+    `type` = ScalarType.String,
+    default = MString(""),
+    constant = false,
+    singleAssignment = false,
+    expression = "",
+    ordered = false,
+    transient = false,
+    upperBound = -1,
+    lowerBound = 0
+  )
 
-    val superClassOneToSuperClassTwo = MReference(
-      name = "superClassOneToSuperClassTwo",
-      sourceDeletionDeletesTarget = false,
-      targetDeletionDeletesSource = false,
-      source = Seq(),
-      target = Seq(),
-      attributes = Seq()
-    )
-    val superClassOneOutput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
-    val superClassTwoInput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
+  val superClassOneToSuperClassTwo = MReference(
+    name = "superClassOneToSuperClassTwo",
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    source = Seq(),
+    target = Seq(),
+    attributes = Seq()
+  )
+  val superClassOneOutput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
+  val superClassTwoInput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
 
-    val abstractSuperClassOne = MClass(
-      name = "abstractSuperClassOne",
-      abstractness = true,
-      superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(superClassOneOutput),
-      attributes = Seq(abstractSuperClassOneAttribute)
-    )
-    val abstractSuperClassTwo = MClass(
-      name = "abstractSuperClassTwo",
-      abstractness = true,
-      superTypeNames = Seq(),
-      inputs = Seq(superClassTwoInput),
-      outputs = Seq(),
-      attributes = Seq()
-    )
-    val subClassOne = MClass(
-      name = "subClassOne",
-      abstractness = false,
-      superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-      inputs = Seq(),
-      outputs = Seq(),
-      attributes = Seq()
-    )
-    val subClassTwo = MClass(
-      name = "subClassTwo",
-      abstractness = false,
-      superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-      inputs = Seq(),
-      outputs = Seq(),
-      attributes = Seq()
-    )
-
-    Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo, superClassOneToSuperClassTwo)
-  }
+  val abstractSuperClassOne = MClass(
+    name = "abstractSuperClassOne",
+    abstractness = true,
+    superTypeNames = Seq(),
+    inputs = Seq(),
+    outputs = Seq(superClassOneOutput),
+    attributes = Seq(abstractSuperClassOneAttribute)
+  )
+  val abstractSuperClassTwo = MClass(
+    name = "abstractSuperClassTwo",
+    abstractness = true,
+    superTypeNames = Seq(),
+    inputs = Seq(superClassTwoInput),
+    outputs = Seq(),
+    attributes = Seq()
+  )
+  val subClassOne = MClass(
+    name = "subClassOne",
+    abstractness = false,
+    superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
+    inputs = Seq(),
+    outputs = Seq(),
+    attributes = Seq()
+  )
+  val subClassTwo = MClass(
+    name = "subClassTwo",
+    abstractness = false,
+    superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
+    inputs = Seq(),
+    outputs = Seq(),
+    attributes = Seq()
+  )
 
   val metaModel = MetaModel(
     name = "metaModelTest",
-    elements = inheritanceMObjects.map(obj => obj.name -> obj).toMap,
+    classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo).map(clazz => (clazz.name, clazz)).toMap,
+    references = Seq(superClassOneToSuperClassTwo).map(reference => (reference.name, reference)).toMap,
+    enums = Map.empty,
     uiState = ""
   )
 
@@ -185,20 +182,6 @@ class UtilTest extends FlatSpec with Matchers {
     val seqString = Util.stringSeqToSeqString(seq)
     seqString should be(
       """Seq("a", "b", "c", "d")""")
-  }
-
-  "getReferences" should "return all mReferences" in {
-    val references = Util.getReferences(mObjects)
-    references.size should be(3)
-    references.map(_.name) should be(Seq("mReference1", "mReference2", "mReference3"))
-    references.forall(_.isInstanceOf[MReference]) should be(true)
-  }
-
-  "getClasses" should "return all mClasses" in {
-    val classes = Util.getClasses(mObjects)
-    classes.size should be(2)
-    classes.map(_.name) should be(Seq("mClass1", "mClass2"))
-    classes.forall(_.isInstanceOf[MClass]) should be(true)
   }
 
   "getAttributeTypeClassName" should "return the correct class name of an AttributeType" in {

@@ -20,7 +20,7 @@ import org.scalatest.Matchers
 
 class NullChecksTests extends FlatSpec with Matchers {
 
-  def toModel(elements: Seq[ModelElement]): Model = Model("", MetaModel("", Map(), ""), elements.map(el => el.id -> el).toMap, "")
+  def toModel(elements: Seq[ModelElement]): Model = Model("", MetaModel("", Map.empty, Map.empty, Map.empty, ""), elements.map(el => el.id -> el).toMap, "")
 
   val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty)
   val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
@@ -291,21 +291,21 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new ElementsNoNullValues
 
     val nonNullEdge = Edge.apply2("", mReference, Seq(), Seq(), Seq())
-    val nonNullModel = Model("", MetaModel("", Map(), ""), Map("" -> nonNullEdge), "")
+    val nonNullModel = Model("", MetaModel("", Map.empty, Map.empty, Map.empty, ""), Map("" -> nonNullEdge), "")
     rule.check(nonNullModel) should be(true)
 
     val nullEdge = null
-    val nullModel = Model("", MetaModel("", Map(), ""), Map("" -> nullEdge), "")
+    val nullModel = Model("", MetaModel("", Map.empty, Map.empty, Map.empty, ""), Map("" -> nullEdge), "")
     rule.check(nullModel) should be(false)
   }
 
   "ElementsNotNull" should "check for null in elements" in {
     val rule = new ElementsNotNull
 
-    val nonNullModel = Model("", MetaModel("", Map(), ""), Map(), "")
+    val nonNullModel = Model("", MetaModel("", Map.empty, Map.empty, Map.empty, ""), Map(), "")
     rule.check(nonNullModel) should be(true)
 
-    val nullModel = Model("", MetaModel("", Map(), ""), null, "")
+    val nullModel = Model("", MetaModel("", Map.empty, Map.empty, Map.empty, ""), null, "")
     rule.check(nullModel) should be(false)
   }
 

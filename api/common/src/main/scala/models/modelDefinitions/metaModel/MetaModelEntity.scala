@@ -17,13 +17,14 @@ import play.api.libs.json.__
 
 /**
  * The container that is used to persist metamodel definitions, contains additional metadata
- * @param id the id of the metamodel
- * @param userId the user that created the metamodel
- * @param created time of creation
- * @param updated time of last update
+ *
+ * @param id        the id of the metamodel
+ * @param userId    the user that created the metamodel
+ * @param created   time of creation
+ * @param updated   time of last update
  * @param metaModel the actual metamodel
- * @param dsl possible dsl definitions
- * @param links optional attribute for HATEOAS links, only used when serving to clients
+ * @param dsl       possible dsl definitions
+ * @param links     optional attribute for HATEOAS links, only used when serving to clients
  */
 case class MetaModelEntity(
     id: String,
@@ -44,6 +45,7 @@ case class MetaModelEntity(
       updated = now
     )
   }
+
   // overrides unchanging data for update
   def asUpdate(id: String, userId: String): MetaModelEntity = {
     copy(
@@ -55,7 +57,7 @@ case class MetaModelEntity(
 
 }
 
-object MetaModelEntity {
+/* object MetaModelEntity {
 
   implicit val reads: Reads[MetaModelEntity] = Json.reads[MetaModelEntity]
 
@@ -90,12 +92,13 @@ object MetaModelEntity {
       "links" -> m.links
     )
   }
-}
+} */
 
 /**
  * Represents concise information on a metamodel, used for REST-API overview uri
- * @param id the id of the metamodel
- * @param name the name of the metamodel
+ *
+ * @param id    the id of the metamodel
+ * @param name  the name of the metamodel
  * @param links optional attribute for HATEOAS links, only used when serving to clients
  */
 case class MetaModelShortInfo(id: UUID, name: String, links: Option[Seq[HLink]] = None)
@@ -104,9 +107,9 @@ object MetaModelShortInfo {
 
   implicit val reads: Reads[MetaModelShortInfo] = (
     (__ \ "id").read[UUID] and
-    (__ \ "metaModel" \ "name").read[String] and
-    (__ \ "links").readNullable[Seq[HLink]]
-  )(MetaModelShortInfo.apply _)
+      (__ \ "metaModel" \ "name").read[String] and
+      (__ \ "links").readNullable[Seq[HLink]]
+    ) (MetaModelShortInfo.apply _)
 
   implicit val writes: OWrites[MetaModelShortInfo] = Json.writes[MetaModelShortInfo]
 }

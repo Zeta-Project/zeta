@@ -375,7 +375,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   private implicit val attributeFormat: RootJsonFormat[Attribute] = jsonFormat2(Attribute.apply)
 
 
-  private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)
+  // private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)
 
   // private implicit val modelFormat: RootJsonFormat[Model] = jsonFormat4(Model.apply)
 

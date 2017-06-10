@@ -22,7 +22,7 @@ class EdgeAttributes(edgeType: String, attributeTypes: Seq[String]) extends Sing
 }
 
 object EdgeAttributes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       if (currentReference.attributes.isEmpty) {
         acc

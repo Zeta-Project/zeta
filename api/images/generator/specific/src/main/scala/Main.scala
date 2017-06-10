@@ -137,8 +137,8 @@ object Main extends Template[CreateOptions, String] {
   }
 
   def file(name: String, entity: MetaModelEntity): File = {
-    val mClassList = entity.metaModel.elements.values.collect { case x: MClass => x }
-    val mReferenceList = entity.metaModel.elements.values.collect { case x: MReference => x }
+    val mClassList = entity.metaModel.classes.values
+    val mReferenceList = entity.metaModel.references.values
     val content = createFileContent(mClassList, mReferenceList)
     File(UUID.randomUUID, name, content)
   }

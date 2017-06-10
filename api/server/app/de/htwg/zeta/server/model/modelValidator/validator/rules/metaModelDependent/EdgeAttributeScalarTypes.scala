@@ -52,7 +52,7 @@ class EdgeAttributeScalarTypes(edgeType: String, attributeType: String, attribut
 }
 
 object EdgeAttributeScalarTypes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes
         .filter(att => Seq(ScalarType.String, ScalarType.Int, ScalarType.Bool, ScalarType.Double).contains(att.`type`))

@@ -6,8 +6,6 @@ import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.AttributeType
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MObject
-import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
@@ -29,16 +27,6 @@ object Util {
   def stringSeqToSeqString(seq: Seq[String]): String = seq.mkString("Seq(\"", "\", \"", "\")")
 
   /* Meta Model Util */
-
-  def getReferences(metaModel: MetaModel): Seq[MReference] = getReferences(metaModel.elements.values.toSeq)
-
-  def getReferences(mObjects: Seq[MObject]): Seq[MReference] = mObjects.collect { case r: MReference => r }
-
-  def getClasses(metaModel: MetaModel): Seq[MClass] = getClasses(metaModel.elements.values.toSeq)
-
-  def getClasses(mObjects: Seq[MObject]): Seq[MClass] = mObjects.collect { case c: MClass => c }
-
-  def getNonAbstractClasses(metaModel: MetaModel): Seq[MClass] = getClasses(metaModel).filterNot(_.abstractness)
 
   def getAttributeTypeClassName(attributeType: AttributeType): String = attributeType.getClass.getSimpleName.split("\\$").last
 
@@ -79,7 +67,7 @@ object Util {
 
   def simplifyMetaModelGraph(metaModel: MetaModel): Seq[El] = {
 
-    val allClasses = getClasses(metaModel)
+    val allClasses = metaModel.classes.values.toSeq
 
     def mapElement(el: MClass): El = El(
       name = el.name,

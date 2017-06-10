@@ -73,7 +73,7 @@ class EdgeAttributesGlobalUnique(edgeType: String, attributeType: String) extend
 }
 
 object EdgeAttributesGlobalUnique extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes.filter(_.globalUnique).map(attr => new EdgeAttributesGlobalUnique(currentReference.name, attr.name))
     }

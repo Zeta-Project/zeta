@@ -142,6 +142,6 @@ object Log {
 object Document {
   implicit val formatPasswordInfo: OFormat[PasswordInfo] = derived.oformat
   implicit val readJobSettings: Reads[JobSettings] = Json.reads[JobSettings]
-  implicit val metaModelFormat: OFormat[MetaModelEntity] = Json.format[MetaModelEntity]
+  // implicit val metaModelFormat: OFormat[MetaModelEntity] = Json.format[MetaModelEntity]
   // implicit val modelFormat: OFormat[ModelEntity] = Json.format[ModelEntity]
 }

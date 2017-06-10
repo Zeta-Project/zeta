@@ -24,7 +24,7 @@ class EdgeAttributesUpperBound(edgeType: String, attributeType: String, upperBou
 }
 
 object EdgeAttributesUpperBound extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes.map(attr => new EdgeAttributesUpperBound(currentReference.name, attr.name, attr.upperBound))
     }

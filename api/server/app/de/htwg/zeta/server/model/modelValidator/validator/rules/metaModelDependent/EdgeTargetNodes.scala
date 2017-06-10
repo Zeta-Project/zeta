@@ -22,7 +22,7 @@ class EdgeTargetNodes(edgeType: String, targetTypes: Seq[String]) extends Single
 }
 
 object EdgeTargetNodes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.getReferences(metaModel)
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       if (currentReference.target.isEmpty) {
         acc

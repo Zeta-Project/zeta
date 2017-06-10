@@ -46,7 +46,7 @@ object ValidatorGenerator {
   def generateInOutMatrix(diagram: Diagram) = {
     var inputMatrix = new ListBuffer[String]
     var outputMatrix = new ListBuffer[String]
-    diagram.metamodel.metaModel.elements.foreach { e =>
+    diagram.metamodel.metaModel.classes.foreach { e =>
       e._2 match {
         case mc: MClass =>
           if (mc.inputs.nonEmpty) {
