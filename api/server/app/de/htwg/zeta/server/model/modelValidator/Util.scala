@@ -77,7 +77,7 @@ object Util {
 
     def mapAttribute(att: MAttribute): Att = Att(
       name = att.name,
-      `type` = att.`type`,
+      `type` = att.typ,
       lowerBound = att.lowerBound,
       upperBound = att.upperBound,
       localUnique = att.localUnique,

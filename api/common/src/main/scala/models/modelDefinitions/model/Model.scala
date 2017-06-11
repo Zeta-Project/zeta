@@ -1,17 +1,8 @@
 package models.modelDefinitions.model
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.Edge
-// import models.modelDefinitions.model.elements.ModelReads
-// import models.modelDefinitions.model.elements.ModelWrites
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
-
+import models.modelDefinitions.model.elements.Node
 /**
  * Immutable container for model definitions
  *

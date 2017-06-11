@@ -71,7 +71,7 @@ object StencilGenerator {
           |  mClassAttributeInfo: [${
           node.mcoreElement.attributes.map(
             attr =>
-              s"""{ name: '${attr.name}', type: '${attr.`type`}' ${textUUID(node, attr.name)}}"""
+              s"""{ name: '${attr.name}', type: '${attr.typ}' ${textUUID(node, attr.name)}}"""
           ).mkString(",")
         }]
           |});

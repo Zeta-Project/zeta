@@ -11,10 +11,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.AttributeValue
 import models.modelDefinitions.metaModel.elements.EnumSymbol
-import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
-import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
-import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
-import models.modelDefinitions.metaModel.elements.ScalarValue.MString
+import models.modelDefinitions.metaModel.elements.ScalarBoolValue
+import models.modelDefinitions.metaModel.elements.ScalarDoubleValue
+import models.modelDefinitions.metaModel.elements.ScalarIntValue
+import models.modelDefinitions.metaModel.elements.ScalarStringValue
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
 
@@ -25,10 +25,10 @@ class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) 
   override val possibleFix: String =
     s"Remove duplicated values of attribute $attributeType in nodes of type ${Util.stringSeqToSeqString(nodeTypes)}."
 
-  def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MString => v }.map(_.value)
-  def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MBool => v }.map(_.value.toString)
-  def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MInt => v }.map(_.value.toString)
-  def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
+  def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarStringValue => v }.map(_.value)
+  def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarBoolValue => v }.map(_.value.toString)
+  def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarIntValue => v }.map(_.value.toString)
+  def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarDoubleValue => v }.map(_.value.toString)
   def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
   override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = {
@@ -41,10 +41,10 @@ class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) 
     // convert all attribute values to string for comparison.
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
       case None => Seq()
-      case Some(_: MString) => handleStrings(attributeValues)
-      case Some(_: MBool) => handleBooleans(attributeValues)
-      case Some(_: MInt) => handleInts(attributeValues)
-      case Some(_: MDouble) => handleDoubles(attributeValues)
+      case Some(_: ScalarStringValue) => handleStrings(attributeValues)
+      case Some(_: ScalarBoolValue) => handleBooleans(attributeValues)
+      case Some(_: ScalarIntValue) => handleInts(attributeValues)
+      case Some(_: ScalarDoubleValue) => handleDoubles(attributeValues)
       case Some(_: EnumSymbol) => handleEnums(attributeValues)
     }
 
@@ -57,10 +57,10 @@ class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) 
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()
-        case Some(_: MString) => handleStrings(attributeValues)
-        case Some(_: MBool) => handleBooleans(attributeValues)
-        case Some(_: MInt) => handleInts(attributeValues)
-        case Some(_: MDouble) => handleDoubles(attributeValues)
+        case Some(_: ScalarStringValue) => handleStrings(attributeValues)
+        case Some(_: ScalarBoolValue) => handleBooleans(attributeValues)
+        case Some(_: ScalarIntValue) => handleInts(attributeValues)
+        case Some(_: ScalarDoubleValue) => handleDoubles(attributeValues)
         case Some(_: EnumSymbol) => handleEnums(attributeValues)
       }
 

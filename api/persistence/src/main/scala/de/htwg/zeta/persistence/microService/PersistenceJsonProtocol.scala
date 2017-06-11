@@ -20,11 +20,15 @@ import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarType
-import models.modelDefinitions.metaModel.elements.ScalarValue
+import models.modelDefinitions.metaModel.elements.ScalarBoolType
+import models.modelDefinitions.metaModel.elements.ScalarBoolValue
+import models.modelDefinitions.metaModel.elements.ScalarDoubleType
+import models.modelDefinitions.metaModel.elements.ScalarDoubleValue
+import models.modelDefinitions.metaModel.elements.ScalarIntType
+import models.modelDefinitions.metaModel.elements.ScalarIntValue
+import models.modelDefinitions.metaModel.elements.ScalarStringType
+import models.modelDefinitions.metaModel.elements.ScalarStringValue
 import spray.json.DefaultJsonProtocol
-import spray.json.DefaultJsonProtocol.StringJsonFormat
-import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.JsArray
 import spray.json.JsBoolean
 import spray.json.JsNumber
@@ -106,10 +110,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def write(attrType: AttributeType): JsString = {
       attrType match {
-        case ScalarType.String => JsString(sString)
-        case ScalarType.Bool => JsString(sBool)
-        case ScalarType.Int => JsString(sInt)
-        case ScalarType.Double => JsString(sDouble)
+        case ScalarStringType => JsString(sString)
+        case ScalarBoolType => JsString(sBool)
+        case ScalarIntType => JsString(sInt)
+        case ScalarDoubleType => JsString(sDouble)
       }
     }
 
@@ -120,10 +124,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def read(value: JsValue): AttributeType = {
       value match {
-        case JsString(`sString`) => ScalarType.String
-        case JsString(`sBool`) => ScalarType.Bool
-        case JsString(`sInt`) => ScalarType.Int
-        case JsString(`sDouble`) => ScalarType.Double
+        case JsString(`sString`) => ScalarStringType
+        case JsString(`sBool`) => ScalarBoolType
+        case JsString(`sInt`) => ScalarIntType
+        case JsString(`sDouble`) => ScalarDoubleType
       }
     }
 
@@ -139,10 +143,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def write(attrValue: AttributeValue): JsObject = {
       attrValue match {
-        case ScalarValue.MString(v) => JsObject(sType -> JsString(sString), sValue -> JsString(v))
-        case ScalarValue.MBool(v) => JsObject(sType -> JsString(sBool), sValue -> JsBoolean(v))
-        case ScalarValue.MInt(v) => JsObject(sType -> JsString(sInt), sValue -> JsNumber(v))
-        case ScalarValue.MDouble(v) => JsObject(sType -> JsString(sDouble), sValue -> JsNumber(v))
+        case ScalarStringValue(v) => JsObject(sType -> JsString(sString), sValue -> JsString(v))
+        case ScalarBoolValue(v) => JsObject(sType -> JsString(sBool), sValue -> JsBoolean(v))
+        case ScalarIntValue(v) => JsObject(sType -> JsString(sInt), sValue -> JsNumber(v))
+        case ScalarDoubleValue(v) => JsObject(sType -> JsString(sDouble), sValue -> JsNumber(v))
       }
     }
 
@@ -153,10 +157,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def read(value: JsValue): AttributeValue = {
       value.asJsObject.getFields(sType, sValue) match {
-        case Seq(JsString(`sString`), JsString(v)) => ScalarValue.MString(v)
-        case Seq(JsString(`sBool`), JsBoolean(v)) => ScalarValue.MBool(v)
-        case Seq(JsString(`sInt`), JsNumber(v)) => ScalarValue.MInt(v.toInt)
-        case Seq(JsString(`sDouble`), JsNumber(v)) => ScalarValue.MDouble(v.toDouble)
+        case Seq(JsString(`sString`), JsString(v)) => ScalarStringValue(v)
+        case Seq(JsString(`sBool`), JsBoolean(v)) => ScalarBoolValue(v)
+        case Seq(JsString(`sInt`), JsNumber(v)) => ScalarIntValue(v.toInt)
+        case Seq(JsString(`sDouble`), JsNumber(v)) => ScalarDoubleValue(v.toDouble)
       }
     }
 

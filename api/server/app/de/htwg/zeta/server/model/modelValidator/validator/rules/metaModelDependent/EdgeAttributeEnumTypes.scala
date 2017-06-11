@@ -33,7 +33,7 @@ object EdgeAttributeEnumTypes extends GeneratorRule {
   override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
 
-      acc ++ currentReference.attributes.flatMap(att => att.`type` match {
+      acc ++ currentReference.attributes.flatMap(att => att.typ match {
         case attType: MEnum => Some(new EdgeAttributeEnumTypes(currentReference.name, att.name, attType.name))
         case _ => None
       })

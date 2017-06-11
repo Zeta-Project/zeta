@@ -5,28 +5,23 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.document.ModelEntity
-// import models.document.Document.modelFormat
+import models.entity.ModelEntity
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.model.Model
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.Node
-// import models.modelDefinitions.model.elements.ModelWrites.mObjectWrites
 import play.api.libs.json.JsError
-import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-import play.api.mvc.AnyContent
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for model definitions
@@ -56,44 +51,40 @@ class ModelRestApi @Inject()() extends Controller {
     (request.body \ "metaModelId").validate[UUID].fold(
       error => Future.successful(Results.BadRequest(JsError.toJson(error))),
       metaModelId => {
-        null
-        /* TODO
-               (request.body \ "model").validate[Model].fold(
-                 errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-                 model => {
-                   val repo = restrictedAccessRepository(request.identity.id)
-                   repo.metaModelEntities.read(metaModelId).flatMap(metaModel => {
-                     repo.modelEntities.create(
-                       ModelEntity(
-                         model = model.copy(metaModel = metaModel.metaModel),
-                         metaModelId = metaModel.id
-                       )
-                     ).map { modelEntity =>
-                       Results.Ok(Json.toJson(modelEntity))
-                     }
-                   }).recover {
-                     case e: Exception => Results.BadRequest(e.getMessage)
-                   }
-                 }
-               ) */
+        (request.body \ "model").validate[Model].fold(
+          errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+          model => {
+            val repo = restrictedAccessRepository(request.identity.id)
+            repo.metaModelEntities.read(metaModelId).flatMap(metaModel => {
+              repo.modelEntities.create(
+                ModelEntity(
+                  model = model.copy(metaModel = metaModel.metaModel),
+                  metaModelId = metaModel.id
+                )
+              ).map { modelEntity =>
+                Results.Ok(Json.toJson(modelEntity))
+              }
+            }).recover {
+              case e: Exception => Results.BadRequest(e.getMessage)
+            }
+          }
+        )
       }
     )
   }
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    null
-    /* TODO
-       request.body.validate[Model].fold(
-         errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-         model => {
-           restrictedAccessRepository(request.identity.id).modelEntities.update(id, _.copy(model = model)).map { updated =>
-             Results.Ok(Json.toJson(updated))
-           }.recover {
-             case e: Exception => Results.BadRequest(e.getMessage)
-           }
-         }
-       ) */
+    request.body.validate[Model].fold(
+      errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+      model => {
+        restrictedAccessRepository(request.identity.id).modelEntities.update(id, _.copy(model = model)).map { updated =>
+          Results.Ok(Json.toJson(updated))
+        }.recover {
+          case e: Exception => Results.BadRequest(e.getMessage)
+        }
+      }
+    )
   }
 
   /** updates model definition only */

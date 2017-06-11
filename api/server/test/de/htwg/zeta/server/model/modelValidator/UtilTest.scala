@@ -96,7 +96,7 @@ class UtilTest extends FlatSpec with Matchers {
     name = "abstractSuperClassOneAttribute",
     globalUnique = false,
     localUnique = false,
-    `type` = ScalarType.String,
+    typ = ScalarType.String,
     default = MString(""),
     constant = false,
     singleAssignment = false,

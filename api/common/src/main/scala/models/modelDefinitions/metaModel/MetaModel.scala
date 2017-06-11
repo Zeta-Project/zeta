@@ -2,17 +2,10 @@ package models.modelDefinitions.metaModel
 
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MClassTraverseWrapper
-// import models.modelDefinitions.metaModel.elements.MCoreReads.mObjectMapReads
-// import models.modelDefinitions.metaModel.elements.MCoreWrites.mObjectWrites
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MReference
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json
-import play.api.libs.json.JsValue
-import play.api.libs.json.Reads
-import play.api.libs.json.Reads.functorReads
-import play.api.libs.json.Writes
-import play.api.libs.json.__
+import play.api.libs.json.OFormat
 
 /**
  * Immutable container for MetaModel definitions
@@ -33,6 +26,45 @@ case class MetaModel(
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)
+
+}
+
+object MetaModel {
+
+
+  /*
+  val read: Reads[MetaModel] = {
+    null
+  }
+
+  val writes: Writes[MetaModel] = {
+    ()
+
+
+  }(MetaModel.apply _)
+
+val x: List = null
+
+  /
+
+  val locationReads: Reads[Location] = (
+  (JsPath \ "lat").read[Double](min(-90.0) keepAnd max(90.0)) and
+  (JsPath \ "long").read[Double](min(-180.0) keepAnd max(180.0))
+)(Location.apply _)
+
+val locationWrites: Writes[Location] = (
+  (JsPath \ "lat").write[Double] and
+  (JsPath \ "long").write[Double]
+)(unlift(Location.unapply))
+
+implicit val locationFormat: Format[Location] =
+  Format(locationReads, locationWrites)
+
+   */
+
+
+
+  implicit val playJsonFormat: OFormat[MetaModel] = Json.format[MetaModel]
 
 }
 

@@ -19,6 +19,7 @@ import models.modelDefinitions.metaModel.Diagram
 import models.modelDefinitions.metaModel.MetaModelShortInfo
 import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.Style
+import models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -56,7 +57,6 @@ class MetaModelRestApi @Inject()() extends Controller {
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    null /* TODO
     request.body.validate[MetaModel].fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       entity => {
@@ -72,7 +72,7 @@ class MetaModelRestApi @Inject()() extends Controller {
           case e: Exception => BadRequest(e.getMessage)
         }
       }
-    ) */
+    )
   }
 
   /** Updates whole metamodel structure (metamodel itself, dsls...)
