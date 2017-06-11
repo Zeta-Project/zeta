@@ -1,7 +1,6 @@
 package models.modelDefinitions.model
 
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.Edge
 // import models.modelDefinitions.model.elements.ModelReads
@@ -17,20 +16,17 @@ import play.api.libs.json.Writes
  * Immutable container for model definitions
  *
  * @param name the name of the model
- * @param metaModel the corresponding metamodel instance
- * @param elements the object graph containing the actual model data
- * @param uiState the uistate of the browser client. Location is debatable
+ * @param metaModel the corresponding MetaModel instance
+ * @param nodes the nodes of the actual model data
+ * @param edges the edges of the actual model data
+ * @param uiState the ui-state of the browser client. Location is debatable
  */
 case class Model(
     name: String,
     metaModel: MetaModel,
-    elements: Map[String, ModelElement],
-    uiState: String) {
-
-  val nodes: Map[String, Node] = elements.collect { case(name: String, node: Node) => (name, node)}
-  val edges: Map[String, Edge] = elements.collect { case(name: String, edge: Edge) => (name, edge)}
-
-}
+    nodes: Map[String, Node],
+    edges: Map[String, Edge],
+    uiState: String)
 
 /*
 object Model {

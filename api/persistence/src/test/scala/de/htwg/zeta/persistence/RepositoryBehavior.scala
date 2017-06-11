@@ -48,7 +48,8 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       enums = Map.empty,
       uiState = "modelEntity1.model.metaModel.uiState"
     ),
-    elements = Map.empty,
+    nodes = Map.empty,
+    edges = Map.empty,
     uiState = "modelEntity.model.uiState"
 
   ), metaModelId = UUID.randomUUID, links = None)

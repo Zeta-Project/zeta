@@ -18,11 +18,7 @@ object Util {
 
   def getNodes(elements: Seq[ModelElement]): Seq[Node] = elements.collect { case n: Node => n }
 
-  def getNodes(model: Model): Seq[Node] = getNodes(model.elements.values.toSeq)
-
   def getEdges(elements: Seq[ModelElement]): Seq[Edge] = elements.collect { case e: Edge => e }
-
-  def getEdges(model: Model): Seq[Edge] = getEdges(model.elements.values.toSeq)
 
   def stringSeqToSeqString(seq: Seq[String]): String = seq.mkString("Seq(\"", "\", \"", "\")")
 
