@@ -1,6 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
@@ -13,10 +12,10 @@ class EdgeSourcesUpperBound(edgeType: String, sourceType: String, upperBound: In
   override val possibleFix: String =
     s"Remove source nodes of type $sourceType from edges of type $edgeType until there are a maximum of $upperBound source nodes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.source.find(_.`type`.name == sourceType) match {
-    case Some(source) => source.nodes.size <= upperBound
+  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.source.find(_.clazz.name == sourceType) match {
+    case Some(source) => source.nodeNames.size <= upperBound
     case None => true
   }
 

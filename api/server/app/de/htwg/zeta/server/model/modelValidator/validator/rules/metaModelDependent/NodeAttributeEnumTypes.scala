@@ -14,14 +14,14 @@ class NodeAttributeEnumTypes(nodeType: String, attributeType: String, enumName: 
   override val description: String = s"Attributes of type $attributeType in nodes of type $nodeType must be of type enum $enumName."
   override val possibleFix: String = s"Remove attribute values of attribute $attributeType in node $nodeType which are not of type enum $enumName."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributes.find(_.name == attributeType) match {
+  def rule(node: Node): Boolean = node.attributes.get(attributeType) match {
     case None => true
-    case Some(attribute) => attribute.value.headOption match {
+    case Some(attribute) => attribute.headOption match {
       case None => true
       case Some(head) => head match {
-        case _: EnumSymbol => attribute.value.collect { case v: EnumSymbol => v }.forall(_.enumName == enumName)
+        case _: EnumSymbol => attribute.collect { case v: EnumSymbol => v }.forall(_.enumName == enumName)
         case _ => true
       }
     }

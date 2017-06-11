@@ -10,5 +10,5 @@ private[metaModelIndependent] class ElementsIdsNotEmpty extends ElementsRule {
   override val possibleFix: String = "Add an non-empty identifier to every element."
 
   override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] =
-    elements.map(el => ModelValidationResult(rule = this, valid = el.id.nonEmpty, modelElement = Some(el)))
+    elements.map(el => ModelValidationResult(rule = this, valid = el.name.nonEmpty, modelElement = Some(el)))
 }

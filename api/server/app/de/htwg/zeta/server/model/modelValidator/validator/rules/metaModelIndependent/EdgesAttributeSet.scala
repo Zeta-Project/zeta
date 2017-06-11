@@ -8,5 +8,5 @@ private[metaModelIndependent] class EdgesAttributeSet extends SingleEdgeRule {
   override val description: String = "In the attribute set, every attribute name must exist only once."
   override val possibleFix: String = "Merge multiple attribute definitions."
 
-  override def isValid(edge: Edge): Option[Boolean] = Some(edge.attributes.map(_.name).distinct.size == edge.attributes.size)
+  override def isValid(edge: Edge): Option[Boolean] = Some(edge.attributes.keys.size == edge.attributes.size)
 }

@@ -8,5 +8,5 @@ private[metaModelIndependent] class NodesAttributeSet extends SingleNodeRule {
   override val description: String = "In the attribute set, every attribute name must exist only once."
   override val possibleFix: String = "Merge multiple attribute definitions."
 
-  override def isValid(node: Node): Option[Boolean] = Some(node.attributes.map(_.name).distinct.size == node.attributes.size)
+  override def isValid(node: Node): Option[Boolean] = Some(node.attributes.keys.size == node.attributes.size)
 }

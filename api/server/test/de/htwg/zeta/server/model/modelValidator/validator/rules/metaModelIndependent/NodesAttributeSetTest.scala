@@ -4,7 +4,6 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -15,21 +14,21 @@ class NodesAttributeSetTest extends FlatSpec with Matchers {
 
 
   "isValid" should "return true on valid nodes attribute sets" in {
-    val attributes = Seq(
-      Attribute("attributeName1", Seq()),
-      Attribute("attributeName2", Seq())
+    val attributes = Map(
+      "attributeName1" -> Seq(),
+      "attributeName2" -> Seq()
     )
-    val node = Node.apply2("", mClass, Seq(), Seq(), attributes)
+    val node = Node("", mClass, Seq(), Seq(), attributes)
     rule.isValid(node).get should be(true)
   }
 
 
   it should "return false on invalid edges attribute sets" in {
-    val attributes = Seq(
-      Attribute("duplicateAttributeName", Seq()),
-      Attribute("duplicateAttributeName", Seq())
+    val attributes = Map(
+      "duplicateAttributeName" -> Seq(),
+      "duplicateAttributeName" -> Seq()
     )
-    val node = Node.apply2("", mClass, Seq(), Seq(), attributes)
+    val node = Node("", mClass, Seq(), Seq(), attributes)
     rule.isValid(node).get should be(false)
   }
 }

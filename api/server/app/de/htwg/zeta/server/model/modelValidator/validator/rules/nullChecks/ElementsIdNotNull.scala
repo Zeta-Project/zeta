@@ -8,5 +8,5 @@ private[nullChecks] class ElementsIdNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !(model.nodes.values ++ model.edges.values).map(_.id).map(Option(_)).forall(_.isDefined)
+  override def check(model: Model): Boolean = !(model.nodes.values ++ model.edges.values).map(_.name).map(Option(_)).forall(_.isDefined)
 }

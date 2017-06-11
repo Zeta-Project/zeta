@@ -11,7 +11,6 @@ import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
@@ -41,11 +40,11 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelElements = Seq(
-    Node.apply2(id = "node1", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
-    Node.apply2(id = "node2", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
-    Edge.apply2(id = "edge1", `type` = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Seq[Attribute]()),
-    Node.apply2(id = "node3", `type` = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Seq[Attribute]()),
-    Edge.apply2(id = "edge2", `type` = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Seq[Attribute]())
+    Node(name = "node1", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Node(name = "node2", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Edge(name = "edge1", reference = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
+    Node(name = "node3", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Edge(name = "edge2", reference = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
   )
 
   val mObjects = Seq(
@@ -166,14 +165,14 @@ class UtilTest extends FlatSpec with Matchers {
   "getNodes" should "return all nodes" in {
     val nodes = Util.getNodes(modelElements)
     nodes.size should be(3)
-    nodes.map(_.id) should be(Seq("node1", "node2", "node3"))
+    nodes.map(_.name) should be(Seq("node1", "node2", "node3"))
     nodes.forall(_.isInstanceOf[Node]) should be(true)
   }
 
   "getEdges" should "return all edges" in {
     val edges = Util.getEdges(modelElements)
     edges.size should be(2)
-    edges.map(_.id) should be(Seq("edge1", "edge2"))
+    edges.map(_.name) should be(Seq("edge1", "edge2"))
     edges.forall(_.isInstanceOf[Edge]) should be(true)
   }
 

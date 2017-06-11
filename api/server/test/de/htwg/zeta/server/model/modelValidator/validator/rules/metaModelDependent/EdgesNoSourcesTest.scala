@@ -6,7 +6,6 @@ import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToNodes
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -24,7 +23,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   val rule = new EdgesNoSources("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no sources" in {
-    val edge = Edge.apply2("", mReference, Seq(), Seq(), Seq())
+    val edge = Edge("", mReference, Seq(), Seq(),Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
@@ -37,14 +36,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       outputs = Seq(),
       attributes = Seq()
     )
-    val toNode = ToNodes(`type` = source, nodes = Seq(Node(
-      id = "",
-      `type` = source,
-      _outputs = Seq(),
-      _inputs = Seq(),
-      attributes = Seq()
-    )))
-    val edge = Edge.apply2("", mReference, Seq(toNode), Seq(), Seq())
+    val toNode = ToNodes(clazz = source, nodeNames = Seq(""))
+    val edge = Edge("", mReference, Seq(toNode), Seq(), Map.empty)
 
     rule.isValid(edge).get should be(false)
   }
@@ -58,8 +51,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       outputs = Seq(),
       attributes = Seq()
     )
-    val toNode = ToNodes(`type` = source, nodes = Seq())
-    val edge = Edge.apply2("", mReference, Seq(toNode), Seq(), Seq())
+    val toNode = ToNodes(clazz = source, nodeNames = Seq())
+    val edge = Edge("", mReference, Seq(toNode), Seq(), Map.empty)
 
     rule.isValid(edge).get should be(true)
   }
@@ -73,7 +66,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq[MAttribute]()
     )
-    val edge = Edge.apply2("", differentReference, Seq(), Seq(), Seq())
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

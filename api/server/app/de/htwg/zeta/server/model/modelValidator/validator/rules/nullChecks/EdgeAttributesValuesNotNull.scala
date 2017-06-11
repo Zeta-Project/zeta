@@ -8,5 +8,5 @@ private[nullChecks] class EdgeAttributesValuesNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.edges.values.flatMap(_.attributes).map(_.value).map(Option(_)).forall(_.isDefined)
+  override def check(model: Model): Boolean = !model.edges.values.flatMap(_.attributes.values).map(Option(_)).forall(_.isDefined)
 }

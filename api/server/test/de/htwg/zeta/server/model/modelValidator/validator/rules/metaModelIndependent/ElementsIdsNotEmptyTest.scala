@@ -17,8 +17,8 @@ class ElementsIdsNotEmptyTest extends FlatSpec with Matchers {
 
   "check" should "return true on elements with non-empty ids" in {
     val elements = Seq(
-      Node.apply2("nodeId", mClass, Seq(), Seq(), Seq()),
-      Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq())
+      Node("nodeId", mClass, Seq(), Seq(), Map.empty),
+      Edge("edgeId", mReference, Seq(), Seq(), Map.empty)
     )
     val results = rule.check(elements)
     results.forall(_.valid) should be (true)
@@ -26,8 +26,8 @@ class ElementsIdsNotEmptyTest extends FlatSpec with Matchers {
 
   it should "return false on elements with empty ids" in {
     val elements = Seq(
-      Node.apply2("", mClass, Seq(), Seq(), Seq()),
-      Edge.apply2("", mReference, Seq(), Seq(), Seq())
+      Node("", mClass, Seq(), Seq(), Map.empty),
+      Edge("", mReference, Seq(), Seq(), Map.empty)
     )
     val results = rule.check(elements)
     results.head.valid should be (false)

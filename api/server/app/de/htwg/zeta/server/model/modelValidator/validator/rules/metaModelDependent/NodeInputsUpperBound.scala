@@ -12,10 +12,10 @@ class NodeInputsUpperBound(nodeType: String, inputType: String, upperBound: Int)
   override val description: String = s"Nodes of type $nodeType must have a maximum of $upperBound input edges of type $inputType."
   override val possibleFix: String = s"Remove input edges of type $inputType from nodes of type $nodeType until there are a maximum of $upperBound input edges."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = if (upperBound == -1) true else node.inputs.find(_.`type`.name == inputType) match {
-    case Some(input) => input.edges.size <= upperBound
+  def rule(node: Node): Boolean = if (upperBound == -1) true else node.inputs.find(_.reference.name == inputType) match {
+    case Some(input) => input.edgeNames.size <= upperBound
     case None => true
   }
 

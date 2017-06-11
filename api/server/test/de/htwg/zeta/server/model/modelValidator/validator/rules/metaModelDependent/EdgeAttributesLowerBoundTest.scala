@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -23,25 +22,24 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
   val rule = new EdgeAttributesLowerBound("edgeType", "attributeType", 2)
 
   "isValid" should "return true on edges with 2 or more attributes of type attributeType" in {
-    val twoAttributes = Attribute(name = "attributeType", value = Seq(MString("att1"), MString("att2")))
-    val twoAttributesEdge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(twoAttributes))
+    val twoAttributes = Map("attributeType" -> Seq(MString("att1"), MString("att2")))
+    val twoAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), twoAttributes)
 
     rule.isValid(twoAttributesEdge).get should be(true)
 
-    val threeAttributes = Attribute(name = "attributeType", value = Seq(MString("att1"), MString("att2"), MString("att3")))
-    val threeAttributesEdge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(threeAttributes))
+    val threeAttributes = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3")))
+    val threeAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), threeAttributes)
 
     rule.isValid(threeAttributesEdge).get should be(true)
   }
 
   it should "return false on edges with less than 2 attributes of type attributeType" in {
-    val noAttributes = Attribute(name = "attributeType", value = Seq())
-    val noAttributesEdge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(noAttributes))
-
+    val noAttributes = Map("attributeType" -> Seq.empty)
+    val noAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), noAttributes)
     rule.isValid(noAttributesEdge).get should be(false)
 
-    val oneAttribute = Attribute(name = "attributeType", value = Seq(MString("att")))
-    val oneAttributeEdge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(oneAttribute))
+    val oneAttribute = Map("attributeType" -> Seq(MString("att")))
+    val oneAttributeEdge = Edge("edgeId", mReference, Seq(), Seq(), oneAttribute)
 
     rule.isValid(oneAttributeEdge).get should be(false)
   }
@@ -55,7 +53,7 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq[MAttribute]()
     )
-    val edge = Edge.apply2("edgeId", differentReference, Seq(), Seq(), Seq())
+    val edge = Edge("edgeId", differentReference, Seq(), Seq(), Map.empty)
 
     rule.isValid(edge) should be(None)
   }

@@ -12,10 +12,10 @@ class NodeInputsLowerBound(nodeType: String, inputType: String, lowerBound: Int)
   override val description: String = s"Nodes of type $nodeType must have at least $lowerBound input edges of type $inputType."
   override val possibleFix: String = s"Add input edges of type $inputType to nodes of type $nodeType until there are at least $lowerBound input edges."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputs.find(_.`type`.name == inputType) match {
-    case Some(input) => input.edges.size >= lowerBound
+  def rule(node: Node): Boolean = node.inputs.find(_.reference.name == inputType) match {
+    case Some(input) => input.edgeNames.size >= lowerBound
     case None => lowerBound == 0
   }
 

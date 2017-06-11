@@ -12,9 +12,9 @@ class NodeAttributes(nodeType: String, attributeTypes: Seq[String]) extends Sing
   override val description: String = s"Nodes of type $nodeType are only allowed to have attributes of types ${attributeTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove all attributes that are not of types ${attributeTypes.mkString("{", ", ", "}")} from nodes of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributes.map(_.name).foldLeft(true) { (acc, attributeName) =>
+  def rule(node: Node): Boolean = node.attributes.keys.foldLeft(true) { (acc, attributeName) =>
     if (attributeTypes.contains(attributeName)) acc else false
   }
 

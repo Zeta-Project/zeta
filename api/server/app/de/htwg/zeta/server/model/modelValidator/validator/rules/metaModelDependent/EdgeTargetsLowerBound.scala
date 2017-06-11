@@ -1,6 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
@@ -12,10 +11,10 @@ class EdgeTargetsLowerBound(edgeType: String, targetType: String, lowerBound: In
   override val description: String = s"Edges of type $edgeType must have at least $lowerBound target nodes of type $targetType."
   override val possibleFix: String = s"Add target nodes of type $targetType to edge of type $edgeType until there are at least $lowerBound target nodes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.target.find(_.`type`.name == targetType) match {
-    case Some(target) => target.nodes.size >= lowerBound
+  def rule(edge: Edge): Boolean = edge.target.find(_.clazz.name == targetType) match {
+    case Some(target) => target.nodeNames.size >= lowerBound
     case None => lowerBound == 0
   }
 

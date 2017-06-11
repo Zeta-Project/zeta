@@ -6,7 +6,6 @@ import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,29 +17,30 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   "isValid" should "be true for valid nodes" in {
     val mEnum = MEnum("enumName", Seq())
-    val attribute = Attribute("attributeType", Seq(EnumSymbol("enumName", mEnum.name)))
-    val node = Node.apply2("", mClass, Seq(), Seq(), Seq(attribute))
+    val attribute = Map("attributeType" -> Seq(EnumSymbol("enumName", mEnum.name)))
+    val node = Node("", mClass, Seq(), Seq(), attribute)
 
-    rule.isValid(node).get should be (true)
+    rule.isValid(node).get should be(true)
   }
 
   it should "be false for invalid nodes" in {
     val differentEnum = MEnum(name = "differentEnumName", values = Seq())
-    val attribute = Attribute(name = "attributeType", value = Seq(EnumSymbol("differentEnumName", differentEnum.name)))
-    val node = Node.apply2("", mClass, Seq(), Seq(), Seq(attribute))
+    val attribute = Map("attributeType" -> Seq(EnumSymbol("differentEnumName", differentEnum.name)))
+    val node = Node("", mClass, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "be None for non-matching nodes" in {
     val differentClass = MClass("differentClass", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
-    val node = Node.apply2("", differentClass, Seq(), Seq(), Seq())
+    val node = Node("", differentClass, Seq(), Seq(), Map.empty)
 
-    rule.isValid(node) should be (None)
+    rule.isValid(node) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Attributes ofType "attributeType" inNodes "nodeType" areOfEnumType "enumName"""")
+    rule.dslStatement should be(
+      """Attributes ofType "attributeType" inNodes "nodeType" areOfEnumType "enumName"""")
   }
 
 }

@@ -21,7 +21,7 @@ class NodeAttributeScalarTypes(nodeType: String, attributeType: String, attribut
   override val possibleFix: String =
     s"Remove attribute values of attribute $attributeType in node $nodeType which are not of data type ${Util.getAttributeTypeClassName(attributeDataType)}."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
   def rule(node: Node): Boolean = {
 
@@ -30,15 +30,15 @@ class NodeAttributeScalarTypes(nodeType: String, attributeType: String, attribut
     def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: MInt => v }.forall(_.attributeType == attributeDataType)
     def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: MDouble => v }.forall(_.attributeType == attributeDataType)
 
-    node.attributes.find(_.name == attributeType) match {
+    node.attributes.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute.value.headOption match {
+      case Some(attribute) => attribute.headOption match {
         case None => true
         case Some(head) => head match {
-          case _: MString => handleStrings(attribute.value)
-          case _: MBool => handleBooleans(attribute.value)
-          case _: MInt => handleInts(attribute.value)
-          case _: MDouble => handleDoubles(attribute.value)
+          case _: MString => handleStrings(attribute)
+          case _: MBool => handleBooleans(attribute)
+          case _: MInt => handleInts(attribute)
+          case _: MDouble => handleDoubles(attribute)
           case _ => true
         }
       }

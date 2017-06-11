@@ -28,7 +28,6 @@ import models.modelDefinitions.metaModel.elements.MReference
 // import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.EnumSymbol
-import models.modelDefinitions.model.elements.Attribute
 import spray.json.DefaultJsonProtocol
 import spray.json.JsString
 import spray.json.JsValue
@@ -371,8 +370,6 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   }
 
-
-  private implicit val attributeFormat: RootJsonFormat[Attribute] = jsonFormat2(Attribute.apply)
 
 
   // private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)

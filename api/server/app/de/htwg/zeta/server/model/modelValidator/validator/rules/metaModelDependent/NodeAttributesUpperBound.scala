@@ -14,10 +14,10 @@ class NodeAttributesUpperBound(nodeType: String, attributeType: String, upperBou
   override val possibleFix: String =
     s"Remove attributes of type $attributeType from nodes of type $nodeType until there are a maximum of $upperBound attributes."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = if (upperBound == -1) true else node.attributes.find(_.name == attributeType) match {
-    case Some(attribute) => attribute.value.size <= upperBound
+  def rule(node: Node): Boolean = if (upperBound == -1) true else node.attributes.get(attributeType) match {
+    case Some(attribute) => attribute.size <= upperBound
     case None => true
   }
 

@@ -26,7 +26,8 @@ case class Model(
     metaModel: MetaModel,
     nodes: Map[String, Node],
     edges: Map[String, Edge],
-    uiState: String)
+    uiState: String
+)
 
 /*
 object Model {

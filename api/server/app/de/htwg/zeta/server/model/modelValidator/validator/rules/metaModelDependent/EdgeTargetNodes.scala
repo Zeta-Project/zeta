@@ -12,9 +12,9 @@ class EdgeTargetNodes(edgeType: String, targetTypes: Seq[String]) extends Single
   override val description: String = s"Edges of type $edgeType are only allowed to have target nodes of types ${targetTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove all target nodes that are not of types ${targetTypes.mkString("{", ", ", "}")} from edges of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.target.map(_.`type`.name).foldLeft(true) { (acc, targetName) =>
+  def rule(edge: Edge): Boolean = edge.target.map(_.clazz.name).foldLeft(true) { (acc, targetName) =>
     if (targetTypes.contains(targetName)) acc else false
   }
 

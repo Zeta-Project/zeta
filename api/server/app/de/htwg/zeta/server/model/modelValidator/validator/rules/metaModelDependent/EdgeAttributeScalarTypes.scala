@@ -23,7 +23,7 @@ class EdgeAttributeScalarTypes(edgeType: String, attributeType: String, attribut
     s"""Remove attribute values of attribute $attributeType in edge $edgeType which are not of data type
       |${Util.getAttributeTypeClassName(attributeDataType)}.""".stripMargin
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = {
 
@@ -32,15 +32,15 @@ class EdgeAttributeScalarTypes(edgeType: String, attributeType: String, attribut
     def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: MInt => v }.forall(_.attributeType == attributeDataType)
     def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: MDouble => v }.forall(_.attributeType == attributeDataType)
 
-    edge.attributes.find(_.name == attributeType) match {
+    edge.attributes.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute.value.headOption match {
+      case Some(attribute) => attribute.headOption match {
         case None => true
         case Some(head) => head match {
-          case _: MString => handleStrings(attribute.value)
-          case _: MBool => handleBooleans(attribute.value)
-          case _: MInt => handleInts(attribute.value)
-          case _: MDouble => handleDoubles(attribute.value)
+          case _: MString => handleStrings(attribute)
+          case _: MBool => handleBooleans(attribute)
+          case _: MInt => handleInts(attribute)
+          case _: MDouble => handleDoubles(attribute)
           case _ => true
         }
       }

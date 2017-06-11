@@ -8,5 +8,5 @@ private[metaModelIndependent] class NodesAttributesNamesNotEmpty extends SingleN
   override val description: String = "Attribute names of nodes attributes must not be empty."
   override val possibleFix: String = "Add name to every attribute."
 
-  override def isValid(node: Node): Option[Boolean] = Some(!node.attributes.map(_.name).contains(""))
+  override def isValid(node: Node): Option[Boolean] = Some(!node.attributes.keys.toSeq.contains(""))
 }

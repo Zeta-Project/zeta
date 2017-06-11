@@ -15,7 +15,6 @@ import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
 import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
 import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
 
@@ -34,10 +33,10 @@ class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) 
 
   override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = {
 
-    val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.`type`.name))
+    val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.clazz.name))
 
-    val attributes: Seq[Attribute] = nodes.flatMap(_.attributes).filter(_.name == attributeType)
-    val attributeValues: Seq[AttributeValue] = attributes.flatMap(_.value)
+    val attributes: Map[String, Seq[AttributeValue]] = nodes.flatMap(_.attributes).filter(_._1 == attributeType).toMap
+    val attributeValues: Seq[AttributeValue] = attributes.values.flatten.toSeq
 
     // convert all attribute values to string for comparison.
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
@@ -54,7 +53,7 @@ class NodeAttributesGlobalUnique(nodeTypes: Seq[String], attributeType: String) 
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
     def checkNodeDuplicateValues(acc: Seq[ModelValidationResult], currentNode: Node): Seq[ModelValidationResult] = {
-      val attributeValues = currentNode.attributes.flatMap(_.value)
+      val attributeValues = currentNode.attributes.values.flatten.toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()

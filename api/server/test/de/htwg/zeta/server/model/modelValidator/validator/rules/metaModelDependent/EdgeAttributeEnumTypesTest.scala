@@ -6,7 +6,6 @@ import models.modelDefinitions.metaModel.elements.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -24,8 +23,8 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   "the rule" should "be true for valid edges" in {
     val mEnum = MEnum(name = "enumName", values = Seq())
-    val attribute = Attribute(name = "attributeType", value = Seq(EnumSymbol("enumName", mEnum.name)))
-    val edge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(attribute))
+    val attribute = Map("attributeType" -> Seq(EnumSymbol("enumName", mEnum.name)))
+    val edge = Edge("edgeId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
@@ -39,15 +38,15 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq[MAttribute]()
     )
-    val edge = Edge.apply2("edgeId", differentMReference, Seq(), Seq(), Seq())
+    val edge = Edge("edgeId", differentMReference, Seq(), Seq(), Map.empty)
 
     rule.isValid(edge) should be(None)
   }
 
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", values = Seq())
-    val attribute = Attribute(name = "attributeType", value = Seq(EnumSymbol("differentEnumName", differentEnum.name)))
-    val edge = Edge.apply2("edgeId", mReference, Seq(), Seq(), Seq(attribute))
+    val attribute = Map("attributeType" -> Seq(EnumSymbol("differentEnumName", differentEnum.name)))
+    val edge = Edge("edgeId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -61,7 +60,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq[MAttribute]()
     )
-    val edge = Edge.apply2("", differentReference, Seq(), Seq(), Seq())
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

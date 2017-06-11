@@ -12,10 +12,10 @@ class EdgeAttributesLowerBound(edgeType: String, attributeType: String, lowerBou
   override val description: String = s"Edges of type $edgeType must have at least $lowerBound attributes of type $attributeType."
   override val possibleFix: String = s"Add attributes of type $attributeType to edges of type $edgeType until there are at least $lowerBound attributes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.attributes.find(_.name == attributeType) match {
-    case Some(attribute) => attribute.value.size >= lowerBound
+  def rule(edge: Edge): Boolean = edge.attributes.get(attributeType) match {
+    case Some(attribute) => attribute.size >= lowerBound
     case None => lowerBound == 0
   }
 

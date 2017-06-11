@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,14 +17,14 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   "check" should "return success validation results on correct attributes" in {
 
-    val attribute1 = Attribute("attributeType", Seq(MString("value1")))
-    val node1 = Node.apply2("", mClass1, Seq(), Seq(), Seq(attribute1))
+    val attribute1 = Map("attributeType" -> Seq(MString("value1")))
+    val node1 = Node("", mClass1, Seq(), Seq(), attribute1)
 
-    val attribute2 = Attribute("attributeType", Seq(MString("value2")))
-    val node2 = Node.apply2("", mClass1, Seq(), Seq(), Seq(attribute2))
+    val attribute2 = Map("attributeType" -> Seq(MString("value2")))
+    val node2 = Node("", mClass1, Seq(), Seq(), attribute2)
 
-    val attribute3 = Attribute("attributeType", Seq(MString("value3")))
-    val node3 = Node.apply2("", mClass2, Seq(), Seq(), Seq(attribute3))
+    val attribute3 = Map("attributeType" -> Seq(MString("value3")))
+    val node3 = Node("", mClass2, Seq(), Seq(), attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
 
@@ -34,14 +33,14 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return failure validation results on invalid attributes" in {
-    val attribute1 = Attribute("attributeType", Seq(MString("duplicateValue")))
-    val node1 = Node.apply2("", mClass1, Seq(), Seq(), Seq(attribute1))
+    val attribute1 = Map("attributeType" -> Seq(MString("duplicateValue")))
+    val node1 = Node("", mClass1, Seq(), Seq(), attribute1)
 
-    val attribute2 = Attribute("attributeType", Seq(MString("value")))
-    val node2 = Node.apply2("", mClass1, Seq(), Seq(), Seq(attribute2))
+    val attribute2 = Map("attributeType" -> Seq(MString("value")))
+    val node2 = Node("", mClass1, Seq(), Seq(), attribute2)
 
-    val attribute3 = Attribute("attributeType", Seq(MString("duplicateValue")))
-    val node3 = Node.apply2("", mClass2, Seq(), Seq(), Seq(attribute3))
+    val attribute3 = Map("attributeType" -> Seq(MString("duplicateValue")))
+    val node3 = Node("", mClass2, Seq(), Seq(), attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
 

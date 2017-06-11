@@ -8,5 +8,5 @@ private[nullChecks] class NodeInputsTypeNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.nodes.values.flatMap(_.inputs).map(_.`type`).map(Option(_)).forall(_.isDefined)
+  override def check(model: Model): Boolean = !model.nodes.values.flatMap(_.inputs).map(_.reference).map(Option(_)).forall(_.isDefined)
 }

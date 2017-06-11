@@ -29,8 +29,8 @@ class EdgeAttributesGlobalUnique(edgeType: String, attributeType: String) extend
     def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
 
-    val edges = Util.getEdges(elements).filter(_.`type`.name == edgeType)
-    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributes).filter(_.name == attributeType).flatMap(_.value)
+    val edges = Util.getEdges(elements).filter(_.reference.name == edgeType)
+    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributes).filter(_._1 == attributeType).flatMap(_._2)
 
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
       case None => Seq()
@@ -46,7 +46,7 @@ class EdgeAttributesGlobalUnique(edgeType: String, attributeType: String) extend
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
     def checkEdgeDuplicateValues(acc: Seq[ModelValidationResult], currentEdge: Edge): Seq[ModelValidationResult] = {
-      val attributeValues = currentEdge.attributes.flatMap(_.value)
+      val attributeValues = currentEdge.attributes.flatMap(_._2).toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()

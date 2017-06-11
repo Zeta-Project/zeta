@@ -8,5 +8,5 @@ private[metaModelIndependent] class EdgesAttributesNamesNotEmpty extends SingleE
   override val description: String = "Attribute names of edges attributes must not be empty."
   override val possibleFix: String = "Add a name to every attribute."
 
-  override def isValid(edge: Edge): Option[Boolean] = Some(!edge.attributes.map(_.name).contains(""))
+  override def isValid(edge: Edge): Option[Boolean] = Some(!edge.attributes.keys.toSeq.contains(""))
 }

@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -22,19 +21,19 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   val rule = new EdgesNoAttributes("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no attributes" in {
-    val edge = Edge.apply2("", mReference, Seq(), Seq(), Seq())
+    val edge = Edge("", mReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on edges of type edgeType with attributes" in {
-    val attribute = Attribute(name = "attributeType", value = Seq(MString("att")))
-    val edge = Edge.apply2("", mReference, Seq(), Seq(), Seq(attribute))
+    val attribute = Map("attributeType" -> Seq(MString("att")))
+    val edge = Edge("", mReference, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(false)
   }
 
   it should "return true on edges of type edgeType with empty attribute values" in {
-    val attribute = Attribute(name = "attributeType", value = Seq())
-    val edge = Edge.apply2("", mReference, Seq(), Seq(), Seq(attribute))
+    val attribute = Map("attributeType" -> Seq())
+    val edge = Edge("", mReference, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(true)
   }
 
@@ -47,7 +46,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq[MAttribute]()
     )
-    val edge = Edge.apply2("", differentReference, Seq(), Seq(), Seq())
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

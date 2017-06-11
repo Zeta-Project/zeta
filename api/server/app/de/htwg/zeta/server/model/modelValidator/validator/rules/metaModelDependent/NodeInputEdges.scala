@@ -12,9 +12,9 @@ class NodeInputEdges(nodeType: String, inputTypes: Seq[String]) extends SingleNo
   override val description: String = s"Nodes of type $nodeType are only allowed to have input edges of types ${inputTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove all input edges that are not of types ${inputTypes.mkString("{", ", ", "}")} from nodes of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.`type`.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputs.map(_.`type`.name).foldLeft(true) { (acc, inputName) =>
+  def rule(node: Node): Boolean = node.inputs.map(_.reference.name).foldLeft(true) { (acc, inputName) =>
     if (inputTypes.contains(inputName)) acc else false
   }
 

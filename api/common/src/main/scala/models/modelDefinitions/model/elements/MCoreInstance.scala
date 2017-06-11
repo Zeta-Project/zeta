@@ -1,7 +1,6 @@
 package models.modelDefinitions.model.elements
 
 import scala.collection.immutable.Seq
-import scala.reflect.ClassTag
 
 import models.modelDefinitions.metaModel.elements.AttributeValue
 import models.modelDefinitions.metaModel.elements.MClass
@@ -16,14 +15,14 @@ import models.modelDefinitions.metaModel.elements.MReference
  * the topmost trait
  */
 sealed trait ModelElement {
-  val id: String
+  val name: String
 }
 
 /**
  * a mixin that offers the attributes field
  */
 sealed trait HasAttributes {
-  val attributes: Seq[Attribute]
+  val attributes: Map[String, Seq[AttributeValue]]
 }
 
 /**
@@ -33,107 +32,51 @@ sealed trait Link
 
 /**
  * represents outgoing edges of a node
- * @param `type` the MReference instance that represents the type of the references
- * @param edges the linked edges
+ *
+ * @param reference the MReference instance that represents the type of the references
+ * @param edgeNames the names of the linked edges
  */
-case class ToEdges(`type`: MReference, edges: Seq[Edge]) extends Link
+case class ToEdges(reference: MReference, edgeNames: Seq[String]) extends Link
 
 /**
  * represents nodes in reach of an edge
- * @param `type` the MClass instance that represents the type of the nodes
- * @param nodes
+ *
+ * @param clazz     the MClass instance that represents the type of the nodes
+ * @param nodeNames the names of the nodes
  */
-case class ToNodes(`type`: MClass, nodes: Seq[Node]) extends Link
+case class ToNodes(clazz: MClass, nodeNames: Seq[String]) extends Link
 
 /**
  * Represents an MClass type instance
- * @param id the id of the node
- * @param `type` the MClass instance that represents the node's type
- * @param _outputs the outgoing edges
- * @param _inputs the incoming edges
- * @param attributes the attributes of the node
+ *
+ * @param name       the name of the node
+ * @param clazz      the MClass instance that represents the node's type
+ * @param outputs    the outgoing edges
+ * @param inputs     the incoming edges
+ * @param attributes a map with attribute names and the assigned values
  */
-class Node(
-    val id: String,
-    val `type`: MClass,
-    _outputs: => Seq[ToEdges],
-    _inputs: => Seq[ToEdges],
-    val attributes: Seq[Attribute]
-) extends ModelElement with HasAttributes {
-  lazy val outputs: Seq[ToEdges] = _outputs
-  lazy val inputs: Seq[ToEdges] = _inputs
-
-  override def toString: String = {
-    s"Node($id, ${`type`.name}, $outputs, $inputs, $attributes)"
-  }
-
-  // convenience method for updating links
-  def updateLinks(_outputs: => Seq[ToEdges], _inputs: => Seq[ToEdges]): Node =
-    new Node(id, `type`, _outputs, _inputs, attributes)
-
-  // getter for attributes
-  def getAttribute[T: ClassTag](name: String): T = {
-    "AttributeValue".asInstanceOf[T]
-  }
-
-}
-
-object Node {
-
-  def apply(
-    id: String,
-    `type`: MClass,
-    _outputs: => Seq[ToEdges],
-    _inputs: => Seq[ToEdges],
-    attributes: Seq[Attribute]
-  ): Node = new Node(id, `type`, _outputs, _inputs, attributes)
-
-  def apply2(
-    id: String,
-    `type`: MClass,
+case class Node(
+    name: String,
+    clazz: MClass,
     outputs: Seq[ToEdges],
     inputs: Seq[ToEdges],
-    attributes: Seq[Attribute]
-  ): Node = new Node(id, `type`, outputs, inputs, attributes)
+    attributes: Map[String, Seq[AttributeValue]]
+) extends ModelElement with HasAttributes
 
-}
 
 /**
  * Represents an MReference type instance
- * @param id the id of the edge
- * @param `type` the MReference instance that represents the edge's type
- * @param _source the nodes that are the origin of relationships
- * @param _target the nodes that can be reached
- * @param attributes
+ *
+ * @param name       the name of the edge
+ * @param reference  the MReference instance that represents the edge's type
+ * @param source     the nodes that are the origin of relationships
+ * @param target     the nodes that can be reached
+ * @param attributes a map with attribute names and the assigned values
  */
-class Edge(
-    val id: String,
-    val `type`: MReference,
-    _source: => Seq[ToNodes],
-    _target: => Seq[ToNodes],
-    val attributes: Seq[Attribute])
-  extends ModelElement with HasAttributes {
-
-  lazy val source: Seq[ToNodes] = _source
-  lazy val target: Seq[ToNodes] = _target
-
-  override def toString: String = {
-    s"Node($id, ${`type`.name}, $source, $target, $attributes)"
-  }
-
-  // convenience method for updating links
-  def updateLinks(_source: => Seq[ToNodes], _target: => Seq[ToNodes]): Edge =
-    new Edge(id, `type`, _source, _target, attributes)
-}
-
-object Edge {
-  def apply2(
-    id: String,
-    `type`: MReference,
+case class Edge(
+    name: String,
+    reference: MReference,
     source: Seq[ToNodes],
     target: Seq[ToNodes],
-    attributes: Seq[Attribute]
-  ): Edge = new Edge(id, `type`, source, target, attributes)
-}
-
-case class Attribute(name: String, value: Seq[AttributeValue])
+    attributes: Map[String, Seq[AttributeValue]]
+) extends ModelElement with HasAttributes

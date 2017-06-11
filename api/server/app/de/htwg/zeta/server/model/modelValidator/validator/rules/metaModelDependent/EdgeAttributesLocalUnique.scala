@@ -1,6 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
@@ -18,7 +17,7 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
   override val description: String = s"Attribute values of attribute type $attributeType in Edge of type $edgeType must be unique locally."
   override val possibleFix: String = s"Remove all but one of the duplicated attribute values of type $attributeType in Edge of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = {
 
@@ -28,22 +27,22 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
     def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
     def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
-    edge.attributes.find(_.name == attributeType) match {
+    edge.attributes.get(attributeType) match {
       case None => true
       case Some(attribute) =>
-        val attributeValues: Seq[String] = attribute.value.headOption match {
+        val attributeValues: Seq[String] = attribute.headOption match {
           case None => Seq()
-          case Some(_: MString) => handleStrings(attribute.value)
-          case Some(_: MBool) => handleBooleans(attribute.value)
-          case Some(_: MInt) => handleInts(attribute.value)
-          case Some(_: MDouble) => handleDoubles(attribute.value)
-          case Some(_: EnumSymbol) => handleEnums(attribute.value)
+          case Some(_: MString) => handleStrings(attribute)
+          case Some(_: MBool) => handleBooleans(attribute)
+          case Some(_: MInt) => handleInts(attribute)
+          case Some(_: MDouble) => handleDoubles(attribute)
+          case Some(_: EnumSymbol) => handleEnums(attribute)
         }
 
         if (attributeValues.isEmpty) {
           true
         } else {
-          attributeValues.distinct.size == attribute.value.size
+          attributeValues.distinct.size == attribute.size
         }
     }
   }

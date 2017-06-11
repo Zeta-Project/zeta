@@ -40,7 +40,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
   case class MyGenerator(generatorId: UUID = UUID.randomUUID) extends Transformer {
 
     def transformBasicActorNode(node: Node) = {
-      val actorName = node.getAttribute[String]("name")
+      val actorName = "AttributeValue"
       val filename = s"${actorName}.scala"
       val content =
         s"""
@@ -57,7 +57,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     def transformPersistentActorNode(node: Node) = "transformPersistentActorNode"
 
     def transformNode(node: Node) = {
-      node.`type`.name match {
+      node.clazz.name match {
         case "BasicActor" => transformBasicActorNode(node)
         case "PersistentActor" => transformPersistentActorNode(node)
       }
@@ -125,8 +125,8 @@ object Main extends Template[CreateOptions, RemoteOptions] {
 
     repository.modelEntities.read(options.modelId).map { entity =>
       entity.model.nodes.values.foreach { node: Node =>
-        if (node.`type`.name == options.nodeType) {
-          remote.emit[File](File(UUID.randomUUID, options.nodeType, node.`type`.name))
+        if (node.clazz.name == options.nodeType) {
+          remote.emit[File](File(UUID.randomUUID, options.nodeType, node.clazz.name))
         }
       }
       p.success(Success())

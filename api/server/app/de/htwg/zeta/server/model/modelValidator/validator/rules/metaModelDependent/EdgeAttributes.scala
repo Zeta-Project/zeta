@@ -12,9 +12,9 @@ class EdgeAttributes(edgeType: String, attributeTypes: Seq[String]) extends Sing
   override val description: String = s"Edges of type $edgeType are only allowed to have attributes of types ${Util.stringSeqToSeqString(attributeTypes)}."
   override val possibleFix: String = s"Remove all attributes that are not of types ${Util.stringSeqToSeqString(attributeTypes)} from edges of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.`type`.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.attributes.map(_.name).foldLeft(true) { (acc, attributeName) =>
+  def rule(edge: Edge): Boolean = edge.attributes.keys.foldLeft(true) { (acc, attributeName) =>
     if (attributeTypes.contains(attributeName)) acc else false
   }
 

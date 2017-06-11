@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
 import org.scalatest.FlatSpec
@@ -18,43 +17,35 @@ class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType having 2 or more output edges of type outputType" in {
 
     val outputType = MReference("outputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
-    val twoOutputEdges = ToEdges(outputType, Seq(
-      Edge.apply2("", outputType, Seq(), Seq(), Seq()),
-      Edge.apply2("", outputType, Seq(), Seq(), Seq())
-    ))
-    val nodeTwoOutputEdges = Node.apply2("", mClass, Seq(twoOutputEdges), Seq(), Seq())
-    rule.isValid(nodeTwoOutputEdges).get should be (true)
+    val twoOutputEdges = ToEdges(outputType, Seq(outputType.name, outputType.name))
+    val nodeTwoOutputEdges = Node("", mClass, Seq(twoOutputEdges), Seq(), Map.empty)
+    rule.isValid(nodeTwoOutputEdges).get should be(true)
 
-    val threeOutputEdges = ToEdges(outputType, Seq(
-      Edge.apply2("", outputType, Seq(), Seq(), Seq()),
-      Edge.apply2("", outputType, Seq(), Seq(), Seq()),
-      Edge.apply2("", outputType, Seq(), Seq(), Seq())
-    ))
-    val nodeThreeOutputEdges = Node.apply2("", mClass, Seq(threeOutputEdges), Seq(), Seq())
-    rule.isValid(nodeThreeOutputEdges).get should be (true)
+    val threeOutputEdges = ToEdges(outputType, Seq(outputType.name, outputType.name, outputType.name))
+    val nodeThreeOutputEdges = Node("", mClass, Seq(threeOutputEdges), Seq(), Map.empty)
+    rule.isValid(nodeThreeOutputEdges).get should be(true)
   }
 
   it should "return false on nodes of type nodeType having less than 2 output edges of type outputType" in {
 
     val outputType = MReference("outputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
     val noOutputEdges = ToEdges(outputType, Seq())
-    val nodeNoOutputEdges = Node.apply2("", mClass, Seq(noOutputEdges), Seq(), Seq())
-    rule.isValid(nodeNoOutputEdges).get should be (false)
+    val nodeNoOutputEdges = Node("", mClass, Seq(noOutputEdges), Seq(), Map.empty)
+    rule.isValid(nodeNoOutputEdges).get should be(false)
 
-    val oneOutputEdge = ToEdges(outputType, Seq(
-      Edge.apply2("", outputType, Seq(), Seq(), Seq())
-    ))
-    val nodeOneOutputEdge = Node.apply2("", mClass, Seq(oneOutputEdge), Seq(), Seq())
-    rule.isValid(nodeOneOutputEdge).get should be (false)
+    val oneOutputEdge = ToEdges(outputType, Seq(outputType.name))
+    val nodeOneOutputEdge = Node("", mClass, Seq(oneOutputEdge), Seq(), Map.empty)
+    rule.isValid(nodeOneOutputEdge).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
-    val node = Node.apply2("", differentMClass, Seq(), Seq(), Seq())
-    rule.isValid(node) should be (None)
+    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    rule.isValid(node) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
-    rule.dslStatement should be ("""Outputs ofNodes "nodeType" toEdges "outputType" haveLowerBound 2""")
+    rule.dslStatement should be(
+      """Outputs ofNodes "nodeType" toEdges "outputType" haveLowerBound 2""")
   }
 }

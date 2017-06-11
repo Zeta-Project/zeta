@@ -18,10 +18,10 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
 
   "check" should "return true on elements with unique ids" in {
     val elements = Seq(
-      Edge.apply2("id1", mReference, Seq(), Seq(), Seq()),
-      Node.apply2("id2", mClass, Seq(), Seq(), Seq()),
-      Edge.apply2("id3", mReference, Seq(), Seq(), Seq()),
-      Node.apply2("id4", mClass, Seq(), Seq(), Seq())
+      Edge("id1", mReference, Seq(), Seq(), Map.empty),
+      Node("id2", mClass, Seq(), Seq(), Map.empty),
+      Edge("id3", mReference, Seq(), Seq(), Map.empty),
+      Node("id4", mClass, Seq(), Seq(), Map.empty)
     )
     val results = rule.check(elements)
     results.forall(_.valid) should be (true)
@@ -29,10 +29,10 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
 
   it should "return false on elements with duplicate ids" in {
     val elements = Seq(
-      Edge.apply2("id1", mReference, Seq(), Seq(), Seq()),
-      Node.apply2("id2", mClass, Seq(), Seq(), Seq()),
-      Edge.apply2("id2", mReference, Seq(), Seq(), Seq()),
-      Node.apply2("id1", mClass, Seq(), Seq(), Seq())
+      Edge("id1", mReference, Seq(), Seq(), Map.empty),
+      Node("id2", mClass, Seq(), Seq(), Map.empty),
+      Edge("id2", mReference, Seq(), Seq(), Map.empty),
+      Node("id1", mClass, Seq(), Seq(), Map.empty)
     )
     val results = rule.check(elements)
     results.forall(!_.valid) should be (true)

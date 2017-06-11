@@ -37,15 +37,15 @@ class EdgesTest extends FlatSpec with Matchers {
   val rule = new Edges(Seq("edgeType1", "edgeType2"))
 
   "isValid" should "return true on valid edges" in {
-    val edge1 = Edge.apply2("edgeId", mReference1, Seq(), Seq(), Seq())
+    val edge1 = Edge("edgeId", mReference1, Seq(), Seq(), Map.empty)
     rule.isValid(edge1).get should be(true)
 
-    val edge2 = Edge.apply2("edgeId", mReference2, Seq(), Seq(), Seq())
+    val edge2 = Edge("edgeId", mReference2, Seq(), Seq(), Map.empty)
     rule.isValid(edge2).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val edge3 = Edge.apply2("edgeId", mReference3, Seq(), Seq(), Seq())
+    val edge3 = Edge("edgeId", mReference3, Seq(), Seq(), Map.empty)
     rule.isValid(edge3).get should be(false)
   }
 
