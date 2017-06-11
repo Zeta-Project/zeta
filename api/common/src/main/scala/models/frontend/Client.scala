@@ -3,7 +3,7 @@ package models.frontend
 import java.util.UUID
 
 import akka.actor.ActorRef
-import models.document.Settings
+import models.entity.Settings
 
 /**
  * Represent any message which can be send to the internal of the system

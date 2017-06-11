@@ -1,4 +1,4 @@
-@import models.User
+@import models.entity.User
 
 @(user: User, url: String, messages: Messages)
 @messages("email.activate.account.hello", user.fullName)

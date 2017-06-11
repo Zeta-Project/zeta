@@ -3,7 +3,6 @@ package actors.worker
 import java.util.UUID
 
 import models.document.DockerSettings
-import models.document.Settings
 import models.frontend.JobLog
 import models.worker.Job
 

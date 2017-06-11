@@ -12,7 +12,7 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.forms.ForgotPasswordForm
-import models.User
+import models.entity.User
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email

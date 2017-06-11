@@ -1,6 +1,6 @@
 package models.document
 
-import models.Entity
+import models.entity.Entity
 
 sealed trait Change
 case object Created extends Change

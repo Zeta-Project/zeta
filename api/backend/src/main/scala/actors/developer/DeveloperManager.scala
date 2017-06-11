@@ -5,13 +5,12 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.cluster.sharding.ClusterSharding
-
 import models.document.Change
 import models.document.Changed
 import models.document.Created
 import models.document.Deleted
-import models.document.Settings
 import models.document.Updated
+import models.entity.Settings
 import models.frontend.Init
 import models.frontend.MessageEnvelope
 

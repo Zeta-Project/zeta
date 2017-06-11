@@ -2,7 +2,6 @@ package de.htwg.zeta.server.generator.parser
 
 import java.io.Serializable
 
-import de.htwg.zeta.server.generator.parser
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.action.Action
 import de.htwg.zeta.server.generator.model.diagram.action.ActionGroup
@@ -28,8 +27,9 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Recta
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.style.Style
+import de.htwg.zeta.server.generator.parser
 import grizzled.slf4j.Logging
-import models.document.MetaModelEntity
+import models.entity.MetaModelEntity
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
 

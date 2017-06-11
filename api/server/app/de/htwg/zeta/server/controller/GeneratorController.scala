@@ -6,8 +6,8 @@ import java.util.UUID
 import javax.inject.Inject
 
 import scala.annotation.tailrec
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits
+import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -20,10 +20,10 @@ import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.parser.Cache
 import de.htwg.zeta.server.generator.parser.SprayParser
 import de.htwg.zeta.server.model.result.Failure
-import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.model.result.Success
+import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.document.MetaModelEntity
+import models.entity.MetaModelEntity
 import models.file.File
 import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.Shape

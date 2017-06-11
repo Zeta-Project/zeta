@@ -10,7 +10,7 @@ import scala.concurrent.duration.Duration
 import com.github.blemale.scaffeine.Cache
 import com.github.blemale.scaffeine.Scaffeine
 import de.htwg.zeta.persistence.general.Persistence
-import models.Entity
+import models.entity.Entity
 
 
 /** Cache-Layer for the persistence, implemented with Scaffeine-Caching library.

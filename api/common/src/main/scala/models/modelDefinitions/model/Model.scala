@@ -28,38 +28,3 @@ case class Model(
     edges: Map[String, Edge],
     uiState: String
 )
-
-/*
-object Model {
-
-
- def readAndMergeWithMetaModel(json: JsValue, meta: MetaModel): JsResult[Model] = {
-   val mapReads = ModelReads.elementMapReads(meta)
-   val name = (json \ "name").as[String]
-   val elements = (json \ "elements").as[Map[String, ModelElement]](mapReads)
-   val uiState = (json \ "uiState").as[String]
-   val model = Model(name, meta, elements, uiState)
-
-   JsSuccess(model)
- }
-
- implicit val reads = new Reads[Model] {
-   def reads(json: JsValue): JsResult[Model] = {
-     val name = (json \ "name").as[String]
-     val uiState = (json \ "uiState").as[String]
-     val model = Model(name, null, Map[String, ModelElement](), uiState)
-     JsSuccess(model)
-   }
- }
-
- implicit val writes = new Writes[Model] {
-   private implicit val mObjectWrites = ModelWrites.mObjectWrites
-   def writes(d: Model): JsValue = Json.obj(
-     "name" -> d.name,
-     "elements" -> d.elements.values,
-     "uiState" -> d.uiState
-   )
- }
-
-}
-*/

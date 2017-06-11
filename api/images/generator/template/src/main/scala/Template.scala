@@ -1,8 +1,8 @@
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.reflect.ClassTag
 import scala.reflect.runtime
 import scala.tools.reflect.ToolBox
@@ -12,8 +12,8 @@ import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Transformer
-import models.document.Filter
-import models.document.ModelEntity
+import models.entity.Filter
+import models.entity.ModelEntity
 import models.file.File
 import models.remote.Remote
 import models.remote.RemoteGenerator

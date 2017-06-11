@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
-import models.Entity
+import models.entity.Entity
 import reactivemongo.api.Cursor
 import reactivemongo.api.MongoConnection
 import reactivemongo.api.MongoDriver

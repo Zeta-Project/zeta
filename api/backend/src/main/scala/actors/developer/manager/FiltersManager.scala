@@ -6,14 +6,14 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.Repository
 import models.document.Changed
 import models.document.Created
 import models.document.Deleted
-import models.document.ModelEntity
 import models.document.Updated
-import models.document.Filter
+import models.entity.Filter
+import models.entity.ModelEntity
 import models.worker.RerunFilterJob
 
 object FiltersManager {

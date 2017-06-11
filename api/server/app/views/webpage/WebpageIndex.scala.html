@@ -1,4 +1,5 @@
-@(user: Option[models.User])
+@import models.entity.User
+@(user: Option[User])
 
 @views.html.webpage.WebpageGeneralLayout("Overview", user) {
     <div class="row">

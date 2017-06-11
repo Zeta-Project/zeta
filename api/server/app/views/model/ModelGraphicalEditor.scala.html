@@ -1,6 +1,7 @@
 @import models.document.ModelEntity
 @import play.api.libs.json.Json
 @import java.util.UUID
+@import models.entity.User
 @(metaModelId: UUID, id: UUID, user: Option[User], model: ModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Model Editor", user) {

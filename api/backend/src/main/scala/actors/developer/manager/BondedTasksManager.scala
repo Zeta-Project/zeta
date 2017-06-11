@@ -1,15 +1,15 @@
 package actors.developer.manager
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import de.htwg.zeta.persistence.general.Repository
-import models.document.BondedTask
+import models.entity.BondedTask
 import models.frontend.BondedTaskList
 import models.frontend.BondedTaskNotExecutable
 import models.frontend.Entry

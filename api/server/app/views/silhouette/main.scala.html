@@ -1,4 +1,5 @@
-@(title: String, user: Option[models.User] = None)(request: RequestHeader, messages: Messages)(content: Html)
+@import models.entity.User
+@(title: String, user: Option[User] = None)(request: RequestHeader, messages: Messages)(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">

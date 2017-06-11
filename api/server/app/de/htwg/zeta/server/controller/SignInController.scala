@@ -18,7 +18,7 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.server.forms.SignInForm
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.User
+import models.entity.User
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig

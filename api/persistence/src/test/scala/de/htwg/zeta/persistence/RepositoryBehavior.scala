@@ -6,10 +6,10 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
-import models.Entity
-import models.User
-import models.document.Log
-import models.document.ModelEntity
+import models.entity.Entity
+import models.entity.Log
+import models.entity.ModelEntity
+import models.entity.User
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.Model
 import org.scalatest.AsyncFlatSpec
@@ -110,7 +110,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     doc2.id shouldBe doc2Updated.id
     doc2 shouldNot be(doc2Updated)
 
-    it should "remove all already existing documents" in {
+    it should "remove all already existing entitys" in {
       persistence.readAllIds().flatMap { ids =>
         Future.sequence(ids.map(id => persistence.delete(id))).flatMap { _ =>
           persistence.readAllIds().flatMap { ids =>
@@ -120,7 +120,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "create a document" in {
+    it should "create a entity" in {
       persistence.create(doc1).flatMap { _ =>
         persistence.readAllIds().flatMap { ids =>
           ids shouldBe Set(doc1.id)
@@ -128,7 +128,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "create a second document" in {
+    it should "create a second entity" in {
       persistence.create(doc2).flatMap { _ =>
         persistence.readAllIds().flatMap { ids =>
           ids.size shouldBe 2
@@ -138,7 +138,7 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "create a third document" in {
+    it should "create a third entity" in {
       persistence.create(doc3).flatMap { _ =>
         persistence.readAllIds().flatMap { ids =>
           ids.size shouldBe 3
@@ -149,13 +149,13 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "fail the future with any Exception, when creating an already existing document" in {
+    it should "fail the future with any Exception, when creating an already existing entity" in {
       recoverToSucceededIf[Exception] {
         persistence.create(doc2)
       }
     }
 
-    it should "read the first, second and third document" in {
+    it should "read the first, second and third entity" in {
       persistence.read(doc1.id).flatMap { d1 =>
         persistence.read(doc2.id).flatMap { d2 =>
           persistence.read(doc3.id).flatMap { d3 =>
@@ -167,13 +167,13 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "fail the future with any Exception, when reading a non-existent document" in {
+    it should "fail the future with any Exception, when reading a non-existent entity" in {
       recoverToSucceededIf[Exception] {
         persistence.read(UUID.randomUUID)
       }
     }
 
-    it should "delete the first document" in {
+    it should "delete the first entity" in {
       persistence.delete(doc1.id).flatMap { _ =>
         persistence.readAllIds().flatMap { ids =>
           ids.size shouldBe 2
@@ -183,13 +183,13 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "fail the future with any Exception, when deleting a non-existent document" in {
+    it should "fail the future with any Exception, when deleting a non-existent entity" in {
       recoverToSucceededIf[Exception] {
         persistence.delete(doc1.id)
       }
     }
 
-    it should "update the second document" in {
+    it should "update the second entity" in {
       persistence.update(doc2Updated).flatMap { _ =>
         persistence.read(doc2.id).flatMap { d2 =>
           persistence.read(doc3.id).flatMap { d3 =>
@@ -203,13 +203,13 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "fail the future with any Exception, when updating a non-existent document" in {
+    it should "fail the future with any Exception, when updating a non-existent entity" in {
       recoverToSucceededIf[Exception] {
         persistence.update(doc1)
       }
     }
 
-    it should "delete the second and third document" in {
+    it should "delete the second and third entity" in {
       persistence.delete(doc2.id).flatMap { _ =>
         persistence.delete(doc3.id).flatMap { _ =>
           persistence.readAllIds().flatMap { ids =>

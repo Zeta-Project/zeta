@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import models.document.ModelEntity
+import models.entity.ModelEntity
 import models.remote.Remote
 
 /**

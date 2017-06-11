@@ -3,8 +3,8 @@ package actors.developer.manager
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -16,8 +16,8 @@ import models.document.Change
 import models.document.Changed
 import models.document.Created
 import models.document.Deleted
-import models.document.TimedTask
 import models.document.Updated
+import models.entity.TimedTask
 import models.worker.RunTimedTask
 
 private case class ExecuteTask(task: TimedTask)

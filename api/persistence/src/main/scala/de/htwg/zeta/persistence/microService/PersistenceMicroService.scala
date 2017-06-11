@@ -3,10 +3,10 @@ package de.htwg.zeta.persistence.microService
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
+import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.VersionIndex
-import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterFormat
@@ -15,19 +15,20 @@ import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorFo
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorImageFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.logFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.settingsFormat
-import models.User
-import models.document.BondedTask
-import models.document.EventDrivenTask
-import models.document.Filter
-import models.document.FilterImage
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Log
-import models.document.MetaModelEntity
-import models.document.MetaModelRelease
-import models.document.ModelEntity
-import models.document.Settings
-import models.document.TimedTask
+import models.entity
+import models.entity.BondedTask
+import models.entity.EventDrivenTask
+import models.entity.Filter
+import models.entity.FilterImage
+import models.entity.Generator
+import models.entity.GeneratorImage
+import models.entity.Log
+import models.entity.MetaModelEntity
+import models.entity.MetaModelRelease
+import models.entity.ModelEntity
+import models.entity.Settings
+import models.entity.TimedTask
+import models.entity.User
 import models.file.File
 
 
@@ -41,40 +42,40 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   private implicit val system = ActorSystem("persistenceClient")
   private implicit val materializer = ActorMaterializer()
 
-  /** Persistence for the [[models.document.EventDrivenTask]] */
+  /** Persistence for the [[models.entity.EventDrivenTask]] */
   override val eventDrivenTasks: Persistence[EventDrivenTask] = new PersistenceClient[EventDrivenTask](address, port)
 
-  /** Persistence for the [[models.document.BondedTask]] */
+  /** Persistence for the [[models.entity.BondedTask]] */
   override val bondTasks: Persistence[BondedTask] = new PersistenceClient[BondedTask](address, port)
 
-  /** Persistence for the [[models.document.Generator]] */
+  /** Persistence for the [[models.entity.Generator]] */
   override val generators: Persistence[Generator] = new PersistenceClient[Generator](address, port)
 
-  /** Persistence for the [[models.document.Filter]] */
+  /** Persistence for the [[models.entity.Filter]] */
   override val filters: Persistence[Filter] = new PersistenceClient[Filter](address, port)
 
-  /** Persistence for the [[models.document.GeneratorImage]] */
+  /** Persistence for the [[models.entity.GeneratorImage]] */
   override val generatorImages: Persistence[GeneratorImage] = new PersistenceClient[GeneratorImage](address, port)
 
-  /** Persistence for the [[models.document.FilterImage]] */
+  /** Persistence for the [[models.entity.FilterImage]] */
   override val filterImages: Persistence[FilterImage] = new PersistenceClient[FilterImage](address, port)
 
-  /** Persistence for the [[models.document.Settings]] */
+  /** Persistence for the [[models.entity.Settings]] */
   override val settings: Persistence[Settings] = new PersistenceClient[Settings](address, port)
 
-  /** Persistence for the [[models.document.MetaModelEntity]] */
+  /** Persistence for the [[models.entity.MetaModelEntity]] */
   override val metaModelEntities: Persistence[MetaModelEntity] = null // TODO
 
-  /** Persistence for the [[models.document.ModelEntity]] */
+  /** Persistence for the [[models.entity.ModelEntity]] */
   override val modelEntities: Persistence[ModelEntity] = null // TODO
 
-  /** Persistence for the [[models.document.Log]] */
+  /** Persistence for the [[models.entity.Log]] */
   override val logs: Persistence[Log] = new PersistenceClient[Log](address, port)
 
   /** Persistence for AccessAuthorisation */
   override private[persistence] val accessAuthorisations: Persistence[AccessAuthorisation] = null
 
-  /** Persistence for [[models.document.TimedTask]] */
+  /** Persistence for [[models.entity.TimedTask]] */
   override val timedTasks: Persistence[TimedTask] = null
 
   /** Persistence for the metaModelReleases indices */
@@ -83,7 +84,7 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   /** Persistence for the metaModelReleases versions */
   override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] = null // TODO
 
-  /** Persistence for [[models.User]] */
+  /** Persistence for [[entity.User]] */
   override val users: Persistence[User] = null // TODO
 
   /** Persistence for the file indices */

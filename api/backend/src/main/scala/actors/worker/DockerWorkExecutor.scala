@@ -1,13 +1,14 @@
 package actors.worker
 
 import java.nio.charset.Charset
+import java.util.UUID
 
 import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.seqAsJavaList
 import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import actors.worker.MasterWorkerProtocol.CancelWork
 import actors.worker.MasterWorkerProtocol.Work
@@ -16,16 +17,18 @@ import akka.actor.ActorLogging
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import com.spotify.docker.client.DefaultDockerClient
+import com.spotify.docker.client.DockerClient.AttachParameter
 import com.spotify.docker.client.LogMessage
 import com.spotify.docker.client.LogStream
-import com.spotify.docker.client.DockerClient.AttachParameter
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
 import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
 import de.htwg.zeta.persistence.Persistence
-import models.document.Log
+import models.entity.Entity
+import models.entity.Log
 import models.frontend.JobLog
 import models.frontend.JobLogMessage
+import org.joda.time.DateTime
 import play.api.libs.ws.ahc.AhcWSClient
 
 object DockerWorkExecutor {
@@ -237,7 +240,16 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
     }
 
     private def processLogs(p: Promise[Int], status: Integer) = {
-      val logs = Log(work.job, jobPersist.toString(), status)
+      val now = new DateTime().toDateTimeISO.toString
+
+      val task = work.job match {
+        case job: Entity =>
+          "Log - " + job.id.toString + " - " + now
+
+        case _ => throw new IllegalArgumentException(s"Creating Log(..) Object failed. Job type '${work.job.getClass.getName}' cannot be persisted.")
+      }
+
+      val logs = Log(UUID.randomUUID, task.toString, "Log" + task, status, now)
 
       documents.logs.create(logs).map {
         result => p.success(status)

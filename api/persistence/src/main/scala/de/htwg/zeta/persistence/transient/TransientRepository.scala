@@ -4,19 +4,19 @@ import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
 import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.VersionIndex
-import models.User
-import models.document.BondedTask
-import models.document.EventDrivenTask
-import models.document.Filter
-import models.document.FilterImage
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Log
-import models.document.MetaModelEntity
-import models.document.MetaModelRelease
-import models.document.ModelEntity
-import models.document.Settings
-import models.document.TimedTask
+import models.entity.BondedTask
+import models.entity.EventDrivenTask
+import models.entity.Filter
+import models.entity.FilterImage
+import models.entity.Generator
+import models.entity.GeneratorImage
+import models.entity.Log
+import models.entity.MetaModelEntity
+import models.entity.MetaModelRelease
+import models.entity.ModelEntity
+import models.entity.Settings
+import models.entity.TimedTask
+import models.entity.User
 import models.file.File
 
 
@@ -26,31 +26,31 @@ class TransientRepository extends Repository {
   /** Persistence for AccessAuthorisation */
   override private[persistence] val accessAuthorisations = new TransientPersistence[AccessAuthorisation]
 
-  /** Persistence for the [[models.document.EventDrivenTask]] */
+  /** Persistence for the [[models.entity.EventDrivenTask]] */
   override val eventDrivenTasks = new TransientPersistence[EventDrivenTask]
 
-  /** Persistence for the [[models.document.BondedTask]] */
+  /** Persistence for the [[models.entity.BondedTask]] */
   override val bondTasks = new TransientPersistence[BondedTask]
 
-  /** Persistence for [[models.document.TimedTask]] */
+  /** Persistence for [[models.entity.TimedTask]] */
   override val timedTasks = new TransientPersistence[TimedTask]
 
-  /** Persistence for the [[models.document.Generator]] */
+  /** Persistence for the [[models.entity.Generator]] */
   override val generators = new TransientPersistence[Generator]
 
-  /** Persistence for the [[models.document.Filter]] */
+  /** Persistence for the [[models.entity.Filter]] */
   override val filters = new TransientPersistence[Filter]
 
-  /** Persistence for the [[models.document.GeneratorImage]] */
+  /** Persistence for the [[models.entity.GeneratorImage]] */
   override val generatorImages = new TransientPersistence[GeneratorImage]
 
-  /** Persistence for the [[models.document.FilterImage]] */
+  /** Persistence for the [[models.entity.FilterImage]] */
   override val filterImages = new TransientPersistence[FilterImage]
 
-  /** Persistence for the [[models.document.Settings]] */
+  /** Persistence for the [[models.entity.Settings]] */
   override val settings = new TransientPersistence[Settings]
 
-  /** Persistence for the [[models.document.MetaModelEntity]] */
+  /** Persistence for the [[models.entity.MetaModelEntity]] */
   override val metaModelEntities = new TransientPersistence[MetaModelEntity]
 
   /** Persistence for the metaModelReleases indices */
@@ -59,13 +59,13 @@ class TransientRepository extends Repository {
   /** Persistence for the metaModelReleases versions */
   override private[persistence] val metaModelReleasesVersions = new TransientPersistence[EntityVersion[MetaModelRelease]]
 
-  /** Persistence for the [[models.document.ModelEntity]] */
+  /** Persistence for the [[models.entity.ModelEntity]] */
   override val modelEntities = new TransientPersistence[ModelEntity]
 
-  /** Persistence for the [[models.document.Log]] */
+  /** Persistence for the [[models.entity.Log]] */
   override val logs = new TransientPersistence[Log]
 
-  /** Persistence for the [[models.User]] */
+  /** Persistence for the [[User]] */
   override val users = new TransientPersistence[User]
 
   /** Persistence for the file indices */

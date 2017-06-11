@@ -5,9 +5,10 @@ import java.util.UUID
 import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
-import models.User
-import models.Entity
-import models.document.MetaModelRelease
+import models.entity
+import models.entity.Entity
+import models.entity.MetaModelRelease
+import models.entity.User
 import models.file.File
 
 
@@ -22,39 +23,39 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
   override private[persistence] val accessAuthorisations: Persistence[AccessAuthorisation] =
     underlaying.accessAuthorisations
 
-  /** Persistence for the [[models.document.EventDrivenTask]] */
+  /** Persistence for the [[models.entity.EventDrivenTask]] */
   override lazy val eventDrivenTasks =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.eventDrivenTasks)
 
-  /** Persistence for the [[models.document.BondedTask]] */
+  /** Persistence for the [[models.entity.BondedTask]] */
   override lazy val bondTasks =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.bondTasks)
 
-  /** Persistence for [[models.document.TimedTask]] */
+  /** Persistence for [[models.entity.TimedTask]] */
   override val timedTasks =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.timedTasks)
 
-  /** Persistence for the [[models.document.Generator]] */
+  /** Persistence for the [[models.entity.Generator]] */
   override lazy val generators =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.generators)
 
-  /** Persistence for the [[models.document.Filter]] */
+  /** Persistence for the [[models.entity.Filter]] */
   override lazy val filters =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.filters)
 
-  /** Persistence for the [[models.document.GeneratorImage]] */
+  /** Persistence for the [[models.entity.GeneratorImage]] */
   override lazy val generatorImages =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.generatorImages)
 
-  /** Persistence for the [[models.document.FilterImage]] */
+  /** Persistence for the [[models.entity.FilterImage]] */
   override lazy val filterImages =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.filterImages)
 
-  /** Persistence for the [[models.document.Settings]] */
+  /** Persistence for the [[models.entity.Settings]] */
   override lazy val settings =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.settings)
 
-  /** Persistence for the [[models.document.MetaModelEntity]] */
+  /** Persistence for the [[models.entity.MetaModelEntity]] */
   override lazy val metaModelEntities =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.metaModelEntities)
 
@@ -66,15 +67,15 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
   override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] =
     underlaying.metaModelReleasesVersions
 
-  /** Persistence for the [[models.document.ModelEntity]] */
+  /** Persistence for the [[models.entity.ModelEntity]] */
   override lazy val modelEntities =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.modelEntities)
 
-  /** Persistence for the [[models.document.Log]] */
+  /** Persistence for the [[models.entity.Log]] */
   override lazy val logs =
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlaying.logs)
 
-  /** Persistence for the [[models.User]] */
+  /** Persistence for the [[entity.User]] */
   override lazy val users: Persistence[User] =
     underlaying.users
 
@@ -90,7 +91,7 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
 
 /** All entity id's a user is authorized to access.
  *
- * @param id               entity-id, same id as [[models.User]]
+ * @param id               entity-id, same id as [[entity.User]]
  * @param authorizedAccess all authorized id's
  */
 private[persistence] case class AccessAuthorisation(id: UUID, authorizedAccess: Map[String, Set[UUID]]) extends Entity {

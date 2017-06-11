@@ -13,7 +13,7 @@ import scala.util.Try
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.MetaModelDependent
-import models.document.MetaModelEntity
+import models.entity.MetaModelEntity
 import models.modelDefinitions.metaModel.MetaModel
 
 case class ValidatorGeneratorResult(success: Boolean, result: String, created: Boolean)

@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import models.Entity
+import models.entity.Entity
 
 /** Interface for the Persistence layer.
  *

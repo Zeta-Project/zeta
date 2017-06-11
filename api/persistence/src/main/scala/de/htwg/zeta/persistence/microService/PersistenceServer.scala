@@ -43,7 +43,7 @@ import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.logFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.settingsFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.UuidJsonFormat
 import grizzled.slf4j.Logging
-import models.Entity
+import models.entity.Entity
 import spray.json.RootJsonFormat
 import spray.json.pimpAny
 import spray.json.DefaultJsonProtocol.seqFormat

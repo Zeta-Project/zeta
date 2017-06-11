@@ -19,9 +19,9 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.general.Persistence
-import models.Entity
 import spray.json.pimpAny
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.UuidJsonFormat
+import models.entity.Entity
 import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.DefaultJsonProtocol.StringJsonFormat
 import spray.json.RootJsonFormat

@@ -1,4 +1,5 @@
 @import java.util.UUID
+@import models.entity.User
 @(user: Option[User], id: UUID, dslType: String)
 
     @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {

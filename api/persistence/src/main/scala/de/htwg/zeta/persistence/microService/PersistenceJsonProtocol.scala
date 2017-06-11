@@ -3,42 +3,36 @@ package de.htwg.zeta.persistence.microService
 import java.time.Instant
 import java.util.UUID
 
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
-import models.User
-import models.document.Log
-import models.document.JobSettings
-import models.document.EventDrivenTask
-import models.document.BondedTask
-import models.document.Generator
-import models.document.Filter
-import models.document.GeneratorImage
-import models.document.FilterImage
-import models.document.Settings
 import models.document.DockerSettings
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.MObject
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MAttribute
+import models.document.JobSettings
+import models.entity.BondedTask
+import models.entity.EventDrivenTask
+import models.entity.Filter
+import models.entity.FilterImage
+import models.entity.Generator
+import models.entity.GeneratorImage
+import models.entity.Log
+import models.entity.Settings
 import models.modelDefinitions.metaModel.elements.AttributeType
-import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.AttributeValue
-import models.modelDefinitions.metaModel.elements.ScalarValue
-import models.modelDefinitions.metaModel.elements.MReference
-// import models.modelDefinitions.metaModel.elements.MLinkDef
+import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.EnumSymbol
+import models.modelDefinitions.metaModel.elements.MObject
+import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.ScalarValue
 import spray.json.DefaultJsonProtocol
-import spray.json.JsString
-import spray.json.JsValue
-import spray.json.JsObject
+import spray.json.DefaultJsonProtocol.StringJsonFormat
+import spray.json.DefaultJsonProtocol.seqFormat
+import spray.json.JsArray
 import spray.json.JsBoolean
 import spray.json.JsNumber
+import spray.json.JsObject
+import spray.json.JsString
+import spray.json.JsValue
 import spray.json.RootJsonFormat
 import spray.json.pimpAny
-import spray.json.JsArray
-import spray.json.DefaultJsonProtocol.seqFormat
-import spray.json.DefaultJsonProtocol.StringJsonFormat
 
 /**
  * Provides implicit conversion for using the Spray-Json library.
@@ -377,41 +371,41 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   // private implicit val modelFormat: RootJsonFormat[Model] = jsonFormat4(Model.apply)
 
 
-  /** Spray-Json conversion protocol for [[models.document.EventDrivenTask]] */
+  /** Spray-Json conversion protocol for [[models.entity.EventDrivenTask]] */
   implicit val eventDrivenTaskFormat: RootJsonFormat[EventDrivenTask] = jsonFormat5(EventDrivenTask.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.BondedTask]] */
+  /** Spray-Json conversion protocol for [[models.entity.BondedTask]] */
   implicit val bondedTaskFormat: RootJsonFormat[BondedTask] = jsonFormat6(BondedTask.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.Generator]] */
+  /** Spray-Json conversion protocol for [[models.entity.Generator]] */
   implicit val generatorFormat: RootJsonFormat[Generator] = jsonFormat3(Generator.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.Filter]] */
+  /** Spray-Json conversion protocol for [[models.entity.Filter]] */
   implicit val filterFormat: RootJsonFormat[Filter] = jsonFormat4(Filter.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.GeneratorImage]] */
+  /** Spray-Json conversion protocol for [[models.entity.GeneratorImage]] */
   implicit val generatorImageFormat: RootJsonFormat[GeneratorImage] = jsonFormat3(GeneratorImage.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.FilterImage]] */
+  /** Spray-Json conversion protocol for [[models.entity.FilterImage]] */
   implicit val filterImageFormat: RootJsonFormat[FilterImage] = jsonFormat3(FilterImage.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.Settings]] */
+  /** Spray-Json conversion protocol for [[models.entity.Settings]] */
   implicit val settingsFormat: RootJsonFormat[Settings] = {
     implicit val dockerSettingsFormat: RootJsonFormat[DockerSettings] = jsonFormat2(DockerSettings.apply)
     implicit val jobSettingsInfoFormat: RootJsonFormat[JobSettings] = jsonFormat3(JobSettings.apply)
     jsonFormat3(Settings.apply)
   }
 
-  /** Spray-Json conversion protocol for [[models.document.MetaModelEntity]] */
+  /** Spray-Json conversion protocol for [[models.entity.MetaModelEntity]] */
   // TODO: implicit val metaModelEntityFormat: RootJsonFormat[MetaModelEntity] = jsonFormat6(MetaModelEntity.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.MetaModelRelease]] */
+  /** Spray-Json conversion protocol for [[models.entity.MetaModelRelease]] */
   // TODO: implicit val metaModelReleaseFormat: RootJsonFormat[MetaModelRelease] = jsonFormat6(MetaModelRelease.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.ModelEntity]] */
+  /** Spray-Json conversion protocol for [[models.entity.ModelEntity]] */
   // implicit val modelEntityFormat: RootJsonFormat[ModelEntity] = jsonFormat7(ModelEntity.apply)
 
-  /** Spray-Json conversion protocol for [[models.document.Log]] */
+  /** Spray-Json conversion protocol for [[models.entity.Log]] */
   implicit val logFormat: RootJsonFormat[Log] = jsonFormat5(Log.apply)
 
 

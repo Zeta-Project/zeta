@@ -3,7 +3,6 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
-
 import scala.reflect.runtime.currentMirror
 import scala.tools.reflect.ToolBox
 
@@ -11,8 +10,8 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
 import filter.BaseFilter
-import models.document.Filter
-import models.document.ModelEntity
+import models.entity.Filter
+import models.entity.ModelEntity
 import models.file.File
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
@@ -74,7 +73,7 @@ object Main extends App {
 
     val content =
       s"""
-      import models.document.{ModelEntity, MetaModelRelease}
+      import models.entity.{ModelEntity, MetaModelRelease}
       import filter.BaseFilter
 
       ${file.content}

@@ -3,24 +3,24 @@ package de.htwg.zeta.persistence.mongo
 import java.util.UUID
 
 import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
-import models.User
-import models.Entity
-import models.document.EventDrivenTask
-import models.document.BondedTask
-import models.document.TimedTask
-import models.document.Generator
-import models.document.Filter
-import models.document.GeneratorImage
-import models.document.FilterImage
-import reactivemongo.bson.BSONDocument
-import reactivemongo.bson.BSONDocumentWriter
-import reactivemongo.bson.BSONDocumentReader
-import reactivemongo.bson.Macros
-import reactivemongo.bson.BSONDocumentHandler
-import reactivemongo.bson.BSONString
-import reactivemongo.bson.BSONReader
-import reactivemongo.bson.BSONWriter
+import models.entity.BondedTask
+import models.entity.Entity
+import models.entity.EventDrivenTask
+import models.entity.Filter
+import models.entity.FilterImage
+import models.entity.Generator
+import models.entity.GeneratorImage
+import models.entity.TimedTask
+import models.entity.User
 import reactivemongo.bson.BSONBoolean
+import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.BSONDocumentHandler
+import reactivemongo.bson.BSONDocumentReader
+import reactivemongo.bson.BSONDocumentWriter
+import reactivemongo.bson.BSONReader
+import reactivemongo.bson.BSONString
+import reactivemongo.bson.BSONWriter
+import reactivemongo.bson.Macros
 
 
 object MongoHandler {

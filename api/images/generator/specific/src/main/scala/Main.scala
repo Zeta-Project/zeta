@@ -4,10 +4,10 @@ import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import models.document.Filter
-import models.document.Generator
-import models.document.MetaModelEntity
-import models.document.ModelEntity
+import models.entity.Filter
+import models.entity.Generator
+import models.entity.MetaModelEntity
+import models.entity.ModelEntity
 import models.file.File
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
@@ -76,7 +76,7 @@ object Main extends Template[CreateOptions, String] {
   def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]) = {
     s"""
       |class MyTransformer() extends Transformer {
-      | def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
+      | def transform(entity: ModelEntity)(implicit entitys: Documents, files: Files, remote: Remote) : Future[Transformer] = {
       |   val transformed = entity.model.elements.values.map { element => element match {
       |     case node: Node => transformNode(node)
       |     case edge: Edge => transformEdge(edge)
@@ -94,7 +94,7 @@ object Main extends Template[CreateOptions, String] {
       |
       | ${methodPrototypes(mClassList, mReferenceList)}
       |
-      | def exit()(implicit documents: Documents, files: Files, remote: Remote) : Future[Result] = {
+      | def exit()(implicit entitys: Documents, files: Files, remote: Remote) : Future[Result] = {
       |   val result = Success("The generator finished")
       |   Future.successful(result)
       | }
@@ -107,8 +107,8 @@ object Main extends Template[CreateOptions, String] {
     val content = s"""
       import scala.concurrent.Future
       import models.modelDefinitions.model.elements.{Node, Edge}
-      import models.document.ModelEntity
-      import models.document.{Repository => Documents}
+      import models.entity.ModelEntity
+      import models.entity.{Repository => Documents}
       import models.file.{Repository => Files}
       import models.remote.Remote
       import generator._

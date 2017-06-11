@@ -6,9 +6,9 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.Persistence
-import models.document.GeneratorImage
+import de.htwg.zeta.persistence.general.Repository
+import models.entity.GeneratorImage
 import models.frontend.CreateGenerator
 import models.frontend.GeneratorImageNotFoundFailure
 import models.worker.CreateGeneratorJob

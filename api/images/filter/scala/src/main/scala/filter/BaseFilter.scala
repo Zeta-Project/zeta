@@ -1,6 +1,6 @@
 package filter
 
-import models.document.ModelEntity
+import models.entity.ModelEntity
 
 trait BaseFilter {
   def filter(entity: ModelEntity): Boolean

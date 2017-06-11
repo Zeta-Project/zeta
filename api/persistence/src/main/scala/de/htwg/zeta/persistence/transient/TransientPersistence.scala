@@ -6,7 +6,7 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
-import models.Entity
+import models.entity.Entity
 
 /** Cache implementation of [[Persistence]].
  *

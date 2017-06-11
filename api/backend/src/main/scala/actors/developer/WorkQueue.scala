@@ -3,6 +3,9 @@ package actors.developer
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
+
 import actors.worker.MasterWorkerProtocol.CancelWork
 import actors.worker.MasterWorkerProtocol.DeveloperReceivedCompletedWork
 import actors.worker.MasterWorkerProtocol.MasterAcceptedWork
@@ -16,8 +19,8 @@ import akka.persistence.PersistentActor
 import models.document.Changed
 import models.document.Created
 import models.document.JobSettings
-import models.document.Settings
 import models.document.Updated
+import models.entity.Settings
 import models.frontend.CancelWorkByUser
 import models.frontend.JobInfo
 import models.frontend.JobInfoList
@@ -31,8 +34,6 @@ import models.worker.RunFilterManually
 import models.worker.RunGeneratorFromGeneratorJob
 import models.worker.RunGeneratorManually
 import models.worker.RunTimedTask
-import scala.concurrent.duration.Duration
-import scala.concurrent.ExecutionContext.Implicits.global
 
 case class JobCannotBeEnqueued(job: Job, reason: String)
 case object GetJobInfoList

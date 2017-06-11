@@ -9,7 +9,7 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
-import models.Entity
+import models.entity.Entity
 
 /**
  */

@@ -36,30 +36,6 @@ case class MetaModel(
 
 }
 
-/*
-object MetaModel {
-
-  implicit val reads: Reads[MetaModel] = null
-
-   (
-     (__ \ "name").read[String] and
-       (__ \ "elements").read[Map[String, MObject]] and
-       (__ \ "uiState").read[String]
-     ) (MetaModel.apply _)
-
-  implicit val writes = null
-
-  new Writes[MetaModel] {
-     def writes(c: MetaModel): JsValue = {
-       Json.obj(
-         "name" -> c.name,
-         "elements" -> Json.toJson(c.elements.values.toList),
-         "uiState" -> c.uiState
-       )
-     }
-   }
-
-} */
 
 case class MetaModelTraverseWrapper(value: MetaModel) {
 

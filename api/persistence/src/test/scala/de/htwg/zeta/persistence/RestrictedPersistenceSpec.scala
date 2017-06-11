@@ -4,7 +4,7 @@ import java.util.UUID
 
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
 import de.htwg.zeta.persistence.transient.TransientRepository
-import models.User
+import models.entity.User
 
 /**
  * PersistenceMicroServiceTest.

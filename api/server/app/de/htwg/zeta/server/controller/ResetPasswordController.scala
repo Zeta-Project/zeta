@@ -18,7 +18,7 @@ import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.controller.ResetPasswordController.error
 import de.htwg.zeta.server.controller.ResetPasswordController.invalidResetLink
 import de.htwg.zeta.server.forms.ResetPasswordForm
-import models.User
+import models.entity.User
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.AnyContent

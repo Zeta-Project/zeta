@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
-import models.Entity
+import models.entity.Entity
 
 
 /** Persistence-Layer to restrict the access to the persistence.

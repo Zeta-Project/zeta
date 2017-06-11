@@ -14,8 +14,7 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAcces
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAllIds
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.transient.TransientPersistence
-import models.Entity
-import models.document.Document
+import models.entity.Entity
 
 
 /** Manages all DocumentAccessors of type [[T]].
@@ -76,7 +75,7 @@ object DocumentAccessorManagerActor {
 
   /**
    * @param cleanUpInterval               the interval between cleanup checks
-   * @param keepInCacheTime               how long the [[Document]] will be cached for
+   * @param keepInCacheTime               how long the [[Entity]] will be cached for
    * @param keepActorAliveTime            how long the Actor will be kept alive
    * @param keepActorAliveAfterDeleteTime how long the Actor will be kept alive after Delete has been called.
    */

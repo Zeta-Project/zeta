@@ -6,8 +6,8 @@ import actors.developer.manager.BondedTasksManager
 import actors.developer.manager.EventDrivenTasksManager
 import actors.developer.manager.FiltersManager
 import actors.developer.manager.GeneratorConnectionManager
-import actors.developer.manager.GeneratorRequestManager
 import actors.developer.manager.GeneratorManager
+import actors.developer.manager.GeneratorRequestManager
 import actors.developer.manager.GetBondedTaskList
 import actors.developer.manager.ManualExecutionManager
 import actors.developer.manager.ModelReleaseManager
@@ -24,9 +24,9 @@ import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
-import models.document.BondedTask
 import models.document.Changed
-import models.document.Filter
+import models.entity.BondedTask
+import models.entity.Filter
 import models.frontend.BondedTaskCompleted
 import models.frontend.BondedTaskStarted
 import models.frontend.CancelWorkByUser

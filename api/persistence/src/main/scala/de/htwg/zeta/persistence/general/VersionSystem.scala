@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.softwaremill.quicklens.ModifyPimp
-import models.Entity
+import models.entity.Entity
 
 /** Persistence to hold multiple version of a Entity with the same id.
  *

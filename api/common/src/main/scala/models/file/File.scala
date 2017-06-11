@@ -2,7 +2,7 @@ package models.file
 
 import java.util.UUID
 
-import models.Entity
+import models.entity.Entity
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
