@@ -1,137 +1,77 @@
 const request = require('requestretry');
 
 class CouchbaseServer {
-  constructor(settings, callback) {
-    this.settings = settings;
-    this.callback = callback;
+  constructor(address) {
+    this.address = address;
   }
 
-  _log(message) {
-    console.log('Setup server -', message);
-  }
-
-  _error(message, error) {
-    console.error('Setup server -', message, error);
-    process.exit(1);
-  }
-
-  setup() {
-    request.get({
-      url: this.settings.address + '/pools/default/buckets/' + this.settings.bucket,
-      maxAttempts: 5,
-      retryDelay: 5000,
-      retryStrategy: request.RetryStrategies.HTTPOrNetworkError
-    }, (error, response, body) => {
-
-      if (error) {
-        this._error('request error:', error);
-      }
-
-      if (response.statusCode === 200) {
-        this._log('bucket already exist. Not setup needed');
-        this.callback();
-      } else {
-        this._setupServices();
-      }
+  getBucket(bucket) {
+    return new Promise((resolve, reject) => {
+      request.get({
+        url: this.address + '/pools/default/buckets/' + bucket,
+        maxAttempts: 5,
+        retryDelay: 5000,
+        retryStrategy: request.RetryStrategies.HTTPOrNetworkError
+      }, (error, response, body) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({ response, body });
+        }
+      });
     });
   }
 
-  _setupServices() {
-    request.post({
-      url: this.settings.address + '/node/controller/setupServices',
-      form: {
-        services: 'data,index,query'
-      }
-    }, (error, response, body) => {
-
-      if (error) {
-        this._error('request error:', error);
-      }
-
-      this._log('setup services was successful');
-      this._createNode();
+  _post(url, data) {
+    return new Promise((resolve, reject) => {
+      request.post({
+        url: this.address + url,
+        form: data
+      }, (error, response, body) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({ response, body });
+        }
+      });
     });
   }
 
-  _createNode() {
-    request.post({
-      url: this.settings.address + '/nodes/self/controller/settings ',
-      form: {
-        path: '/opt/couchbase/var/lib/couchbase/data',
-        index_path: '/opt/couchbase/var/lib/couchbase/data',
-      }
-    }, (error, response, body) => {
-
-      if (error) {
-        this._error('request error:', error);
-      }
-
-      this._log('create node was successful');
-      this._createUser();
-    });
+  createNode(data) {
+    return this._post('/nodes/self/controller/settings', data);
   }
 
-  _createUser() {
-    request.post({
-      url: this.settings.address + '/settings/web',
-      form: {
-        username: this.settings.username,
-        password: this.settings.password
-      }
-    }, (error, response, body) => {
-
-      if (error) {
-        this._error('request error:', error);
-      }
-
-      this._log('create user was successful');
-      this._createBucket();
-    });
+  renameNode(data) {
+    return this._post('/node/controller/rename', data);
   }
 
-  _createBucket() {
-    request.post({
-      'url': this.settings.address + '/pools/default/buckets',
-      'auth': {
-        'user': this.settings.username,
-        'pass': this.settings.password
-      },
-      'form': {
-        'name': this.settings.bucket,
-        'ramQuotaMB': 256,
-        'authType': 'sasl',
-      }
-    }, (error, response, body) => {
-
-      if (error) {
-        this._error('request error:', error);
-      }
-      
-      this._log('create bucket was successful');
-      this._setIndexRamQuota();
-    });
+  setIndex(data) {
+    return this._post('/settings/indexes', data);
   }
 
-  _setIndexRamQuota() {
-    request.post({
-      url: this.settings.address + '/pools/default',
-      form: {
-        memoryQuota: 256,
-        indexMemoryQuota: 256
-      }
-    }, (error, response, body) => {
+  setupNodeServices(data) {
+    return this._post('/node/controller/setupServices', data);
+  }
 
-      if (error) {
-        this._error('request error:', error);
-      }
+  setPool(data) {
+    return this._post('/pools/default', data);
+  }
 
-      this._log('set ram index quota was successful');
-      this.callback();
-    });
+  createBucket(data) {
+    return this._post('/pools/default/buckets', data);
+  }
+
+  setStats(data) {
+    return this._post('/settings/stats', data);
+  }
+
+  createUser(data) {
+    return this._post('/settings/web', data);
+  }
+
+  login(data) {
+    return this._post('/uilogin', data);
   }
 }
 
-module.exports = (settings, callback) => {
-  var db = new CouchbaseServer(settings, callback);
-  db.setup();
-}
+module.exports = CouchbaseServer;
