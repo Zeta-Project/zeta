@@ -6,7 +6,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgeAttributesLocalUnique
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgeAttributesLowerBound
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgeAttributesUpperBound
-import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 
 class AttributesOfTypeInEdges(attributeType: String, edgeType: String) {
 
@@ -19,10 +22,10 @@ class AttributesOfTypeInEdges(attributeType: String, edgeType: String) {
   def areGlobalUnique(): EdgeAttributesGlobalUnique = new EdgeAttributesGlobalUnique(edgeType, attributeType)
 
   def areOfScalarType(scalarType: String): EdgeAttributeScalarTypes = scalarType match {
-    case "String" => new EdgeAttributeScalarTypes(edgeType, attributeType, ScalarType.String)
-    case "Int" => new EdgeAttributeScalarTypes(edgeType, attributeType, ScalarType.Int)
-    case "Bool" => new EdgeAttributeScalarTypes(edgeType, attributeType, ScalarType.Bool)
-    case "Double" => new EdgeAttributeScalarTypes(edgeType, attributeType, ScalarType.Double)
+    case "String" => new EdgeAttributeScalarTypes(edgeType, attributeType, StringType)
+    case "Int" => new EdgeAttributeScalarTypes(edgeType, attributeType, IntType)
+    case "Bool" => new EdgeAttributeScalarTypes(edgeType, attributeType, BoolType)
+    case "Double" => new EdgeAttributeScalarTypes(edgeType, attributeType, DoubleType)
   }
 
   def areOfEnumType(enumType: String): EdgeAttributeEnumTypes = new EdgeAttributeEnumTypes(edgeType, attributeType, enumType)

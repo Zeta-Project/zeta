@@ -5,8 +5,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.EnumSymbol
-import models.modelDefinitions.metaModel.elements.MEnum
+import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import models.modelDefinitions.model.elements.Node
 
 class NodeAttributeEnumTypes(nodeType: String, attributeType: String, enumName: String) extends SingleNodeRule with DslRule {

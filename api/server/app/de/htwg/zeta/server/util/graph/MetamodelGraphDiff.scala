@@ -1,17 +1,16 @@
 package de.htwg.zeta.server.util.graph
 
 import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.ScalarBoolType
-import models.modelDefinitions.metaModel.elements.ScalarBoolValue
-import models.modelDefinitions.metaModel.elements.ScalarDoubleType
-import models.modelDefinitions.metaModel.elements.ScalarDoubleValue
-import models.modelDefinitions.metaModel.elements.ScalarIntType
-import models.modelDefinitions.metaModel.elements.ScalarIntValue
-import models.modelDefinitions.metaModel.elements.ScalarStringType
-import models.modelDefinitions.metaModel.elements.ScalarStringValue
-// import models.modelDefinitions.metaModel.elements.MCoreReads
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
 import org.slf4j.LoggerFactory
@@ -19,9 +18,10 @@ import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNumber
 import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json
+
 
 /**
  * MetamodelGraphDiff
@@ -151,18 +151,18 @@ object MetamodelGraphDiff {
 
     private def toJsonAttribute(attribute: MAttribute): JsObject = {
       val `type` = JsString(attribute.typ match {
-        case ScalarStringType=> "String"
-        case ScalarBoolType => "Boolean"
-        case ScalarIntType => "Integer"
-        case ScalarDoubleType => "Double"
+        case StringType=> "String"
+        case BoolType => "Boolean"
+        case IntType => "Integer"
+        case DoubleType => "Double"
         case _ => ""
       })
 
       val default = attribute.default match {
-        case ScalarStringValue(value) => JsString(value)
-        case ScalarBoolValue(value) => JsBoolean(value)
-        case ScalarIntValue(value) => JsNumber(value)
-        case ScalarDoubleValue(value) => JsNumber(value)
+        case MString(value) => JsString(value)
+        case MBool(value) => JsBoolean(value)
+        case MInt(value) => JsNumber(value)
+        case MDouble(value) => JsNumber(value)
       }
 
       JsObject(Seq(

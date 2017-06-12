@@ -3,6 +3,8 @@ package models.modelDefinitions.model
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 /**
  * Immutable container for model definitions
  *
@@ -19,3 +21,9 @@ case class Model(
     edges: Map[String, Edge],
     uiState: String
 )
+
+object Model {
+
+  implicit val playJsonModelFormat: OFormat[Model] = Json.format[Model]
+
+}

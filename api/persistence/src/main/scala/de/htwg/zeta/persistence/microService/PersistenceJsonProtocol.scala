@@ -14,20 +14,20 @@ import models.entity.GeneratorImage
 import models.entity.Log
 import models.entity.Settings
 import models.modelDefinitions.metaModel.elements.AttributeType
+import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import models.modelDefinitions.metaModel.elements.AttributeValue
+import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MObject
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarBoolType
-import models.modelDefinitions.metaModel.elements.ScalarBoolValue
-import models.modelDefinitions.metaModel.elements.ScalarDoubleType
-import models.modelDefinitions.metaModel.elements.ScalarDoubleValue
-import models.modelDefinitions.metaModel.elements.ScalarIntType
-import models.modelDefinitions.metaModel.elements.ScalarIntValue
-import models.modelDefinitions.metaModel.elements.ScalarStringType
-import models.modelDefinitions.metaModel.elements.ScalarStringValue
 import spray.json.DefaultJsonProtocol
 import spray.json.JsArray
 import spray.json.JsBoolean
@@ -110,10 +110,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def write(attrType: AttributeType): JsString = {
       attrType match {
-        case ScalarStringType => JsString(sString)
-        case ScalarBoolType => JsString(sBool)
-        case ScalarIntType => JsString(sInt)
-        case ScalarDoubleType => JsString(sDouble)
+        case StringType => JsString(sString)
+        case BoolType => JsString(sBool)
+        case IntType => JsString(sInt)
+        case DoubleType => JsString(sDouble)
       }
     }
 
@@ -124,10 +124,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def read(value: JsValue): AttributeType = {
       value match {
-        case JsString(`sString`) => ScalarStringType
-        case JsString(`sBool`) => ScalarBoolType
-        case JsString(`sInt`) => ScalarIntType
-        case JsString(`sDouble`) => ScalarDoubleType
+        case JsString(`sString`) => StringType
+        case JsString(`sBool`) => BoolType
+        case JsString(`sInt`) => IntType
+        case JsString(`sDouble`) => DoubleType
       }
     }
 
@@ -143,10 +143,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def write(attrValue: AttributeValue): JsObject = {
       attrValue match {
-        case ScalarStringValue(v) => JsObject(sType -> JsString(sString), sValue -> JsString(v))
-        case ScalarBoolValue(v) => JsObject(sType -> JsString(sBool), sValue -> JsBoolean(v))
-        case ScalarIntValue(v) => JsObject(sType -> JsString(sInt), sValue -> JsNumber(v))
-        case ScalarDoubleValue(v) => JsObject(sType -> JsString(sDouble), sValue -> JsNumber(v))
+        case MString(v) => JsObject(sType -> JsString(sString), sValue -> JsString(v))
+        case MBool(v) => JsObject(sType -> JsString(sBool), sValue -> JsBoolean(v))
+        case MInt(v) => JsObject(sType -> JsString(sInt), sValue -> JsNumber(v))
+        case MDouble(v) => JsObject(sType -> JsString(sDouble), sValue -> JsNumber(v))
       }
     }
 
@@ -157,10 +157,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
      */
     def read(value: JsValue): AttributeValue = {
       value.asJsObject.getFields(sType, sValue) match {
-        case Seq(JsString(`sString`), JsString(v)) => ScalarStringValue(v)
-        case Seq(JsString(`sBool`), JsBoolean(v)) => ScalarBoolValue(v)
-        case Seq(JsString(`sInt`), JsNumber(v)) => ScalarIntValue(v.toInt)
-        case Seq(JsString(`sDouble`), JsNumber(v)) => ScalarDoubleValue(v.toDouble)
+        case Seq(JsString(`sString`), JsString(v)) => MString(v)
+        case Seq(JsString(`sBool`), JsBoolean(v)) => MBool(v)
+        case Seq(JsString(`sInt`), JsNumber(v)) => MInt(v.toInt)
+        case Seq(JsString(`sDouble`), JsNumber(v)) => MDouble(v.toDouble)
       }
     }
 
@@ -268,7 +268,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MEnum]] */
+  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType.MEnum]] */
   private implicit object MEnumFormat extends RootJsonFormat[MEnum] {
 
     /** Write a MEnum.
@@ -304,7 +304,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MEnum]] */
+  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType.MEnum]] */
   private implicit object MObjectFormat extends RootJsonFormat[MObject] {
 
     /** Write a MObject.

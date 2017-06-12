@@ -5,11 +5,11 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.metaModel.elements.AttributeValue
-import models.modelDefinitions.metaModel.elements.EnumSymbol
-import models.modelDefinitions.metaModel.elements.ScalarBoolValue
-import models.modelDefinitions.metaModel.elements.ScalarDoubleValue
-import models.modelDefinitions.metaModel.elements.ScalarIntValue
-import models.modelDefinitions.metaModel.elements.ScalarStringValue
+import models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.model.elements.Edge
 
 class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String) extends SingleEdgeRule with DslRule {
@@ -21,10 +21,10 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
 
   def rule(edge: Edge): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarStringValue => v }.map(_.value)
-    def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarBoolValue => v }.map(_.value.toString)
-    def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarIntValue => v }.map(_.value.toString)
-    def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: ScalarDoubleValue => v }.map(_.value.toString)
+    def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MString => v }.map(_.value)
+    def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MBool => v }.map(_.value.toString)
+    def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MInt => v }.map(_.value.toString)
+    def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
     def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
     edge.attributes.get(attributeType) match {
@@ -32,10 +32,10 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
       case Some(attribute) =>
         val attributeValues: Seq[String] = attribute.headOption match {
           case None => Seq()
-          case Some(_: ScalarStringValue) => handleStrings(attribute)
-          case Some(_: ScalarBoolValue) => handleBooleans(attribute)
-          case Some(_: ScalarIntValue) => handleInts(attribute)
-          case Some(_: ScalarDoubleValue) => handleDoubles(attribute)
+          case Some(_: MString) => handleStrings(attribute)
+          case Some(_: MBool) => handleBooleans(attribute)
+          case Some(_: MInt) => handleInts(attribute)
+          case Some(_: MDouble) => handleDoubles(attribute)
           case Some(_: EnumSymbol) => handleEnums(attribute)
         }
 
