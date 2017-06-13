@@ -16,8 +16,8 @@ import models.entity.Entity
  * @tparam E The Entity-Type
  */
 class VersionSystem[K, E <: Entity]( // scalastyle:ignore
-    versionPersistence: Persistence[VersionIndex],
-    entityPersistence: Persistence[EntityVersion[E]])
+    versionPersistence: EntityPersistence[VersionIndex],
+    entityPersistence: EntityPersistence[EntityVersion[E]])
   (implicit ordering: Ordering[K]) {
 
 

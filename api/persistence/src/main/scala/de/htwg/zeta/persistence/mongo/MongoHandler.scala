@@ -22,6 +22,7 @@ import models.entity.ModelEntity
 import models.entity.Settings
 import models.entity.TimedTask
 import models.entity.User
+import models.file.File
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Diagram
 import models.modelDefinitions.metaModel.Dsl
@@ -68,7 +69,11 @@ object MongoHandler {
 
   case class IdOnlyEntity(id: UUID) extends Entity
 
-  implicit val reader: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
+  implicit val idOnlyEntityHandler: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
+
+  case class FileKey(id: UUID, name: String) extends Entity
+
+  implicit val fileKeyHandler: BSONDocumentHandler[FileKey] = Macros.handler[FileKey]
 
   private val uuidSetHandler = new {
 
@@ -292,5 +297,6 @@ object MongoHandler {
 
   implicit val versionIndexStringHandler: BSONDocumentHandler[VersionIndex] = Macros.handler[VersionIndex]
 
+  implicit val fileHandler: BSONDocumentHandler[File] = Macros.handler[File]
 
 }

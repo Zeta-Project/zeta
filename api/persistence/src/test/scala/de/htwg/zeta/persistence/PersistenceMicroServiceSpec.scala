@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.microService.PersistenceMicroService
 import de.htwg.zeta.persistence.microService.PersistenceServer
 import de.htwg.zeta.persistence.transient.TransientRepository
@@ -19,6 +20,6 @@ class PersistenceMicroServiceSpec extends RepositoryBehavior {
 
   Await.result(PersistenceServer.start(address, port, new TransientRepository), Duration(1, TimeUnit.MINUTES))
 
-  "persistenceMicroService" should behave like serviceBehavior(new PersistenceMicroService(address, port))
+  "persistenceMicroService" should behave like repositoryBehavior(new PersistenceMicroService(address, port))
 
 }

@@ -1,68 +1,19 @@
-package de.htwg.zeta.persistence
+package de.htwg.zeta.persistence.behavior
 
 import java.util.UUID
 
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
-import de.htwg.zeta.persistence.entityTestCases.AccessAuthorisationTestCase
-import de.htwg.zeta.persistence.entityTestCases.BondedTaskTestCase
-import de.htwg.zeta.persistence.entityTestCases.LogTestCase
-import de.htwg.zeta.persistence.entityTestCases.UserTestCase
-import de.htwg.zeta.persistence.general.Persistence
-import de.htwg.zeta.persistence.general.Repository
-import models.entity.BondedTask
+import de.htwg.zeta.persistence.general.EntityPersistence
 import models.entity.Entity
-import models.entity.Log
-import models.entity.User
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 
 
 /** PersistenceBehavior. */
-trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
+trait EntityPersistenceBehavior extends AsyncFlatSpec with Matchers {
 
-  /** Behavior for a PersistenceService.
-   *
-   * @param service PersistenceService
-   */
-  def serviceBehavior(service: Repository): Unit = {
-
-    "AccessAuthorisation" should behave like entityBehavior[AccessAuthorisation](
-      service.accessAuthorisations,
-      AccessAuthorisationTestCase.entity1,
-      AccessAuthorisationTestCase.entity2,
-      AccessAuthorisationTestCase.entity2Updated,
-      AccessAuthorisationTestCase.entity3
-    )
-
-    "BondedTask" should behave like entityBehavior[BondedTask](
-      service.bondTasks,
-      BondedTaskTestCase.entity1,
-      BondedTaskTestCase.entity2,
-      BondedTaskTestCase.entity2Updated,
-      BondedTaskTestCase.entity3
-    )
-
-    "User" should behave like entityBehavior[User](
-      service.users,
-      UserTestCase.entity1,
-      UserTestCase.entity2,
-      UserTestCase.entity2Updated,
-      UserTestCase.entity3
-    )
-
-    "Log" should behave like entityBehavior[Log](
-      service.logs,
-      LogTestCase.entity1,
-      LogTestCase.entity2,
-      LogTestCase.entity2Updated,
-      LogTestCase.entity3
-    )
-
-  }
-
-  private def entityBehavior[T <: Entity](persistence: Persistence[T], doc1: T, doc2: T, doc2Updated: T, doc3: T): Unit = { // scalastyle:ignore
+  def entityPersistenceBehavior[T <: Entity](persistence: EntityPersistence[T], doc1: T, doc2: T, doc2Updated: T, doc3: T): Unit = { // scalastyle:ignore
     doc1.id shouldNot be(doc2.id)
     doc1.id shouldNot be(doc3.id)
     doc2.id shouldNot be(doc3.id)

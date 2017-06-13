@@ -4,7 +4,8 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
 import de.htwg.zeta.persistence.general.EntityVersion
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.VersionIndex
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
@@ -43,54 +44,47 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   private implicit val materializer = ActorMaterializer()
 
   /** Persistence for the [[models.entity.EventDrivenTask]] */
-  override val eventDrivenTasks: Persistence[EventDrivenTask] = new PersistenceClient[EventDrivenTask](address, port)
+  override val eventDrivenTasks: EntityPersistence[EventDrivenTask] = new PersistenceClient[EventDrivenTask](address, port)
 
   /** Persistence for the [[models.entity.BondedTask]] */
-  override val bondTasks: Persistence[BondedTask] = new PersistenceClient[BondedTask](address, port)
+  override val bondTasks: EntityPersistence[BondedTask] = new PersistenceClient[BondedTask](address, port)
 
   /** Persistence for the [[models.entity.Generator]] */
-  override val generators: Persistence[Generator] = new PersistenceClient[Generator](address, port)
+  override val generators: EntityPersistence[Generator] = new PersistenceClient[Generator](address, port)
 
   /** Persistence for the [[models.entity.Filter]] */
-  override val filters: Persistence[Filter] = new PersistenceClient[Filter](address, port)
+  override val filters: EntityPersistence[Filter] = new PersistenceClient[Filter](address, port)
 
   /** Persistence for the [[models.entity.GeneratorImage]] */
-  override val generatorImages: Persistence[GeneratorImage] = new PersistenceClient[GeneratorImage](address, port)
+  override val generatorImages: EntityPersistence[GeneratorImage] = new PersistenceClient[GeneratorImage](address, port)
 
   /** Persistence for the [[models.entity.FilterImage]] */
-  override val filterImages: Persistence[FilterImage] = new PersistenceClient[FilterImage](address, port)
+  override val filterImages: EntityPersistence[FilterImage] = new PersistenceClient[FilterImage](address, port)
 
   /** Persistence for the [[models.entity.Settings]] */
-  override val settings: Persistence[Settings] = new PersistenceClient[Settings](address, port)
+  override val settings: EntityPersistence[Settings] = new PersistenceClient[Settings](address, port)
 
   /** Persistence for the [[models.entity.MetaModelEntity]] */
-  override val metaModelEntities: Persistence[MetaModelEntity] = null // TODO
+  override val metaModelEntities: EntityPersistence[MetaModelEntity] = null // TODO
 
   /** Persistence for the [[models.entity.ModelEntity]] */
-  override val modelEntities: Persistence[ModelEntity] = null // TODO
+  override val modelEntities: EntityPersistence[ModelEntity] = null // TODO
 
   /** Persistence for the [[models.entity.Log]] */
-  override val logs: Persistence[Log] = new PersistenceClient[Log](address, port)
+  override val logs: EntityPersistence[Log] = new PersistenceClient[Log](address, port)
 
   /** Persistence for AccessAuthorisation */
-  override private[persistence] val accessAuthorisations: Persistence[AccessAuthorisation] = null
+  override private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation] = null
 
   /** Persistence for [[models.entity.TimedTask]] */
-  override val timedTasks: Persistence[TimedTask] = null
-
-  /** Persistence for the metaModelReleases indices */
-  override private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex] = null // TODO
-
-  /** Persistence for the metaModelReleases versions */
-  override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] = null // TODO
+  override val timedTasks: EntityPersistence[TimedTask] = null
 
   /** Persistence for [[entity.User]] */
-  override val users: Persistence[User] = null // TODO
+  override val users: EntityPersistence[User] = null // TODO
 
-  /** Persistence for the file indices */
-  override private[persistence] val fileIndices: Persistence[VersionIndex] = null // TODO
+  /** Persistence for [[models.entity.MetaModelRelease]] */
+  override val metaModelReleases: EntityPersistence[MetaModelRelease] = null // TODO
 
-  /** Persistence for the file versions */
-  override private[persistence] val fileVersions: Persistence[EntityVersion[File]] = null // TODO
-
+  /** Versioned Persistence for [[models.file.File]] */
+  override val files: FilePersistence = null // TODO
 }

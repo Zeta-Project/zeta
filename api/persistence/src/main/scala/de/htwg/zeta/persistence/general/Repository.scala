@@ -15,68 +15,53 @@ import models.entity.ModelEntity
 import models.entity.Settings
 import models.entity.TimedTask
 import models.entity.User
-import models.file.File
 
-/**
- * Persistence Implementation for the different types of entitys.
- */
+/** Persistence Implementation for the different types of entities. */
 trait Repository {
 
   /** Persistence for AccessAuthorisation */
-  private[persistence] val accessAuthorisations: Persistence[AccessAuthorisation]
+  private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation]
 
   /** Persistence for [[models.entity.EventDrivenTask]] */
-  val eventDrivenTasks: Persistence[EventDrivenTask]
+  val eventDrivenTasks: EntityPersistence[EventDrivenTask]
 
   /** Persistence for [[models.entity.BondedTask]] */
-  val bondTasks: Persistence[BondedTask]
+  val bondTasks: EntityPersistence[BondedTask]
 
   /** Persistence for [[models.entity.TimedTask]] */
-  val timedTasks: Persistence[TimedTask]
+  val timedTasks: EntityPersistence[TimedTask]
 
   /** Persistence for [[models.entity.Generator]] */
-  val generators: Persistence[Generator]
+  val generators: EntityPersistence[Generator]
 
   /** Persistence for [[models.entity.Filter]] */
-  val filters: Persistence[Filter]
+  val filters: EntityPersistence[Filter]
 
   /** Persistence for [[models.entity.GeneratorImage]] */
-  val generatorImages: Persistence[GeneratorImage]
+  val generatorImages: EntityPersistence[GeneratorImage]
 
   /** Persistence for [[models.entity.FilterImage]] */
-  val filterImages: Persistence[FilterImage]
+  val filterImages: EntityPersistence[FilterImage]
 
   /** Persistence for [[models.entity.Settings]] */
-  val settings: Persistence[Settings]
+  val settings: EntityPersistence[Settings]
 
   /** Persistence for [[models.entity.MetaModelEntity]] */
-  val metaModelEntities: Persistence[MetaModelEntity]
-
-  /** Persistence for the metaModelReleases indices */
-  private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex]
-
-  /** Persistence for the metaModelReleases versions */
-  private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]]
+  val metaModelEntities: EntityPersistence[MetaModelEntity]
 
   /** Persistence for [[models.entity.MetaModelRelease]] */
-  final val metaModelReleases = new VersionSystem(metaModelReleasesIndices, metaModelReleasesVersions)(Ordering.Int)
+  val metaModelReleases: EntityPersistence[MetaModelRelease]
 
   /** Persistence for [[models.entity.ModelEntity]] */
-  val modelEntities: Persistence[ModelEntity]
+  val modelEntities: EntityPersistence[ModelEntity]
 
   /** Persistence for [[models.entity.Log]] */
-  val logs: Persistence[Log]
+  val logs: EntityPersistence[Log]
 
   /** Persistence for [[entity.User]] */
-  val users: Persistence[User]
-
-  /** Persistence for the file indices */
-  private[persistence] val fileIndices: Persistence[VersionIndex]
-
-  /** Persistence for the file versions */
-  private[persistence] val fileVersions: Persistence[EntityVersion[File]]
+  val users: EntityPersistence[User]
 
   /** Versioned Persistence for [[models.file.File]] */
-  final val files = new VersionSystem(fileIndices, fileVersions)(Ordering.String)
+  val files: FilePersistence
 
 }

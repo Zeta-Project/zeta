@@ -31,7 +31,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.ContentTypes.`application/json`
 import akka.http.scaladsl.model.HttpEntity
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
@@ -83,7 +83,7 @@ object PersistenceServer extends Logging {
     }
   }
 
-  private def persistenceRoutes[T <: Entity](service: Persistence[T])(implicit jsonFormat: RootJsonFormat[T], manifest: Manifest[T]): Route = {
+  private def persistenceRoutes[T <: Entity](service: EntityPersistence[T])(implicit jsonFormat: RootJsonFormat[T], manifest: Manifest[T]): Route = {
     pathPrefix(service.entityTypeName / "id" /
       """\w+""".r) { id =>
       get {

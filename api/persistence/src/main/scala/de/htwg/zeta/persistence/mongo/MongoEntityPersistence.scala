@@ -5,10 +5,10 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
-import de.htwg.zeta.persistence.mongo.MongoPersistence.idProjection
-import de.htwg.zeta.persistence.mongo.MongoPersistence.sId
+import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.idProjection
+import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.sId
 import models.entity.Entity
 import reactivemongo.api.Cursor
 import reactivemongo.api.MongoConnection
@@ -20,19 +20,19 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.BSONDocumentWriter
 
-class MongoPersistence[E <: Entity](
+class MongoEntityPersistence[E <: Entity](
     uri: String,
     dbName: String,
     implicit val entityHandler: BSONDocumentWriter[E] with BSONDocumentReader[E])(
     implicit manifest: Manifest[E])
-  extends Persistence[E] {
+  extends EntityPersistence[E] {
 
   private val connection: Future[MongoConnection] = Future.fromTry {
     MongoDriver().connection(uri)
   }
 
   private val indexEnsured: Future[Unit] = connection.flatMap(_.database(dbName)).map(_.collection[BSONCollection](entityTypeName)).flatMap(
-    _.indexesManager.ensure(Index(Seq((sId, IndexType.Ascending)), unique = true))
+    _.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
   ).flatMap(_ => Future.successful(()))
 
   private def doDatabaseAction[T](f: BSONCollection => Future[T]): Future[T] = {
@@ -109,10 +109,10 @@ class MongoPersistence[E <: Entity](
 
 }
 
-private object MongoPersistence {
+private object MongoEntityPersistence {
 
   private val sId = "id"
 
-  private val idProjection = BSONDocument(sId -> 1)
+  private val idProjection = BSONDocument("_id" -> 0, sId -> 1)
 
 }

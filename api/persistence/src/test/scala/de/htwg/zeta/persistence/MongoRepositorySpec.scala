@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence
 
+import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.mongo.MongoRepository
 
 /**
@@ -7,6 +8,8 @@ import de.htwg.zeta.persistence.mongo.MongoRepository
  */
 class MongoRepositorySpec extends RepositoryBehavior {
 
-  "MongoRepositorySpec" should behave like serviceBehavior(new MongoRepository("127.0.0.1:27017", "test"))
+  val repo = new MongoRepository("127.0.0.1:27017", "test")
+
+  "MongoRepository" should behave like repositoryBehavior(repo)
 
 }

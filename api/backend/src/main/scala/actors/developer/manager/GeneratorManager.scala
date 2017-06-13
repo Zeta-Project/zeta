@@ -6,7 +6,7 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.Repository
 import models.entity.GeneratorImage
 import models.frontend.CreateGenerator
@@ -19,7 +19,7 @@ object GeneratorManager {
 
 class GeneratorManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
 
-  private val generatorImageRepo: Persistence[GeneratorImage] = repository.generatorImages
+  private val generatorImageRepo: EntityPersistence[GeneratorImage] = repository.generatorImages
 
   def createGenerator(create: CreateGenerator) = {
     val reply = sender

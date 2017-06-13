@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence
 
+import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.transient.TransientRepository
 
 /**
@@ -7,6 +8,6 @@ import de.htwg.zeta.persistence.transient.TransientRepository
  */
 class TransientRepositorySpec extends RepositoryBehavior {
 
-  "persistenceMicroService" should behave like serviceBehavior(new TransientRepository)
+  "persistenceMicroService" should behave like repositoryBehavior(new TransientRepository)
 
 }

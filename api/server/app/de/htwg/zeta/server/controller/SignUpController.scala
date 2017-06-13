@@ -15,7 +15,7 @@ import controllers.routes
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -45,7 +45,7 @@ class SignUpController @Inject()(
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: Persistence[User] = Persistence.fullAccessRepository.users
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.users
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
 
   /** Views the `Sign Up` page.

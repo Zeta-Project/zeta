@@ -1,7 +1,9 @@
 package de.htwg.zeta.persistence.transient
 
 import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.EntityVersion
+import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.VersionIndex
 import models.entity.BondedTask
@@ -53,11 +55,7 @@ class TransientRepository extends Repository {
   /** Persistence for the [[models.entity.MetaModelEntity]] */
   override val metaModelEntities = new TransientPersistence[MetaModelEntity]
 
-  /** Persistence for the metaModelReleases indices */
-  override private[persistence] val metaModelReleasesIndices = new TransientPersistence[VersionIndex]
 
-  /** Persistence for the metaModelReleases versions */
-  override private[persistence] val metaModelReleasesVersions = new TransientPersistence[EntityVersion[MetaModelRelease]]
 
   /** Persistence for the [[models.entity.ModelEntity]] */
   override val modelEntities = new TransientPersistence[ModelEntity]
@@ -68,10 +66,9 @@ class TransientRepository extends Repository {
   /** Persistence for the [[User]] */
   override val users = new TransientPersistence[User]
 
-  /** Persistence for the file indices */
-  override private[persistence] val fileIndices = new TransientPersistence[VersionIndex]
+  /** Persistence for [[models.entity.MetaModelRelease]] */
+  override val metaModelReleases = new TransientPersistence[MetaModelRelease]
 
-  /** Persistence for the file versions */
-  override private[persistence] val fileVersions = new TransientPersistence[EntityVersion[File]]
-
+  /** Versioned Persistence for [[models.file.File]] */
+  override val files: FilePersistence = null // TODO
 }

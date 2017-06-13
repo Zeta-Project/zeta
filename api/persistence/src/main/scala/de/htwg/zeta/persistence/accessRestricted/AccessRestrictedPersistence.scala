@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import models.entity.Entity
 
 
@@ -19,8 +19,8 @@ import models.entity.Entity
  */
 case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
     ownerId: UUID,
-    accessAuthorisation: Persistence[AccessAuthorisation],
-    underlaying: Persistence[E])(implicit manifest: Manifest[E]) extends Persistence[E] {
+    accessAuthorisation: EntityPersistence[AccessAuthorisation],
+    underlaying: EntityPersistence[E])(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
 
   /** Create a new entity.
    *

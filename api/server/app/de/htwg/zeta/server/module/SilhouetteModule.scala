@@ -54,7 +54,7 @@ import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.transient.TransientPasswordInfoPersistence
 import de.htwg.zeta.persistence.transient.TransientLoginInfoPersistence
@@ -112,7 +112,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
 
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
-  private val userPersistence: Persistence[User] = Persistence.fullAccessRepository.users
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.users
 
 
   /** Provides the UserIdentityService

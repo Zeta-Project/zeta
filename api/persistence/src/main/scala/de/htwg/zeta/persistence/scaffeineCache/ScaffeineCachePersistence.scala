@@ -9,7 +9,7 @@ import scala.concurrent.duration.Duration
 
 import com.github.blemale.scaffeine.Cache
 import com.github.blemale.scaffeine.Scaffeine
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import models.entity.Entity
 
 
@@ -21,10 +21,10 @@ import models.entity.Entity
  * @tparam E type of the entity
  */
 case class ScaffeineCachePersistence[E <: Entity]( // scalastyle:ignore
-    underlaying: Persistence[E],
+    underlaying: EntityPersistence[E],
     keepInCacheDuration: Duration = Duration(10, TimeUnit.MINUTES), // scalastyle:ignore
     maximumSize: Int = 1000 // scalastyle:ignore
-) extends Persistence[E] {
+) extends EntityPersistence[E] {
 
   private val cache: Cache[UUID, E] =
     Scaffeine()

@@ -11,7 +11,7 @@ import models.entity.Entity
  *
  * @tparam E type of the entity
  */
-trait Persistence[E <: Entity] { // scalastyle:ignore
+trait EntityPersistence[E <: Entity] { // scalastyle:ignore
 
   /** The name of the entity-type.
    *

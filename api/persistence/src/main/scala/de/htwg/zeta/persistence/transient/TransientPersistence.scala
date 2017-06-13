@@ -5,14 +5,14 @@ import java.util.UUID
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import models.entity.Entity
 
-/** Cache implementation of [[Persistence]].
+/** Cache implementation of [[EntityPersistence]].
  *
  * @tparam E type of the entity
  */
-class TransientPersistence[E <: Entity] extends Persistence[E] { // scalastyle:ignore
+class TransientPersistence[E <: Entity] extends EntityPersistence[E] { // scalastyle:ignore
 
   private val cache: TrieMap[UUID, E] = TrieMap.empty[UUID, E]
 

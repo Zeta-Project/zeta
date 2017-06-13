@@ -24,7 +24,7 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.UpdatingDocumen
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumentSucceed
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumentFailed
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDuration
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import models.entity.Entity
 
 
@@ -32,7 +32,7 @@ import models.entity.Entity
  *
  * @tparam T type of the document
  */
-class DocumentAccessorActor[T <: Entity](private val persistence: Persistence[T], private val cacheDuration: CacheDuration)
+class DocumentAccessorActor[T <: Entity](private val persistence: EntityPersistence[T], private val cacheDuration: CacheDuration)
   extends Actor with ActorLogging { // scalastyle:ignore
 
   private var actorLifeExpireTime: Long = System.currentTimeMillis() + cacheDuration.keepActorAliveTime // scalastyle:ignore
@@ -246,11 +246,11 @@ object DocumentAccessorActor {
 }
 
 trait DocumentAccessorFactory {
-  def props[T <: Entity](persistence: Persistence[T], cacheDuration: CacheDuration): Props
+  def props[T <: Entity](persistence: EntityPersistence[T], cacheDuration: CacheDuration): Props
 }
 
 object DocumentAccessorFactoryDefaultImpl extends DocumentAccessorFactory {
-  override def props[T <: Entity](persistence: Persistence[T], cacheDuration: CacheDuration): Props = {
+  override def props[T <: Entity](persistence: EntityPersistence[T], cacheDuration: CacheDuration): Props = {
     Props(new DocumentAccessorActor[T](persistence, cacheDuration))
   }
 }

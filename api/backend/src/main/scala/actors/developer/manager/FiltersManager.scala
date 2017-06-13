@@ -6,7 +6,7 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.Repository
 import models.document.Changed
 import models.document.Created
@@ -22,7 +22,7 @@ object FiltersManager {
 
 class FiltersManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
 
-  private val filterRepo: Persistence[Filter] = repository.filters
+  private val filterRepo: EntityPersistence[Filter] = repository.filters
 
   private def rerunFilter = {
     filterRepo.readAllIds().map(ids =>

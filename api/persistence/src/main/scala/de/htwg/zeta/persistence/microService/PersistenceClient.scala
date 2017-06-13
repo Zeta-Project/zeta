@@ -18,7 +18,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.general.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import spray.json.pimpAny
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.UuidJsonFormat
 import models.entity.Entity
@@ -38,7 +38,7 @@ import spray.json.RootJsonFormat
  * @tparam T type of the document
  */
 class PersistenceClient[T <: Entity](address: String, port: Int) // scalastyle:ignore
-  (implicit format: RootJsonFormat[T], system: ActorSystem, materializer: ActorMaterializer, manifest: Manifest[T]) extends Persistence[T] {
+  (implicit format: RootJsonFormat[T], system: ActorSystem, materializer: ActorMaterializer, manifest: Manifest[T]) extends EntityPersistence[T] {
 
   private val http = Http()
   private val uri = s"http://$address:$port/$entityTypeName" // scalastyle:ignore
