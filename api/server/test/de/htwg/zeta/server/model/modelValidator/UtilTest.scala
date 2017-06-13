@@ -4,13 +4,16 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.server.model.modelValidator.Util.Att
 import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarType
 import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
@@ -96,7 +99,7 @@ class UtilTest extends FlatSpec with Matchers {
     name = "abstractSuperClassOneAttribute",
     globalUnique = false,
     localUnique = false,
-    typ = ScalarType.String,
+    typ = StringType,
     default = MString(""),
     constant = false,
     singleAssignment = false,
@@ -184,10 +187,10 @@ class UtilTest extends FlatSpec with Matchers {
   }
 
   "getAttributeTypeClassName" should "return the correct class name of an AttributeType" in {
-    Util.getAttributeTypeClassName(ScalarType.String) should be("String")
-    Util.getAttributeTypeClassName(ScalarType.Double) should be("Double")
-    Util.getAttributeTypeClassName(ScalarType.Bool) should be("Bool")
-    Util.getAttributeTypeClassName(ScalarType.Int) should be("Int")
+    Util.getAttributeTypeClassName(StringType) should be("String")
+    Util.getAttributeTypeClassName(DoubleType) should be("Double")
+    Util.getAttributeTypeClassName(BoolType) should be("Bool")
+    Util.getAttributeTypeClassName(IntType) should be("Int")
 
     val mEnum: MEnum = MEnum(
       name = "TestMEnum",
@@ -252,7 +255,7 @@ class UtilTest extends FlatSpec with Matchers {
       name = "abstractSuperClassOneAttribute", // same name
       globalUnique = false,
       localUnique = false,
-      `type` = ScalarType.Bool, // different data type
+      `type` = BoolType, // different data type
       default = "false",
       constant = false,
       singleAssignment = false,

@@ -3,8 +3,8 @@ package models.entity
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.Identity
+import play.api.libs.json.Format
 import play.api.libs.json.Json
-import play.api.libs.json.OFormat
 
 /** The user object.
  *
@@ -30,6 +30,6 @@ case class User(
 object User {
 
   /** Play-Json conversion format. */
-  implicit val jsonFormat: OFormat[User] = Json.format[User]
+  implicit val jsonFormat: Format[User] = Json.format[User]
 
 }

@@ -12,6 +12,8 @@ import reactivemongo.api.Cursor
 import reactivemongo.api.MongoConnection
 import reactivemongo.api.MongoDriver
 import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.indexes.Index
+import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.BSONDocumentWriter
@@ -23,8 +25,7 @@ class MongoPersistence[E <: Entity](
     implicit manifest: Manifest[E])
   extends Persistence[E] {
 
-
-  private val sId = "_id"
+  private val sId = "id"
 
   private val connection: Future[MongoConnection] = Future.fromTry {
     MongoDriver().connection(uri)
@@ -32,9 +33,12 @@ class MongoPersistence[E <: Entity](
 
   private val idProjection = BSONDocument(sId -> 1)
 
-  private def doDatabaseAction[T](f: BSONCollection => Future[T]): Future[T] = {
-    connection.flatMap(_.database(dbName)).map(_.collection(entityTypeName)).flatMap(f)
+  private val indexEnsured: Future[Unit] = connection.flatMap(_.database(dbName)).map(_.collection[BSONCollection](entityTypeName)).flatMap(
+    _.indexesManager.ensure(Index(Seq((sId, IndexType.Ascending)), unique = true))
+  ).flatMap(_ => Future.successful(()))
 
+  private def doDatabaseAction[T](f: BSONCollection => Future[T]): Future[T] = {
+    indexEnsured.flatMap(_ => connection.flatMap(_.database(dbName)).map(_.collection(entityTypeName)).flatMap(f))
   }
 
   /** Create a new entity.
@@ -66,8 +70,12 @@ class MongoPersistence[E <: Entity](
    */
   override private[persistence] def update(entity: E): Future[E] = {
     doDatabaseAction { collection =>
-      collection.findAndUpdate(BSONDocument(sId -> entity), entity).map(_ =>
-        entity
+      collection.update(BSONDocument(sId -> entity.id.toString), entity).flatMap(result =>
+        if (result.nModified == 1) {
+          Future.successful(entity)
+        } else {
+          Future.failed(new IllegalStateException("couldn't update the document"))
+        }
       )
     }
   }
@@ -79,8 +87,12 @@ class MongoPersistence[E <: Entity](
    */
   override def delete(id: UUID): Future[Unit] = {
     doDatabaseAction { collection =>
-      collection.remove(BSONDocument(sId -> id.toString)).flatMap(_ =>
-        Future.successful(())
+      collection.remove(BSONDocument(sId -> id.toString)).flatMap(result =>
+        if (result.n == 1) {
+          Future.successful(())
+        } else {
+          Future.failed(new IllegalStateException("couldn't delete the document"))
+        }
       )
     }
   }

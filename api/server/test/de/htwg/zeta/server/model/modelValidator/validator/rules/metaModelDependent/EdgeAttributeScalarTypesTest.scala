@@ -2,11 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarType
-import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
-import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -21,7 +21,7 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq[MAttribute]()
   )
-  val rule = new EdgeAttributeScalarTypes("reference", "attributeType", ScalarType.String)
+  val rule = new EdgeAttributeScalarTypes("reference", "attributeType", StringType)
 
   "the rule" should "be true for valid edges" in {
     val attribute = Map("attributeType" -> Seq(MString("value")))

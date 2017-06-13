@@ -79,7 +79,7 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   override val timedTasks: Persistence[TimedTask] = null
 
   /** Persistence for the metaModelReleases indices */
-  override private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex[Int]] = null // TODO
+  override private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex] = null // TODO
 
   /** Persistence for the metaModelReleases versions */
   override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] = null // TODO
@@ -88,7 +88,7 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   override val users: Persistence[User] = null // TODO
 
   /** Persistence for the file indices */
-  override private[persistence] val fileIndices: Persistence[VersionIndex[String]] = null // TODO
+  override private[persistence] val fileIndices: Persistence[VersionIndex] = null // TODO
 
   /** Persistence for the file versions */
   override private[persistence] val fileVersions: Persistence[EntityVersion[File]] = null // TODO

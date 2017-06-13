@@ -2,9 +2,9 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers

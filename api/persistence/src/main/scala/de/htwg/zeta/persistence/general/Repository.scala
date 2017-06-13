@@ -53,7 +53,7 @@ trait Repository {
   val metaModelEntities: Persistence[MetaModelEntity]
 
   /** Persistence for the metaModelReleases indices */
-  private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex[Int]]
+  private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex]
 
   /** Persistence for the metaModelReleases versions */
   private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]]
@@ -71,7 +71,7 @@ trait Repository {
   val users: Persistence[User]
 
   /** Persistence for the file indices */
-  private[persistence] val fileIndices: Persistence[VersionIndex[String]]
+  private[persistence] val fileIndices: Persistence[VersionIndex]
 
   /** Persistence for the file versions */
   private[persistence] val fileVersions: Persistence[EntityVersion[File]]

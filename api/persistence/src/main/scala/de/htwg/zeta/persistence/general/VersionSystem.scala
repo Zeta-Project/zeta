@@ -2,6 +2,7 @@ package de.htwg.zeta.persistence.general
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -15,7 +16,7 @@ import models.entity.Entity
  * @tparam E The Entity-Type
  */
 class VersionSystem[K, E <: Entity]( // scalastyle:ignore
-    versionPersistence: Persistence[VersionIndex[K]],
+    versionPersistence: Persistence[VersionIndex],
     entityPersistence: Persistence[EntityVersion[E]])
   (implicit ordering: Ordering[K]) {
 
@@ -36,8 +37,8 @@ class VersionSystem[K, E <: Entity]( // scalastyle:ignore
    * @param id the entity-id
    * @return sorted version keys
    */
-  def readVersionKeys(id: UUID): Future[Seq[K]] = {
-    versionPersistence.read(id).map(_.versions.keySet.toSeq)
+  def readVersionKeys(id: UUID): Future[Seq[String]] = {
+    versionPersistence.read(id).map(_.versions.keySet.toVector)
   }
 
   /** Add a new version.
@@ -46,7 +47,7 @@ class VersionSystem[K, E <: Entity]( // scalastyle:ignore
    * @param entity  The Entity
    * @return A copy containing the new version.
    */
-  def createVersion(version: K, entity: E): Future[E] = {
+  def createVersion(version: String, entity: E): Future[E] = {
     entityPersistence.create(EntityVersion(UUID.randomUUID, entity)).flatMap(versionedEntity =>
       versionPersistence.update(
         entity.id, _.modify(_.versions).using(_ + (version -> versionedEntity.id))
@@ -64,7 +65,7 @@ class VersionSystem[K, E <: Entity]( // scalastyle:ignore
    * @param version the version-key
    * @return the entity
    */
-  def readVersion(id: UUID, version: K): Future[E] = {
+  def readVersion(id: UUID, version: String): Future[E] = {
     versionPersistence.read(id).map(_.versions(version)).flatMap(versionId =>
       entityPersistence.read(versionId)
     ).map(_.entity)
@@ -77,7 +78,7 @@ class VersionSystem[K, E <: Entity]( // scalastyle:ignore
    * @param version      the version-key
    * @return the entity
    */
-  def updateVersion(id: UUID, updateEntity: E => E, version: K): Future[E] = {
+  def updateVersion(id: UUID, updateEntity: E => E, version: String): Future[E] = {
     versionPersistence.read(id).map(_.versions(version)).flatMap(versionId =>
       entityPersistence.update(versionId, _.modify(_.entity).using(updateEntity))
     ).map(_.entity)
@@ -89,7 +90,7 @@ class VersionSystem[K, E <: Entity]( // scalastyle:ignore
    * @param version the version-key
    * @return the entity
    */
-  def deleteVersion(id: UUID, version: K): Future[Unit] = {
+  def deleteVersion(id: UUID, version: String): Future[Unit] = {
     versionPersistence.read(id).map(_.versions(version)).flatMap(versionId =>
       entityPersistence.delete(versionId)
     ).flatMap(_ =>
@@ -109,9 +110,11 @@ class VersionSystem[K, E <: Entity]( // scalastyle:ignore
  *
  * @param id       the entity-id
  * @param versions the version-keys
- * @tparam K the key-type
  */
-private[persistence] case class VersionIndex[K](id: UUID, versions: SortedMap[K, UUID]) extends Entity
+private[persistence] case class VersionIndex(
+    id: UUID,
+    versions: SortedMap[String, UUID]
+) extends Entity
 
 /** Holds a single version of a entity.
  *
@@ -119,4 +122,7 @@ private[persistence] case class VersionIndex[K](id: UUID, versions: SortedMap[K,
  * @param entity the entity
  * @tparam E the entity-type
  */
-private[persistence] case class EntityVersion[E <: Entity](id: UUID, entity: E) extends Entity // scalastyle:ignore
+private[persistence] case class EntityVersion[E <: Entity](
+    id: UUID,
+    entity: E
+) extends Entity

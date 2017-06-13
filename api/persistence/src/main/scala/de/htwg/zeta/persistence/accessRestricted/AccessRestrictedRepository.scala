@@ -94,7 +94,10 @@ case class AccessRestrictedRepository(ownerId: UUID, underlaying: Repository) ex
  * @param id               entity-id, same id as [[entity.User]]
  * @param authorizedAccess all authorized id's
  */
-private[persistence] case class AccessAuthorisation(id: UUID, authorizedAccess: Map[String, Set[UUID]]) extends Entity {
+private[persistence] case class AccessAuthorisation(
+    id: UUID,
+    authorizedAccess: Map[String, Set[UUID]]
+) extends Entity {
 
   /** Add a id to the accessible id's.
    *
@@ -152,6 +155,8 @@ object AccessAuthorisation {
    * @param id the ownerId
    * @return
    */
-  def empty(id: UUID): AccessAuthorisation = AccessAuthorisation(id, Map.empty)
+  def empty(id: UUID): AccessAuthorisation = {
+    AccessAuthorisation(id, Map.empty)
+  }
 
 }

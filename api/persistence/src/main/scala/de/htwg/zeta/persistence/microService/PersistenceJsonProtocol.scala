@@ -279,7 +279,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
     def write(mEnum: MEnum): JsObject = {
       JsObject(
         sName -> JsString(mEnum.name),
-        sValues -> JsArray(mEnum.values.map(value => JsString(value.name)).toVector)
+        sValues -> JsArray(mEnum.symbols.map(value => JsString(value.name)).toVector)
       )
     }
 

@@ -56,39 +56,39 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
     new MongoPersistence[FilterImage](uri, dbName, MongoHandler.filterImageHandler)
 
   /** Persistence for [[models.entity.Settings]] */
-  override val settings: Persistence[Settings] = null
-  //  new MongoPersistence[Settings](uri, dbName, MongoHandler.settingsHandler)
+  override val settings: Persistence[Settings] =
+    new MongoPersistence[Settings](uri, dbName, MongoHandler.settingsHandler)
 
   /** Persistence for [[models.entity.MetaModelEntity]] */
-  override val metaModelEntities: Persistence[MetaModelEntity] = null
-  //  new MongoPersistence[MetaModelEntity](uri, dbName, MongoHandler.metaModelEntityHandler)
+  override val metaModelEntities: Persistence[MetaModelEntity] =
+    new MongoPersistence[MetaModelEntity](uri, dbName, MongoHandler.metaModelEntityHandler)
 
   /** Persistence for the metaModelReleases indices */
-  override private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex[Int]] = null
-  //  new MongoPersistence[VersionIndex[Int]](uri, dbName, MongoHandler.versionIndexIntHandler)
+  override private[persistence] val metaModelReleasesIndices: Persistence[VersionIndex] =
+    new MongoPersistence[VersionIndex](uri, dbName, MongoHandler.versionIndexIntHandler)
 
   /** Persistence for the metaModelReleases versions */
-  override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] = null
-  //  new MongoPersistence[EntityVersion[MetaModelRelease]](uri, dbName, MongoHandler.entityVersionMetaModelReleaseHandler)
+  override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] =
+    new MongoPersistence[EntityVersion[MetaModelRelease]](uri, dbName, MongoHandler.entityVersionReleaseHandler)
 
   /** Persistence for [[models.entity.ModelEntity]] */
-  override val modelEntities: Persistence[ModelEntity] = null
-  //  new MongoPersistence[ModelEntity](uri, dbName, MongoHandler.modelEntityHandler)
+  override val modelEntities: Persistence[ModelEntity] =
+    new MongoPersistence[ModelEntity](uri, dbName, MongoHandler.modelEntityHandler)
 
   /** Persistence for [[models.entity.Log]] */
-  override val logs: Persistence[Log] = null
-  //  new MongoPersistence[Log](uri, dbName, MongoHandler.logHandler)
+  override val logs: Persistence[Log] =
+    new MongoPersistence[Log](uri, dbName, MongoHandler.logHandler)
 
   /** Persistence for [[User]] */
   override val users: Persistence[User] =
-    new MongoPersistence[User](uri, dbName, null)
+    new MongoPersistence[User](uri, dbName, MongoHandler.userHandler)
 
   /** Persistence for the file indices */
-  override private[persistence] val fileIndices: Persistence[VersionIndex[String]] = null
-  //  new MongoPersistence[VersionIndex[String]](uri, dbName, MongoHandler.versionIndexStringHandler)
+  override private[persistence] val fileIndices: Persistence[VersionIndex] =
+    new MongoPersistence[VersionIndex](uri, dbName, MongoHandler.versionIndexStringHandler)
 
   /** Persistence for the file versions */
-  override private[persistence] val fileVersions: Persistence[EntityVersion[File]] = null
-  //  new MongoPersistence[EntityVersion[File]](uri, dbName, MongoHandler.entityVersionFileHandler)
+  override private[persistence] val fileVersions: Persistence[EntityVersion[File]] =
+    new MongoPersistence[EntityVersion[File]](uri, dbName, MongoHandler.entityVersionReleaseHandler)
 
 }

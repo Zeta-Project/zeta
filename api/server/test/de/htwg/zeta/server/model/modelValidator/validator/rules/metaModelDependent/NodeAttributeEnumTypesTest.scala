@@ -2,10 +2,10 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.elements.EnumSymbol
+import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MEnum
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers

@@ -4,20 +4,20 @@ import java.util.UUID
 
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.TokenCache
-import de.htwg.zeta.persistence.general.PasswordInfoPersistence
+import de.htwg.zeta.persistence.mongo.MongoRepository
 import de.htwg.zeta.persistence.transient.TransientLoginInfoPersistence
-import de.htwg.zeta.persistence.transient.TransientRepository
-import de.htwg.zeta.persistence.transient.TransientTokenCache
 import de.htwg.zeta.persistence.transient.TransientPasswordInfoPersistence
+import de.htwg.zeta.persistence.transient.TransientTokenCache
 
 
 /** Persistence. */
 object Persistence extends App {
 
   /** The current implementation of the PersistenceService. */
-  lazy val fullAccessRepository: Repository = new TransientRepository
+  lazy val fullAccessRepository: Repository = new MongoRepository("127.0.0.1:27017", "zeta")
 
   /** The current implementation of the PersistenceService with a overlaying Access-Restriction Layer.
    *

@@ -3,11 +3,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks
 import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.MetaModel
+import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
-import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node

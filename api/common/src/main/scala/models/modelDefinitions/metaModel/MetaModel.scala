@@ -5,8 +5,8 @@ import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
 import models.modelDefinitions.metaModel.elements.MReference
+import play.api.libs.json.Format
 import play.api.libs.json.Json
-import play.api.libs.json.OFormat
 
 /**
  * Immutable container for MetaModel definitions
@@ -31,37 +31,6 @@ case class MetaModel(
 }
 
 object MetaModel {
-
-
-  /*
-  val read: Reads[MetaModel] = {
-    null
-  }
-
-  val writes: Writes[MetaModel] = {
-    ()
-
-
-  }(MetaModel.apply _)
-
-val x: List = null
-
-  /
-
-  val locationReads: Reads[Location] = (
-  (JsPath \ "lat").read[Double](min(-90.0) keepAnd max(90.0)) and
-  (JsPath \ "long").read[Double](min(-180.0) keepAnd max(180.0))
-)(Location.apply _)
-
-val locationWrites: Writes[Location] = (
-  (JsPath \ "lat").write[Double] and
-  (JsPath \ "long").write[Double]
-)(unlift(Location.unapply))
-
-implicit val locationFormat: Format[Location] =
-  Format(locationReads, locationWrites)
-
-   */
 
   case class MetaModelTraverseWrapper(value: MetaModel) {
 
@@ -110,6 +79,6 @@ implicit val locationFormat: Format[Location] =
 
   }
 
-  implicit val playJsonFormat: OFormat[MetaModel] = Json.format[MetaModel]
+  implicit val playJsonFormat: Format[MetaModel] = Json.format[MetaModel]
 
 }

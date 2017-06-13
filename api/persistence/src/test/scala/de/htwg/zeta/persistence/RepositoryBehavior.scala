@@ -58,7 +58,6 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
   private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = UUID.randomUUID)
 
 
-
   private val log1 = Log(
     id = UUID.randomUUID,
     task = "task",
@@ -66,8 +65,8 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     status = 1,
     date = "date"
   )
-  private val log2: Log = log1.copy(id =  UUID.randomUUID)
-  private val log3: Log = log1.copy(id =  UUID.randomUUID)
+  private val log2: Log = log1.copy(id = UUID.randomUUID)
+  private val log3: Log = log1.copy(id = UUID.randomUUID)
   private val log2Updated: Log = log2.copy(status = 2)
 
   private val user1 = User(
@@ -77,8 +76,8 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
     email = "test@mail.com",
     activated = false
   )
-  private val user2: User = user1.copy(id =  UUID.randomUUID)
-  private val user3: User = user1.copy(id =  UUID.randomUUID)
+  private val user2: User = user1.copy(id = UUID.randomUUID)
+  private val user3: User = user1.copy(id = UUID.randomUUID)
   private val user2Updated: User = user2.copy(activated = true)
 
 
@@ -218,6 +217,23 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
         }
       }
     }
+
+
+    it should "it should create all entities again" in {
+      persistence.create(doc1).flatMap { _ =>
+        persistence.create(doc2Updated).flatMap { _ =>
+          persistence.create(doc3).flatMap { _ =>
+            persistence.readAllIds().flatMap { ids =>
+              ids.size shouldBe 3
+              ids should contain(doc1.id)
+              ids should contain(doc2.id)
+              ids should contain(doc3.id)
+            }
+          }
+        }
+      }
+    }
+
 
   }
 
