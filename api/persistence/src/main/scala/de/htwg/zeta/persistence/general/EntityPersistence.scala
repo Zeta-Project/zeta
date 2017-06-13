@@ -68,7 +68,7 @@ trait EntityPersistence[E <: Entity] { // scalastyle:ignore
 
   /** Read a entity by id. If it doesn't exist create it.
    *
-   * @param id the id of the entity to read
+   * @param id     the id of the entity to read
    * @param entity the entity to create, only evaluated when needed (call-by-name)
    * @return The read or created entity
    */
@@ -80,12 +80,23 @@ trait EntityPersistence[E <: Entity] { // scalastyle:ignore
 
   /** Update a entity. If it doesn't exist create it.
    *
-   * @param id the id of the entity to read
-   * @param updateEntity Function, to build the updated entity from the existing
-   * @param entity the entity to create, only evaluated when needed (call-by-name)
+   * @param entity the entity to create or update
    * @return The updated or created entity
    */
-  final def updateOrCreate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
+  final def createOrUpdate(entity: E): Future[E] = {
+    update(entity).recoverWith {
+      case _ => create(entity)
+    }
+  }
+
+  /** Update a entity. If it doesn't exist create it.
+   *
+   * @param id           the id of the entity
+   * @param updateEntity function to update the existing entity
+   * @param entity       the entity to create
+   * @return The updated or created entity
+   */
+  final def createOrUpdate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
     update(id, updateEntity).recoverWith {
       case _ => create(entity)
     }

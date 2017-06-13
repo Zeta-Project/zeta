@@ -15,8 +15,8 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Round
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Wrapper
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.layouts.CommonLayout
-import models.file.File
 import de.htwg.zeta.server.model.result.Unreliable
+import models.entity.File
 
 
 object VrGeneratorShapeDefinition {

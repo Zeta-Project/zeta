@@ -2,12 +2,9 @@ package de.htwg.zeta.persistence.microService
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
-import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.Repository
-import de.htwg.zeta.persistence.general.VersionIndex
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterFormat
@@ -17,6 +14,7 @@ import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorIm
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.logFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.settingsFormat
 import models.entity
+import models.entity.AccessAuthorisation
 import models.entity.BondedTask
 import models.entity.EventDrivenTask
 import models.entity.Filter
@@ -30,7 +28,6 @@ import models.entity.ModelEntity
 import models.entity.Settings
 import models.entity.TimedTask
 import models.entity.User
-import models.file.File
 
 
 /** Micro-Service Implementation of the PersistenceService.
@@ -85,6 +82,6 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   /** Persistence for [[models.entity.MetaModelRelease]] */
   override val metaModelReleases: EntityPersistence[MetaModelRelease] = null // TODO
 
-  /** Versioned Persistence for [[models.file.File]] */
+  /** Versioned Persistence for [[entity.File]] */
   override val files: FilePersistence = null // TODO
 }

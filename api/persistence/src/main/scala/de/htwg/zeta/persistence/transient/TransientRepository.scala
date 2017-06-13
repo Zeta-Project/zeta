@@ -1,11 +1,9 @@
 package de.htwg.zeta.persistence.transient
 
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.EntityVersion
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.Repository
-import de.htwg.zeta.persistence.general.VersionIndex
+import models.entity
+import models.entity.AccessAuthorisation
 import models.entity.BondedTask
 import models.entity.EventDrivenTask
 import models.entity.Filter
@@ -19,7 +17,6 @@ import models.entity.ModelEntity
 import models.entity.Settings
 import models.entity.TimedTask
 import models.entity.User
-import models.file.File
 
 
 /** Cache-Implementation of the PersistenceService. */
@@ -69,6 +66,6 @@ class TransientRepository extends Repository {
   /** Persistence for [[models.entity.MetaModelRelease]] */
   override val metaModelReleases = new TransientPersistence[MetaModelRelease]
 
-  /** Versioned Persistence for [[models.file.File]] */
+  /** Versioned Persistence for [[entity.File]] */
   override val files: FilePersistence = null // TODO
 }

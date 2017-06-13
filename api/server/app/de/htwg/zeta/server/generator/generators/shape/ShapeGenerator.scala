@@ -4,8 +4,8 @@ import java.util.UUID
 
 import de.htwg.zeta.server.generator.model.diagram.node.Node
 import de.htwg.zeta.server.generator.parser.Cache
-import models.file.File
 import de.htwg.zeta.server.model.result.Unreliable
+import models.entity.File
 
 /**
  * The ShapeGenerator Object

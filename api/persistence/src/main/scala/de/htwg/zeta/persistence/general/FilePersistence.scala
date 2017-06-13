@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import models.file.File
+import models.entity.File
 
 /** Modification of the EntityPersistence. The key is a compound key and consists of the id and the name of the file. */
 trait FilePersistence {
@@ -55,7 +55,7 @@ trait FilePersistence {
    *
    * @return Future containing all id's of the file type
    */
-  def readAllIds(): Future[Map[UUID, Set[String]]]
+  def readAllKeys(): Future[Map[UUID, Set[String]]]
 
   /** Read a file by id. If it doesn't exist create it.
    *
@@ -72,14 +72,11 @@ trait FilePersistence {
 
   /** Update a file. If it doesn't exist create it.
    *
-   * @param id         the id of the file to read
-   * @param name       the name of the file
-   * @param updateFile Function, to build the updated file from the existing
-   * @param file       the file to create, only evaluated when needed (call-by-name)
+   * @param file       the file to create or update
    * @return The updated or created file
    */
-  final def updateOrCreate(id: UUID, name: String, updateFile: File => File, file: => File): Future[File] = {
-    update(id, name, updateFile).recoverWith {
+  final def createOrUpdate(file: File): Future[File] = {
+    update(file).recoverWith {
       case _ => create(file)
     }
   }

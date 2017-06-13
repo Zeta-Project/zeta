@@ -5,8 +5,8 @@ import java.util.UUID
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.shapecontainer.connection.Connection
-import models.file.File
 import de.htwg.zeta.server.model.result.Unreliable
+import models.entity.File
 
 
 object VrDiagramGenerator {

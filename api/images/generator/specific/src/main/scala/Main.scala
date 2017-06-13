@@ -8,12 +8,13 @@ import models.entity.Filter
 import models.entity.Generator
 import models.entity.MetaModelEntity
 import models.entity.ModelEntity
-import models.file.File
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
 import models.remote.Remote
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
+import models.entity.File
 
 object Main extends Template[CreateOptions, String] {
   val sep = "\n"
@@ -132,7 +133,7 @@ object Main extends Template[CreateOptions, String] {
       image <- repository.generatorImages.read(imageId)
       metaModel <- repository.metaModelEntities.read(UUID.fromString(options.metaModelRelease))
       generator <- repository.generators.create(Generator(user, options.name, image.id))
-      created <- repository.files.createVersion(Settings.generatorFile, file(Settings.generatorFile, metaModel))
+      created <- repository.files.create(file(Settings.generatorFile, metaModel))
     } yield Success()
   }
 

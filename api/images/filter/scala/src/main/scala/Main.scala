@@ -10,9 +10,9 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
 import filter.BaseFilter
+import models.entity.File
 import models.entity.Filter
 import models.entity.ModelEntity
-import models.file.File
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
@@ -47,7 +47,7 @@ object Main extends App {
 
     val result = for {
       filter <- repository.filters.read(UUID.fromString(id))
-      file <- repository.files.readVersion(filter.id, "filter.scala")
+      file <- repository.files.read(filter.id, "filter.scala")
       fn <- compileFilter(file)
       instances <- checkInstances(fn)
       saved <- saveResult(filter, instances)

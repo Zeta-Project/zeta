@@ -7,10 +7,10 @@ import scala.concurrent.Promise
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
+import models.entity.File
 import models.entity.Filter
 import models.entity.Generator
 import models.entity.ModelEntity
-import models.file.File
 import models.modelDefinitions.model.elements.Node
 import models.remote.Remote
 import org.slf4j.LoggerFactory
@@ -29,7 +29,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     for {
       image <- repository.generatorImages.read(imageId)
       generator <- repository.generators.create(Generator(user, options.name, image.id))
-      created <- repository.files.createVersion("demoFile", createFileContent())
+      created <- repository.files.create(createFileContent())
     } yield {
       Success()
     }

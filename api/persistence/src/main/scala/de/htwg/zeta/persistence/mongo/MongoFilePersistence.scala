@@ -13,7 +13,7 @@ import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sName
 import de.htwg.zeta.persistence.mongo.MongoHandler.FileKey
 import de.htwg.zeta.persistence.mongo.MongoHandler.fileHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
-import models.file.File
+import models.entity.File
 import reactivemongo.api.Cursor
 import reactivemongo.api.MongoConnection
 import reactivemongo.api.MongoDriver
@@ -112,7 +112,7 @@ class MongoFilePersistence(
    *
    * @return Future containing all id's of the file type
    */
-  override def readAllIds(): Future[Map[UUID, Set[String]]] = {
+  override def readAllKeys(): Future[Map[UUID, Set[String]]] = {
     doDatabaseAction { collection =>
       collection.find(BSONDocument.empty, keyProjection).cursor[FileKey]().
         collect(-1, Cursor.FailOnError[Set[FileKey]]())

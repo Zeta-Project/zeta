@@ -8,8 +8,6 @@ import de.htwg.zeta.persistence.mongo.MongoRepository
  */
 class MongoRepositorySpec extends RepositoryBehavior {
 
-  val repo = new MongoRepository("127.0.0.1:27017", "test")
-
-  "MongoRepository" should behave like repositoryBehavior(repo)
+  "MongoRepository" should behave like repositoryBehavior(new MongoRepository("127.0.0.1:27017", "test"))
 
 }

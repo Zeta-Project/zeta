@@ -7,5 +7,5 @@ case class Filter(
     id: UUID = UUID.randomUUID,
     name: String,
     description: String,
-    instanceIds: List[UUID]
+    instanceIds: Seq[UUID]
 ) extends Entity

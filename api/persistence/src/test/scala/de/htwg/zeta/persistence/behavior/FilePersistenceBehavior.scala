@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Repository
-import models.file.File
+import models.entity.File
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 
@@ -18,44 +18,42 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
   private val file2Updated: File = file2.copy(content = "content2Updated")
   private val file3 = File(UUID.randomUUID, "file3", "content3")
 
-
-  /** Behavior for a PersistenceService.
-   *
-   * @param repo PersistenceService
-   */
   def filePersistenceBehavior(repo: Repository): Unit = { // scalastyle:ignore
 
     it should "remove all already existing files" in {
-      repo.files.readAllIds().flatMap { entries =>
-        Future.sequence(entries.flatMap { case (id, names) => names.map(name => repo.files.delete(id, name)) }).flatMap { _ =>
-          repo.files.readAllIds().flatMap { keys =>
-            keys shouldBe Map.empty
-          }
-        }
+      for {
+        existingKeys <- repo.files.readAllKeys()
+        _ <- Future.sequence(existingKeys.flatMap { case (id, names) => names.map(name => repo.files.delete(id, name)) })
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map.empty
       }
     }
 
     it should "create a file" in {
-      repo.files.create(file1).flatMap { _ =>
-        repo.files.readAllIds().flatMap { keys =>
-          keys shouldBe Map(file1.id -> Set(file1.name))
-        }
+      for {
+        _ <- repo.files.create(file1)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map(file1.id -> Set(file1.name))
       }
     }
 
     it should "create a second file" in {
-      repo.files.create(file2).flatMap { _ =>
-        repo.files.readAllIds().flatMap { keys =>
-          keys shouldBe Map(file1.id -> Set(file1.name, file2.name))
-        }
+      for {
+        _ <- repo.files.create(file2)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map(file1.id -> Set(file1.name, file2.name))
       }
     }
 
     it should "create a third file" in {
-      repo.files.create(file3).flatMap { _ =>
-        repo.files.readAllIds().flatMap { keys =>
-          keys shouldBe Map(file1.id -> Set(file1.name, file2.name), file3.id -> Set(file3.name))
-        }
+      for {
+        _ <- repo.files.create(file3)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map(file1.id -> Set(file1.name, file2.name), file3.id -> Set(file3.name))
       }
     }
 
@@ -66,14 +64,14 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
     }
 
     it should "read the first, second and third file" in {
-      repo.files.read(file1.id, file1.name).flatMap { d1 =>
-        repo.files.read(file2.id, file2.name).flatMap { d2 =>
-          repo.files.read(file3.id, file3.name).flatMap { d3 =>
-            d1 shouldBe file1
-            d2 shouldBe file2
-            d3 shouldBe file3
-          }
-        }
+      for {
+        f1 <- repo.files.read(file1.id, file1.name)
+        f2 <- repo.files.read(file2.id, file2.name)
+        f3 <- repo.files.read(file3.id, file3.name)
+      } yield {
+        f1 shouldBe file1
+        f2 shouldBe file2
+        f3 shouldBe file3
       }
     }
 
@@ -84,10 +82,11 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
     }
 
     it should "delete the first file" in {
-      repo.files.delete(file1.id, file1.name).flatMap { _ =>
-        repo.files.readAllIds().flatMap { keys =>
-          keys shouldBe Map(file2.id -> Set(file2.name), file3.id -> Set(file3.name))
-        }
+      for {
+        _ <- repo.files.delete(file1.id, file1.name)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map(file2.id -> Set(file2.name), file3.id -> Set(file3.name))
       }
     }
 
@@ -98,16 +97,15 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
     }
 
     it should "update the second file" in {
-      repo.files.update(file2Updated).flatMap { _ =>
-        repo.files.read(file2.id, file2.name).flatMap { d2 =>
-          repo.files.read(file3.id, file3.name).flatMap { d3 =>
-            repo.files.readAllIds().flatMap { keys =>
-              keys shouldBe Map(file2.id -> Set(file2.name), file3.id -> Set(file3.name))
-              d2 shouldBe file2Updated
-              d3 shouldBe file3
-            }
-          }
-        }
+      for {
+        _ <- repo.files.update(file2Updated)
+        f2 <- repo.files.read(file2.id, file2.name)
+        f3 <- repo.files.read(file3.id, file3.name)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map(file2.id -> Set(file2.name), file3.id -> Set(file3.name))
+        f2 shouldBe file2Updated
+        f3 shouldBe file3
       }
     }
 
@@ -118,24 +116,23 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
     }
 
     it should "delete the second and third file" in {
-      repo.files.delete(file2.id, file2.name).flatMap { _ =>
-        repo.files.delete(file3.id, file3.name).flatMap { _ =>
-          repo.files.readAllIds().flatMap { keys =>
-            keys shouldBe Map.empty
-          }
-        }
+      for {
+        _ <- repo.files.delete(file2.id, file2.name)
+        _ <- repo.files.delete(file3.id, file3.name)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map.empty
       }
     }
 
     it should "it should create all files again" in {
-      repo.files.create(file1).flatMap { _ =>
-        repo.files.create(file2Updated).flatMap { _ =>
-          repo.files.create(file3).flatMap { _ =>
-            repo.files.readAllIds().flatMap { keys =>
-              keys shouldBe Map(file1.id -> Set(file1.name, file2.name), file3.id -> Set(file3.name))
-            }
-          }
-        }
+      for {
+        _ <- repo.files.create(file1)
+        _ <- repo.files.create(file2Updated)
+        _ <- repo.files.create(file3)
+        keys <- repo.files.readAllKeys()
+      } yield {
+        keys shouldBe Map(file1.id -> Set(file1.name, file2.name), file3.id -> Set(file3.name))
       }
     }
 

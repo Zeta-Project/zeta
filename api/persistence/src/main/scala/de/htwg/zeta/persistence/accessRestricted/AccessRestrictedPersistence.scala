@@ -6,6 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.EntityPersistence
+import models.entity.AccessAuthorisation
 import models.entity.Entity
 
 
@@ -29,10 +30,10 @@ case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
    */
   override def create(entity: E): Future[E] = {
     underlaying.create(entity).flatMap(entity =>
-      accessAuthorisation.updateOrCreate(
+      accessAuthorisation.createOrUpdate(
         ownerId,
         _.grantAccess(entityTypeName, entity.id),
-        AccessAuthorisation.empty(ownerId).grantAccess(entityTypeName, entity.id)
+        AccessAuthorisation(ownerId, Map.empty).grantAccess(entityTypeName, entity.id)
       ).flatMap { _ =>
         Future.successful(entity)
       }
@@ -75,11 +76,11 @@ case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
    * @return Future containing all id's of the entity type, can fail
    */
   override def readAllIds(): Future[Set[UUID]] = {
-    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation.empty(ownerId)).map(_.listAccess(entityTypeName))
+    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty)).map(_.listAccess(entityTypeName))
   }
 
   private def restricted[T](id: UUID, f: => Future[T]): Future[T] = {
-    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation.empty(ownerId)).map(_.checkAccess(entityTypeName, id)).flatMap(accessGranted =>
+    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty)).map(_.checkAccess(entityTypeName, id)).flatMap(accessGranted =>
       if (accessGranted) {
         f
       } else {

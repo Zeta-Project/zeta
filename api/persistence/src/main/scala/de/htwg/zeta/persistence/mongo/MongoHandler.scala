@@ -4,25 +4,24 @@ import java.util.UUID
 
 import scala.collection.immutable.SortedMap
 
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
-import de.htwg.zeta.persistence.general.EntityVersion
-import de.htwg.zeta.persistence.general.VersionIndex
 import models.document.DockerSettings
 import models.document.JobSettings
+import models.entity.AccessAuthorisation
 import models.entity.BondedTask
 import models.entity.Entity
 import models.entity.EventDrivenTask
+import models.entity.File
 import models.entity.Filter
 import models.entity.FilterImage
 import models.entity.Generator
 import models.entity.GeneratorImage
 import models.entity.Log
 import models.entity.MetaModelEntity
+import models.entity.MetaModelRelease
 import models.entity.ModelEntity
 import models.entity.Settings
 import models.entity.TimedTask
 import models.entity.User
-import models.file.File
 import models.modelDefinitions.helper.HLink
 import models.modelDefinitions.metaModel.Diagram
 import models.modelDefinitions.metaModel.Dsl
@@ -67,11 +66,11 @@ object MongoHandler {
 
   }
 
-  case class IdOnlyEntity(id: UUID) extends Entity
+  case class IdOnlyEntity(id: UUID)
 
   implicit val idOnlyEntityHandler: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
 
-  case class FileKey(id: UUID, name: String) extends Entity
+  case class FileKey(id: UUID, name: String)
 
   implicit val fileKeyHandler: BSONDocumentHandler[FileKey] = Macros.handler[FileKey]
 
@@ -102,7 +101,6 @@ object MongoHandler {
     }
 
   }
-
 
   implicit val accessAuthorisationHandler: BSONDocumentHandler[AccessAuthorisation] = Macros.handler[AccessAuthorisation]
 
@@ -201,10 +199,8 @@ object MongoHandler {
 
   implicit val metaModelEntityHandler: BSONDocumentHandler[MetaModelEntity] = Macros.handler[MetaModelEntity]
 
-  implicit val versionIndexIntHandler: BSONDocumentHandler[VersionIndex] = Macros.handler[VersionIndex]
 
-
-  private implicit val kSortedMapUUIDHandler = new BSONDocumentReader[SortedMap[String, UUID]] with BSONDocumentWriter[SortedMap[String, UUID]] {
+  private implicit val sortedMapStringUUIDHandler = new BSONDocumentReader[SortedMap[String, UUID]] with BSONDocumentWriter[SortedMap[String, UUID]] {
 
     override def read(doc: BSONDocument): SortedMap[String, UUID] = {
       val m = doc.elements.map { tuple =>
@@ -234,8 +230,7 @@ object MongoHandler {
 
   }
 
-  implicit val entityVersionReleaseHandler: BSONDocumentHandler[EntityVersion[Entity]] with BSONDocumentWriter[EntityVersion[Entity]] with
-    BSONDocumentReader[EntityVersion[Entity]] = Macros.handler[EntityVersion[Entity]]
+  implicit val metaModelReleaseHandler: BSONDocumentHandler[MetaModelRelease] = Macros.handler[MetaModelRelease]
 
   implicit val modelEntityHandler: BSONDocumentHandler[ModelEntity] = Macros.handler[ModelEntity]
 
@@ -294,8 +289,6 @@ object MongoHandler {
 
   implicit val userHandler: BSONDocumentHandler[User] = Macros.handler[User]
 
-
-  implicit val versionIndexStringHandler: BSONDocumentHandler[VersionIndex] = Macros.handler[VersionIndex]
 
   implicit val fileHandler: BSONDocumentHandler[File] = Macros.handler[File]
 

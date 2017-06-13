@@ -1,11 +1,12 @@
 package de.htwg.zeta.persistence.mongo
 
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.Repository
+import models.entity.AccessAuthorisation
 import models.entity.BondedTask
 import models.entity.EventDrivenTask
+import models.entity.File
 import models.entity.Filter
 import models.entity.FilterImage
 import models.entity.Generator
@@ -19,7 +20,6 @@ import models.entity.TimedTask
 import models.entity.User
 
 class MongoRepository(uri: String, dbName: String) extends Repository {
-
 
   /** Persistence for AccessAuthorisation */
   override private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation] =
@@ -63,7 +63,7 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
 
   /** Persistence for [[models.entity.MetaModelRelease]] */
   override val metaModelReleases: EntityPersistence[MetaModelRelease] =
-    new MongoEntityPersistence[MetaModelRelease](uri, dbName, null) // TODO
+    new MongoEntityPersistence[MetaModelRelease](uri, dbName, MongoHandler.metaModelReleaseHandler)
 
   /** Persistence for [[models.entity.ModelEntity]] */
   override val modelEntities: EntityPersistence[ModelEntity] =
@@ -77,7 +77,7 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
   override val users: EntityPersistence[User] =
     new MongoEntityPersistence[User](uri, dbName, MongoHandler.userHandler)
 
-  /** Versioned Persistence for [[models.file.File]] */
+  /** Versioned Persistence for [[File]] */
   override val files: FilePersistence = new MongoFilePersistence(uri, dbName)
 
 }

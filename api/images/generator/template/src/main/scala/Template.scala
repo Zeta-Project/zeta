@@ -12,9 +12,9 @@ import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Transformer
+import models.entity.File
 import models.entity.Filter
 import models.entity.ModelEntity
-import models.file.File
 import models.remote.Remote
 import models.remote.RemoteGenerator
 import org.rogach.scallop.ScallopConf
@@ -148,7 +148,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val p = Promise[Result]
     logger.info("run the generator")
 
-    val start: Future[Transformer] = generator.prepare(filter.instanceIds)
+    val start: Future[Transformer] = generator.prepare(filter.instanceIds.toList)
     val futures = filter.instanceIds.foldLeft(start) {
       case (future, modelId) => future.flatMap { generator =>
         repository.modelEntities.read(modelId).flatMap { entity =>
@@ -193,7 +193,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   }
 
   def checkFilter(filter: Filter): Future[Boolean] = {
-    if (filter.instanceIds.size > 0) {
+    if (filter.instanceIds.nonEmpty) {
       Future.successful(true)
     } else {
       Future.failed(new Exception("No Models are available with the selected filter."))
@@ -212,7 +212,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
       generator <- repository.generators.read(generatorId)
       filter <- repository.filters.read(filterId)
       ok <- checkFilter(filter)
-      file <- repository.files.readVersion(generator.id, Settings.generatorFile)
+      file <- repository.files.read(generator.id, Settings.generatorFile)
       fn <- getTransformer(file, filter)
       end <- executeTransformation(fn, filter)
     } yield {
@@ -231,7 +231,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     for {
       generator <- repository.generators.read(generatorId)
       model <- repository.modelEntities.read(modelId)
-      file <- repository.files.readVersion(generator.id, Settings.generatorFile)
+      file <- repository.files.read(generator.id, Settings.generatorFile)
       fn <- getTransformer(file, model)
       end <- executeTransformation(fn, model)
     } yield {

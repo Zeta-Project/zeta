@@ -1,9 +1,10 @@
 package de.htwg.zeta.persistence.general
 
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
 import models.entity
+import models.entity.AccessAuthorisation
 import models.entity.BondedTask
 import models.entity.EventDrivenTask
+import models.entity.File
 import models.entity.Filter
 import models.entity.FilterImage
 import models.entity.Generator
@@ -61,7 +62,7 @@ trait Repository {
   /** Persistence for [[entity.User]] */
   val users: EntityPersistence[User]
 
-  /** Versioned Persistence for [[models.file.File]] */
+  /** Versioned Persistence for [[File]] */
   val files: FilePersistence
 
 }

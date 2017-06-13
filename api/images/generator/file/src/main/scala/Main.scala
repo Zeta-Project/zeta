@@ -10,10 +10,10 @@ import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
+import models.entity.File
 import models.entity.Filter
 import models.entity.Generator
 import models.entity.ModelEntity
-import models.file.File
 import models.remote.Remote
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -34,7 +34,7 @@ class MyTransformer() extends Transformer {
 
     val f = File(entity.id, filename, content)
 
-    fullAccessRepository.files.createVersion(filename, File(entity.id, filename, content)).map { result =>
+    fullAccessRepository.files.create(File(entity.id, filename, content)).map { _ =>
       logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
       p.success(this)
     }.recover {
@@ -59,7 +59,7 @@ object Main extends Template[CreateOptions, String] {
     for {
       image <- repository.generatorImages.read(imageId)
       generator <- repository.generators.create(Generator(user, options.name, image.id))
-      created <- repository.files.createVersion("demoFile", createFileContent())
+      created <- repository.files.create(createFileContent())
     } yield {
       Success()
     }

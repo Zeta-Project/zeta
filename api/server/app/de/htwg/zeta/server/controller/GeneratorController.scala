@@ -23,8 +23,8 @@ import de.htwg.zeta.server.model.result.Failure
 import de.htwg.zeta.server.model.result.Success
 import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.util.auth.ZetaEnv
+import models.entity.File
 import models.entity.MetaModelEntity
-import models.file.File
 import models.modelDefinitions.metaModel.Dsl
 import models.modelDefinitions.metaModel.Shape
 import models.modelDefinitions.metaModel.{Diagram => DslDiagram}

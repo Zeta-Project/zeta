@@ -2,7 +2,7 @@ package de.htwg.zeta.persistence.entityTestCases
 
 import java.util.UUID
 
-import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
+import models.entity.AccessAuthorisation
 
 
 object AccessAuthorisationTestCase extends EntityTestCase[AccessAuthorisation] {

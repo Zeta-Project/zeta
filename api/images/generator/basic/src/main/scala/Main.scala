@@ -7,10 +7,11 @@ import de.htwg.zeta.server.generator.Transformer
 import models.entity.Filter
 import models.entity.Generator
 import models.entity.ModelEntity
-import models.file.File
 import models.remote.Remote
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
+import models.entity.File
 
 /**
  * Main class of basic generator
@@ -29,7 +30,7 @@ object Main extends Template[CreateOptions, String] {
     for {
       image <- repository.generatorImages.read(imageId)
       _ <- repository.generators.create(Generator(user, options.name, image.id))
-      _ <- repository.files.createVersion(Settings.generatorFile, createFile(Settings.generatorFile))
+      _ <- repository.files.create(createFile(Settings.generatorFile))
     } yield {
       Success()
     }
