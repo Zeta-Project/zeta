@@ -41,9 +41,8 @@ object Main extends App {
 
     val result = for {
       from <- documents.metaModelEntities.read(UUID.fromString(id))
-      version <- documents.metaModelReleases.readVersionKeys(from.id).map(_.last + 1)
-
-      release <- documents.metaModelReleases.createVersion(4,
+      version <- documents.metaModelReleases.readVersionKeys(from.id).map(_.last.toInt + 1)
+      release <- documents.metaModelReleases.createVersion(version.toString,
         MetaModelRelease(
           name = s"${from.metaModel.name} $version",
           metaModel = from.metaModel,

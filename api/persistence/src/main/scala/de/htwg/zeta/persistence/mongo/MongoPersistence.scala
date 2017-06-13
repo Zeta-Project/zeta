@@ -7,6 +7,8 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
+import de.htwg.zeta.persistence.mongo.MongoPersistence.idProjection
+import de.htwg.zeta.persistence.mongo.MongoPersistence.sId
 import models.entity.Entity
 import reactivemongo.api.Cursor
 import reactivemongo.api.MongoConnection
@@ -25,13 +27,9 @@ class MongoPersistence[E <: Entity](
     implicit manifest: Manifest[E])
   extends Persistence[E] {
 
-  private val sId = "id"
-
   private val connection: Future[MongoConnection] = Future.fromTry {
     MongoDriver().connection(uri)
   }
-
-  private val idProjection = BSONDocument(sId -> 1)
 
   private val indexEnsured: Future[Unit] = connection.flatMap(_.database(dbName)).map(_.collection[BSONCollection](entityTypeName)).flatMap(
     _.indexesManager.ensure(Index(Seq((sId, IndexType.Ascending)), unique = true))
@@ -108,5 +106,13 @@ class MongoPersistence[E <: Entity](
     }.map(_.map(_.id))
   }
 
+
+}
+
+private object MongoPersistence {
+
+  private val sId = "id"
+
+  private val idProjection = BSONDocument(sId -> 1)
 
 }

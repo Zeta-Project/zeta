@@ -9,7 +9,7 @@ import models.entity.User
 /**
  * PersistenceMicroServiceTest.
  */
-class RestrictedPersistenceSpec extends RepositoryBehavior {
+class RestrictedRepositorySpec extends RepositoryBehavior {
 
   val user = User(UUID.randomUUID, "FirstName", "LastName", "test@mail.com", activated = true)
 

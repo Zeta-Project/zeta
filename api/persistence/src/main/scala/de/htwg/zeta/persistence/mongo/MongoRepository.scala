@@ -69,7 +69,7 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
 
   /** Persistence for the metaModelReleases versions */
   override private[persistence] val metaModelReleasesVersions: Persistence[EntityVersion[MetaModelRelease]] =
-    new MongoPersistence[EntityVersion[MetaModelRelease]](uri, dbName, MongoHandler.entityVersionReleaseHandler)
+    new MongoPersistence[EntityVersion[MetaModelRelease]](uri, dbName, null)
 
   /** Persistence for [[models.entity.ModelEntity]] */
   override val modelEntities: Persistence[ModelEntity] =
@@ -89,6 +89,6 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
 
   /** Persistence for the file versions */
   override private[persistence] val fileVersions: Persistence[EntityVersion[File]] =
-    new MongoPersistence[EntityVersion[File]](uri, dbName, MongoHandler.entityVersionReleaseHandler)
+    new MongoPersistence[EntityVersion[File]](uri, dbName, null)
 
 }

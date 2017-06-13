@@ -5,7 +5,7 @@ import de.htwg.zeta.persistence.transient.TransientRepository
 /**
  * PersistenceMicroServiceTest.
  */
-class PersistenceTransientCacheSpec extends RepositoryBehavior {
+class TransientRepositorySpec extends RepositoryBehavior {
 
   "persistenceMicroService" should behave like serviceBehavior(new TransientRepository)
 

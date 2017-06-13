@@ -54,7 +54,7 @@ class TransientRepository extends Repository {
   override val metaModelEntities = new TransientPersistence[MetaModelEntity]
 
   /** Persistence for the metaModelReleases indices */
-  override private[persistence] val metaModelReleasesIndices = new TransientPersistence[VersionIndex[Int]]
+  override private[persistence] val metaModelReleasesIndices = new TransientPersistence[VersionIndex]
 
   /** Persistence for the metaModelReleases versions */
   override private[persistence] val metaModelReleasesVersions = new TransientPersistence[EntityVersion[MetaModelRelease]]
@@ -69,7 +69,7 @@ class TransientRepository extends Repository {
   override val users = new TransientPersistence[User]
 
   /** Persistence for the file indices */
-  override private[persistence] val fileIndices = new TransientPersistence[VersionIndex[String]]
+  override private[persistence] val fileIndices = new TransientPersistence[VersionIndex]
 
   /** Persistence for the file versions */
   override private[persistence] val fileVersions = new TransientPersistence[EntityVersion[File]]

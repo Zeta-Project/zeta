@@ -41,6 +41,7 @@ import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
 import models.modelDefinitions.model.elements.ToNodes
+import reactivemongo.bson.BSONArray
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
@@ -69,25 +70,23 @@ object MongoHandler {
 
   implicit val reader: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
 
+  private val uuidSetHandler = new {
 
-  private implicit val uuidSetHandler = new BSONDocumentReader[Set[UUID]] with BSONDocumentWriter[Set[UUID]] {
-
-    override def read(doc: BSONDocument): Set[UUID] = {
+    def read(doc: BSONArray): Set[UUID] = {
       doc.values.map { case s: BSONString => IdHandler.read(s) }.toSet
     }
 
-    override def write(set: Set[UUID]): BSONDocument = {
-      BSONDocument(set.map(IdHandler.write))
+    def write(set: Set[UUID]): BSONArray = {
+      BSONArray(set.map(IdHandler.write).toList)
     }
 
   }
-
 
   private implicit val mapStringSetIdHandler = new BSONDocumentReader[Map[String, Set[UUID]]] with BSONDocumentWriter[Map[String, Set[UUID]]] {
 
     override def read(doc: BSONDocument): Map[String, Set[UUID]] = {
       doc.elements.map { tuple =>
-        tuple.name -> uuidSetHandler.read(tuple.value.seeAsTry[BSONDocument].get)
+        tuple.name -> uuidSetHandler.read(tuple.value.seeAsTry[BSONArray].get)
       }.toMap
     }
 

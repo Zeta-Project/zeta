@@ -4,14 +4,17 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
+import de.htwg.zeta.persistence.accessRestricted.AccessAuthorisation
+import de.htwg.zeta.persistence.entityTestCases.AccessAuthorisationTestCase
+import de.htwg.zeta.persistence.entityTestCases.BondedTaskTestCase
+import de.htwg.zeta.persistence.entityTestCases.LogTestCase
+import de.htwg.zeta.persistence.entityTestCases.UserTestCase
 import de.htwg.zeta.persistence.general.Persistence
 import de.htwg.zeta.persistence.general.Repository
+import models.entity.BondedTask
 import models.entity.Entity
 import models.entity.Log
-import models.entity.ModelEntity
 import models.entity.User
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.model.Model
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 
@@ -19,97 +22,54 @@ import org.scalatest.Matchers
 /** PersistenceBehavior. */
 trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
 
-  /** TODO add tests for this case classes
-   * case class EventDrivenTask(_id: String, _rev: String, name: String, generator: String, filter: String, event: String)
-   * *
-   * case class BondedTask(_id: String, _rev: String, name: String, generator: String, filter: String, menu: String, item: String)
-   * *
-   * case class Generator(_id: String, _rev: String, name: String, image: String)
-   * *
-   * case class Filter(_id: String, _rev: String, name: String, description: String, instances: List[String])
-   * *
-   * case class GeneratorImage(_id: String, _rev: String, name: String, dockerImage: String)
-   * *
-   * case class FilterImage(_id: String, _rev: String, name: String, dockerImage: String)
-   * *
-   * case class Settings(_id: String, _rev: String, owner: String, jobSettings: JobSettings)
-   * *
-   * case class MetaModelEntity(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, links: Option[Seq[HLink]] = None)
-   * *
-   * case class MetaModelRelease(_id: String, _rev: String, name: String, metaModel: MetaModel, dsl: Dsl, version: String) */
-
-
-  private val modelEntity1 = ModelEntity(id = UUID.randomUUID, model = Model(
-    name = "modelEntity1.model.name",
-    metaModel = MetaModel(
-      name = "modelEntity1.model.metaModel.name",
-      classes = Map.empty,
-      references = Map.empty,
-      enums = Map.empty,
-      uiState = "modelEntity1.model.metaModel.uiState"
-    ),
-    nodes = Map.empty,
-    edges = Map.empty,
-    uiState = "modelEntity.model.uiState"
-
-  ), metaModelId = UUID.randomUUID, links = None)
-  private val modelEntity2: ModelEntity = modelEntity1.copy(id = UUID.randomUUID)
-  private val modelEntity3: ModelEntity = modelEntity1.copy(id = UUID.randomUUID)
-  private val modelEntity2Updated: ModelEntity = modelEntity2.copy(metaModelId = UUID.randomUUID)
-
-
-  private val log1 = Log(
-    id = UUID.randomUUID,
-    task = "task",
-    log = "logMsg1",
-    status = 1,
-    date = "date"
-  )
-  private val log2: Log = log1.copy(id = UUID.randomUUID)
-  private val log3: Log = log1.copy(id = UUID.randomUUID)
-  private val log2Updated: Log = log2.copy(status = 2)
-
-  private val user1 = User(
-    id = UUID.randomUUID,
-    firstName = "firstName",
-    lastName = "lastName",
-    email = "test@mail.com",
-    activated = false
-  )
-  private val user2: User = user1.copy(id = UUID.randomUUID)
-  private val user3: User = user1.copy(id = UUID.randomUUID)
-  private val user2Updated: User = user2.copy(activated = true)
-
-
   /** Behavior for a PersistenceService.
    *
    * @param service PersistenceService
    */
   def serviceBehavior(service: Repository): Unit = {
 
-    /*
-    "ModelEntity" should behave like docBehavior[ModelEntity](
-      service.modelEntities, modelEntity1, modelEntity2, modelEntity3, modelEntity2Updated
+    "AccessAuthorisation" should behave like entityBehavior[AccessAuthorisation](
+      service.accessAuthorisations,
+      AccessAuthorisationTestCase.entity1,
+      AccessAuthorisationTestCase.entity2,
+      AccessAuthorisationTestCase.entity2Updated,
+      AccessAuthorisationTestCase.entity3
     )
 
-    "Log" should behave like docBehavior[Log](
-      service.logs, log1, log2, log3, log2Updated
-    ) */
+    "BondedTask" should behave like entityBehavior[BondedTask](
+      service.bondTasks,
+      BondedTaskTestCase.entity1,
+      BondedTaskTestCase.entity2,
+      BondedTaskTestCase.entity2Updated,
+      BondedTaskTestCase.entity3
+    )
 
-    "User" should behave like docBehavior[User](
-      service.users, user1, user2, user3, user2Updated
+    "User" should behave like entityBehavior[User](
+      service.users,
+      UserTestCase.entity1,
+      UserTestCase.entity2,
+      UserTestCase.entity2Updated,
+      UserTestCase.entity3
+    )
+
+    "Log" should behave like entityBehavior[Log](
+      service.logs,
+      LogTestCase.entity1,
+      LogTestCase.entity2,
+      LogTestCase.entity2Updated,
+      LogTestCase.entity3
     )
 
   }
 
-  private def docBehavior[T <: Entity](persistence: Persistence[T], doc1: T, doc2: T, doc3: T, doc2Updated: T): Unit = { // scalastyle:ignore
+  private def entityBehavior[T <: Entity](persistence: Persistence[T], doc1: T, doc2: T, doc2Updated: T, doc3: T): Unit = { // scalastyle:ignore
     doc1.id shouldNot be(doc2.id)
     doc1.id shouldNot be(doc3.id)
     doc2.id shouldNot be(doc3.id)
     doc2.id shouldBe doc2Updated.id
     doc2 shouldNot be(doc2Updated)
 
-    it should "remove all already existing entitys" in {
+    it should "remove all already existing entities" in {
       persistence.readAllIds().flatMap { ids =>
         Future.sequence(ids.map(id => persistence.delete(id))).flatMap { _ =>
           persistence.readAllIds().flatMap { ids =>
@@ -233,7 +193,6 @@ trait RepositoryBehavior extends AsyncFlatSpec with Matchers {
         }
       }
     }
-
 
   }
 
