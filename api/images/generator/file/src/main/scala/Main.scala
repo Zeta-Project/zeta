@@ -34,7 +34,7 @@ class MyTransformer() extends Transformer {
 
     val f = File(entity.id, filename, content)
 
-    fullAccessRepository.files.create(File(entity.id, filename, content)).map { _ =>
+    fullAccessRepository.file.create(File(entity.id, filename, content)).map { _ =>
       logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
       p.success(this)
     }.recover {
@@ -57,9 +57,9 @@ object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
     val repository = Persistence.fullAccessRepository
     for {
-      image <- repository.generatorImages.read(imageId)
-      generator <- repository.generators.create(Generator(user, options.name, image.id))
-      created <- repository.files.create(createFileContent())
+      image <- repository.generatorImage.read(imageId)
+      generator <- repository.generator.create(Generator(user, options.name, image.id))
+      created <- repository.file.create(createFileContent())
     } yield {
       Success()
     }

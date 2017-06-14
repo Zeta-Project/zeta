@@ -22,7 +22,7 @@ object FiltersManager {
 
 class FiltersManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
 
-  private val filterRepo: EntityPersistence[Filter] = repository.filters
+  private val filterRepo: EntityPersistence[Filter] = repository.filter
 
   private def rerunFilter = {
     filterRepo.readAllIds().map(ids =>

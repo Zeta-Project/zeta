@@ -4,15 +4,16 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Success
 
 import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.idProjection
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.sId
+import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
 import models.entity.Entity
 import reactivemongo.api.Cursor
+import reactivemongo.api.DefaultDB
 import reactivemongo.api.MongoConnection
-import reactivemongo.api.MongoDriver
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
@@ -21,22 +22,15 @@ import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.BSONDocumentWriter
 
 class MongoEntityPersistence[E <: Entity](
-    uri: String,
-    dbName: String,
+    database: Future[DefaultDB],
     implicit val entityHandler: BSONDocumentWriter[E] with BSONDocumentReader[E])(
     implicit manifest: Manifest[E])
   extends EntityPersistence[E] {
 
-  private val connection: Future[MongoConnection] = Future.fromTry {
-    MongoDriver().connection(uri)
-  }
-
-  private val indexEnsured: Future[Unit] = connection.flatMap(_.database(dbName)).map(_.collection[BSONCollection](entityTypeName)).flatMap(
-    _.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
-  ).flatMap(_ => Future.successful(()))
-
-  private def doDatabaseAction[T](f: BSONCollection => Future[T]): Future[T] = {
-    indexEnsured.flatMap(_ => connection.flatMap(_.database(dbName)).map(_.collection(entityTypeName)).flatMap(f))
+  private val collection: Future[BSONCollection] = {
+    database.map(_.collection[BSONCollection](entityTypeName))
+  }.andThen { case Success(col) =>
+    col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
   }
 
   /** Create a new entity.
@@ -45,7 +39,7 @@ class MongoEntityPersistence[E <: Entity](
    * @return Future, with the created entity
    */
   override def create(entity: E): Future[E] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.insert(entity).map(_ => entity)
     }
   }
@@ -56,7 +50,7 @@ class MongoEntityPersistence[E <: Entity](
    * @return Future containing the read entity
    */
   override def read(id: UUID): Future[E] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.find(BSONDocument(sId -> id.toString)).requireOne[E]
     }
   }
@@ -67,7 +61,7 @@ class MongoEntityPersistence[E <: Entity](
    * @return Future containing the updated entity
    */
   override private[persistence] def update(entity: E): Future[E] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.update(BSONDocument(sId -> entity.id.toString), entity).flatMap(result =>
         if (result.nModified == 1) {
           Future.successful(entity)
@@ -84,7 +78,7 @@ class MongoEntityPersistence[E <: Entity](
    * @return Future
    */
   override def delete(id: UUID): Future[Unit] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.remove(BSONDocument(sId -> id.toString)).flatMap(result =>
         if (result.n == 1) {
           Future.successful(())
@@ -100,12 +94,11 @@ class MongoEntityPersistence[E <: Entity](
    * @return Future containing all id's of the entity type
    */
   override def readAllIds(): Future[Set[UUID]] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.find(BSONDocument.empty, idProjection).cursor[IdOnlyEntity]().
         collect(-1, Cursor.FailOnError[Set[IdOnlyEntity]]())
     }.map(_.map(_.id))
   }
-
 
 }
 

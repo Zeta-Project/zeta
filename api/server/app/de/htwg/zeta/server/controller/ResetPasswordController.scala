@@ -38,7 +38,7 @@ class ResetPasswordController @Inject()(
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.users
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
   /** Views the `Reset Password` page.
    *

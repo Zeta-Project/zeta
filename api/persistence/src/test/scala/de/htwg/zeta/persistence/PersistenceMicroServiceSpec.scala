@@ -20,6 +20,6 @@ class PersistenceMicroServiceSpec extends RepositoryBehavior {
 
   Await.result(PersistenceServer.start(address, port, new TransientRepository), Duration(1, TimeUnit.MINUTES))
 
-  "persistenceMicroService" should behave like repositoryBehavior(new PersistenceMicroService(address, port))
+  "persistenceMicroService" should behave like repositoryBehavior(new PersistenceMicroService(address, port), restricted = false)
 
 }

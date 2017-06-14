@@ -46,8 +46,8 @@ object Main extends App {
   cmd.filter.foreach({ id =>
 
     val result = for {
-      filter <- repository.filters.read(UUID.fromString(id))
-      file <- repository.files.read(filter.id, "filter.scala")
+      filter <- repository.filter.read(UUID.fromString(id))
+      file <- repository.file.read(filter.id, "filter.scala")
       fn <- compileFilter(file)
       instances <- checkInstances(fn)
       saved <- saveResult(filter, instances)
@@ -97,8 +97,8 @@ object Main extends App {
     val p = Promise[List[String]]
     logger.info("Check all models")
 
-    val allFilterIds = repository.modelEntities.readAllIds()
-    val allFilters = allFilterIds.flatMap(ids => Future.sequence(ids.map(repository.modelEntities.read)) )
+    val allFilterIds = repository.modelEntity.readAllIds()
+    val allFilters = allFilterIds.flatMap(ids => Future.sequence(ids.map(repository.modelEntity.read)) )
     allFilters.flatMap(filters => Future.sequence(filters.map(checkInstance(filter, _)))).map(x => x.map(_._1).toList)
 
   }
@@ -120,7 +120,7 @@ object Main extends App {
     } else {
       val newFilter = filter.copy(instanceIds = instances)
       logger.info("Filter need to be saved")
-      repository.filters.update(filter.id, _ => newFilter)
+      repository.filter.update(filter.id, _ => newFilter)
     }
   }
 

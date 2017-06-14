@@ -1,13 +1,13 @@
-package de.htwg.zeta.persistence.entityTestCases
+package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
 import models.entity.EventDrivenTask
 
 
-object EventDrivenTaskTestCase extends EntityTestCase[EventDrivenTask] {
+object EventDrivenTaskFixtures {
 
-  override val entity1 = EventDrivenTask(
+  val entity1 = EventDrivenTask(
     id = UUID.randomUUID,
     name = "eventDrivenTask1",
     generatorId = UUID.randomUUID,
@@ -15,7 +15,7 @@ object EventDrivenTaskTestCase extends EntityTestCase[EventDrivenTask] {
     event = "event1"
   )
 
-  override val entity2 = EventDrivenTask(
+  val entity2 = EventDrivenTask(
     id = UUID.randomUUID,
     name = "eventDrivenTask2",
     generatorId = UUID.randomUUID,
@@ -23,9 +23,9 @@ object EventDrivenTaskTestCase extends EntityTestCase[EventDrivenTask] {
     event = "event2"
   )
 
-  override val entity2Updated: EventDrivenTask = entity2.copy(filterId = UUID.randomUUID)
+  val entity2Updated: EventDrivenTask = entity2.copy(filterId = UUID.randomUUID)
 
-  override val entity3 = EventDrivenTask(
+  val entity3 = EventDrivenTask(
     id = UUID.randomUUID,
     name = "eventDrivenTask3",
     generatorId = UUID.randomUUID,

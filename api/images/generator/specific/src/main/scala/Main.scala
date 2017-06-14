@@ -130,10 +130,10 @@ object Main extends Template[CreateOptions, String] {
    */
   override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
     for {
-      image <- repository.generatorImages.read(imageId)
-      metaModel <- repository.metaModelEntities.read(UUID.fromString(options.metaModelRelease))
-      generator <- repository.generators.create(Generator(user, options.name, image.id))
-      created <- repository.files.create(file(Settings.generatorFile, metaModel))
+      image <- repository.generatorImage.read(imageId)
+      metaModel <- repository.metaModelEntity.read(UUID.fromString(options.metaModelRelease))
+      generator <- repository.generator.create(Generator(user, options.name, image.id))
+      created <- repository.file.create(file(Settings.generatorFile, metaModel))
     } yield Success()
   }
 

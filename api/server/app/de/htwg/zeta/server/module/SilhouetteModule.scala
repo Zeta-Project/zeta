@@ -112,7 +112,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
 
 
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.users
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
 
   /** Provides the UserIdentityService

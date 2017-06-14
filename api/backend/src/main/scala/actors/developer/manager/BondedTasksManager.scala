@@ -30,11 +30,11 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
   // 3. check if the user (which triggered the task) can execute the task.
   def handleRequest(request: ExecuteBondedTask) = {
     val job = for {
-      task <- repository.bondTasks.read(request.taskId) // repository.get[BondedTask](request.task)
-      filter <- repository.filters.read(task.filterId)
+      task <- repository.bondedTask.read(request.taskId) // repository.get[BondedTask](request.task)
+      filter <- repository.filter.read(task.filterId)
       if filter.instanceIds.contains(request.modelId)
-      generator <- repository.generators.read(task.generatorId)
-      image <- repository.generatorImages.read(generator.imageId)
+      generator <- repository.generator.read(task.generatorId)
+      image <- repository.generatorImage.read(generator.imageId)
     } yield {
       RunBondedTask(task.id, task.generatorId, filter.id, request.modelId, image.dockerImage)
     }
@@ -51,7 +51,7 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
   def entry(task: BondedTask, model: ModelUser): Future[Option[Entry]] = {
     val p = Promise[Option[Entry]]
 
-    repository.filters.read(task.filterId).map { filter =>
+    repository.filter.read(task.filterId).map { filter =>
       if (filter.instanceIds.contains(model.modelId)) {
         p.success(Some(Entry(task.id, task.menu, task.item)))
       } else {
@@ -67,8 +67,8 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
   }
 
   def getBondedTaskList(user: ModelUser): Unit = {
-    val allTaskIds = repository.bondTasks.readAllIds()
-    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.bondTasks.read)) }
+    val allTaskIds = repository.bondedTask.readAllIds()
+    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.bondedTask.read)) }
     val filteredTasks = allTasks.flatMap(x => Future.sequence(x.map(i => entry(i, user))).map(_.flatten))
     filteredTasks.map(tasks => user.out ! BondedTaskList(tasks.toList))
   }

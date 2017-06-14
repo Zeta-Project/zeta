@@ -151,7 +151,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val start: Future[Transformer] = generator.prepare(filter.instanceIds.toList)
     val futures = filter.instanceIds.foldLeft(start) {
       case (future, modelId) => future.flatMap { generator =>
-        repository.modelEntities.read(modelId).flatMap { entity =>
+        repository.modelEntity.read(modelId).flatMap { entity =>
           generator.transform(entity)
         }
       }
@@ -209,10 +209,10 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    */
   def runGeneratorWithFilter(generatorId: UUID, filterId: UUID): Future[Result] = {
     for {
-      generator <- repository.generators.read(generatorId)
-      filter <- repository.filters.read(filterId)
+      generator <- repository.generator.read(generatorId)
+      filter <- repository.filter.read(filterId)
       ok <- checkFilter(filter)
-      file <- repository.files.read(generator.id, Settings.generatorFile)
+      file <- repository.file.read(generator.id, Settings.generatorFile)
       fn <- getTransformer(file, filter)
       end <- executeTransformation(fn, filter)
     } yield {
@@ -229,9 +229,9 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    */
   def runGeneratorForSingleModel(generatorId: UUID, modelId: UUID): Future[Result] = {
     for {
-      generator <- repository.generators.read(generatorId)
-      model <- repository.modelEntities.read(modelId)
-      file <- repository.files.read(generator.id, Settings.generatorFile)
+      generator <- repository.generator.read(generatorId)
+      model <- repository.modelEntity.read(modelId)
+      file <- repository.file.read(generator.id, Settings.generatorFile)
       fn <- getTransformer(file, model)
       end <- executeTransformation(fn, model)
     } yield {

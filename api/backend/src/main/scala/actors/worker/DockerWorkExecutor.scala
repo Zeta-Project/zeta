@@ -251,7 +251,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
 
       val logs = Log(UUID.randomUUID, task.toString, "Log" + task, status, now)
 
-      documents.logs.create(logs).map {
+      documents.log.create(logs).map {
         result => p.success(status)
       }.recover {
         case e: Exception =>

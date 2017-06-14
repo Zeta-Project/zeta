@@ -30,7 +30,7 @@ class MetaModelController @Inject()(
   extends Controller {
 
   def metaModelEditor(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).metaModelEntities.read(metaModelId).map { metaModelEntity =>
+    restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelId).map { metaModelEntity =>
       Ok(views.html.metamodel.MetaModelGraphicalEditor(Some(request.identity), metaModelId, metaModelEntity))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)

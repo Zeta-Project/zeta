@@ -79,7 +79,7 @@ class BackendController @Inject()(
    * @return (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse])
    */
   def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-    val futureProps = restrictedAccessRepository(request.identity.id).modelEntities.read(modelId).map(_ => userProps(request.identity.id, modelId) _)
+    val futureProps = restrictedAccessRepository(request.identity.id).modelEntity.read(modelId).map(_ => userProps(request.identity.id, modelId) _)
     system.dispatcher
     (futureProps, userMsg)
   }

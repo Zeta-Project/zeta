@@ -1,27 +1,27 @@
-package de.htwg.zeta.persistence.entityTestCases
+package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
 import models.entity.Generator
 
 
-object GeneratorTestCase extends EntityTestCase[Generator] {
+object GeneratorFixtures {
 
-  override val entity1 = Generator(
+  val entity1 = Generator(
     id = UUID.randomUUID,
     name = "filterImage1",
     imageId = UUID.randomUUID
   )
 
-  override val entity2 = Generator(
+  val entity2 = Generator(
     id = UUID.randomUUID,
     name = "filterImage2",
     imageId = UUID.randomUUID
   )
 
-  override val entity2Updated: Generator = entity2.copy(imageId = UUID.randomUUID)
+  val entity2Updated: Generator = entity2.copy(imageId = UUID.randomUUID)
 
-  override val entity3 = Generator(
+  val entity3 = Generator(
     id = UUID.randomUUID,
     name = "filterImage3",
     imageId = UUID.randomUUID

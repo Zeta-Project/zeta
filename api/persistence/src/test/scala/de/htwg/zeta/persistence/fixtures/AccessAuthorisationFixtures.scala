@@ -1,13 +1,13 @@
-package de.htwg.zeta.persistence.entityTestCases
+package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
 import models.entity.AccessAuthorisation
 
 
-object AccessAuthorisationTestCase extends EntityTestCase[AccessAuthorisation] {
+object AccessAuthorisationFixtures {
 
-  override val entity1 = AccessAuthorisation(
+  val entity1 = AccessAuthorisation(
     id = UUID.randomUUID,
     authorizedAccess = Map(
       "col1" -> Set(UUID.randomUUID, UUID.randomUUID, UUID.randomUUID),
@@ -16,7 +16,7 @@ object AccessAuthorisationTestCase extends EntityTestCase[AccessAuthorisation] {
     )
   )
 
-  override val entity2 = AccessAuthorisation(
+  val entity2 = AccessAuthorisation(
     id = UUID.randomUUID,
     authorizedAccess = Map(
       "col4" -> Set(UUID.randomUUID),
@@ -25,9 +25,9 @@ object AccessAuthorisationTestCase extends EntityTestCase[AccessAuthorisation] {
     )
   )
 
-  override val entity2Updated: AccessAuthorisation = entity2.grantAccess("col7", UUID.randomUUID)
+  val entity2Updated: AccessAuthorisation = entity2.grantAccess("col7", UUID.randomUUID)
 
-  override val entity3 = AccessAuthorisation(
+  val entity3 = AccessAuthorisation(
     id = UUID.randomUUID,
     authorizedAccess = Map.empty
   )

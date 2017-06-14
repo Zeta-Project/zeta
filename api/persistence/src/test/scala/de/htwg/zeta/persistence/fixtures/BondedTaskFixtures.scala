@@ -1,13 +1,13 @@
-package de.htwg.zeta.persistence.entityTestCases
+package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
 import models.entity.BondedTask
 
 
-object BondedTaskTestCase extends EntityTestCase[BondedTask] {
+object BondedTaskFixtures {
 
-  override val entity1 = BondedTask(
+  val entity1 = BondedTask(
     id = UUID.randomUUID,
     name = "bondedTask1",
     generatorId = UUID.randomUUID,
@@ -16,7 +16,7 @@ object BondedTaskTestCase extends EntityTestCase[BondedTask] {
     item = "item1"
   )
 
-  override val entity2 = BondedTask(
+  val entity2 = BondedTask(
     id = UUID.randomUUID,
     name = "bondedTask2",
     generatorId = UUID.randomUUID,
@@ -25,9 +25,9 @@ object BondedTaskTestCase extends EntityTestCase[BondedTask] {
     item = "item2"
   )
 
-  override val entity2Updated: BondedTask = entity2.copy(filterId = UUID.randomUUID)
+  val entity2Updated: BondedTask = entity2.copy(filterId = UUID.randomUUID)
 
-  override val entity3 = BondedTask(
+  val entity3 = BondedTask(
     id = UUID.randomUUID,
     name = "bondedTask3",
     generatorId = UUID.randomUUID,

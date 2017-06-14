@@ -4,6 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Success
 
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.collectionName
@@ -11,32 +12,22 @@ import de.htwg.zeta.persistence.mongo.MongoFilePersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sId
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sName
 import de.htwg.zeta.persistence.mongo.MongoHandler.FileKey
-import de.htwg.zeta.persistence.mongo.MongoHandler.fileHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
+import de.htwg.zeta.persistence.mongo.MongoHandler.fileHandler
 import models.entity.File
 import reactivemongo.api.Cursor
-import reactivemongo.api.MongoConnection
-import reactivemongo.api.MongoDriver
+import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 
-class MongoFilePersistence(
-    uri: String,
-    dbName: String)
-  extends FilePersistence {
+class MongoFilePersistence(database: Future[DefaultDB]) extends FilePersistence {
 
-  private val connection: Future[MongoConnection] = Future.fromTry {
-    MongoDriver().connection(uri)
-  }
-
-  private val indexEnsured: Future[Unit] = connection.flatMap(_.database(dbName)).map(_.collection[BSONCollection](collectionName)).flatMap(
-    _.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending, sName -> IndexType.Ascending), unique = true))
-  ).flatMap(_ => Future.successful(()))
-
-  private def doDatabaseAction[T](f: BSONCollection => Future[T]): Future[T] = {
-    indexEnsured.flatMap(_ => connection.flatMap(_.database(dbName)).map(_.collection(collectionName)).flatMap(f))
+  private val collection: Future[BSONCollection] = {
+    database.map(_.collection[BSONCollection](collectionName))
+  }.andThen { case Success(col) =>
+    col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending, sName -> IndexType.Ascending), unique = true))
   }
 
   /** Get the id's of all entity.
@@ -44,7 +35,7 @@ class MongoFilePersistence(
    * @return Future containing all id's of the entity type
    */
   def readAllIdsOld(): Future[Set[UUID]] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.find(BSONDocument.empty, keyProjection).cursor[IdOnlyEntity]().
         collect(-1, Cursor.FailOnError[Set[IdOnlyEntity]]())
     }.map(_.map(_.id))
@@ -56,7 +47,7 @@ class MongoFilePersistence(
    * @return Future, with the created file
    */
   override def create(file: File): Future[File] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.insert(file).map(_ => file)
     }
   }
@@ -68,7 +59,7 @@ class MongoFilePersistence(
    * @return Future containing the read file
    */
   override def read(id: UUID, name: String): Future[File] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.find(BSONDocument(sId -> id.toString, sName -> name)).requireOne[File]
     }
   }
@@ -79,7 +70,7 @@ class MongoFilePersistence(
    * @return Future containing the updated file
    */
   override private[persistence] def update(file: File): Future[File] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.update(BSONDocument(sId -> file.id.toString, sName -> file.name), file).flatMap(result =>
         if (result.nModified == 1) {
           Future.successful(file)
@@ -97,7 +88,7 @@ class MongoFilePersistence(
    * @return Future
    */
   override def delete(id: UUID, name: String): Future[Unit] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.remove(BSONDocument(sId -> id.toString, sName -> name)).flatMap(result =>
         if (result.n == 1) {
           Future.successful(())
@@ -113,7 +104,7 @@ class MongoFilePersistence(
    * @return Future containing all id's of the file type
    */
   override def readAllKeys(): Future[Map[UUID, Set[String]]] = {
-    doDatabaseAction { collection =>
+    collection.flatMap { collection =>
       collection.find(BSONDocument.empty, keyProjection).cursor[FileKey]().
         collect(-1, Cursor.FailOnError[Set[FileKey]]())
     }.map(x => x.groupBy(_.id).mapValues(_.map(_.name)))

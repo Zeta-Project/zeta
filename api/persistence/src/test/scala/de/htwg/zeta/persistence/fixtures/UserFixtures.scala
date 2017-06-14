@@ -1,13 +1,13 @@
-package de.htwg.zeta.persistence.entityTestCases
+package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
 import models.entity.User
 
 
-object UserTestCase extends EntityTestCase[User] {
+object UserFixtures {
 
-  override val entity1 = User(
+  val entity1 = User(
     id = UUID.randomUUID,
     firstName = "user1First",
     lastName = "user1Last",
@@ -15,7 +15,7 @@ object UserTestCase extends EntityTestCase[User] {
     activated = false
   )
 
-  override val entity2 = User(
+  val entity2 = User(
     id = UUID.randomUUID,
     firstName = "user2First",
     lastName = "user2Last",
@@ -23,9 +23,9 @@ object UserTestCase extends EntityTestCase[User] {
     activated = false
   )
 
-  override val entity2Updated: User = entity2.copy(activated = true)
+  val entity2Updated: User = entity2.copy(activated = true)
 
-  override val entity3 = User(
+  val entity3 = User(
     id = UUID.randomUUID,
     firstName = "user3First",
     lastName = "user3Last",

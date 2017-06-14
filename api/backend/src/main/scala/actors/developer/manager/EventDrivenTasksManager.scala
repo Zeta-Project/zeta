@@ -30,10 +30,10 @@ class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends 
     val p = Promise[Option[RunEventDrivenTask]]
 
     val op = for {
-      filter <- repository.filters.read(task.filterId)
+      filter <- repository.filter.read(task.filterId)
       if filter.instanceIds.contains(saved.modelId)
-      generator <- repository.generators.read(task.generatorId)
-      image <- repository.generatorImages.read(generator.imageId)
+      generator <- repository.generator.read(task.generatorId)
+      image <- repository.generatorImage.read(generator.imageId)
     } yield {
       Some(RunEventDrivenTask(task.id, generator.id, filter.id, saved.modelId, image.dockerImage))
     }
@@ -48,8 +48,8 @@ class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends 
   }
 
   def onModelChange(changed: SavedModel): Unit = {
-    val allTaskIds = repository.eventDrivenTasks.readAllIds()
-    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.eventDrivenTasks.read)) }
+    val allTaskIds = repository.eventDrivenTask.readAllIds()
+    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.eventDrivenTask.read)) }
     val listeningTasks = allTasks.map(_.filter(isListening(_, changed)))
     val filteredTasks = listeningTasks.flatMap(x => Future.sequence(x.map(i => check(i, changed))).map(_.flatten))
     filteredTasks.foreach(task => worker ! task)

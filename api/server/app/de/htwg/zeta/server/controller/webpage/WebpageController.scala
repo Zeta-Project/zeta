@@ -25,7 +25,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
   }
 
   private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[MetaModelShortInfo]] = {
-    val repo = restrictedAccessRepository(request.identity.id).metaModelEntities
+    val repo = restrictedAccessRepository(request.identity.id).metaModelEntity
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.map(entity => {
         MetaModelShortInfo(entity.id, entity.name, entity.links)
@@ -34,7 +34,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
   }
 
   private def getModels[A](metaModelId: UUID, request: SecuredRequest[ZetaEnv, A]): Future[Seq[ModelShortInfo]] = {
-    val repo = restrictedAccessRepository(request.identity.id).modelEntities
+    val repo = restrictedAccessRepository(request.identity.id).modelEntity
     repo.readAllIds.flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.filter(_.metaModelId == metaModelId).map(entity => {
         ModelShortInfo(entity.id, entity.metaModelId, entity.model.name)
@@ -62,7 +62,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
       val result: Future[Result] = for {
         metaModels <- getMetaModels(request)
         models <- getModels(id, request)
-        metaModel <- restrictedAccessRepository(request.identity.id).metaModelEntities.read(id)
+        metaModel <- restrictedAccessRepository(request.identity.id).metaModelEntity.read(id)
       } yield {
         Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, Some(metaModel), models))
       }

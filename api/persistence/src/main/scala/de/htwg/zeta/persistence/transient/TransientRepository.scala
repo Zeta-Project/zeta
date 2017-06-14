@@ -1,6 +1,8 @@
 package de.htwg.zeta.persistence.transient
 
 import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 import de.htwg.zeta.persistence.general.Repository
 import models.entity
 import models.entity.AccessAuthorisation
@@ -23,49 +25,54 @@ import models.entity.User
 class TransientRepository extends Repository {
 
   /** Persistence for AccessAuthorisation */
-  override val accessAuthorisations = new TransientPersistence[AccessAuthorisation]
+  override val accessAuthorisation = new TransientPersistence[AccessAuthorisation]
 
   /** Persistence for the [[models.entity.EventDrivenTask]] */
-  override val eventDrivenTasks = new TransientPersistence[EventDrivenTask]
+  override val eventDrivenTask = new TransientPersistence[EventDrivenTask]
 
   /** Persistence for the [[models.entity.BondedTask]] */
-  override val bondTasks = new TransientPersistence[BondedTask]
+  override val bondedTask = new TransientPersistence[BondedTask]
 
   /** Persistence for [[models.entity.TimedTask]] */
-  override val timedTasks = new TransientPersistence[TimedTask]
+  override val timedTask = new TransientPersistence[TimedTask]
 
   /** Persistence for the [[models.entity.Generator]] */
-  override val generators = new TransientPersistence[Generator]
+  override val generator = new TransientPersistence[Generator]
 
   /** Persistence for the [[models.entity.Filter]] */
-  override val filters = new TransientPersistence[Filter]
+  override val filter = new TransientPersistence[Filter]
 
   /** Persistence for the [[models.entity.GeneratorImage]] */
-  override val generatorImages = new TransientPersistence[GeneratorImage]
+  override val generatorImage = new TransientPersistence[GeneratorImage]
 
   /** Persistence for the [[models.entity.FilterImage]] */
-  override val filterImages = new TransientPersistence[FilterImage]
+  override val filterImage = new TransientPersistence[FilterImage]
 
   /** Persistence for the [[models.entity.Settings]] */
   override val settings = new TransientPersistence[Settings]
 
   /** Persistence for the [[models.entity.MetaModelEntity]] */
-  override val metaModelEntities = new TransientPersistence[MetaModelEntity]
-
-
+  override val metaModelEntity = new TransientPersistence[MetaModelEntity]
 
   /** Persistence for the [[models.entity.ModelEntity]] */
-  override val modelEntities = new TransientPersistence[ModelEntity]
+  override val modelEntity = new TransientPersistence[ModelEntity]
 
   /** Persistence for the [[models.entity.Log]] */
-  override val logs = new TransientPersistence[Log]
+  override val log = new TransientPersistence[Log]
 
   /** Persistence for the [[User]] */
-  override val users = new TransientPersistence[User]
+  override val user = new TransientPersistence[User]
 
   /** Persistence for [[models.entity.MetaModelRelease]] */
-  override val metaModelReleases = new TransientPersistence[MetaModelRelease]
+  override val metaModelRelease = new TransientPersistence[MetaModelRelease]
 
   /** Versioned Persistence for [[entity.File]] */
-  override val files: FilePersistence = null // TODO
+  override val file: FilePersistence = null // TODO
+
+  /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
+  override val loginInfo: LoginInfoPersistence = null // TODO
+
+  /** Persistence for [[com.mohiva.play.silhouette.api.util.PasswordInfo]] */
+  override val passwordInfo: PasswordInfoPersistence = null // TODO
+  
 }

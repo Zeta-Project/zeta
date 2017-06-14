@@ -1,7 +1,12 @@
 package de.htwg.zeta.persistence.mongo
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 import de.htwg.zeta.persistence.general.Repository
 import models.entity.AccessAuthorisation
 import models.entity.BondedTask
@@ -18,66 +23,79 @@ import models.entity.ModelEntity
 import models.entity.Settings
 import models.entity.TimedTask
 import models.entity.User
+import reactivemongo.api.DefaultDB
+import reactivemongo.api.MongoDriver
 
 class MongoRepository(uri: String, dbName: String) extends Repository {
 
+  private val database: Future[DefaultDB] = Future.fromTry(MongoDriver().connection(uri)).flatMap(_.database(dbName))
+
   /** Persistence for AccessAuthorisation */
-  override val accessAuthorisations: EntityPersistence[AccessAuthorisation] =
-    new MongoEntityPersistence[AccessAuthorisation](uri, dbName, MongoHandler.accessAuthorisationHandler)
+  override val accessAuthorisation: EntityPersistence[AccessAuthorisation] =
+    new MongoEntityPersistence[AccessAuthorisation](database, MongoHandler.accessAuthorisationHandler)
 
   /** Persistence for [[models.entity.EventDrivenTask]] */
-  override val eventDrivenTasks: EntityPersistence[EventDrivenTask] =
-    new MongoEntityPersistence[EventDrivenTask](uri, dbName, MongoHandler.eventDrivenTaskHandler)
+  override val eventDrivenTask: EntityPersistence[EventDrivenTask] =
+    new MongoEntityPersistence[EventDrivenTask](database, MongoHandler.eventDrivenTaskHandler)
 
   /** Persistence for [[models.entity.BondedTask]] */
-  override val bondTasks: EntityPersistence[BondedTask] =
-    new MongoEntityPersistence[BondedTask](uri, dbName, MongoHandler.bondedTaskHandler)
+  override val bondedTask: EntityPersistence[BondedTask] =
+    new MongoEntityPersistence[BondedTask](database, MongoHandler.bondedTaskHandler)
 
   /** Persistence for [[models.entity.TimedTask]] */
-  override val timedTasks: EntityPersistence[TimedTask] =
-    new MongoEntityPersistence[TimedTask](uri, dbName, MongoHandler.timedTaskHandler)
+  override val timedTask: EntityPersistence[TimedTask] =
+    new MongoEntityPersistence[TimedTask](database, MongoHandler.timedTaskHandler)
 
   /** Persistence for [[models.entity.Generator]] */
-  override val generators: EntityPersistence[Generator] =
-    new MongoEntityPersistence[Generator](uri, dbName, MongoHandler.generatorHandler)
+  override val generator: EntityPersistence[Generator] =
+    new MongoEntityPersistence[Generator](database, MongoHandler.generatorHandler)
 
   /** Persistence for [[models.entity.Filter]] */
-  override val filters: EntityPersistence[Filter] =
-    new MongoEntityPersistence[Filter](uri, dbName, MongoHandler.filterHandler)
+  override val filter: EntityPersistence[Filter] =
+    new MongoEntityPersistence[Filter](database, MongoHandler.filterHandler)
 
   /** Persistence for [[models.entity.GeneratorImage]] */
-  override val generatorImages: EntityPersistence[GeneratorImage] =
-    new MongoEntityPersistence[GeneratorImage](uri, dbName, MongoHandler.generatorImageHandler)
+  override val generatorImage: EntityPersistence[GeneratorImage] =
+    new MongoEntityPersistence[GeneratorImage](database, MongoHandler.generatorImageHandler)
 
   /** Persistence for [[models.entity.FilterImage]] */
-  override val filterImages: EntityPersistence[FilterImage] =
-    new MongoEntityPersistence[FilterImage](uri, dbName, MongoHandler.filterImageHandler)
+  override val filterImage: EntityPersistence[FilterImage] =
+    new MongoEntityPersistence[FilterImage](database, MongoHandler.filterImageHandler)
 
   /** Persistence for [[models.entity.Settings]] */
   override val settings: EntityPersistence[Settings] =
-    new MongoEntityPersistence[Settings](uri, dbName, MongoHandler.settingsHandler)
+    new MongoEntityPersistence[Settings](database, MongoHandler.settingsHandler)
 
   /** Persistence for [[models.entity.MetaModelEntity]] */
-  override val metaModelEntities: EntityPersistence[MetaModelEntity] =
-    new MongoEntityPersistence[MetaModelEntity](uri, dbName, MongoHandler.metaModelEntityHandler)
+  override val metaModelEntity: EntityPersistence[MetaModelEntity] =
+    new MongoEntityPersistence[MetaModelEntity](database, MongoHandler.metaModelEntityHandler)
 
   /** Persistence for [[models.entity.MetaModelRelease]] */
-  override val metaModelReleases: EntityPersistence[MetaModelRelease] =
-    new MongoEntityPersistence[MetaModelRelease](uri, dbName, MongoHandler.metaModelReleaseHandler)
+  override val metaModelRelease: EntityPersistence[MetaModelRelease] =
+    new MongoEntityPersistence[MetaModelRelease](database, MongoHandler.metaModelReleaseHandler)
 
   /** Persistence for [[models.entity.ModelEntity]] */
-  override val modelEntities: EntityPersistence[ModelEntity] =
-    new MongoEntityPersistence[ModelEntity](uri, dbName, MongoHandler.modelEntityHandler)
+  override val modelEntity: EntityPersistence[ModelEntity] =
+    new MongoEntityPersistence[ModelEntity](database, MongoHandler.modelEntityHandler)
 
   /** Persistence for [[models.entity.Log]] */
-  override val logs: EntityPersistence[Log] =
-    new MongoEntityPersistence[Log](uri, dbName, MongoHandler.logHandler)
+  override val log: EntityPersistence[Log] =
+    new MongoEntityPersistence[Log](database, MongoHandler.logHandler)
 
   /** Persistence for [[User]] */
-  override val users: EntityPersistence[User] =
-    new MongoEntityPersistence[User](uri, dbName, MongoHandler.userHandler)
+  override val user: EntityPersistence[User] =
+    new MongoEntityPersistence[User](database, MongoHandler.userHandler)
 
   /** Versioned Persistence for [[File]] */
-  override val files: FilePersistence = new MongoFilePersistence(uri, dbName)
+  override val file: FilePersistence =
+    new MongoFilePersistence(database)
+
+  /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
+  override val loginInfo: LoginInfoPersistence =
+    new MongoLoginInfoPersistence(database)
+
+  /** Persistence for [[com.mohiva.play.silhouette.api.util.PasswordInfo]] */
+  override val passwordInfo: PasswordInfoPersistence =
+    new MongoPasswordInfoPersistence(database)
 
 }

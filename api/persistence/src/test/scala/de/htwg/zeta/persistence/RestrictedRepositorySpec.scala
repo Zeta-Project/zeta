@@ -15,8 +15,8 @@ class RestrictedRepositorySpec extends RepositoryBehavior {
   val user = User(UUID.randomUUID, "FirstName", "LastName", "test@mail.com", activated = true)
 
   val repo = new TransientRepository
-  repo.users.create(user)
+  repo.user.create(user)
 
-  "persistenceMicroService" should behave like repositoryBehavior(AccessRestrictedRepository(user.id, repo))
+  "persistenceMicroService" should behave like repositoryBehavior(AccessRestrictedRepository(user.id, repo), restricted = true)
 
 }

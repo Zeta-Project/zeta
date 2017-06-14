@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.entityTestCases
+package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
@@ -7,9 +7,9 @@ import models.document.JobSettings
 import models.entity.Settings
 
 
-object SettingsTestCase extends EntityTestCase[Settings] {
+object SettingsFixtures {
 
-  override val entity1 = Settings(
+  val entity1 = Settings(
     id = UUID.randomUUID,
     owner = UUID.randomUUID,
     jobSettings = JobSettings(
@@ -22,7 +22,7 @@ object SettingsTestCase extends EntityTestCase[Settings] {
     )
   )
 
-  override val entity2 = Settings(
+  val entity2 = Settings(
     id = UUID.randomUUID,
     owner = UUID.randomUUID,
     jobSettings = JobSettings(
@@ -35,9 +35,9 @@ object SettingsTestCase extends EntityTestCase[Settings] {
     )
   )
 
-  override val entity2Updated: Settings = entity2.copy(owner = UUID.randomUUID)
+  val entity2Updated: Settings = entity2.copy(owner = UUID.randomUUID)
 
-  override val entity3 = Settings(
+  val entity3 = Settings(
     id = UUID.randomUUID,
     owner = UUID.randomUUID,
     jobSettings = JobSettings(

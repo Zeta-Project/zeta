@@ -46,7 +46,7 @@ class SignInController @Inject()(
   extends Controller {
 
   private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.users
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
   /** Views the `Sign In` page.
    *

@@ -40,8 +40,8 @@ object Main extends App {
     logger.info("Create Model Release for " + id)
 
     val result = for {
-      from <- documents.metaModelEntities.read(UUID.fromString(id))
-      release <- documents.metaModelReleases.createOrUpdate(MetaModelRelease(
+      from <- documents.metaModelEntity.read(UUID.fromString(id))
+      release <- documents.metaModelRelease.createOrUpdate(MetaModelRelease(
         name = s"${from.metaModel.name}",
         metaModel = from.metaModel,
         dsl = from.dsl,

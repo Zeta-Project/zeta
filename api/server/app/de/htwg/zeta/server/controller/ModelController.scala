@@ -26,7 +26,7 @@ class ModelController @Inject()(
   extends Controller {
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntities.read(modelId).map { model =>
+    restrictedAccessRepository(request.identity.id).modelEntity.read(modelId).map { model =>
       Ok(views.html.model.ModelGraphicalEditor(model.metaModelId, model.id, Some(request.identity), model))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -34,7 +34,7 @@ class ModelController @Inject()(
   }
 
   def vrModelEditor(modelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntities.read(modelUuid).map { model =>
+    restrictedAccessRepository(request.identity.id).modelEntity.read(modelUuid).map { model =>
       Ok(views.html.VrEditor(model.metaModelId))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
