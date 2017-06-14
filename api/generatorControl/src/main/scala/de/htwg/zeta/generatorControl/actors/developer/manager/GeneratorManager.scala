@@ -1,0 +1,35 @@
+package de.htwg.zeta.generatorControl.actors.developer.manager
+
+import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Props
+
+import models.document.GeneratorImage
+import models.document.Repository
+import models.frontend.CreateGenerator
+import models.frontend.GeneratorImageNotFoundFailure
+import models.worker.CreateGeneratorJob
+
+import scala.concurrent.ExecutionContext.Implicits.global
+
+object GeneratorsManager {
+  def props(worker: ActorRef, repository: Repository) = Props(new GeneratorsManager(worker, repository))
+}
+
+class GeneratorsManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
+  def createGenerator(create: CreateGenerator) = {
+    val reply = sender
+    repository.get[GeneratorImage](create.image)
+      .map { image =>
+        worker ! CreateGeneratorJob(image.dockerImage, create.image, create.options)
+      }.recover {
+        case e: Exception => reply ! GeneratorImageNotFoundFailure(e.getMessage)
+      }
+  }
+
+  def receive = {
+    case create: CreateGenerator => createGenerator(create)
+    case _ =>
+  }
+}
