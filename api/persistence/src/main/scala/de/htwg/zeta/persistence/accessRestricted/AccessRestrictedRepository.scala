@@ -8,8 +8,19 @@ import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.Repository
 import models.entity
 import models.entity.AccessAuthorisation
+import models.entity.BondedTask
+import models.entity.EventDrivenTask
 import models.entity.File
+import models.entity.Filter
+import models.entity.FilterImage
+import models.entity.Generator
+import models.entity.GeneratorImage
+import models.entity.Log
+import models.entity.MetaModelEntity
 import models.entity.MetaModelRelease
+import models.entity.ModelEntity
+import models.entity.Settings
+import models.entity.TimedTask
 import models.entity.User
 
 
@@ -21,62 +32,78 @@ import models.entity.User
 case class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) extends Repository {
 
   /** Persistence for AccessAuthorisation */
-  override private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation] =
+  override def accessAuthorisations: EntityPersistence[AccessAuthorisation] = {
     underlying.accessAuthorisations
+  }
 
   /** Persistence for the [[models.entity.EventDrivenTask]] */
-  override lazy val eventDrivenTasks =
+  override def eventDrivenTasks: AccessRestrictedPersistence[EventDrivenTask] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.eventDrivenTasks)
+  }
 
   /** Persistence for the [[models.entity.BondedTask]] */
-  override lazy val bondTasks =
+  override def bondTasks: AccessRestrictedPersistence[BondedTask] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.bondTasks)
+  }
 
   /** Persistence for [[models.entity.TimedTask]] */
-  override val timedTasks =
+  override def timedTasks: AccessRestrictedPersistence[TimedTask] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.timedTasks)
+  }
 
   /** Persistence for the [[models.entity.Generator]] */
-  override lazy val generators =
+  override def generators: AccessRestrictedPersistence[Generator] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.generators)
+  }
 
   /** Persistence for the [[models.entity.Filter]] */
-  override lazy val filters =
+  override def filters: AccessRestrictedPersistence[Filter] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.filters)
+  }
 
   /** Persistence for the [[models.entity.GeneratorImage]] */
-  override lazy val generatorImages =
+  override def generatorImages: AccessRestrictedPersistence[GeneratorImage] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.generatorImages)
+  }
 
   /** Persistence for the [[models.entity.FilterImage]] */
-  override lazy val filterImages =
+  override def filterImages: AccessRestrictedPersistence[FilterImage] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.filterImages)
+  }
 
   /** Persistence for the [[models.entity.Settings]] */
-  override lazy val settings =
+  override def settings: AccessRestrictedPersistence[Settings] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.settings)
+  }
 
   /** Persistence for the [[models.entity.MetaModelEntity]] */
-  override lazy val metaModelEntities =
+  override def metaModelEntities: AccessRestrictedPersistence[MetaModelEntity] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.metaModelEntities)
+  }
 
   /** Persistence for [[models.entity.MetaModelRelease]] */
-  override val metaModelReleases: EntityPersistence[MetaModelRelease] =
+  override def metaModelReleases: EntityPersistence[MetaModelRelease] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.metaModelReleases)
+  }
 
   /** Persistence for the [[models.entity.ModelEntity]] */
-  override lazy val modelEntities =
+  override def modelEntities: AccessRestrictedPersistence[ModelEntity] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.modelEntities)
+  }
 
   /** Persistence for the [[models.entity.Log]] */
-  override lazy val logs =
+  override def logs: AccessRestrictedPersistence[Log] = {
     AccessRestrictedPersistence(ownerId, accessAuthorisations, underlying.logs)
+  }
 
   /** Persistence for the [[entity.User]] */
-  override lazy val users: EntityPersistence[User] =
+  override def users: EntityPersistence[User] = {
     underlying.users
+  }
 
   /** Versioned Persistence for [[File]] */
-  override val files: FilePersistence = null // TODO
+  override def files: FilePersistence = {
+    null // TODO
+  }
 
 }

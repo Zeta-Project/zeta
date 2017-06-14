@@ -21,48 +21,48 @@ import models.entity.User
 trait Repository {
 
   /** Persistence for AccessAuthorisation */
-  private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation]
+  def accessAuthorisations: EntityPersistence[AccessAuthorisation]
 
   /** Persistence for [[models.entity.EventDrivenTask]] */
-  val eventDrivenTasks: EntityPersistence[EventDrivenTask]
+  def eventDrivenTasks: EntityPersistence[EventDrivenTask]
 
   /** Persistence for [[models.entity.BondedTask]] */
-  val bondTasks: EntityPersistence[BondedTask]
+  def bondTasks: EntityPersistence[BondedTask]
 
   /** Persistence for [[models.entity.TimedTask]] */
-  val timedTasks: EntityPersistence[TimedTask]
+  def timedTasks: EntityPersistence[TimedTask]
 
   /** Persistence for [[models.entity.Generator]] */
-  val generators: EntityPersistence[Generator]
+  def generators: EntityPersistence[Generator]
 
   /** Persistence for [[models.entity.Filter]] */
-  val filters: EntityPersistence[Filter]
+  def filters: EntityPersistence[Filter]
 
   /** Persistence for [[models.entity.GeneratorImage]] */
-  val generatorImages: EntityPersistence[GeneratorImage]
+  def generatorImages: EntityPersistence[GeneratorImage]
 
   /** Persistence for [[models.entity.FilterImage]] */
-  val filterImages: EntityPersistence[FilterImage]
+  def filterImages: EntityPersistence[FilterImage]
 
   /** Persistence for [[models.entity.Settings]] */
-  val settings: EntityPersistence[Settings]
+  def settings: EntityPersistence[Settings]
 
   /** Persistence for [[models.entity.MetaModelEntity]] */
-  val metaModelEntities: EntityPersistence[MetaModelEntity]
+  def metaModelEntities: EntityPersistence[MetaModelEntity]
 
   /** Persistence for [[models.entity.MetaModelRelease]] */
-  val metaModelReleases: EntityPersistence[MetaModelRelease]
+  def metaModelReleases: EntityPersistence[MetaModelRelease]
 
   /** Persistence for [[models.entity.ModelEntity]] */
-  val modelEntities: EntityPersistence[ModelEntity]
+  def modelEntities: EntityPersistence[ModelEntity]
 
   /** Persistence for [[models.entity.Log]] */
-  val logs: EntityPersistence[Log]
+  def logs: EntityPersistence[Log]
 
   /** Persistence for [[entity.User]] */
-  val users: EntityPersistence[User]
+  def users: EntityPersistence[User]
 
   /** Versioned Persistence for [[File]] */
-  val files: FilePersistence
+  def files: FilePersistence
 
 }

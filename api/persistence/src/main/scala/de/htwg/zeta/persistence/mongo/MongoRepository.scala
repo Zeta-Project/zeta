@@ -22,7 +22,7 @@ import models.entity.User
 class MongoRepository(uri: String, dbName: String) extends Repository {
 
   /** Persistence for AccessAuthorisation */
-  override private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation] =
+  override val accessAuthorisations: EntityPersistence[AccessAuthorisation] =
     new MongoEntityPersistence[AccessAuthorisation](uri, dbName, MongoHandler.accessAuthorisationHandler)
 
   /** Persistence for [[models.entity.EventDrivenTask]] */

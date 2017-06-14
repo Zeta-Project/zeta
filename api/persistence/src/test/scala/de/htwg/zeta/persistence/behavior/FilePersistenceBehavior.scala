@@ -125,7 +125,7 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "it should create all files again" in {
+    it should "create all files again" in {
       for {
         _ <- repo.files.create(file1)
         _ <- repo.files.create(file2Updated)

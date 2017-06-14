@@ -23,7 +23,7 @@ import models.entity.User
 class TransientRepository extends Repository {
 
   /** Persistence for AccessAuthorisation */
-  override private[persistence] val accessAuthorisations = new TransientPersistence[AccessAuthorisation]
+  override val accessAuthorisations = new TransientPersistence[AccessAuthorisation]
 
   /** Persistence for the [[models.entity.EventDrivenTask]] */
   override val eventDrivenTasks = new TransientPersistence[EventDrivenTask]

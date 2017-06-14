@@ -71,7 +71,7 @@ class PersistenceMicroService(address: String, port: Int) extends Repository {
   override val logs: EntityPersistence[Log] = new PersistenceClient[Log](address, port)
 
   /** Persistence for AccessAuthorisation */
-  override private[persistence] val accessAuthorisations: EntityPersistence[AccessAuthorisation] = null
+  override val accessAuthorisations: EntityPersistence[AccessAuthorisation] = null
 
   /** Persistence for [[models.entity.TimedTask]] */
   override val timedTasks: EntityPersistence[TimedTask] = null

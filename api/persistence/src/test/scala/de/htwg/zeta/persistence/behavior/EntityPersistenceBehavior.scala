@@ -125,7 +125,7 @@ trait EntityPersistenceBehavior extends AsyncFlatSpec with Matchers {
       }
     }
 
-    it should "it should create all entities again" in {
+    it should "create all entities again" in {
       for {
         _ <- persistence.create(entity1)
         _ <- persistence.create(doc2Updated)
