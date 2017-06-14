@@ -1,9 +1,9 @@
 package de.htwg.zeta.server.generator
 
-import models.document.ModelEntity
-import models.document.{ Repository => Documents }
-import models.file.{ Repository => Files }
-import models.remote.Remote
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.{ Repository => Documents }
+import de.htwg.zeta.common.models.file.{ Repository => Files }
+import de.htwg.zeta.common.models.remote.Remote
 
 import scala.concurrent.Future
 

@@ -9,7 +9,7 @@ import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.model.style.color.Transparent
 import de.htwg.zeta.server.generator.model.style.gradient.Gradient
 import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
-import models.file.File
+import de.htwg.zeta.common.models.file.File
 import de.htwg.zeta.server.model.result.Unreliable
 
 /**

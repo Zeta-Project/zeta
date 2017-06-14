@@ -4,17 +4,17 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Transformer
-import models.document.Filter
-import models.document.Generator
-import models.document.ModelEntity
-import models.document.{Repository => Documents}
-import models.document.http.{HttpRepository => DocumentRepository}
-import models.file.File
-import models.file.{Repository => Files}
-import models.file.http.{HttpRepository => FileRepository}
-import models.remote.Remote
-import models.remote.RemoteGenerator
-import models.session.SyncGatewaySession
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.{Repository => Documents}
+import de.htwg.zeta.common.models.document.http.{HttpRepository => DocumentRepository}
+import de.htwg.zeta.common.models.file.File
+import de.htwg.zeta.common.models.file.{Repository => Files}
+import de.htwg.zeta.common.models.file.http.{HttpRepository => FileRepository}
+import de.htwg.zeta.common.models.remote.Remote
+import de.htwg.zeta.common.models.remote.RemoteGenerator
+import de.htwg.zeta.common.models.session.SyncGatewaySession
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError

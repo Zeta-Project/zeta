@@ -13,7 +13,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.persistence.PersistentActor
-import models.session.Session
+import de.htwg.zeta.common.models.session.Session
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global

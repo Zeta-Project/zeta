@@ -68,7 +68,7 @@ import de.htwg.zeta.server.model.daos.SGUserDAO
 import de.htwg.zeta.server.model.daos.UserDAO
 import de.htwg.zeta.server.model.services.UserService
 import de.htwg.zeta.server.model.services.UserServiceImpl
-import models.session.Session
+import de.htwg.zeta.common.models.session.Session
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.mapValueReader

@@ -4,7 +4,7 @@ import scala.collection.breakOut
 import scala.collection.mutable
 
 import de.htwg.zeta.server.model.modelValidator.Util
-import models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 
 class NoCyclicInheritance extends MetaModelRule {
 

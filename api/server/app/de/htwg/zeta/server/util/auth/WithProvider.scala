@@ -2,10 +2,10 @@ package de.htwg.zeta.server.util.auth
 
 import com.mohiva.play.silhouette.api.Authenticator
 import com.mohiva.play.silhouette.api.Authorization
-import models.User
 import play.api.mvc.Request
-
 import scala.concurrent.Future
+
+import de.htwg.zeta.common.models.User
 
 /**
  * Grants only access if a user has authenticated with the given provider.

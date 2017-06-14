@@ -6,14 +6,14 @@ import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.Props
-import models.frontend.Connected
-import models.frontend.Connection
-import models.frontend.Disconnected
-import models.frontend.FromGenerator
-import models.frontend.GeneratorClient
-import models.frontend.GeneratorCompleted
-import models.frontend.ToGenerator
-import models.worker.RunGeneratorFromGeneratorJob
+import de.htwg.zeta.common.models.frontend.Connected
+import de.htwg.zeta.common.models.frontend.Connection
+import de.htwg.zeta.common.models.frontend.Disconnected
+import de.htwg.zeta.common.models.frontend.FromGenerator
+import de.htwg.zeta.common.models.frontend.GeneratorClient
+import de.htwg.zeta.common.models.frontend.GeneratorCompleted
+import de.htwg.zeta.common.models.frontend.ToGenerator
+import de.htwg.zeta.common.models.worker.RunGeneratorFromGeneratorJob
 
 object GeneratorConnectionManager {
   def props() = Props(new GeneratorConnectionManager())

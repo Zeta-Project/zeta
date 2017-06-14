@@ -2,10 +2,10 @@ package de.htwg.zeta.generatorControl.actors.worker
 
 import java.util.UUID
 
-import models.document.DockerSettings
-import models.document.Settings
-import models.frontend.JobLog
-import models.worker.Job
+import de.htwg.zeta.common.models.document.DockerSettings
+import de.htwg.zeta.common.models.document.Settings
+import de.htwg.zeta.common.models.frontend.JobLog
+import de.htwg.zeta.common.models.worker.Job
 
 object MasterWorkerProtocol {
   // Messages from Workers to Master

@@ -6,8 +6,8 @@ import scala.tools.reflect.ToolBox
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.MetaModelDependent
-import models.document.MetaModelEntity
-import models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.document.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 
 case class ValidatorGeneratorResult(success: Boolean, result: String)
 

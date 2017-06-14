@@ -1,9 +1,9 @@
 package de.htwg.zeta.server.model.modelValidator.validator
 
 import de.htwg.zeta.server.model.modelValidator.validator.rules.Rule
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.ModelElement
-import models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNull
 import play.api.libs.json.JsString

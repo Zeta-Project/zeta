@@ -5,16 +5,16 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 
-import models.document.AllFilters
-import models.document.Change
-import models.document.Changed
-import models.document.Created
-import models.document.Deleted
-import models.document.Filter
-import models.document.ModelEntity
-import models.document.Repository
-import models.document.Updated
-import models.worker.RerunFilterJob
+import de.htwg.zeta.common.models.document.AllFilters
+import de.htwg.zeta.common.models.document.Change
+import de.htwg.zeta.common.models.document.Changed
+import de.htwg.zeta.common.models.document.Created
+import de.htwg.zeta.common.models.document.Deleted
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.document.Updated
+import de.htwg.zeta.common.models.worker.RerunFilterJob
 
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext

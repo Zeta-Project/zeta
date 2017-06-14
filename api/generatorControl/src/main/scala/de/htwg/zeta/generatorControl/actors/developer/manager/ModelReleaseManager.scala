@@ -5,8 +5,8 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 
-import models.frontend.RunModelRelease
-import models.worker.CreateMetaModelReleaseJob
+import de.htwg.zeta.common.models.frontend.RunModelRelease
+import de.htwg.zeta.common.models.worker.CreateMetaModelReleaseJob
 
 object ModelReleaseManager {
   def props(worker: ActorRef) = Props(new ModelReleaseManager(worker))

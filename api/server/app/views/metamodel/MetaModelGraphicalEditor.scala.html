@@ -1,5 +1,6 @@
 @import play.api.libs.json.Json
-@import models.document.MetaModelEntity
+@import de.htwg.zeta.common.models.document.MetaModelEntity
+@import de.htwg.zeta.common.models.User
 @(user: Option[User], uuid: String, metaModel: MetaModelEntity)
 
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {

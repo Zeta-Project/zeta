@@ -5,11 +5,11 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 
-import models.document.GeneratorImage
-import models.document.Repository
-import models.frontend.CreateGenerator
-import models.frontend.GeneratorImageNotFoundFailure
-import models.worker.CreateGeneratorJob
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.frontend.CreateGenerator
+import de.htwg.zeta.common.models.frontend.GeneratorImageNotFoundFailure
+import de.htwg.zeta.common.models.worker.CreateGeneratorJob
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

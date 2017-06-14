@@ -29,9 +29,9 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Round
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.style.Style
 import grizzled.slf4j.Logging
-import models.document.MetaModelEntity
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.document.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 /**
  * SprayParser

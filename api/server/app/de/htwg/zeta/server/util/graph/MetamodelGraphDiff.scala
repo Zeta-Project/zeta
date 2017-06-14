@@ -1,14 +1,14 @@
 package de.htwg.zeta.server.util.graph
 
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MCoreReads
-import models.modelDefinitions.metaModel.elements.MEnum
-import models.modelDefinitions.metaModel.elements.MObject
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.ScalarType
-import models.modelDefinitions.metaModel.elements.ScalarValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MCoreReads
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.ScalarType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.ScalarValue
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean

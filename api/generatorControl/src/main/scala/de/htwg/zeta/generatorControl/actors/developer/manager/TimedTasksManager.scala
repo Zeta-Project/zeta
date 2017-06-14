@@ -8,17 +8,17 @@ import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
 
-import models.document.Change
-import models.document.Changed
-import models.document.Created
-import models.document.Deleted
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Repository
-import models.document.TimedTask
-import models.document.Updated
-import models.worker.RunTimedTask
+import de.htwg.zeta.common.models.document.Change
+import de.htwg.zeta.common.models.document.Changed
+import de.htwg.zeta.common.models.document.Created
+import de.htwg.zeta.common.models.document.Deleted
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.document.TimedTask
+import de.htwg.zeta.common.models.document.Updated
+import de.htwg.zeta.common.models.worker.RunTimedTask
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global

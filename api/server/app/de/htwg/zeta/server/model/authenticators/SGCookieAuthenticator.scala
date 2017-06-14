@@ -24,12 +24,8 @@ import com.mohiva.play.silhouette.api.util.ExtractableRequest
 import com.mohiva.play.silhouette.api.util.FingerprintGenerator
 import com.mohiva.play.silhouette.api.util.IDGenerator
 import com.mohiva.play.silhouette.api.util.JsonFormats
-
-import models.User
-import models.session.Session
-
+import de.htwg.zeta.common.models.session.Session
 import org.joda.time.DateTime
-
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
@@ -38,7 +34,6 @@ import play.api.mvc.Cookies
 import play.api.mvc.DiscardingCookie
 import play.api.mvc.RequestHeader
 import play.api.mvc.Result
-
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -46,6 +41,8 @@ import scala.concurrent.duration.Duration
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
+
+import de.htwg.zeta.common.models.User
 
 /**
  * An authenticator that uses a stateful as well as stateless, cookie based approach.

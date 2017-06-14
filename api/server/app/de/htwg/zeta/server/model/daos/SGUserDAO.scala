@@ -4,20 +4,20 @@ import java.util.UUID
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.User
-import models.document.AllUsers
-import models.document.Settings
-import models.document.UserEntity
-import models.session.Account
-import models.session.SyncGatewayAccount
+import de.htwg.zeta.common.models.document.AllUsers
+import de.htwg.zeta.common.models.document.Settings
+import de.htwg.zeta.common.models.document.UserEntity
+import de.htwg.zeta.common.models.session.Account
+import de.htwg.zeta.common.models.session.SyncGatewayAccount
 import play.api.libs.ws.WSClient
 import rx.lang.scala.Notification.OnError
 import rx.lang.scala.Notification.OnNext
 import de.htwg.zeta.server.util.auth.RepositoryFactory
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
+
+import de.htwg.zeta.common.models.User
 
 class SGUserDAO @Inject() (implicit wSClient: WSClient, repositoryFactory: RepositoryFactory) extends UserDAO {
   val repository = repositoryFactory.forAdministrator

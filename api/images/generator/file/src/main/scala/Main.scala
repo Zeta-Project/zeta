@@ -2,16 +2,16 @@ import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.ModelEntity
-import models.document.{Repository => Documents}
-import models.file.File
-import models.file.{Repository => Files}
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.Node
-import models.remote.Remote
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.{Repository => Documents}
+import de.htwg.zeta.common.models.file.File
+import de.htwg.zeta.common.models.file.{Repository => Files}
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.remote.Remote
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -99,11 +99,11 @@ object Main extends Template[CreateOptions, String] {
       s"""
         |import scala.concurrent.ExecutionContext.Implicits.global
         |import scala.concurrent.{Future, Promise}
-        |import models.modelDefinitions.model.elements.{Node, Edge}
-        |import models.document.ModelEntity
-        |import models.document.{Repository => Documents}
-        |import models.file.{File, Repository => Files}
-        |import models.remote.Remote
+        |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
+        |import de.htwg.zeta.common.models.document.ModelEntity
+        |import de.htwg.zeta.common.models.document.{Repository => Documents}
+        |import de.htwg.zeta.common.models.file.{File, Repository => Files}
+        |import de.htwg.zeta.common.models.remote.Remote
         |import generator._
         |import org.slf4j.LoggerFactory
         |

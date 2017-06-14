@@ -1,4 +1,5 @@
-@(user: Option[models.User])
+@import de.htwg.zeta.common.models.User
+@(user: Option[User])
 
 @views.html.webpage.WebpageGeneralLayout("Overview", user) {
     <div class="row">

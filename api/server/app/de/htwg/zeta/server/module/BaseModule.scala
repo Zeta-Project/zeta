@@ -6,8 +6,8 @@ import de.htwg.zeta.server.model.daos.AuthTokenDAO
 import de.htwg.zeta.server.model.daos.AuthTokenDAOImpl
 import de.htwg.zeta.server.model.services.AuthTokenService
 import de.htwg.zeta.server.model.services.AuthTokenServiceImpl
-import models.session.Session
-import models.session.SyncGatewaySession
+import de.htwg.zeta.common.models.session.Session
+import de.htwg.zeta.common.models.session.SyncGatewaySession
 import net.codingwell.scalaguice.ScalaModule
 import play.api.libs.ws.WSClient
 import de.htwg.zeta.server.util.auth.HttpRepositoryFactory

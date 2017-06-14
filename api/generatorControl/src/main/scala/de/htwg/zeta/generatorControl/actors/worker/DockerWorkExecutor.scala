@@ -15,10 +15,10 @@ import com.spotify.docker.client.DockerClient.AttachParameter
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
 import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
-import models.document.Log
-import models.document.http.HttpRepository
-import models.frontend.JobLog
-import models.frontend.JobLogMessage
+import de.htwg.zeta.common.models.document.Log
+import de.htwg.zeta.common.models.document.http.HttpRepository
+import de.htwg.zeta.common.models.frontend.JobLog
+import de.htwg.zeta.common.models.frontend.JobLogMessage
 import play.api.libs.ws.ahc.AhcWSClient
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -5,16 +5,16 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 
-import models.document.GeneratorImage
-import models.document.Repository
-import models.document.Filter
-import models.document.Generator
-import models.frontend.ExecuteFilterError
-import models.frontend.ExecuteGeneratorError
-import models.frontend.RunFilter
-import models.frontend.RunGenerator
-import models.worker.RunFilterManually
-import models.worker.RunGeneratorManually
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.frontend.ExecuteFilterError
+import de.htwg.zeta.common.models.frontend.ExecuteGeneratorError
+import de.htwg.zeta.common.models.frontend.RunFilter
+import de.htwg.zeta.common.models.frontend.RunGenerator
+import de.htwg.zeta.common.models.worker.RunFilterManually
+import de.htwg.zeta.common.models.worker.RunGeneratorManually
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

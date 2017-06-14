@@ -3,17 +3,17 @@ import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
 
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.MetaModelEntity
-import models.document.ModelEntity
-import models.document.{Repository => Documents}
-import models.file.File
-import models.file.{Repository => Files}
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
-import models.remote.Remote
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.MetaModelEntity
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.{Repository => Documents}
+import de.htwg.zeta.common.models.file.File
+import de.htwg.zeta.common.models.file.{Repository => Files}
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.remote.Remote
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -113,11 +113,11 @@ object Main extends Template[CreateOptions, String] {
   def compiledGenerator(file: File) = {
     val content = s"""
       import scala.concurrent.Future
-      import models.modelDefinitions.model.elements.{Node, Edge}
-      import models.document.ModelEntity
-      import models.document.{Repository => Documents}
-      import models.file.{Repository => Files}
-      import models.remote.Remote
+      import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
+      import de.htwg.zeta.common.models.document.ModelEntity
+      import de.htwg.zeta.common.models.document.{Repository => Documents}
+      import de.htwg.zeta.common.models.file.{Repository => Files}
+      import de.htwg.zeta.common.models.remote.Remote
       import generator._
 
       ${file.content}

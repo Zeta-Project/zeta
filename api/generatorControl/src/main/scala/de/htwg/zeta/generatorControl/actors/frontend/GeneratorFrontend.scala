@@ -7,12 +7,12 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 
-import models.frontend.Connected
-import models.frontend.Disconnected
-import models.frontend.GeneratorClient
-import models.frontend.GeneratorRequest
-import models.frontend.GeneratorResponse
-import models.frontend.MessageEnvelope
+import de.htwg.zeta.common.models.frontend.Connected
+import de.htwg.zeta.common.models.frontend.Disconnected
+import de.htwg.zeta.common.models.frontend.GeneratorClient
+import de.htwg.zeta.common.models.frontend.GeneratorRequest
+import de.htwg.zeta.common.models.frontend.GeneratorResponse
+import de.htwg.zeta.common.models.frontend.MessageEnvelope
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -3,11 +3,10 @@ package de.htwg.zeta.server.model.daos
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
-
-import models.User
-
 import scala.collection.mutable
 import scala.concurrent.Future
+
+import de.htwg.zeta.common.models.User
 
 /**
  * Give access to the user object.

@@ -4,9 +4,9 @@ import java.util.UUID
 
 import com.mohiva.play.silhouette.api.services.IdentityService
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
-import models.User
-
 import scala.concurrent.Future
+
+import de.htwg.zeta.common.models.User
 
 /**
  * Handles actions to users.

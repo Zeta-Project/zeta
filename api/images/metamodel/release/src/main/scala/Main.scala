@@ -1,9 +1,9 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import models.document.AllMetaModelReleases
-import models.document.MetaModelEntity
-import models.document.MetaModelRelease
-import models.document.http.{HttpRepository => DocumentRepository}
+import de.htwg.zeta.common.models.document.AllMetaModelReleases
+import de.htwg.zeta.common.models.document.MetaModelEntity
+import de.htwg.zeta.common.models.document.MetaModelRelease
+import de.htwg.zeta.common.models.document.http.{HttpRepository => DocumentRepository}
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory

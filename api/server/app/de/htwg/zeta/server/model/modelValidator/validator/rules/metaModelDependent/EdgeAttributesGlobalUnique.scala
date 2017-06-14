@@ -5,15 +5,15 @@ import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.AttributeValue
-import models.modelDefinitions.metaModel.elements.EnumSymbol
-import models.modelDefinitions.metaModel.elements.ScalarValue.MBool
-import models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
-import models.modelDefinitions.metaModel.elements.ScalarValue.MInt
-import models.modelDefinitions.metaModel.elements.ScalarValue.MString
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.ModelElement
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.ScalarValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.ScalarValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.ScalarValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.ScalarValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).

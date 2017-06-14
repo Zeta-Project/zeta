@@ -28,9 +28,9 @@ import akka.persistence.journal.leveldb.SharedLeveldbJournal
 import akka.persistence.journal.leveldb.SharedLeveldbStore
 import akka.stream.ActorMaterializer
 import akka.util.Timeout
-import cluster.ClusterManager
+import de.htwg.zeta.common.cluster.ClusterManager
 import com.typesafe.config.ConfigFactory
-import models.session.SyncGatewaySession
+import de.htwg.zeta.common.models.session.SyncGatewaySession
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory

@@ -5,13 +5,11 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
-
-import models.User
 import de.htwg.zeta.server.model.daos.UserDAO
-
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
 import scala.concurrent.Future
+
+import de.htwg.zeta.common.models.User
 
 /**
  * Handles actions to users.

@@ -10,11 +10,11 @@ import com.neovisionaries.ws.client.WebSocketAdapter
 import com.neovisionaries.ws.client.WebSocketException
 import com.neovisionaries.ws.client.WebSocketFactory
 import com.neovisionaries.ws.client.WebSocketFrame
-import models.document.Changed
-import models.document.Created
-import models.document.Deleted
-import models.document.Document
-import models.document.Updated
+import de.htwg.zeta.common.models.document.Changed
+import de.htwg.zeta.common.models.document.Created
+import de.htwg.zeta.common.models.document.Deleted
+import de.htwg.zeta.common.models.document.Document
+import de.htwg.zeta.common.models.document.Updated
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json

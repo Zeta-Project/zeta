@@ -4,18 +4,18 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import models.document.AllBondedTasks
-import models.document.BondedTask
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Repository
-import models.frontend.BondedTaskList
-import models.frontend.BondedTaskNotExecutable
-import models.frontend.Entry
-import models.frontend.ExecuteBondedTask
-import models.frontend.ModelUser
-import models.worker.RunBondedTask
+import de.htwg.zeta.common.models.document.AllBondedTasks
+import de.htwg.zeta.common.models.document.BondedTask
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.frontend.BondedTaskList
+import de.htwg.zeta.common.models.frontend.BondedTaskNotExecutable
+import de.htwg.zeta.common.models.frontend.Entry
+import de.htwg.zeta.common.models.frontend.ExecuteBondedTask
+import de.htwg.zeta.common.models.frontend.ModelUser
+import de.htwg.zeta.common.models.worker.RunBondedTask
 
 import rx.lang.scala.Observable
 

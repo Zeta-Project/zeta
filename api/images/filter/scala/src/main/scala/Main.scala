@@ -1,12 +1,12 @@
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import filter.BaseFilter
-import models.document.AllModels
-import models.document.Filter
-import models.document.ModelEntity
-import models.document.http.{HttpRepository => DocumentRepository}
-import models.file.File
-import models.file.http.{HttpRepository => FileRepository}
+import de.htwg.zeta.common.models.document.AllModels
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.http.{HttpRepository => DocumentRepository}
+import de.htwg.zeta.common.models.file.File
+import de.htwg.zeta.common.models.file.http.{HttpRepository => FileRepository}
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
@@ -67,7 +67,7 @@ object Main extends App {
     logger.info("compile filter")
 
     val content = s"""
-      import models.document.{ModelEntity, MetaModelRelease}
+      import de.htwg.zeta.common.models.document.{ModelEntity, MetaModelRelease}
       import filter.BaseFilter
 
       ${file.content}

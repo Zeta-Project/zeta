@@ -12,7 +12,7 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Recta
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.RoundedRectangle
 import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.style.DASH
-import models.file.File
+import de.htwg.zeta.common.models.file.File
 import de.htwg.zeta.server.model.result.Unreliable
 
 

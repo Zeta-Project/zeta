@@ -11,14 +11,14 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import akka.cluster.sharding.ClusterSharding
 
-import models.document.Change
-import models.document.Changed
-import models.document.Created
-import models.document.Deleted
-import models.document.Settings
-import models.document.Updated
-import models.frontend.Init
-import models.frontend.MessageEnvelope
+import de.htwg.zeta.common.models.document.Change
+import de.htwg.zeta.common.models.document.Changed
+import de.htwg.zeta.common.models.document.Created
+import de.htwg.zeta.common.models.document.Deleted
+import de.htwg.zeta.common.models.document.Settings
+import de.htwg.zeta.common.models.document.Updated
+import de.htwg.zeta.common.models.frontend.Init
+import de.htwg.zeta.common.models.frontend.MessageEnvelope
 
 object DeveloperManager {
   def props() = Props(new DeveloperManager())

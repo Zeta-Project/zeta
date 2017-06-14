@@ -5,15 +5,15 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 
-import models.document.AllEventDrivenTasks
-import models.document.EventDrivenTask
-import models.document.Filter
-import models.document.Generator
-import models.document.GeneratorImage
-import models.document.Repository
-import models.frontend.ModelChanged
-import models.frontend.SavedModel
-import models.worker.RunEventDrivenTask
+import de.htwg.zeta.common.models.document.AllEventDrivenTasks
+import de.htwg.zeta.common.models.document.EventDrivenTask
+import de.htwg.zeta.common.models.document.Filter
+import de.htwg.zeta.common.models.document.Generator
+import de.htwg.zeta.common.models.document.GeneratorImage
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.frontend.ModelChanged
+import de.htwg.zeta.common.models.frontend.SavedModel
+import de.htwg.zeta.common.models.worker.RunEventDrivenTask
 
 import rx.lang.scala.Observable
 
