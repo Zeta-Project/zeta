@@ -1,5 +1,5 @@
 pushd api
-sbt 'project backend' 'docker:publishLocal'
+sbt 'project generatorControl' 'docker:publishLocal'
 sbt 'project server' 'docker:publishLocal'
 sbt 'project scalaFilter' 'docker:publishLocal'
 sbt 'project basicGenerator' 'docker:publishLocal'

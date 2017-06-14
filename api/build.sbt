@@ -116,14 +116,14 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.scala-lang"            % "scala-reflect"             % "2.11.8",
     "org.scala-lang"            % "scala-compiler"            % "2.11.8"
   )
-).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend)
+).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(generatorControl)
 
 lazy val client = baseProject("client", file("client")).settings(
   fork := false,
   persistLauncher := true,
   persistLauncher in Test := false,
   sourceMapsDirectories += sharedJs.base / "..",
-  
+
   resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
@@ -210,11 +210,11 @@ def projectT(name: String, d: sbt.File) = baseProject(name, d).settings(
   )
 ).enablePlugins(JavaAppPackaging)
 
-lazy val backend = projectT("backend", file("backend")).settings(
+lazy val generatorControl = projectT("generatorControl", file("generatorControl")).settings(
   Seq(
-    name                   := "backend",
+    name                   := "generatorControl",
     version                := "0.1",
-    packageName in Docker  := "backend",
+    packageName in Docker  := "generatorControl",
     daemonUser in Docker   := "root",
     libraryDependencies   ++= Seq(
       "org.iq80.leveldb"          % "leveldb"                   % "0.7",
