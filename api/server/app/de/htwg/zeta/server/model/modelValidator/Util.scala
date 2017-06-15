@@ -7,7 +7,6 @@ import models.modelDefinitions.metaModel.elements.AttributeType
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import models.modelDefinitions.model.Model
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
@@ -88,7 +87,7 @@ object Util {
   )
 
   /**
-   * Internal representation of [[MLinkDef]].
+   * Internal representation of MLinkDef.
    *
    * @param name       The name.
    * @param lowerBound The lower bound.

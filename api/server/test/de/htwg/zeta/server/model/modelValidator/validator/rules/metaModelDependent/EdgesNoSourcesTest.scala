@@ -23,7 +23,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   val rule = new EdgesNoSources("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no sources" in {
-    val edge = Edge("", mReference, Seq(), Seq(),Map.empty)
+    val edge = Edge("", mReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
@@ -76,14 +76,14 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgesNoSources.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: EdgesNoSources =>
-        rule.edgeType should be ("reference")
+        rule.edgeType should be("reference")
       case _ => fail
     }
   }

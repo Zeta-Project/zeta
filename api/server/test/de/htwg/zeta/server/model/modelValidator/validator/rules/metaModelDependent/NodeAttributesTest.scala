@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
 import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
@@ -39,7 +40,7 @@ class NodeAttributesTest extends FlatSpec with Matchers {
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
-    val node = Node("", differentMClass, Seq(), Seq(),Map.empty)
+    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }
@@ -50,17 +51,20 @@ class NodeAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val attribute1 = MAttribute("attributeName1", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](attribute1, attribute2))
-    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val attribute1 = MAttribute("attributeName1", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](attribute1,
+      attribute2))
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributes.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: NodeAttributes =>
-        rule.nodeType should be ("class")
-        rule.attributeTypes should be (Seq("attributeName1", "attributeName2"))
+        rule.nodeType should be("class")
+        rule.attributeTypes should be(Seq("attributeName1", "attributeName2"))
       case _ => fail
     }
 

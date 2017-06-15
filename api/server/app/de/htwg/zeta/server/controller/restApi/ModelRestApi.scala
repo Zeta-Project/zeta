@@ -1,11 +1,11 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 import scala.concurrent.Await
 import scala.concurrent.Future
-import scala.concurrent.Promise
 import scala.concurrent.duration.Duration
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
@@ -90,25 +90,9 @@ class ModelRestApi @Inject()() extends Controller {
   }
 
   /** updates model definition only */
+  // FIXME duplicate method
   def updateModel(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id).modelEntity
-
-    val p = Promise[Result]
-    repo.read(id).map { saved =>
-      // TODO readAndMergeWithMetaModel is deleted due to refactoring
-      /* Model.readAndMergeWithMetaModel(request.body, saved.model.metaModel) match {
-        case JsSuccess(model, path) =>
-          repo.update(id, _.copy(model = model)).map { updated =>
-            p.success(Results.Ok(Json.toJson(updated)))
-          }.recover {
-            case e: Exception => p.success(Results.BadRequest(e.getMessage))
-          }
-        case JsError(_) => p.success(Results.BadRequest(s"Failed parsing of MetaModel in Model on GET $id"))
-      } */
-    }.recover {
-      case e: Exception => p.success(Results.BadRequest(e.getMessage))
-    }
-    p.future
+    update(id)(request)
   }
 
   /** returns whole model structure incl. HATEOS links */
@@ -119,28 +103,28 @@ class ModelRestApi @Inject()() extends Controller {
         HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(m.metaModelId).absoluteURL()(request)),
         HLink.delete("remove", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request))
       )))
-      null // TODO Results.Ok(Json.toJson(out))
+      Results.Ok(Json.toJson(out))
     })
   }
 
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    null // TODO protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
+    protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val nodes = m.model.nodes.values
-      null // TODO Results.Ok(Json.toJson(nodes))
+      Results.Ok(Json.toJson(nodes))
     })
   }
 
   /** returns specific node of a specific model as json object */
   def getNode(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val node = m.model.nodes.get(name) // TODO ese fold
-      null // TODO node.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      val node = m.model.nodes.get(name)
+      node.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
@@ -148,15 +132,15 @@ class ModelRestApi @Inject()() extends Controller {
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val edges = m.model.edges.values
-      null // TODO Results.Ok(Json.toJson(edges))
+      Results.Ok(Json.toJson(edges))
     })
   }
 
   /** returns specific edge of a specific model as json object */
   def getEdge(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val edge = m.model.edges.get(name) // TODO use fold
-      null // TODO edge.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      val edge = m.model.edges.get(name)
+      edge.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
 
@@ -185,7 +169,10 @@ class ModelRestApi @Inject()() extends Controller {
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (modelEntity: ModelEntity) => {
 
-      val metaModelEntity = Await.result(repository(request).get[MetaModelEntity](modelEntity.metaModelId), Duration(1, TimeUnit.SECONDS))
+      val metaModelEntity = Await.result( // FIXME don't use Await
+        restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.metaModelId),
+        Duration(1, TimeUnit.SECONDS)
+      )
 
       metaModelEntity.validator match {
         case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
@@ -194,8 +181,8 @@ class ModelRestApi @Inject()() extends Controller {
         }
         case None =>
           val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
-          Conflict(s"""No validator generated yet. Try calling $url first.""")
-
+          Conflict(
+            s"""No validator generated yet. Try calling $url first.""")
       }
 
     })
@@ -209,4 +196,5 @@ class ModelRestApi @Inject()() extends Controller {
       case e: Exception => Results.BadRequest(e.getMessage)
     }
   }
+
 }

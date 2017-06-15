@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
@@ -55,9 +56,10 @@ class NodeAttributesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, 7, 0)
-    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](attribute))
-    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment = false,
+      "", ordered = false, transient = false, 7, 0)
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](attribute))
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributesUpperBound.generateFor(metaModel)
 
     result.size should be (1)

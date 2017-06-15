@@ -30,9 +30,7 @@ class ScalaRoutes @Inject()(
 
 
   // # Home page
-  def getIndex(): Action[AnyContent] = {
-    AuthenticatedGet(ApplicationController.index _)
-  }
+  def getIndex(): Action[AnyContent] = AuthenticatedGet(ApplicationController.index _)
 
   def getUser(): Action[AnyContent] = AuthenticatedGet(ApplicationController.user _)
 
@@ -58,15 +56,14 @@ class ScalaRoutes @Inject()(
 
   def postPasswordChange(): Action[AnyContent] = AuthenticatedPost(ChangePasswordController.submit _)
 
+
   def getAccountEmail(email: String): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.send(email) _) // TODO send email per API??
 
   def getAccountActivate(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.activate(token: java.util.UUID) _)
 
 
   // ### Webpage
-  def getWebpage(): Action[AnyContent] = {
-    AuthenticatedGet(WebpageController.index _)
-  }
+  def getWebpage(): Action[AnyContent] = AuthenticatedGet(WebpageController.index _)
 
   def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverviewShortInfo _)
 
@@ -74,33 +71,24 @@ class ScalaRoutes @Inject()(
 
 
   // # metamodel editor
-  def getMetamodelEditor(metaModelId: UUID): Action[AnyContent] = {
-    AuthenticatedGet(MetaModelController.metaModelEditor(metaModelId) _)
-  }
+  def getMetamodelEditor(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelController.metaModelEditor(metaModelId) _)
 
   def getMetamodelSocket(metaModelId: UUID): WebSocket = AuthenticatedSocket(MetaModelController.metaModelSocket(metaModelId) _)
 
 
   // ### model editor
-  def getModelEditor(modelId: UUID): Action[AnyContent] = {
-    AuthenticatedGet(ModelController.modelEditor(modelId) _)
-  }
+  def getModelEditor(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(modelId) _)
 
   def getModelSocket(instanceId: UUID, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
 
-  def getModelValidator(): Action[AnyContent] = AuthenticatedGet(ModelController.modelValidator _)
-
 
   // ### vr
-  def getModelVrEditor(modelUuid: UUID): Action[AnyContent] = {
-    AuthenticatedGet(ModelController.vrModelEditor(modelUuid) _)
-  }
+  def getModelVrEditor(modelId: UUID): Action[AnyContent] =
+    AuthenticatedGet(ModelController.vrModelEditor(modelId) _)
 
 
   // # temporary
-  def getGenerate(metaModelUuid: UUID): Action[AnyContent] = {
-    AuthenticatedGet(GeneratorController.generate(metaModelUuid) _)
-  }
+  def getGenerate(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorController.generate(metaModelId) _)
 
   /* ### MetaModel REST API
    * MMRA => MetaModelRestApi
@@ -118,21 +106,18 @@ class ScalaRoutes @Inject()(
 
   def getMetamodelsDefinition(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
 
-  def putMetamodelsDefinition(metaModelId: UUID): Action[JsValue] = {
+  def putMetamodelsDefinition(metaModelId: UUID): Action[JsValue] =
     AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateMetaModelDefinition(metaModelId) _)
-  }
 
   def getMetamodelsDefinitionMclassesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
 
   def getMetamodelsDefinitionMreferencesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMReferences(metaModelId) _)
 
-  def getMetamodelsDefinitionMclasses(metaModelId: UUID, mClassName: String): Action[AnyContent] = {
+  def getMetamodelsDefinitionMclasses(metaModelId: UUID, mClassName: String): Action[AnyContent] =
     AuthenticatedGet(MetaModelRestApi.getMClass(metaModelId, mClassName) _)
-  }
 
-  def getMetamodelsDefinitionMReferences(metaModelId: UUID, mReferenceName: String): Action[AnyContent] = {
+  def getMetamodelsDefinitionMReferences(metaModelId: UUID, mReferenceName: String): Action[AnyContent] =
     AuthenticatedGet(MetaModelRestApi.getMReference(metaModelId, mReferenceName) _)
-  }
 
   def getMetamodelsShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getShape(metaModelId) _)
 
@@ -146,10 +131,8 @@ class ScalaRoutes @Inject()(
 
   def putMetamodelsDiagram(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
 
-  def getMetamodelsValidator(metaModelId: UUID, regenerate: Option[Boolean], noContent: Option[Boolean]): Action[AnyContent] =
-    AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, regenerate, noContent) _)
-
-  def deleteMetamodelsValidator(metaModelId: UUID): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.deleteValidator(metaModelId) _)
+  def getMetamodelsValidator(metaModelId: UUID, generate: Option[Boolean], noContent: Option[Boolean]): Action[AnyContent] =
+    AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, generate, noContent) _)
 
   /* ### Model REST API
    * MRA => ModelRestApi
@@ -182,23 +165,17 @@ class ScalaRoutes @Inject()(
 
 
   // ### Code Editor
-  def getCodeeditorEditor(metaModelId: UUID, dslType: String): Action[AnyContent] = {
+  def getCodeeditorEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
     AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
-  }
 
   def getCodeeditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
 
 
   // # Map static resources from the /public folder to the /assets URL path
-  def getAssets(file: String): Action[AnyContent] = {
-    Assets.at(path = "/public", file)
-  }
+  def getAssets(file: String): Action[AnyContent] = Assets.at(path = "/public", file)
 
   def getWebjars(file: String): Action[AnyContent] = WebJarAssets.at(file)
 
   def getMode_specific(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
 
 }
-
-
-

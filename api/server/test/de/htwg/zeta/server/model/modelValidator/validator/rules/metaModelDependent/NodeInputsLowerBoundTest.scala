@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.model.elements.ToEdges
 import models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
@@ -52,10 +53,10 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
-    val inputMLinkDef = MLinkDef(mReference, -1, 5, deleteIfLower = false)
+    val inputMLinkDef = MReferenceLinkDef(mReference.name, -1, 5, deleteIfLower = false)
 
-    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](inputMLinkDef), Seq[MLinkDef](), Seq[MAttribute]())
-    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef), Seq.empty, Seq[MAttribute]())
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeInputsLowerBound.generateFor(metaModel)
 
     result.size should be (1)

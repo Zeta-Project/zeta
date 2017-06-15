@@ -4,6 +4,7 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MClassLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ToNodes
@@ -89,12 +90,13 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class1", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-    val class2 = MClass("class2", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-    val targetLinkDef1 = MLinkDef(class1, -1, 0, deleteIfLower = false)
-    val targetLinkDef2 = MLinkDef(class2, -1, 0, deleteIfLower = false)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](targetLinkDef1, targetLinkDef2), Seq[MAttribute]())
-    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val class1 = MClass("class1", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val class2 = MClass("class2", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val targetLinkDef1 = MClassLinkDef(class1.name, -1, 0, deleteIfLower = false)
+    val targetLinkDef2 = MClassLinkDef(class2.name, -1, 0, deleteIfLower = false)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq(targetLinkDef1,
+      targetLinkDef2), Seq[MAttribute]())
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeTargetNodes.generateFor(metaModel)
 
     result.size should be (1)

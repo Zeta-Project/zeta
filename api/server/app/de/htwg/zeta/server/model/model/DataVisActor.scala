@@ -10,11 +10,8 @@ import de.htwg.zeta.server.model.model.DataVisActor.MetamodelFailure
 import de.htwg.zeta.server.model.model.DataVisActor.MetamodelLoaded
 import de.htwg.zeta.server.model.model.ModelWsActor.DataVisInvalidError
 import play.api.Logger
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import shared.DiagramWSMessage.DataVisCodeMessage
 import shared.DiagramWSMessage.DataVisScopeQuery
-import de.htwg.zeta.server.util.MetamodelBuilder
 import de.htwg.zeta.server.util.datavis.domain.Conditional
 import de.htwg.zeta.server.util.datavis.generator.ListenersGenerator
 import de.htwg.zeta.server.util.datavis.parser.DataVisParsers
@@ -32,7 +29,9 @@ class DataVisActor(socket: ActorRef, instanceId: UUID, graphType: String) extend
   override def receive = {
     case msg: DataVisCodeMessage => handleDataVisCode(msg)
     case DataVisScopeQuery(mClass) => handleScopeQuery(mClass)
-    case MetamodelLoaded(code) => metamodel = MetamodelBuilder().fromJson(Json.parse(code).asInstanceOf[JsObject])
+    case MetamodelLoaded(code) =>
+      // FIXME MetamodelBuilder().fromJson doesn't parsed the json, instead it always returned an empty MetaModel
+      // metamodel = MetamodelBuilder().fromJson(Json.parse(code).asInstanceOf[JsObject])
     case MetamodelFailure() => log.error("Unable to lead metamodel")
     case _ => log.error("Unknown message received")
   }

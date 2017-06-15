@@ -4,6 +4,7 @@ import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MClassLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ToNodes
@@ -87,10 +88,10 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
-    val sourceLinkDef1 = MLinkDef(class1, 7, 0, deleteIfLower = false)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](sourceLinkDef1), Seq[MLinkDef](), Seq[MAttribute]())
-    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val sourceLinkDef1 = MClassLinkDef(class1.name, 7, 0, deleteIfLower = false)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(sourceLinkDef1), Seq.empty, Seq.empty)
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeSourcesUpperBound.generateFor(metaModel)
 
     result.size should be (1)

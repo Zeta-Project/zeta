@@ -74,5 +74,5 @@ class TransientRepository extends Repository {
 
   /** Persistence for [[com.mohiva.play.silhouette.api.util.PasswordInfo]] */
   override val passwordInfo: PasswordInfoPersistence = null // TODO
-  
+
 }

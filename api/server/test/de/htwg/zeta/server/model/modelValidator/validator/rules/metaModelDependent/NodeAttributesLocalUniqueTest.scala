@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
@@ -41,17 +42,20 @@ class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val localUniqueAttribute = MAttribute("attributeName", globalUnique = false, localUnique = true, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val nonLocalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](nonLocalUniqueAttribute, localUniqueAttribute))
-    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val localUniqueAttribute = MAttribute("attributeName", globalUnique = false, localUnique = true, StringType, MString(""), constant = false,
+      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val nonLocalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
+      (nonLocalUniqueAttribute, localUniqueAttribute))
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributesLocalUnique.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: NodeAttributesLocalUnique =>
-        rule.nodeType should be ("class")
-        rule.attributeType should be ("attributeName")
+        rule.nodeType should be("class")
+        rule.attributeType should be("attributeName")
       case _ => fail
     }
 

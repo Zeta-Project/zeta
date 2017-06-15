@@ -72,14 +72,13 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
   }
 
   private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
-    val metaModelUuid = metaModel._id
 
     val currentDir = {
       val root = if (System.getenv("PWD") != null) System.getenv("PWD") else System.getProperty("user.dir")
       s"$root/server/model_specific"
     }
-    val generatorOutputLocation: String = s"$currentDir/$metaModelUuid/"
-    val vrGeneratorOutputLocation = s"$currentDir/vr/$metaModelUuid/"
+    val generatorOutputLocation: String = s"$currentDir/${metaModel.id}/"
+    val vrGeneratorOutputLocation = s"$currentDir/vr/${metaModel.id}/"
 
     createGeneratorFiles(diagram, hierarchyContainer).flatMap(gen => {
       createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {

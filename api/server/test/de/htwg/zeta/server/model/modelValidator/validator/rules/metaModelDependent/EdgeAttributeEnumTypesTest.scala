@@ -108,7 +108,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](enumAttribute, scalarAttribute))
-    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributeEnumTypes.generateFor(metaModel)
 
     result.size should be (1)

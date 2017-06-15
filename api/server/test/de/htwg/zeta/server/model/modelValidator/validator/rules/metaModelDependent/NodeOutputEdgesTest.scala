@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
 import org.scalatest.FlatSpec
@@ -49,18 +50,18 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
   "generateFor" should "generate this rule from the meta model" in {
     val mReference1 = MReference("reference1", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
     val mReference2 = MReference("reference2", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
-    val outputMLinkDef1 = MLinkDef(mReference1, -1, 0, deleteIfLower = false)
-    val outputMLinkDef2 = MLinkDef(mReference2, -1, 0, deleteIfLower = false)
+    val outputMLinkDef1 = MReferenceLinkDef(mReference1.name, -1, 0, deleteIfLower = false)
+    val outputMLinkDef2 = MReferenceLinkDef(mReference2.name, -1, 0, deleteIfLower = false)
 
-    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](outputMLinkDef1, outputMLinkDef2), Seq[MAttribute]())
-    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(outputMLinkDef1, outputMLinkDef2), Seq[MAttribute]())
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeOutputEdges.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: NodeOutputEdges =>
-        rule.nodeType should be ("class")
-        rule.outputTypes should be (Seq("reference1", "reference2"))
+        rule.nodeType should be("class")
+        rule.outputTypes should be(Seq("reference1", "reference2"))
       case _ => fail
     }
 

@@ -5,6 +5,7 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
 import org.scalatest.FlatSpec
@@ -51,18 +52,18 @@ class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
-    val outputMLinkDef = MLinkDef(mReference, -1, 5, deleteIfLower = false)
+    val outputMLinkDef = MReferenceLinkDef(mReference.name, -1, 5, deleteIfLower = false)
 
-    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](outputMLinkDef), Seq[MAttribute]())
-    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(outputMLinkDef), Seq[MAttribute]())
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeOutputsLowerBound.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: NodeOutputsLowerBound =>
-        rule.nodeType should be ("class")
-        rule.outputType should be ("reference")
-        rule.lowerBound should be (5)
+        rule.nodeType should be("class")
+        rule.outputType should be("reference")
+        rule.lowerBound should be(5)
       case _ => fail
     }
 

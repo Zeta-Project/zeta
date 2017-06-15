@@ -15,6 +15,7 @@ case class MetaModelEntity(
     name: String,
     metaModel: MetaModel,
     dsl: Dsl = Dsl(),
+    validator: Option[String] = None,
     links: Option[Seq[HLink]] = None
 ) extends Entity
 

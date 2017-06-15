@@ -5,7 +5,7 @@
 # backend connection
 GET           /socket/developer                                                      controllers.ScalaRoutes.getSocketDeveloper
 GET           /socket/generator/:id                                                  controllers.ScalaRoutes.getSocketGenerator(id: java.util.UUID)
-GET           /socket/user/:modelId                                                  controllers.ScalaRoutes.getSocketUser(modelId: java.util.UUID)
+GET           /socket/user/:model                                                    controllers.ScalaRoutes.getSocketUser(model: java.util.UUID)
 
 # Home page
 GET           /                                                                      controllers.ScalaRoutes.getIndex
@@ -40,14 +40,14 @@ GET           /metamodel/editor/:metaModelId                                    
 GET           /metamodel/socket/:metaModelId                                         controllers.ScalaRoutes.getMetamodelSocket(metaModelId: java.util.UUID)
 
 ### model editor
-GET           /model/editor/:metaModelUuid/:modelUuid                                controllers.ScalaRoutes.getModelEditor(metaModelUuid: String, modelUuid: String)
-GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:String, graphType:String)
+GET           /model/editor/:modelId                                                 controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
+GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:java.util.UUID, graphType:String)
 
 ### vr
 GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: java.util.UUID)
 
 # temporary
-GET           /generator/:metaModelUuid                                              controllers.ScalaRoutes.getGenerate(metaModelUuid: java.util.UUID)
+GET           /generator/:metaModelId                                                controllers.ScalaRoutes.getGenerate(metaModelId: java.util.UUID)
 
 ### MetaModel REST API
 GET           /metamodels                                                            controllers.ScalaRoutes.getMetamodelsNoArgs
@@ -67,9 +67,7 @@ GET           /metamodels/:metaModelId/style                                    
 PUT           /metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: java.util.UUID)
 GET           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
-GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, regenerate: Option[Boolean], noContent: Option[Boolean])
-DELETE        /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.deleteMetamodelsValidator(metaModelId: java.util.UUID)
-
+GET           /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean], noContent: Option[Boolean])
 
 ### Model REST API
 GET           /models                                                                controllers.ScalaRoutes.getModelsNoArgs
@@ -84,7 +82,6 @@ GET           /models/:modelId/definition/edges                                 
 GET           /models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: java.util.UUID, edgeName: String)
 DELETE        /models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
 GET           /models/:modelId/validation                                            controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
-
 
 ### Code Editor
 GET           /codeeditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeeditorEditor(metaModelId: java.util.UUID, dslType: String)
