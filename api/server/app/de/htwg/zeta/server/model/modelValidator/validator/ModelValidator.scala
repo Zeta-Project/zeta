@@ -32,7 +32,7 @@ trait ModelValidator {
   def validate(model: Model): Seq[ModelValidationResult] = {
     NullChecks.check(model) match {
       case NullChecksResult(false, Some(rule)) => Seq(ModelValidationResult(rule, valid = false))
-      case _ => (MetaModelIndependent.rules ++ metaModelDependentRules).flatMap(_.check(model.nodes.values.toSeq ++ model.edges.values.toSeq))
+      case _ => (MetaModelIndependent.rules ++ metaModelDependentRules).flatMap(_.check(model.nodeMap.values.toSeq ++ model.edgeMap.values.toSeq))
     }
   }
 

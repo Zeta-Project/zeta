@@ -11,5 +11,5 @@ class ElementsNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = Option(model.nodes).isDefined && Option(model.edges).isDefined
+  override def check(model: Model): Boolean = Option(model.nodeMap).isDefined && Option(model.edgeMap).isDefined
 }

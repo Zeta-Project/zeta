@@ -23,7 +23,7 @@ class EdgesNoTargets(val edgeType: String) extends SingleEdgeRule with DslRule {
 }
 
 object EdgesNoTargets extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .filter(_.target.isEmpty)
     .map(ref => new EdgesNoTargets(ref.name)).toSeq
 }

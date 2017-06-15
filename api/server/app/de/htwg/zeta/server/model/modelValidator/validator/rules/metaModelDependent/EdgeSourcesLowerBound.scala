@@ -25,7 +25,7 @@ class EdgeSourcesLowerBound(val edgeType: String, val sourceType: String, val lo
 }
 
 object EdgeSourcesLowerBound extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.source.map(source => new EdgeSourcesLowerBound(currentReference.name, source.className, source.lowerBound))
     }

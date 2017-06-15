@@ -1,26 +1,25 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelIndependent
 
-import scala.collection.immutable.Seq
-
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class EdgesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
 
   val rule = new EdgesAttributesNamesNotEmpty
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty)
+  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set.empty, Set.empty, Set.empty)
 
   "isValid" should "return true on non-empty attribute names" in {
-    val attribute = Map("attributeName1" -> Seq())
-    val edge = Edge("", mReference, Seq(), Seq(), attribute)
+    val attribute: Map[String, Set[AttributeValue]] = Map("attributeName1" -> Set())
+    val edge = Edge("", mReference, Set(), Set(), attribute)
     rule.isValid(edge).get should be (true)
   }
 
   it should "return false on empty attribute names" in {
-    val attribute = Map("" -> Seq())
-    val edge = Edge("", mReference, Seq(), Seq(), attribute)
+    val attribute: Map[String, Set[AttributeValue]] = Map("" -> Set())
+    val edge = Edge("", mReference, Set(), Set(), attribute)
     rule.isValid(edge).get should be (false)
   }
 

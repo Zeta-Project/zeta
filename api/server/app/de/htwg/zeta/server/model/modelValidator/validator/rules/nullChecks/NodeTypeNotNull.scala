@@ -11,5 +11,5 @@ class NodeTypeNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.nodes.values.toSeq.map(_.clazz).map(Option(_)).forall(_.isDefined)
+  override def check(model: Model): Boolean = !model.nodeMap.values.toSeq.map(_.clazz).map(Option(_)).forall(_.isDefined)
 }

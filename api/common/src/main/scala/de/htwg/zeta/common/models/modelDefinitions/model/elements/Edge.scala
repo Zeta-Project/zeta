@@ -1,7 +1,5 @@
 package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
-import scala.collection.immutable.Seq
-
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.Format
@@ -19,9 +17,9 @@ import play.api.libs.json.Json
 case class Edge(
     name: String,
     reference: MReference,
-    source: Seq[ToNodes],
-    target: Seq[ToNodes],
-    attributes: Map[String, Seq[AttributeValue]]
+    source: Set[ToNodes],
+    target: Set[ToNodes],
+    attributes: Map[String, Set[AttributeValue]]
 ) extends ModelElement with HasAttributes
 
 object Edge {

@@ -1,7 +1,5 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
-import scala.collection.immutable.Seq
-
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import play.api.libs.json.Format
 import play.api.libs.json.Json
@@ -28,13 +26,10 @@ object AttributeType {
    * @param name   the name of the MENum instance
    * @param values the names of the symbols
    */
-  case class MEnum(
-      name: String,
-      values: Seq[String]
-  ) extends MObject with AttributeType {
+  case class MEnum(name: String, values: Set[String]) extends MObject with AttributeType {
 
     /** The symbols. */
-    val symbols: Seq[EnumSymbol] = values.map(value => EnumSymbol(name, value))
+    val symbols: Set[EnumSymbol] = values.map(value => EnumSymbol(name, value))
 
   }
 

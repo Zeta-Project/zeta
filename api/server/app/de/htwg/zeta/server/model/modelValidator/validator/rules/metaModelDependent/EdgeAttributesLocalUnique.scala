@@ -24,17 +24,17 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
 
   def rule(edge: Edge): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MString => v }.map(_.value)
-    def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MBool => v }.map(_.value.toString)
-    def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MInt => v }.map(_.value.toString)
-    def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
-    def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
+    def handleStrings(values: Set[AttributeValue]): Set[String] = values.collect { case v: MString => v }.map(_.value)
+    def handleBooleans(values: Set[AttributeValue]): Set[String] = values.collect { case v: MBool => v }.map(_.value.toString)
+    def handleInts(values: Set[AttributeValue]): Set[String] = values.collect { case v: MInt => v }.map(_.value.toString)
+    def handleDoubles(values: Set[AttributeValue]): Set[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
+    def handleEnums(values: Set[AttributeValue]): Set[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
     edge.attributes.get(attributeType) match {
       case None => true
       case Some(attribute) =>
-        val attributeValues: Seq[String] = attribute.headOption match {
-          case None => Seq()
+        val attributeValues: Set[String] = attribute.headOption match {
+          case None => Set.empty
           case Some(_: MString) => handleStrings(attribute)
           case Some(_: MBool) => handleBooleans(attribute)
           case Some(_: MInt) => handleInts(attribute)
@@ -45,7 +45,7 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
         if (attributeValues.isEmpty) {
           true
         } else {
-          attributeValues.distinct.size == attribute.size
+          attributeValues.size == attribute.size
         }
     }
   }
@@ -54,7 +54,7 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
 }
 
 object EdgeAttributesLocalUnique extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes.filter(_.localUnique).map(attr => new EdgeAttributesLocalUnique(currentReference.name, attr.name))
     }

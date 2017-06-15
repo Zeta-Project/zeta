@@ -25,7 +25,7 @@ class EdgeAttributesLowerBound(val edgeType: String, val attributeType: String, 
 }
 
 object EdgeAttributesLowerBound extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes.map(attr => new EdgeAttributesLowerBound(currentReference.name, attr.name, attr.lowerBound))
     }

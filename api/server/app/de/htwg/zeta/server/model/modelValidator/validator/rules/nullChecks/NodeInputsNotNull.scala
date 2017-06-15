@@ -11,5 +11,5 @@ class NodeInputsNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.nodes.values.map(_.inputs).map(Option(_)).forall(_.isDefined)
+  override def check(model: Model): Boolean = !model.nodeMap.values.map(_.inputs).map(Option(_)).forall(_.isDefined)
 }

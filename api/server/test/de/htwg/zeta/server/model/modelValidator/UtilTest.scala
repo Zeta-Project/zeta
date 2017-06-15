@@ -2,22 +2,22 @@ package de.htwg.zeta.server.model.modelValidator
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
 import de.htwg.zeta.server.model.modelValidator.Util.Att
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.Node
-import models.modelDefinitions.model.elements.ToEdges
-import models.modelDefinitions.model.elements.ToNodes
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -27,69 +27,69 @@ class UtilTest extends FlatSpec with Matchers {
   val mClass = MClass(
     name = "mClass",
     abstractness = false,
-    superTypeNames = Seq.empty,
-    inputs = Seq.empty,
-    outputs = Seq.empty,
-    attributes = Seq[MAttribute]()
+    superTypeNames = Set.empty,
+    inputs = Set.empty,
+    outputs = Set.empty,
+    attributes = Set[MAttribute]()
   )
 
   val mReference = MReference(
     name = "mReference",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq.empty,
-    target = Seq.empty,
-    attributes = Seq[MAttribute]()
+    source = Set.empty,
+    target = Set.empty,
+    attributes = Set[MAttribute]()
   )
 
   val modelElements = Seq(
-    Node(name = "node1", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Node(name = "node2", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(name = "edge1", reference = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
-    Node(name = "node3", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(name = "edge2", reference = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
+    Node(name = "node1", clazz = mClass, outputs = Set[ToEdges](), inputs = Set[ToEdges](), attributes = Map.empty),
+    Node(name = "node2", clazz = mClass, outputs = Set[ToEdges](), inputs = Set[ToEdges](), attributes = Map.empty),
+    Edge(name = "edge1", reference = mReference, source = Set[ToNodes](), target = Set[ToNodes](), attributes = Map.empty),
+    Node(name = "node3", clazz = mClass, outputs = Set[ToEdges](), inputs = Set[ToEdges](), attributes = Map.empty),
+    Edge(name = "edge2", reference = mReference, source = Set[ToNodes](), target = Set[ToNodes](), attributes = Map.empty)
   )
 
-  val mObjects = Seq(
+  val mObjects = Set(
     MReference(
       name = "mReference1",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
-      attributes = Seq[MAttribute]()
+      source = Set.empty,
+      target = Set.empty,
+      attributes = Set[MAttribute]()
     ),
     MReference(
       name = "mReference2",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
-      attributes = Seq[MAttribute]()
+      source = Set.empty,
+      target = Set.empty,
+      attributes = Set[MAttribute]()
     ),
     MClass(
       name = "mClass1",
       abstractness = false,
-      superTypeNames = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
-      attributes = Seq[MAttribute]()
+      superTypeNames = Set.empty,
+      inputs = Set.empty,
+      outputs = Set.empty,
+      attributes = Set[MAttribute]()
     ),
     MReference(
       name = "mReference3",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
-      attributes = Seq[MAttribute]()
+      source = Set.empty,
+      target = Set.empty,
+      attributes = Set[MAttribute]()
     ),
     MClass(
       name = "mClass2",
       abstractness = true,
-      superTypeNames = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
-      attributes = Seq[MAttribute]()
+      superTypeNames = Set.empty,
+      inputs = Set.empty,
+      outputs = Set.empty,
+      attributes = Set[MAttribute]()
     )
 
   )
@@ -114,9 +114,9 @@ class UtilTest extends FlatSpec with Matchers {
     name = "superClassOneToSuperClassTwo",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq(),
-    target = Seq(),
-    attributes = Seq()
+    source = Set(),
+    target = Set(),
+    attributes = Set()
   )
   val superClassOneOutput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
   val superClassTwoInput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
@@ -124,41 +124,41 @@ class UtilTest extends FlatSpec with Matchers {
   val abstractSuperClassOne = MClass(
     name = "abstractSuperClassOne",
     abstractness = true,
-    superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(superClassOneOutput),
-    attributes = Seq(abstractSuperClassOneAttribute)
+    superTypeNames = Set(),
+    inputs = Set(),
+    outputs = Set(superClassOneOutput),
+    attributes = Set(abstractSuperClassOneAttribute)
   )
   val abstractSuperClassTwo = MClass(
     name = "abstractSuperClassTwo",
     abstractness = true,
-    superTypeNames = Seq(),
-    inputs = Seq(superClassTwoInput),
-    outputs = Seq(),
-    attributes = Seq()
+    superTypeNames = Set(),
+    inputs = Set(superClassTwoInput),
+    outputs = Set(),
+    attributes = Set()
   )
   val subClassOne = MClass(
     name = "subClassOne",
     abstractness = false,
-    superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
-    attributes = Seq()
+    superTypeNames = Set(abstractSuperClassOne.name, abstractSuperClassTwo.name),
+    inputs = Set(),
+    outputs = Set(),
+    attributes = Set()
   )
   val subClassTwo = MClass(
     name = "subClassTwo",
     abstractness = false,
-    superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
-    attributes = Seq()
+    superTypeNames = Set(abstractSuperClassOne.name, abstractSuperClassTwo.name),
+    inputs = Set(),
+    outputs = Set(),
+    attributes = Set()
   )
 
   val metaModel = MetaModel(
     name = "metaModelTest",
-    classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo).map(clazz => (clazz.name, clazz)).toMap,
-    references = Seq(superClassOneToSuperClassTwo).map(reference => (reference.name, reference)).toMap,
-    enums = Map.empty,
+    classes = Set(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo),
+    references = Set(superClassOneToSuperClassTwo),
+    enums = Set.empty,
     uiState = ""
   )
 
@@ -192,10 +192,7 @@ class UtilTest extends FlatSpec with Matchers {
     Util.getAttributeTypeClassName(BoolType) should be("Bool")
     Util.getAttributeTypeClassName(IntType) should be("Int")
 
-    val mEnum: MEnum = MEnum(
-      name = "TestMEnum",
-      values = Seq()
-    )
+    val mEnum: MEnum = MEnum(name = "TestMEnum", values = Set.empty)
 
     Util.getAttributeTypeClassName(mEnum) should be("MEnum")
   }

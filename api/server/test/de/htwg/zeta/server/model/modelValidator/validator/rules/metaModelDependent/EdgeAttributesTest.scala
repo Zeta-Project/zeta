@@ -2,14 +2,15 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -19,30 +20,30 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     "reference",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
-    Seq[MAttribute]()
+    Set.empty,
+    Set.empty,
+    Set[MAttribute]()
   )
   val rule = new EdgeAttributes("reference", Seq("stringAttribute", "boolAttribute"))
 
   "the rule" should "be true for valid edge" in {
-    val attributes = Map(
-      "stringAttribute" -> Seq(MString("test")),
-      "boolAttribute" -> Seq(MBool(true))
+    val attributes: Map[String, Set[AttributeValue]] = Map(
+      "stringAttribute" -> Set(MString("test")),
+      "boolAttribute" -> Set(MBool(true))
     )
-    val edge = Edge("edgeId", mReference, Seq(), Seq(), attributes)
+    val edge = Edge("edgeId", mReference, Set(), Set(), attributes)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "be false for invalid edges" in {
-    val attributes = Map(
-      "stringAttribute" -> Seq(MString("test")),
-      "boolAttribute" -> Seq(MBool(true)),
-      "invalidAttribute" -> Seq(MDouble(1.0))
+    val attributes: Map[String, Set[AttributeValue]] = Map(
+      "stringAttribute" -> Set(MString("test")),
+      "boolAttribute" -> Set(MBool(true)),
+      "invalidAttribute" -> Set(MDouble(1.0))
     )
 
-    val edge = Edge("edgeId", mReference, Seq(), Seq(), attributes)
+    val edge = Edge("edgeId", mReference, Set(), Set(), attributes)
 
     rule.isValid(edge).get should be(false)
   }
@@ -53,24 +54,24 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "nonMatchingReference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
-      Seq[MAttribute]()
+      Set.empty,
+      Set.empty,
+      Set[MAttribute]()
     )
 
-    val attributes = Map(
-      "stringAttribute" -> Seq(MString("test")),
-      "boolAttribute" -> Seq(MBool(true))
+    val attributes: Map[String, Set[AttributeValue]] = Map(
+      "stringAttribute" -> Set(MString("test")),
+      "boolAttribute" -> Set(MBool(true))
     )
 
-    val edge = Edge("edgeId", nonMatchingReference, Seq(), Seq(), attributes)
+    val edge = Edge("edgeId", nonMatchingReference, Set(), Set(), attributes)
 
     rule.isValid(edge) should be(None)
   }
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be(
-      """Attributes inEdges "reference" areOfTypes Seq("stringAttribute", "boolAttribute")""")
+      """Attributes inEdges "reference" areOfTypes Set("stringAttribute", "boolAttribute")""")
   }
 
   "generateFor" should "generate this rule from the meta model" in {
@@ -78,16 +79,16 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "", ordered = false, transient = false, -1, 0)
     val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MInt(0), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, -1, 0)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set.empty, Set.empty, Set[MAttribute]
       (attribute, attribute2))
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
+    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
     val result = EdgeAttributes.generateFor(metaModel)
 
     result.size should be(1)
     result.head match {
       case rule: EdgeAttributes =>
         rule.edgeType should be("reference")
-        rule.attributeTypes should be(Seq("attributeName", "attributeName2"))
+        rule.attributeTypes should be(Set("attributeName", "attributeName2"))
       case _ => fail
     }
   }

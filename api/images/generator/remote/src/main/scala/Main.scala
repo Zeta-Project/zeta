@@ -122,7 +122,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     val p = Promise[Result]
 
     repository.modelEntity.read(options.modelId).map { entity =>
-      entity.model.nodes.values.foreach { node: Node =>
+      entity.model.nodeMap.values.foreach { node: Node =>
         if (node.clazz.name == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.clazz.name))
         }

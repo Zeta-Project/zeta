@@ -1,27 +1,27 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 object TestUtil {
 
-  def classesToMetaModel(elements: Seq[MClass]) = {
+  def classesToMetaModel(elements: Set[MClass]) = {
     MetaModel(
       name = "",
-      classes = elements.map(el => el.name -> el).toMap,
-      references = Map.empty,
-      enums = Map.empty,
+      classes = elements,
+      references = Set.empty,
+      enums = Set.empty,
       uiState = ""
     )
   }
 
-  def referencesToMetaModel(elements: Seq[MReference]) = {
+  def referencesToMetaModel(elements: Set[MReference]) = {
     MetaModel(
       name = "",
-      classes = Map.empty,
-      references = elements.map(el => el.name -> el).toMap,
-      enums = Map.empty,
+      classes = Set.empty,
+      references = elements,
+      enums = Set.empty,
       uiState = ""
     )
   }

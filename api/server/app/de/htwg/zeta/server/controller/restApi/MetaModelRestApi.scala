@@ -138,7 +138,7 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns all MClasses of a specific metamodel as Json Array */
   def getMClasses(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      val classes = m.metaModel.classes.values
+      val classes = m.metaModel.classMap.values
       Ok(Json.toJson(classes))
     })
   }
@@ -146,7 +146,7 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns all MReferences of a specific metamodel as Json Array */
   def getMReferences(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      val references = m.metaModel.references.values
+      val references = m.metaModel.referenceMap.values
       Ok(Json.toJson(references))
     })
   }
@@ -154,7 +154,7 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns specific MClass of a specific metamodel as Json Object */
   def getMClass(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.metaModel.classes.get(name).map(clazz =>
+      m.metaModel.classMap.get(name).map(clazz =>
         Ok(Json.toJson(clazz))
       ).getOrElse(NotFound)
     })
@@ -163,7 +163,7 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns specific MReference of a specific metamodel as Json Object */
   def getMReference(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.metaModel.references.get(name).map(reference =>
+      m.metaModel.referenceMap.get(name).map(reference =>
         Ok(Json.toJson(reference))
       ).getOrElse(NotFound)
     })

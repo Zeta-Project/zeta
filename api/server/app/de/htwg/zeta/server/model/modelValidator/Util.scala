@@ -124,16 +124,16 @@ object Util {
    */
   def simplifyMetaModelGraph(metaModel: MetaModel): Seq[El] = {
 
-    val allClasses = metaModel.classes.values.toSeq
+    val allClasses = metaModel.classMap.values.toSeq
 
     def mapElement(el: MClass): El = El(
       name = el.name,
-      superTypes = el.superTypeNames,
+      superTypes = el.superTypeNames.toSeq,
       subTypes = allClasses.filter(_.superTypeNames.contains(el.name)).map(_.name),
-      attributes = el.attributes.map(mapAttribute),
+      attributes = el.attributes.map(mapAttribute).toSeq,
       abstractness = el.abstractness,
-      inputs = el.inputs.map(mapLinkDef),
-      outputs = el.outputs.map(mapLinkDef)
+      inputs = el.inputs.map(mapLinkDef).toSeq,
+      outputs = el.outputs.map(mapLinkDef).toSeq
     )
 
     def mapAttribute(att: MAttribute): Att = Att(

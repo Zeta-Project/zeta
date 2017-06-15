@@ -169,7 +169,6 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   private implicit val mAttributeFormat: RootJsonFormat[MAttribute] = jsonFormat12(MAttribute.apply)
 
 
-
   /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass]] */
   private implicit object MClassFormat extends RootJsonFormat[MClass] {
 
@@ -200,10 +199,10 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
           MClass(
             name,
             abstractness,
-            superTypes.convertTo[List[String]],
+            superTypes.convertTo[Set[String]],
             null, // TODO inputs.convertTo[List[MLinkDef]],
             null, // TODO outputs.convertTo[List[MLinkDef]],
-            attributes.convertTo[List[MAttribute]]
+            attributes.convertTo[Set[MAttribute]]
           )
       }
     }
@@ -244,7 +243,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
             targetDeletionDeletesSource,
             null, // TODO source.convertTo[List[MLinkDef]],
             null, // TODO target.convertTo[List[MLinkDef]],
-            attributes.convertTo[List[MAttribute]]
+            attributes.convertTo[Set[MAttribute]]
           )
       }
     }
@@ -292,12 +291,9 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
       value.asJsObject.getFields(sName, sValues) match {
         case Seq(JsString(name), JsArray(values)) =>
           val enum = MEnum(name, null) // scalastyle:ignore
-          MEnum(
-            name,
-            values.map {
-              case JsString(v) => null // TODO EnumSymbol(v, enum)
-            }
-          )
+          MEnum(name, values.map {
+            case JsString(v) => null // TODO EnumSymbol(v, enum)
+          }.toSet)
       }
     }
 
@@ -367,7 +363,6 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
     }
 
   }
-
 
 
   // private implicit val metaModelFormat: RootJsonFormat[MetaModel] = jsonFormat3(MetaModel.apply)

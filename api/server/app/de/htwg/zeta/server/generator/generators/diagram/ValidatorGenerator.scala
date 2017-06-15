@@ -46,7 +46,7 @@ object ValidatorGenerator {
   def generateInOutMatrix(diagram: Diagram) = {
     var inputMatrix = new ListBuffer[String]
     var outputMatrix = new ListBuffer[String]
-    diagram.metamodel.metaModel.classes.foreach { e =>
+    diagram.metamodel.metaModel.classMap.foreach { e =>
       e._2 match {
         case mc: MClass =>
           if (mc.inputs.nonEmpty) {
@@ -69,7 +69,7 @@ object ValidatorGenerator {
     """
   }
 
-  def generateInOutMatrixForMClass(inputs: Seq[MReferenceLinkDef], mcName: String): String = {
+  def generateInOutMatrixForMClass(inputs: Set[MReferenceLinkDef], mcName: String): String = {
     s"""
     $mcName: {
       ${

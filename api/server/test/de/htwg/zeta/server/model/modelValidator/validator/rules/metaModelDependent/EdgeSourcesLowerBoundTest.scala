@@ -1,13 +1,11 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import scala.collection.immutable.Seq
-
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MClassLinkDef
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -17,9 +15,9 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
     "edgeType",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
-    Seq[MAttribute]()
+    Set.empty,
+    Set.empty,
+    Set[MAttribute]()
   )
   val rule = new EdgeSourcesLowerBound("edgeType", "sourceType", 2)
 
@@ -27,21 +25,21 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
     val sourceType = MClass(
       name = "sourceType",
       abstractness = false,
-      superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
-      attributes = Seq()
+      superTypeNames = Set(),
+      inputs = Set(),
+      outputs = Set(),
+      attributes = Set()
     )
 
-    val twoSourceNodes = ToNodes(clazz = sourceType, nodeNames = Seq("1", "2"))
+    val twoSourceNodes = ToNodes(clazz = sourceType, nodeNames = Set("1", "2"))
 
-    val edgeTwoSourceNodes = Edge("", mReference, Seq(twoSourceNodes), Seq(), Map.empty)
+    val edgeTwoSourceNodes = Edge("", mReference, Set(twoSourceNodes), Set(), Map.empty)
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
-    val threeSourceNodes = ToNodes(clazz = sourceType, nodeNames = Seq("1", "2", "2"))
+    val threeSourceNodes = ToNodes(clazz = sourceType, nodeNames = Set("1", "2", "2"))
 
-    val edgeThreeSourceNodes = Edge("", mReference, Seq(threeSourceNodes), Seq(), Map.empty)
+    val edgeThreeSourceNodes = Edge("", mReference, Set(threeSourceNodes), Set(), Map.empty)
 
     rule.isValid(edgeThreeSourceNodes).get should be(true)
   }
@@ -50,19 +48,19 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
     val sourceType = MClass(
       name = "sourceType",
       abstractness = false,
-      superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
-      attributes = Seq()
+      superTypeNames = Set(),
+      inputs = Set(),
+      outputs = Set(),
+      attributes = Set()
     )
 
-    val oneSourceNode = ToNodes(clazz = sourceType, nodeNames = Seq("1"))
+    val oneSourceNode = ToNodes(clazz = sourceType, nodeNames = Set("1"))
 
-    val edgeOneSourceNode = Edge("", mReference, Seq(oneSourceNode), Seq(), Map.empty)
+    val edgeOneSourceNode = Edge("", mReference, Set(oneSourceNode), Set(), Map.empty)
 
     rule.isValid(edgeOneSourceNode).get should be(false)
 
-    val edgeNoSourceNodes = Edge("", mReference, Seq(), Seq(), Map.empty)
+    val edgeNoSourceNodes = Edge("", mReference, Set(), Set(), Map.empty)
 
     rule.isValid(edgeNoSourceNodes).get should be(false)
   }
@@ -72,11 +70,11 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       "invalidReference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
-      Seq[MAttribute]()
+      Set.empty,
+      Set.empty,
+      Set[MAttribute]()
     )
-    val edge = Edge("", differentMRef, Seq(), Seq(), Map.empty)
+    val edge = Edge("", differentMRef, Set(), Set(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 
@@ -86,11 +84,11 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val class1 = MClass("class", abstractness = false, Set.empty, Set.empty, Set.empty, Set[MAttribute]())
     val sourceLinkDef1 = MClassLinkDef(class1.name, -1, 5, deleteIfLower = false)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(sourceLinkDef1), Seq.empty,
-      Seq[MAttribute]())
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set(sourceLinkDef1), Set.empty,
+      Set[MAttribute]())
+    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
     val result = EdgeSourcesLowerBound.generateFor(metaModel)
 
     result.size should be(1)

@@ -25,12 +25,12 @@ class EdgeTargetNodes(val edgeType: String, val targetTypes: Seq[String]) extend
 }
 
 object EdgeTargetNodes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       if (currentReference.target.isEmpty) {
         acc
       } else {
-        acc :+ new EdgeTargetNodes(currentReference.name, currentReference.target.map(_.className))
+        acc :+ new EdgeTargetNodes(currentReference.name, currentReference.target.map(_.className).toSeq)
       }
     }
 }

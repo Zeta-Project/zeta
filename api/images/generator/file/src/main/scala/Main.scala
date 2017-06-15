@@ -28,8 +28,8 @@ class MyTransformer() extends Transformer {
     val filename = "example.txt"
     val content =
       s"""
-        |Number of nodes : ${entity.model.nodes.size}
-        |Number of edges : ${entity.model.edges.size}
+        |Number of nodes : ${entity.model.nodeMap.size}
+        |Number of edges : ${entity.model.edgeMap.size}
       """.stripMargin
 
     val f = File(entity.id, filename, content)

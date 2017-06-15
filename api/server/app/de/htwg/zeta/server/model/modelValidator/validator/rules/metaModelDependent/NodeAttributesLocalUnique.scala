@@ -23,18 +23,18 @@ class NodeAttributesLocalUnique(val nodeType: String, val attributeType: String)
 
   override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
-  def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MString => v }.map(_.value)
-  def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MBool => v }.map(_.value.toString)
-  def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MInt => v }.map(_.value.toString)
-  def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
-  def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
+  def handleStrings(values: Set[AttributeValue]): Set[String] = values.collect { case v: MString => v }.map(_.value)
+  def handleBooleans(values: Set[AttributeValue]): Set[String] = values.collect { case v: MBool => v }.map(_.value.toString)
+  def handleInts(values: Set[AttributeValue]): Set[String] = values.collect { case v: MInt => v }.map(_.value.toString)
+  def handleDoubles(values: Set[AttributeValue]): Set[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
+  def handleEnums(values: Set[AttributeValue]): Set[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
   def rule(node: Node): Boolean = {
     node.attributes.get(attributeType) match {
       case None => true
       case Some(attribute) =>
-        val attributeValues: Seq[String] = attribute.headOption match {
-          case None => Seq()
+        val attributeValues: Set[String] = attribute.headOption match {
+          case None => Set.empty
           case Some(_: MString) => handleStrings(attribute)
           case Some(_: MBool) => handleBooleans(attribute)
           case Some(_: MInt) => handleInts(attribute)
@@ -42,7 +42,7 @@ class NodeAttributesLocalUnique(val nodeType: String, val attributeType: String)
           case Some(_: EnumSymbol) => handleEnums(attribute)
         }
 
-        if (attributeValues.isEmpty) true else attributeValues.distinct.size == attribute.size
+        if (attributeValues.isEmpty) true else attributeValues.size == attribute.size
     }
   }
 

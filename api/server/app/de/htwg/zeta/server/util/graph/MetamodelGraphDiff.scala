@@ -36,7 +36,7 @@ object MetamodelGraphDiff {
    */
   def fixGraph(metaModel: MetaModel): MetaModel = {
 
-    val elements: Map[String, MObject] = metaModel.classes ++ metaModel.references ++ metaModel.enums
+    val elements: Map[String, MObject] = metaModel.classMap ++ metaModel.referenceMap ++ metaModel.enumMap
     if (metaModel.uiState.isEmpty) {
       metaModel
     } else {

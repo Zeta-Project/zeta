@@ -1,7 +1,6 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.annotation.tailrec
-import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import play.api.libs.json.Json
@@ -20,18 +19,17 @@ import play.api.libs.json.OFormat
 case class MClass(
     name: String,
     abstractness: Boolean,
-    superTypeNames: Seq[String],
-    inputs: Seq[MReferenceLinkDef],
-    outputs: Seq[MReferenceLinkDef],
-    attributes: Seq[MAttribute]
+    superTypeNames: Set[String],
+    inputs: Set[MReferenceLinkDef],
+    outputs: Set[MReferenceLinkDef],
+    attributes: Set[MAttribute]
 ) extends MObject
 
 object MClass {
 
 
   case class MClassTraverseWrapper(value: MClass, metaModel: MetaModelTraverseWrapper) {
-
-    def superTypes: Seq[MClassTraverseWrapper] = {
+    def superTypes: Set[MClassTraverseWrapper] = {
       value.superTypeNames.map(name =>
         MClassTraverseWrapper(metaModel.classes(name).value, metaModel)
       )
@@ -40,7 +38,7 @@ object MClass {
     /**
      * represents the supertype hierarchy of this particular MClass
      */
-    lazy val typeHierarchy: Seq[MClassTraverseWrapper] = getSuperHierarchy(Seq(this), superTypes)
+    lazy val typeHierarchy: Set[MClassTraverseWrapper] = getSuperHierarchy(Set(this), superTypes)
 
     /**
      * Determines the supertype hierarchy of this particular MClass
@@ -49,16 +47,14 @@ object MClass {
      * @param inspect the next MClass to check
      * @return MClasses that take part in the supertype hierarchy
      */
-    private def getSuperHierarchy(acc: Seq[MClassTraverseWrapper], inspect: Seq[MClassTraverseWrapper]): Seq[MClassTraverseWrapper] = {
-      {
-        inspect.foldLeft(acc) { (a, m) =>
-          if (a.exists(_.value.name == m.value.name)) {
-            a
-          } else {
-            getSuperHierarchy(m +: acc, m.superTypes)
-          }
+    private def getSuperHierarchy(acc: Set[MClassTraverseWrapper], inspect: Set[MClassTraverseWrapper]): Set[MClassTraverseWrapper] = {
+      inspect.foldLeft(acc) { (a, m) =>
+        if (a.exists(_.value.name == m.value.name)) {
+          a
+        } else {
+          getSuperHierarchy(acc + m, m.superTypes)
         }
-      }.reverse
+      }
     }
 
     /**
@@ -102,7 +98,7 @@ object MClass {
      *
      * @return the MAttributes
      */
-    def getTypeMAttributes: Seq[MAttribute] = {
+    def getTypeMAttributes: Set[MAttribute] = {
       typeHierarchy.flatMap(_.value.attributes)
     }
 
@@ -114,15 +110,15 @@ object MClass {
      */
     def findMAttribute(attributeName: String): Option[MAttribute] = {
       @tailrec
-      def find(remaining: Seq[MClass]): Option[MAttribute] = {
-        remaining match {
-          case Nil => None
-          case head :: tail =>
-            val attribute = head.attributes.find(_.name == attributeName)
-            if (attribute.isDefined) attribute else find(tail)
+      def find(remaining: Set[MClass]): Option[MAttribute] = {
+        if (remaining.isEmpty) {
+          None
+        } else {
+          val head = remaining.head
+          val attribute = head.attributes.find(_.name == attributeName)
+          if (attribute.isDefined) attribute else find(remaining - head)
         }
       }
-
       find(typeHierarchy.map(_.value))
     }
 

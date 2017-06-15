@@ -33,10 +33,10 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
 
   def rule(edge: Edge): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Boolean = values.collect { case v: MString => v }.forall(_.attributeType == attributeDataType)
-    def handleBooleans(values: Seq[AttributeValue]): Boolean = values.collect { case v: MBool => v }.forall(_.attributeType == attributeDataType)
-    def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: MInt => v }.forall(_.attributeType == attributeDataType)
-    def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: MDouble => v }.forall(_.attributeType == attributeDataType)
+    def handleStrings(values: Set[AttributeValue]): Boolean = values.collect { case v: MString => v }.forall(_.attributeType == attributeDataType)
+    def handleBooleans(values: Set[AttributeValue]): Boolean = values.collect { case v: MBool => v }.forall(_.attributeType == attributeDataType)
+    def handleInts(values: Set[AttributeValue]): Boolean = values.collect { case v: MInt => v }.forall(_.attributeType == attributeDataType)
+    def handleDoubles(values: Set[AttributeValue]): Boolean = values.collect { case v: MDouble => v }.forall(_.attributeType == attributeDataType)
 
     edge.attributes.get(attributeType) match {
       case None => true
@@ -58,7 +58,7 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
 }
 
 object EdgeAttributeScalarTypes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes
         .filter(att => Seq(StringType, IntType, BoolType, DoubleType).contains(att.typ))

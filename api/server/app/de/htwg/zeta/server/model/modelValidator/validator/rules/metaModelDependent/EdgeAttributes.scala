@@ -25,12 +25,12 @@ class EdgeAttributes(val edgeType: String, val attributeTypes: Seq[String]) exte
 }
 
 object EdgeAttributes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.references.values
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       if (currentReference.attributes.isEmpty) {
         acc
       } else {
-        acc :+ new EdgeAttributes(currentReference.name, currentReference.attributes.map(_.name))
+        acc :+ new EdgeAttributes(currentReference.name, currentReference.attributes.map(_.name).toSeq)
       }
     }
 }

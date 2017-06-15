@@ -21,6 +21,6 @@ class Nodes(val nodeTypes: Seq[String]) extends SingleNodeRule with DslRule {
 }
 
 object Nodes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Seq(new Nodes(metaModel.classes.values.filter(!_.abstractness).map(_
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Seq(new Nodes(metaModel.classMap.values.filter(!_.abstractness).map(_
     .name).toSeq))
 }

@@ -238,7 +238,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
       stream
     }
 
-    private def processLogs(p: Promise[Int], status: Integer): Future[p.type] = {
+    private def processLogs(p: Promise[Int], status: Integer): Future[Any] = {
       val now = new DateTime().toDateTimeISO.toString
 
       val task = work.job match {

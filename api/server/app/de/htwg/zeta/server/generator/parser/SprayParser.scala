@@ -44,9 +44,9 @@ object SprayParser
 class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) extends CommonParserMethods with Logging {
   type diaConnection = de.htwg.zeta.server.generator.model.diagram.edge.Connection
 
-  private val metaMapMClass: Map[String, MClass] = metaModelE.metaModel.classes
+  private val metaMapMClass: Map[String, MClass] = metaModelE.metaModel.classMap
 
-  private val metaMapMReference: Map[String, MReference] = metaModelE.metaModel.references
+  private val metaMapMReference: Map[String, MReference] = metaModelE.metaModel.referenceMap
   require(metaMapMClass.nonEmpty)
 
   /* Style-specific---------------------------------------------------------------------------- */

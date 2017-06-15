@@ -71,7 +71,7 @@ class DiaShape(
   }
 
   private def getNests(getElement: ElementSup[MReference, Compartment]): Map[MReference, Compartment] = {
-    getElement("nest", _.compartmentMap, key => metaModelEntity.metaModel.references.toStream.flatMap {
+    getElement("nest", _.compartmentMap, key => metaModelEntity.metaModel.referenceMap.toStream.flatMap {
       case (name: String, ref: MReference) if name == key => List(ref)
       case _ => Nil
     }.headOption)

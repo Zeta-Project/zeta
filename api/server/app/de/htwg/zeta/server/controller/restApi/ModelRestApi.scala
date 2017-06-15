@@ -113,7 +113,7 @@ class ModelRestApi() extends Controller with Logging {
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val nodes = m.model.nodes.values
+      val nodes = m.model.nodeMap.values
       Results.Ok(Json.toJson(nodes))
     })
   }
@@ -121,7 +121,7 @@ class ModelRestApi() extends Controller with Logging {
   /** returns specific node of a specific model as json object */
   def getNode(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val node = m.model.nodes.get(name)
+      val node = m.model.nodeMap.get(name)
       node.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }
@@ -129,7 +129,7 @@ class ModelRestApi() extends Controller with Logging {
   /** returns all edges of a model as json array */
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val edges = m.model.edges.values
+      val edges = m.model.edgeMap.values
       Results.Ok(Json.toJson(edges))
     })
   }
@@ -137,7 +137,7 @@ class ModelRestApi() extends Controller with Logging {
   /** returns specific edge of a specific model as json object */
   def getEdge(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val edge = m.model.edges.get(name)
+      val edge = m.model.edgeMap.get(name)
       edge.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
     })
   }

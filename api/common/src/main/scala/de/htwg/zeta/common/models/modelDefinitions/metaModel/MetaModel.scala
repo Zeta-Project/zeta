@@ -19,11 +19,20 @@ import play.api.libs.json.Json
  */
 case class MetaModel(
     name: String,
-    classes: Map[String, MClass],
-    references: Map[String, MReference],
-    enums: Map[String, MEnum],
+    classes: Set[MClass],
+    references: Set[MReference],
+    enums: Set[MEnum],
     uiState: String
 ) {
+
+  /** Classes mapped to their own names. */
+  val classMap: Map[String, MClass] = classes.map(clazz => (clazz.name, clazz)).toMap
+
+  /** References mapped to their own names. */
+  val referenceMap: Map[String, MReference] = references.map(reference => (reference.name, reference)).toMap
+
+  /** Enums mapped to their own names. */
+  val enumMap: Map[String, MEnum] = enums.map(enum => (enum.name, enum)).toMap
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)
@@ -35,7 +44,7 @@ object MetaModel {
   case class MetaModelTraverseWrapper(value: MetaModel) {
 
     def classes: Map[String, MClassTraverseWrapper] = {
-      value.classes.map {
+      value.classMap.map {
         case (name: String, clazz: MClass) => (name, MClassTraverseWrapper(clazz, this))
       }
     }

@@ -2,11 +2,12 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MReference
-import models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -17,21 +18,21 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
     "edgeType",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
-    Seq[MAttribute]()
+    Set.empty,
+    Set.empty,
+    Set[MAttribute]()
   )
 
   "isValid" should "return true on valid edges" in {
-    val attribute = Map("attributeType" -> Seq(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
-    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), attribute)
+    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
+    val edge = Edge("edgeOneId", mReference, Set(), Set(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val attribute = Map("attributeType" -> Seq(MString("dupValue"), MString("dupValue"), MString("valueThree")))
-    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), attribute)
+    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("dupValue"), MString("dupValue"), MString("valueThree")))
+    val edge = Edge("edgeOneId", mReference, Set(), Set(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -41,11 +42,11 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       "differentEdgeType",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
-      Seq[MAttribute]()
+      Set.empty,
+      Set.empty,
+      Set[MAttribute]()
     )
-    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("edgeOneId", mReference, Set(), Set(), Map.empty)
 
     rule.isValid(edge) should be(None)
   }
@@ -83,11 +84,11 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       "reference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
-      Seq[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute)
+      Set.empty,
+      Set.empty,
+      Set[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute)
     )
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
+    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
     val result = EdgeAttributesLocalUnique.generateFor(metaModel)
 
     result.size should be(1)

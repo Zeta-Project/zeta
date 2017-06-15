@@ -21,5 +21,5 @@ class Edges(val edgeTypes: Seq[String]) extends SingleEdgeRule with DslRule {
 }
 
 object Edges extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Seq(new Edges(metaModel.references.values.map(_.name).toSeq))
+  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Seq(new Edges(metaModel.referenceMap.values.map(_.name).toSeq))
 }
