@@ -1,12 +1,8 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-import scala.concurrent.Await
 import scala.concurrent.Future
-import scala.concurrent.duration.Duration
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
@@ -16,6 +12,7 @@ import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.util.auth.ZetaEnv
+import grizzled.slf4j.Logging
 import play.api.libs.json.JsError
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
@@ -28,7 +25,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 /**
  * RESTful API for model definitions
  */
-class ModelRestApi @Inject()() extends Controller {
+class ModelRestApi() extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
@@ -168,34 +165,38 @@ class ModelRestApi @Inject()() extends Controller {
    * @return Results of the validation.
    */
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (modelEntity: ModelEntity) => {
+    protectedReadFuture(id, request, (modelEntity: ModelEntity) => {
 
-      val metaModelEntity = Await.result( // FIXME don't use Await
-        restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.metaModelId),
-        Duration(1, TimeUnit.SECONDS)
-      )
-
-      metaModelEntity.validator match {
-        case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
-          case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model).filterNot(_.valid)))
-          case None => InternalServerError("Error loading model validator.")
+      restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.metaModelId).map(metaModelEntity => {
+        metaModelEntity.validator match {
+          case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
+            case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model).filterNot(_.valid)))
+            case None => InternalServerError("Error loading model validator.")
+          }
+          case None =>
+            val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
+            Conflict(
+              s"""No validator generated yet. Try calling $url first.""")
         }
-        case None =>
-          val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
-          Conflict(
-            s"""No validator generated yet. Try calling $url first.""")
-      }
+      })
 
     })
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntity.read(id).map { model =>
+  private def protectedReadFuture[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Future[Result]): Future[Result] = {
+    restrictedAccessRepository(request.identity.id).modelEntity.read(id).flatMap(model => {
       trans(model)
-    }.recover {
-      case e: Exception => Results.BadRequest(e.getMessage)
+    }).recover {
+      case e: Exception =>
+        info("exception while trying to read from DB", e)
+        Results.BadRequest(e.getMessage)
     }
+  }
+
+  /** A helper method for less verbose reads from the database */
+  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
+    protectedReadFuture[A](id, request, me => Future(trans(me)))
   }
 
 }
