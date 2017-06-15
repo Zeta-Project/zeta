@@ -26,8 +26,17 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
@@ -39,10 +48,13 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
 import reactivemongo.bson.BSONArray
+import reactivemongo.bson.BSONBoolean
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.BSONDocumentWriter
+import reactivemongo.bson.BSONDouble
+import reactivemongo.bson.BSONInteger
 import reactivemongo.bson.BSONReader
 import reactivemongo.bson.BSONString
 import reactivemongo.bson.BSONWriter
@@ -121,9 +133,64 @@ object MongoHandler {
 
   implicit val settingsHandler: BSONDocumentHandler[Settings] = Macros.handler[Settings]
 
-  private implicit val attributeTypeHandler: BSONDocumentHandler[AttributeType] = Macros.handler[AttributeType] // TODO manual implement
+  private val sType = "type"
+  private val sValue = "value"
+  private val sValues = "values"
+  private val sString = "string"
+  private val sBool = "bool"
+  private val sInt = "int"
+  private val sDouble = "double"
+  private val sEnum = "enum"
+  private val sName = "name"
+  private val sEnumName = "enumName"
 
-  private implicit val attributeValueHandler: BSONDocumentHandler[AttributeValue] = Macros.handler[AttributeValue] // TODO manual implement
+  private implicit val attributeTypeHandler = new BSONDocumentWriter[AttributeType] with BSONDocumentReader[AttributeType] {
+
+    override def write(typ: AttributeType): BSONDocument = {
+      typ match {
+        case StringType => BSONDocument(sType -> sString)
+        case BoolType => BSONDocument(sType -> sBool)
+        case IntType => BSONDocument(sType -> sInt)
+        case DoubleType => BSONDocument(sType -> sDouble)
+        case MEnum(name, values) => BSONDocument(sType -> sEnum, sName -> name, sValues -> values)
+      }
+    }
+
+    override def read(doc: BSONDocument): AttributeType = {
+      doc.getAs[String](sType).get match {
+        case `sString` => StringType
+        case `sBool` => BoolType
+        case `sInt` => IntType
+        case `sDouble` => DoubleType
+        case `sEnum` => MEnum(doc.getAs[String](sName).get, doc.getAs[Set[String]](sValues).get)
+      }
+    }
+
+  }
+
+  private implicit object AttributeValueHandler extends BSONDocumentWriter[AttributeValue] with BSONDocumentReader[AttributeValue] {
+
+    override def write(value: AttributeValue): BSONDocument = {
+      value match {
+        case MString(v) => BSONDocument(sType -> sString, sValue -> BSONString(v))
+        case MBool(v) => BSONDocument(sType -> sBool, sValue -> BSONBoolean(v))
+        case MInt(v) => BSONDocument(sType -> sInt, sValue -> BSONInteger(v))
+        case MDouble(v) => BSONDocument(sType -> sDouble, sValue -> BSONDouble(v))
+        case EnumSymbol(name, enumName) => BSONDocument(sType -> sEnum, sName -> name, sEnumName -> enumName)
+      }
+    }
+
+    override def read(doc: BSONDocument): AttributeValue = {
+      doc.getAs[String](sType).get match {
+        case `sString` => MString(doc.getAs[String](sValue).get)
+        case `sBool` => MBool(doc.getAs[Boolean](sValue).get)
+        case `sInt` => MInt(doc.getAs[Int](sValue).get)
+        case `sDouble` => MDouble(doc.getAs[Double](sValue).get)
+        case `sEnum` => EnumSymbol(doc.getAs[String](sName).get, doc.getAs[String](sEnumName).get)
+      }
+    }
+
+  }
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
