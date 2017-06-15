@@ -6,6 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Success
 
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.keyProjection
@@ -14,7 +15,6 @@ import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sName
 import de.htwg.zeta.persistence.mongo.MongoHandler.FileKey
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
 import de.htwg.zeta.persistence.mongo.MongoHandler.fileHandler
-import models.entity.File
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection

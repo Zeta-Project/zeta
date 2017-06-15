@@ -11,14 +11,13 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.controller.ResetPasswordController.error
 import de.htwg.zeta.server.controller.ResetPasswordController.invalidResetLink
 import de.htwg.zeta.server.forms.ResetPasswordForm
-import models.entity.User
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.AnyContent

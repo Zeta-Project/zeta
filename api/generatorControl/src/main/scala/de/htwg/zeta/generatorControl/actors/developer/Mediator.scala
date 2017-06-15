@@ -2,34 +2,14 @@ package de.htwg.zeta.generatorControl.actors.developer
 
 import java.util.UUID
 
-import de.htwg.zeta.generatorControl.actors.common.AllDocsFromDeveloper
-import de.htwg.zeta.generatorControl.actors.common.ChangeFeed
-import de.htwg.zeta.generatorControl.actors.common.Configuration
-import de.htwg.zeta.generatorControl.actors.common.Images
-import de.htwg.zeta.generatorControl.actors.developer.Mediator.Refresh
-import de.htwg.zeta.generatorControl.actors.developer.manager.BondedTasksManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.EventDrivenTasksManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.FiltersManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorConnectionManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorRequestManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorsManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.GetBondedTaskList
-import de.htwg.zeta.generatorControl.actors.developer.manager.ManualExecutionManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.ModelReleaseManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.TimedTasksManager
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterToDeveloper
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.ToDeveloper
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerToDeveloper
-
 import akka.actor.Actor
 import akka.actor.ActorLogging
+import akka.actor.ActorRef
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.common.models.entity.Filter
@@ -57,6 +37,22 @@ import de.htwg.zeta.common.models.frontend.ToGenerator
 import de.htwg.zeta.common.models.frontend.ToolDeveloper
 import de.htwg.zeta.common.models.frontend.UserRequest
 import de.htwg.zeta.common.models.worker.RunBondedTask
+import de.htwg.zeta.generatorControl.actors.developer.manager.BondedTasksManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.EventDrivenTasksManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.FiltersManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorConnectionManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorRequestManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.GetBondedTaskList
+import de.htwg.zeta.generatorControl.actors.developer.manager.ManualExecutionManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.ModelReleaseManager
+import de.htwg.zeta.generatorControl.actors.developer.manager.TimedTasksManager
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterToDeveloper
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.ToDeveloper
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerToDeveloper
+import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.Repository
 import play.api.libs.ws.ahc.AhcWSClient
 
 
@@ -87,23 +83,23 @@ class Mediator() extends Actor with ActorLogging {
   // the ttl of the session to access the database
   val ttl = 3600
 
-  val mediator = DistributedPubSub(context.system).mediator
-  val developerId = UUID.fromString(self.path.name)
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
+  val developerId: UUID = UUID.fromString(self.path.name)
   mediator ! Subscribe(developerId.toString, self)
 
-  val repo = Persistence.restrictedAccessRepository(developerId)
+  val repo: Repository = Persistence.restrictedAccessRepository(developerId)
 
-  val workQueue = context.actorOf(WorkQueue.props(developerId), "workQueue")
+  val workQueue: ActorRef = context.actorOf(WorkQueue.props(developerId), "workQueue")
 
-  val filters = context.actorOf(FiltersManager.props(workQueue, repo), "filters")
-  val generators = context.actorOf(GeneratorManager.props(workQueue, repo), "generators")
-  val modelRelease = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
-  val bondedTasks = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
-  val eventDrivenTasks = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")
-  val timedTasks = context.actorOf(TimedTasksManager.props(workQueue, repo), "timedTasks")
-  val manualExecution = context.actorOf(ManualExecutionManager.props(workQueue, repo), "manualExecution")
-  val generatorRequest = context.actorOf(GeneratorRequestManager.props(workQueue, repo), "generatorRequest")
-  val generatorConnection = context.actorOf(GeneratorConnectionManager.props(), "generatorConnection")
+  val filters: ActorRef = context.actorOf(FiltersManager.props(workQueue, repo), "filters")
+  val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, repo), "generators")
+  val modelRelease: ActorRef = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
+  val bondedTasks: ActorRef = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
+  val eventDrivenTasks: ActorRef = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")
+  val timedTasks: ActorRef = context.actorOf(TimedTasksManager.props(workQueue, repo), "timedTasks")
+  val manualExecution: ActorRef = context.actorOf(ManualExecutionManager.props(workQueue, repo), "manualExecution")
+  val generatorRequest: ActorRef = context.actorOf(GeneratorRequestManager.props(workQueue, repo), "generatorRequest")
+  val generatorConnection: ActorRef = context.actorOf(GeneratorConnectionManager.props(), "generatorConnection")
 
 
   val listeners = List(self, bondedTasks, eventDrivenTasks, timedTasks, manualExecution, modelRelease, filters, generators, workQueue)
@@ -121,10 +117,9 @@ class Mediator() extends Actor with ActorLogging {
     // Handle any request from a client to this actor
     case connection: Connection => handleConnection(connection)
     case request: Request => processRequest(request)
-    case request: Event => {
+    case request: Event =>
       checkForBondedTask(request)
       generatorConnection ! request
-    }
     // change from the database
     case changed: Changed => documentChange(changed)
     // Handle any response from this actor to the clients
@@ -133,14 +128,14 @@ class Mediator() extends Actor with ActorLogging {
     case error: JobCannotBeEnqueued => log.warning(error.reason)
   }
 
-  private def processToDeveloper(response: ToDeveloper) = {
+  private def processToDeveloper(response: ToDeveloper): Unit = {
     response match {
       case response: MasterToDeveloper => workQueue forward response
       case response: WorkerToDeveloper => handleWorkerResponse(response)
     }
   }
 
-  private def processRequest(request: Request) = {
+  private def processRequest(request: Request): Unit = {
     request match {
       case request: DeveloperRequest => handleDeveloperRequest(request)
       case request: UserRequest => handleUserRequest(request)
@@ -148,7 +143,7 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  private def processGeneratorRequest(request: GeneratorRequest) = {
+  private def processGeneratorRequest(request: GeneratorRequest): Unit = {
     request match {
       // request which are send from a generator or need to be send to a generator
       case request: RunGeneratorFromGenerator => generatorRequest ! request
@@ -156,29 +151,27 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  def documentChange(changed: Changed) = {
+  def documentChange(changed: Changed): Unit = {
     // Handle the update of bonded task lists to users
     changed.doc match {
-      case _: BondedTask => resendBondedTasksToUsers
-      case _: Filter => resendBondedTasksToUsers
+      case _: BondedTask => resendBondedTasksToUsers()
+      case _: Filter => resendBondedTasksToUsers()
       case _ => // other documents can be ignored
     }
   }
 
-  def handleConnection(connection: Connection) = {
+  def handleConnection(connection: Connection): Unit = {
     connection match {
-      case Connected(client) => client match {
-        case developer @ ToolDeveloper(out, user) => {
+      case Connected(c) => c match {
+        case developer @ ToolDeveloper(out, user) =>
           workQueue forward GetJobInfoList
-          developers += (client.id -> developer)
-        }
-        case user @ ModelUser(out, id, model) => {
+          developers += (c.id -> developer)
+        case user @ ModelUser(out, id, model) =>
           bondedTasks forward GetBondedTaskList(user)
-          users += (client.id -> user)
-        }
+          users += (c.id -> user)
         case _ => generatorConnection ! connection
       }
-      case Disconnected(client) => client match {
+      case Disconnected(c) => c match {
         case developer @ ToolDeveloper(out, user) => developers -= developer.id
         case user @ ModelUser(out, id, model) => users -= user.id
         case generator @ GeneratorClient(out, id) => generatorConnection ! connection
@@ -186,7 +179,7 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  def handleDeveloperRequest(request: DeveloperRequest) = {
+  def handleDeveloperRequest(request: DeveloperRequest): Unit = {
     request match {
       case _: CreateGenerator => generators forward request
       case _: RunFilter => manualExecution forward request
@@ -196,40 +189,40 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  def handleUserRequest(request: UserRequest) = {
+  def handleUserRequest(request: UserRequest): Unit = {
     request match {
       case ExecuteBondedTask(_, _) => bondedTasks forward request
       case SavedModel(_) => eventDrivenTasks forward request
     }
   }
 
-  def handleWorkerResponse(response: WorkerToDeveloper) = response match {
+  def handleWorkerResponse(response: WorkerToDeveloper): Unit = response match {
     case WorkerStreamedMessage(message) => sendToToolDeveloperClients(message)
     case _ =>
   }
 
-  def sendToToolDeveloperClients(message: Any) = {
+  def sendToToolDeveloperClients(message: Any): Unit = {
     developers foreach {
-      case (id, client) =>
-        client.out ! message
+      case (id, c) =>
+        c.out ! message
     }
   }
 
-  def sendToUserClients(message: Any) = {
+  def sendToUserClients(message: Any): Unit = {
     users foreach {
-      case (id, client) =>
-        client.out ! message
+      case (id, c) =>
+        c.out ! message
     }
   }
 
-  def resendBondedTasksToUsers() = {
+  def resendBondedTasksToUsers(): Unit = {
     users.foreach {
       case (id, user) =>
         bondedTasks ! GetBondedTaskList(user)
     }
   }
 
-  def checkForBondedTask(request: Event) = request match {
+  def checkForBondedTask(request: Event): Unit = request match {
     case WorkEnqueued(work) => work.job match {
       case RunBondedTask(taskId, generatorId, filterId, modelId, image) => sendToUserClients(BondedTaskStarted(taskId))
       case _ => // no bonded task

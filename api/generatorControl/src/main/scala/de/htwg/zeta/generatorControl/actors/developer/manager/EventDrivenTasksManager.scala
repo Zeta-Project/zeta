@@ -8,21 +8,11 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Repository
-import models.entity.EventDrivenTask
-import models.frontend.ModelChanged
-import models.frontend.SavedModel
-import models.worker.RunEventDrivenTask
-
-import de.htwg.zeta.common.models.document.AllEventDrivenTasks
-import de.htwg.zeta.common.models.document.EventDrivenTask
-import de.htwg.zeta.common.models.document.Filter
-import de.htwg.zeta.common.models.document.Generator
-import de.htwg.zeta.common.models.document.GeneratorImage
-import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.frontend.ModelChanged
 import de.htwg.zeta.common.models.frontend.SavedModel
 import de.htwg.zeta.common.models.worker.RunEventDrivenTask
+import de.htwg.zeta.persistence.general.Repository
 
 object EventDrivenTasksManager {
   def props(worker: ActorRef, repository: Repository) = Props(new EventDrivenTasksManager(worker, repository))
@@ -65,7 +55,7 @@ class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends 
     filteredTasks.foreach(task => worker ! task)
   }
 
-  def receive = {
+  def receive: Receive = {
     case changed@SavedModel(_) => onModelChange(changed)
     case _ =>
   }

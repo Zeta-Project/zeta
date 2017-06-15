@@ -8,22 +8,22 @@ import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
-import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsError
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for model definitions
@@ -60,6 +60,7 @@ class ModelRestApi @Inject()() extends Controller {
             repo.metaModelEntity.read(metaModelId).flatMap(metaModel => {
               repo.modelEntity.create(
                 ModelEntity(
+                  id = UUID.randomUUID(),
                   model = model.copy(metaModel = metaModel.metaModel),
                   metaModelId = metaModel.id
                 )

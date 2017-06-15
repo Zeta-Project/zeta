@@ -1,6 +1,6 @@
 package de.htwg.zeta.common.models.document
 
-import models.entity.Entity
+import de.htwg.zeta.common.models.entity.Entity
 
 sealed trait Change
 case object Created extends Change

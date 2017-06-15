@@ -1,9 +1,9 @@
 import java.util.UUID
 
-import de.htwg.zeta.server.generator.Error
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Success
-import de.htwg.zeta.server.generator.Transformer
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.MetaModelEntity
@@ -11,10 +11,10 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.remote.Remote
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
-import models.entity.File
+import de.htwg.zeta.server.generator.Error
+import de.htwg.zeta.server.generator.Result
+import de.htwg.zeta.server.generator.Success
+import de.htwg.zeta.server.generator.Transformer
 
 object Main extends Template[CreateOptions, String] {
   val sep = "\n"
@@ -42,7 +42,7 @@ object Main extends Template[CreateOptions, String] {
     compiledGenerator(file)
   }
 
-  def matchMClassMethod(entity: MClass) = {
+  def matchMClassMethod(entity: MClass): String = {
     s"""case "${entity.name}" => transform${entity.name}Node(node)"""
   }
 
@@ -74,7 +74,7 @@ object Main extends Template[CreateOptions, String] {
     """.stripMargin
   }
 
-  def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]) = {
+  def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]): String = {
     s"""
       |class MyTransformer() extends Transformer {
       | def transform(entity: ModelEntity)(implicit entitys: Documents, files: Files, remote: Remote) : Future[Transformer] = {
@@ -104,7 +104,7 @@ object Main extends Template[CreateOptions, String] {
     """.stripMargin
   }
 
-  def compiledGenerator(file: File) = {
+  def compiledGenerator(file: File): Future[Transformer] = {
     val content = s"""
       import scala.concurrent.Future
       import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}

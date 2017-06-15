@@ -2,7 +2,7 @@ package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
-import models.entity.Log
+import de.htwg.zeta.common.models.entity.Log
 
 
 object LogFixtures {

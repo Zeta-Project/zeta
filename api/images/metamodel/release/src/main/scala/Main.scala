@@ -4,8 +4,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.persistence.Persistence
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -41,12 +41,15 @@ object Main extends App {
 
     val result = for {
       from <- documents.metaModelEntity.read(UUID.fromString(id))
-      release <- documents.metaModelRelease.createOrUpdate(MetaModelRelease(
-        name = s"${from.metaModel.name}",
-        metaModel = from.metaModel,
-        dsl = from.dsl,
-        version = "1"
-      ))
+      release <- documents.metaModelRelease.createOrUpdate(
+        MetaModelRelease(
+          id = UUID.randomUUID(),
+          name = s"${from.metaModel.name}",
+          metaModel = from.metaModel,
+          dsl = from.dsl,
+          version = "1"
+        )
+      )
     } yield {
       release
     }

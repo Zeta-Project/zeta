@@ -5,9 +5,9 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import de.htwg.zeta.common.models.entity.AccessAuthorisation
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
-import models.entity.AccessAuthorisation
-import models.entity.Entity
 
 
 /** Persistence-Layer to restrict the access to the persistence.

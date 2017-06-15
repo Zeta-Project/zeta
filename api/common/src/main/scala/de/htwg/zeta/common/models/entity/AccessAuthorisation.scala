@@ -1,11 +1,11 @@
-package models.entity
+package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
 
 /** All entity id's a user is authorized to access.
  *
- * @param id               entity-id, same id as [[models.entity.User]]
+ * @param id               entity-id, same id as [[de.htwg.zeta.common.models.entity.User]]
  * @param authorizedAccess all authorized id's
  */
 case class AccessAuthorisation(

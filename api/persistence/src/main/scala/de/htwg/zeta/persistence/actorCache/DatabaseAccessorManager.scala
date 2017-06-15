@@ -9,7 +9,7 @@ import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.pattern.ask
 import akka.util.Timeout
-import models.entity.Entity
+import de.htwg.zeta.common.models.entity.Entity
 
 /**
  */
@@ -17,7 +17,7 @@ class DatabaseAccessorManager[E <: Entity](private val system: ActorSystem) {
   private val actor: ActorRef = system.actorOf(Props[DocumentAccessorManagerActor[Entity]])
   private val timeout = Timeout(1, TimeUnit.SECONDS)
 
-  def getAllIDs(): Future[Seq[String]] = {
+  def getAllIDs: Future[Seq[String]] = {
     ask(actor, DocumentAccessorManagerActor.GetAllIds)(timeout).mapTo[Seq[String]]
   }
 

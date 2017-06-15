@@ -1,4 +1,4 @@
-package models.modelDefinitions.metaModel.elements
+package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 /**
  * the MBounds trait

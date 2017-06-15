@@ -4,8 +4,8 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FilePersistence
-import models.entity.File
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 

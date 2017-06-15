@@ -3,18 +3,18 @@ package de.htwg.zeta.server.controller.webpage
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.model.ModelShortInfo
+import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.ws.WSClient
-import play.api.mvc.Controller
 import play.api.mvc.AnyContent
+import play.api.mvc.Controller
 import play.api.mvc.Result
 
 class WebpageController @Inject()(ws: WSClient) extends Controller {
@@ -35,7 +35,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
 
   private def getModels[A](metaModelId: UUID, request: SecuredRequest[ZetaEnv, A]): Future[Seq[ModelShortInfo]] = {
     val repo = restrictedAccessRepository(request.identity.id).modelEntity
-    repo.readAllIds.flatMap { ids =>
+    repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.filter(_.metaModelId == metaModelId).map(entity => {
         ModelShortInfo(entity.id, entity.metaModelId, entity.model.name)
       }))

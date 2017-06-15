@@ -1,10 +1,10 @@
-package models.entity
+package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
 
 case class Filter(
-    id: UUID = UUID.randomUUID,
+    id: UUID,
     name: String,
     description: String,
     instanceIds: Seq[UUID]

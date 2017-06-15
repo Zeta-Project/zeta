@@ -1,4 +1,4 @@
-package models.modelDefinitions.model.elements
+package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
 /** The topmost trait */
 trait ModelElement {

@@ -10,10 +10,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWork
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
 import akka.actor.Actor
 import akka.actor.ActorLogging
+import akka.actor.ActorRef
 import akka.actor.Props
 import akka.stream.ActorMaterializer
 import com.spotify.docker.client.DefaultDockerClient
@@ -23,14 +22,19 @@ import com.spotify.docker.client.LogStream
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
 import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.document.http.HttpRepository
 import de.htwg.zeta.common.models.frontend.JobLog
 import de.htwg.zeta.common.models.frontend.JobLogMessage
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWork
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
+import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.persistence.general.Repository
+import org.joda.time.DateTime
 import play.api.libs.ws.ahc.AhcWSClient
 
 object DockerWorkExecutor {
-  def props() = Props(new DockerWorkExecutor())
+  def props(): Props = Props(new DockerWorkExecutor())
 }
 
 class DockerWorkExecutor() extends Actor with ActorLogging {
@@ -47,53 +51,51 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
 
   private var currentContainerId: Option[String] = None
 
-  override def postStop() = docker.close()
+  override def postStop(): Unit = docker.close()
 
-  def receive = {
+  def receive: Receive = {
     case cancelWork: CancelWork => processCancelWork(cancelWork.id)
     case work: Work => new WorkProcessor(work)
   }
 
-  private def processCancelWork(id: String) = {
+  private def processCancelWork(id: String): Unit = {
     currentContainerId match {
-      case Some(id) => {
-        log.warning("Received Cancel work {}. Send stop Command to docker.", id)
+      case Some(containerId) =>
+        log.warning("Received Cancel work {}. Send stop Command to docker.", containerId)
         try {
-          docker.stopContainer(id, secondsToWaitBeforeKilling)
+          docker.stopContainer(containerId, secondsToWaitBeforeKilling)
         } catch {
-          case e: ContainerNotFoundException => log.warning("Tried to stop already stopped docker container on cancel work {}", id)
+          case e: ContainerNotFoundException => log.warning("Tried to stop already stopped docker container on cancel work {}", containerId)
           case e: Exception => log.warning("Error on docker stop container {}", e.getMessage)
         }
-      }
-      case None => {
+      case None =>
         log.warning("Tried to stop, but no container is running..")
         sender() ! WorkComplete(137)
-      }
     }
   }
 
   private class WorkProcessor(work: Work) {
-    val documents = Persistence.restrictedAccessRepository(work.owner)
+    val documents: Repository = restrictedAccessRepository(work.owner)
     log.info("DockerWorkExecutor received job {}", work.id)
     var jobStream = JobLog(job = work.id)
     var jobPersist = JobLog(job = work.id)
 
-    val out = sender()
+    val out: ActorRef = sender()
 
     // send log messages to the client
-    private def sendMessage(limit: Int) = {
+    private def sendMessage(limit: Int): Unit = {
       if (jobStream.messages.length > limit) {
         out ! MasterWorkerProtocol.WorkerStreamedMessage(jobStream.copy())
         jobStream = JobLog(job = work.id)
       }
     }
 
-    private def streamMessage(message: JobLogMessage) = {
+    private def streamMessage(message: JobLogMessage): Unit = {
       jobStream = jobStream.copy(messages = jobStream.messages.enqueue(message))
       sendMessage(streamBuffer)
     }
 
-    private def persistMessage(message: JobLogMessage) = {
+    private def persistMessage(message: JobLogMessage): Unit = {
       // check if max log persistent was reached
       if (jobPersist.messages.length == maxLogPersistance) {
         val error = JobLogMessage("\nStopped to persist log output. Logging should be reduced!\n", "error")
@@ -115,25 +117,25 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
           case LogMessage.Stream.STDIN => None
         }
         nextMessage match {
-          case Some(message) =>
+          case Some(msg) =>
             // streaming active?
             if (work.job.stream) {
-              streamMessage(message)
+              streamMessage(msg)
             }
             // log persistance active?
             if (work.job.persist) {
-              persistMessage(message)
+              persistMessage(msg)
             }
           case None => // no message
         }
       }
     }
 
-    private def getExitCodeMessage(status: Int) = {
+    private def getExitCodeMessage(status: Int): JobLogMessage = {
       if (status == 0) {
-        JobLogMessage(s"Exit with status code: ${status}", "info")
+        JobLogMessage(s"Exit with status code: $status", "info")
       } else {
-        JobLogMessage(s"Exit with status code: ${status}", "error")
+        JobLogMessage(s"Exit with status code: $status", "error")
       }
     }
 
@@ -162,7 +164,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
             sendMessage(0)
           }
 
-          stream.close
+          stream.close()
 
           // Remove container
           docker.removeContainer(id)
@@ -187,23 +189,22 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
     execute(work).map {
       result => out ! WorkComplete(result)
     } recover {
-      case e: Exception => {
+      case e: Exception =>
         if (work.job.stream) {
           jobStream = jobStream.copy(messages = jobStream.messages.enqueue(JobLogMessage(e.getCause.toString, "error")))
           out ! MasterWorkerProtocol.WorkerStreamedMessage(jobStream)
         }
         out ! WorkComplete(1)
-      }
     }
 
-    private def createContainer() = {
+    private def createContainer(): String = {
       val hostConfig = createHostConfig()
       val config = createContainerConfig(hostConfig)
       val creation = docker.createContainer(config)
       creation.id
     }
 
-    private def createHostConfig() = {
+    private def createHostConfig(): HostConfig = {
       HostConfig.builder()
         .networkMode("zeta_default")
         .cpuShares(work.dockerSettings.cpuShares)
@@ -211,7 +212,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
         .build()
     }
 
-    private def createContainerConfig(hostConfig: HostConfig) = {
+    private def createContainerConfig(hostConfig: HostConfig): ContainerConfig = {
       ContainerConfig.builder()
         .hostConfig(hostConfig)
         .image(work.job.image)
@@ -222,7 +223,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
         .build()
     }
 
-    private def processStream(id: String) = {
+    private def processStream(id: String): LogStream = {
       // Redirect stdout and stderr
       val stream = docker.attachContainer(
         id,
@@ -237,7 +238,7 @@ class DockerWorkExecutor() extends Actor with ActorLogging {
       stream
     }
 
-    private def processLogs(p: Promise[Int], status: Integer) = {
+    private def processLogs(p: Promise[Int], status: Integer): Future[p.type] = {
       val now = new DateTime().toDateTimeISO.toString
 
       val task = work.job match {

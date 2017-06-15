@@ -2,7 +2,7 @@ package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
-import models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.BondedTask
 
 
 object BondedTaskFixtures {

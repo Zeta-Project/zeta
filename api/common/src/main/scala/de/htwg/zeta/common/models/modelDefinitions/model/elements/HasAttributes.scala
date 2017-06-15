@@ -1,8 +1,8 @@
-package models.modelDefinitions.model.elements
+package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 
 /** A mixin that offers the attributes field */
 trait HasAttributes {

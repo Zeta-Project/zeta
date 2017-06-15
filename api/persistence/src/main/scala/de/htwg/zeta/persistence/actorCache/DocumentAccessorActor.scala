@@ -25,7 +25,7 @@ import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumen
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.DeletingDocumentFailed
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDuration
 import de.htwg.zeta.persistence.general.EntityPersistence
-import models.entity.Entity
+import de.htwg.zeta.common.models.entity.Entity
 
 
 /** Access object for a single Document.

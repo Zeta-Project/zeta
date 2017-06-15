@@ -1,8 +1,8 @@
-package models.modelDefinitions.metaModel.elements
+package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult

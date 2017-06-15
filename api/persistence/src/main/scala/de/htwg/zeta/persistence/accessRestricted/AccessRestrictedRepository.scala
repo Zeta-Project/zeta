@@ -1,29 +1,26 @@
-
 package de.htwg.zeta.persistence.accessRestricted
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.AccessAuthorisation
+import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.EventDrivenTask
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.FilterImage
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.Log
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.entity.Settings
+import de.htwg.zeta.common.models.entity.TimedTask
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 import de.htwg.zeta.persistence.general.Repository
-import models.entity
-import models.entity.AccessAuthorisation
-import models.entity.BondedTask
-import models.entity.EventDrivenTask
-import models.entity.File
-import models.entity.Filter
-import models.entity.FilterImage
-import models.entity.Generator
-import models.entity.GeneratorImage
-import models.entity.Log
-import models.entity.MetaModelEntity
-import models.entity.MetaModelRelease
-import models.entity.ModelEntity
-import models.entity.Settings
-import models.entity.TimedTask
-import models.entity.User
 
 
 /** PersistenceService-Layer to restrict the access to the persistence.
@@ -38,72 +35,72 @@ case class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) ext
     throw new UnsupportedOperationException("access to AccessAuthorisation-Persistence can't be restricted")
   }
 
-  /** Persistence for the [[models.entity.EventDrivenTask]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
   override def eventDrivenTask: AccessRestrictedPersistence[EventDrivenTask] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.eventDrivenTask)
   }
 
-  /** Persistence for the [[models.entity.BondedTask]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override def bondedTask: AccessRestrictedPersistence[BondedTask] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.bondedTask)
   }
 
-  /** Persistence for [[models.entity.TimedTask]] */
+  /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
   override def timedTask: AccessRestrictedPersistence[TimedTask] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.timedTask)
   }
 
-  /** Persistence for the [[models.entity.Generator]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.Generator]] */
   override def generator: AccessRestrictedPersistence[Generator] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.generator)
   }
 
-  /** Persistence for the [[models.entity.Filter]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.Filter]] */
   override def filter: AccessRestrictedPersistence[Filter] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.filter)
   }
 
-  /** Persistence for the [[models.entity.GeneratorImage]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.GeneratorImage]] */
   override def generatorImage: AccessRestrictedPersistence[GeneratorImage] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.generatorImage)
   }
 
-  /** Persistence for the [[models.entity.FilterImage]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.FilterImage]] */
   override def filterImage: AccessRestrictedPersistence[FilterImage] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.filterImage)
   }
 
-  /** Persistence for the [[models.entity.Settings]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.Settings]] */
   override def settings: AccessRestrictedPersistence[Settings] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.settings)
   }
 
-  /** Persistence for the [[models.entity.MetaModelEntity]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.MetaModelEntity]] */
   override def metaModelEntity: AccessRestrictedPersistence[MetaModelEntity] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.metaModelEntity)
   }
 
-  /** Persistence for [[models.entity.MetaModelRelease]] */
+  /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelRelease]] */
   override def metaModelRelease: EntityPersistence[MetaModelRelease] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.metaModelRelease)
   }
 
-  /** Persistence for the [[models.entity.ModelEntity]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.ModelEntity]] */
   override def modelEntity: AccessRestrictedPersistence[ModelEntity] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.modelEntity)
   }
 
-  /** Persistence for the [[models.entity.Log]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.Log]] */
   override def log: AccessRestrictedPersistence[Log] = {
     AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.log)
   }
 
-  /** Persistence for the [[entity.User]] */
+  /** Persistence for the [[de.htwg.zeta.common.models.entity.User]] */
   override def user: EntityPersistence[User] = {
     throw new UnsupportedOperationException("access to User-Persistence can't be restricted")
   }
 
-  /** Versioned Persistence for [[File]] */
+  /** Versioned Persistence for [[de.htwg.zeta.common.models.entity.File]] */
   override def file: FilePersistence = {
     null // TODO implement own AccessRestrictedPersistence for files
   }

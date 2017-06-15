@@ -2,10 +2,10 @@ package de.htwg.zeta.persistence
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
 import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.transient.TransientRepository
-import models.entity.User
 
 /**
  * PersistenceMicroServiceTest.

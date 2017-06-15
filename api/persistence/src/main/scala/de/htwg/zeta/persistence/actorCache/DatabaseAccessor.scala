@@ -9,7 +9,7 @@ import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
-import models.entity.Entity
+import de.htwg.zeta.common.models.entity.Entity
 
 
 /**

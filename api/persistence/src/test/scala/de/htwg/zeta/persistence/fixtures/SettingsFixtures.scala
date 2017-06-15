@@ -2,9 +2,9 @@ package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
-import models.document.DockerSettings
-import models.document.JobSettings
-import models.entity.Settings
+import de.htwg.zeta.common.models.document.DockerSettings
+import de.htwg.zeta.common.models.document.JobSettings
+import de.htwg.zeta.common.models.entity.Settings
 
 
 object SettingsFixtures {

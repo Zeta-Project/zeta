@@ -1,9 +1,9 @@
-package models.modelDefinitions.metaModel.elements
+package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 

@@ -6,14 +6,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Success
 
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.idProjection
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.sId
 import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
-import models.entity.Entity
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
-import reactivemongo.api.MongoConnection
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType

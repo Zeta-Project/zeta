@@ -2,7 +2,17 @@ package de.htwg.zeta.persistence.behavior
 
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
+import de.htwg.zeta.common.models.entity.AccessAuthorisation
+import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.EventDrivenTask
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.FilterImage
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.Log
+import de.htwg.zeta.common.models.entity.Settings
+import de.htwg.zeta.common.models.entity.TimedTask
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.fixtures.AccessAuthorisationFixtures
 import de.htwg.zeta.persistence.fixtures.BondedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.EventDrivenTaskFixtures
@@ -15,17 +25,6 @@ import de.htwg.zeta.persistence.fixtures.SettingsFixtures
 import de.htwg.zeta.persistence.fixtures.TimedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.UserFixtures
 import de.htwg.zeta.persistence.general.Repository
-import models.entity.AccessAuthorisation
-import models.entity.BondedTask
-import models.entity.EventDrivenTask
-import models.entity.Filter
-import models.entity.FilterImage
-import models.entity.Generator
-import models.entity.GeneratorImage
-import models.entity.Log
-import models.entity.Settings
-import models.entity.TimedTask
-import models.entity.User
 
 
 /** PersistenceBehavior. */
@@ -35,7 +34,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
   def repositoryBehavior(repository: Repository, restricted: Boolean): Unit = { // scalastyle:ignore
 
     if (restricted) {
-      "AccessAuthorisation(restricted)" should "throw an UnsupportedOperationException" in {
+      it should "throw an UnsupportedOperationException when accessing AccessAuthorisation" in {
         recoverToSucceededIf[UnsupportedOperationException] {
           Future(repository.accessAuthorisation)
         }
@@ -148,7 +147,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     if (restricted) {
-      "User(restricted)" should "throw an UnsupportedOperationException" in {
+      it should "throw an UnsupportedOperationException when accessing User" in {
         recoverToSucceededIf[UnsupportedOperationException] {
           Future(repository.user)
         }
@@ -166,7 +165,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     "File" should behave like filePersistenceBehavior(repository.file)
 
     if (restricted) {
-      "LoginInfo(restricted)" should "throw an UnsupportedOperationException" in {
+      it should "throw an UnsupportedOperationException when accessing LoginInfo" in {
         recoverToSucceededIf[UnsupportedOperationException] {
           Future(repository.loginInfo)
         }
@@ -176,7 +175,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     }
 
     if (restricted) {
-      "PasswordInfo(restricted)" should "throw an UnsupportedOperationException" in {
+      it should "throw an UnsupportedOperationException when accessing PasswordInfo" in {
         recoverToSucceededIf[UnsupportedOperationException] {
           Future(repository.passwordInfo)
         }

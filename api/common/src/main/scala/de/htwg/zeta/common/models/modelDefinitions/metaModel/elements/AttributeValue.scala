@@ -1,9 +1,9 @@
-package models.modelDefinitions.metaModel.elements
+package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
-import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import play.api.libs.json.Format
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean

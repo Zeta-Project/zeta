@@ -1,8 +1,8 @@
-package models.modelDefinitions.model.elements
+package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
 import scala.collection.immutable.Seq
 
-import models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 

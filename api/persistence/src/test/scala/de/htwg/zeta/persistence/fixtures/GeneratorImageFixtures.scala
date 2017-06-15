@@ -2,7 +2,7 @@ package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
-import models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.GeneratorImage
 
 
 object GeneratorImageFixtures {

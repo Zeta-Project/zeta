@@ -3,23 +3,21 @@ package de.htwg.zeta.generatorControl.actors.developer
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWork
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.DeveloperReceivedCompletedWork
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterAcceptedWork
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterCompletedWork
-import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 
 import akka.actor.ActorLogging
+import akka.actor.ActorRef
+import akka.actor.Cancellable
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Publish
 import akka.persistence.PersistentActor
-
 import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.document.Created
 import de.htwg.zeta.common.models.document.JobSettings
-import de.htwg.zeta.common.models.document.Settings
 import de.htwg.zeta.common.models.document.Updated
+import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.frontend.CancelWorkByUser
 import de.htwg.zeta.common.models.frontend.JobInfo
 import de.htwg.zeta.common.models.frontend.JobInfoList
@@ -33,6 +31,11 @@ import de.htwg.zeta.common.models.worker.RunFilterManually
 import de.htwg.zeta.common.models.worker.RunGeneratorFromGeneratorJob
 import de.htwg.zeta.common.models.worker.RunGeneratorManually
 import de.htwg.zeta.common.models.worker.RunTimedTask
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWork
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.DeveloperReceivedCompletedWork
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterAcceptedWork
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterCompletedWork
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
 
 case class JobCannotBeEnqueued(job: Job, reason: String)
 case object GetJobInfoList
@@ -40,7 +43,7 @@ private case object CheckTick
 private case object NextWork
 
 object WorkQueue {
-  def props(developer: UUID) = Props(new WorkQueue(developer))
+  def props(developer: UUID): Props = Props(new WorkQueue(developer))
 }
 
 class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
@@ -48,17 +51,17 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
   private val WAITING_JOB = "waiting"
   private val RUNNING_JOB = "running"
 
-  private val reply = context.parent
-  private val master = DistributedPubSub(context.system).mediator
+  private val reply: ActorRef = context.parent
+  private val master: ActorRef = DistributedPubSub(context.system).mediator
 
-  private var jobSettings = JobSettings.default()
+  private var jobSettings: JobSettings = JobSettings.default()
 
   // workState is event sourced
-  private var workState = WorkState.empty()
+  private var workState: WorkState = WorkState.empty()
 
   // trigger task to check if work was accepted from the master
   private val duration = Duration(10, TimeUnit.SECONDS)
-  private val workAcceptedTask = context.system.scheduler.schedule(duration, duration, self, CheckTick)
+  private val workAcceptedTask: Cancellable = context.system.scheduler.schedule(duration, duration, self, CheckTick)
 
   override def postStop(): Unit = workAcceptedTask.cancel()
 
@@ -78,7 +81,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
   }
 
   // check if a child generator can be started. Can only be started if a parent is already running
-  private def parentExist(job: RunGeneratorFromGeneratorJob) = workState.workInProgress.exists(_._1 == job.parentId)
+  private def parentExist(job: RunGeneratorFromGeneratorJob): Boolean = workState.workInProgress.exists(_._1 == job.parentId)
 
   // check if there is a not a equal job running or enqueued.
   private def equalJobNotExist(starting: Job): Boolean = jobInfoList((work) => work.job.equals(starting)).jobs.isEmpty
@@ -100,13 +103,13 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     )
   }
 
-  private def publishEvent(event: Event) = {
+  private def publishEvent(event: Event): Unit = {
     log.info("Publish event : {}", event.toString)
     sendJobInfoList()
     context.parent ! event
   }
 
-  private def sendJobInfoList() = context.parent ! jobInfoList((work) => true)
+  private def sendJobInfoList(): Unit = context.parent ! jobInfoList((work) => true)
 
   override def receiveRecover: Receive = {
     case event: Event => workState = workState.updated(event)
@@ -130,10 +133,10 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     case GetJobInfoList => sendJobInfoList()
   }
 
-  private def processJob(job: Job) = {
-    log.info(s"Received job ${job}")
+  private def processJob(job: Job): Unit = {
+    log.info(s"Received job $job")
     if (jobSettings.maxPending < workState.pendingWork.length) {
-      val reason = s"Received job ${job} cannot be enqueued because of max pending work!"
+      val reason = s"Received job $job cannot be enqueued because of max pending work!"
       reply ! JobCannotBeEnqueued(job, reason)
     } else if (jobCanBeEnqueued(job)) {
       val work = Work(job = job, owner = developer, dockerSettings = jobSettings.docker.copy())
@@ -143,12 +146,12 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
         publishEvent(event)
       }
     } else {
-      val reason = s"Received job ${job} cannot be enqueued!"
+      val reason = s"Received job $job cannot be enqueued!"
       reply ! JobCannotBeEnqueued(job, reason)
     }
   }
 
-  private def processNextWork() = {
+  private def processNextWork(): Unit = {
     if (workState.hasWork && workState.numberOfRunning < jobSettings.maxRunning) {
       val work = workState.nextWork
       log.info(s"Send job to master ${work.job}")
@@ -160,7 +163,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     }
   }
 
-  private def cancelJob(workId: String) = {
+  private def cancelJob(workId: String): Unit = {
     workState.getWorkFromAnyState(workId) foreach { work =>
       persist(WorkCanceled(work)) { event =>
         workState = workState.updated(event)
@@ -170,24 +173,23 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     }
   }
 
-  private def acceptWork(workId: String) = {
-    log.info(s"Master accepted work ${workId}")
+  private def acceptWork(workId: String): Unit = {
+    log.info(s"Master accepted work $workId")
     workState.getWorkInWait(workId) match {
-      case Some(work) => {
+      case Some(work) =>
         persist(WorkAcceptedByMaster(work)) { event =>
           workState = workState.updated(event)
           publishEvent(event)
         }
-      }
       case None => log.info("accepted received twice for {}", workId)
     }
   }
 
-  private def signalWorkDone(workId: String, result: Int) = {
-    log.info(s"Master completed work ${workId}")
+  private def signalWorkDone(workId: String, result: Int): Unit = {
+    log.info(s"Master completed work $workId")
     // check if work was in progress
     workState.getWorkInProgress(workId) foreach { work =>
-      log.info(s"Work was in progress and ended now ${workId}")
+      log.info(s"Work was in progress and ended now $workId")
       persist(WorkCompleted(work, result)) { event =>
         workState = workState.updated(event)
         self ! NextWork
@@ -196,7 +198,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     }
     // otherwise check if work was canceled
     workState.getCanceledWork(workId) foreach { work =>
-      log.info(s"Work was canceled ${workId}")
+      log.info(s"Work was canceled $workId")
       persist(WorkCompleted(work, result)) { event =>
         workState = workState.updated(event)
         self ! NextWork
@@ -208,7 +210,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     sender() ! DeveloperReceivedCompletedWork(workId)
   }
 
-  private def processCheck() = {
+  private def processCheck(): Unit = {
     workState.listWorkInWait.foreach(work => {
       log.info("ask for waiting work {}", work._1)
       sendToMaster(work)
@@ -219,7 +221,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
     })
   }
 
-  private def sendToMaster(message: Any) = master ! Publish("Master", message)
+  private def sendToMaster(message: Any): Unit = master ! Publish("Master", message)
 
-  override def persistenceId: String = s"worker-${developer}"
+  override def persistenceId: String = s"worker-$developer"
 }

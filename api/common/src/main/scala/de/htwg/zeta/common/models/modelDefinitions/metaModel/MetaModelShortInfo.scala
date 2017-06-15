@@ -1,8 +1,8 @@
-package models.modelDefinitions.metaModel
+package de.htwg.zeta.common.models.modelDefinitions.metaModel
 
 import java.util.UUID
 
-import models.modelDefinitions.helper.HLink
+import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json
 import play.api.libs.json.OWrites

@@ -8,26 +8,14 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
+import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.frontend.BondedTaskList
+import de.htwg.zeta.common.models.frontend.BondedTaskNotExecutable
+import de.htwg.zeta.common.models.frontend.Entry
+import de.htwg.zeta.common.models.frontend.ExecuteBondedTask
+import de.htwg.zeta.common.models.frontend.ModelUser
+import de.htwg.zeta.common.models.worker.RunBondedTask
 import de.htwg.zeta.persistence.general.Repository
-import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.frontend.BondedTaskList
-import de.htwg.zeta.common.models.frontend.BondedTaskNotExecutable
-import de.htwg.zeta.common.models.frontend.Entry
-import de.htwg.zeta.common.models.frontend.ExecuteBondedTask
-import de.htwg.zeta.common.models.frontend.ModelUser
-import de.htwg.zeta.common.models.worker.RunBondedTask
-import de.htwg.zeta.common.models.entity.AllBondedTasks
-import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.document.Repository
-import de.htwg.zeta.common.models.frontend.BondedTaskList
-import de.htwg.zeta.common.models.frontend.BondedTaskNotExecutable
-import de.htwg.zeta.common.models.frontend.Entry
-import de.htwg.zeta.common.models.frontend.ExecuteBondedTask
-import de.htwg.zeta.common.models.frontend.ModelUser
-import de.htwg.zeta.common.models.worker.RunBondedTask
 
 case class GetBondedTaskList(user: ModelUser)
 
@@ -40,7 +28,7 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
   // 1. check if the bonded task exist
   // 2. get the filter attached to the bonded task
   // 3. check if the user (which triggered the task) can execute the task.
-  def handleRequest(request: ExecuteBondedTask) = {
+  def handleRequest(request: ExecuteBondedTask): Future[Unit] = {
     val job = for {
       task <- repository.bondedTask.read(request.taskId) // repository.get[BondedTask](request.task)
       filter <- repository.filter.read(task.filterId)
@@ -70,25 +58,24 @@ class BondedTasksManager(worker: ActorRef, repository: Repository) extends Actor
         p.success(None)
       }
     }.recover {
-      case e: Exception => {
+      case e: Exception =>
         log.error(e.getMessage)
         p.success(None)
-      }
     }
     p.future
   }
 
-  def getBondedTaskList(user: ModelUser): Unit = {
+  def sendBondedTaskList(user: ModelUser): Unit = {
     val allTaskIds = repository.bondedTask.readAllIds()
     val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.bondedTask.read)) }
     val filteredTasks = allTasks.flatMap(x => Future.sequence(x.map(i => entry(i, user))).map(_.flatten))
     filteredTasks.map(tasks => user.out ! BondedTaskList(tasks.toList))
   }
 
-  def receive = {
+  def receive: Receive = {
     // handle user request to execute a bonded task
     case request: ExecuteBondedTask => handleRequest(request)
-    case request: GetBondedTaskList => getBondedTaskList(request.user)
+    case request: GetBondedTaskList => sendBondedTaskList(request.user)
   }
 
 }

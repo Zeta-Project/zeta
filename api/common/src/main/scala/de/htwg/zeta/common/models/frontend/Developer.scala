@@ -4,14 +4,15 @@ import java.util.UUID
 
 import scala.collection.immutable.Queue
 
-import julienrf.json.derived
 import de.htwg.zeta.common.models.worker.Job
-import play.api.libs.json.__
+import julienrf.json.derived
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
+import play.api.libs.json.OWrites
 import play.api.libs.json.Writes
+import play.api.libs.json.__
 
 /**
  * Request messages which can be send by a Tool-Developer
@@ -39,29 +40,29 @@ case class JobInfo(id: String, job: Job, state: String) extends DeveloperRespons
 case class JobInfoList(jobs: List[JobInfo], running: Int, pending: Int, waiting: Int, canceled: Int) extends DeveloperResponse
 case class JobLogMessage(message: String, sort: String) extends DeveloperResponse
 case class JobLog(job: String, messages: Queue[JobLogMessage] = Queue.empty) extends DeveloperResponse {
-  override def toString(): String = messages.map(log => log.message).mkString
+  override def toString: String = messages.map(log => log.message).mkString
 }
 
 object DeveloperResponse {
-  implicit val writeGeneratorImageNotFoundFailure = Json.writes[GeneratorImageNotFoundFailure]
-  implicit val writeGeneratorNotFoundFailure = Json.writes[ExecuteGeneratorError]
-  implicit val writeFilterNotFoundFailure = Json.writes[ExecuteFilterError]
-  implicit val writeServiceUnavailable = Json.writes[ServiceUnavailable]
-  implicit val writeJobInfo = Json.writes[JobInfo]
-  implicit val writeJobInfoList = Json.writes[JobInfoList]
-  implicit val writeJobLogMessage = Json.writes[JobLogMessage]
-  implicit val writeJobLog = Json.writes[JobLog]
+  implicit val writeGeneratorImageNotFoundFailure: OWrites[GeneratorImageNotFoundFailure] = Json.writes[GeneratorImageNotFoundFailure]
+  implicit val writeGeneratorNotFoundFailure: OWrites[ExecuteGeneratorError] = Json.writes[ExecuteGeneratorError]
+  implicit val writeFilterNotFoundFailure: OWrites[ExecuteFilterError] = Json.writes[ExecuteFilterError]
+  implicit val writeServiceUnavailable: OWrites[ServiceUnavailable] = Json.writes[ServiceUnavailable]
+  implicit val writeJobInfo: OWrites[JobInfo] = Json.writes[JobInfo]
+  implicit val writeJobInfoList: OWrites[JobInfoList] = Json.writes[JobInfoList]
+  implicit val writeJobLogMessage: OWrites[JobLogMessage] = Json.writes[JobLogMessage]
+  implicit val writeJobLog: OWrites[JobLog] = Json.writes[JobLog]
 
   implicit val write = new Writes[DeveloperResponse] {
     override def writes(response: DeveloperResponse): JsObject = response match {
-      case s: GeneratorImageNotFoundFailure => Json.toJson(s).as[JsObject] + ("type", JsString("Error"))
-      case s: ExecuteGeneratorError => Json.toJson(s).as[JsObject] + ("type", JsString("Error"))
-      case s: ExecuteFilterError => Json.toJson(s).as[JsObject] + ("type", JsString("Error"))
-      case s: ServiceUnavailable => Json.toJson(s).as[JsObject] + ("type", JsString("Error"))
-      case s: JobInfo => Json.toJson(s).as[JsObject] + ("type", JsString("JobInfo"))
-      case s: JobInfoList => Json.toJson(s).as[JsObject] + ("type", JsString("JobInfoList"))
-      case s: JobLogMessage => Json.toJson(s).as[JsObject] + ("type", JsString("JobLogMessage"))
-      case s: JobLog => Json.toJson(s).as[JsObject] + ("type", JsString("JobLog"))
+      case s: GeneratorImageNotFoundFailure => Json.toJson(s).as[JsObject] + (("type", JsString("Error")))
+      case s: ExecuteGeneratorError => Json.toJson(s).as[JsObject] + (("type", JsString("Error")))
+      case s: ExecuteFilterError => Json.toJson(s).as[JsObject] + (("type", JsString("Error")))
+      case s: ServiceUnavailable => Json.toJson(s).as[JsObject] + (("type", JsString("Error")))
+      case s: JobInfo => Json.toJson(s).as[JsObject] + (("type", JsString("JobInfo")))
+      case s: JobInfoList => Json.toJson(s).as[JsObject] + (("type", JsString("JobInfoList")))
+      case s: JobLogMessage => Json.toJson(s).as[JsObject] + (("type", JsString("JobLogMessage")))
+      case s: JobLog => Json.toJson(s).as[JsObject] + (("type", JsString("JobLog")))
     }
   }
 }

@@ -3,31 +3,31 @@ package de.htwg.zeta.persistence.microService
 import java.time.Instant
 import java.util.UUID
 
-import models.document.DockerSettings
-import models.document.JobSettings
-import models.entity.BondedTask
-import models.entity.EventDrivenTask
-import models.entity.Filter
-import models.entity.FilterImage
-import models.entity.Generator
-import models.entity.GeneratorImage
-import models.entity.Log
-import models.entity.Settings
-import models.modelDefinitions.metaModel.elements.AttributeType
-import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import models.modelDefinitions.metaModel.elements.AttributeValue
-import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MObject
-import models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.document.DockerSettings
+import de.htwg.zeta.common.models.document.JobSettings
+import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.EventDrivenTask
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.FilterImage
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.Log
+import de.htwg.zeta.common.models.entity.Settings
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import spray.json.DefaultJsonProtocol
 import spray.json.JsArray
 import spray.json.JsBoolean
@@ -100,7 +100,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   }
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType]] */
   private implicit object AttributeTypeFormat extends RootJsonFormat[AttributeType] {
 
     /** Write a AttributeType.
@@ -133,7 +133,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
   }
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeValue]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue]] */
   private implicit object AttributeValueFormat extends RootJsonFormat[AttributeValue] {
 
     /** Write a AttributeValue.
@@ -170,7 +170,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
 
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MClass]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass]] */
   private implicit object MClassFormat extends RootJsonFormat[MClass] {
 
     /** Write a MClass.
@@ -211,7 +211,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.MReference]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference]] */
   private implicit object MReferenceFormat extends RootJsonFormat[MReference] {
 
     /** Write a MReference.
@@ -268,7 +268,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType.MEnum]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum]] */
   private implicit object MEnumFormat extends RootJsonFormat[MEnum] {
 
     /** Write a MEnum.
@@ -304,7 +304,7 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   }
 
 
-  /** Spray-Json conversion protocol for [[models.modelDefinitions.metaModel.elements.AttributeType.MEnum]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum]] */
   private implicit object MObjectFormat extends RootJsonFormat[MObject] {
 
     /** Write a MObject.
@@ -375,41 +375,41 @@ object PersistenceJsonProtocol extends DefaultJsonProtocol with App {
   // private implicit val modelFormat: RootJsonFormat[Model] = jsonFormat4(Model.apply)
 
 
-  /** Spray-Json conversion protocol for [[models.entity.EventDrivenTask]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
   implicit val eventDrivenTaskFormat: RootJsonFormat[EventDrivenTask] = jsonFormat5(EventDrivenTask.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.BondedTask]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.BondedTask]] */
   implicit val bondedTaskFormat: RootJsonFormat[BondedTask] = jsonFormat6(BondedTask.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.Generator]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.Generator]] */
   implicit val generatorFormat: RootJsonFormat[Generator] = jsonFormat3(Generator.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.Filter]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.Filter]] */
   implicit val filterFormat: RootJsonFormat[Filter] = jsonFormat4(Filter.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.GeneratorImage]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.GeneratorImage]] */
   implicit val generatorImageFormat: RootJsonFormat[GeneratorImage] = jsonFormat3(GeneratorImage.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.FilterImage]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.FilterImage]] */
   implicit val filterImageFormat: RootJsonFormat[FilterImage] = jsonFormat3(FilterImage.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.Settings]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.Settings]] */
   implicit val settingsFormat: RootJsonFormat[Settings] = {
     implicit val dockerSettingsFormat: RootJsonFormat[DockerSettings] = jsonFormat2(DockerSettings.apply)
     implicit val jobSettingsInfoFormat: RootJsonFormat[JobSettings] = jsonFormat3(JobSettings.apply)
     jsonFormat3(Settings.apply)
   }
 
-  /** Spray-Json conversion protocol for [[models.entity.MetaModelEntity]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.MetaModelEntity]] */
   // TODO: implicit val metaModelEntityFormat: RootJsonFormat[MetaModelEntity] = jsonFormat6(MetaModelEntity.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.MetaModelRelease]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.MetaModelRelease]] */
   // TODO: implicit val metaModelReleaseFormat: RootJsonFormat[MetaModelRelease] = jsonFormat6(MetaModelRelease.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.ModelEntity]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.ModelEntity]] */
   // implicit val modelEntityFormat: RootJsonFormat[ModelEntity] = jsonFormat7(ModelEntity.apply)
 
-  /** Spray-Json conversion protocol for [[models.entity.Log]] */
+  /** Spray-Json conversion protocol for [[de.htwg.zeta.common.models.entity.Log]] */
   implicit val logFormat: RootJsonFormat[Log] = jsonFormat5(Log.apply)
 
 

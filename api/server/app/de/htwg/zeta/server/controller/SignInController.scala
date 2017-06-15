@@ -13,12 +13,12 @@ import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.server.forms.SignInForm
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.entity.User
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig

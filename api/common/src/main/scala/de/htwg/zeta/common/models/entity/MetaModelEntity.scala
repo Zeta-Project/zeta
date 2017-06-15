@@ -1,16 +1,16 @@
-package models.entity
+package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
-import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.metaModel.Dsl
-import models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
 
 case class MetaModelEntity(
-    id: UUID = UUID.randomUUID,
+    id: UUID,
     rev: String,
     name: String,
     metaModel: MetaModel,

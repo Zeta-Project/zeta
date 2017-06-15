@@ -8,13 +8,13 @@ import scala.concurrent.duration.FiniteDuration
 
 import akka.actor.Actor
 import akka.actor.Cancellable
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorActor.CleanUp
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.CacheDuration
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAccessor
 import de.htwg.zeta.persistence.actorCache.DocumentAccessorManagerActor.GetAllIds
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.transient.TransientPersistence
-import models.entity.Entity
 
 
 /** Manages all DocumentAccessors of type [[T]].

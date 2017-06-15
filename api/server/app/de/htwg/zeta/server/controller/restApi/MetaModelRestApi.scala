@@ -9,17 +9,17 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -62,6 +62,7 @@ class MetaModelRestApi @Inject()() extends Controller {
       entity => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.create(
           MetaModelEntity(
+            id = UUID.randomUUID(),
             name = entity.name,
             rev = "1",
             metaModel = entity

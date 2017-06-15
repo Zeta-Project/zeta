@@ -1,4 +1,4 @@
-package models.modelDefinitions.metaModel.elements
+package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import play.api.libs.json.Format
 import play.api.libs.json.Json

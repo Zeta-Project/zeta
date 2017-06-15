@@ -8,9 +8,12 @@ import scala.util.Failure
 import scala.util.Success
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.sprayJsValueMarshaller
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.sprayJsonMarshaller
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.sprayJsonUnmarshaller
-import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport.sprayJsValueMarshaller
+import akka.http.scaladsl.model.ContentTypes.`application/json`
+import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._enhanceRouteWithConcatenation
 import akka.http.scaladsl.server.Directives._segmentStringToPathMatcher
@@ -27,12 +30,11 @@ import akka.http.scaladsl.server.Directives.post
 import akka.http.scaladsl.server.Directives.put
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.StandardRoute
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.ContentTypes.`application/json`
-import akka.http.scaladsl.model.HttpEntity
 import akka.stream.ActorMaterializer
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.UuidJsonFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.bondedTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.eventDrivenTaskFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.filterFormat
@@ -41,13 +43,11 @@ import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorFo
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.generatorImageFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.logFormat
 import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.settingsFormat
-import de.htwg.zeta.persistence.microService.PersistenceJsonProtocol.UuidJsonFormat
 import grizzled.slf4j.Logging
-import models.entity.Entity
+import spray.json.DefaultJsonProtocol.StringJsonFormat
+import spray.json.DefaultJsonProtocol.seqFormat
 import spray.json.RootJsonFormat
 import spray.json.pimpAny
-import spray.json.DefaultJsonProtocol.seqFormat
-import spray.json.DefaultJsonProtocol.StringJsonFormat
 
 
 /**

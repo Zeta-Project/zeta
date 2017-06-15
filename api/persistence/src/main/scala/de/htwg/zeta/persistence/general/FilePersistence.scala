@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import models.entity.File
+import de.htwg.zeta.common.models.entity.File
 
 /** Modification of the EntityPersistence. The key is a compound key and consists of the id and the name of the file. */
 trait FilePersistence {
