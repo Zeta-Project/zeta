@@ -17,7 +17,7 @@ import de.htwg.zeta.persistence.transient.TransientTokenCache
 object Persistence extends App {
 
   /** The current implementation of the PersistenceService. */
-  lazy val fullAccessRepository: Repository = new MongoRepository("127.0.0.1:27017", "zeta")
+  lazy val fullAccessRepository: Repository = new MongoRepository("localhost:27017", "zeta")
 
   /** The current implementation of the PersistenceService with a overlaying Access-Restriction Layer.
    *
