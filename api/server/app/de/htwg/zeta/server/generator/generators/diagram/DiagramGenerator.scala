@@ -2,9 +2,9 @@ package de.htwg.zeta.server.generator.generators.diagram
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.model.result.Unreliable
-import models.entity.File
 
 /**
  * The DiagramGenerator Object

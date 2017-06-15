@@ -4,13 +4,13 @@ import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import models.entity.Filter
-import models.entity.Generator
-import models.entity.MetaModelEntity
-import models.entity.ModelEntity
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
-import models.remote.Remote
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.remote.Remote
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -107,11 +107,11 @@ object Main extends Template[CreateOptions, String] {
   def compiledGenerator(file: File) = {
     val content = s"""
       import scala.concurrent.Future
-      import models.modelDefinitions.model.elements.{Node, Edge}
-      import models.entity.ModelEntity
-      import models.entity.{Repository => Documents}
-      import models.file.{Repository => Files}
-      import models.remote.Remote
+      import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
+      import de.htwg.zeta.common.models.entity.ModelEntity
+      import de.htwg.zeta.common.models.entity.{Repository => Documents}
+      import de.htwg.zeta.common.models.file.{Repository => Files}
+      import de.htwg.zeta.common.models.remote.Remote
       import generator._
 
       ${file.content}

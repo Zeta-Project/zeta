@@ -3,11 +3,11 @@ package de.htwg.zeta.server.generator.generators.diagram
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.diagram.node.Node
-import models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 
-import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
 /**
  * ValidatorGenerator is responsible for the creation of the String for validator.js

@@ -7,16 +7,16 @@ import javax.inject.Inject
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.entity.ModelEntity
-import models.modelDefinitions.helper.HLink
-import models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
+import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json

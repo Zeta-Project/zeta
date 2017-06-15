@@ -10,8 +10,8 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.modelDefinitions.metaModel.MetaModelShortInfo
-import models.modelDefinitions.model.ModelShortInfo
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
+import de.htwg.zeta.common.models.modelDefinitions.model.ModelShortInfo
 import play.api.libs.ws.WSClient
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent

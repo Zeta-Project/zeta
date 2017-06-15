@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
-import models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.MetaModelRelease
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory

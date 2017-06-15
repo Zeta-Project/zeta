@@ -4,8 +4,8 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import models.entity.ModelEntity
-import models.remote.Remote
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.remote.Remote
 
 /**
  * Result of a generator

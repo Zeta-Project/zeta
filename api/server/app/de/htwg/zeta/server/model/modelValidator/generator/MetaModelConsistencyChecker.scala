@@ -1,7 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
 import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.ConsistencyRules
-import models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 
 class MetaModelConsistencyChecker(metaModel: MetaModel) {
 

@@ -6,7 +6,7 @@ import de.htwg.zeta.server.generator.model.diagram.node.Node
 import de.htwg.zeta.server.generator.model.style.HasStyle
 import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.parser.Cache
-import models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.MetaModelEntity
 
 /**
  * Created by julian on 24.11.15.

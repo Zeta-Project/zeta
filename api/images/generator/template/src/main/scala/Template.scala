@@ -12,11 +12,11 @@ import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Transformer
-import models.entity.File
-import models.entity.Filter
-import models.entity.ModelEntity
-import models.remote.Remote
-import models.remote.RemoteGenerator
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.remote.Remote
+import de.htwg.zeta.common.models.remote.RemoteGenerator
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError

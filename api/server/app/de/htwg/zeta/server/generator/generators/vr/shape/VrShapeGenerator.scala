@@ -3,8 +3,8 @@ package de.htwg.zeta.server.generator.generators.vr.shape
 
 import de.htwg.zeta.server.generator.model.diagram.node.Node
 import de.htwg.zeta.server.generator.parser.Cache
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.server.model.result.Unreliable
-import models.entity.File
 
 
 /**

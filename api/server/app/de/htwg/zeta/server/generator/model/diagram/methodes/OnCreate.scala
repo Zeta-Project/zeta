@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.generator.model.diagram.methodes
 
-import models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 
 
 /**

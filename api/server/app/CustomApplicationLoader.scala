@@ -1,4 +1,4 @@
-import cluster.ClusterManager
+import de.htwg.zeta.common.cluster.ClusterManager
 import com.typesafe.config.ConfigFactory
 import play.api.ApplicationLoader
 import play.api.Configuration

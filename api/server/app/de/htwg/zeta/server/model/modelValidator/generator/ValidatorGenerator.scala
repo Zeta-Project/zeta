@@ -1,19 +1,13 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
-import java.io.File
-import java.io.PrintWriter
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.UUID
-
 import scala.reflect.runtime.universe
 import scala.tools.reflect.ToolBox
 
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.MetaModelDependent
-import models.entity.MetaModelEntity
-import models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 
 case class ValidatorGeneratorResult(success: Boolean, result: String)
 

@@ -1,6 +1,6 @@
 package filter
 
-import models.entity.ModelEntity
+import de.htwg.zeta.common.models.entity.ModelEntity
 
 trait BaseFilter {
   def filter(entity: ModelEntity): Boolean

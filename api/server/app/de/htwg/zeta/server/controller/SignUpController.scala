@@ -19,7 +19,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.entity.User
+import de.htwg.zeta.common.models.entity.User
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email

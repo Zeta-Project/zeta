@@ -4,18 +4,18 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.AttributeType
-import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import models.modelDefinitions.metaModel.elements.AttributeValue
-import models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).

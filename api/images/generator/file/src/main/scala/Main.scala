@@ -10,11 +10,11 @@ import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import models.entity.File
-import models.entity.Filter
-import models.entity.Generator
-import models.entity.ModelEntity
-import models.remote.Remote
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.remote.Remote
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -98,11 +98,11 @@ object Main extends Template[CreateOptions, String] {
       s"""
         |import scala.concurrent.ExecutionContext.Implicits.global
         |import scala.concurrent.{Future, Promise}
-        |import models.modelDefinitions.model.elements.{Node, Edge}
-        |import models.document.ModelEntity
-        |import models.document.{Repository => Documents}
-        |import models.file.{File, Repository => Files}
-        |import models.remote.Remote
+        |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
+        |import de.htwg.zeta.common.models.document.ModelEntity
+        |import de.htwg.zeta.common.models.document.{Repository => Documents}
+        |import de.htwg.zeta.common.models.file.{File, Repository => Files}
+        |import de.htwg.zeta.common.models.remote.Remote
         |import generator._
         |import org.slf4j.LoggerFactory
         |

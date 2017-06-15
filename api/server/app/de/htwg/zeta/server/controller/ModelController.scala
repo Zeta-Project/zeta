@@ -15,6 +15,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.model.model.ModelWsActor
 import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.common.models.entity.ModelEntity
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent
 import play.api.mvc.Result

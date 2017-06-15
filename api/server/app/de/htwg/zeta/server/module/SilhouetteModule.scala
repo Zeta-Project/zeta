@@ -61,7 +61,7 @@ import de.htwg.zeta.persistence.transient.TransientLoginInfoPersistence
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import models.entity.User
+import de.htwg.zeta.common.models.entity.User
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.Ficus.finiteDurationReader

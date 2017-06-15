@@ -7,10 +7,10 @@ import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.parser.Cache
 import de.htwg.zeta.server.generator.parser.ShapeSketch
 import de.htwg.zeta.server.generator.parser.IDtoShapeSketch
-import models.entity.MetaModelEntity
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 /**
  * Created by julian on 30.11.15.

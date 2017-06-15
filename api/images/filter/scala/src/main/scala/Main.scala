@@ -10,9 +10,9 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.persistence.Persistence
 import filter.BaseFilter
-import models.entity.File
-import models.entity.Filter
-import models.entity.ModelEntity
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.ModelEntity
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
@@ -71,9 +71,8 @@ object Main extends App {
     val p = Promise[BaseFilter]
     logger.info("compile filter")
 
-    val content =
-      s"""
-      import models.entity.{ModelEntity, MetaModelRelease}
+    val content = s"""
+      import de.htwg.zeta.common.models.entity.{ModelEntity, MetaModelRelease}
       import filter.BaseFilter
 
       ${file.content}

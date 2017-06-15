@@ -1,14 +1,14 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodeAttributeEnumTypes
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodeAttributeScalarTypes
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodeAttributesLocalUnique
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodeAttributesLowerBound
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodeAttributesUpperBound
-import models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).

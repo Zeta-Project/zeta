@@ -2,8 +2,8 @@ package worker
 
 import java.io.File
 
-import actors.master.Master
-import actors.worker.DummyWorkExecutor$
+import de.htwg.zeta.generatorControl.actors.master.Master
+import de.htwg.zeta.generatorControl.actors.worker.DummyWorkExecutor$
 import akka.actor.{Actor, ActorSystem, PoisonPill, Props, RootActorPath}
 import akka.cluster.Cluster
 import akka.cluster.ClusterEvent.{CurrentClusterState, MemberUp}
@@ -20,7 +20,7 @@ import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-import actors.worker.MasterWorkerProtocol.Work
+import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
 
 object DistributedWorkerSpec {
 

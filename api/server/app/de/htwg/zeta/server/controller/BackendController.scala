@@ -6,10 +6,10 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import actors.developer.Mediator
-import actors.frontend.DeveloperFrontend
-import actors.frontend.GeneratorFrontend
-import actors.frontend.UserFrontend
+import de.htwg.zeta.generatorControl.actors.developer.Mediator
+import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
+import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
+import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
 import akka.actor.ActorSystem
 import akka.actor.ActorRef
 import akka.actor.Props
@@ -18,6 +18,7 @@ import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.common.models.User
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import models.frontend.DeveloperRequest
 import models.frontend.DeveloperResponse
@@ -25,6 +26,16 @@ import models.frontend.GeneratorRequest
 import models.frontend.GeneratorResponse
 import models.frontend.UserRequest
 import models.frontend.UserResponse
+import de.htwg.zeta.server.util.auth.RepositoryFactory
+import de.htwg.zeta.common.models.document.ModelEntity
+import de.htwg.zeta.common.models.document.Repository
+import de.htwg.zeta.common.models.frontend.DeveloperRequest
+import de.htwg.zeta.common.models.frontend.DeveloperResponse
+import de.htwg.zeta.common.models.frontend.GeneratorRequest
+import de.htwg.zeta.common.models.frontend.GeneratorResponse
+import de.htwg.zeta.common.models.frontend.UserRequest
+import de.htwg.zeta.common.models.frontend.UserResponse
+import de.htwg.zeta.common.models.session.Session
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent
 import play.api.mvc.WebSocket.MessageFlowTransformer

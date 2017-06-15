@@ -5,7 +5,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelIndependent.MetaModelIndependent
 import de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks.NullChecks
 import de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks.NullChecks.NullChecksResult
-import models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.Model
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).

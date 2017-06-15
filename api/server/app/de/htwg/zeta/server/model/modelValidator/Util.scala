@@ -2,14 +2,14 @@ package de.htwg.zeta.server.model.modelValidator
 
 import scala.annotation.tailrec
 
-import models.modelDefinitions.metaModel.MetaModel
-import models.modelDefinitions.metaModel.elements.AttributeType
-import models.modelDefinitions.metaModel.elements.MAttribute
-import models.modelDefinitions.metaModel.elements.MClass
-import models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import models.modelDefinitions.model.elements.Edge
-import models.modelDefinitions.model.elements.ModelElement
-import models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (Mar 2017 - Sep 2017).
