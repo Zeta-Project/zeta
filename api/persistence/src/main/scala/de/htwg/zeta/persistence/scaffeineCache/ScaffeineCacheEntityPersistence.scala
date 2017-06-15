@@ -20,7 +20,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  * @param maximumSize         the maximum size of the cache
  * @tparam E type of the entity
  */
-case class ScaffeineCachePersistence[E <: Entity]( // scalastyle:ignore
+class ScaffeineCacheEntityPersistence[E <: Entity]( // scalastyle:ignore
     underlaying: EntityPersistence[E],
     keepInCacheDuration: Duration = Duration(10, TimeUnit.MINUTES), // scalastyle:ignore
     maximumSize: Int = 1000 // scalastyle:ignore

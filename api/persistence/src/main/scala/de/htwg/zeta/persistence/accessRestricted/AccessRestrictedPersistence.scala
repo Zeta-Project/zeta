@@ -18,7 +18,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  * @tparam E type of the entity
  * @param manifest implicit manifest of the entity type
  */
-case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
+class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
     ownerId: UUID,
     accessAuthorisation: EntityPersistence[AccessAuthorisation],
     underlaying: EntityPersistence[E])(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
