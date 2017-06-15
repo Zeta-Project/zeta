@@ -9,7 +9,10 @@ import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import models.modelDefinitions.model.elements.Node
 
-class NodeAttributeEnumTypes(nodeType: String, attributeType: String, enumName: String) extends SingleNodeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class NodeAttributeEnumTypes(val nodeType: String, val attributeType: String, val enumName: String) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Attributes of type $attributeType in nodes of type $nodeType must be of type enum $enumName."
   override val possibleFix: String = s"Remove attribute values of attribute $attributeType in node $nodeType which are not of type enum $enumName."

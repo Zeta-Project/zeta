@@ -7,7 +7,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
-class NodeOutputEdges(nodeType: String, outputTypes: Seq[String]) extends SingleNodeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class NodeOutputEdges(val nodeType: String, val outputTypes: Seq[String]) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"Nodes of type $nodeType are only allowed to have output edges of types ${outputTypes.mkString("{", ", ", "}")}."

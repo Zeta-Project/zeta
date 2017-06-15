@@ -6,7 +6,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeSourcesUpperBound(edgeType: String, sourceType: String, upperBound: Int) extends SingleEdgeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class EdgeSourcesUpperBound(val edgeType: String, val sourceType: String, val upperBound: Int) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Edges of type $edgeType must have a maximum of $upperBound source nodes of type $sourceType."
   override val possibleFix: String =

@@ -15,7 +15,10 @@ import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ModelElement
 
-class EdgeAttributesGlobalUnique(edgeType: String, attributeType: String) extends ElementsRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String) extends ElementsRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Every value of attribute $attributeType in edges of type $edgeType must be globally unique."
   override val possibleFix: String = s"Remove duplicated values of attribute $attributeType in edges of type $edgeType."

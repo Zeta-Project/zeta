@@ -86,4 +86,21 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       """Sources ofEdges "edgeType" toNodes "sourceType" haveUpperBound 2""")
   }
 
+  "generateFor" should "generate this rule from the meta model" in {
+    val class1 = MClass("class", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val sourceLinkDef1 = MLinkDef(class1, 7, 0, deleteIfLower = false)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](sourceLinkDef1), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgeSourcesUpperBound.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgeSourcesUpperBound =>
+        rule.edgeType should be ("reference")
+        rule.sourceType should be ("class")
+        rule.upperBound should be (7)
+      case _ => fail
+    }
+  }
+
 }

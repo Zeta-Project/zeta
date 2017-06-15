@@ -5,6 +5,9 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.ScalarValue.MString
+import models.modelDefinitions.model.elements.Attribute
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -79,6 +82,22 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be(
       """Attributes ofType "attributeType" inEdges "edgeType" areGlobalUnique ()""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val globalUniqueAttribute = MAttribute("attributeName", globalUnique = true, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val nonGlobalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](globalUniqueAttribute, nonGlobalUniqueAttribute))
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgeAttributesGlobalUnique.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgeAttributesGlobalUnique =>
+        rule.edgeType should be ("reference")
+        rule.attributeType should be ("attributeName")
+      case _ => fail
+    }
   }
 
 }

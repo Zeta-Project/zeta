@@ -8,7 +8,6 @@ import java.util.UUID
 
 import scala.reflect.runtime.universe
 import scala.tools.reflect.ToolBox
-import scala.util.Try
 
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
@@ -16,52 +15,21 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 import models.entity.MetaModelEntity
 import models.modelDefinitions.metaModel.MetaModel
 
-case class ValidatorGeneratorResult(success: Boolean, result: String, created: Boolean)
+case class ValidatorGeneratorResult(success: Boolean, result: String)
 
 class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
 
-  val consistencyChecker = new MetaModelConsistencyChecker(metaModelEntity.metaModel)
+  def generateValidator(): ValidatorGeneratorResult = {
+    val consistencyChecker = new MetaModelConsistencyChecker(metaModelEntity.metaModel)
 
-  def getGenerator(forceRegenerate: Boolean): ValidatorGeneratorResult = {
-
-    val validatorExists = ValidatorGenerator.validatorExists(metaModelEntity.id)
-
-    lazy val validatorDeprecated = ValidatorGenerator.load(metaModelEntity.id) match {
-      case Some(validator) => validator.metaModelRevision != metaModelEntity.rev
-      case _ => true
+    consistencyChecker.checkConsistency() match {
+      case ConsistencyCheckResult(valid, _) if valid => ValidatorGeneratorResult(success = true, result = doGenerate())
+      case ConsistencyCheckResult(_, Some(failedRule)) => ValidatorGeneratorResult(success = false, result = s"$failedRule")
+      case _ => ValidatorGeneratorResult(success = false, result = "error checking meta model consistency")
     }
-
-    if (forceRegenerate || !validatorExists || validatorDeprecated) {
-
-      consistencyChecker.checkConsistency() match {
-        case ConsistencyCheckResult(valid, _) if valid =>
-
-          val validator = doGenerate()
-          new PrintWriter(ValidatorGenerator.filePath(metaModelEntity.id)) {
-            write(validator)
-            close()
-          }
-          ValidatorGeneratorResult(success = true, result = validator, created = true)
-
-        case ConsistencyCheckResult(_, Some(failedRule)) => ValidatorGeneratorResult(success = false, result = s"failed rule: $failedRule", created = false)
-
-        case _ => ValidatorGeneratorResult(success = false, result = "error checking meta model consistency", created = false)
-
-      }
-
-    } else {
-
-      ValidatorGeneratorResult(success = true, ValidatorGenerator.readFile(ValidatorGenerator.filePath(metaModelEntity.id)), created = false)
-
-    }
-
   }
 
-  def doGenerate(): String =
-    s"""override val metaModelId = "${metaModelEntity.id}"
-      |override val metaModelRevision = "${metaModelEntity.rev}"
-      |
-      |override val metaModelDependentRules = ${generateRules(metaModelEntity.metaModel).mkString("Seq(\n    ", ",\n    ", "\n  )")}""".stripMargin
+  def doGenerate(): String = generateRules(metaModelEntity.metaModel).mkString(",\n")
 
   def generateRules(metaModel: MetaModel): Seq[String] = rules(metaModel).map(_.dslStatement)
 
@@ -70,52 +38,24 @@ class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
 
 object ValidatorGenerator {
 
-  def deleteValidator(metaModelId: UUID): Boolean = deleteFile(filePath(metaModelId))
+  def create(validatorContents: String): Option[ModelValidator] = {
+    val classContents = addBoilerplate(validatorContents)
+    val mirror = universe.runtimeMirror(getClass.getClassLoader)
+    val toolBox = mirror.mkToolBox()
+    val tree = toolBox.parse(classContents)
+    val compiledCode = toolBox.compile(tree)
 
-  def validatorExists(metaModelId: UUID): Boolean = Files.exists(Paths.get(filePath(metaModelId)))
-
-  def filePath(metaModelId: UUID): String = {
-    val root = {
-      val pwd = System.getenv("PWD")
-      if (pwd != null) pwd else System.getProperty("user.dir")
-    }
-    s"$root/server/app/assets/modelValidator/generated/$metaModelId"
-  }
-
-  def readFile(filePath: String): String = {
-    val source = scala.io.Source.fromFile(filePath)
-    val contents = Try(source.mkString).getOrElse("")
-    source.close()
-    contents
-  }
-
-  def deleteFile(filePath: String): Boolean = new File(filePath).delete()
-
-  def load(metaModelId: UUID): Option[ModelValidator] = {
-
-    if (validatorExists(metaModelId)) {
-
-      val fileContents = readFile(filePath(metaModelId))
-      val mirror = universe.runtimeMirror(getClass.getClassLoader)
-      val tb = mirror.mkToolBox()
-      val tree = tb.parse(addBoilerplate(fileContents))
-      val compiledCode = tb.compile(tree)
-
-      compiledCode() match {
-        case v: ModelValidator => Some(v)
-        case _ => None
-      }
-
-    } else {
-      None
+    compiledCode() match {
+      case v: ModelValidator => Some(v)
+      case _ => None
     }
   }
 
-  def addBoilerplate(fileContents: String): String =
+  def addBoilerplate(validatorContents: String): String =
     s"""import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
       |import de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl._
       |new ModelValidator {
-      |$fileContents
+      |override val metaModelDependentRules = Seq($validatorContents)
       |}""".stripMargin
 
 }

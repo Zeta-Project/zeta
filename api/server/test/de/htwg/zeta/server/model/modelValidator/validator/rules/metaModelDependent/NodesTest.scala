@@ -33,4 +33,19 @@ class NodesTest extends FlatSpec with Matchers {
     rule.dslStatement should be ("""Nodes areOfTypes Seq("nodeType1", "nodeType2")""")
   }
 
+  "generateFor" should "generate this rule from the meta model" in {
+    val mClass1 = MClass("class1", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val mClass2 = MClass("class2", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(mClass1, mClass2))
+    val result = Nodes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: Nodes =>
+        rule.nodeTypes should be (Seq("class1", "class2"))
+      case _ => fail
+    }
+
+  }
+
 }

@@ -40,4 +40,30 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
     rule.dslStatement should be(
       """Attributes ofType "attributeType" inNodes "nodeType" areOfScalarType "String"""")
   }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val tmpEnumType = MEnum("enumName", Seq())
+
+    val enumValues = Seq(
+      EnumSymbol("enumValue1", tmpEnumType),
+      EnumSymbol("enumValue2", tmpEnumType)
+    )
+
+    val enumType = tmpEnumType.copy(values = enumValues)
+    val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enumType, enumValues.head, constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](enumAttribute, scalarAttribute))
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeAttributeScalarTypes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeAttributeScalarTypes =>
+        rule.nodeType should be ("class")
+        rule.attributeType should be ("attributeName2")
+        rule.attributeDataType should be (ScalarType.String)
+      case _ => fail
+    }
+
+  }
 }

@@ -15,4 +15,5 @@ tmp
 *.iml
 server/app/assets/modelEditor/editor/model_specific
 .idea
-    
+/api/server/app/de/htwg/zeta/server/model/modelValidator/generated/
+/api/server/model_specific/

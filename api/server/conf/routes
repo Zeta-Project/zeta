@@ -40,9 +40,8 @@ GET           /metamodel/editor/:metaModelId                                    
 GET           /metamodel/socket/:metaModelId                                         controllers.ScalaRoutes.getMetamodelSocket(metaModelId: java.util.UUID)
 
 ### model editor
-GET           /model/editor/:modelId                                                 controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
-GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId: java.util.UUID, graphType:String)
-GET           /model/validator                                                       controllers.ScalaRoutes.getModelValidator
+GET           /model/editor/:metaModelUuid/:modelUuid                                controllers.ScalaRoutes.getModelEditor(metaModelUuid: String, modelUuid: String)
+GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:String, graphType:String)
 
 ### vr
 GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: java.util.UUID)

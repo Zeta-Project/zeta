@@ -12,10 +12,19 @@ import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.ModelElement
 import models.modelDefinitions.model.elements.Node
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (Mar 2017 - Sep 2017).
+ *
+ * Utility methods for handling the model and meta model graph inside the model validator.
+ */
 object Util {
 
-  /* Model Util */
-
+  /**
+   * Filters all nodes from the given model elements.
+   *
+   * @param elements The model elements.
+   * @return All nodes.
+   */
   def getNodes(elements: Seq[ModelElement]): Seq[Node] = elements.collect { case n: Node => n }
 
   def getEdges(elements: Seq[ModelElement]): Seq[Edge] = elements.collect { case e: Edge => e }
@@ -26,6 +35,22 @@ object Util {
 
   def getAttributeTypeClassName(attributeType: AttributeType): String = attributeType.getClass.getSimpleName.split("\\$").last
 
+  /**
+   * Internal representation of [[MAttribute]].
+   *
+   * @param name             The name.
+   * @param `type`           The type.
+   * @param lowerBound       The lower bound.
+   * @param upperBound       The upper bound.
+   * @param localUnique      Is it local unique?
+   * @param globalUnique     Is it global unique?
+   * @param constant         Is it constant?
+   * @param ordered          Is it ordered?
+   * @param singleAssignment Is it single assignment?
+   * @param transient        Is it transient?
+   * @param expression       The expression.
+   * @param default          The default value.
+   */
   case class Att(
       name: String,
       `type`: AttributeType,
@@ -39,8 +64,19 @@ object Util {
       transient: Boolean,
       expression: String,
       default: String
-    )
+  )
 
+  /**
+   * Internal representation of [[MClass]].
+   *
+   * @param name         The name.
+   * @param superTypes   The super types.
+   * @param subTypes     The sub types.
+   * @param attributes   The attributes.
+   * @param abstractness Is it abstract?
+   * @param inputs       The inputs.
+   * @param outputs      The outputs.
+   */
   case class El(
       name: String,
       superTypes: Seq[String],
@@ -49,10 +85,29 @@ object Util {
       abstractness: Boolean,
       inputs: Seq[LinkDef],
       outputs: Seq[LinkDef]
-    )
+  )
 
+  /**
+   * Internal representation of [[MLinkDef]].
+   *
+   * @param name       The name.
+   * @param lowerBound The lower bound.
+   * @param upperBound The upper bound.
+   */
   case class LinkDef(name: String, lowerBound: Int, upperBound: Int)
 
+  /**
+   * Generates a graph from the meta model, which has all inheritable properties inherited downwards.
+   *
+   * Inheritable properties are:
+   * * Attributes of classes.
+   * * Inputs of classes.
+   * * Outputs of classes.
+   *
+   * @throws IllegalStateException If the properties could not be inherited because of ambiguous inheritance relationships.
+   * @param metaModel The meta model.
+   * @return The sequence of elements containing the inherited properties.
+   */
   def generateResolvedInheritanceGraph(metaModel: MetaModel): Seq[El] = {
     val simplifiedGraph = simplifyMetaModelGraph(metaModel)
     val inheritedAttributesGraph = inheritAttributes(simplifiedGraph)
@@ -61,6 +116,13 @@ object Util {
     inheritedOutputsGraph
   }
 
+  /**
+   * Translates the given meta model into the simpler representation using the internal classes El, Att, etc.
+   * Nothing will be inherited yet, this is just a 1:1 mapping.
+   *
+   * @param metaModel The meta model.
+   * @return The simplified translated graph.
+   */
   def simplifyMetaModelGraph(metaModel: MetaModel): Seq[El] = {
 
     val allClasses = metaModel.classes.values.toSeq
@@ -99,6 +161,13 @@ object Util {
     allClasses.map(mapElement)
   }
 
+  /**
+   * Inherit all the attributes down the inheritance relationships.
+   *
+   * @throws IllegalStateException On ambiguous attribute inheritance relationship.
+   * @param graph The simplified meta model graph.
+   * @return The graph with inherited attributes.
+   */
   def inheritAttributes(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
     def attributeInheritanceValid(attributes: Seq[Att]): Boolean = {
@@ -119,6 +188,13 @@ object Util {
     element.copy(attributes = element.attributes ++ inferredAttributes.distinct)
   }
 
+  /**
+   * Inherit all the inputs down the inheritance relationships.
+   *
+   * @throws IllegalStateException On ambiguous input inheritance relationship.
+   * @param graph The simplified meta model graph.
+   * @return The graph with inherited inputs.
+   */
   def inheritInputs(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
     def inputInheritanceValid(inputs: Seq[LinkDef]): Boolean = {
@@ -139,6 +215,13 @@ object Util {
     element.copy(inputs = element.inputs ++ inferredInputs.distinct)
   }
 
+  /**
+   * Inherit all the outputs down the inheritance relationships.
+   *
+   * @throws IllegalStateException On ambiguous output inheritance relationship.
+   * @param graph The simplified meta model graph.
+   * @return The graph with inherited outputs.
+   */
   def inheritOutputs(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
     def outputInheritanceValid(outputs: Seq[LinkDef]): Boolean = {
@@ -159,6 +242,13 @@ object Util {
     element.copy(outputs = element.outputs ++ inferredOutputs.distinct)
   }
 
+  /**
+   * Helper method for mapping the simplified graph elements from the root(s) top down the graph.
+   *
+   * @param graph     The graph.
+   * @param mappingFn The function to apply to every element.
+   * @return The mapped graph.
+   */
   def mapGraphElementsTopDown(graph: Seq[El])(mappingFn: (El, Seq[El]) => El): Seq[El] = {
 
     @tailrec

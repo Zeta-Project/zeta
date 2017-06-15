@@ -52,10 +52,10 @@
             },
             data: JSON.stringify(data),
             success: function (data, textStatus, jqXHR) {
-              window.location.replace("/overview/" + window.metaModelId);
+                window.location.replace("/overview/" + window.metaModelId);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              alert("failed creating model instance: " + textStatus);
+                alert("failed creating model instance: " + textStatus);
             }
         });
     };
@@ -72,10 +72,11 @@
                 window.location.replace("/overview/" + window.metaModelId);
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              alert("failed deleting model instance: " + textStatus);
+                alert("failed deleting model instance: " + textStatus);
             }
         });
     };
+
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip();
@@ -105,7 +106,7 @@
                     window.location.replace("/overview");
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                  alert("Could not delete meta model: " + textStatus);
+                    alert("Could not delete meta model: " + textStatus);
                 }
             });
         });
@@ -120,11 +121,50 @@
                     showSuccess(data);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                  showError(jqXHR.responseText)
+                    showError(jqXHR.responseText)
                 }
             });
         });
 
+        $('#validatorGenerate').click(function () {
+            modelValidatorUtil.generate(window.metaModelId, {
+                success: function(data, textStatus, jqXHR) {
+                    showSuccess("Validator successfully generated");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                }
+            });
+        });
+
+        $('#validatorShow').click(function () {
+            modelValidatorUtil.show(window.metaModelId, {
+                openWindow: true,
+                success: function(data, textStatus, jqXHR) {
+                    switch (data.status) {
+                        case 200:
+                            showSuccess("Validator successfully generated.");
+                            break;
+                        case 201:
+                            showSuccess("Existing validator successfully loaded.");
+                            break;
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                }
+            });
+        });
+
+        $(".validate-model-instance").click(function () {
+            event.preventDefault();
+            modelValidatorUtil.validate(this.dataset.modelId, {
+                openWindow: true,
+                error: function(jqXHR, textStatus, errorThrown) {
+                    showError(jqXHR.responseText);
+                }
+            });
+        });
 
         $("#inputModelName").keypress(function (e) {
             if (e.which == 13) {
@@ -151,23 +191,24 @@
             })
         });
 
-        var showError = function(text) {
-            $("#error-panel").fadeOut('slow', function() {
+        var showError = function (text) {
+            $("#error-panel").fadeOut('slow', function () {
                 $("#error-panel").find("div").text(text);
                 $("#error-panel").fadeIn('slow');
             });
         };
 
-        var showSuccess = function(text) {
-            $("#success-panel").fadeOut('slow', function() {
+        var showSuccess = function (text) {
+            $("#success-panel").fadeOut('slow', function () {
                 $("#success-panel").show();
                 $("#success-panel").find("div").text(text);
                 $("#success-panel").fadeIn('slow');
             });
         };
 
-        $("[data-hide]").on("click", function(){
+        $("[data-hide]").on("click", function () {
             $("." + $(this).attr("data-hide")).hide();
         });
+
     });
 }(jQuery) );

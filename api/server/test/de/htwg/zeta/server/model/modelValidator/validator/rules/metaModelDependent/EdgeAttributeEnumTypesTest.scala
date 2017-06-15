@@ -5,6 +5,8 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
@@ -67,6 +69,57 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be(
       """Attributes ofType "attributeType" inEdges "reference" areOfEnumType "enumName"""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val enumType = MEnum("enumName", Seq("enumValue1", "enumValue2"))
+    val enumAttribute = MAttribute(
+      "attributeName",
+      globalUnique = false,
+      localUnique = false,
+      enumType,
+      enumType.symbols.head,
+      constant = false,
+      singleAssignment = false,
+      "",
+      ordered = false,
+      transient = false,
+      -1,
+      0
+    )
+    val scalarAttribute = MAttribute(
+      "attributeName2",
+      globalUnique = false,
+      localUnique = false,
+      StringType,
+      MString(""),
+      constant = false,
+      singleAssignment = false,
+      "",
+      ordered = false,
+      transient = false,
+      -1,
+      0
+    )
+    val reference = MReference(
+      "reference",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute](enumAttribute, scalarAttribute))
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgeAttributeEnumTypes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgeAttributeEnumTypes =>
+        rule.edgeType should be ("reference")
+        rule.attributeType should be ("attributeName")
+        rule.enumName should be ("enumName")
+      case _ => fail
+    }
+
   }
 
 }

@@ -3,8 +3,10 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.Promise
+import scala.concurrent.duration.Duration
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -40,7 +42,7 @@ class ModelRestApi @Inject()() extends Controller {
         )))
       ))
     }.map(list =>
-      Ok // TODO Ok(Json.toJson(list))
+      Ok(Json.toJson(list))
     ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -167,18 +169,33 @@ class ModelRestApi @Inject()() extends Controller {
     }
   }
 
+  /**
+   * Validates a model against its meta model and returns the validation results.
+   *
+   * The following HTP status codes can be returned:
+   * * 200 OK - The model could be validated and the results are contained in the response.
+   * * 400 BAD_REQUEST - The model could not be found or the user does not have the permissions for this model.
+   * * 409 CONFLICT - No validator was found for the model.
+   * * 500 INTERNAL_SERVER_ERROR - The validator exists but could not be loaded.
+   *
+   * @param id      ID of the model to validate.
+   * @param request The HTTP request.
+   * @return Results of the validation.
+   */
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (modelEntity: ModelEntity) => {
 
-      val metaModelId = modelEntity.metaModelId
+      val metaModelEntity = Await.result(repository(request).get[MetaModelEntity](modelEntity.metaModelId), Duration(1, TimeUnit.SECONDS))
 
-      if (ValidatorGenerator.validatorExists(metaModelId)) {
-        ValidatorGenerator.load(metaModelId) match {
-          case Some(modelValidator) => Ok(modelValidator.validate(modelEntity.model).map(_.rule.description).mkString("\n"))
-          case None => InternalServerError("Error loading model validator")
+      metaModelEntity.validator match {
+        case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
+          case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model).filterNot(_.valid)))
+          case None => InternalServerError("Error loading model validator.")
         }
-      } else {
-        Conflict(s"There is no validator for this meta model. Try calling GET /metamodels/$metaModelId/validator?noContent=true first.")
+        case None =>
+          val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
+          Conflict(s"""No validator generated yet. Try calling $url first.""")
+
       }
 
     })

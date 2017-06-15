@@ -13,7 +13,10 @@ import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.model.elements.Node
 
-class NodeAttributesLocalUnique(nodeType: String, attributeType: String) extends SingleNodeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class NodeAttributesLocalUnique(val nodeType: String, val attributeType: String) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Attribute values of attribute type $attributeType in Node of type $nodeType must be unique locally."
   override val possibleFix: String = s"Remove all but one of the duplicated attribute values of type $attributeType in Node of type $nodeType."

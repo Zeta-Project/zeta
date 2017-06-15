@@ -7,7 +7,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Edge
 
-class EdgeSourceNodes(edgeType: String, sourceTypes: Seq[String]) extends SingleEdgeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class EdgeSourceNodes(val edgeType: String, val sourceTypes: Seq[String]) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Edges of type $edgeType are only allowed to have source nodes of types ${sourceTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove all source nodes that are not of types ${sourceTypes.mkString("{", ", ", "}")} from edges of type $edgeType."

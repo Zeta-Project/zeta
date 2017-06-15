@@ -10,6 +10,9 @@ import models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import models.modelDefinitions.metaModel.elements.AttributeType.StringType
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 class AttributesOfTypeInNodes(attributeType: String, nodeType: String) {
 
   def haveUpperBound(upperBound: Int): NodeAttributesUpperBound = new NodeAttributesUpperBound(nodeType, attributeType, upperBound)

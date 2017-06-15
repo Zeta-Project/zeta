@@ -68,16 +68,16 @@ services:
   #    driver: none
   b1:
     container_name: master-1
-    image: modigen/backend:0.1
+    image: modigen/generatorControl:0.1
     command: --master-port 2551 --master-num 1
   b2:
     container_name: master-2
-    image: modigen/backend:0.1
+    image: modigen/generatorControl:0.1
     links:
       - b1
     command: --master-port 2551 --master-seeds b1:2551 --master-num 2
   workers:
-    image: modigen/backend:0.1
+    image: modigen/generatorControl:0.1
     links:
      - b1
      - b2
@@ -86,7 +86,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
   developers:
     container_name: developers
-    image: modigen/backend:0.1
+    image: modigen/generatorControl:0.1
     links:
      - b1
      - b2

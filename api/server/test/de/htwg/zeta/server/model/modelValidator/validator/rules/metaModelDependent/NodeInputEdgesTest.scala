@@ -5,6 +5,8 @@ import scala.collection.immutable.Seq
 import models.modelDefinitions.metaModel.elements.MAttribute
 import models.modelDefinitions.metaModel.elements.MClass
 import models.modelDefinitions.metaModel.elements.MReference
+import models.modelDefinitions.metaModel.elements.ScalarType
+import models.modelDefinitions.metaModel.elements.ScalarValue.MString
 import models.modelDefinitions.model.elements.Edge
 import models.modelDefinitions.model.elements.Node
 import models.modelDefinitions.model.elements.ToEdges
@@ -45,6 +47,26 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
 
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Inputs ofNodes "nodeType" areOfTypes Seq("input1", "input2")""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val mReference1 = MReference("reference1", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val mReference2 = MReference("reference2", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val inputMLinkDef1 = MLinkDef(mReference1, -1, 0, deleteIfLower = false)
+    val inputMLinkDef2 = MLinkDef(mReference2, -1, 0, deleteIfLower = false)
+
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](inputMLinkDef1, inputMLinkDef2), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodeInputEdges.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodeInputEdges =>
+        rule.nodeType should be ("class")
+        rule.inputTypes should be (Seq("reference1", "reference2"))
+      case _ => fail
+    }
+
   }
 
 

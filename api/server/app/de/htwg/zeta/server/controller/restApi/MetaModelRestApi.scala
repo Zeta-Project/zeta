@@ -243,25 +243,49 @@ class MetaModelRestApi @Inject()() extends Controller {
     )
   }
 
-  def getValidator(id: UUID, regenerateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  /**
+   * Loads or generates the validator for a given meta model.
+   *
+   * The following HTTP status codes can be returned:
+   * * 200 OK - The validator was loaded from memory and is contained in the response.
+   * * 201 CREATED - The validator has been generated or regenerated and is contained in the response.
+   * * 204 NO_CONTENT - The validator has been successfully loaded or generated and is NOT contained in the response.
+   * * 400 BAD_REQUEST - There was an error loading or generating the validator OR you have no access to the meta model.
+   * * 409 CONFLICT - A validator was not yet generated.
+   *
+   * @param id           ID of the meta model to load or generate the validator.
+   * @param generateOpt  Force a (re)generation.
+   * @param noContentOpt Expect a NoContent result on success. Helpful, when you just want to generate the validator.
+   * @param request      The HTTP-Request.
+   * @return The validator.
+   */
+  def getValidator(id: UUID, generateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (metaModelEntity: MetaModelEntity) => {
-      val validatorGenerator = new ValidatorGenerator(metaModelEntity)
-      val regenerate = regenerateOpt.getOrElse(false)
+
+      val generate = generateOpt.getOrElse(false)
       val noContent = noContentOpt.getOrElse(false)
 
-      validatorGenerator.getGenerator(regenerate) match {
-        case ValidatorGeneratorResult(false, msg, _) => BadRequest(msg)
-        case ValidatorGeneratorResult(_, validator, true) => if (noContent) NoContent else Created(validator)
-        case ValidatorGeneratorResult(_, validator, false) => if (noContent) NoContent else Ok(validator)
+      if (generate) {
+
+        new ValidatorGenerator(metaModelEntity).generateValidator() match {
+          case ValidatorGeneratorResult(false, msg) => BadRequest(msg)
+          case ValidatorGeneratorResult(_, validator) =>
+            repository(request).update[MetaModelEntity](metaModelEntity.copy(validator = Some(validator)))
+            if (noContent) NoContent else Created(validator)
+        }
+
+      } else {
+
+        metaModelEntity.validator match {
+          case Some(validatorText) => Ok(validatorText)
+          case None =>
+            val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
+            Conflict(s"""No validator generated yet. Try calling $url first.""")
+        }
+
       }
 
     })
-  }
-
-  def deleteValidator(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Future.successful {
-      if (ValidatorGenerator.deleteValidator(id)) NoContent else NotFound
-    }
   }
 
 }

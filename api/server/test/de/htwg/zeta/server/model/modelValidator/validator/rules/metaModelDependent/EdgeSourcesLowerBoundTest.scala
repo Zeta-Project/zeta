@@ -84,4 +84,21 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       """Sources ofEdges "edgeType" toNodes "sourceType" haveLowerBound 2""")
   }
 
+  "generateFor" should "generate this rule from the meta model" in {
+    val class1 = MClass("class", abstractness = false, Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val sourceLinkDef1 = MLinkDef(class1, -1, 5, deleteIfLower = false)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](sourceLinkDef1), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgeSourcesLowerBound.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgeSourcesLowerBound =>
+        rule.edgeType should be ("reference")
+        rule.sourceType should be ("class")
+        rule.lowerBound should be (5)
+      case _ => fail
+    }
+  }
+
 }

@@ -12,6 +12,9 @@ import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.model.elements.Edge
 
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
 class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String) extends SingleEdgeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Attribute values of attribute type $attributeType in Edge of type $edgeType must be unique locally."

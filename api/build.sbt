@@ -117,7 +117,7 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.scala-lang" % "scala-compiler" % "2.11.8",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   )
-).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(backend).dependsOn(persistence)
+).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
 
 lazy val client = baseProject("client", file("client")).settings(
   fork := false,
@@ -214,28 +214,28 @@ def projectT(name: String, d: sbt.File) = {
   ).enablePlugins(JavaAppPackaging)
 }
 
-lazy val backend = projectT("backend", file("backend")).settings(
+lazy val generatorControl = projectT("generatorControl", file("generatorControl")).settings(
   Seq(
-    name := "backend",
-    version := "0.1",
-    packageName in Docker := "backend",
-    daemonUser in Docker := "root",
-    libraryDependencies ++= Seq(
-      "org.iq80.leveldb" % "leveldb" % "0.7",
-      "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
-      "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
-      "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-      "com.typesafe.akka" %% "akka-remote" % akkaVersion,
-      "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http-core" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http-testkit" % "10.0.7",
-      "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
-      "com.spotify" % "docker-client" % "6.1.1",
-      "commons-io" % "commons-io" % "2.4" % "test",
-      "org.julienrf" %% "play-json-derived-codecs" % "3.3",
-      "org.rogach" %% "scallop" % "2.0.2",
-      "com.github.romix.akka" %% "akka-kryo-serialization" % "0.4.1",
-      "com.neovisionaries" % "nv-websocket-client" % "1.30"
+    name                   := "generatorControl",
+    version                := "0.1",
+    packageName in Docker  := "generatorControl",
+    daemonUser in Docker   := "root",
+    libraryDependencies   ++= Seq(
+      "org.iq80.leveldb"          % "leveldb"                   % "0.7",
+      "org.fusesource.leveldbjni" % "leveldbjni-all"            % "1.8",
+      "com.typesafe.akka"         %% "akka-testkit"             % akkaVersion     % "test",
+      "org.scalatest"             %% "scalatest"                % "2.2.4"         % "test",
+      "com.typesafe.akka"         %% "akka-remote"              % akkaVersion,
+      "com.typesafe.akka"         %% "akka-stream"              % akkaVersion,
+      "com.typesafe.akka"         %% "akka-http-core"           % akkaVersion,
+      "com.typesafe.akka"         %% "akka-http-testkit"        % akkaVersion,
+      "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
+      "com.spotify"               % "docker-client"             % "6.1.1",
+      "commons-io"                % "commons-io"                % "2.4"           % "test",
+      "org.julienrf"              %% "play-json-derived-codecs" % "3.3",
+      "org.rogach"                %% "scallop"                  % "2.0.2",
+      "com.github.romix.akka"     %% "akka-kryo-serialization"  % "0.4.1",
+      "com.neovisionaries"        % "nv-websocket-client"       % "1.30"
     )
   )
 ).dependsOn(common).dependsOn(persistence)
@@ -296,33 +296,33 @@ lazy val basicGenerator = image("basicGenerator", file("./images/generator/basic
 
 lazy val fileGenerator = image("fileGenerator", file("./images/generator/file")).settings(
   Seq(
-    name := "generator/file",
-    version := "0.1",
-    packageName in Docker := "generator/file"
+    name                   := "generator/file",
+    version                := "0.1",
+    packageName in Docker  := "generator/file"
   )
 ).dependsOn(scalaGeneratorTemplate)
 
 lazy val remoteGenerator = image("remoteGenerator", file("./images/generator/remote")).settings(
   Seq(
-    name := "generator/remote",
-    version := "0.1",
-    packageName in Docker := "generator/remote"
+    name                   := "generator/remote",
+    version                := "0.1",
+    packageName in Docker  := "generator/remote"
   )
 ).dependsOn(scalaGeneratorTemplate)
 
 lazy val specificGenerator = image("specificGenerator", file("./images/generator/specific")).settings(
   Seq(
-    name := "generator/specific",
-    version := "0.1",
-    packageName in Docker := "generator/specific"
+    name                   := "generator/specific",
+    version                := "0.1",
+    packageName in Docker  := "generator/specific"
   )
 ).dependsOn(scalaGeneratorTemplate)
 
 lazy val metaModelRelease = image("metaModelRelease", file("./images/metamodel/release")).settings(
   Seq(
-    name := "metamodel/release",
-    version := "0.1",
-    packageName in Docker := "metamodel/release"
+    name                   := "metamodel/release",
+    version                := "0.1",
+    packageName in Docker  := "metamodel/release"
   )
 )
 

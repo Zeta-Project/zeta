@@ -7,7 +7,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import models.modelDefinitions.metaModel.MetaModel
 import models.modelDefinitions.model.elements.Node
 
-class NodesNoAttributes(nodeType: String) extends SingleNodeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class NodesNoAttributes(val nodeType: String) extends SingleNodeRule with DslRule {
 
   override val name: String = getClass.getSimpleName
   override val description: String = s"Nodes of type $nodeType must not have attributes."

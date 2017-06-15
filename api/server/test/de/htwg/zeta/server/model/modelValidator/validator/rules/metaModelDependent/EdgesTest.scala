@@ -3,6 +3,8 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 import scala.collection.immutable.Seq
 
 import models.modelDefinitions.metaModel.elements.MAttribute
+import models.modelDefinitions.metaModel.elements.MClass
+import models.modelDefinitions.metaModel.elements.MLinkDef
 import models.modelDefinitions.metaModel.elements.MReference
 import models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
@@ -52,6 +54,20 @@ class EdgesTest extends FlatSpec with Matchers {
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be(
       """Edges areOfTypes Seq("edgeType1", "edgeType2")""")
+  }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val reference1 = MReference("reference1", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val reference2 = MReference("reference2", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(reference1, reference2))
+    val result = Edges.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: Edges =>
+        rule.edgeTypes should be (Seq("reference1", "reference2"))
+      case _ => fail
+    }
   }
 
 }

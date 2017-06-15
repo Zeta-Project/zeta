@@ -43,4 +43,18 @@ class NodesNoOutputsTest extends FlatSpec with Matchers {
   "dslStatement" should "return the correct string" in {
     rule.dslStatement should be ("""Nodes ofType "nodeType" haveNoOutputs ()""")
   }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val mClass = MClass("class", abstractness = false, superTypes = Seq[MClass](), Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(mClass))
+    val result = NodesNoOutputs.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: NodesNoOutputs =>
+        rule.nodeType should be ("class")
+      case _ => fail
+    }
+
+  }
 }

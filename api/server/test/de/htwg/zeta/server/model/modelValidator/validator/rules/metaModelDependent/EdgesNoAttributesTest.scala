@@ -54,4 +54,17 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     rule.dslStatement should be(
       """Edges ofType "edgeType" haveNoAttributes ()""")
   }
+
+  "generateFor" should "generate this rule from the meta model" in {
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute]())
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgesNoAttributes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgesNoAttributes =>
+        rule.edgeType should be ("reference")
+      case _ => fail
+    }
+  }
 }

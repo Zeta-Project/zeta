@@ -71,4 +71,20 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       """Attributes inEdges "reference" areOfTypes Seq("stringAttribute", "boolAttribute")""")
   }
 
+  "generateFor" should "generate this rule from the meta model" in {
+    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, ScalarType.String, MString(""), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, ScalarType.String, MInt(0), constant = false, singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq[MLinkDef](), Seq[MLinkDef](), Seq[MAttribute](attribute, attribute2))
+    val metaModel = TestUtil.toMetaModel(Seq(reference))
+    val result = EdgeAttributes.generateFor(metaModel)
+
+    result.size should be (1)
+    result.head match {
+      case rule: EdgeAttributes =>
+        rule.edgeType should be ("reference")
+        rule.attributeTypes should be (Seq("attributeName", "attributeName2"))
+      case _ => fail
+    }
+  }
+
 }

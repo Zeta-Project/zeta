@@ -17,7 +17,10 @@ import models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import models.modelDefinitions.model.elements.Node
 
-class NodeAttributeScalarTypes(nodeType: String, attributeType: String, attributeDataType: AttributeType) extends SingleNodeRule with DslRule {
+/**
+ * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
+ */
+class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, val attributeDataType: AttributeType) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"Attributes of type $attributeType in nodes of type $nodeType must be of data type ${Util.getAttributeTypeClassName(attributeDataType)}."
