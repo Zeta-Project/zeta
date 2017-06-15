@@ -10,6 +10,9 @@ import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.Log
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
@@ -21,6 +24,9 @@ import de.htwg.zeta.persistence.fixtures.FilterTestFixtures
 import de.htwg.zeta.persistence.fixtures.GeneratorFixtures
 import de.htwg.zeta.persistence.fixtures.GeneratorImageFixtures
 import de.htwg.zeta.persistence.fixtures.LogFixtures
+import de.htwg.zeta.persistence.fixtures.MetaModelEntityFixtures
+import de.htwg.zeta.persistence.fixtures.MetaModelReleaseFixtures
+import de.htwg.zeta.persistence.fixtures.ModelEntityFixtures
 import de.htwg.zeta.persistence.fixtures.SettingsFixtures
 import de.htwg.zeta.persistence.fixtures.TimedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.UserFixtures
@@ -106,29 +112,29 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
       LogFixtures.entity3
     )
 
-    /* "MetaModelEntity" should behave like entityPersistenceBehavior[MetaModelEntity](
-      repository.metaModelEntities,
-      null,
-      null, // TODO
-      null,
-      null
-    ) */
+    "MetaModelEntity" should behave like entityPersistenceBehavior[MetaModelEntity](
+      repository.metaModelEntity,
+      MetaModelEntityFixtures.entity1,
+      MetaModelEntityFixtures.entity2,
+      MetaModelEntityFixtures.entity2Updated,
+      MetaModelEntityFixtures.entity3
+    )
 
-    /* "MetaModelRelease" should behave like entityPersistenceBehavior[MetaModelRelease](
-      repository.metaModelReleases,
-      null,
-      null, // TODO
-      null,
-      null
-    ) */
+    "MetaModelRelease" should behave like entityPersistenceBehavior[MetaModelRelease](
+      repository.metaModelRelease,
+      MetaModelReleaseFixtures.entity1,
+      MetaModelReleaseFixtures.entity2,
+      MetaModelReleaseFixtures.entity2Updated,
+      MetaModelReleaseFixtures.entity3
+    )
 
-    /* "ModelEntity" should behave like entityPersistenceBehavior[ModelEntity](
-      repository.modelEntities,
-      null,
-      null, // TODO
-      null,
-      null
-    ) */
+    "ModelEntity" should behave like entityPersistenceBehavior[ModelEntity](
+      repository.modelEntity,
+      ModelEntityFixtures.entity1,
+      ModelEntityFixtures.entity2,
+      ModelEntityFixtures.entity2Updated,
+      ModelEntityFixtures.entity3
+    )
 
     "Settings" should behave like entityPersistenceBehavior[Settings](
       repository.settings,

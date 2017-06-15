@@ -49,8 +49,10 @@ object DeveloperResponse {
   implicit val writeFilterNotFoundFailure: OWrites[ExecuteFilterError] = Json.writes[ExecuteFilterError]
   implicit val writeServiceUnavailable: OWrites[ServiceUnavailable] = Json.writes[ServiceUnavailable]
   implicit val writeJobInfo: OWrites[JobInfo] = Json.writes[JobInfo]
+  implicit val writeListJobInfo: OWrites[List[JobInfo]] = null // TODO
   implicit val writeJobInfoList: OWrites[JobInfoList] = Json.writes[JobInfoList]
   implicit val writeJobLogMessage: OWrites[JobLogMessage] = Json.writes[JobLogMessage]
+  implicit val writeQueueJobLogMessage: OWrites[Queue[JobLogMessage]] = null // TODO
   implicit val writeJobLog: OWrites[JobLog] = Json.writes[JobLog]
 
   implicit val write = new Writes[DeveloperResponse] {
