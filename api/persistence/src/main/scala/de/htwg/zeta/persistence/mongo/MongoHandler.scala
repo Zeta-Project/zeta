@@ -95,7 +95,7 @@ object MongoHandler {
 
   }
 
-  private implicit val mapStringSetIdHandler = new BSONDocumentReader[Map[String, Set[UUID]]] with BSONDocumentWriter[Map[String, Set[UUID]]] {
+  private implicit object MapStringSetIdHandler extends BSONDocumentReader[Map[String, Set[UUID]]] with BSONDocumentWriter[Map[String, Set[UUID]]] {
 
     override def read(doc: BSONDocument): Map[String, Set[UUID]] = {
       doc.elements.map { tuple =>
@@ -144,7 +144,7 @@ object MongoHandler {
   private val sName = "name"
   private val sEnumName = "enumName"
 
-  private implicit val attributeTypeHandler = new BSONDocumentWriter[AttributeType] with BSONDocumentReader[AttributeType] {
+  private implicit object AttributeTypeHandler extends BSONDocumentWriter[AttributeType] with BSONDocumentReader[AttributeType] {
 
     override def write(typ: AttributeType): BSONDocument = {
       typ match {
