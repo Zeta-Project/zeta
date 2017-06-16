@@ -4,7 +4,7 @@ import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.mongo.MongoRepository
 
 /**
- * PersistenceMicroServiceTest.
+ * MongoRepositorySpec.
  */
 class MongoRepositorySpec extends RepositoryBehavior {
 

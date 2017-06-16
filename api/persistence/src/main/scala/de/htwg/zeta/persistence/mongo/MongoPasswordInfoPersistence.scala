@@ -58,4 +58,11 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
     null // TODO
   }
 
+  /** Read all LoginInfo's
+   *
+   * @return all LoginInfo's
+   */
+  override def readAllKeys(): Future[Set[LoginInfo]] = {
+    null // TODO
+  }
 }

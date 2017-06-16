@@ -23,7 +23,7 @@ trait EntityPersistenceBehavior extends AsyncFlatSpec with Matchers {
     it should "remove all already existing entities" in {
       for {
         existingIds <- persistence.readAllIds()
-        _ <- Future.sequence(existingIds.map(id => persistence.delete(id)))
+        _ <- Future.sequence(existingIds.map(persistence.delete))
         ids <- persistence.readAllIds()
       } yield {
         ids shouldBe Set.empty

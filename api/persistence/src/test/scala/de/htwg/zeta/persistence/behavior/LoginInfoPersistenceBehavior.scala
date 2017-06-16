@@ -25,7 +25,7 @@ trait LoginInfoPersistenceBehavior extends AsyncFlatSpec with Matchers {
     it should "remove all already existing LoginInfo's" in {
       for {
         existingKeys <- persistence.readAllKeys()
-        _ <- Future.sequence(existingKeys.map(loginInfo => persistence.delete(loginInfo)))
+        _ <- Future.sequence(existingKeys.map(persistence.delete))
         keys <- persistence.readAllKeys()
       } yield {
         keys shouldBe Set.empty

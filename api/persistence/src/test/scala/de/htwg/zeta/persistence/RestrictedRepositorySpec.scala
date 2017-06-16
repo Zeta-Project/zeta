@@ -8,7 +8,7 @@ import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.transient.TransientRepository
 
 /**
- * PersistenceMicroServiceTest.
+ * RestrictedRepositorySpec.
  */
 class RestrictedRepositorySpec extends RepositoryBehavior {
 

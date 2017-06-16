@@ -14,7 +14,6 @@ class TransientPasswordInfoPersistence extends PasswordInfoPersistence {
 
   private val cache: TrieMap[LoginInfo, PasswordInfo] = TrieMap.empty
 
-
   /** Finds the auth info which is linked to the specified login info.
    *
    * @param loginInfo The linked login info.
@@ -23,7 +22,6 @@ class TransientPasswordInfoPersistence extends PasswordInfoPersistence {
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     Future.successful(cache.get(loginInfo))
   }
-
 
   /** Adds new auth info for the given login info.
    *
@@ -72,6 +70,14 @@ class TransientPasswordInfoPersistence extends PasswordInfoPersistence {
   override def remove(loginInfo: LoginInfo): Future[Unit] = {
     cache.remove(loginInfo)
     Future.successful(())
+  }
+
+  /** Read all LoginInfo's
+   *
+   * @return all LoginInfo's
+   */
+  override def readAllKeys(): Future[Set[LoginInfo]] = {
+    Future.successful(cache.keys.toSet)
   }
 
 }
