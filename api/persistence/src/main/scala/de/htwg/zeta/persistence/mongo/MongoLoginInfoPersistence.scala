@@ -51,7 +51,7 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    */
   override def read(loginInfo: LoginInfo): Future[UUID] = {
     collection.flatMap { collection =>
-      collection.find(loginInfo).requireOne[UserIdOnlyEntity]().map(_.userId)
+      collection.find(BSONDocument(sLoginInfo -> loginInfo)).requireOne[UserIdOnlyEntity].map(_.userId)
     }
   }
 
