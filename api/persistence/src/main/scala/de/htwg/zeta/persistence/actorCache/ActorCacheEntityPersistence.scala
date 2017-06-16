@@ -2,8 +2,8 @@ package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Failure
 import scala.util.Success
@@ -13,6 +13,7 @@ import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.routing.ConsistentHashingPool
 import akka.routing.ConsistentHashingRouter.ConsistentHashMapping
+import akka.util.Timeout
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Delete
@@ -21,32 +22,33 @@ import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Update
 import de.htwg.zeta.persistence.general.EntityPersistence
 
 /**
- * TODO.
+ * Actor Cache Implementation of EntityPersistence.
  */
 class ActorCacheEntityPersistence[E <: Entity](
     system: ActorSystem,
     underlying: EntityPersistence[E],
-    nrOfInstances: Int,
-    cacheDuration: FiniteDuration
+    numberActorsPerEntityType: Int,
+    cacheDuration: FiniteDuration,
+    implicit val timeout: Timeout)(
+    implicit manifest: Manifest[E]
 ) extends EntityPersistence[E] {
 
-  def hashMapping: ConsistentHashMapping = {
-    case Create(entity) => entity.id
-    case Read(id) => id
-    case Update(id, _) => id
-    case Delete(id) => id
+  private def hashMapping: ConsistentHashMapping = {
+    case Create(entity) => entity.id.toString
+    case Read(id) => id.toString
+    case Update(id, _) => id.toString
+    case Delete(id) => id.toString
   }
 
   private val router: ActorRef = system.actorOf(
     ConsistentHashingPool(
-      nrOfInstances = nrOfInstances,
+      nrOfInstances = numberActorsPerEntityType,
       hashMapping = hashMapping
     ).props(
-      EntityCacheActor.props(underlying, Duration.Zero)
+      EntityCacheActor.props(underlying, cacheDuration)
     ),
     entityTypeName
   )
-
 
   /** Create a new entity.
    *
@@ -74,11 +76,15 @@ class ActorCacheEntityPersistence[E <: Entity](
 
   /** Update a entity.
    *
-   * @param entity The updated entity
+   * @param id           The id of the entity
+   * @param updateEntity Function, to build the updated entity from the existing
    * @return Future containing the updated entity
    */
-  override private[persistence] def update(entity: E): Future[E] = {
-    ???
+  override def update(id: UUID, updateEntity: E => E): Future[E] = {
+    (router ? Update(id, updateEntity)).flatMap {
+      case Success(entity: E) => Future.successful(entity)
+      case Failure(e) => Future.failed(e)
+    }
   }
 
   /** Delete a entity.
@@ -87,7 +93,10 @@ class ActorCacheEntityPersistence[E <: Entity](
    * @return Future
    */
   override def delete(id: UUID): Future[Unit] = {
-    ???
+    (router ? Delete(id)).flatMap {
+      case Success(Unit) => Future.successful(())
+      case Failure(e) => Future.failed(e)
+    }
   }
 
   /** Get the id's of all entity.
@@ -97,6 +106,5 @@ class ActorCacheEntityPersistence[E <: Entity](
   override def readAllIds(): Future[Set[UUID]] = {
     underlying.readAllIds()
   }
-
 
 }

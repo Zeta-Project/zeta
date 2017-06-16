@@ -98,11 +98,12 @@ trait EntityPersistenceBehavior extends AsyncFlatSpec with Matchers {
 
     it should "update the second entity" in {
       for {
-        _ <- persistence.update(doc2Updated)
+        updated <- persistence.update(entity2.id, _ => doc2Updated)
         e2 <- persistence.read(entity2.id)
         e3 <- persistence.read(entity3.id)
         ids <- persistence.readAllIds()
       } yield {
+        updated shouldBe doc2Updated
         ids shouldBe Set(entity2.id, entity3.id)
         e2 shouldBe doc2Updated
         e3 shouldBe entity3
@@ -111,7 +112,7 @@ trait EntityPersistenceBehavior extends AsyncFlatSpec with Matchers {
 
     it should "fail the future with any Exception, when updating a non-existent entity" in {
       recoverToSucceededIf[Exception] {
-        persistence.update(entity1)
+        persistence.update(entity1.id, _ => entity1)
       }
     }
 

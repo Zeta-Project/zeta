@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.transient
 import java.util.UUID
 
 import scala.collection.concurrent.TrieMap
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.Entity
@@ -44,13 +45,16 @@ class TransientPersistence[E <: Entity] extends EntityPersistence[E] { // scalas
 
   /** Update a entity.
    *
-   * @param entity The updated entity
+   * @param id           The id of the entity
+   * @param updateEntity Function, to build the updated entity from the existing
    * @return Future containing the updated entity
    */
-  override private[persistence] def update(entity: E): Future[E] = {
-    if (cache.replace(entity.id, entity).isDefined) {
-      Future.successful(entity)
-    } else {
+  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
+    read(id).flatMap { entity =>
+      val updated = updateEntity(entity)
+      cache.replace(entity.id, updated).get
+      Future.successful(updated)
+    }.recoverWith { case _ =>
       Future.failed(new IllegalArgumentException("can't update the document, a document with the id doesn't exist"))
     }
   }
@@ -68,13 +72,12 @@ class TransientPersistence[E <: Entity] extends EntityPersistence[E] { // scalas
     }
   }
 
-  /** Get the id's of all entitys.
+  /** Get the id's of all entities.
    *
    * @return Future containing all id's of the entity type, can fail
    */
   override def readAllIds(): Future[Set[UUID]] = {
     Future.successful(cache.keys.toSet)
   }
-
 
 }

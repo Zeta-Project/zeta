@@ -9,6 +9,7 @@ import scala.util.Failure
 import scala.util.Success
 
 import akka.actor.Actor
+import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
@@ -22,7 +23,7 @@ import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Update
 import de.htwg.zeta.persistence.general.EntityPersistence
 
-object EntityCacheActor {
+private[actorCache] object EntityCacheActor {
 
   case class Create[E <: Entity](entity: E)
 
@@ -42,7 +43,7 @@ object EntityCacheActor {
 
 }
 
-class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDuration: FiniteDuration) extends Actor {
+private[actorCache] class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDuration: FiniteDuration) extends Actor with ActorLogging {
 
   private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
@@ -59,6 +60,7 @@ class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDurat
   }
 
   private def create(cache: Future[Cache[E]], entity: E, sender: ActorRef): Future[Cache[E]] = {
+    log.info("creating - " + entity.id.toString)
     cache.flatMap { cache =>
       underlying.create(entity).map { entity =>
         sender ! Success(entity)
@@ -74,6 +76,7 @@ class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDurat
   }
 
   private def read(cache: Future[Cache[E]], id: UUID, sender: ActorRef): Future[Cache[E]] = {
+    log.info("reading - " + id.toString)
     cache.flatMap { cache =>
       cache.entities.get(id).fold[Future[Found[E]]] {
         underlying.read(id).map(Found(_, inCache = false))
@@ -97,6 +100,7 @@ class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDurat
   }
 
   private def update(cache: Future[Cache[E]], id: UUID, updateEntity: E => E, sender: ActorRef): Future[Cache[E]] = {
+    log.info("updating - " + id.toString)
     cache.flatMap { cache =>
       underlying.update(id, updateEntity).map { entity =>
         sender ! Success(entity)
@@ -112,6 +116,7 @@ class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDurat
   }
 
   private def delete(cache: Future[Cache[E]], id: UUID, sender: ActorRef): Future[Cache[E]] = {
+    log.info("deleting - " + id.toString)
     cache.flatMap { cache =>
       underlying.delete(id).map { _ =>
         sender ! Success(Unit)
@@ -127,6 +132,7 @@ class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDurat
   }
 
   private def cleanUp(cache: Future[Cache[E]]): Future[Cache[E]] = {
+    log.info("cleaning cache")
     cache.map { cache =>
       cache.copy(
         cache.used.map(id => (id, cache.entities(id))).toMap,

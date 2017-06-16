@@ -51,11 +51,12 @@ class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
 
   /** Update a entity.
    *
-   * @param entity The updated entity
+   * @param id           The id of the entity
+   * @param updateEntity Function, to build the updated entity from the existing
    * @return Future containing the updated entity
    */
-  override private[persistence] def update(entity: E): Future[E] = {
-    restricted(entity.id, underlaying.update(entity))
+  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
+    restricted(id, underlaying.update(id, updateEntity))
   }
 
   /** Delete a entity.
