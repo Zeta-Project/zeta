@@ -15,7 +15,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  */
 class TransientPersistence[E <: Entity] extends EntityPersistence[E] { // scalastyle:ignore
 
-  private val cache: TrieMap[UUID, E] = TrieMap.empty[UUID, E]
+  private val cache: TrieMap[UUID, E] = TrieMap.empty
 
   /** Create a new entity.
    *
@@ -55,7 +55,7 @@ class TransientPersistence[E <: Entity] extends EntityPersistence[E] { // scalas
       cache.replace(entity.id, updated).get
       Future.successful(updated)
     }.recoverWith { case _ =>
-      Future.failed(new IllegalArgumentException("can't update the document, a document with the id doesn't exist"))
+      Future.failed(new IllegalArgumentException("can't update the entity, a entity with the id doesn't exist"))
     }
   }
 

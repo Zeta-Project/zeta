@@ -13,7 +13,7 @@ import de.htwg.zeta.persistence.general.TokenCache
 import grizzled.slf4j.Logging
 
 /**
- * TODO
+ * Transient Implementation of TokenCache.
  */
 class TransientTokenCache extends TokenCache with Logging {
 

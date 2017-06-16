@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 
 /**
- * TODO
+ * Transient Implementation of LoginInfoPersistence.
  */
 class TransientLoginInfoPersistence extends LoginInfoPersistence {
 
@@ -76,9 +76,11 @@ class TransientLoginInfoPersistence extends LoginInfoPersistence {
   }
 
   /** Get all LoginInfo's.
-    *
-    * @return Future containing all LoginInfo's
-    */
-  override def readAllLoginInfos(): Future[Set[LoginInfo]] =
+   *
+   * @return Future containing all LoginInfo's
+   */
+  override def readAllLoginInfos(): Future[Set[LoginInfo]] = {
     null
+  }
+
 }
