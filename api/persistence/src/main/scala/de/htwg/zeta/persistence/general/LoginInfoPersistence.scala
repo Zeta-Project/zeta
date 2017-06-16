@@ -41,4 +41,10 @@ trait LoginInfoPersistence {
    * @return Unit-Future
    */
   def delete(loginInfo: LoginInfo): Future[Unit]
+
+  /** Get all LoginInfo's.
+    *
+    * @return Future containing all LoginInfo's
+    */
+  def readAllLoginInfos(): Future[Set[LoginInfo]]
 }

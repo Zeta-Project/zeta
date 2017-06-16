@@ -74,4 +74,11 @@ class TransientLoginInfoPersistence extends LoginInfoPersistence {
       Future.successful(())
     }
   }
+
+  /** Get all LoginInfo's.
+    *
+    * @return Future containing all LoginInfo's
+    */
+  override def readAllLoginInfos(): Future[Set[LoginInfo]] =
+    null
 }

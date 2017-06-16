@@ -13,6 +13,7 @@ import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
 import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
+import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
@@ -27,7 +28,7 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
   private val collection: Future[BSONCollection] = {
     database.map(_.collection[BSONCollection](collectionName))
   }.andThen { case Success(col) =>
-    col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending, sUserId -> IndexType.Ascending), unique = true))
+    col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
   }
 
   /** Create a LoginInfo.
@@ -51,7 +52,7 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    */
   override def read(loginInfo: LoginInfo): Future[UUID] = {
     collection.flatMap { collection =>
-      collection.find(loginInfo).requireOne[UserIdOnlyEntity]().map(_.userId)
+      collection.find(BSONDocument(sLoginInfo -> loginInfo)).requireOne[UserIdOnlyEntity].map(_.userId)
     }
   }
 
@@ -71,7 +72,26 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    * @return Unit-Future
    */
   override def delete(loginInfo: LoginInfo): Future[Unit] = {
-    null // TODO
+    collection.flatMap { collection =>
+      collection.remove(BSONDocument(sLoginInfo -> loginInfo)).flatMap(result =>
+        if (result.n == 1) {
+          Future.successful(())
+        } else {
+          Future.failed(new IllegalStateException("couldn't delete the file"))
+        }
+      )
+    }
+  }
+
+  /** Get all LoginInfo's.
+    *
+    * @return Future containing all LoginInfo's
+    */
+  override def readAllLoginInfos(): Future[Set[LoginInfo]] = {
+    collection.flatMap { collection =>
+      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfo]().
+        collect(-1, Cursor.FailOnError[Set[LoginInfo]]())
+    }
   }
 
 }
