@@ -19,8 +19,7 @@ trait LoginInfoPersistence {
    */
   def create(loginInfo: LoginInfo, id: UUID): Future[Unit]
 
-  /**
-   * Get a user that matches the specified LoginInfo.
+  /** Get a user that matches the specified LoginInfo.
    *
    * @param loginInfo The LoginInfo.
    * @return The id of the User.
@@ -29,7 +28,7 @@ trait LoginInfoPersistence {
 
   /** Update a LoginInfo.
    *
-   * @param old The LoginInfo to update.
+   * @param old     The LoginInfo to update.
    * @param updated The updated LoginInfo.
    * @return Unit-Future
    */
@@ -42,9 +41,10 @@ trait LoginInfoPersistence {
    */
   def delete(loginInfo: LoginInfo): Future[Unit]
 
-  /** Get all LoginInfo's.
-    *
-    * @return Future containing all LoginInfo's
-    */
-  def readAllLoginInfos(): Future[Set[LoginInfo]]
+  /** Read all LoginInfo's.
+   *
+   * @return Future containing all LoginInfo's
+   */
+  def readAllKeys(): Future[Set[LoginInfo]]
+
 }

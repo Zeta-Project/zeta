@@ -79,8 +79,8 @@ class TransientLoginInfoPersistence extends LoginInfoPersistence {
    *
    * @return Future containing all LoginInfo's
    */
-  override def readAllLoginInfos(): Future[Set[LoginInfo]] = {
-    null
+  override def readAllKeys(): Future[Set[LoginInfo]] = {
+    Future.successful(cache.keys.toSet)
   }
 
 }

@@ -2,25 +2,25 @@ package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.util.Success
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.collectionName
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sLoginInfo
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sUserId
-import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
-import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
-import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
-
-import scala.util.Success
 
 
 class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPersistence {
@@ -84,10 +84,10 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
   }
 
   /** Get all LoginInfo's.
-    *
-    * @return Future containing all LoginInfo's
-    */
-  override def readAllLoginInfos(): Future[Set[LoginInfo]] = {
+   *
+   * @return Future containing all LoginInfo's
+   */
+  override def readAllKeys(): Future[Set[LoginInfo]] = {
     collection.flatMap { collection =>
       collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfo]().
         collect(-1, Cursor.FailOnError[Set[LoginInfo]]())
