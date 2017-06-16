@@ -84,6 +84,11 @@ object MongoHandler {
 
   implicit val fileKeyHandler: BSONDocumentHandler[FileKey] = Macros.handler[FileKey]
 
+  case class UserIdOnlyEntity(userId: UUID)
+
+  implicit val userIdOnlyEntityHandler: BSONDocumentHandler[UserIdOnlyEntity] = Macros.handler[UserIdOnlyEntity]
+
+
   private val uuidSetHandler = new {
 
     def read(doc: BSONArray): Set[UUID] = {

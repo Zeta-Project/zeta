@@ -9,6 +9,9 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sLoginInfo
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sUserId
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
+import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
+import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
@@ -35,7 +38,8 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    */
   override def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = {
     collection.flatMap { collection =>
-      collection.insert(loginInfo).map(_ => BSONDocument(sLoginInfo -> loginInfo, sUserId -> id.toString))
+      collection.insert(BSONDocument(sLoginInfo -> loginInfo, sUserId -> id.toString)).flatMap(_ =>
+        Future.successful())
     }
   }
 
@@ -46,10 +50,9 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    * @return The id of the User.
    */
   override def read(loginInfo: LoginInfo): Future[UUID] = {
-    /*collection.flatMap { collection =>
-      collection.find(BSONDocument(sId -> loginInfo)).requireOne[LoginInfo]
-    }*/
-    null
+    collection.flatMap { collection =>
+      collection.find(loginInfo).requireOne[UserIdOnlyEntity]().map(_.userId)
+    }
   }
 
   /** Update a LoginInfo.
@@ -75,7 +78,7 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
 
 private object MongoLoginInfoPersistence {
 
-  private val collectionName = "Login"
+  private val collectionName = "LoginInfo"
 
   private val sLoginInfo = "loginInfo"
 

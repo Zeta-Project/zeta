@@ -12,16 +12,16 @@ import org.scalatest.Matchers
 trait LoginInfoPersistenceBehavior extends AsyncFlatSpec with Matchers {
 
   private val loginInfo1 = LoginInfo(providerID = "provider1", providerKey = "key1")
-  private val userId1 = UUID.randomUUID()
 
   def loginInfoPersistenceBehavior(persistence: LoginInfoPersistence): Unit = { // scalastyle:ignore
+    val userId1 = UUID.randomUUID
 
     it should "create a logininfo" in {
       for {
         _ <- persistence.create(loginInfo1, userId1)
-        result <- persistence.read(loginInfo1)
+        userId <- persistence.read(loginInfo1)
       } yield {
-        result shouldBe Map(result -> loginInfo1)
+        userId shouldBe Map(userId -> userId1)
       }
     }
   }
