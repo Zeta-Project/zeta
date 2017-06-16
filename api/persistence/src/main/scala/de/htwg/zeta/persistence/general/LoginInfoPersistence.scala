@@ -41,5 +41,4 @@ trait LoginInfoPersistence {
    * @return Unit-Future
    */
   def delete(loginInfo: LoginInfo): Future[Unit]
-
 }

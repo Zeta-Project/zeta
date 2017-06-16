@@ -2,6 +2,7 @@ package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
 
+import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.common.models.document.DockerSettings
 import de.htwg.zeta.common.models.document.JobSettings
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
@@ -237,5 +238,7 @@ object MongoHandler {
   implicit val userHandler: BSONDocumentHandler[User] = Macros.handler[User]
 
   implicit val fileHandler: BSONDocumentHandler[File] = Macros.handler[File]
+
+  implicit val loginInfoHandler: BSONDocumentHandler[LoginInfo] = Macros.handler[LoginInfo]
 
 }
