@@ -32,8 +32,8 @@ class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
     underlaying.create(entity).flatMap(entity =>
       accessAuthorisation.createOrUpdate(
         ownerId,
-        _.grantAccess(entityTypeName, entity.id),
-        AccessAuthorisation(ownerId, Map.empty).grantAccess(entityTypeName, entity.id)
+        _.grantEntityAccess(entityTypeName, entity.id),
+        AccessAuthorisation(ownerId, Map.empty, Map.empty).grantEntityAccess(entityTypeName, entity.id)
       ).flatMap { _ =>
         Future.successful(entity)
       }
@@ -66,7 +66,7 @@ class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
    */
   override def delete(id: UUID): Future[Unit] = {
     restricted(id, underlaying.delete(id).flatMap(_ =>
-      accessAuthorisation.update(ownerId, _.revokeAccess(entityTypeName, id)).flatMap(_ =>
+      accessAuthorisation.update(ownerId, _.revokeEntityAccess(entityTypeName, id)).flatMap(_ =>
         Future.successful(())
       )
     ))
@@ -77,11 +77,12 @@ class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
    * @return Future containing all id's of the entity type, can fail
    */
   override def readAllIds(): Future[Set[UUID]] = {
-    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty)).map(_.listAccess(entityTypeName))
+    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty, Map.empty)).map(_.listEntityAccess(entityTypeName))
   }
 
   private def restricted[T](id: UUID, f: => Future[T]): Future[T] = {
-    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty)).map(_.checkAccess(entityTypeName, id)).flatMap(accessGranted =>
+    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty, Map.empty)).map(
+      _.checkEntityAccess(entityTypeName, id)).flatMap(accessGranted =>
       if (accessGranted) {
         f
       } else {

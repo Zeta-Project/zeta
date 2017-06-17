@@ -9,27 +9,36 @@ object AccessAuthorisationFixtures {
 
   val entity1 = AccessAuthorisation(
     id = UUID.randomUUID,
-    authorizedAccess = Map(
+    authorizedEntityAccess = Map(
       "col1" -> Set(UUID.randomUUID, UUID.randomUUID, UUID.randomUUID),
       "col2" -> Set(UUID.randomUUID, UUID.randomUUID),
       "col3" -> Set.empty
-    )
+    ),
+    authorizedFileAccess = Map.empty
   )
 
   val entity2 = AccessAuthorisation(
     id = UUID.randomUUID,
-    authorizedAccess = Map(
+    authorizedEntityAccess = Map(
       "col4" -> Set(UUID.randomUUID),
       "col5" -> Set(UUID.randomUUID, UUID.randomUUID, UUID.randomUUID),
       "col6" -> Set.empty
+    ),
+    authorizedFileAccess = Map(
+      UUID.randomUUID -> 2,
+      UUID.randomUUID -> 3,
+      UUID.randomUUID -> 1
     )
   )
 
-  val entity2Updated: AccessAuthorisation = entity2.grantAccess("col7", UUID.randomUUID)
+  val entity2Updated: AccessAuthorisation = entity2.grantEntityAccess("col7", UUID.randomUUID)
 
   val entity3 = AccessAuthorisation(
     id = UUID.randomUUID,
-    authorizedAccess = Map.empty
+    authorizedEntityAccess = Map.empty,
+    authorizedFileAccess = Map(
+      UUID.randomUUID -> 3
+    )
   )
 
 }
