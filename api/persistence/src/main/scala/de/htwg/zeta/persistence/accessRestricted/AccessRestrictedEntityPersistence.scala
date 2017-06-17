@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
 
 
-/** Persistence-Layer to restrict the access to the persistence.
+/** Persistence-Layer to restrict the access to the entity-persistence.
  *
  * @param ownerId             the user-id of the owner
  * @param accessAuthorisation accessAuthorisation
@@ -18,7 +18,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  * @tparam E type of the entity
  * @param manifest implicit manifest of the entity type
  */
-case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
+class AccessRestrictedEntityPersistence[E <: Entity]( // scalastyle:ignore
     ownerId: UUID,
     accessAuthorisation: EntityPersistence[AccessAuthorisation],
     underlaying: EntityPersistence[E])(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
@@ -32,8 +32,8 @@ case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
     underlaying.create(entity).flatMap(entity =>
       accessAuthorisation.createOrUpdate(
         ownerId,
-        _.grantAccess(entityTypeName, entity.id),
-        AccessAuthorisation(ownerId, Map.empty).grantAccess(entityTypeName, entity.id)
+        _.grantEntityAccess(entityTypeName, entity.id),
+        AccessAuthorisation(ownerId, Map.empty, Map.empty).grantEntityAccess(entityTypeName, entity.id)
       ).flatMap { _ =>
         Future.successful(entity)
       }
@@ -51,11 +51,12 @@ case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
 
   /** Update a entity.
    *
-   * @param entity The updated entity
+   * @param id           The id of the entity
+   * @param updateEntity Function, to build the updated entity from the existing
    * @return Future containing the updated entity
    */
-  override private[persistence] def update(entity: E): Future[E] = {
-    restricted(entity.id, underlaying.update(entity))
+  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
+    restricted(id, underlaying.update(id, updateEntity))
   }
 
   /** Delete a entity.
@@ -65,7 +66,7 @@ case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
    */
   override def delete(id: UUID): Future[Unit] = {
     restricted(id, underlaying.delete(id).flatMap(_ =>
-      accessAuthorisation.update(ownerId, _.revokeAccess(entityTypeName, id)).flatMap(_ =>
+      accessAuthorisation.update(ownerId, _.revokeEntityAccess(entityTypeName, id)).flatMap(_ =>
         Future.successful(())
       )
     ))
@@ -76,11 +77,12 @@ case class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
    * @return Future containing all id's of the entity type, can fail
    */
   override def readAllIds(): Future[Set[UUID]] = {
-    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty)).map(_.listAccess(entityTypeName))
+    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty, Map.empty)).map(_.listEntityAccess(entityTypeName))
   }
 
   private def restricted[T](id: UUID, f: => Future[T]): Future[T] = {
-    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty)).map(_.checkAccess(entityTypeName, id)).flatMap(accessGranted =>
+    accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty, Map.empty)).map(
+      _.checkEntityAccess(entityTypeName, id)).flatMap(accessGranted =>
       if (accessGranted) {
         f
       } else {

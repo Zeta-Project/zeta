@@ -32,7 +32,7 @@ class ForgotPasswordController @Inject()(
   extends Controller {
 
   private val tokenCache: TokenCache = Persistence.tokenCache
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
   private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
   /** Views the `Forgot Password` page.

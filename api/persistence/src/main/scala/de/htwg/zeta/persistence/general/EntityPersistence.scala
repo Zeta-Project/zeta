@@ -42,16 +42,7 @@ trait EntityPersistence[E <: Entity] { // scalastyle:ignore
    * @param updateEntity Function, to build the updated entity from the existing
    * @return Future containing the updated entity
    */
-  final def update(id: UUID, updateEntity: E => E): Future[E] = {
-    read(id).flatMap(entity => update(updateEntity(entity)))
-  }
-
-  /** Update a entity.
-   *
-   * @param entity The updated entity
-   * @return Future containing the updated entity
-   */
-  private[persistence] def update(entity: E): Future[E]
+  def update(id: UUID, updateEntity: E => E): Future[E]
 
   /** Delete a entity.
    *
@@ -60,7 +51,7 @@ trait EntityPersistence[E <: Entity] { // scalastyle:ignore
    */
   def delete(id: UUID): Future[Unit]
 
-  /** Get the id's of all entity.
+  /** Get the id's of all entities.
    *
    * @return Future containing all id's of the entity type
    */
@@ -84,7 +75,7 @@ trait EntityPersistence[E <: Entity] { // scalastyle:ignore
    * @return The updated or created entity
    */
   final def createOrUpdate(entity: E): Future[E] = {
-    update(entity).recoverWith {
+    update(entity.id, _ => entity).recoverWith {
       case _ => create(entity)
     }
   }

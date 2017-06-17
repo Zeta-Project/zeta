@@ -46,7 +46,7 @@ class SignUpController @Inject()(
 
   private val tokenCache: TokenCache = Persistence.tokenCache
   private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
 
   /** Views the `Sign Up` page.
    *

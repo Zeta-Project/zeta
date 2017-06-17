@@ -67,12 +67,12 @@ class TransientRepository extends Repository {
   override val metaModelRelease = new TransientPersistence[MetaModelRelease]
 
   /** Versioned Persistence for [[entity.File]] */
-  override val file: FilePersistence = null // TODO
+  override val file: FilePersistence = new TransientFilePersistence
 
   /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
-  override val loginInfo: LoginInfoPersistence = null // TODO
+  override val loginInfo: LoginInfoPersistence = new TransientLoginInfoPersistence
 
   /** Persistence for [[com.mohiva.play.silhouette.api.util.PasswordInfo]] */
-  override val passwordInfo: PasswordInfoPersistence = null // TODO
+  override val passwordInfo: PasswordInfoPersistence = new TransientPasswordInfoPersistence
 
 }

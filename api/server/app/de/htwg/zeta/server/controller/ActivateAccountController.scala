@@ -34,7 +34,7 @@ class ActivateAccountController @Inject()(
 
   private val tokenCache: TokenCache = Persistence.tokenCache
   private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
 
   /** Sends an account activation email to the user with the given email.
    *

@@ -54,22 +54,6 @@ class MongoEntityPersistence[E <: Entity](
     }
   }
 
-  /** Update a entity.
-   *
-   * @param entity The updated entity
-   * @return Future containing the updated entity
-   */
-  override private[persistence] def update(entity: E): Future[E] = {
-    collection.flatMap { collection =>
-      collection.update(BSONDocument(sId -> entity.id.toString), entity).flatMap(result =>
-        if (result.nModified == 1) {
-          Future.successful(entity)
-        } else {
-          Future.failed(new IllegalStateException("couldn't update the document"))
-        }
-      )
-    }
-  }
 
   /** Delete a entity.
    *
@@ -97,6 +81,27 @@ class MongoEntityPersistence[E <: Entity](
       collection.find(BSONDocument.empty, idProjection).cursor[IdOnlyEntity]().
         collect(-1, Cursor.FailOnError[Set[IdOnlyEntity]]())
     }.map(_.map(_.id))
+  }
+
+  /** Update a entity.
+   *
+   * @param id           The id of the entity
+   * @param updateEntity Function, to build the updated entity from the existing
+   * @return Future containing the updated entity
+   */
+  override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
+    read(id).flatMap { entity =>
+      collection.flatMap { collection =>
+        val updated = updateEntity(entity)
+        collection.update(BSONDocument(sId -> id.toString), updated).flatMap(result =>
+          if (result.nModified == 1) {
+            Future.successful(updated)
+          } else {
+            Future.failed(new IllegalStateException("couldn't update the document"))
+          }
+        )
+      }
+    }
   }
 
 }

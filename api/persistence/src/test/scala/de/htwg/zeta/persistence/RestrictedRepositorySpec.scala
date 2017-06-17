@@ -8,7 +8,7 @@ import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.transient.TransientRepository
 
 /**
- * PersistenceMicroServiceTest.
+ * RestrictedRepositorySpec.
  */
 class RestrictedRepositorySpec extends RepositoryBehavior {
 
@@ -17,6 +17,6 @@ class RestrictedRepositorySpec extends RepositoryBehavior {
   val repo = new TransientRepository
   repo.user.create(user)
 
-  "persistenceMicroService" should behave like repositoryBehavior(AccessRestrictedRepository(user.id, repo), restricted = true)
+  "AccessRestrictedRepository" should behave like repositoryBehavior(AccessRestrictedRepository(user.id, repo), restricted = true)
 
 }

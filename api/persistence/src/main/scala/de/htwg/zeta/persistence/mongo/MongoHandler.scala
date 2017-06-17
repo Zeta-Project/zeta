@@ -2,13 +2,12 @@ package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
 
-import scala.collection.immutable.SortedMap
-
+import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.common.models.document.DockerSettings
 import de.htwg.zeta.common.models.document.JobSettings
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
@@ -29,8 +28,17 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
@@ -42,10 +50,13 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
 import reactivemongo.bson.BSONArray
+import reactivemongo.bson.BSONBoolean
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.BSONDocumentWriter
+import reactivemongo.bson.BSONDouble
+import reactivemongo.bson.BSONInteger
 import reactivemongo.bson.BSONReader
 import reactivemongo.bson.BSONString
 import reactivemongo.bson.BSONWriter
@@ -74,6 +85,18 @@ object MongoHandler {
 
   implicit val fileKeyHandler: BSONDocumentHandler[FileKey] = Macros.handler[FileKey]
 
+  case class UserIdOnlyEntity(userId: UUID)
+
+  implicit val userIdOnlyEntityHandler: BSONDocumentHandler[UserIdOnlyEntity] = Macros.handler[UserIdOnlyEntity]
+
+  case class LoginInfoWrapper(loginInfo: LoginInfo)
+
+  implicit val LoginInfoWrapperHandler: BSONDocumentHandler[LoginInfoWrapper] = Macros.handler[LoginInfoWrapper]
+
+  case class PasswordInfoWrapper(authInfo: PasswordInfo)
+
+  implicit val PasswordInfoWrapperHandler: BSONDocumentHandler[PasswordInfoWrapper] = Macros.handler[PasswordInfoWrapper]
+
   private val uuidSetHandler = new {
 
     def read(doc: BSONArray): Set[UUID] = {
@@ -86,7 +109,7 @@ object MongoHandler {
 
   }
 
-  private implicit val mapStringSetIdHandler = new BSONDocumentReader[Map[String, Set[UUID]]] with BSONDocumentWriter[Map[String, Set[UUID]]] {
+  private implicit object MapStringSetIdHandler extends BSONDocumentReader[Map[String, Set[UUID]]] with BSONDocumentWriter[Map[String, Set[UUID]]] {
 
     override def read(doc: BSONDocument): Map[String, Set[UUID]] = {
       doc.elements.map { tuple =>
@@ -118,17 +141,70 @@ object MongoHandler {
 
   implicit val filterImageHandler: BSONDocumentHandler[FilterImage] = Macros.handler[FilterImage]
 
-
   private implicit val jobSettingsHandler: BSONDocumentHandler[JobSettings] = Macros.handler[JobSettings]
 
   private implicit val dockerSettingsHandler: BSONDocumentHandler[DockerSettings] = Macros.handler[DockerSettings]
 
   implicit val settingsHandler: BSONDocumentHandler[Settings] = Macros.handler[Settings]
 
+  private val sType = "type"
+  private val sValue = "value"
+  private val sValues = "values"
+  private val sString = "string"
+  private val sBool = "bool"
+  private val sInt = "int"
+  private val sDouble = "double"
+  private val sEnum = "enum"
+  private val sName = "name"
+  private val sEnumName = "enumName"
 
-  private implicit val attributeTypeHandler: BSONDocumentHandler[AttributeType] = Macros.handler[AttributeType]
+  private implicit object AttributeTypeHandler extends BSONDocumentWriter[AttributeType] with BSONDocumentReader[AttributeType] {
 
-  private implicit val attributeValueHandler: BSONDocumentHandler[AttributeValue] = Macros.handler[AttributeValue]
+    override def write(typ: AttributeType): BSONDocument = {
+      typ match {
+        case StringType => BSONDocument(sType -> sString)
+        case BoolType => BSONDocument(sType -> sBool)
+        case IntType => BSONDocument(sType -> sInt)
+        case DoubleType => BSONDocument(sType -> sDouble)
+        case MEnum(name, values) => BSONDocument(sType -> sEnum, sName -> name, sValues -> values)
+      }
+    }
+
+    override def read(doc: BSONDocument): AttributeType = {
+      doc.getAs[String](sType).get match {
+        case `sString` => StringType
+        case `sBool` => BoolType
+        case `sInt` => IntType
+        case `sDouble` => DoubleType
+        case `sEnum` => MEnum(doc.getAs[String](sName).get, doc.getAs[Set[String]](sValues).get)
+      }
+    }
+
+  }
+
+  private implicit object AttributeValueHandler extends BSONDocumentWriter[AttributeValue] with BSONDocumentReader[AttributeValue] {
+
+    override def write(value: AttributeValue): BSONDocument = {
+      value match {
+        case MString(v) => BSONDocument(sType -> sString, sValue -> BSONString(v))
+        case MBool(v) => BSONDocument(sType -> sBool, sValue -> BSONBoolean(v))
+        case MInt(v) => BSONDocument(sType -> sInt, sValue -> BSONInteger(v))
+        case MDouble(v) => BSONDocument(sType -> sDouble, sValue -> BSONDouble(v))
+        case EnumSymbol(name, enumName) => BSONDocument(sType -> sEnum, sName -> name, sEnumName -> enumName)
+      }
+    }
+
+    override def read(doc: BSONDocument): AttributeValue = {
+      doc.getAs[String](sType).get match {
+        case `sString` => MString(doc.getAs[String](sValue).get)
+        case `sBool` => MBool(doc.getAs[Boolean](sValue).get)
+        case `sInt` => MInt(doc.getAs[Int](sValue).get)
+        case `sDouble` => MDouble(doc.getAs[Double](sValue).get)
+        case `sEnum` => EnumSymbol(doc.getAs[String](sName).get, doc.getAs[String](sEnumName).get)
+      }
+    }
+
+  }
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
@@ -142,50 +218,7 @@ object MongoHandler {
 
   private implicit val metaModelHandler: BSONDocumentHandler[MetaModel] = Macros.handler[MetaModel]
 
-  private implicit val mapMClassHandler = new BSONDocumentReader[Map[String, MClass]] with BSONDocumentWriter[Map[String, MClass]] {
-
-    override def read(doc: BSONDocument): Map[String, MClass] = {
-      doc.values.map { value =>
-        mClassHandler.read(value.seeAsTry[BSONDocument].get)
-      }.map(c => (c.name, c)).toMap
-    }
-
-    override def write(map: Map[String, MClass]): BSONDocument = {
-      BSONDocument(map.values.map(mClassHandler.write))
-    }
-
-  }
-
-
-  private implicit val mapMReferenceHandler = new BSONDocumentReader[Map[String, MReference]] with BSONDocumentWriter[Map[String, MReference]] {
-
-    override def read(doc: BSONDocument): Map[String, MReference] = {
-      doc.values.map { value =>
-        mReferenceHandler.read(value.seeAsTry[BSONDocument].get)
-      }.map(c => (c.name, c)).toMap
-    }
-
-    override def write(map: Map[String, MReference]): BSONDocument = {
-      BSONDocument(map.values.map(mReferenceHandler.write))
-    }
-
-  }
-
   private implicit val mEnumHandler: BSONDocumentHandler[MEnum] = Macros.handler[MEnum]
-
-  private implicit val mapMEumHandler = new BSONDocumentReader[Map[String, MEnum]] with BSONDocumentWriter[Map[String, MEnum]] {
-
-    override def read(doc: BSONDocument): Map[String, MEnum] = {
-      doc.values.map { value =>
-        mEnumHandler.read(value.seeAsTry[BSONDocument].get)
-      }.map(c => (c.name, c)).toMap
-    }
-
-    override def write(map: Map[String, MEnum]): BSONDocument = {
-      BSONDocument(map.values.map(mEnumHandler.write))
-    }
-
-  }
 
   private implicit val dslHandler: BSONDocumentHandler[Dsl] = Macros.handler[Dsl]
 
@@ -199,80 +232,9 @@ object MongoHandler {
 
   implicit val metaModelEntityHandler: BSONDocumentHandler[MetaModelEntity] = Macros.handler[MetaModelEntity]
 
-
-  private implicit val sortedMapStringUUIDHandler = new BSONDocumentReader[SortedMap[String, UUID]] with BSONDocumentWriter[SortedMap[String, UUID]] {
-
-    override def read(doc: BSONDocument): SortedMap[String, UUID] = {
-      val m = doc.elements.map { tuple =>
-        tuple.name -> IdHandler.read(tuple.value.seeAsTry[BSONString].get)
-      }.toMap
-      scala.collection.immutable.TreeMap(m.toArray: _*)
-    }
-
-    override def write(map: SortedMap[String, UUID]): BSONDocument = {
-      BSONDocument(map.map { tuple =>
-        tuple._1 -> IdHandler.write(tuple._2)
-      })
-    }
-
-  }
-
-
-  private implicit val entityHandler = new BSONDocumentReader[Entity] with BSONDocumentWriter[Entity] {
-
-    override def read(doc: BSONDocument): Entity = {
-      null // TODO
-    }
-
-    override def write(entity: Entity): BSONDocument = {
-      null // TODO
-    }
-
-  }
-
   implicit val metaModelReleaseHandler: BSONDocumentHandler[MetaModelRelease] = Macros.handler[MetaModelRelease]
 
   implicit val modelEntityHandler: BSONDocumentHandler[ModelEntity] = Macros.handler[ModelEntity]
-
-  private implicit val mapAttributeValueHandler =
-    new BSONDocumentReader[Map[String, scala.collection.immutable.Seq[AttributeValue]]]
-      with BSONDocumentWriter[Map[String, scala.collection.immutable.Seq[AttributeValue]]] {
-
-      override def read(doc: BSONDocument): Map[String, scala.collection.immutable.Seq[AttributeValue]] = {
-        null // TODO
-      }
-
-      override def write(map: Map[String, scala.collection.immutable.Seq[AttributeValue]]): BSONDocument = {
-        null // TODO
-      }
-
-    }
-
-
-  private implicit val mapNodeHandler = new BSONDocumentReader[Map[String, Node]] with BSONDocumentWriter[Map[String, Node]] {
-
-    override def read(doc: BSONDocument): Map[String, Node] = {
-      null // TODO
-    }
-
-    override def write(map: Map[String, Node]): BSONDocument = {
-      null // TODO
-    }
-
-  }
-
-  private implicit val mapEdgeHandler = new BSONDocumentReader[Map[String, Edge]] with BSONDocumentWriter[Map[String, Edge]] {
-
-    override def read(doc: BSONDocument): Map[String, Edge] = {
-      null // TODO
-    }
-
-    override def write(map: Map[String, Edge]): BSONDocument = {
-      null // TODO
-    }
-
-  }
-
 
   implicit val nodeEntityHandler: BSONDocumentHandler[Node] = Macros.handler[Node]
 
@@ -284,12 +246,14 @@ object MongoHandler {
 
   implicit val modelHandler: BSONDocumentHandler[Model] = Macros.handler[Model]
 
-
   implicit val logHandler: BSONDocumentHandler[Log] = Macros.handler[Log]
 
   implicit val userHandler: BSONDocumentHandler[User] = Macros.handler[User]
 
-
   implicit val fileHandler: BSONDocumentHandler[File] = Macros.handler[File]
+
+  implicit val loginInfoHandler: BSONDocumentHandler[LoginInfo] = Macros.handler[LoginInfo]
+
+  implicit val passwordInfoHandler: BSONDocumentHandler[PasswordInfo] = Macros.handler[PasswordInfo]
 
 }

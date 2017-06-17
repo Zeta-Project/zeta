@@ -4,10 +4,10 @@ import de.htwg.zeta.persistence.behavior.RepositoryBehavior
 import de.htwg.zeta.persistence.mongo.MongoRepository
 
 /**
- * PersistenceMicroServiceTest.
+ * MongoRepositorySpec.
  */
 class MongoRepositorySpec extends RepositoryBehavior {
 
-  "MongoRepository" should behave like repositoryBehavior(new MongoRepository("127.0.0.1:27017", "test"), restricted = false)
+  "MongoRepository" should behave like repositoryBehavior(new MongoRepository("localhost:27017", "test"), restricted = false)
 
 }
