@@ -121,7 +121,7 @@ class ActorCacheRepository(underlying: Repository) extends Repository {
 
   /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
   override def loginInfo: LoginInfoPersistence = {
-    null // TODO
+    new ActorCacheLoginInfoPersistence(system, underlying.loginInfo, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[com.mohiva.play.silhouette.api.util.PasswordInfo]] */
