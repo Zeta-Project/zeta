@@ -11,13 +11,6 @@ import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
  */
 trait PasswordInfoPersistence extends DelegableAuthInfoDAO[PasswordInfo] {
 
-  /** Finds the auth info which is linked to the specified login info.
-   *
-   * @param loginInfo The linked login info.
-   * @return The found auth info or None if no auth info could be found for the given login info.
-   */
-  override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]]
-
   /** Adds new auth info for the given login info.
    *
    * @param loginInfo The login info for which the auth info should be added.
@@ -25,6 +18,13 @@ trait PasswordInfoPersistence extends DelegableAuthInfoDAO[PasswordInfo] {
    * @return The added auth info.
    */
   override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+
+  /** Finds the auth info which is linked to the specified login info.
+   *
+   * @param loginInfo The linked login info.
+   * @return The found auth info or None if no auth info could be found for the given login info.
+   */
+  override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]]
 
   /** Updates the auth info for the given login info.
    *
