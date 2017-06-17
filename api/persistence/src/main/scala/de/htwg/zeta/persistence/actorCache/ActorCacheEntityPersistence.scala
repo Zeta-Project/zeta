@@ -34,10 +34,10 @@ class ActorCacheEntityPersistence[E <: Entity](
 ) extends EntityPersistence[E] {
 
   private def hashMapping: ConsistentHashMapping = {
-    case Create(entity) => entity.id.toString
-    case Read(id) => id.toString
-    case Update(id, _) => id.toString
-    case Delete(id) => id.toString
+    case Create(entity) => entity.id.hashCode
+    case Read(id) => id.hashCode
+    case Update(id, _) => id.hashCode
+    case Delete(id) => id.hashCode
   }
 
   private val router: ActorRef = system.actorOf(

@@ -34,11 +34,11 @@ class ActorCachePasswordInfoPersistence(
 
 
   private def hashMapping: ConsistentHashMapping = {
-    case Add(loginInfo, _) => loginInfo
-    case Find(loginInfo) => loginInfo
-    case Update(loginInfo, _) => loginInfo
-    case Save(loginInfo, _) => loginInfo
-    case Remove(loginInfo) => loginInfo
+    case Add(loginInfo, _) => loginInfo.hashCode
+    case Find(loginInfo) => loginInfo.hashCode
+    case Update(loginInfo, _) => loginInfo.hashCode
+    case Save(loginInfo, _) => loginInfo.hashCode
+    case Remove(loginInfo) => loginInfo.hashCode
   }
 
   private val router: ActorRef = system.actorOf(

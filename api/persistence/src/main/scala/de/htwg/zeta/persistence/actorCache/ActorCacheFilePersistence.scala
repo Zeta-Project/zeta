@@ -33,10 +33,10 @@ class ActorCacheFilePersistence(
 ) extends FilePersistence {
 
   private def hashMapping: ConsistentHashMapping = {
-    case Create(file) => file.id.toString
-    case Read(id, _) => id.toString
-    case Update(file) => file.id.toString
-    case Delete(id, _) => id.toString
+    case Create(file) => file.id.hashCode
+    case Read(id, _) => id.hashCode
+    case Update(file) => file.id.hashCode
+    case Delete(id, _) => id.hashCode
   }
 
   private val router: ActorRef = system.actorOf(

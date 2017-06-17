@@ -33,10 +33,10 @@ class ActorCacheLoginInfoPersistence(
 ) extends LoginInfoPersistence {
 
   private def hashMapping: ConsistentHashMapping = {
-    case Create(loginInfo, _) => loginInfo
-    case Read(loginInfo) => loginInfo
-    case Update(loginInfo, _) => loginInfo
-    case Delete(loginInfo) => loginInfo
+    case Create(loginInfo, _) => loginInfo.hashCode
+    case Read(loginInfo) => loginInfo.hashCode
+    case Update(loginInfo, _) => loginInfo.hashCode
+    case Delete(loginInfo) => loginInfo.hashCode
   }
 
   private val router: ActorRef = system.actorOf(
