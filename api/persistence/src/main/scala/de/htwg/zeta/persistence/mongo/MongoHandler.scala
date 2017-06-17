@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.mongo
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.common.models.document.DockerSettings
 import de.htwg.zeta.common.models.document.JobSettings
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
@@ -91,6 +92,10 @@ object MongoHandler {
   case class LoginInfoWrapper(loginInfo: LoginInfo)
 
   implicit val LoginInfoWrapperHandler: BSONDocumentHandler[LoginInfoWrapper] = Macros.handler[LoginInfoWrapper]
+
+  case class PasswordInfoWrapper(authInfo: PasswordInfo)
+
+  implicit val PasswordInfoWrapperHandler: BSONDocumentHandler[PasswordInfoWrapper] = Macros.handler[PasswordInfoWrapper]
 
   private val uuidSetHandler = new {
 
@@ -248,5 +253,7 @@ object MongoHandler {
   implicit val fileHandler: BSONDocumentHandler[File] = Macros.handler[File]
 
   implicit val loginInfoHandler: BSONDocumentHandler[LoginInfo] = Macros.handler[LoginInfo]
+
+  implicit val passwordInfoHandler: BSONDocumentHandler[PasswordInfo] = Macros.handler[PasswordInfo]
 
 }
