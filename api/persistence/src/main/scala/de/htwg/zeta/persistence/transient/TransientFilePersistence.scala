@@ -49,7 +49,7 @@ class TransientFilePersistence extends FilePersistence {
    * @param file The updated file
    * @return Future containing the updated file
    */
-  override private[persistence] def update(file: File): Future[File] = {
+  def update(file: File): Future[File] = {
     if (cache.replace(Key(file.id, file.name), file).isDefined) {
       Future.successful(file)
     } else {

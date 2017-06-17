@@ -36,63 +36,63 @@ case class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) ext
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
-  override def eventDrivenTask: AccessRestrictedPersistence[EventDrivenTask] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.eventDrivenTask)
+  override def eventDrivenTask: AccessRestrictedEntityPersistence[EventDrivenTask] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.eventDrivenTask)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
-  override def bondedTask: AccessRestrictedPersistence[BondedTask] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.bondedTask)
+  override def bondedTask: AccessRestrictedEntityPersistence[BondedTask] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.bondedTask)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
-  override def timedTask: AccessRestrictedPersistence[TimedTask] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.timedTask)
+  override def timedTask: AccessRestrictedEntityPersistence[TimedTask] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.timedTask)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Generator]] */
-  override def generator: AccessRestrictedPersistence[Generator] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.generator)
+  override def generator: AccessRestrictedEntityPersistence[Generator] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.generator)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Filter]] */
-  override def filter: AccessRestrictedPersistence[Filter] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.filter)
+  override def filter: AccessRestrictedEntityPersistence[Filter] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.filter)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.GeneratorImage]] */
-  override def generatorImage: AccessRestrictedPersistence[GeneratorImage] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.generatorImage)
+  override def generatorImage: AccessRestrictedEntityPersistence[GeneratorImage] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.generatorImage)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.FilterImage]] */
-  override def filterImage: AccessRestrictedPersistence[FilterImage] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.filterImage)
+  override def filterImage: AccessRestrictedEntityPersistence[FilterImage] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.filterImage)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Settings]] */
-  override def settings: AccessRestrictedPersistence[Settings] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.settings)
+  override def settings: AccessRestrictedEntityPersistence[Settings] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.settings)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.MetaModelEntity]] */
-  override def metaModelEntity: AccessRestrictedPersistence[MetaModelEntity] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.metaModelEntity)
+  override def metaModelEntity: AccessRestrictedEntityPersistence[MetaModelEntity] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.metaModelEntity)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelRelease]] */
   override def metaModelRelease: EntityPersistence[MetaModelRelease] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.metaModelRelease)
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.metaModelRelease)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.ModelEntity]] */
-  override def modelEntity: AccessRestrictedPersistence[ModelEntity] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.modelEntity)
+  override def modelEntity: AccessRestrictedEntityPersistence[ModelEntity] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.modelEntity)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Log]] */
-  override def log: AccessRestrictedPersistence[Log] = {
-    new AccessRestrictedPersistence(ownerId, underlying.accessAuthorisation, underlying.log)
+  override def log: AccessRestrictedEntityPersistence[Log] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.log)
   }
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.User]] */
@@ -102,7 +102,7 @@ case class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) ext
 
   /** Versioned Persistence for [[de.htwg.zeta.common.models.entity.File]] */
   override def file: FilePersistence = {
-    null // TODO implement own AccessRestrictedPersistence for files
+    new AccessRestrictedFilePersistence(ownerId, underlying.accessAuthorisation, underlying.file)
   }
 
   /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */

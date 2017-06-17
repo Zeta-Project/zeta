@@ -116,7 +116,7 @@ class ActorCacheRepository(underlying: Repository) extends Repository {
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.File]] */
   override def file: FilePersistence = {
-    null // TODO
+    new ActorCacheFilePersistence(system, underlying.file, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */

@@ -69,7 +69,7 @@ class MongoFilePersistence(database: Future[DefaultDB]) extends FilePersistence 
    * @param file The updated file
    * @return Future containing the updated file
    */
-  override private[persistence] def update(file: File): Future[File] = {
+  def update(file: File): Future[File] = {
     collection.flatMap { collection =>
       collection.update(BSONDocument(sId -> file.id.toString, sName -> file.name), file).flatMap(result =>
         if (result.nModified == 1) {
