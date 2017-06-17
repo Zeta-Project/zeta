@@ -7,9 +7,9 @@ import com.google.inject.Provides
 import com.google.inject.name.Named
 import com.mohiva.play.silhouette.api.Environment
 import com.mohiva.play.silhouette.api.EventBus
+import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.SilhouetteProvider
-import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
 import com.mohiva.play.silhouette.api.crypto.CookieSigner
@@ -18,7 +18,6 @@ import com.mohiva.play.silhouette.api.crypto.CrypterAuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.services.IdentityService
-import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.CacheLayer
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.FingerprintGenerator
@@ -26,26 +25,17 @@ import com.mohiva.play.silhouette.api.util.HTTPLayer
 import com.mohiva.play.silhouette.api.util.IDGenerator
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
-import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.api.util.PlayHTTPLayer
 import com.mohiva.play.silhouette.crypto.JcaCookieSigner
 import com.mohiva.play.silhouette.crypto.JcaCookieSignerSettings
 import com.mohiva.play.silhouette.crypto.JcaCrypter
 import com.mohiva.play.silhouette.crypto.JcaCrypterSettings
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
-import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorSettings
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorService
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorSettings
 import com.mohiva.play.silhouette.impl.providers.OAuth1Info
 import com.mohiva.play.silhouette.impl.providers.OAuth2Info
 import com.mohiva.play.silhouette.impl.providers.OpenIDInfo
-import com.mohiva.play.silhouette.impl.providers.OAuth1TokenSecretProvider
-import com.mohiva.play.silhouette.impl.providers.OAuth2StateProvider
-import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretSettings
-import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.CookieSecretProvider
-import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateProvider
-import com.mohiva.play.silhouette.impl.providers.oauth2.state.CookieStateSettings
-import com.mohiva.play.silhouette.impl.services.GravatarService
 import com.mohiva.play.silhouette.impl.util.DefaultFingerprintGenerator
 import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
@@ -53,20 +43,15 @@ import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
-import de.htwg.zeta.persistence.transient.TransientPasswordInfoPersistence
-import de.htwg.zeta.persistence.transient.TransientLoginInfoPersistence
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import de.htwg.zeta.common.models.entity.User
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
-import net.ceedubs.ficus.Ficus.finiteDurationReader
-import net.ceedubs.ficus.Ficus.mapValueReader
-import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -111,7 +96,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   }
 
 
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.loginInfoPersistence
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
   private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
 
@@ -193,7 +178,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideAuthInfoRepository: AuthInfoRepository = {
-    new DelegableAuthInfoRepository(Persistence.passwordInfoPersistence)
+    new DelegableAuthInfoRepository(Persistence.fullAccessRepository.passwordInfo)
   }
 
   /**
