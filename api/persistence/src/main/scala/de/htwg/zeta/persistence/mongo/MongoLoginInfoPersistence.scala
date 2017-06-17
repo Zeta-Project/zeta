@@ -11,6 +11,8 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapper
+import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapperHandler
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sLoginInfo
@@ -63,7 +65,17 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    * @return Unit-Future
    */
   override def update(old: LoginInfo, updated: LoginInfo): Future[Unit] = {
-    null // TODO
+    read(old).flatMap { userId =>
+      collection.flatMap { collection =>
+        collection.update(BSONDocument(sLoginInfo -> old), BSONDocument(sLoginInfo -> updated, sUserId -> userId.toString)).flatMap(result =>
+          if (result.nModified == 1) {
+            Future.successful()
+          } else {
+            Future.failed(new IllegalStateException("couldn't update the LoginInfo"))
+          }
+        )
+      }
+    }
   }
 
   /** Delete a LoginInfo.
@@ -89,9 +101,9 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    */
   override def readAllKeys(): Future[Set[LoginInfo]] = {
     collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfo]().
-        collect(-1, Cursor.FailOnError[Set[LoginInfo]]())
-    }
+      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfoWrapper]().
+        collect(-1, Cursor.FailOnError[Set[LoginInfoWrapper]]())
+    }.map(_.map(_.loginInfo))
   }
 
 }
@@ -104,6 +116,6 @@ private object MongoLoginInfoPersistence {
 
   private val sUserId = "userId"
 
-  private val keyProjection = BSONDocument("_id" -> 0, sLoginInfo -> 1, sUserId -> 1)
+  private val keyProjection = BSONDocument("_id" -> 0, sLoginInfo -> 1)
 
 }

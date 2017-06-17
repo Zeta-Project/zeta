@@ -88,6 +88,9 @@ object MongoHandler {
 
   implicit val userIdOnlyEntityHandler: BSONDocumentHandler[UserIdOnlyEntity] = Macros.handler[UserIdOnlyEntity]
 
+  case class LoginInfoWrapper(loginInfo: LoginInfo)
+
+  implicit val LoginInfoWrapperHandler: BSONDocumentHandler[LoginInfoWrapper] = Macros.handler[LoginInfoWrapper]
 
   private val uuidSetHandler = new {
 

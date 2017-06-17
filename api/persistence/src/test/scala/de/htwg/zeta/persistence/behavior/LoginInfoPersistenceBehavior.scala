@@ -155,7 +155,6 @@ trait LoginInfoPersistenceBehavior extends AsyncFlatSpec with Matchers {
         keys shouldBe Set(loginInfo1, loginInfo2, loginInfo3)
       }
     }
-
   }
 
 }
