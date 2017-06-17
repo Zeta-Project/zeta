@@ -28,7 +28,7 @@ import de.htwg.zeta.persistence.general.Repository
  * @param ownerId    The id of the assigned user to the restriction
  * @param underlying The underlaying persistence Service
  */
-case class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) extends Repository {
+class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) extends Repository {
 
   /** Persistence for AccessAuthorisation */
   override def accessAuthorisation: EntityPersistence[AccessAuthorisation] = {
