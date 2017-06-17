@@ -27,21 +27,10 @@ trait FilePersistence {
 
   /** Update a file.
    *
-   * @param id         The id of the file
-   * @param name       the name of the file
-   * @param updateFile Function, to build the updated file from the existing
-   * @return Future containing the updated file
-   */
-  final def update(id: UUID, name: String, updateFile: File => File): Future[File] = {
-    read(id, name).flatMap(file => update(updateFile(file)))
-  }
-
-  /** Update a file.
-   *
    * @param file The updated file
    * @return Future containing the updated file
    */
-  private[persistence] def update(file: File): Future[File]
+  def update(file: File): Future[File]
 
   /** Delete a file.
    *
@@ -72,7 +61,7 @@ trait FilePersistence {
 
   /** Update a file. If it doesn't exist create it.
    *
-   * @param file       the file to create or update
+   * @param file the file to create or update
    * @return The updated or created file
    */
   final def createOrUpdate(file: File): Future[File] = {

@@ -7,12 +7,12 @@ import java.util.UUID
  *
  * @param id                     entity-id, same id as [[de.htwg.zeta.common.models.entity.User]]
  * @param authorizedEntityAccess authorized id's for entities
- * @param authorizedFileAccess   authorized id's for files, with a counter on the number of files per id
+ * @param authorizedFileAccess   authorized id's and file-names for files
  */
 case class AccessAuthorisation(
     id: UUID,
     authorizedEntityAccess: Map[String, Set[UUID]],
-    authorizedFileAccess: Map[UUID, Int]
+    authorizedFileAccess: Map[UUID, Set[String]]
 ) extends Entity {
 
   /** Add a id to the accessible id's.
@@ -69,7 +69,7 @@ case class AccessAuthorisation(
    */
   def grantFileAccess(fileId: UUID, name: String): AccessAuthorisation = {
     copy(authorizedFileAccess = authorizedFileAccess.updated(
-      fileId, authorizedFileAccess.getOrElse(fileId, 0) + 1)
+      fileId, authorizedFileAccess.getOrElse(fileId, Set.empty) + name)
     )
   }
 
@@ -80,20 +80,12 @@ case class AccessAuthorisation(
    * @return copy of this with the removed id
    */
   def revokeFileAccess(fileId: UUID, name: String): AccessAuthorisation = {
-    val remaining = authorizedFileAccess(fileId) - 1
-    if (remaining == 0) {
+    val remaining = authorizedFileAccess(fileId) - name
+    if (remaining.isEmpty) {
       copy(authorizedFileAccess = authorizedFileAccess - fileId)
     } else {
       copy(authorizedFileAccess = authorizedFileAccess.updated(fileId, remaining))
     }
-  }
-
-  /** List all accessible id's.
-   *
-   * @return List with the accessible id's
-   */
-  def listFileAccess(): Set[UUID] = {
-    authorizedFileAccess.keySet
   }
 
   /** Check if a id is authorised to access.
@@ -101,8 +93,8 @@ case class AccessAuthorisation(
    * @param fileId the file-id
    * @return List with the accessible id's
    */
-  def checkFileAccess(fileId: UUID): Boolean = {
-    authorizedFileAccess.contains(fileId)
+  def checkFileAccess(fileId: UUID, name: String): Boolean = {
+    authorizedFileAccess.get(fileId).fold(false)(_.contains(name))
   }
 
 }

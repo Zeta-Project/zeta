@@ -25,9 +25,9 @@ object AccessAuthorisationFixtures {
       "col6" -> Set.empty
     ),
     authorizedFileAccess = Map(
-      UUID.randomUUID -> 2,
-      UUID.randomUUID -> 3,
-      UUID.randomUUID -> 1
+      UUID.randomUUID -> Set("file1.txt", "file2.txt", "file3.txt"),
+      UUID.randomUUID -> Set("file4.txt"),
+      UUID.randomUUID -> Set("file5.txt", "file6.txt")
     )
   )
 
@@ -37,7 +37,7 @@ object AccessAuthorisationFixtures {
     id = UUID.randomUUID,
     authorizedEntityAccess = Map.empty,
     authorizedFileAccess = Map(
-      UUID.randomUUID -> 3
+      UUID.randomUUID -> Set("file7.txt", "file8.txt")
     )
   )
 

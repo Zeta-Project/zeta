@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
 
 
-/** Persistence-Layer to restrict the access to the persistence.
+/** Persistence-Layer to restrict the access to the entity-persistence.
  *
  * @param ownerId             the user-id of the owner
  * @param accessAuthorisation accessAuthorisation
@@ -18,7 +18,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  * @tparam E type of the entity
  * @param manifest implicit manifest of the entity type
  */
-class AccessRestrictedPersistence[E <: Entity]( // scalastyle:ignore
+class AccessRestrictedEntityPersistence[E <: Entity]( // scalastyle:ignore
     ownerId: UUID,
     accessAuthorisation: EntityPersistence[AccessAuthorisation],
     underlaying: EntityPersistence[E])(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
