@@ -48,6 +48,7 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
+import net.ceedubs.ficus.readers.ValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -139,9 +140,15 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   @Named("authenticator-cookie-signer")
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
+    val config = {
+      // required for parsing JcaCookieSignerSettings
+      implicit val stringValueReader = Ficus.stringValueReader
+      implicit val booleanValueReader = Ficus.booleanValueReader
+
+      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
+
+      configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
+    }
     new JcaCookieSigner(config)
   }
 
@@ -190,9 +197,16 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
       configuration: Configuration,
       clock: Clock
   ): AuthenticatorService[CookieAuthenticator] = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
-    val config = configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
+    val config = {
+      // required for parsing CookieAuthenticatorSettings
+      implicit val stringValueReader = Ficus.stringValueReader
+      implicit val booleanValueReader = Ficus.booleanValueReader
+      implicit val finiteDurationReader = Ficus.finiteDurationReader
+
+      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
+
+      configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
+    }
     val encoder = new CrypterAuthenticatorEncoder(crypter)
 
     new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock)
