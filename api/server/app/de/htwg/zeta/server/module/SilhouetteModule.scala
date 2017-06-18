@@ -46,11 +46,7 @@ import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus
-import net.ceedubs.ficus.Ficus.{finiteDurationReader => ficusFiniteDurationReader}
-import net.ceedubs.ficus.Ficus.{mapValueReader => ficusMapValueReader}
-import net.ceedubs.ficus.Ficus.{optionValueReader => ficusOptionValueReader}
 import net.ceedubs.ficus.Ficus.toFicusConfig
-import net.ceedubs.ficus.readers.ValueReader
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -59,13 +55,8 @@ import play.api.libs.ws.WSClient
 
 /**
  * The Guice module which wires all Silhouette dependencies.
- *
- * Bug: IDEA marks some needed imports as unused, these imports are renamed
  */
 class SilhouetteModule extends AbstractModule with ScalaModule {
-
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
   /**
    * Configures the module.
@@ -92,6 +83,11 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideHTTPLayer(client: WSClient): HTTPLayer = {
     new PlayHTTPLayer(client)
   }
+
+
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
+
 
   /** Provides the UserIdentityService
    *
@@ -134,7 +130,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     )
   }
 
-
   /**
    * Provides the cookie signer for the authenticator.
    *
@@ -144,15 +139,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   @Named("authenticator-cookie-signer")
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
-    val config = {
-      // required for parsing JcaCookieSignerSettings
-      implicit val stringValueReader = Ficus.stringValueReader
-      implicit val booleanValueReader = Ficus.booleanValueReader
-
-      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
-
-      configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
-    }
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val config = configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
     new JcaCookieSigner(config)
   }
 
@@ -201,16 +190,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
       configuration: Configuration,
       clock: Clock
   ): AuthenticatorService[CookieAuthenticator] = {
-    val config = {
-      // required for parsing CookieAuthenticatorSettings
-      implicit val stringValueReader = Ficus.stringValueReader
-      implicit val booleanValueReader = Ficus.booleanValueReader
-      implicit val finiteDurationReader = Ficus.finiteDurationReader
-
-      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
-
-      configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
-    }
+    implicit val stringValueReader = Ficus.stringValueReader
+    implicit val booleanValueReader = Ficus.booleanValueReader
+    val config = configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
     val encoder = new CrypterAuthenticatorEncoder(crypter)
 
     new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock)
