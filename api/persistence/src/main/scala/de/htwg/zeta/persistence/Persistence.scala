@@ -3,7 +3,6 @@ package de.htwg.zeta.persistence
 import java.util.UUID
 
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheRepository
 import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.mongo.MongoRepository
@@ -14,7 +13,7 @@ import de.htwg.zeta.persistence.transient.TransientTokenCache
 object Persistence {
 
   /** The current implementation of the Repository. */
-  val fullAccessRepository: Repository = new ActorCacheRepository(new MongoRepository("localhost:27017", "zeta"))
+  val fullAccessRepository: Repository = new MongoRepository("localhost:27017", "zeta")
 
   /** The current implementation of the Repository with an overlying Access-Restriction Layer.
    *

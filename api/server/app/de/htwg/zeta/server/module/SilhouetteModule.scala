@@ -52,6 +52,9 @@ import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
+import net.ceedubs.ficus.Ficus.{finiteDurationReader => ficusFiniteDurationReader}
+import net.ceedubs.ficus.Ficus.{mapValueReader => ficusMapValueReader}
+import net.ceedubs.ficus.Ficus.{optionValueReader => focusOptionValueReader}
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -60,6 +63,8 @@ import play.api.libs.ws.WSClient
 
 /**
  * The Guice module which wires all Silhouette dependencies.
+ *
+ * Bug: IDEA marks some needed imports as unused, this imports are renamed
  */
 class SilhouetteModule extends AbstractModule with ScalaModule {
 
