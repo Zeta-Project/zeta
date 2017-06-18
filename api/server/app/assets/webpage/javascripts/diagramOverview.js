@@ -7,7 +7,9 @@
 
         var data = JSON.stringify({
             "name": name,
-            "elements": [],
+            "classes": [],
+            "references": [],
+            "enums": [],
             "uiState": ""
         });
 
@@ -21,7 +23,7 @@
             },
             dataType: "json",
             success: function (data, textStatus, jqXHR) {
-                window.location.replace("/overview/" + data._id);
+                window.location.replace("/overview/" + data.id);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 alert("Could not create meta model: " + textStatus);

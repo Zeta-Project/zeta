@@ -33,15 +33,10 @@ import com.mohiva.play.silhouette.crypto.JcaCrypterSettings
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorService
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorSettings
-import com.mohiva.play.silhouette.impl.providers.OAuth1Info
-import com.mohiva.play.silhouette.impl.providers.OAuth2Info
-import com.mohiva.play.silhouette.impl.providers.OpenIDInfo
 import com.mohiva.play.silhouette.impl.util.DefaultFingerprintGenerator
 import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
-import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
-import com.mohiva.play.silhouette.persistence.daos.InMemoryAuthInfoDAO
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.Persistence
@@ -51,10 +46,10 @@ import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus
-import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.Ficus.{finiteDurationReader => ficusFiniteDurationReader}
 import net.ceedubs.ficus.Ficus.{mapValueReader => ficusMapValueReader}
-import net.ceedubs.ficus.Ficus.{optionValueReader => focusOptionValueReader}
+import net.ceedubs.ficus.Ficus.{optionValueReader => ficusOptionValueReader}
+import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
@@ -64,9 +59,12 @@ import play.api.libs.ws.WSClient
 /**
  * The Guice module which wires all Silhouette dependencies.
  *
- * Bug: IDEA marks some needed imports as unused, this imports are renamed
+ * Bug: IDEA marks some needed imports as unused, these imports are renamed
  */
 class SilhouetteModule extends AbstractModule with ScalaModule {
+
+  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
+  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
 
   /**
    * Configures the module.
@@ -81,12 +79,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
-
-    // Replace this with the bindings to your concrete DAOs
-    bind[DelegableAuthInfoDAO[OAuth1Info]].toInstance(new InMemoryAuthInfoDAO[OAuth1Info])
-    bind[DelegableAuthInfoDAO[OAuth2Info]].toInstance(new InMemoryAuthInfoDAO[OAuth2Info])
-    bind[DelegableAuthInfoDAO[OpenIDInfo]].toInstance(new InMemoryAuthInfoDAO[OpenIDInfo])
-
   }
 
   /**
@@ -99,11 +91,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideHTTPLayer(client: WSClient): HTTPLayer = {
     new PlayHTTPLayer(client)
   }
-
-
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
-
 
   /** Provides the UserIdentityService
    *
