@@ -22,7 +22,7 @@ object Persistence {
    * @return PersistenceService
    */
   def restrictedAccessRepository(ownerID: UUID): Repository = {
-    AccessRestrictedRepository(ownerID, fullAccessRepository)
+    new AccessRestrictedRepository(ownerID, fullAccessRepository)
   }
 
   /** The current implementation of TokenCache. */
