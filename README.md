@@ -2,17 +2,18 @@
 > Model-Driven Generation of Graphical Editors
 
 ## Overview
+
+List of services in docker-compose:
+
 - **api** Webpage, Auth, REST API,..
-- **couchbase-server** Database configuration
-- **sync-gateway** Manage connection between Database and Clients
-- **webapp** Webapplication for generators
-- **proxy** Nginx settings
-- **data** Provide mock data
+- **couchbase-server** NoSQL database
+- **mongodb** NoSQL database
+- **sync-gateway** Couchbase loadbalancer, Couchbase cluser synchronisation
+- **webapp** Setup database and Webapplication for generators
+- **proxy** Nginx web server
 
 ## Prerequisites
-The development stack is completely based on Docker.
-Therefore you first need to install Docker and make sure
-that your system fulfill the below dependencies.
+The development stack is completely based on Docker. Therefore you first need to install Docker and make sure that your system fulfill the below dependencies.
 
 **install dependencies:**
 
@@ -24,13 +25,12 @@ that your system fulfill the below dependencies.
 
 4) Install [sbt](http://www.scala-sbt.org/)
 
-5) Install Java JDK 8 
+5) Install Java JDK 8
 
 
 ## Getting Started
 First all docker images need to be build.
 ```sh
-chmod +x setup.sh
 ./setup.sh
 ```
 
@@ -49,20 +49,11 @@ docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
 - [couchbase-server](http://localhost:8091)
 - [sync-gateway-admin](http://localhost:4985/_admin/)
 
-## Initialize Data
-To setup initial data run
-```sh
-docker run -i -t --network zeta_default modigen:data
-```
-
 ## Create a Generator
 Two steps are required to create a generator.
 
 ### 1. Create a Docker Image
-First you need to create a docker image for the execution of a generator.
-A few examples can be found in the [images](./api/images/generator) folder.
+First you need to create a docker image for the execution of a generator. A few examples can be found in the [images](./api/images/generator) folder.
 
 ### 2. Make the Docker Image available
-After an image was created we need to create a document in the database which link to the docker image.
-The created document will make the previous created docker image available for users.
-Images can be added in the [data](./data) folder
+After an image was created we need to create a document in the database which link to the docker image. The created document will make the previous created docker image available for users.
