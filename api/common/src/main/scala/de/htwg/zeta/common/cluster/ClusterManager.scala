@@ -11,11 +11,12 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 
 /**
- * Created by user on 9/28/16.
  */
 object ClusterManager {
+  val clusterPathPrefix = "akka.tcp://ClusterSystem@"
+
   def getClusterClient(system: ActorSystem, seeds: List[String]): ActorRef = {
-    val parsedSeeds = seeds.map { address => s"""akka.tcp://ClusterSystem@${HostIP.lookupNodeAddress(address)}""" }
+    val parsedSeeds = seeds.map { address => s"$clusterPathPrefix${HostIP.lookupNodeAddress(address)}" }
 
     val initialContacts = parsedSeeds.map {
       case AddressFromURIString(address) => RootActorPath(address) / "system" / "receptionist"
@@ -32,30 +33,32 @@ object ClusterManager {
 
   def getJournalPath(port: Int, seeds: List[String]): ActorPath = {
     if (seeds.isEmpty) {
-      ActorPath.fromString(s"akka.tcp://ClusterSystem@${HostIP.load()}:${port}/user/store")
+      ActorPath.fromString(s"$clusterPathPrefix${HostIP.load()}:${port}/user/store")
     } else {
-      ActorPath.fromString(s"akka.tcp://ClusterSystem@${HostIP.lookupNodeAddress(seeds.head)}/user/store")
+      ActorPath.fromString(s"$clusterPathPrefix${HostIP.lookupNodeAddress(seeds.head)}/user/store")
     }
   }
 
   def getClusterJoinConfig(roles: List[String], seeds: List[String], port: Int = 0): Config = {
     val formattedSeeds = (s"${HostIP.load()}:${port}" :: seeds).map {
-      address => s"""akka.cluster.seed-nodes += "akka.tcp://ClusterSystem@${HostIP.lookupNodeAddress(address)}\""""
+      address => s"""akka.cluster.seed-nodes += "$clusterPathPrefix${HostIP.lookupNodeAddress(address)}\""""
     }.mkString("\n")
 
     val formattedRoles = roles.mkString(",")
 
-    val content = s"""akka.cluster.roles = [ ${formattedRoles} ]
-      |akka.remote.netty.tcp.port=${port}
-      |akka.remote.netty.tcp.hostname=${HostIP.load()}
-      |${formattedSeeds}""".stripMargin
+    val content =
+      s"""akka.cluster.roles = [ ${formattedRoles} ]
+        |akka.remote.netty.tcp.port=${port}
+        |akka.remote.netty.tcp.hostname=${HostIP.load()}
+        |${formattedSeeds}""".stripMargin
 
     ConfigFactory.parseString(content).resolve()
   }
 
   def getLocalConfig(port: Int): Config = {
-    val content = s"""akka.remote.netty.tcp.port=${port}
-      |akka.remote.netty.tcp.hostname=${HostIP.load()}""".stripMargin
+    val content =
+      s"""akka.remote.netty.tcp.port=${port}
+        |akka.remote.netty.tcp.hostname=${HostIP.load()}""".stripMargin
 
     ConfigFactory.parseString(content).withFallback(ConfigFactory.load("worker"))
   }
