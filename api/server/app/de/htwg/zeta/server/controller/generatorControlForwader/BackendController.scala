@@ -1,10 +1,10 @@
-package de.htwg.zeta.server.controller
+package de.htwg.zeta.server.controller.generatorControlForwader
 
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem

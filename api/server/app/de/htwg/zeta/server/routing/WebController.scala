@@ -1,7 +1,6 @@
 package de.htwg.zeta.server.routing
 
 import controllers.WebJarAssets
-import de.htwg.zeta.server.controller.BackendController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.SignInController
@@ -14,6 +13,7 @@ import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.GeneratorController
 import de.htwg.zeta.server.controller.CodeEditorController
 import de.htwg.zeta.server.controller.DynamicFileController
+import de.htwg.zeta.server.controller.generatorControlForwader.BackendController
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
