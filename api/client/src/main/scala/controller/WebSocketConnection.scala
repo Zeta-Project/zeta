@@ -17,23 +17,23 @@ import shared.CodeEditorMessage.TextOperation
 import upickle.default
 
 case class WebSocketConnection(
-    uri: String = s"ws://${window.location.host}/codeeditor/socket",
+    uri: String = s"ws://${window.location.host}/codeEditor/socket",
     controller: CodeEditorController,
     metaModelId: UUID,
     dslType: String) {
 
   /** Set up WebSocket connection */
-  val ws = new dom.WebSocket(uri + "/" + metaModelId + "/" + dslType)
+  val ws = new dom.WebSocket(s"$uri/${metaModelId.toString}/$dslType") // scalastyle:ignore multiple.string.literals
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
   ws.onopen = (e: Event) => onOpen(e)
-  ws.onerror = (e: ErrorEvent) => console.error(s"Websocket Error! ${e.message}")
-  ws.onclose = (e: CloseEvent) => console.log(s"Closed WS for Reason: ${e.reason}")
+  ws.onerror = (e: ErrorEvent) => console.error(s"WebSocket Error! ${e.message}")
+  ws.onclose = (e: CloseEvent) => console.log(s"Closed WebSocket for Reason: ${e.reason}")
 
-  def onOpen(e: Event) = {
-    console.log("Opened Websocket: ", e.`type`)
+  def onOpen(e: Event): Unit = {
+    console.log("Opened WebSocket: ", e.`type`)
   }
 
-  def onMessage(msg: MessageEvent) = {
+  def onMessage(msg: MessageEvent): Unit = {
     default.read[CodeEditorMessage](msg.data.toString) match {
       case msg: TextOperation => controller.operationFromRemote(msg)
       case msg: DocLoaded => controller.docLoadedMessage(msg)
@@ -42,7 +42,7 @@ case class WebSocketConnection(
     }
   }
 
-  def sendMessage(msg: CodeEditorMessage) = ws.readyState match {
+  def sendMessage(msg: CodeEditorMessage): Unit = ws.readyState match {
     case WebSocket.OPEN =>
       ws.send(default.write(msg))
     case _ =>

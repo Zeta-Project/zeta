@@ -9,7 +9,8 @@ import akka.actor.Props
 import akka.cluster.client.ClusterClient.Publish
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
-import akka.event.Logging
+import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.FilePersistence
 import scalot.Server
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage.DocAdded
@@ -26,68 +27,65 @@ case class MediatorMessage(msg: Any, broadcaster: ActorRef)
  */
 class CodeDocManagingActor extends Actor {
 
+  private val files: FilePersistence = Persistence.fullAccessRepository.file
+
   var documents: Map[UUID, DbCodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.docId, x)).toMap
 
-  val mediator = DistributedPubSub(context.system).mediator
-  val log = Logging(context.system, this)
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
-  def receive = {
-    case x: CodeEditorMessage =>
-      x match {
-        case TextOperation(op, docId) =>
-          documents(docId).doc.receiveOperation(op) match {
-            case Some(send) => {
-              mediator ! Publish(
-                documents(docId).dslType,
-                MediatorMessage(TextOperation(send, docId), self)
-              )
-              sender() ! MediatorMessage(TextOperation(send, docId), self)
-            }
-            case _ => // Nothing to do!
-          }
-          CodeDocumentDb.saveDocument(documents(docId))
-
-        case newDoc: DocAdded =>
-          documents = documents + (newDoc.id -> DbCodeDocument(
-            docId = newDoc.id,
-            dslType = newDoc.dslType,
-            metaModelId = newDoc.metaModelId,
-            doc =  Server(
-            str = "",
-            title = newDoc.title,
-            docType = newDoc.docType,
-            id = newDoc.id.toString
+  def receive: Receive = {
+    case TextOperation(op, docId) =>
+      documents(docId).doc.receiveOperation(op) match {
+        case Some(send) =>
+          mediator ! Publish(
+            documents(docId).dslType,
+            MediatorMessage(TextOperation(send, docId), self)
           )
-          ))
-          CodeDocumentDb.saveDocument(documents(newDoc.id))
-          mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, sender()))
-          sender() ! MediatorMessage(newDoc, sender())
-
-        case msg: DocDeleted =>
-          documents = documents - msg.id
-          CodeDocumentDb.deleteDocWithId(msg.id)
-          mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
-          sender() ! MediatorMessage(msg, sender())
-
-        case _ => ;
+          sender() ! MediatorMessage(TextOperation(send, docId), self)
+        case _ => // Nothing to do!
       }
+      CodeDocumentDb.saveDocument(documents(docId))
+
+    case newDoc: DocAdded =>
+      documents = documents + (newDoc.id -> DbCodeDocument(
+        docId = newDoc.id,
+        dslType = newDoc.dslType,
+        metaModelId = newDoc.metaModelId,
+        doc = Server(
+          str = "",
+          title = newDoc.title,
+          docType = newDoc.docType,
+          id = newDoc.id.toString
+        )
+      ))
+      CodeDocumentDb.saveDocument(documents(newDoc.id))
+      mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, sender()))
+      sender() ! MediatorMessage(newDoc, sender())
+
+    case msg: DocDeleted =>
+      documents = documents - msg.id
+      CodeDocumentDb.deleteDocWithId(msg.id)
+      mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
+      sender() ! MediatorMessage(msg, sender())
+
   }
+
 }
 
 object CodeDocManagingActor {
-  def props() = Props(new CodeDocManagingActor())
+  def props(): Props = Props(new CodeDocManagingActor())
 }
 
 /**
- * This Actor is responsible of the communictaion with the users browser
+ * This Actor is responsible of the communication with the users browser
  */
 class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String) extends Actor with ActorLogging {
 
-  val mediator = DistributedPubSub(context.system).mediator
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
   mediator ! Subscribe(dslType, self)
 
   /** Tell the client about the existing document */
-  CodeDocumentDb.getDocWithUuidAndDslType(metaModelId, dslType) match {
+  CodeDocumentDb.getDocWithIdAndDslType(metaModelId, dslType) match {
     case doc: Some[DbCodeDocument] => out ! default.write[CodeEditorMessage](
       DocLoaded(
         str = doc.get.doc.str,
@@ -113,7 +111,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dsl
     case _ => log.debug(s" ${self.toString()} - Message is not a String!")
   }
 
-  private def processCommand(pickled: String) = {
+  private def processCommand(pickled: String): Unit = {
     try {
       default.read[CodeEditorMessage](pickled) match {
 
@@ -133,7 +131,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dsl
     }
   }
 
-  private def processMediatorMessage(medMsg: MediatorMessage) = {
+  private def processMediatorMessage(medMsg: MediatorMessage): Unit = {
     if (medMsg.broadcaster != self) {
       medMsg.msg match {
         case x: CodeEditorMessage => out ! default.write[CodeEditorMessage](x)
@@ -144,5 +142,7 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dsl
 }
 
 object CodeDocWsActor {
-  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String) = Props(new CodeDocWsActor(out, docManager, metaModelId, dslType))
+  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String): Props = {
+    Props(new CodeDocWsActor(out, docManager, metaModelId, dslType))
+  }
 }

@@ -165,10 +165,10 @@ class ScalaRoutes @Inject()(
 
 
   // ### Code Editor
-  def getCodeeditorEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
+  def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
     AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
 
-  def getCodeeditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
+  def getCodeEditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
 
 
   // # Map static resources from the /public folder to the /assets URL path

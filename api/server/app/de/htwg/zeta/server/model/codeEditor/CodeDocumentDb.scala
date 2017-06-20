@@ -6,6 +6,7 @@ import com.mongodb.ServerAddress
 import com.mongodb.casbah.Imports.DBObject
 import com.mongodb.casbah.Imports.wrapDBObj
 import com.mongodb.casbah.MongoClient
+import com.mongodb.casbah.TypeImports
 import com.mongodb.casbah.commons.MongoDBObject
 import com.novus.salat
 import com.novus.salat.Context
@@ -37,23 +38,15 @@ object CodeDocumentDb {
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
-  def saveDocument(doc: DbCodeDocument) = {
+  def saveDocument(doc: DbCodeDocument): TypeImports.WriteResult = {
     coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
   }
 
-  def getDocWithId(id: String): Option[DbCodeDocument] = coll.find((x: DBObject) => x.docId == id) match {
-    case Some(doc) => Some(salat.grater[DbCodeDocument].asObject(doc))
-    case _ => None
-  }
-
-  def getDocWithUuidAndDslType(metaModelId: UUID, dslType: String): Option[DbCodeDocument] =
+  def getDocWithIdAndDslType(metaModelId: UUID, dslType: String): Option[DbCodeDocument] =
     coll.find((x: DBObject) => x.metaModelId == metaModelId && x.dslType == dslType) match {
       case Some(doc) => Some(salat.grater[DbCodeDocument].asObject(doc))
       case _ => None
     }
-
-  def getDocsWithDslType(dslType: String): Seq[DbCodeDocument] =
-    coll.find(MongoDBObject("dslType" -> dslType)).map(DBObj2Doc).toSeq
 
   def getAllDocuments: Seq[DbCodeDocument] = coll
     .find(MongoDBObject())
@@ -67,4 +60,5 @@ object CodeDocumentDb {
   implicit def DBObj2Doc(obj: DBObject): DbCodeDocument = salat.grater[DbCodeDocument].asObject(obj)
 
   implicit def MDBObj2Doc(obj: MongoDBObject): DbCodeDocument = salat.grater[DbCodeDocument].asObject(obj)
+
 }
