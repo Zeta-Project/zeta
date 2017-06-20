@@ -65,13 +65,23 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
       BondedTaskFixtures.entity3
     )
 
-    "CodeDocument" should behave like entityPersistenceBehavior[CodeDocument](
-      repository.codeDocument,
-      CodeDocumentFixtures.entity1,
-      CodeDocumentFixtures.entity2,
-      CodeDocumentFixtures.entity2Updated,
-      CodeDocumentFixtures.entity3
-    )
+
+    if (restricted) {
+      it should "throw an UnsupportedOperationException when accessing CodeDocument" in {
+        recoverToSucceededIf[UnsupportedOperationException] {
+          Future(repository.codeDocument)
+        }
+      }
+    } else {
+      "CodeDocument" should behave like entityPersistenceBehavior[CodeDocument](
+        repository.codeDocument,
+        CodeDocumentFixtures.entity1,
+        CodeDocumentFixtures.entity2,
+        CodeDocumentFixtures.entity2Updated,
+        CodeDocumentFixtures.entity3
+      )
+    }
+
 
     "EventDrivenTask" should behave like entityPersistenceBehavior[EventDrivenTask](
       repository.eventDrivenTask,

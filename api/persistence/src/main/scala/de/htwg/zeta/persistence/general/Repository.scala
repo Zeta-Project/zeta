@@ -2,7 +2,6 @@ package de.htwg.zeta.persistence.general
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
@@ -26,7 +25,7 @@ trait Repository {
   def bondedTask: EntityPersistence[BondedTask]
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  def codeDocument: EntityPersistence[CodeDocument]
+  def codeDocument: CodeDocumentPersistence
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
   def eventDrivenTask: EntityPersistence[EventDrivenTask]

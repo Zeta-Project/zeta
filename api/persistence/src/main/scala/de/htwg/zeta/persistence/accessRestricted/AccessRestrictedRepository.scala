@@ -4,7 +4,6 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
@@ -17,6 +16,7 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.persistence.general.CodeDocumentPersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
@@ -47,8 +47,8 @@ class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) extends 
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  override def codeDocument: EntityPersistence[CodeDocument] = {
-    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.codeDocument)
+  override def codeDocument: CodeDocumentPersistence = {
+    throw new UnsupportedOperationException("access to CodeDocument-Persistence can't be restricted")
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */

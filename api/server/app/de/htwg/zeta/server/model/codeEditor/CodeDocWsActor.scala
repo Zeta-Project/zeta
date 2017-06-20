@@ -11,7 +11,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import scalot.Server
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage.DocAdded
@@ -28,7 +28,7 @@ case class MediatorMessage(msg: Any, broadcaster: ActorRef)
  */
 class CodeDocManagingActor extends Actor {
 
-  private val files: FilePersistence = Persistence.fullAccessRepository.file
+  private val persistence: EntityPersistence[CodeDocument] = Persistence.fullAccessRepository.codeDocument
 
   var documents: Map[UUID, CodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.id, x)).toMap
 
@@ -45,6 +45,7 @@ class CodeDocManagingActor extends Actor {
           sender() ! MediatorMessage(TextOperation(send, docId), self)
         case _ => // Nothing to do!
       }
+
       CodeDocumentDb.saveDocument(documents(docId))
 
     case newDoc: DocAdded =>

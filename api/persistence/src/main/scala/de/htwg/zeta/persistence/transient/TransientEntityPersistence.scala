@@ -13,7 +13,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  *
  * @tparam E type of the entity
  */
-class TransientPersistence[E <: Entity] extends EntityPersistence[E] { // scalastyle:ignore
+class TransientEntityPersistence[E <: Entity] extends EntityPersistence[E] { // scalastyle:ignore
 
   private val cache: TrieMap[UUID, E] = TrieMap.empty
 
