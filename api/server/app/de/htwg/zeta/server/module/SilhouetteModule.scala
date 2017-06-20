@@ -138,7 +138,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @return The cookie signer for the authenticator.
    */
   @Provides
-  @Named("authenticator-cookie-signer")
+  @Named("authenticator-cookie-signer") // scalastyle:ignore multiple.string.literals
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
     val config = {
       // required for parsing JcaCookieSignerSettings
@@ -159,7 +159,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @return The crypter for the authenticator.
    */
   @Provides
-  @Named("authenticator-crypter")
+  @Named("authenticator-crypter") // scalastyle:ignore multiple.string.literals
   def provideAuthenticatorCrypter(configuration: Configuration): Crypter = {
     implicit val stringValueReader = Ficus.stringValueReader
     implicit val booleanValueReader = Ficus.booleanValueReader

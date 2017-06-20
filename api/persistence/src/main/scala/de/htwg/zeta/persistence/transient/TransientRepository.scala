@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.transient
 import de.htwg.zeta.common.models.entity
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
@@ -32,6 +33,9 @@ class TransientRepository extends Repository {
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override val bondedTask = new TransientPersistence[BondedTask]
+
+  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
+  override val codeDocument = new TransientPersistence[CodeDocument]
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
   override val timedTask = new TransientPersistence[TimedTask]

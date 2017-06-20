@@ -12,11 +12,9 @@ import com.novus.salat
 import com.novus.salat.Context
 import com.novus.salat.StringTypeHintStrategy
 import com.novus.salat.TypeHintFrequency
+import de.htwg.zeta.common.models.entity.CodeDocument
 import play.api.Logger
 import play.api.Play
-
-/** Represents a Serverside CodeDocument which is stored in the Database */
-case class DbCodeDocument(docId: UUID, dslType: String, metaModelId: UUID, doc: scalot.Server)
 
 /**
  * Code Database Responsible for persisting and retrieving the CodeDocuments.
@@ -38,27 +36,27 @@ object CodeDocumentDb {
   }
   ctx.registerClassLoader(Play.classloader(Play.current))
 
-  def saveDocument(doc: DbCodeDocument): TypeImports.WriteResult = {
-    coll.update(MongoDBObject("docId" -> doc.docId), doc, upsert = true)
+  def saveDocument(doc: CodeDocument): TypeImports.WriteResult = {
+    coll.update(MongoDBObject("docId" -> doc.id), doc, upsert = true)
   }
 
-  def getDocWithIdAndDslType(metaModelId: UUID, dslType: String): Option[DbCodeDocument] =
+  def getDocWithIdAndDslType(metaModelId: UUID, dslType: String): Option[CodeDocument] =
     coll.find((x: DBObject) => x.metaModelId == metaModelId && x.dslType == dslType) match {
-      case Some(doc) => Some(salat.grater[DbCodeDocument].asObject(doc))
+      case Some(doc) => Some(salat.grater[CodeDocument].asObject(doc))
       case _ => None
     }
 
-  def getAllDocuments: Seq[DbCodeDocument] = coll
+  def getAllDocuments: Seq[CodeDocument] = coll
     .find(MongoDBObject())
     .map(DBObj2Doc).toSeq
 
   def deleteDocWithId(docId: UUID) = coll.remove(MongoDBObject("docId" -> docId))
 
   /** Implicit Salat Conversions */
-  implicit def Doc2DBObj(u: DbCodeDocument): DBObject = salat.grater[DbCodeDocument].asDBObject(u)
+  implicit def Doc2DBObj(u: CodeDocument): DBObject = salat.grater[CodeDocument].asDBObject(u)
 
-  implicit def DBObj2Doc(obj: DBObject): DbCodeDocument = salat.grater[DbCodeDocument].asObject(obj)
+  implicit def DBObj2Doc(obj: DBObject): CodeDocument = salat.grater[CodeDocument].asObject(obj)
 
-  implicit def MDBObj2Doc(obj: MongoDBObject): DbCodeDocument = salat.grater[DbCodeDocument].asObject(obj)
+  implicit def MDBObj2Doc(obj: MongoDBObject): CodeDocument = salat.grater[CodeDocument].asObject(obj)
 
 }

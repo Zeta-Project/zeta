@@ -4,22 +4,25 @@ import java.util.UUID
 
 import scala.scalajs.js
 import scala.scalajs.js.Any
+import scala.scalajs.runtime.genTraversableOnce2jsArray
 import scala.util.Random
 
 import controller.CodeEditorController
 import controller.ModeController
 import facade.Delta
-import facade.ace
+import facade.Editor
 import facade.IEditSession
+import facade.ace
 import org.scalajs.dom
+import org.scalajs.dom.html.Div
+import org.scalajs.dom.html.Span
+import org.scalajs.dom.raw.Node
+import scalatags.JsDom
 import scalatags.JsDom.GenericAttr
 import scalatags.JsDom.all
 import scalatags.JsDom.all.bindJsAnyLike
 import scalot.Client
 import scalot.Operation
-import scala.scalajs.runtime.genTraversableOnce2jsArray
-
-import facade.Editor
 
 class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslType: String, autoSave: Boolean) {
 
@@ -46,13 +49,13 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
 
   private def stringAttrX = new GenericAttr[String]()
 
-  private def createSkeleton() = {
+  private def createSkeleton(): Node = {
     dom.document.getElementById("editor").appendChild(
       createContainer().render
     )
   }
 
-  private def createContainer() = {
+  private def createContainer(): JsDom.TypedTag[Div] = {
     all.div(
       all.cls.:=("container")(stringAttrX),
       all.div(
@@ -63,7 +66,7 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
     )
   }
 
-  private def createHeader() = {
+  private def createHeader(): JsDom.TypedTag[Div] = {
     all.div(
       all.cls.:=("panel-heading")(stringAttrX),
       all.h3(
@@ -76,7 +79,7 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
     )
   }
 
-  private def createButton() = {
+  private def createButton(): JsDom.TypedTag[Span] = {
     all.span(
       all.cls.:=("btn btn-default glyphicon glyphicon-floppy-disk typcnbtn pull-right")(stringAttrX),
       all.id.:=("btn-save")(bindJsAnyLike),
@@ -87,7 +90,7 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
     )
   }
 
-  private def createBody() = {
+  private def createBody(): JsDom.TypedTag[Div] = {
     all.div(
       all.cls.:=("panel-body editor-body")(stringAttrX),
       all.div(

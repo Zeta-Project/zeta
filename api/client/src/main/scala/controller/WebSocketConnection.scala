@@ -16,7 +16,7 @@ import shared.CodeEditorMessage.DocNotFound
 import shared.CodeEditorMessage.TextOperation
 import upickle.default
 
-case class WebSocketConnection(
+class WebSocketConnection(
     uri: String = s"ws://${window.location.host}/codeEditor/socket",
     controller: CodeEditorController,
     metaModelId: UUID,
@@ -26,8 +26,8 @@ case class WebSocketConnection(
   val ws = new dom.WebSocket(s"$uri/${metaModelId.toString}/$dslType") // scalastyle:ignore multiple.string.literals
   ws.onmessage = (msg: MessageEvent) => onMessage(msg)
   ws.onopen = (e: Event) => onOpen(e)
-  ws.onerror = (e: ErrorEvent) => console.error(s"WebSocket Error! ${e.message}")
-  ws.onclose = (e: CloseEvent) => console.log(s"Closed WebSocket for Reason: ${e.reason}")
+  ws.onerror = (e: ErrorEvent) => console.error(s"WebSocket error! ${e.message}")
+  ws.onclose = (e: CloseEvent) => console.log(s"Closed WebSocket for reason: ${e.reason}")
 
   def onOpen(e: Event): Unit = {
     console.log("Opened WebSocket: ", e.`type`)
@@ -46,6 +46,7 @@ case class WebSocketConnection(
     case WebSocket.OPEN =>
       ws.send(default.write(msg))
     case _ =>
-      console.error("Could not send Message because WebSocket is not in ready state!", ws)
+      console.error("Could not send message because WebSocket is not in ready state!", ws)
   }
+
 }

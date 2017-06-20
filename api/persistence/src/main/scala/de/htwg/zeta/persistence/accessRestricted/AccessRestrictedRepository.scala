@@ -4,6 +4,7 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
@@ -43,6 +44,11 @@ class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) extends 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override def bondedTask: AccessRestrictedEntityPersistence[BondedTask] = {
     new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.bondedTask)
+  }
+
+  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
+  override def codeDocument: EntityPersistence[CodeDocument] = {
+    new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.codeDocument)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */

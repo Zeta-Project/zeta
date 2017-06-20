@@ -9,6 +9,7 @@ import akka.actor.Props
 import akka.cluster.client.ClusterClient.Publish
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
+import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import scalot.Server
@@ -29,13 +30,13 @@ class CodeDocManagingActor extends Actor {
 
   private val files: FilePersistence = Persistence.fullAccessRepository.file
 
-  var documents: Map[UUID, DbCodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.docId, x)).toMap
+  var documents: Map[UUID, CodeDocument] = CodeDocumentDb.getAllDocuments.map(x => (x.id, x)).toMap
 
   val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
   def receive: Receive = {
     case TextOperation(op, docId) =>
-      documents(docId).doc.receiveOperation(op) match {
+      documents(docId).serverDocument.receiveOperation(op) match {
         case Some(send) =>
           mediator ! Publish(
             documents(docId).dslType,
@@ -47,11 +48,11 @@ class CodeDocManagingActor extends Actor {
       CodeDocumentDb.saveDocument(documents(docId))
 
     case newDoc: DocAdded =>
-      documents = documents + (newDoc.id -> DbCodeDocument(
-        docId = newDoc.id,
+      documents = documents + (newDoc.id -> CodeDocument(
+        id = newDoc.id,
         dslType = newDoc.dslType,
         metaModelId = newDoc.metaModelId,
-        doc = Server(
+        serverDocument = Server(
           str = "",
           title = newDoc.title,
           docType = newDoc.docType,
@@ -86,13 +87,13 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dsl
 
   /** Tell the client about the existing document */
   CodeDocumentDb.getDocWithIdAndDslType(metaModelId, dslType) match {
-    case doc: Some[DbCodeDocument] => out ! default.write[CodeEditorMessage](
+    case doc: Some[CodeDocument] => out ! default.write[CodeEditorMessage](
       DocLoaded(
-        str = doc.get.doc.str,
-        revision = doc.get.doc.operations.length,
-        docType = doc.get.doc.docType,
-        title = doc.get.doc.title,
-        id = doc.get.docId,
+        str = doc.get.serverDocument.str,
+        revision = doc.get.serverDocument.operations.length,
+        docType = doc.get.serverDocument.docType,
+        title = doc.get.serverDocument.title,
+        id = doc.get.id,
         dslType = doc.get.dslType,
         metaModelId = doc.get.metaModelId
       )

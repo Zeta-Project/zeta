@@ -87,8 +87,6 @@ lazy val server = baseProject("server", file("server")).settings(
     filters,
     ws,
 
-    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    "com.github.jahoefne" %% "scalot" % "0.4.4-SNAPSHOT",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
@@ -128,11 +126,10 @@ lazy val client = baseProject("client", file("client")).settings(
   resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
-    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
+    "com.github.jahoefne" % "scalot_2.11" % "1.0",
+    // "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
     "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
-    // "com.github.jahoefne" %%% "scalot" % "0.1",
     "com.lihaoyi" %%% "scalarx" % "0.2.8",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
     "com.lihaoyi" %%% "upickle" % "0.3.4"
@@ -172,12 +169,11 @@ lazy val sharedJs = shared.js
 lazy val common = baseProject("common", file("common")).settings(
   Seq(
     version := "0.1",
-    resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/",
+    resolvers += Resolver.jcenterRepo,
 
     libraryDependencies ++= Seq(
       // silhouette
       "com.mohiva" %% "play-silhouette" % "4.0.0",
-
       "com.typesafe.play" %% "play-json" % "2.5.7",
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
@@ -190,7 +186,8 @@ lazy val common = baseProject("common", file("common")).settings(
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
       "org.scalaz" %% "scalaz-core" % "7.2.8",
       "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "com.github.jahoefne" % "scalot_2.11" % "1.0"
     )
   )
 )

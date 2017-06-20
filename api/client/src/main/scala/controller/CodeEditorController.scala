@@ -24,8 +24,7 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
   val autoSave = true
 
   val view = new CodeEditorView(controller = this, metaModelId = metaModelId, dslType = dslType, autoSave = autoSave)
-  val ws = WebSocketConnection(controller = this, metaModelId = metaModelId, dslType = dslType)
-  val clientId: String = UUID.randomUUID().toString
+  val ws = new WebSocketConnection(controller = this, metaModelId = metaModelId, dslType = dslType)
   var document: Client = null
 
   def docLoadedMessage(msg: DocLoaded): js.Dynamic = {

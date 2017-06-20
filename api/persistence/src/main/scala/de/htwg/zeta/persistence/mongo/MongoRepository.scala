@@ -5,6 +5,7 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
+import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
@@ -32,59 +33,63 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
 
   /** Persistence for AccessAuthorisation */
   override val accessAuthorisation: EntityPersistence[AccessAuthorisation] =
-    new MongoEntityPersistence[AccessAuthorisation](database, MongoHandler.accessAuthorisationHandler)
+    new MongoEntityPersistence(database, MongoHandler.accessAuthorisationHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
   override val eventDrivenTask: EntityPersistence[EventDrivenTask] =
-    new MongoEntityPersistence[EventDrivenTask](database, MongoHandler.eventDrivenTaskHandler)
+    new MongoEntityPersistence(database, MongoHandler.eventDrivenTaskHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override val bondedTask: EntityPersistence[BondedTask] =
-    new MongoEntityPersistence[BondedTask](database, MongoHandler.bondedTaskHandler)
+    new MongoEntityPersistence(database, MongoHandler.bondedTaskHandler)
+
+  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
+  override val codeDocument: EntityPersistence[CodeDocument] =
+    new MongoEntityPersistence(database, MongoHandler.codeDocumentHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
   override val timedTask: EntityPersistence[TimedTask] =
-    new MongoEntityPersistence[TimedTask](database, MongoHandler.timedTaskHandler)
+    new MongoEntityPersistence(database, MongoHandler.timedTaskHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Generator]] */
   override val generator: EntityPersistence[Generator] =
-    new MongoEntityPersistence[Generator](database, MongoHandler.generatorHandler)
+    new MongoEntityPersistence(database, MongoHandler.generatorHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Filter]] */
   override val filter: EntityPersistence[Filter] =
-    new MongoEntityPersistence[Filter](database, MongoHandler.filterHandler)
+    new MongoEntityPersistence(database, MongoHandler.filterHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.GeneratorImage]] */
   override val generatorImage: EntityPersistence[GeneratorImage] =
-    new MongoEntityPersistence[GeneratorImage](database, MongoHandler.generatorImageHandler)
+    new MongoEntityPersistence(database, MongoHandler.generatorImageHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.FilterImage]] */
   override val filterImage: EntityPersistence[FilterImage] =
-    new MongoEntityPersistence[FilterImage](database, MongoHandler.filterImageHandler)
+    new MongoEntityPersistence(database, MongoHandler.filterImageHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Settings]] */
   override val settings: EntityPersistence[Settings] =
-    new MongoEntityPersistence[Settings](database, MongoHandler.settingsHandler)
+    new MongoEntityPersistence(database, MongoHandler.settingsHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelEntity]] */
   override val metaModelEntity: EntityPersistence[MetaModelEntity] =
-    new MongoEntityPersistence[MetaModelEntity](database, MongoHandler.metaModelEntityHandler)
+    new MongoEntityPersistence(database, MongoHandler.metaModelEntityHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelRelease]] */
   override val metaModelRelease: EntityPersistence[MetaModelRelease] =
-    new MongoEntityPersistence[MetaModelRelease](database, MongoHandler.metaModelReleaseHandler)
+    new MongoEntityPersistence(database, MongoHandler.metaModelReleaseHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.ModelEntity]] */
   override val modelEntity: EntityPersistence[ModelEntity] =
-    new MongoEntityPersistence[ModelEntity](database, MongoHandler.modelEntityHandler)
+    new MongoEntityPersistence(database, MongoHandler.modelEntityHandler)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Log]] */
   override val log: EntityPersistence[Log] =
-    new MongoEntityPersistence[Log](database, MongoHandler.logHandler)
+    new MongoEntityPersistence(database, MongoHandler.logHandler)
 
   /** Persistence for [[User]] */
   override val user: EntityPersistence[User] =
-    new MongoEntityPersistence[User](database, MongoHandler.userHandler)
+    new MongoEntityPersistence(database, MongoHandler.userHandler)
 
   /** Versioned Persistence for [[File]] */
   override val file: FilePersistence =
