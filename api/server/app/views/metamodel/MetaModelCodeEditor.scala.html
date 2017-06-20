@@ -6,7 +6,7 @@
         @playscalajs.html.selectScript("client", "/assets")
 
         <script type="text/javascript">
-                client.Main().main("@id", "@dslType");
+                client.Main().main("@id.toString", "@dslType");
         </script>
 
         <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>

@@ -128,8 +128,8 @@ lazy val client = baseProject("client", file("client")).settings(
   resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
   resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
   libraryDependencies ++= Seq(
-    "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    // "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
+    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
+    "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
     "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
     "com.lihaoyi" %%% "scalarx" % "0.2.8",
