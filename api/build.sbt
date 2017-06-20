@@ -87,6 +87,8 @@ lazy val server = baseProject("server", file("server")).settings(
     filters,
     ws,
 
+    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
+    "com.github.jahoefne" %% "scalot" % "0.4.4-SNAPSHOT",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
     "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
