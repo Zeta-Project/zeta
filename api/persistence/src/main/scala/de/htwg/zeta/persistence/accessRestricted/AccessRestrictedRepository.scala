@@ -16,7 +16,6 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.CodeDocumentPersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
@@ -44,11 +43,6 @@ class AccessRestrictedRepository(ownerId: UUID, underlying: Repository) extends 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override def bondedTask: AccessRestrictedEntityPersistence[BondedTask] = {
     new AccessRestrictedEntityPersistence(ownerId, underlying.accessAuthorisation, underlying.bondedTask)
-  }
-
-  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  override def codeDocument: CodeDocumentPersistence = {
-    throw new UnsupportedOperationException("access to CodeDocument-Persistence can't be restricted")
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */

@@ -26,7 +26,7 @@ import scalot.Operation
 
 class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslType: String, autoSave: Boolean) {
 
-  private val aceId: String = Random.alphanumeric.take(20).mkString
+  private val aceId: String = UUID.randomUUID.toString
   var selectedId: UUID = UUID.randomUUID
 
   createSkeleton()

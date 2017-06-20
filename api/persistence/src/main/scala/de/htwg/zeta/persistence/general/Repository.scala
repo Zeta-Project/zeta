@@ -24,9 +24,6 @@ trait Repository {
   /** Persistence for [[de.htwg.zeta.common.models.entity.BondedTask]] */
   def bondedTask: EntityPersistence[BondedTask]
 
-  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  def codeDocument: CodeDocumentPersistence
-
   /** Persistence for [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
   def eventDrivenTask: EntityPersistence[EventDrivenTask]
 

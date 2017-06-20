@@ -28,16 +28,19 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
   var document: Client = null
 
   def docLoadedMessage(msg: DocLoaded): js.Dynamic = {
+    console.log(s"docLoadedMessage(${msg.toString})")
     document = Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id.toString)
     view.displayDoc(document)
   }
 
   def docNotFoundMessage(msg: DocNotFound): js.Dynamic = {
+    console.log(s"docNotFoundMessage(${msg.toString})")
     addDocument(msg.metaModelId.toString, msg.dslType)
     view.displayDoc(document)
   }
 
   def addDocument(title: String, docType: String): Unit = {
+    console.log(s"addDocument(${title.toString}, ${docType.toString})")
     document = Client(str = "", revision = 0, title = title, docType = docType, id = UUID.randomUUID.toString)
     ws.sendMessage(
       DocAdded(str = "", revision = 0, docType = docType, title = title, id = UUID.fromString(document.id), dslType = dslType, metaModelId = metaModelId)
@@ -45,6 +48,8 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
   }
 
   def deleteDocument(id: UUID): Unit = {
+    console.log(s"deleteDocument(${id.toString})")
+    console.log(s"deleteDocument(${id.toString})")
     ws.sendMessage(DocDeleted(id, dslType))
   }
 
@@ -56,6 +61,7 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
    * This function fnSave() is a callback function which will be called inside authorized().
    */
   def saveCode(): js.Dynamic = {
+    console.log("saveCode()")
     jquery.jQuery.ajax(literal(
       `type` = "PUT",
       url = s"/metamodels/$metaModelId/$dslType",
@@ -74,6 +80,7 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
 
   /** Apply changes to the corresponding doc */
   def operationFromRemote(op: TextOperation): Unit = {
+    console.log(s"operationFromRemote(${op.toString})")
     val res = document.applyRemote(op.op)
     res.apply match {
       case Some(apply) if op.docId == view.selectedId =>
@@ -88,6 +95,7 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
   }
 
   def operationFromLocal(op: scalot.Operation, docId: UUID): Any = {
+    console.log(s"operationFromLocal(${op.toString}, ${docId.toString})")
     document.applyLocal(op) match {
       case ApplyResult(Some(send), _) =>
         ws.sendMessage(TextOperation(send, docId))
@@ -95,6 +103,10 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
           saveCode()
         }
       case _ =>
+        if (autoSave) {
+          saveCode()
+        }
     }
+
   }
 }

@@ -8,7 +8,6 @@ import de.htwg.zeta.common.models.document.DockerSettings
 import de.htwg.zeta.common.models.document.JobSettings
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
@@ -65,8 +64,6 @@ import reactivemongo.bson.Macros
 import scalot.Component
 import scalot.DelComp
 import scalot.InsComp
-import scalot.Operation
-import scalot.Server
 import scalot.SkipComp
 
 
@@ -286,11 +283,5 @@ object MongoHandler {
     }
 
   }
-
-  private implicit val operationHandler: BSONDocumentHandler[Operation] = Macros.handler[Operation]
-
-  private implicit val serverHandler: BSONDocumentHandler[Server] = Macros.handler[Server]
-
-  implicit val codeDocumentHandler: BSONDocumentHandler[CodeDocument] = Macros.handler[CodeDocument]
 
 }

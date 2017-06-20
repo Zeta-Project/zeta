@@ -1,15 +1,13 @@
 package de.htwg.zeta.server.model.codeEditor
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.collection.mutable
 
 import akka.actor.Actor
+import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.cluster.client.ClusterClient.Publish
 import akka.cluster.pubsub.DistributedPubSub
-import de.htwg.zeta.common.models.entity.CodeDocument
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.EntityPersistence
 import scalot.Server
 import shared.CodeEditorMessage.DocAdded
 import shared.CodeEditorMessage.DocDeleted
@@ -23,31 +21,29 @@ object CodeDocManagingActor {
 /**
  * This Actor takes care of applying the changed to the documents.
  */
-class CodeDocManagingActor extends Actor {
+class CodeDocManagingActor extends Actor with ActorLogging {
 
-  private val persistence: EntityPersistence[CodeDocument] = Persistence.fullAccessRepository.codeDocument
+  private val codeDocuments: mutable.Set[CodeDocument] = mutable.Set.empty
 
   val mediator: ActorRef = DistributedPubSub(context.system).mediator
 
   def receive: Receive = {
+
     case TextOperation(op, docId) =>
-      val target = sender()
-      persistence.read(docId).flatMap { doc =>
+      codeDocuments.find(_.id == docId).fold() { doc =>
         doc.serverDocument.receiveOperation(op) match {
           case Some(send) =>
             mediator ! Publish(
               doc.dslType,
               MediatorMessage(TextOperation(send, docId), self)
             )
-            target ! MediatorMessage(TextOperation(send, docId), self)
+            sender() ! MediatorMessage(TextOperation(send, docId), self)
           case _ => // Nothing to do!
         }
-        persistence.update(docId, _ => doc)
       }
 
     case newDoc: DocAdded =>
-      val target = sender()
-      persistence.create(
+      codeDocuments +=
         CodeDocument(
           id = newDoc.id,
           dslType = newDoc.dslType,
@@ -59,17 +55,14 @@ class CodeDocManagingActor extends Actor {
             id = newDoc.id.toString
           )
         )
-      ).map { _ =>
-        mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, target))
-        sender() ! MediatorMessage(newDoc, target)
-      }
+      mediator ! Publish(newDoc.dslType, MediatorMessage(newDoc, sender()))
+      sender() ! MediatorMessage(newDoc, sender())
 
     case msg: DocDeleted =>
-      val target = sender()
-      persistence.delete(msg.id).map { _ =>
-        mediator ! Publish(msg.dslType, MediatorMessage(msg, target))
-        sender() ! MediatorMessage(msg, target)
-      }
+      codeDocuments.find(_.id == msg.id).fold()(codeDocuments.remove)
+      mediator ! Publish(msg.dslType, MediatorMessage(msg, sender()))
+      sender() ! MediatorMessage(msg, sender())
+
   }
 
 }

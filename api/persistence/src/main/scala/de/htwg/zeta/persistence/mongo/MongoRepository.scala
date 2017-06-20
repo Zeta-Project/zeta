@@ -18,7 +18,6 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.CodeDocumentPersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
@@ -42,10 +41,6 @@ class MongoRepository(uri: String, dbName: String) extends Repository {
   /** Persistence for [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override val bondedTask: EntityPersistence[BondedTask] =
     new MongoEntityPersistence(database, MongoHandler.bondedTaskHandler)
-
-  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  override val codeDocument: CodeDocumentPersistence =
-    new MongoCodeDocumentPersistence(database)
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
   override val timedTask: EntityPersistence[TimedTask] =

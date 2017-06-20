@@ -4,7 +4,6 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.CodeDocument
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
@@ -19,7 +18,6 @@ import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.fixtures.AccessAuthorisationFixtures
 import de.htwg.zeta.persistence.fixtures.BondedTaskFixtures
-import de.htwg.zeta.persistence.fixtures.CodeDocumentFixtures
 import de.htwg.zeta.persistence.fixtures.EventDrivenTaskFixtures
 import de.htwg.zeta.persistence.fixtures.FilterImageTestFixtures
 import de.htwg.zeta.persistence.fixtures.FilterTestFixtures
@@ -64,24 +62,6 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
       BondedTaskFixtures.entity2Updated,
       BondedTaskFixtures.entity3
     )
-
-
-    if (restricted) {
-      it should "throw an UnsupportedOperationException when accessing CodeDocument" in {
-        recoverToSucceededIf[UnsupportedOperationException] {
-          Future(repository.codeDocument)
-        }
-      }
-    } else {
-      "CodeDocument" should behave like entityPersistenceBehavior[CodeDocument](
-        repository.codeDocument,
-        CodeDocumentFixtures.entity1,
-        CodeDocumentFixtures.entity2,
-        CodeDocumentFixtures.entity2Updated,
-        CodeDocumentFixtures.entity3
-      )
-    }
-
 
     "EventDrivenTask" should behave like entityPersistenceBehavior[EventDrivenTask](
       repository.eventDrivenTask,

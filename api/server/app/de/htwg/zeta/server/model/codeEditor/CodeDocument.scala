@@ -1,10 +1,10 @@
-package de.htwg.zeta.common.models.entity
+package de.htwg.zeta.server.model.codeEditor
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.Entity
 import scalot.Server
 
-/** */
 
 /** Represents a Server-side CodeDocument which is stored in the Database, used by the ace-web-editor.
  *

@@ -29,11 +29,11 @@ class WebSocketConnection(
   ws.onerror = (e: ErrorEvent) => console.error(s"WebSocket error! ${e.message}")
   ws.onclose = (e: CloseEvent) => console.log(s"Closed WebSocket for reason: ${e.reason}")
 
-  def onOpen(e: Event): Unit = {
+  private def onOpen(e: Event): Unit = {
     console.log("Opened WebSocket: ", e.`type`)
   }
 
-  def onMessage(msg: MessageEvent): Unit = {
+  private def onMessage(msg: MessageEvent): Unit = {
     default.read[CodeEditorMessage](msg.data.toString) match {
       case msg: TextOperation => controller.operationFromRemote(msg)
       case msg: DocLoaded => controller.docLoadedMessage(msg)

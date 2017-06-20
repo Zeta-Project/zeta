@@ -10,6 +10,7 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
+import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.persistence.Persistence
 import shared.CodeEditorMessage
 import shared.CodeEditorMessage.DocAdded
@@ -35,16 +36,21 @@ class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dsl
   mediator ! Subscribe(dslType, self)
 
   /** Tell the client about the existing document */
-  Persistence.fullAccessRepository.codeDocument.findByMetaModelIdAndDslType(metaModelId, dslType).map { doc =>
+  Persistence.fullAccessRepository.metaModelEntity.read(metaModelId).map { metaModelEntity: MetaModelEntity =>
+
     out ! default.write[CodeEditorMessage](
       DocLoaded(
-        str = doc.serverDocument.str,
-        revision = doc.serverDocument.operations.length,
-        docType = doc.serverDocument.docType,
-        title = doc.serverDocument.title,
-        id = doc.id,
-        dslType = doc.dslType,
-        metaModelId = doc.metaModelId
+        str = dslType match {
+          case "style" => metaModelEntity.dsl.style.fold("")(_.code)
+          case "shape" => metaModelEntity.dsl.shape.fold("")(_.code)
+          case "diagram" => metaModelEntity.dsl.diagram.fold("")(_.code)
+        },
+        revision = 0,
+        docType = dslType,
+        title = metaModelId.toString,
+        id = UUID.randomUUID(),
+        dslType = dslType,
+        metaModelId = metaModelId
       )
     )
   }.recover { case _ =>

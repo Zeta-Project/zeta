@@ -33,9 +33,6 @@ class TransientRepository extends Repository {
   /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
   override val bondedTask = new TransientEntityPersistence[BondedTask]
 
-  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  override val codeDocument = new TransientCodeDocumentPersistence
-
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
   override val timedTask = new TransientEntityPersistence[TimedTask]
 

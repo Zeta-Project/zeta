@@ -20,7 +20,6 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.CodeDocumentPersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
@@ -58,11 +57,6 @@ class ActorCacheRepository(underlying: Repository) extends Repository {
   /** Persistence for [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
   override val eventDrivenTask: EntityPersistence[EventDrivenTask] = {
     new ActorCacheEntityPersistence(system, underlying.eventDrivenTask, numberActorsPerEntityType, cacheDuration, timeout)
-  }
-
-  /** Persistence for [[de.htwg.zeta.common.models.entity.CodeDocument]] */
-  override val codeDocument: CodeDocumentPersistence = {
-    new ActorCacheCodeDocumentPersistence(system, underlying.codeDocument, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Filter]] */
