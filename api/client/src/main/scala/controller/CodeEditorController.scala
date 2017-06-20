@@ -56,7 +56,6 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
    * This function fnSave() is a callback function which will be called inside authorized().
    */
   def saveCode(): js.Dynamic = {
-    console.log("auto-saving: " + document.str)
     jquery.jQuery.ajax(literal(
       `type` = "PUT",
       url = s"/metamodels/$metaModelId/$dslType",

@@ -32,7 +32,7 @@ class CodeDocManagingActor extends Actor {
   def receive: Receive = {
     case TextOperation(op, docId) =>
       val target = sender()
-      persistence.read(docId).map { doc =>
+      persistence.read(docId).flatMap { doc =>
         doc.serverDocument.receiveOperation(op) match {
           case Some(send) =>
             mediator ! Publish(
@@ -42,6 +42,7 @@ class CodeDocManagingActor extends Actor {
             target ! MediatorMessage(TextOperation(send, docId), self)
           case _ => // Nothing to do!
         }
+        persistence.update(docId, _ => doc)
       }
 
     case newDoc: DocAdded =>
