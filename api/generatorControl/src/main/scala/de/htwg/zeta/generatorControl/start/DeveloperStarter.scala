@@ -3,11 +3,15 @@ package de.htwg.zeta.generatorControl.start
 import scala.language.implicitConversions
 
 import akka.actor.Props
+import akka.cluster.client.ClusterClientReceptionist
 import akka.cluster.sharding.ClusterSharding
 import akka.cluster.sharding.ClusterShardingSettings
 import de.htwg.zeta.common.cluster.ClusterManager
-import de.htwg.zeta.generatorControl.actors.developer.DeveloperManager
 import de.htwg.zeta.generatorControl.actors.developer.Mediator
+import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
+import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
+import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
+import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager
 import org.slf4j.LoggerFactory
 
 /**
@@ -19,7 +23,7 @@ class DeveloperStarter(developer: DeveloperConfig) extends Starter {
 
   def start(): Unit = {
     logger.debug(DeveloperStarter.LogStart, developer.toString)
-    Thread.sleep(DeveloperStarter.MilliSecWaitForOtherActors)
+    // Thread.sleep(DeveloperStarter.MilliSecWaitForOtherActors)  // FIXME is the sleep necessary
     val system = createActorSystem(Mediator.locatedOnNode, developer.seeds, developer.port)
 
     ClusterSharding(system).start(
@@ -30,7 +34,11 @@ class DeveloperStarter(developer: DeveloperConfig) extends Starter {
       extractShardId = Mediator.extractShardId
     )
 
-    system.actorOf(DeveloperManager.props(), DeveloperStarter.ActorName)
+    val receptionist: ClusterClientReceptionist = ClusterClientReceptionist(system)
+    receptionist.registerService(system.actorOf(FrontendManager.props(DeveloperFrontend), DeveloperFrontend.developerFrontendService))
+    receptionist.registerService(system.actorOf(FrontendManager.props(GeneratorFrontend), GeneratorFrontend.generatorFrontendService))
+    receptionist.registerService(system.actorOf(FrontendManager.props(UserFrontend), UserFrontend.userFrontendService))
+
 
     val journalAddress = ClusterManager.getJournalPath(developer.port, developer.seeds)
     setSharedJournal(system, journalAddress)
