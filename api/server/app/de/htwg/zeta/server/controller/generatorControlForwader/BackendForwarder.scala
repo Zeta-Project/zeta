@@ -27,7 +27,8 @@ class BackendForwarder(clusterAddress: String, serviceName: String, out: ActorRe
   private val receptionistPath: String = s"${ClusterManager.clusterPathPrefix}$clusterAddress/system/receptionist"
   private val initialContacts: Set[ActorPath] = Set(ActorPath.fromString(receptionistPath))
   private val settings: ClusterClientSettings = ClusterClientSettings(context.system).withInitialContacts(initialContacts)
-  private val client: ActorRef = context.system.actorOf(ClusterClient.props(settings), s"${serviceName}Client")
+  //  private val client: ActorRef = context.system.actorOf(ClusterClient.props(settings), s"${serviceName}Client")
+  private val client: ActorRef = context.system.actorOf(ClusterClient.props(settings))
   private val clientPath = s"/user/$serviceName"
 
   context.setReceiveTimeout(Duration(5, TimeUnit.MINUTES))

@@ -1,21 +1,20 @@
 
 import java.io.File
 
-
-import de.htwg.zeta.common.cluster.ClusterManager
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigParseOptions
+import de.htwg.zeta.common.cluster.ClusterManager
+import grizzled.slf4j.Logging
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceApplicationLoader
-import scala.collection.convert.WrapAsScala
 
 /**
  * Entrypoint of application
  */
-class CustomApplicationLoader extends GuiceApplicationLoader() {
+class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
 
 
   private def parseConf(baseName: String, classLoader: ClassLoader): Config = {
@@ -35,7 +34,7 @@ class CustomApplicationLoader extends GuiceApplicationLoader() {
   override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
     val classLoader: ClassLoader = context.environment.classLoader
 
-    val parsed = parseConf("production", classLoader)
+    val parsed = parseConf("development", classLoader)
 
     val parsedWithInit = parsed.withFallback(context.initialConfiguration.underlying)
     val clusterConfig = loadConfig(parsedWithInit.resolve())
@@ -56,12 +55,7 @@ class CustomApplicationLoader extends GuiceApplicationLoader() {
    */
   private def loadConfig(initialConfig: Config): Config = {
 
-    val seeds: List[String] = Option(initialConfig.getStringList("zeta.actor.cluster")) match {
-      case None => Nil
-      case Some(javaList) => WrapAsScala.iterableAsScalaIterable(javaList).toList
-    }
-    val roles = List("api")
-    val clusterConfig = ClusterManager.getClusterJoinConfig(roles, seeds, 0)
+    val clusterConfig = ClusterManager.getLocalNettyConfig(0)
 
     clusterConfig
   }
