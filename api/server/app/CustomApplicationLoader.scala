@@ -1,5 +1,8 @@
 
 import java.io.File
+import javax.inject.Singleton
+
+import scala.collection.convert.WrapAsScala
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
@@ -41,12 +44,17 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     val parsed = parseConf("development", classLoader)
 
     val parsedWithInit = parsed.withFallback(context.initialConfiguration.underlying)
-    val clusterConfig = loadConfig(parsedWithInit.resolve())
-    val mergedConfig = clusterConfig.withFallback(parsedWithInit).resolve()
+    val nettyConfig = loadConfig(parsedWithInit.resolve())
+    val mergedConfig = nettyConfig.withFallback(parsedWithInit).resolve()
 
-    // FIXME get address out of config
+    val seeds: List[String] = Option(mergedConfig.getStringList("zeta.actor.cluster")) match {
+      case None => Nil
+      case Some(javaList) => WrapAsScala.iterableAsScalaIterable(javaList).toList
+    }
+    val settings = ClusterAddressSettings(seeds.map(HostIP.lookupNodeAddress))
+
     val clusterAddressBinding: GuiceableModule =
-      GuiceableModule.fromPlayBinding(bind[ClusterAddressSettings].to(ClusterAddressSettings(HostIP.load(), 2553)))
+      GuiceableModule.fromPlayBinding(bind[ClusterAddressSettings].to(settings).in[Singleton])
     val modules: List[GuiceableModule] = clusterAddressBinding :: overrides(context).toList
 
     initialBuilder
@@ -56,9 +64,6 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
   }
 
   /**
-   * This method given a class loader will return the configuration object for an ActorSystem
-   * in a clustered environment
-   *
    * @param initialConfig the initialConfig
    * @return Config
    */

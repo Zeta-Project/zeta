@@ -10,12 +10,15 @@ import de.htwg.zeta.common.cluster.ClusterManager
 
 class RemoteClientSettings @Inject()(system: ActorSystem, clusterAddressSettings: ClusterAddressSettings) {
 
-  private val receptionistPath: String = s"${ClusterManager.clusterPathPrefix}${clusterAddressSettings.clusterAddress}/system/receptionist"
-  private val initialContacts: Set[ActorPath] = Set(ActorPath.fromString(receptionistPath))
+  private val initialContacts: Set[ActorPath] = clusterAddressSettings.addresses.map(clusterAddress => {
+    s"${ClusterManager.clusterPathPrefix}${clusterAddress}/system/receptionist"
+  }).map(ActorPath.fromString).toSet
+
   val settings: ClusterClientSettings = ClusterClientSettings(system).withInitialContacts(initialContacts)
 
 }
 
-case class ClusterAddressSettings(ip: String, port: Int) {
-  lazy val clusterAddress = s"${ip}:${port}"
-}
+/**
+ * @param addresses list of addresses in format s"${ip}:${port}"
+ */
+case class ClusterAddressSettings(addresses: List[String])
