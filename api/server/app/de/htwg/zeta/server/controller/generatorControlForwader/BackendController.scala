@@ -37,7 +37,7 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
  * @param silhouette Silhouette
  */
 class BackendController @Inject()(
-    implicit system: ActorSystem,
+    system: ActorSystem,
     mat: Materializer,
     silhouette: Silhouette[ZetaEnv])
   extends Controller with Logging {
