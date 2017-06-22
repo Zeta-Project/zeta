@@ -16,7 +16,7 @@ import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.DynamicFileController
-import de.htwg.zeta.server.controller.generatorControlForwader.BackendController
+import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -24,7 +24,7 @@ import de.htwg.zeta.server.controller.webpage.WebpageController
 /**
  */
 class WebControllerContainer @Inject() private(
-    val backendController: Provider[BackendController],
+    val backendController: Provider[GeneratorControlController],
     val applicationController: Provider[ApplicationController],
     val signUpController: Provider[SignUpController],
     val signInController: Provider[SignInController],

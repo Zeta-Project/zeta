@@ -37,10 +37,10 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
  * @param backendRemoteClient the remote client for the backend
  * @param silhouette          Silhouette
  */
-class BackendController @Inject()(
+class GeneratorControlController @Inject()(
     system: ActorSystem,
     mat: Materializer,
-    backendRemoteClient: BackendRemoteClient,
+    backendRemoteClient: GeneratorControlRemoteClient,
     silhouette: Silhouette[ZetaEnv])
   extends Controller with Logging {
 
@@ -59,8 +59,8 @@ class BackendController @Inject()(
    * @return WebSocket
    */
   def developer()(out: ActorRef, request: SecuredRequest[ZetaEnv, AnyContent]): (Props, MessageFlowTransformer[DeveloperRequest, DeveloperResponse]) = {
-    val register = BackendRegisterFactory((ident, ref) => DeveloperFrontend.CreateDeveloperFrontend(ident, ref, request.identity.id))
-    (BackendForwarder.props(backendRemoteClient.developerFrontendService, out, register), developerMsg)
+    val register = GeneratorControlRegisterFactory((ident, ref) => DeveloperFrontend.CreateDeveloperFrontend(ident, ref, request.identity.id))
+    (GeneratorControlForwarder.props(backendRemoteClient.developerFrontendService, out, register), developerMsg)
   }
 
 
@@ -73,8 +73,8 @@ class BackendController @Inject()(
   def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
 
     val futureProps = restrictedAccessRepository(request.identity.id).modelEntity.read(modelId).map(_ => {
-      val register = BackendRegisterFactory((ident, ref) => UserFrontend.CreateUserFrontend(ident, ref, request.identity.id, modelId))
-      (out: ActorRef) => BackendForwarder.props(backendRemoteClient.userFrontendService, out, register)
+      val register = GeneratorControlRegisterFactory((ident, ref) => UserFrontend.CreateUserFrontend(ident, ref, request.identity.id, modelId))
+      (out: ActorRef) => GeneratorControlForwarder.props(backendRemoteClient.userFrontendService, out, register)
     })
     (futureProps, userMsg)
   }
@@ -90,9 +90,9 @@ class BackendController @Inject()(
     (out: ActorRef, request: SecuredRequest[ZetaEnv, AnyContent]): (Props, MessageFlowTransformer[GeneratorRequest, GeneratorResponse]) = {
 
     // Extract the user from the request and connect to the endpoint of that user
-    val register = BackendRegisterFactory((ident, ref) => GeneratorFrontend.CreateGeneratorFrontend(ident, ref, request.identity.id, workId))
+    val register = GeneratorControlRegisterFactory((ident, ref) => GeneratorFrontend.CreateGeneratorFrontend(ident, ref, request.identity.id, workId))
 
-    (BackendForwarder.props(backendRemoteClient.generatorFrontendService, out, register), generatorMsg)
+    (GeneratorControlForwarder.props(backendRemoteClient.generatorFrontendService, out, register), generatorMsg)
   }
 }
 

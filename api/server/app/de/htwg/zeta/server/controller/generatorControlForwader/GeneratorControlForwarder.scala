@@ -14,7 +14,7 @@ import grizzled.slf4j.Logging
 
 /**
  */
-class BackendForwarder(remoteClient: RemoteClient, out: ActorRef, factory: BackendRegisterFactory) extends Actor with Logging {
+class GeneratorControlForwarder(remoteClient: RemoteClient, out: ActorRef, factory: GeneratorControlRegisterFactory) extends Actor with Logging {
 
   private val ident: UUID = UUID.randomUUID()
   private val outForwarder: ActorRef = context.actorOf(DirectForwarder.props(out))
@@ -39,22 +39,22 @@ class BackendForwarder(remoteClient: RemoteClient, out: ActorRef, factory: Backe
 
 }
 
-object BackendForwarder {
-  def props(remoteClient: RemoteClient, out: ActorRef, factory: BackendRegisterFactory): Props =
-    Props(new BackendForwarder(remoteClient, out, factory))
+object GeneratorControlForwarder {
+  def props(remoteClient: RemoteClient, out: ActorRef, factory: GeneratorControlRegisterFactory): Props =
+    Props(new GeneratorControlForwarder(remoteClient, out, factory))
 }
 
-trait BackendRegisterFactory {
+trait GeneratorControlRegisterFactory {
   def apply(ident: UUID, out: ActorRef): FrontendManager.Create
 }
 
-object BackendRegisterFactory {
+object GeneratorControlRegisterFactory {
 
-  private class BackendRegisterFactoryImpl(func: (UUID, ActorRef) => FrontendManager.Create) extends BackendRegisterFactory {
+  private class GeneratorControlRegisterFactoryImpl(func: (UUID, ActorRef) => FrontendManager.Create) extends GeneratorControlRegisterFactory {
     override def apply(ident: UUID, out: ActorRef): FrontendManager.Create = func(ident, out)
   }
 
-  def apply(func: (UUID, ActorRef) => FrontendManager.Create): BackendRegisterFactory = {
-    new BackendRegisterFactoryImpl(func)
+  def apply(func: (UUID, ActorRef) => FrontendManager.Create): GeneratorControlRegisterFactory = {
+    new GeneratorControlRegisterFactoryImpl(func)
   }
 }

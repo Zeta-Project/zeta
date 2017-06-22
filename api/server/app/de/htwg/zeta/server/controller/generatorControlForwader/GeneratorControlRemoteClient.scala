@@ -11,7 +11,7 @@ import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
 /**
  */
 @Singleton
-class BackendRemoteClient @Inject()(system: ActorSystem, settings: RemoteClientSettings) {
+class GeneratorControlRemoteClient @Inject()(system: ActorSystem, settings: RemoteClientSettings) {
   val developerFrontendService: RemoteClient = RemoteClient(system, DeveloperFrontend.developerFrontendService, settings)
   val generatorFrontendService: RemoteClient = RemoteClient(system, GeneratorFrontend.generatorFrontendService, settings)
   val userFrontendService: RemoteClient = RemoteClient(system, UserFrontend.userFrontendService, settings)
