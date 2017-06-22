@@ -32,13 +32,15 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
 /**
  * BackendController.
  *
- * @param system     ActorSystem
- * @param mat        Materializer
- * @param silhouette Silhouette
+ * @param system              ActorSystem
+ * @param mat                 Materializer
+ * @param backendRemoteClient the remote client for the backend
+ * @param silhouette          Silhouette
  */
 class BackendController @Inject()(
     system: ActorSystem,
     mat: Materializer,
+    backendRemoteClient: BackendRemoteClient,
     silhouette: Silhouette[ZetaEnv])
   extends Controller with Logging {
 
@@ -51,8 +53,6 @@ class BackendController @Inject()(
   private val generatorMsg: MessageFlowTransformer[GeneratorRequest, GeneratorResponse] =
     MessageFlowTransformer.jsonMessageFlowTransformer[GeneratorRequest, GeneratorResponse]
 
-  private val backendAddress: String = "192.168.0.21:2553"
-
   /**
    * Connect as a developer
    *
@@ -60,7 +60,7 @@ class BackendController @Inject()(
    */
   def developer()(out: ActorRef, request: SecuredRequest[ZetaEnv, AnyContent]): (Props, MessageFlowTransformer[DeveloperRequest, DeveloperResponse]) = {
     val register = BackendRegisterFactory((ident, ref) => DeveloperFrontend.CreateDeveloperFrontend(ident, ref, request.identity.id))
-    (BackendForwarder.props(backendAddress, DeveloperFrontend.developerFrontendService, out, register), developerMsg)
+    (BackendForwarder.props(backendRemoteClient.developerFrontendService, out, register), developerMsg)
   }
 
 
@@ -74,7 +74,7 @@ class BackendController @Inject()(
 
     val futureProps = restrictedAccessRepository(request.identity.id).modelEntity.read(modelId).map(_ => {
       val register = BackendRegisterFactory((ident, ref) => UserFrontend.CreateUserFrontend(ident, ref, request.identity.id, modelId))
-      (out: ActorRef) => BackendForwarder.props(backendAddress, UserFrontend.userFrontendService, out, register)
+      (out: ActorRef) => BackendForwarder.props(backendRemoteClient.userFrontendService, out, register)
     })
     (futureProps, userMsg)
   }
@@ -92,7 +92,7 @@ class BackendController @Inject()(
     // Extract the user from the request and connect to the endpoint of that user
     val register = BackendRegisterFactory((ident, ref) => GeneratorFrontend.CreateGeneratorFrontend(ident, ref, request.identity.id, workId))
 
-    (BackendForwarder.props(backendAddress, GeneratorFrontend.generatorFrontendService, out, register), generatorMsg)
+    (BackendForwarder.props(backendRemoteClient.generatorFrontendService, out, register), generatorMsg)
   }
 }
 

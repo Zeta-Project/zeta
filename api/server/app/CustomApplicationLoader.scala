@@ -5,11 +5,15 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigParseOptions
 import de.htwg.zeta.common.cluster.ClusterManager
+import de.htwg.zeta.common.cluster.HostIP
+import de.htwg.zeta.server.controller.generatorControlForwader.ClusterAddressSettings
 import grizzled.slf4j.Logging
 import play.api.ApplicationLoader
 import play.api.Configuration
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceApplicationLoader
+import play.api.inject.guice.GuiceableModule
 
 /**
  * Entrypoint of application
@@ -40,10 +44,15 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     val clusterConfig = loadConfig(parsedWithInit.resolve())
     val mergedConfig = clusterConfig.withFallback(parsedWithInit).resolve()
 
+    // FIXME get address out of config
+    val clusterAddressBinding: GuiceableModule =
+      GuiceableModule.fromPlayBinding(bind[ClusterAddressSettings].to(ClusterAddressSettings(HostIP.load(), 2553)))
+    val modules: List[GuiceableModule] = clusterAddressBinding :: overrides(context).toList
+
     initialBuilder
       .in(context.environment)
       .loadConfig(Configuration(mergedConfig))
-      .overrides(overrides(context): _*)
+      .overrides(modules: _*)
   }
 
   /**
