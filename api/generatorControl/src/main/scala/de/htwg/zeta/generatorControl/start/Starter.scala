@@ -42,7 +42,7 @@ protected trait Starter {
 
   protected def createActorSystem(role: String, seeds: List[String], port: Int): ActorSystem = {
     val roles = List(role)
-    val config = ClusterManager.getClusterJoinConfig(roles, seeds, port).withFallback(ConfigFactory.load())
+    val config = ClusterManager.getClusterJoinConfig(roles, seeds, port).withFallback(ConfigFactory.load()).resolve()
     ActorSystem(Starter.Name, config)
   }
 }

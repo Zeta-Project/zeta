@@ -44,7 +44,6 @@ object DeveloperFrontend extends FrontendManagerGenerator {
 
 class DeveloperFrontend(out: ActorRef, devMediator: ActorRef, userId: UUID) extends Actor with ActorLogging {
   context.setReceiveTimeout(Duration(10, TimeUnit.MINUTES))
-  log.error("developerFrontendCreated")
   private val instance = ToolDeveloper(out, userId)
   private val registerTask: Cancellable =
     context.system.scheduler.schedule(Duration(1, TimeUnit.SECONDS), Duration(30, TimeUnit.SECONDS), self, RegisterDeveloperFrontend)
