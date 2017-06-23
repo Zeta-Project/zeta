@@ -24,8 +24,8 @@ case class DbCodeDocument(docId: UUID, dslType: String, metaModelId: UUID, doc: 
 object CodeDocumentDb {
   val log = Logger(this getClass () getName ())
 
-  val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.ip").get))
-  val db = mongoClient(Play.current.configuration.getString("mongodb.name").get)
+  val mongoClient = MongoClient(new ServerAddress(Play.current.configuration.getString("mongodb.legacy.ip").get))
+  val db = mongoClient(Play.current.configuration.getString("mongodb.legacy.name").get)
   val coll = db("CodeDocuments")
 
   /**
