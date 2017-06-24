@@ -13,7 +13,10 @@ tmp
 /RUNNING_PID
 /.settings
 *.iml
-server/app/assets/modelEditor/editor/model_specific
 .idea
 /api/server/app/de/htwg/zeta/server/model/modelValidator/generated/
 /api/server/model_specific/
+/couchbase/
+/model_specific/
+/mongodb/
+/sbt/

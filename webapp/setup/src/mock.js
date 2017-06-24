@@ -7,9 +7,7 @@ const system = {
   admin_roles: []
 };
 
-module.exports.users = [
-  system
-];
+module.exports.user = system;
 
 const options1 = {
   "$schema": "http://json-schema.org/schema#",

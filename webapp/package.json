@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "MoDiGen Webapp for Tool-Developers.",
   "scripts": {
-    "dev": "polymer serve & gulp watch",
+    "dev": "npm run setup && polymer serve & gulp watch",
+    "setup": "node setup/server.js",
     "test": "polymer test",
     "watch": "gulp watch"
   },
@@ -12,6 +13,16 @@
     "bower": "^1.7.9",
     "polymer-cli": "^0.13.0",
     "browser-sync": "^2.13.0",
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "pouchdb": "^5.0.0",
+    "requestretry": "^1.12.0",
+    "request-promise": "^1.0.2"
+  },
+  "config": {
+    "couchdbSyncGateway": "http://database:4984/db/",
+    "couchdbServer": "http://couchbase-server:8091",
+    "couchdbServerBucket": "db",
+    "couchdbServerUsername": "Administrator",
+    "couchdbServerPassword": "admin1234"
   }
 }
