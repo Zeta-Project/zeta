@@ -1,12 +1,6 @@
 package de.htwg.zeta.common.cluster
 
 import akka.actor.ActorPath
-import akka.actor.ActorRef
-import akka.actor.ActorSystem
-import akka.actor.AddressFromURIString
-import akka.actor.RootActorPath
-import akka.cluster.client.ClusterClient
-import akka.cluster.client.ClusterClientSettings
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 
@@ -16,10 +10,12 @@ object ClusterManager {
   val clusterPathPrefix = "akka.tcp://ClusterSystem@"
 
   def getJournalPath(port: Int, seeds: List[String]): ActorPath = {
-    if (seeds.isEmpty) {
-      ActorPath.fromString(s"$clusterPathPrefix${HostIP.load()}:${port}/user/store")
-    } else {
-      ActorPath.fromString(s"$clusterPathPrefix${HostIP.lookupNodeAddress(seeds.head)}/user/store")
+    seeds.headOption match {
+      case None =>
+        ActorPath.fromString(s"$clusterPathPrefix${HostIP.load()}:${port}/user/store")
+
+      case Some(seed) =>
+        ActorPath.fromString(s"$clusterPathPrefix${HostIP.lookupNodeAddress(seed)}/user/store")
     }
   }
 
