@@ -1,14 +1,16 @@
-package de.htwg.zeta.server.controller.generatorControlForwader
+package de.htwg.zeta.common.cluster
 
 import javax.inject.Inject
+import javax.inject.Singleton
 
 import akka.actor.ActorPath
 import akka.actor.ActorSystem
+import akka.actor.ActorRef
 import akka.cluster.client.ClusterClientSettings
-import de.htwg.zeta.common.cluster.ClusterManager
+import akka.cluster.client.ClusterClient
 
-
-class RemoteClientSettings @Inject()(system: ActorSystem, clusterAddressSettings: ClusterAddressSettings) {
+@Singleton
+class RemoteClient @Inject()(system: ActorSystem, clusterAddressSettings: ClusterAddressSettings) {
 
   private val initialContacts: Set[ActorPath] = clusterAddressSettings.addresses.map(clusterAddress => {
     s"${ClusterManager.clusterPathPrefix}${clusterAddress}/system/receptionist"
@@ -16,6 +18,7 @@ class RemoteClientSettings @Inject()(system: ActorSystem, clusterAddressSettings
 
   val settings: ClusterClientSettings = ClusterClientSettings(system).withInitialContacts(initialContacts)
 
+  val client: ActorRef = system.actorOf(ClusterClient.props(settings), "client")
 }
 
 /**

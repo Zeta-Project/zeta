@@ -4,6 +4,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 import akka.actor.ActorSystem
+import de.htwg.zeta.common.cluster.RemoteClient
 import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
@@ -11,10 +12,10 @@ import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
 /**
  */
 @Singleton
-class GeneratorControlRemoteClient @Inject()(system: ActorSystem, settings: RemoteClientSettings) {
-  val developerFrontendService: RemoteClient = RemoteClient(system, DeveloperFrontend.developerFrontendService, settings)
-  val generatorFrontendService: RemoteClient = RemoteClient(system, GeneratorFrontend.generatorFrontendService, settings)
-  val userFrontendService: RemoteClient = RemoteClient(system, UserFrontend.userFrontendService, settings)
+class GeneratorControlRemoteClient @Inject()(system: ActorSystem, settings: RemoteClient) {
+  val developerFrontendService: RemoteService = RemoteService(system, DeveloperFrontend.developerFrontendService, settings)
+  val generatorFrontendService: RemoteService = RemoteService(system, GeneratorFrontend.generatorFrontendService, settings)
+  val userFrontendService: RemoteService = RemoteService(system, UserFrontend.userFrontendService, settings)
 
 }
 

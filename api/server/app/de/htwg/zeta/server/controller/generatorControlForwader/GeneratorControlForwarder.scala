@@ -14,7 +14,7 @@ import grizzled.slf4j.Logging
 
 /**
  */
-class GeneratorControlForwarder(remoteClient: RemoteClient, out: ActorRef, factory: GeneratorControlRegisterFactory) extends Actor with Logging {
+class GeneratorControlForwarder(remoteClient: RemoteService, out: ActorRef, factory: GeneratorControlRegisterFactory) extends Actor with Logging {
 
   private val ident: UUID = UUID.randomUUID()
   private val outForwarder: ActorRef = context.actorOf(DirectForwarder.props(out))
@@ -40,7 +40,7 @@ class GeneratorControlForwarder(remoteClient: RemoteClient, out: ActorRef, facto
 }
 
 object GeneratorControlForwarder {
-  def props(remoteClient: RemoteClient, out: ActorRef, factory: GeneratorControlRegisterFactory): Props =
+  def props(remoteClient: RemoteService, out: ActorRef, factory: GeneratorControlRegisterFactory): Props =
     Props(new GeneratorControlForwarder(remoteClient, out, factory))
 }
 

@@ -9,7 +9,7 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigParseOptions
 import de.htwg.zeta.common.cluster.ClusterManager
 import de.htwg.zeta.common.cluster.HostIP
-import de.htwg.zeta.server.controller.generatorControlForwader.ClusterAddressSettings
+import de.htwg.zeta.common.cluster.ClusterAddressSettings
 import grizzled.slf4j.Logging
 import play.api.ApplicationLoader
 import play.api.Configuration
