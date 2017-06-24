@@ -36,7 +36,7 @@ def baseSettings = {
     scalastyleFailOnError := true,
     compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
     compile in Compile := ((compile in Compile) dependsOn compileScalastyle).value,
-    wartremoverWarnings ++= Warts.unsafe,
+    wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
 
     dockerRepository := Some("modigen")
   )
