@@ -3,20 +3,21 @@ package de.htwg.zeta.common.cluster
 import java.net.InetAddress
 
 import scala.util.Try
+import scala.util.matching.Regex
 
 import grizzled.slf4j.Logging
 
 
 object HostIP extends Logging {
 
+  val addressRegex: Regex = """(\w+):(\d+)""".r
 
   def load(): String = InetAddress.getLocalHost.getHostAddress
 
   def lookupNodeAddress(value: String): String = {
-    val node = """(\w*):*(\d*)""".r
 
     val ret = value match {
-      case node(hostname, port) =>
+      case addressRegex(hostname, port) =>
         Try(InetAddress.getByName(hostname).getHostAddress).map(host => s"$host:$port").getOrElse(value)
       case _ => value
     }
