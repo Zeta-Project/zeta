@@ -7,17 +7,22 @@ import grizzled.slf4j.Logging
 
 object HostIP extends Logging {
 
+  @SuppressWarnings(Array("org.wartremover.warts.OptionPartial"))
   def load(): String = Option(InetAddress.getLocalHost.getHostAddress).get // throw exception when null
 
-  def lookupNodeAddress(value: String): String = {
-    val ret = value match {
-      case IpAddress(address) => address
-      case _ => throw new IllegalArgumentException(s"cannot lookup node address: $value. address must have format: ip:port")
+  @SuppressWarnings(Array("org.wartremover.warts.Throw"))
+  def lookupNodeAddress(address: String): String = {
+    val ret = address match {
+      case IpAddress(parsedAddress) => parsedAddress
+      case _ =>
+        throw new IllegalArgumentException(s"cannot lookup node address: $address. address must have format: ip:port")
     }
-
-    info(s"looked up seed: $value. Found: $ret")
-
+    info(s"looked up seed: $address. Found: $ret")
     ret
+  }
+
+  def lookupNodeAddressOption(address: String): Option[String] = {
+    IpAddress.unapply(address)
   }
 
   object IpAddress {
