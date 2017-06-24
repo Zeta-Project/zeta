@@ -91,3 +91,7 @@ GET           /codeeditor/socket/:metaModelId/:dslType                          
 GET           /assets/*file                                                          controllers.ScalaRoutes.getAssets(file)
 GET           /webjars/*file                                                         controllers.ScalaRoutes.getWebjars(file)
 GET           /model_specific/*file                                                  controllers.ScalaRoutes.getMode_specific(file)
+
+GET           /app/                                                                  controllers.ScalaRoutes.getWebApp(page = "")
+GET           /app/*path                                                             controllers.ScalaRoutes.getWebApp(path)
+

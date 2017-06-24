@@ -14,6 +14,7 @@ import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.GeneratorController
 import de.htwg.zeta.server.controller.CodeEditorController
 import de.htwg.zeta.server.controller.DynamicFileController
+import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -41,4 +42,5 @@ trait WebController {
   protected lazy val DynamicFileController: DynamicFileController = webCont.dynamicFileController.get()
   protected lazy val MetaModelRestApi: MetaModelRestApi = webCont.metaModelRestApi.get()
   protected lazy val ModelRestApi: ModelRestApi = webCont.modelRestApi.get()
+  protected lazy val WebAppController: WebAppController = webCont.webApp.get()
 }

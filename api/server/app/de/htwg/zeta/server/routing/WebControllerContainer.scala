@@ -17,6 +17,7 @@ import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.DynamicFileController
+import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -40,4 +41,5 @@ class WebControllerContainer @Inject() private(
     val webJarAssets: Provider[WebJarAssets],
     val dynamicFileController: Provider[DynamicFileController],
     val metaModelRestApi: Provider[MetaModelRestApi],
-    val modelRestApi: Provider[ModelRestApi])
+    val modelRestApi: Provider[ModelRestApi],
+    val webApp: Provider[WebAppController])
