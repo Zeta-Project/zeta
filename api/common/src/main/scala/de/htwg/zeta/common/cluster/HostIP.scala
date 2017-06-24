@@ -1,25 +1,63 @@
 package de.htwg.zeta.common.cluster
 
+import java.net.InetAddress
+
+import scala.util.Try
+
+
 object HostIP {
 
-  import java.net.InetAddress
+  def load(): String = Option(InetAddress.getLocalHost.getHostAddress).get // throw exception when null
 
-  import scala.util.Try
-
-  def load(): String = InetAddress.getLocalHost.getHostAddress
-
-  def lookupNodeAddress(value: String) = {
-
-    val node = """(\w*):*(\d*)""".r
-
+  def lookupNodeAddress(value: String): String = {
     value match {
-      case node(hostname, port) =>
-        Try(InetAddress.getByName(hostname).getHostAddress).map(host => s"$host:$port").getOrElse(value)
-      case _ => value
+      case IpAddress(address) => address
+      case _ => throw new IllegalArgumentException(s"cannot lookup node address: $value. address must have format: ip:port")
     }
   }
+
+  object IpAddress {
+    private val delimiter = ":"
+    private val maxPortNumber = 65535
+
+    private def parseAddress(addressName: String): Option[String] = {
+      val address =
+        if (addressName == "localhost") {
+          HostIP.load()
+        } else {
+          InetAddress.getByName(addressName).getHostAddress
+        }
+      Some(address)
+    }
+
+    private def parsePort(portString: String): Option[Int] = {
+      val port = portString.toInt
+      if (port < 0 || port > maxPortNumber) {
+        None
+      }
+      else {
+        Some(port)
+      }
+    }
+
+    def unapply(ip: String): Option[String] = try {
+      val s = ip.split(delimiter, -1).toList
+      s.reverse match {
+        // list size must be at least 2. tail can be Nil
+        case stringPort :: head :: tail =>
+          parsePort(stringPort).flatMap(port => parseAddress((head :: tail).reverse.mkString(delimiter)).map(address => s"$address$delimiter$port"))
+        case _ => None
+      }
+    } catch {
+      case _: Throwable => None
+    }
+  }
+
 
   def lookupNode(hostname: String) = {
     Try(InetAddress.getByName(hostname).getHostAddress).map(host => host).getOrElse(hostname)
   }
 }
+
+
+
