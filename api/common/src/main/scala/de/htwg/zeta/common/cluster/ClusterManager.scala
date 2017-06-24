@@ -15,22 +15,6 @@ import com.typesafe.config.ConfigFactory
 object ClusterManager {
   val clusterPathPrefix = "akka.tcp://ClusterSystem@"
 
-  def getClusterClient(system: ActorSystem, seeds: List[String]): ActorRef = {
-    val parsedSeeds = seeds.map { address => s"$clusterPathPrefix${HostIP.lookupNodeAddress(address)}" }
-
-    val initialContacts = parsedSeeds.map {
-      case AddressFromURIString(address) => RootActorPath(address) / "system" / "receptionist"
-    }.toSet
-
-    system.actorOf(
-      ClusterClient.props(
-        ClusterClientSettings(system)
-          .withInitialContacts(initialContacts)
-      ),
-      "clusterClient"
-    )
-  }
-
   def getJournalPath(port: Int, seeds: List[String]): ActorPath = {
     if (seeds.isEmpty) {
       ActorPath.fromString(s"$clusterPathPrefix${HostIP.load()}:${port}/user/store")

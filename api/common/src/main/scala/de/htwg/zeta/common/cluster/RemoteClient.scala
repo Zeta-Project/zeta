@@ -6,19 +6,26 @@ import javax.inject.Singleton
 import akka.actor.ActorPath
 import akka.actor.ActorSystem
 import akka.actor.ActorRef
+import akka.actor.AddressFromURIString
+import akka.actor.RootActorPath
 import akka.cluster.client.ClusterClientSettings
 import akka.cluster.client.ClusterClient
 
 @Singleton
 class RemoteClient @Inject()(system: ActorSystem, clusterAddressSettings: ClusterAddressSettings) {
 
-  private val initialContacts: Set[ActorPath] = clusterAddressSettings.addresses.map(clusterAddress => {
-    s"${ClusterManager.clusterPathPrefix}${clusterAddress}/system/receptionist"
-  }).map(ActorPath.fromString).toSet
+  val settings: ClusterClientSettings = {
 
-  val settings: ClusterClientSettings = ClusterClientSettings(system).withInitialContacts(initialContacts)
+    val initialContacts: Set[ActorPath] = clusterAddressSettings.addresses.map(clusterAddress => {
+      s"${ClusterManager.clusterPathPrefix}${clusterAddress}"
+    }).map {
+      case AddressFromURIString(address) => RootActorPath(address) / "system" / "receptionist"
+    }.toSet
 
-  val client: ActorRef = system.actorOf(ClusterClient.props(settings), "client")
+    ClusterClientSettings(system).withInitialContacts(initialContacts)
+  }
+
+  val client: ActorRef = system.actorOf(ClusterClient.props(settings), "clusterClient")
 }
 
 /**
