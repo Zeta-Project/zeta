@@ -126,8 +126,8 @@ class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLo
         s""""$home\\bin\\java.exe" """ +
           buildCommandString("\"")
       } else {
-        s"""'$home/bin/java' """ +
-          buildCommandString("'")
+        s"""$home/bin/java """ +
+          buildCommandString("")
       }
     }
 
