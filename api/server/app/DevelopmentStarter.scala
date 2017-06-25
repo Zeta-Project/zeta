@@ -108,22 +108,29 @@ class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLo
       s"--master-port $port --master-num 1 --workers 3 --worker-seeds $seed --dev-port 2552 --dev-seeds $seed"
     )
 
+    def buildCommandString(quote: String) = {
+      commandList.map(s => {
+        if (s.startsWith("-")) {
+          s
+        } else {
+          s"""$quote$s$quote"""
+        }
+      }).mkString(" ")
+    }
 
-    val commandString = commandList.map(s => {
-      if (s.startsWith("-")) s else "\"" + s + "\""
-    }).mkString(" ")
 
-    val header: String = {
+    val cmd: String = {
       val home = System.getProperty("java.home")
 
       if (System.getProperty("os.name").startsWith("Windows")) {
-        s""""$home\\bin\\java.exe" """
+        s""""$home\\bin\\java.exe" """ +
+          buildCommandString("\"")
       } else {
-        s""""$home/bin/java" """
+        s"""'$home/bin/java' """ +
+          buildCommandString("'")
       }
     }
 
-    val cmd = header + commandString
     startThread(cmd)
   }
 
