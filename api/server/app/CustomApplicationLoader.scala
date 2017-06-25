@@ -3,7 +3,6 @@ import java.io.File
 import javax.inject.Singleton
 
 import scala.collection.convert.WrapAsScala
-import scala.sys.process.Process
 
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
@@ -18,14 +17,15 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceApplicationLoader
 import play.api.inject.guice.GuiceableModule
-import CustomApplicationLoader.Production
-import CustomApplicationLoader.Development
 
 /**
+ * TODO Nicolas: Documentation
+ *
  * Entrypoint of application
  */
 class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
 
+  info("CustomApplicationLoader started")
 
   private def parseConf(baseName: String, classLoader: ClassLoader): Config = {
     val conf = if (baseName.endsWith(".conf")) baseName else baseName + ".conf"
@@ -35,28 +35,10 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     ConfigFactory.parseFile(file, configParserOpts)
   }
 
-  private def checkEnvironment(config: Configuration): CustomApplicationLoader.Environment = {
-
-    val envOpt =
-      config.getString("zeta.deployment.environment").collect {
-        case Production(env) => env
-        case Development(env) => env
-      }
-
-    envOpt match {
-      case Some(env) =>
-        env
-
-      case None =>
-        val msg =
-          s"""Please set the Environment Variable "ZETA_DEPLOYMENT" to either "${Development.asString}" or "${Production.asString}"."""
-        throw new IllegalArgumentException(msg)
-    }
-
-  }
-
 
   /**
+   * TODO Nicolas: Documentation
+   *
    * Initiate configuration for builder
    *
    * @param context Application Context instance
@@ -65,7 +47,9 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
   override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
     val classLoader: ClassLoader = context.environment.classLoader
 
-    val environment = checkEnvironment(context.initialConfiguration)
+    val environment = CustomApplicationLoader.checkEnvironment(context.initialConfiguration)
+
+    DevelopmentStarter(environment, classLoader)
 
     val parsed = parseConf(environment.asString, classLoader)
 
@@ -73,17 +57,12 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     val nettyConfig = ClusterManager.getLocalNettyConfig(0)
     val mergedConfig = nettyConfig.withFallback(parsedWithInit).resolve()
 
-    val seeds: List[String] = {
-      val list = buildSeeds(mergedConfig)
-      environment match {
-        case Development => list.take(1)
-        case Production => list
-      }
+    val seeds: List[String] = environment match {
+      case CustomApplicationLoader.DevDeployment => List(s"${HostIP.load()}:${CustomApplicationLoader.devPort}")
+      case CustomApplicationLoader.ProdDeployment => buildSeeds(mergedConfig)
     }
 
     if (seeds.isEmpty) throw new IllegalArgumentException("zeta.actor.cluster must be defined in config.")
-
-    if (environment.isDevelopment) handleDevThread(seeds)
 
     val settings = ClusterAddressSettings(seeds)
 
@@ -107,83 +86,48 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     }
   }
 
-
-  private val clusterGroup = "clusterThreadGroup"
-
-  private def getGroup(): ThreadGroup = {
-    val current = Thread.currentThread().getThreadGroup
-    val arr: Array[ThreadGroup] = Array.ofDim(100)
-    current.enumerate(arr, /* recurse = */ false)
-
-    val list = arr.toList.filterNot(_ == null)
-
-    list.find(_.getName == clusterGroup) match {
-      case Some(group) =>
-        info("reusing existing thread group")
-        val threadArr: Array[Thread] = Array.ofDim(group.activeCount() + 100)
-        group.enumerate(threadArr, /* recurse = */ true)
-        val threadList = threadArr.toList.filterNot(_ == null)
-        threadList.foreach(_.interrupt())
-        Thread.sleep(1000)
-        threadList.filter(_.isAlive).foreach(_.stop())
-        group
-      case None =>
-        info("creating new thread group")
-        new ThreadGroup(clusterGroup)
-    }
-
-  }
-
-
-  private def handleDevThread(seeds: List[String]): Unit = {
-    val group = getGroup()
-
-
-    val commandList = List("sbt",
-      "project generatorControl",
-      "run --master-port 2551 --master-num 1 --workers 3 --worker-seeds localhost:2551 --dev-port 2552 --dev-seeds localhost:2551")
-
-    val windowsStarter = List("cmd.exe", "/c")
-
-
-    val cmd: List[String] =
-      if (System.getProperty("os.name").startsWith("Windows")) {
-        windowsStarter ++ commandList
-      } else {
-        commandList
-      }
-
-    val thread = new Thread(group, new Runnable {
-      override def run(): Unit = {
-        val p = Process(cmd).run()
-        try {
-          p.exitValue()
-        } catch {
-          case _: Throwable =>
-            p.destroy()
-        }
-      }
-    })
-
-    thread.start()
-  }
-
 }
-
 
 object CustomApplicationLoader {
 
-  sealed abstract class Environment(val asString: String) {
-    def unapply(arg: String): Option[Environment] = if (arg.toLowerCase() == asString) Some(this) else None
+  private val noDeploymentMessage =
+    s"""Please set the Environment Variable "ZETA_DEPLOYMENT" to either "${
+      DevDeployment.asString
+    }" or "${
+      ProdDeployment.asString
+    }"."""
 
-    def isDevelopment: Boolean = this == Development
+  def checkEnvironment(config: Configuration): CustomApplicationLoader.DeploymentMode = {
 
-    def isProduction: Boolean = this == Production
+    val envOpt =
+      config.getString("zeta.deployment.environment").collect {
+        case ProdDeployment(env) => env
+        case DevDeployment(env) => env
+      }
+
+    envOpt match {
+      case Some(env) => env
+      case None => throw new IllegalArgumentException(noDeploymentMessage)
+    }
   }
 
-  object Development extends Environment("development")
 
-  object Production extends Environment("production")
+  /**
+   *
+   * TODO replace with [[play.api.Mode]]
+   */
+  sealed abstract class DeploymentMode(val asString: String) {
+    def unapply(arg: String): Option[DeploymentMode] = if (arg.toLowerCase() == asString) Some(this) else None
 
-  val isDevMode: Boolean = true
+    def isDevelopment: Boolean = this == DevDeployment
+
+    def isProduction: Boolean = this == ProdDeployment
+  }
+
+  object DevDeployment extends DeploymentMode("development")
+
+  object ProdDeployment extends DeploymentMode("production")
+
+  val devPort: Int = 2551
+
 }
