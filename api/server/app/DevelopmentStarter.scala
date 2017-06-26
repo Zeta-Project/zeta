@@ -11,11 +11,20 @@ import scala.sys.process.Process
 import grizzled.slf4j.Logging
 
 /**
- * TODO Nicolas: Documentation
+ *
+ * DevelopmentStarter will start a new ThreadGroup with a single Thread.
+ * This Thread will spawn a Process that will run [[de.htwg.zeta.generatorControl.Main]].
+ * <p>
+ * Play reload will not stop running Threads. The Thread is encapsulated in a ThreadGroup because a ThreadGroups is easier to find.
+ * When the Thread gets interrupted, the process will get destroyed and a new identical process will be spawned.
+ * <p>
+ * Starting generatorControl via SBT will take quite some time. It is also unnecessary as it will be compiled before that during the play reload.
+ * For this reason. java will bes started directly. Because te complete classPath is too long, it is written into a JAR file that is then passed to the process.
+ *
  */
 class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLoader: ClassLoader) extends Logging {
 
-  info("LifeCycleHook started")
+  info("DevelopmentStarter started")
 
   private def getParents(cl: ClassLoader): List[ClassLoader] = {
     cl.getParent match {

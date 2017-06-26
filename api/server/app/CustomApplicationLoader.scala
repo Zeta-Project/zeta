@@ -19,9 +19,14 @@ import play.api.inject.guice.GuiceApplicationLoader
 import play.api.inject.guice.GuiceableModule
 
 /**
- * TODO Nicolas: Documentation
+ * Entrypoint of application. The config is loaded / generated here.
+ * Part of the config is parsed and added into the dependency injection.
+ * If the config is incorrect there will be an Exception and the application will shut down.
+ * <p>
+ *  It is the CustomApplicationLoader that decides whether or not the Application will start in production or development mode.
+ *  Depending on this decision different configuration files will be loaded.
+ *  In development mode [[DevelopmentStarter]] will spawn a child-process that will run [[de.htwg.zeta.generatorControl.Main]]
  *
- * Entrypoint of application
  */
 class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
 
@@ -37,8 +42,6 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
 
 
   /**
-   * TODO Nicolas: Documentation
-   *
    * Initiate configuration for builder
    *
    * @param context Application Context instance
