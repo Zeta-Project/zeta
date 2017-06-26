@@ -178,4 +178,5 @@ class ScalaRoutes @Inject()(
 
   def getMode_specific(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
 
+  def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(WebAppController.get(path) _)
 }

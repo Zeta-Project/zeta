@@ -41,7 +41,8 @@ services:
     links:
       - mongodb
       - database
-    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551", "run"]
+      - webapp
+    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp", "run"]
 
   webapp:
     image: node:boron
@@ -58,7 +59,6 @@ services:
       - "80:80"
     links:
       - api
-      - webapp
       - database
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
