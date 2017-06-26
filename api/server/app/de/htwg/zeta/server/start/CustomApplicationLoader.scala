@@ -1,3 +1,5 @@
+package de.htwg.zeta.server.start
+
 
 import java.io.File
 import javax.inject.Singleton
@@ -23,9 +25,9 @@ import play.api.inject.guice.GuiceableModule
  * Part of the config is parsed and added into the dependency injection.
  * If the config is incorrect there will be an Exception and the application will shut down.
  * <p>
- *  It is the CustomApplicationLoader that decides whether or not the Application will start in production or development mode.
+ *  It is the [[CustomApplicationLoader]] that decides whether or not the Application will start in production or development mode.
  *  Depending on this decision different configuration files will be loaded.
- *  In development mode [[DevelopmentStarter]] will spawn a child-process that will run [[de.htwg.zeta.generatorControl.Main]]
+ *  In development mode [[de.htwg.zeta.server.start.DevelopmentStarter]] will spawn a child-process that will run [[de.htwg.zeta.generatorControl.Main]]
  *
  */
 class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {

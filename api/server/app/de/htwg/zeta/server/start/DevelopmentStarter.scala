@@ -1,3 +1,5 @@
+package de.htwg.zeta.server.start
+
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -12,7 +14,7 @@ import grizzled.slf4j.Logging
 
 /**
  *
- * DevelopmentStarter will start a new ThreadGroup with a single Thread.
+ * [[DevelopmentStarter]] will start a new ThreadGroup with a single Thread.
  * This Thread will spawn a Process that will run [[de.htwg.zeta.generatorControl.Main]].
  * <p>
  * Play reload will not stop running Threads. The Thread is encapsulated in a ThreadGroup because a ThreadGroups is easier to find.
@@ -24,7 +26,7 @@ import grizzled.slf4j.Logging
  */
 class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLoader: ClassLoader) extends Logging {
 
-  info("DevelopmentStarter started")
+  info("de.htwg.zeta.server.start.DevelopmentStarter started")
 
   private def getParents(cl: ClassLoader): List[ClassLoader] = {
     cl.getParent match {
