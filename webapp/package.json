@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "MoDiGen Webapp for Tool-Developers.",
   "scripts": {
-    "dev": "npm run setup && polymer serve & gulp watch",
+    "dev": "npm run setup && polymer serve",
     "setup": "node setup/server.js",
     "test": "polymer test",
     "watch": "gulp watch"
