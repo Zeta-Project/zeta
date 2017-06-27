@@ -3,7 +3,7 @@ package de.htwg.zeta.persistence.transient
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import scala.collection.mutable
+import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
@@ -19,9 +19,9 @@ class TransientTokenCache extends TokenCache with Logging {
 
   private case class Token(userId: UUID, lastUse: Long)
 
-  private val tokens: mutable.HashMap[UUID, Token] = mutable.HashMap.empty
+  private val tokens: TrieMap[UUID, Token] = TrieMap.empty
 
-  private val cleaningInterval = Duration(1, TimeUnit.MINUTES)
+  private val cleaningInterval = Duration(10, TimeUnit.MINUTES)
 
   private val lifeTime: Long = Duration(1, TimeUnit.HOURS).toMillis
 
