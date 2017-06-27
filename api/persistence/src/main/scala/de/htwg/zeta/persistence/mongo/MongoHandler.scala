@@ -61,6 +61,10 @@ import reactivemongo.bson.BSONReader
 import reactivemongo.bson.BSONString
 import reactivemongo.bson.BSONWriter
 import reactivemongo.bson.Macros
+import scalot.Component
+import scalot.DelComp
+import scalot.InsComp
+import scalot.SkipComp
 
 
 object MongoHandler {
@@ -255,5 +259,29 @@ object MongoHandler {
   implicit val loginInfoHandler: BSONDocumentHandler[LoginInfo] = Macros.handler[LoginInfo]
 
   implicit val passwordInfoHandler: BSONDocumentHandler[PasswordInfo] = Macros.handler[PasswordInfo]
+
+  private implicit object ComponentHandler extends BSONDocumentWriter[Component] with BSONDocumentReader[Component] {
+
+    private val sInsComp = "insComp"
+    private val sDelComp = "delComp"
+    private val sSkipComp = "skipComp"
+
+    override def write(component: Component): BSONDocument = {
+      component match {
+        case InsComp(str) => BSONDocument(sType -> sInsComp, sValue -> str)
+        case DelComp(count) => BSONDocument(sType -> sDelComp, sValue -> count)
+        case SkipComp(ret) => BSONDocument(sType -> sSkipComp, sValue -> ret)
+      }
+    }
+
+    override def read(doc: BSONDocument): Component = {
+      doc.getAs[String](sType).get match {
+        case `sInsComp` => InsComp(doc.getAs[String](sValue).get)
+        case `sDelComp` => DelComp(doc.getAs[Int](sValue).get)
+        case `sSkipComp` => SkipComp(doc.getAs[Int](sValue).get)
+      }
+    }
+
+  }
 
 }

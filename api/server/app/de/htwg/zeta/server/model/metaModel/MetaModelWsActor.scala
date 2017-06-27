@@ -14,26 +14,27 @@ import play.api.Logger
 import play.api.libs.json.JsValue
 import scala.language.postfixOps
 
-class MetaModelWsActor(out: ActorRef, metaModelUuid: UUID) extends Actor {
+object MetaModelWsActor {
+  def props(out: ActorRef, metaModelUuid: UUID): Props = Props(new MetaModelWsActor(out, metaModelUuid))
+}
 
-  val log = Logger(getClass getName)
-  val mediator = DistributedPubSub(context.system).mediator
+class MetaModelWsActor(out: ActorRef, metaModelId: UUID) extends Actor {
 
-  mediator ! Subscribe(metaModelUuid.toString, self)
+  val log = Logger(getClass.getName)
+  val mediator: ActorRef = DistributedPubSub(context.system).mediator
+
+  mediator ! Subscribe(metaModelId.toString, self)
 
   /**
    * Send an incoming WebSocket message to all other subscribed WebSocket actors.
    * Every actor, except of the broadcaster itself, forwards the received message to its client.
    */
-  override def receive = {
-    case msg: JsValue => mediator ! Publish(metaModelUuid.toString, MediatorMessage(msg, self))
+  override def receive: Receive = {
+    case msg: JsValue => mediator ! Publish(metaModelId.toString, MediatorMessage(msg, self))
     case msg: MediatorMessage => if (msg.broadcaster != self) out ! msg.msg
 
     case ack: SubscribeAck => log.info(s"Subscribed to ${ack.subscribe.topic}")
     case _ => log.error("Got unknown message")
   }
-}
 
-object MetaModelWsActor {
-  def props(out: ActorRef, metaModelUuid: UUID) = Props(new MetaModelWsActor(out, metaModelUuid))
 }
