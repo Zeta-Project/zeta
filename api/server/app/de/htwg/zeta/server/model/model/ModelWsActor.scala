@@ -20,6 +20,7 @@ import shared.DiagramWSOutMessage.DataVisScope
 import shared.DiagramWSOutMessage.NewScriptFile
 import upickle.default
 
+// TODO Check if still used. If yes Replace DistributedPubSub with local solution
 class ModelWsActor(out: ActorRef, instanceId: UUID, graphType: String) extends Actor {
   val mediator = DistributedPubSub(context.system).mediator
   val log = Logger(this getClass () getName ())
