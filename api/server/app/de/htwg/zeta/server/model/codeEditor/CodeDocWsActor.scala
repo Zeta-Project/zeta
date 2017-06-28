@@ -8,8 +8,6 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import akka.cluster.pubsub.DistributedPubSub
-import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.persistence.Persistence
 import shared.CodeEditorMessage
@@ -32,8 +30,7 @@ object CodeDocWsActor {
  */
 class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String) extends Actor with ActorLogging {
 
-  val mediator: ActorRef = DistributedPubSub(context.system).mediator
-  mediator ! Subscribe(dslType, self)
+  docManager ! CodeDocManagingActor.SubscribeTo(dslType)
 
   /** Tell the client about the existing document */
   Persistence.fullAccessRepository.metaModelEntity.read(metaModelId).map { metaModelEntity: MetaModelEntity =>
