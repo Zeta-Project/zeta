@@ -1,24 +1,24 @@
 package de.htwg.zeta.server.start
 
-
 import java.io.File
 import javax.inject.Singleton
 
-import scala.collection.convert.WrapAsScala
-
-import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigParseOptions
+import com.typesafe.config.impl.ConfigImpl
+import de.htwg.zeta.common.cluster.ClusterAddressSettings
 import de.htwg.zeta.common.cluster.ClusterManager
 import de.htwg.zeta.common.cluster.HostIP
-import de.htwg.zeta.common.cluster.ClusterAddressSettings
 import grizzled.slf4j.Logging
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.bind
+import play.api.inject.guice.GuiceableModule
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceApplicationLoader
-import play.api.inject.guice.GuiceableModule
+
+import scala.collection.convert.WrapAsScala
 
 /**
  * Entrypoint of application. The config is loaded / generated here.
@@ -60,7 +60,7 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
 
     val parsedWithInit = parsed.withFallback(context.initialConfiguration.underlying)
     val nettyConfig = ClusterManager.getLocalNettyConfig(0)
-    val mergedConfig = nettyConfig.withFallback(parsedWithInit).resolve()
+    val mergedConfig = ConfigImpl.systemPropertiesAsConfig().withFallback(nettyConfig.withFallback(parsedWithInit)).resolve()
 
     val seeds: List[String] = environment match {
       case CustomApplicationLoader.DevDeployment => List(s"${HostIP.load()}:${CustomApplicationLoader.devPort}")
