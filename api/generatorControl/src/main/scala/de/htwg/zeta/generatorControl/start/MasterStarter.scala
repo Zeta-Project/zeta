@@ -16,7 +16,6 @@ import akka.stream.ActorMaterializer
 import de.htwg.zeta.common.cluster.ClusterManager
 import de.htwg.zeta.generatorControl.actors.master.Master
 import org.rogach.scallop.ScallopOption
-import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
 
@@ -25,10 +24,8 @@ import play.api.libs.ws.ahc.AhcWSClient
 class MasterStarter(config: MasterConfig) extends Starter {
 
 
-  private val logger = LoggerFactory.getLogger(MasterStarter.getClass)
-
   def start(): Unit = {
-    logger.debug(MasterStarter.LogStart, config.toString)
+    debug(MasterStarter.LogStart.format(config.toString))
     if (config.num == 2) {
       Thread.sleep(MasterStarter.MilliSecToWaitForFirstMaster)
     }
@@ -37,7 +34,7 @@ class MasterStarter(config: MasterConfig) extends Starter {
     startSharedLevelDbOnFirstMaster(config, system)
 
     val journalAddress = ClusterManager.getJournalPath(config.port, config.seeds)
-    logger.debug(MasterStarter.LogJournalAddress, journalAddress.toString)
+    debug(MasterStarter.LogJournalAddress.format(journalAddress.toString))
 
     setSharedJournal(system, journalAddress)
   }
@@ -70,8 +67,8 @@ object MasterStarter {
   val ActorName = "master"
   val ActorRole = "backend"
   val ActorSharedLevelDbStore = "store"
-  val LogJournalAddress = "Journal Address : {}"
-  val LogStart = "Start master actor: {}"
+  val LogJournalAddress = "Journal Address : %s"
+  val LogStart = "Start master actor: %s"
   val MilliSecToWaitForFirstMaster = 10000
   /**
    * This time specify how long the session is, to access the database in a docker container (to execute generator, filter, etc..)

@@ -8,18 +8,16 @@ import scala.language.implicitConversions
 
 import de.htwg.zeta.generatorControl.actors.worker.DockerWorkExecutor
 import de.htwg.zeta.generatorControl.actors.worker.Worker
-import org.slf4j.LoggerFactory
 
 /**
  */
 class WorkersStarter(config: WorkerConfig) extends Starter {
 
-  private val logger = LoggerFactory.getLogger(WorkersStarter.getClass)
 
   def start(): Unit = {
     Thread.sleep(WorkersStarter.MilliSecWaitForMaster)
 
-    logger.debug(WorkersStarter.LogStart, config.numberOfWorkers, config.toString)
+    debug(WorkersStarter.LogStart.format(config.numberOfWorkers, config.toString))
     (1 to config.numberOfWorkers) foreach (i => startWorker(config, i, 0))
   }
 
@@ -32,7 +30,7 @@ class WorkersStarter(config: WorkerConfig) extends Starter {
 
 object WorkersStarter {
   val ActorRole = "worker"
-  val LogStart = "Start `{}` worker actor: {}"
+  val LogStart = "Start `%s` worker actor: %s"
   /**
    * The interval in which a worker register itself to the master
    */

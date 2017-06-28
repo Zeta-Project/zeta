@@ -5,18 +5,14 @@ import scala.language.implicitConversions
 import akka.cluster.sharding.ClusterSharding
 import de.htwg.zeta.generatorControl.actors.developer.Mediator
 import de.htwg.zeta.generatorControl.actors.frontend.DeveloperDummy
-import org.slf4j.LoggerFactory
 
 /**
  */
 class DummyStarter(conf: DummyConfig) extends Starter {
 
 
-  private val logger = LoggerFactory.getLogger(DummyStarter.getClass)
-
-
   def start(): Unit = {
-    logger.debug(DummyStarter.LogStart, conf.toString)
+    logger.debug(DummyStarter.LogStart.format(conf.toString))
     val system = createActorSystem(DummyStarter.ActorRole, conf.seeds, conf.port)
 
     ClusterSharding(system).startProxy(
@@ -33,7 +29,7 @@ class DummyStarter(conf: DummyConfig) extends Starter {
 object DummyStarter {
   val ActorName = "dummy"
   val ActorRole = "dummy"
-  val LogStart = "Start dummy actor: {}"
+  val LogStart = "Start dummy actor: %s"
 
   def apply(cmd: Commands): Option[DummyStarter] = {
     val config = for {

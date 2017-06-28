@@ -16,10 +16,11 @@ import akka.persistence.journal.leveldb.SharedLeveldbJournal
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.common.cluster.ClusterManager
+import grizzled.slf4j.Logging
 
 /**
  */
-protected trait Starter {
+protected trait Starter extends Logging {
   def start(): Unit
 
   protected def setSharedJournal(system: ActorSystem, path: ActorPath): Unit = {

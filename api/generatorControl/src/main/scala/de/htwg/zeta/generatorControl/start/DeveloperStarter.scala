@@ -12,17 +12,14 @@ import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
 import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager
-import org.slf4j.LoggerFactory
 
 /**
  */
 class DeveloperStarter(developer: DeveloperConfig) extends Starter {
 
 
-  private val logger = LoggerFactory.getLogger(DeveloperStarter.getClass)
-
   def start(): Unit = {
-    logger.debug(DeveloperStarter.LogStart, developer.toString)
+    debug(DeveloperStarter.LogStart.format(developer.toString))
     // Thread.sleep(DeveloperStarter.MilliSecWaitForOtherActors)  // FIXME is the sleep necessary
     val system = createActorSystem(Mediator.locatedOnNode, developer.seeds, developer.port)
 
@@ -47,7 +44,7 @@ class DeveloperStarter(developer: DeveloperConfig) extends Starter {
 
 object DeveloperStarter {
   val ActorName = "developer"
-  val LogStart = "Start developer actor: {}"
+  val LogStart = "Start developer actor: %s"
   val MilliSecWaitForOtherActors = 20000
 
   def apply(cmd: Commands): Option[DeveloperStarter] = {
