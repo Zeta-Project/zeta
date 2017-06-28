@@ -11,9 +11,9 @@ import de.htwg.zeta.server.controller.ActivateAccountController
 import de.htwg.zeta.server.controller.MetaModelController
 import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.GeneratorController
-import de.htwg.zeta.server.controller.CodeEditorController
 import de.htwg.zeta.server.controller.DynamicFileController
 import de.htwg.zeta.server.controller.WebAppController
+import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
