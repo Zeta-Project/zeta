@@ -20,7 +20,7 @@ object Persistence {
   private val DefaultPort = 27017
   private val DefaultDb = "zeta"
 
-  private val config = ConfigFactory.load().getConfig("mongodb")
+  private val config = ConfigFactory.load().getConfig("zeta.mongodb")
   private val configServer = if (config.hasPath(SettingServer)) config.getString(SettingServer) else DefaultServer
   private val configPort = if (config.hasPath(SettingPort)) config.getInt(SettingPort) else DefaultPort
   private val configDb = if (config.hasPath(SettingDb)) config.getString(SettingDb) else DefaultDb

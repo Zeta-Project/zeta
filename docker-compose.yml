@@ -43,7 +43,7 @@ services:
       - database
       - webapp
       - generatorControl
-    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production -Dmongodb.server=mongodb", "run"]
+    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production -Dzeta.mongodb.server=mongodb", "run"]
 
   webapp:
     image: node:boron
