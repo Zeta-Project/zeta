@@ -60,6 +60,7 @@ object HostIP extends Logging {
 
   object AddressParser extends AddressParser {
     def unapply(ip: String): Option[(String, Int)] = {
+      // split with -1 so that trailing spaces won't be discarded. For example invalid:address: will produce ["invalid", "address", ""]
       val s = ip.split(delimiter, -1).toList
       s.reverse match {
         // list size must be at least 2. tail can be Nil
