@@ -19,7 +19,7 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType having 2 or more input edges of type inputType" in {
 
     val inputType = MReference("inputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
-    val twoInputEdges = ToEdges(inputType, Seq(inputType.name))
+    val twoInputEdges = ToEdges(inputType, Seq(inputType.name, inputType.name))
     val nodeTwoInputEdge = Node("", mClass, Seq(), Seq(twoInputEdges), Map.empty)
     rule.isValid(nodeTwoInputEdge).get should be(true)
 
