@@ -1,5 +1,7 @@
 package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import play.api.libs.json.Format
 import play.api.libs.json.Json
@@ -10,7 +12,7 @@ import play.api.libs.json.Json
  * @param clazz     the MClass instance that represents the type of the nodes
  * @param nodeNames the names of the nodes
  */
-case class ToNodes(clazz: MClass, nodeNames: Set[String]) extends Link
+case class ToNodes(clazz: MClass, nodeNames: Seq[String]) extends Link
 
 object ToNodes {
 

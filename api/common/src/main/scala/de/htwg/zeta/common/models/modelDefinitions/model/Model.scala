@@ -1,5 +1,7 @@
 package de.htwg.zeta.common.models.modelDefinitions.model
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -17,8 +19,8 @@ import play.api.libs.json.OFormat
 case class Model(
     name: String,
     metaModel: MetaModel,
-    nodes: Set[Node],
-    edges: Set[Edge],
+    nodes: Seq[Node],
+    edges: Seq[Edge],
     uiState: String
 ) {
 

@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -13,26 +15,26 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     "edgeType",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Set.empty,
-    Set.empty,
-    Set[MAttribute]()
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
   )
   val rule = new EdgesNoAttributes("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no attributes" in {
-    val edge = Edge("", mReference, Set(), Set(), Map.empty)
+    val edge = Edge("", mReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on edges of type edgeType with attributes" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("att")))
-    val edge = Edge("", mReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
+    val edge = Edge("", mReference, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(false)
   }
 
   it should "return true on edges of type edgeType with empty attribute values" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set())
-    val edge = Edge("", mReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
+    val edge = Edge("", mReference, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(true)
   }
 
@@ -41,11 +43,11 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
       "differentEdgeType",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val edge = Edge("", differentReference, Set(), Set(), Map.empty)
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 
@@ -55,8 +57,8 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set.empty, Set.empty, Set[MAttribute]())
-    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgesNoAttributes.generateFor(metaModel)
 
     result.size should be (1)

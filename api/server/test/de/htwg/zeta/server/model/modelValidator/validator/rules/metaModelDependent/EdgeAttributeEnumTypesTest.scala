@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
@@ -17,15 +19,15 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
     "reference",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Set.empty, Set.empty,
-    Set[MAttribute]()
+    Seq.empty, Seq.empty,
+    Seq[MAttribute]()
   )
   val rule = new EdgeAttributeEnumTypes("reference", "attributeType", "enumName")
 
   "the rule" should "be true for valid edges" in {
-    val mEnum = MEnum(name = "enumName", values = Set())
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(EnumSymbol("enumName", mEnum.name)))
-    val edge = Edge("edgeId", mReference, Set(), Set(), attribute)
+    val mEnum = MEnum(name = "enumName", values = Seq())
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumSymbol("enumName", mEnum.name)))
+    val edge = Edge("edgeId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
@@ -35,19 +37,19 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       "differentMReference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val edge = Edge("edgeId", differentMReference, Set(), Set(), Map.empty)
+    val edge = Edge("edgeId", differentMReference, Seq(), Seq(), Map.empty)
 
     rule.isValid(edge) should be(None)
   }
 
   it should "be false for invalid edges" in {
-    val differentEnum = MEnum(name = "differentEnumName", values = Set())
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(EnumSymbol("differentEnumName", differentEnum.name)))
-    val edge = Edge("edgeId", mReference, Set(), Set(), attribute)
+    val differentEnum = MEnum(name = "differentEnumName", values = Seq())
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumSymbol("differentEnumName", differentEnum.name)))
+    val edge = Edge("edgeId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -57,11 +59,11 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       "differentRef",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val edge = Edge("", differentReference, Set(), Set(), Map.empty)
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 
@@ -71,7 +73,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val enumType = MEnum("enumName", Set("enumValue1", "enumValue2"))
+    val enumType = MEnum("enumName", Seq("enumValue1", "enumValue2"))
     val enumAttribute = MAttribute(
       "attributeName",
       globalUnique = false,
@@ -104,10 +106,10 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       "reference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute](enumAttribute, scalarAttribute))
-    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute](enumAttribute, scalarAttribute))
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributeEnumTypes.generateFor(metaModel)
 
     result.size should be (1)

@@ -2,12 +2,6 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.mutable.ListBuffer
 
-import de.htwg.zeta.server.model.modelValidator.Util
-import de.htwg.zeta.server.model.modelValidator.Util.El
-import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
-import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
@@ -17,6 +11,12 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.server.model.modelValidator.Util
+import de.htwg.zeta.server.model.modelValidator.Util.El
+import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
+import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -38,7 +38,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
 
     val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.clazz.name))
 
-    val attributes: Map[String, Set[AttributeValue]] = nodes.flatMap(_.attributes).filter(_._1 == attributeType).toMap
+    val attributes: Map[String, Seq[AttributeValue]] = nodes.flatMap(_.attributes).filter(_._1 == attributeType).toMap
     val attributeValues: Seq[AttributeValue] = attributes.values.flatten.toSeq
 
     // convert all attribute values to string for comparison.

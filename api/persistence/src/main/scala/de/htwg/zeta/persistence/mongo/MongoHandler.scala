@@ -2,6 +2,8 @@ package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.common.models.document.DockerSettings
@@ -95,11 +97,11 @@ object MongoHandler {
 
   case class LoginInfoWrapper(loginInfo: LoginInfo)
 
-  implicit val LoginInfoWrapperHandler: BSONDocumentHandler[LoginInfoWrapper] = Macros.handler[LoginInfoWrapper]
+  implicit val loginInfoWrapperHandler: BSONDocumentHandler[LoginInfoWrapper] = Macros.handler[LoginInfoWrapper]
 
   case class PasswordInfoWrapper(authInfo: PasswordInfo)
 
-  implicit val PasswordInfoWrapperHandler: BSONDocumentHandler[PasswordInfoWrapper] = Macros.handler[PasswordInfoWrapper]
+  implicit val passwordInfoWrapperHandler: BSONDocumentHandler[PasswordInfoWrapper] = Macros.handler[PasswordInfoWrapper]
 
   private val uuidSetHandler = new {
 
@@ -180,7 +182,7 @@ object MongoHandler {
         case `sBool` => BoolType
         case `sInt` => IntType
         case `sDouble` => DoubleType
-        case `sEnum` => MEnum(doc.getAs[String](sName).get, doc.getAs[Set[String]](sValues).get)
+        case `sEnum` => MEnum(doc.getAs[String](sName).get, doc.getAs[Seq[String]](sValues).get)
       }
     }
 

@@ -1,5 +1,7 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -19,9 +21,9 @@ import play.api.libs.json.Json
  */
 case class MetaModel(
     name: String,
-    classes: Set[MClass],
-    references: Set[MReference],
-    enums: Set[MEnum],
+    classes: Seq[MClass],
+    references: Seq[MReference],
+    enums: Seq[MEnum],
     uiState: String
 ) {
 

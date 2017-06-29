@@ -2,6 +2,8 @@ package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel

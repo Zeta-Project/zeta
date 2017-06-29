@@ -2,6 +2,8 @@ package de.htwg.zeta.common.models.modelDefinitions.model
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json

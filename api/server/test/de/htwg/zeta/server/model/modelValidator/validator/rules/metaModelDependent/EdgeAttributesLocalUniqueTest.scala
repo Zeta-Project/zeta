@@ -18,21 +18,21 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
     "edgeType",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Set.empty,
-    Set.empty,
-    Set[MAttribute]()
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
   )
 
   "isValid" should "return true on valid edges" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
-    val edge = Edge("edgeOneId", mReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
+    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("dupValue"), MString("dupValue"), MString("valueThree")))
-    val edge = Edge("edgeOneId", mReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("dupValue"), MString("dupValue"), MString("valueThree")))
+    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -42,11 +42,11 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       "differentEdgeType",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val edge = Edge("edgeOneId", mReference, Set(), Set(), Map.empty)
+    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), Map.empty)
 
     rule.isValid(edge) should be(None)
   }
@@ -84,11 +84,11 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       "reference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute)
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute)
     )
-    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesLocalUnique.generateFor(metaModel)
 
     result.size should be(1)

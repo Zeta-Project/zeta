@@ -3,6 +3,7 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.collection.immutable.Seq
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -21,8 +22,8 @@ import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsError
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
