@@ -187,14 +187,14 @@ class UtilTest extends FlatSpec with Matchers {
   }
 
   "getAttributeTypeClassName" should "return the correct class name of an AttributeType" in {
-    Util.getAttributeTypeClassName(StringType) should be("String")
-    Util.getAttributeTypeClassName(DoubleType) should be("Double")
-    Util.getAttributeTypeClassName(BoolType) should be("Bool")
-    Util.getAttributeTypeClassName(IntType) should be("Int")
+    StringType.asString should be("String")
+    DoubleType.asString should be("Double")
+    BoolType.asString should be("Bool")
+    IntType.asString should be("Int")
 
     val mEnum: MEnum = MEnum(name = "TestMEnum", values = Seq.empty)
 
-    Util.getAttributeTypeClassName(mEnum) should be("MEnum")
+    mEnum.asString should be("MEnum")
   }
 
   "simplifyMetaModelGraph" should "convert the meta model to a simpler structure" in {

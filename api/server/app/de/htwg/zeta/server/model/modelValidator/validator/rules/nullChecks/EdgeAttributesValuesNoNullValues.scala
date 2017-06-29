@@ -11,5 +11,5 @@ class EdgeAttributesValuesNoNullValues extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.edges.flatMap(_.attributes.values).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.edges.flatMap(_.attributes.values).flatten.contains(null) // scalastyle:ignore null
 }

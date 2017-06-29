@@ -32,8 +32,6 @@ object Util {
 
   /* Meta Model Util */
 
-  def getAttributeTypeClassName(attributeType: AttributeType): String = attributeType.getClass.getSimpleName.split("\\$").last
-
   /**
    * Internal representation of [[MAttribute]].
    *
@@ -128,12 +126,12 @@ object Util {
 
     def mapElement(el: MClass): El = El(
       name = el.name,
-      superTypes = el.superTypeNames.toSeq,
+      superTypes = el.superTypeNames,
       subTypes = allClasses.filter(_.superTypeNames.contains(el.name)).map(_.name),
-      attributes = el.attributes.map(mapAttribute).toSeq,
+      attributes = el.attributes.map(mapAttribute),
       abstractness = el.abstractness,
-      inputs = el.inputs.map(mapLinkDef).toSeq,
-      outputs = el.outputs.map(mapLinkDef).toSeq
+      inputs = el.inputs.map(mapLinkDef),
+      outputs = el.outputs.map(mapLinkDef)
     )
 
     def mapAttribute(att: MAttribute): Att = Att(

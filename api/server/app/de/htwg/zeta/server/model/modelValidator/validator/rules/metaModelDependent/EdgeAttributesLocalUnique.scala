@@ -47,7 +47,7 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
         if (attributeValues.isEmpty) {
           true
         } else {
-          attributeValues.size == attribute.size
+          attributeValues.distinct.size == attribute.size
         }
     }
   }

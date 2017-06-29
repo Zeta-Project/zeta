@@ -28,13 +28,25 @@ case class MetaModel(
 ) {
 
   /** Classes mapped to their own names. */
-  val classMap: Map[String, MClass] = classes.map(clazz => (clazz.name, clazz)).toMap
+  val classMap: Map[String, MClass] = Option(classes).fold(
+    Map.empty[String, MClass]
+  ) { classes =>
+    classes.filter(Option(_).isDefined).map(clazz => (clazz.name, clazz)).toMap
+  }
 
   /** References mapped to their own names. */
-  val referenceMap: Map[String, MReference] = references.map(reference => (reference.name, reference)).toMap
+  val referenceMap: Map[String, MReference] = Option(references).fold(
+    Map.empty[String, MReference]
+  ) { references =>
+    references.filter(Option(_).isDefined).map(reference => (reference.name, reference)).toMap
+  }
 
   /** Enums mapped to their own names. */
-  val enumMap: Map[String, MEnum] = enums.map(enum => (enum.name, enum)).toMap
+  val enumMap: Map[String, MEnum] = Option(enums).fold(
+    Map.empty[String, MEnum]
+  ) { enums =>
+    enums.filter(Option(_).isDefined).map(enum => (enum.name, enum)).toMap
+  }
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)

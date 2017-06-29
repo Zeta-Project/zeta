@@ -44,7 +44,7 @@ class NodeAttributesLocalUnique(val nodeType: String, val attributeType: String)
           case Some(_: EnumSymbol) => handleEnums(attribute)
         }
 
-        if (attributeValues.isEmpty) true else attributeValues.size == attribute.size
+        if (attributeValues.isEmpty) true else attributeValues.distinct.size == attribute.size
     }
   }
 

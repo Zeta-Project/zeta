@@ -25,9 +25,9 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, val attributeDataType: AttributeType) extends SingleNodeRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
-    s"Attributes of type $attributeType in nodes of type $nodeType must be of data type ${Util.getAttributeTypeClassName(attributeDataType)}."
+    s"Attributes of type $attributeType in nodes of type $nodeType must be of data type ${attributeDataType.asString}."
   override val possibleFix: String =
-    s"Remove attribute values of attribute $attributeType in node $nodeType which are not of data type ${Util.getAttributeTypeClassName(attributeDataType)}."
+    s"Remove attribute values of attribute $attributeType in node $nodeType which are not of data type ${attributeDataType.asString}."
 
   override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
 
@@ -54,7 +54,7 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
   }
 
   override val dslStatement: String =
-    s"""Attributes ofType "$attributeType" inNodes "$nodeType" areOfScalarType "${Util.getAttributeTypeClassName(attributeDataType)}""""
+    s"""Attributes ofType "$attributeType" inNodes "$nodeType" areOfScalarType "${attributeDataType.asString}""""
 }
 
 object NodeAttributeScalarTypes extends GeneratorRule {

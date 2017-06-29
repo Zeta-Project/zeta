@@ -11,5 +11,5 @@ class EdgeSourcesNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.edges.contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.edges.map(_.source).contains(null) // scalastyle:ignore null
 }

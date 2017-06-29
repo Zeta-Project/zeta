@@ -38,8 +38,8 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
 
     val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.clazz.name))
 
-    val attributes: Map[String, Seq[AttributeValue]] = nodes.flatMap(_.attributes).filter(_._1 == attributeType).toMap
-    val attributeValues: Seq[AttributeValue] = attributes.values.flatten.toSeq
+    val attributes: Seq[(String, Seq[AttributeValue])] = nodes.flatMap(_.attributes).filter(_._1 == attributeType)
+    val attributeValues: Seq[AttributeValue] = attributes.flatMap(_._2)
 
     // convert all attribute values to string for comparison.
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {

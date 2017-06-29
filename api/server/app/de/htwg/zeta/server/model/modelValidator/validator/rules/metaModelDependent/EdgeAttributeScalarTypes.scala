@@ -14,7 +14,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
@@ -26,10 +25,10 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"""Attributes of type $attributeType in edges of type $edgeType must be of data type
-      |${Util.getAttributeTypeClassName(attributeDataType)}.""".stripMargin
+      |${attributeDataType.asString}.""".stripMargin
   override val possibleFix: String =
     s"""Remove attribute values of attribute $attributeType in edge $edgeType which are not of data type
-      |${Util.getAttributeTypeClassName(attributeDataType)}.""".stripMargin
+      |${attributeDataType.asString}.""".stripMargin
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
 
@@ -56,7 +55,7 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
   }
 
   override val dslStatement: String =
-    s"""Attributes ofType "$attributeType" inEdges "$edgeType" areOfScalarType "${Util.getAttributeTypeClassName(attributeDataType)}""""
+    s"""Attributes ofType "$attributeType" inEdges "$edgeType" areOfScalarType "${attributeDataType.asString}""""
 }
 
 object EdgeAttributeScalarTypes extends GeneratorRule {

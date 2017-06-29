@@ -11,17 +11,37 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 
 
-sealed trait AttributeType
+sealed trait AttributeType {
+
+  val asString: String
+
+}
 
 object AttributeType {
 
-  case object StringType extends AttributeType
+  case object StringType extends AttributeType {
 
-  case object BoolType extends AttributeType
+    override val asString = "String"
 
-  case object IntType extends AttributeType
+  }
 
-  case object DoubleType extends AttributeType
+  case object BoolType extends AttributeType {
+
+    override val asString = "Bool"
+
+  }
+
+  case object IntType extends AttributeType {
+
+    override val asString = "Int"
+
+  }
+
+  case object DoubleType extends AttributeType {
+
+    override val asString = "Double"
+
+  }
 
   /** The MEnum implementation
    *
@@ -29,6 +49,8 @@ object AttributeType {
    * @param values the names of the symbols
    */
   case class MEnum(name: String, values: Seq[String]) extends MObject with AttributeType {
+
+    override val asString: String = "MEnum"
 
     /** The symbols. */
     val symbols: Seq[EnumSymbol] = values.map(value => EnumSymbol(name, value))
@@ -66,6 +88,15 @@ object AttributeType {
       }
     }
 
+  }
+
+  def parse(s: String): AttributeType = {
+    s match {
+      case StringType.asString => StringType
+      case BoolType.asString => BoolType
+      case IntType.asString => IntType
+      case DoubleType.asString => DoubleType
+    }
   }
 
 }
