@@ -4,8 +4,8 @@ import java.util.UUID
 import javax.inject.Inject
 
 import scala.collection.immutable.Seq
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
@@ -13,17 +13,22 @@ import controllers.routes
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MetaModelUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MetaModelEntityUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MClassUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MReferenceUiFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -47,7 +52,7 @@ class MetaModelRestApi @Inject()() extends Controller {
           HLink.delete("remove", routes.ScalaRoutes.getMetamodels(mm.id).absoluteURL()(request))
         )))
       })
-    }).map(list => Ok(Json.toJson(list))).recover {
+    }).map((set: Set[MetaModelShortInfo]) => Ok(JsArray(set.toList.map(MetaModelShortInfo.writes.writes)))).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
@@ -58,7 +63,7 @@ class MetaModelRestApi @Inject()() extends Controller {
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[MetaModel].fold(
+    request.body.validate(MetaModelUiFormat).fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       entity => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.create(
@@ -68,8 +73,8 @@ class MetaModelRestApi @Inject()() extends Controller {
             rev = "1",
             metaModel = entity
           )
-        ).map { metaModelEntity =>
-          Created(Json.toJson(metaModelEntity))
+        ).map { (metaModelEntity: MetaModelEntity) =>
+          Created(MetaModelEntityUiFormat.writes(metaModelEntity))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -84,13 +89,13 @@ class MetaModelRestApi @Inject()() extends Controller {
    * @return result
    */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    val in = request.body.validate[MetaModel]
+    val in = request.body.validate(MetaModelUiFormat)
     in.fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       metaModel => {
         val repo = restrictedAccessRepository(request.identity.id).metaModelEntity
         repo.update(id, _.copy(metaModel = metaModel)).map { _ =>
-          Ok(Json.toJson(metaModel))
+          Ok(MetaModelUiFormat.writes(metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -115,18 +120,18 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns whole metamodels incl. dsl definitions and HATEOAS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      val out = m.copy(links = Some(Seq(
+      val out: MetaModelEntity = m.copy(links = Some(Seq(
         HLink.put("update", routes.ScalaRoutes.getMetamodels(m.id).absoluteURL()(request)),
         HLink.delete("remove", routes.ScalaRoutes.getMetamodels(m.id).absoluteURL()(request))
       )))
-      Ok(Json.toJson(out))
+      Ok(MetaModelEntityUiFormat.writes(out))
     })
   }
 
   /** returns pure metamodel without dsl definitions */
   def getMetaModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      Ok(Json.toJson(m.metaModel))
+      Ok(MetaModelUiFormat.writes(m.metaModel))
     })
   }
 
@@ -139,24 +144,24 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns all MClasses of a specific metamodel as Json Array */
   def getMClasses(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      val classes = m.metaModel.classMap.values
-      Ok(Json.toJson(classes))
+      val classes = m.metaModel.classMap.values.toList
+      Ok(JsArray(classes.map(MClassUiFormat.writes)))
     })
   }
 
   /** returns all MReferences of a specific metamodel as Json Array */
   def getMReferences(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      val references = m.metaModel.referenceMap.values
-      Ok(Json.toJson(references))
+      val references = m.metaModel.referenceMap.values.toList
+      Ok(JsArray(references.map(MReferenceUiFormat.writes)))
     })
   }
 
   /** returns specific MClass of a specific metamodel as Json Object */
   def getMClass(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.metaModel.classMap.get(name).map(clazz =>
-        Ok(Json.toJson(clazz))
+      m.metaModel.classMap.get(name).map((clazz: MClass) =>
+        Ok(MClassUiFormat.writes(clazz))
       ).getOrElse(NotFound)
     })
   }
@@ -164,8 +169,8 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns specific MReference of a specific metamodel as Json Object */
   def getMReference(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.metaModel.referenceMap.get(name).map(reference =>
-        Ok(Json.toJson(reference))
+      m.metaModel.referenceMap.get(name).map((reference: MReference) =>
+        Ok(MReferenceUiFormat.writes(reference))
       ).getOrElse(NotFound)
     })
   }
@@ -173,21 +178,21 @@ class MetaModelRestApi @Inject()() extends Controller {
   /** returns style definition */
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.dsl.style.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      m.dsl.style.map(m => Ok(Style.styleFormat.writes(m))).getOrElse(NotFound)
     })
   }
 
   /** returns shape definition */
   def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.dsl.shape.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      m.dsl.shape.map(m => Ok(Shape.shapeFormat.writes(m))).getOrElse(NotFound)
     })
   }
 
   /** returns diagram definition */
   def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: MetaModelEntity) => {
-      m.dsl.diagram.map(m => Ok(Json.toJson(m))).getOrElse(NotFound)
+      m.dsl.diagram.map(m => Ok(Diagram.diagramFormat.writes(m))).getOrElse(NotFound)
     })
   }
 
@@ -202,11 +207,11 @@ class MetaModelRestApi @Inject()() extends Controller {
 
   /** updates shape definition */
   def updateShape(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[Shape].fold(
+    request.body.validate(Shape.shapeFormat).fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       shape => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
-          Ok(Json.toJson(metaModelEntity.metaModel))
+          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -216,11 +221,11 @@ class MetaModelRestApi @Inject()() extends Controller {
 
   /** updates style definition */
   def updateStyle(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[Style].fold(
+    request.body.validate(Style.styleFormat).fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       style => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
-          Ok(Json.toJson(metaModelEntity.metaModel))
+          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -230,11 +235,11 @@ class MetaModelRestApi @Inject()() extends Controller {
 
   /** updates diagram definition */
   def updateDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[Diagram].fold(
+    request.body.validate(Diagram.diagramFormat).fold(
       faulty => Future.successful(BadRequest(JsError.toJson(faulty))),
       diagram => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
-          Ok(Json.toJson(metaModelEntity.metaModel))
+          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
