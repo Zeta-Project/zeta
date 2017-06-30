@@ -7,18 +7,23 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MBounds
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import play.api.data.validation.ValidationError
 import play.api.libs.json.Reads
 import play.api.libs.json.JsError
@@ -30,18 +35,14 @@ import play.api.libs.json.JsNumber
 import play.api.libs.json.JsString
 import play.api.libs.json.Writes
 import play.api.libs.json.JsBoolean
+import play.api.libs.json.Json
+import play.api.libs.json.JsArray
 
 /**
  */
 object MetaModelUiJsonFormat {
 
-  val metaModelFormat: Format[MetaModel] = Format(MetaModelReads, Writes(writeJson))
-
-  def writeJson(mm: MetaModel): JsValue = {
-    null
-  }
-
-  object MetaModelReads extends Reads[MetaModel] {
+  object MetaModelFormat extends Format[MetaModel] {
 
     private def checkObjectsUnique(elems: List[MObject]): JsResult[List[MObject]] = {
       val set: mutable.Set[String] = mutable.HashSet()
@@ -117,9 +118,17 @@ object MetaModelUiJsonFormat {
       mm.flatMap(validateMLinks)
     }
 
+    override def writes(mm: MetaModel): JsValue = {
+      val elems: Seq[MObject] = mm.classes ++ mm.references ++ mm.enums
+      Json.obj(
+        "name" -> mm.name,
+        "elements" -> JsArray(elems.map(MObjectWrites.writes)),
+        "uiState" -> mm.uiState
+      )
+    }
   }
 
-  trait MBoundsReads[MB <: MBounds] extends Reads[MB] { // scalastyle:ignore
+  trait MBoundsFormat[MB <: MBounds] extends Format[MB] { // scalastyle:ignore
     private val boundsError = JsError(ValidationError("invalid lower and/or upper bound"))
 
     private def boundsCheck(bounds: MBounds): Boolean = {
@@ -134,7 +143,7 @@ object MetaModelUiJsonFormat {
     def readsUnchecked(json: JsValue): JsResult[MB]
   }
 
-  trait MLinkDefReads[MB <: MBounds] extends MBoundsReads[MB] { // scalastyle:ignore
+  trait MLinkDefFormats[MB <: MBounds] extends MBoundsFormat[MB] { // scalastyle:ignore
     override final def readsUnchecked(jsv: JsValue): JsResult[MB] = {
       for {
         refName <- jsv.\("type").validate[String]
@@ -147,31 +156,42 @@ object MetaModelUiJsonFormat {
     }
 
     def buildMLink(name: String, upperBound: Int, lowerBound: Int, deleteIfLower: Boolean): MB
+
+    override final def writes(mLink: MB): JsValue = {
+      val (name: String, upperBound: Int, lowerBound: Int, deleteIfLower: Boolean) = destroyMLink(mLink)
+      Json.obj(
+        "type" -> name,
+        "upperBound" -> upperBound,
+        "lowerBound" -> lowerBound,
+        "deleteIfLower" -> deleteIfLower
+      )
+    }
+
+    def destroyMLink(mb: MB): (String, Int, Int, Boolean)
   }
 
   // replacement for MLinkDef
-  object MReferenceLinkDefReads extends MLinkDefReads[MReferenceLinkDef] {
+  object MReferenceLinkDefFormats extends MLinkDefFormats[MReferenceLinkDef] {
     override def buildMLink(name: String, upperBound: Int, lowerBound: Int, deleteIfLower: Boolean): MReferenceLinkDef =
       MReferenceLinkDef(name, upperBound, lowerBound, deleteIfLower)
+
+    override def destroyMLink(mb: MReferenceLinkDef): (String, Int, Int, Boolean) = {
+      MReferenceLinkDef.unapply(mb).get // safe call to get
+    }
+
   }
 
   // replacement for MLinkDef
-  object MClassLinkDefReads extends MLinkDefReads[MClassLinkDef] {
+  object MClassLinkDefFormats extends MLinkDefFormats[MClassLinkDef] {
     override def buildMLink(name: String, upperBound: Int, lowerBound: Int, deleteIfLower: Boolean): MClassLinkDef =
       MClassLinkDef(name, upperBound, lowerBound, deleteIfLower)
-  }
 
-  val attributeTypeWrites: Writes[AttributeType] = new Writes[AttributeType] {
-    override def writes(a: AttributeType): JsValue = {
-      val out = a match {
-        case MEnum(name, _) => name
-        case _ => a.asString
-      }
-      JsString(out)
+    override def destroyMLink(mb: MClassLinkDef): (String, Int, Int, Boolean) = {
+      MClassLinkDef.unapply(mb).get // safe call to get
     }
   }
 
-  class MAttributeReads(val enumMap: Map[String, MEnum]) extends MBoundsReads[MAttribute] {
+  class MAttributeFormat(val enumMap: Map[String, MEnum]) extends MBoundsFormat[MAttribute] {
     private val singletonString = JsSuccess(StringType)
     private val singletonBool = JsSuccess(BoolType)
     private val singletonInt = JsSuccess(IntType)
@@ -231,19 +251,59 @@ object MetaModelUiJsonFormat {
         MAttribute(name, globalUnique, localUnique, typ, default, constant, singleAssignment, expression, ordered, transient, upperBound, lowerBound)
       }
     }
+
+
+    override def writes(ma: MAttribute): JsValue = MAttributeWrites.writes(ma)
+  }
+
+  object MAttributeWrites extends Writes[MAttribute] {
+
+    private def writesAttributeType(a: AttributeType): JsValue = {
+      val out = a match {
+        case MEnum(name, _) => name
+        case _ => a.asString
+      }
+      JsString(out)
+    }
+
+    private def writesAttributeValue(av: AttributeValue): JsValue = av match {
+      case MString(v) => JsString(v)
+      case MBool(v) => JsBoolean(v)
+      case MInt(v) => JsNumber(v)
+      case MDouble(v) => JsNumber(v)
+      case EnumSymbol(name, _) => JsString(name)
+    }
+
+
+    override def writes(ma: MAttribute): JsValue = {
+      Json.obj(
+        "name" -> ma.name,
+        "globalUnique" -> ma.globalUnique,
+        "localUnique" -> ma.localUnique,
+        "type" -> writesAttributeType(ma.typ),
+        "default" -> writesAttributeValue(ma.default),
+        "constant" -> ma.constant,
+        "singleAssignment" -> ma.singleAssignment,
+        "expression" -> ma.expression,
+        "ordered" -> ma.ordered,
+        "transient" -> ma.transient,
+        "upperBound" -> ma.upperBound,
+        "lowerBound" -> ma.lowerBound
+      )
+    }
   }
 
   class MClassReads(val enumMap: Map[String, MEnum]) extends Reads[MClass] {
 
-    private val attributeListReads: Reads[List[MAttribute]] = Reads.list(new MAttributeReads(enumMap))
+    private val attributeListReads: Reads[List[MAttribute]] = Reads.list(new MAttributeFormat(enumMap))
 
     override def reads(json: JsValue): JsResult[MClass] = {
       for {
         name <- json.\("name").validate[String](Reads.minLength[String](1))
         abstractness <- json.\("abstract").validate[Boolean]
         superTypes <- json.\("superTypes").validate[Seq[String]]
-        inputs <- json.\("inputs").validate(Reads.list(MReferenceLinkDefReads))
-        outputs <- json.\("outputs").validate(Reads.list(MReferenceLinkDefReads))
+        inputs <- json.\("inputs").validate(Reads.list(MReferenceLinkDefFormats))
+        outputs <- json.\("outputs").validate(Reads.list(MReferenceLinkDefFormats))
         attributes <- json.\("attributes").validate(attributeListReads)
       } yield {
         MClass(name, abstractness, superTypes, inputs, outputs, attributes)
@@ -251,22 +311,50 @@ object MetaModelUiJsonFormat {
     }
   }
 
+  object MClassWrites extends Writes[MClass] {
+    override def writes(mc: MClass): JsValue = {
+      Json.obj(
+        "mType" -> "mClass",
+        "name" -> mc.name,
+        "abstract" -> mc.abstractness,
+        "superTypes" -> JsArray(mc.superTypeNames.map(JsString)),
+        "inputs" -> JsArray(mc.inputs.map(MReferenceLinkDefFormats.writes)),
+        "outputs" -> JsArray(mc.outputs.map(MReferenceLinkDefFormats.writes)),
+        "attributes" -> JsArray(mc.attributes.map(MAttributeWrites.writes))
+      )
+    }
+  }
+
 
   class MReferenceReads(val enumMap: Map[String, MEnum]) extends Reads[MReference] {
 
-    private val attributeListReads: Reads[List[MAttribute]] = Reads.list(new MAttributeReads(enumMap))
+    private val attributeListReads: Reads[List[MAttribute]] = Reads.list(new MAttributeFormat(enumMap))
 
     override def reads(json: JsValue): JsResult[MReference] = {
       for {
         name <- json.\("name").validate[String](Reads.minLength[String](1))
         sourceDeletionDeletesTarget <- json.\("sourceDeletionDeletesTarget").validate[Boolean]
         targetDeletionDeletesSource <- json.\("targetDeletionDeletesSource").validate[Boolean]
-        source <- json.\("source").validate(Reads.list(MClassLinkDefReads))
-        target <- json.\("target").validate(Reads.list(MClassLinkDefReads))
+        source <- json.\("source").validate(Reads.list(MClassLinkDefFormats))
+        target <- json.\("target").validate(Reads.list(MClassLinkDefFormats))
         attributes <- json.\("attributes").validate(attributeListReads)
       } yield {
         MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes)
       }
+    }
+  }
+
+  object MReferenceWrites extends Writes[MReference] {
+    override def writes(mr: MReference): JsValue = {
+      Json.obj(
+        "mType" -> "mReference",
+        "name" -> mr.name,
+        "sourceDeletionDeletesTarget" -> mr.sourceDeletionDeletesTarget,
+        "targetDeletionDeletesSource" -> mr.targetDeletionDeletesSource,
+        "source" -> JsArray(mr.source.map(MClassLinkDefFormats.writes)),
+        "target" -> JsArray(mr.target.map(MClassLinkDefFormats.writes)),
+        "attributes" -> JsArray(mr.attributes.map(MAttributeWrites.writes))
+      )
     }
   }
 
@@ -292,6 +380,25 @@ object MetaModelUiJsonFormat {
         case JsSuccess(_, _) => JsError("Missing or unknown mType at top level, only mClass, mReference and mEnum allowed")
         case e: JsError => e
       }
+    }
+  }
+
+  object MObjectWrites extends Writes[MObject] {
+    override def writes(mo: MObject): JsValue = mo match {
+      case mc: MClass => MClassWrites.writes(mc)
+      case mr: MReference => MReferenceWrites.writes(mr)
+      case me: MEnum => MEnumWrites.writes(me)
+    }
+  }
+
+
+  object MEnumWrites extends Writes[MEnum] {
+    override def writes(o: MEnum): JsValue = {
+      Json.obj(
+        "mType" -> "mEnum",
+        "name" -> o.name,
+        "symbols" -> JsArray(o.values.map(JsString))
+      )
     }
   }
 
@@ -324,6 +431,7 @@ object MetaModelUiJsonFormat {
         MEnum(name, symbols)
       }
     }
+
   }
 
 }
