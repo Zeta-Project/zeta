@@ -119,7 +119,7 @@ object MetaModelUiJsonFormat {
 
   }
 
-  trait MBoundsReads[MB <: MBounds] extends Reads[MB] {
+  trait MBoundsReads[MB <: MBounds] extends Reads[MB] { // scalastyle:ignore
     private val boundsError = JsError(ValidationError("invalid lower and/or upper bound"))
 
     private def boundsCheck(bounds: MBounds): Boolean = {
@@ -134,7 +134,7 @@ object MetaModelUiJsonFormat {
     def readsUnchecked(json: JsValue): JsResult[MB]
   }
 
-  trait MLinkDefReads[MB <: MBounds] extends MBoundsReads[MB] {
+  trait MLinkDefReads[MB <: MBounds] extends MBoundsReads[MB] { // scalastyle:ignore
     override final def readsUnchecked(jsv: JsValue): JsResult[MB] = {
       for {
         refName <- jsv.\("type").validate[String]
