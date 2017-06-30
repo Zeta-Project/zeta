@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MBounds
 import play.api.data.validation.ValidationError
@@ -7,7 +7,7 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsResult
 import play.api.libs.json.Format
 
-private[metaModelUIJsonFormat] trait MBoundsFormat[MB <: MBounds] extends Format[MB] { // scalastyle:ignore
+private[metaModelUiFormat] trait MBoundsFormat[MB <: MBounds] extends Format[MB] { // scalastyle:ignore
   private val boundsError = JsError(ValidationError("invalid lower and/or upper bound"))
 
   private def boundsCheck(bounds: MBounds): Boolean = {

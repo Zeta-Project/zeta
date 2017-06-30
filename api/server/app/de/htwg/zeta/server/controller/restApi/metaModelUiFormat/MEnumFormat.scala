@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import play.api.libs.json.JsError
@@ -11,7 +11,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.JsArray
 
-private[metaModelUIJsonFormat] object MEnumFormat extends Format[MEnum] {
+private[metaModelUiFormat] object MEnumFormat extends Format[MEnum] {
 
   private val enumSymbolError = JsError("Enum symbols must be unique and not empty")
 

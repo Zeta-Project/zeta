@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -11,7 +11,7 @@ import play.api.libs.json.Format
 import play.api.libs.json.JsValue
 import play.api.libs.json.Writes
 
-private[metaModelUIJsonFormat] class MObjectFormat(enumOpts: List[Option[MEnum]]) extends Format[MObject] {
+private[metaModelUiFormat] class MObjectFormat(enumOpts: List[Option[MEnum]]) extends Format[MObject] {
 
   private val enumMap: Map[String, MEnum] = enumOpts.flatMap {
     case Some(enum) => List((enum.name, enum))
@@ -39,7 +39,7 @@ private[metaModelUIJsonFormat] class MObjectFormat(enumOpts: List[Option[MEnum]]
 }
 
 
-private[metaModelUIJsonFormat] object MObjectFormat extends Writes[MObject] {
+private[metaModelUiFormat] object MObjectFormat extends Writes[MObject] {
   override def writes(mo: MObject): JsValue = mo match {
     case mc: MClass => MClassUiFormat.writes(mc)
     case mr: MReference => MReferenceUiFormat.writes(mr)

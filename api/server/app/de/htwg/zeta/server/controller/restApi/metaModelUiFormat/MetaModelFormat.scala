@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import scala.annotation.tailrec
 import scala.collection.mutable
@@ -21,7 +21,7 @@ import play.api.libs.json.Reads
 import play.api.libs.json.JsSuccess
 
 
-private[metaModelUIJsonFormat] object MetaModelFormat extends Format[MetaModel] {
+private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
 
   private def checkObjectsUnique(elems: List[MObject]): JsResult[List[MObject]] = {
     val set: mutable.Set[String] = mutable.HashSet()

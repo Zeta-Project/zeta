@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
@@ -24,7 +24,7 @@ import play.api.libs.json.JsError
 import play.api.libs.json.Writes
 import play.api.libs.json.Json
 
-private[metaModelUIJsonFormat] class MAttributeFormat(val enumMap: Map[String, MEnum]) extends MBoundsFormat[MAttribute] {
+private[metaModelUiFormat] class MAttributeFormat(val enumMap: Map[String, MEnum]) extends MBoundsFormat[MAttribute] {
   private val singletonString = JsSuccess(StringType)
   private val singletonBool = JsSuccess(BoolType)
   private val singletonInt = JsSuccess(IntType)
@@ -89,7 +89,7 @@ private[metaModelUIJsonFormat] class MAttributeFormat(val enumMap: Map[String, M
   override def writes(ma: MAttribute): JsValue = MAttributeFormat.writes(ma)
 }
 
-private[metaModelUIJsonFormat] object MAttributeFormat extends Writes[MAttribute] {
+private[metaModelUiFormat] object MAttributeFormat extends Writes[MAttribute] {
 
   private def writesAttributeType(a: AttributeType): JsValue = {
     val out = a match {

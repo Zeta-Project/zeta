@@ -1,9 +1,9 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
 // replacement for MLinkDef
-private[metaModelUIJsonFormat] object MReferenceLinkDefFormat extends MLinkDefFormat[MReferenceLinkDef] {
+private[metaModelUiFormat] object MReferenceLinkDefFormat extends MLinkDefFormat[MReferenceLinkDef] {
   override def buildMLink(name: String, upperBound: Int, lowerBound: Int, deleteIfLower: Boolean): MReferenceLinkDef =
     MReferenceLinkDef(name, upperBound, lowerBound, deleteIfLower)
 

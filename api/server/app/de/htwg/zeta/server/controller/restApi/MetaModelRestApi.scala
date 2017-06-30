@@ -19,10 +19,10 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MetaModelUiFormat
-import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MetaModelEntityUiFormat
-import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MClassUiFormat
-import de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat.MReferenceUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MetaModelUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MetaModelEntityUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MClassUiFormat
+import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MReferenceUiFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv

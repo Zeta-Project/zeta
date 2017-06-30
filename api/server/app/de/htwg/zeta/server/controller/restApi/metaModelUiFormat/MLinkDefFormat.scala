@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MBounds
 import play.api.libs.json.JsValue
@@ -6,7 +6,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.JsResult
 
-private[metaModelUIJsonFormat] trait MLinkDefFormat[MB <: MBounds] extends MBoundsFormat[MB] { // scalastyle:ignore
+private[metaModelUiFormat] trait MLinkDefFormat[MB <: MBounds] extends MBoundsFormat[MB] { // scalastyle:ignore
   override final def readsUnchecked(jsv: JsValue): JsResult[MB] = {
     for {
       refName <- jsv.\("type").validate[String]
