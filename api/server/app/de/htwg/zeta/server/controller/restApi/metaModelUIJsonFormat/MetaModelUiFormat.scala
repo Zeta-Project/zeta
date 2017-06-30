@@ -7,7 +7,7 @@ import play.api.libs.json.Format
 
 /**
  */
-object MetaModelUiJsonFormat extends Format[MetaModel] {
+object MetaModelUiFormat extends Format[MetaModel] {
 
 
   override def writes(o: MetaModel): JsValue = MetaModelFormat.writes(o)

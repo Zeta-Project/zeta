@@ -18,8 +18,8 @@ private[metaModelUIJsonFormat] class MObjectFormat(enumOpts: List[Option[MEnum]]
     case None => Nil
   }.toMap
 
-  private val mClassReads = new MClassFormat(enumMap)
-  private val mRefsReads = new MReferenceFormat(enumMap)
+  private val mClassReads = new MClassUiFormat(enumMap)
+  private val mRefsReads = new MReferenceUiFormat(enumMap)
 
   override def reads(json: JsValue): JsResult[MObject] = {
     json.\("mType").validate[String] match {
@@ -41,8 +41,8 @@ private[metaModelUIJsonFormat] class MObjectFormat(enumOpts: List[Option[MEnum]]
 
 private[metaModelUIJsonFormat] object MObjectFormat extends Writes[MObject] {
   override def writes(mo: MObject): JsValue = mo match {
-    case mc: MClass => MClassFormat.writes(mc)
-    case mr: MReference => MReferenceFormat.writes(mr)
+    case mc: MClass => MClassUiFormat.writes(mc)
+    case mr: MReference => MReferenceUiFormat.writes(mr)
     case me: MEnum => MEnumFormat.writes(me)
   }
 }

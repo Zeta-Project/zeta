@@ -11,7 +11,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Writes
 import play.api.libs.json.JsArray
 
-private[metaModelUIJsonFormat] class MReferenceFormat(val enumMap: Map[String, MEnum]) extends Format[MReference] {
+class MReferenceUiFormat(val enumMap: Map[String, MEnum]) extends Format[MReference] {
 
   private val attributeListReads: Reads[List[MAttribute]] = Reads.list(new MAttributeFormat(enumMap))
 
@@ -28,11 +28,11 @@ private[metaModelUIJsonFormat] class MReferenceFormat(val enumMap: Map[String, M
     }
   }
 
-  override def writes(o: MReference): JsValue = MReferenceFormat.writes(o)
+  override def writes(o: MReference): JsValue = MReferenceUiFormat.writes(o)
 }
 
 
-private[metaModelUIJsonFormat] object MReferenceFormat extends Writes[MReference] {
+object MReferenceUiFormat extends Writes[MReference] {
   override def writes(mr: MReference): JsValue = {
     Json.obj(
       "mType" -> "mReference",

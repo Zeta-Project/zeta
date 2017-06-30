@@ -10,6 +10,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
 import play.api.libs.json.__
+import play.api.libs.json.Writes
 
 
 /**
@@ -29,5 +30,5 @@ object MetaModelShortInfo {
       (__ \ "links").readNullable[Seq[HLink]]
     ) (MetaModelShortInfo.apply _)
 
-  implicit val writes: OWrites[MetaModelShortInfo] = Json.writes[MetaModelShortInfo]
+  implicit val writes: Writes[MetaModelShortInfo] = Json.writes[MetaModelShortInfo]
 }

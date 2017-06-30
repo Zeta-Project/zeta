@@ -1,8 +1,7 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel
 
 import play.api.libs.json.Json
-import play.api.libs.json.OWrites
-import play.api.libs.json.Reads
+import play.api.libs.json.Format
 
 // DSL definitions are just plain strings for now, should probably be changed in the future
 
@@ -14,8 +13,7 @@ import play.api.libs.json.Reads
 case class Style(code: String)
 
 object Style {
-  implicit val styleReads: Reads[Style] = Json.reads[Style]
-  implicit val styleWrites: OWrites[Style] = Json.writes[Style]
+  implicit val styleFormat: Format[Style] = Json.format[Style]
 }
 
 /**
@@ -26,8 +24,7 @@ object Style {
 case class Shape(code: String)
 
 object Shape {
-  implicit val shapeReads: Reads[Shape] = Json.reads[Shape]
-  implicit val shapeWrites: OWrites[Shape] = Json.writes[Shape]
+  implicit val shapeFormat: Format[Shape] = Json.format[Shape]
 }
 
 /**
@@ -38,8 +35,7 @@ object Shape {
 case class Diagram(code: String)
 
 object Diagram {
-  implicit val diagramReads: Reads[Diagram] = Json.reads[Diagram]
-  implicit val diagramWrites: OWrites[Diagram] = Json.writes[Diagram]
+  implicit val diagramFormat: Format[Diagram] = Json.format[Diagram]
 }
 
 /**
@@ -55,6 +51,5 @@ case class Dsl(
     style: Option[Style] = None)
 
 object Dsl {
-  implicit val dslReads: Reads[Dsl] = Json.reads[Dsl]
-  implicit val dslWrites: OWrites[Dsl] = Json.writes[Dsl]
+  implicit val dslFormat: Format[Dsl] = Json.format[Dsl]
 }
