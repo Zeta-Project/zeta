@@ -1,0 +1,48 @@
+package de.htwg.zeta.server.controller.restApi.metaModelUIJsonFormat
+
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import play.api.libs.json.JsResult
+import play.api.libs.json.Format
+import play.api.libs.json.JsValue
+import play.api.libs.json.Writes
+
+private[metaModelUIJsonFormat] class MObjectFormat(enumOpts: List[Option[MEnum]]) extends Format[MObject] {
+
+  private val enumMap: Map[String, MEnum] = enumOpts.flatMap {
+    case Some(enum) => List((enum.name, enum))
+    case None => Nil
+  }.toMap
+
+  private val mClassReads = new MClassFormat(enumMap)
+  private val mRefsReads = new MReferenceFormat(enumMap)
+
+  override def reads(json: JsValue): JsResult[MObject] = {
+    json.\("mType").validate[String] match {
+      case JsSuccess("mClass", _) => json.validate(mClassReads)
+      case JsSuccess("mReference", _) => json.validate(mRefsReads)
+      case JsSuccess("mEnum", _) => json.\("name").validate[String].flatMap(enumMap.get(_) match {
+        case Some(enum) => JsSuccess(enum)
+        // this can only happen if there is a mistake in the Reads implementation thus throws an Exception instead of returning a JsError
+        case None => throw new IllegalStateException("MEnum map should contain all MEnums in this MetaModel")
+      })
+      case JsSuccess(_, _) => JsError("Missing or unknown mType at top level, only mClass, mReference and mEnum allowed")
+      case e: JsError => e
+    }
+  }
+
+  override def writes(o: MObject): JsValue = MObjectFormat.writes(o)
+}
+
+
+private[metaModelUIJsonFormat] object MObjectFormat extends Writes[MObject] {
+  override def writes(mo: MObject): JsValue = mo match {
+    case mc: MClass => MClassFormat.writes(mc)
+    case mr: MReference => MReferenceFormat.writes(mr)
+    case me: MEnum => MEnumFormat.writes(me)
+  }
+}
