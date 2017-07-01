@@ -14,6 +14,9 @@ class DynamicFileController extends Controller {
   }
 
   def serveFile(filePath: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+
+    val x = request.identity
+
     try {
       val fileStream: java.io.InputStream = new java.io.FileInputStream(basePath + filePath)
       val fileString = scala.io.Source.fromInputStream(fileStream).mkString("")

@@ -1,12 +1,10 @@
-@import java.util.UUID
-
 @import de.htwg.zeta.common.models.entity.ModelEntity
 @import de.htwg.zeta.common.models.entity.User
 @import play.api.libs.json.Json
 
-@(metaModelId: UUID, id: UUID, user: Option[User], model: ModelEntity)
+@(model: ModelEntity, user: User)
 
-@views.html.webpage.WebpageGeneralLayout("Model Editor", user) {
+@views.html.webpage.WebpageGeneralLayout("Model Editor", Some(user)) {
     <script>
             SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function (toElement) {
                         return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
@@ -74,14 +72,14 @@
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/src/main.js")"></script>
 
         <!-- model specific files-->
-    <script src="@("/model_specific/" + metaModelId + "/inspector.js") "> </script>
-    <script src="@("/model_specific/" + metaModelId + "/style.js")"></script>
-    <script src="@("/model_specific/" + metaModelId + "/shape.js")"></script>
-    <script src="@("/model_specific/" + metaModelId + "/stencil.js")"></script>
-    <script src="@("/model_specific/" + metaModelId + "/connectionstyle.js")"></script>
-    <script src="@("/model_specific/" + metaModelId + "/linkhelper.js")"></script>
-    <script src="@("/model_specific/" + metaModelId + "/validator.js")"></script>
-    <script src="@("/model_specific/" + metaModelId + "/elementAndInlineStyle.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/inspector.js") "> </script>
+    <script src="@(s"/model_specific/${model.metaModelId}/style.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/shape.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/stencil.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/connectionstyle.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/linkhelper.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/validator.js")"></script>
+    <script src="@(s"/model_specific/${model.metaModelId}/elementAndInlineStyle.js")"></script>
 
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/linkTypeSelector.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/exportModel.js")"></script>
@@ -144,11 +142,11 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="btnValidator">
-                <li><a href="#" id="validatorValidate" data-model-id="@(id)">Validate Model</a></li>
-                <li><a href="#" id="validatorShow" data-meta-model-id="@(metaModelId)">Show Validation Rules</a></li>
+                <li><a href="#" id="validatorValidate" data-model-id="@(model.id)">Validate Model</a></li>
+                <li><a href="#" id="validatorShow" data-meta-model-id="@(model.metaModelId)">Show Validation Rules</a></li>
                 <li><a href="#" id="validatorUnhighlight">Unhighlight highlighted Cells</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(metaModelId)">Generate / Update Validator</a></li>
+                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(model.metaModelId)">Generate / Update Validator</a></li>
             </ul>
         </div>
 
@@ -227,31 +225,6 @@
         <span class="inspector-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-right"></span>
     </div>
 
-        <!--
-    <div class="statusbar-container">
-        <span class="rt-colab"></span>
-    </div>
-    -->
-
-
-        <!-- Share button - from  https://github.com/carrot/share-button -->
-        <!--
-    <div class="share-button-container"><div class="share-button"></div></div>
-    <script>
-            var share = new Share('.share-button', {
-                title: "Spray Online Diagram",
-                description: "Check out my new diagram:",
-
-                networks: {
-                    email: {
-                        enabled: true,
-                        title: "Spray Online Diagram",
-                        description: "Check out me new diagram: " + window.location.href
-                    }
-                }
-            });
-    </script>
-    -->
 
     <div id="user-tags"></div>
     <div id="contextMenuContainer"></div>
@@ -270,10 +243,10 @@
     </div>
 
     <script type="text/javascript">
-    window._global_uuid = "@(id)";
-    window._global_graph_type = "@(metaModelId)";
-    window._global_userID = "@(user.get.id)";
-    window._global_userName = "@(user.get.fullName)";
+    window._global_uuid = "@(model.id)";
+    window._global_graph_type = "@(model.metaModelId)";
+    window._global_userID = "@(user.id)";
+    window._global_userName = "@(user.fullName)";
     window._global_model_name = "@(model.model.name)";
     @if(model.model.uiState.nonEmpty) {
     window._global_loadOnStart = true;
@@ -282,66 +255,13 @@
     </script>
 
 
-    <!-- Node Code Editor -->
-        <!--<link rel="stylesheet" type="text/css" href=" @routes.ScalaRoutes.getAssets("modelEditor/editor/model_specific/nodeCodeEditor.css")
-    " />-->
-        <!--
-        <script src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js") "></script>
-    <script src="@routes.ScalaRoutes.getAssets("codeEditor/ace-grammar/classy.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("codeEditor/ace-grammar/regexanalyzer.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("codeEditor/ace-grammar/ace_grammar.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ext-language_tools.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("modelEditor/datavis/DataVisGrammar.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("modelEditor/datavis/DataVisUI.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("modelEditor/datavis/DataVisClient.js")"></script>
-    -->
-
-
-
-        <!--[if IE 9]>
-            <script src='@routes.ScalaRoutes.getAssets("jointjs/lib/base64.js") '></script>
-	    <script type="text/javascript">
-	      window.btoa = base64.encode
-	      document.onselectstart = function() { return false; };
-	    </script>
-    <![endif]-->
-
-        <script>
-                var app = new Rappid();
-                Backbone.history.start();
-        </script>
+    <script>
+            var app = new Rappid();
+            Backbone.history.start();
+    </script>
 
 
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/chat.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/modelValidator.js")"></script>
 
-        <!-- nodeCodeEditor -->
-        <!--
-    <div class="nodeCodeEditor-cover"></div>
-
-    <aside class="nodeCodeEditor-popup">
-        <h2>Data Visualiser Editor</h2>
-
-        <div class="editor-content">
-            <div id="datavis"></div>
-        </div>
-            <div id="node-info"></div>
-        <span id="datavis-error">There is an error in your code</span>
-        <ul id="validation-errors"></ul>
-        <button type="button" onclick="dataVisEditor.save()" id="saveDatavis">Save</button>
-        <img id="close-button" src=" @routes.ScalaRoutes.getAssets("jointjs/images/grey_close_x.png")
-    " onclick="nodeCodeEditor.deactivate();" style="position : absolute ; right : 0.2em ; top : 0.2em ; width : 1.2em ; height : 1.2em ;">
-
-    </aside>
-
-    <script>
-            var dataVisMode = AceGrammar.getMode(dataVisGrammar);
-            var dataVisAce = ace.edit("datavis");
-            dataVisAce.getSession().setMode(dataVisMode);
-            dataVisAce.setOptions({enableBasicAutocompletion: true, enableLiveAutocompletion: true});
-    </script>
-    <script src="@routes.ScalaRoutes.getAssets("modelEditor/datavis/DataVisEditor.js")"></script>
-    -->
-
-        <!-- nodeCodeEditor -->
 }
