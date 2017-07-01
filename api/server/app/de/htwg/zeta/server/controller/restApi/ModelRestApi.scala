@@ -58,7 +58,8 @@ class ModelRestApi() extends Controller with Logging {
               repo.modelEntity.create(
                 ModelEntity(
                   id = UUID.randomUUID(),
-                  model = model.copy(metaModel = metaModel.metaModel),
+                  // TODO fix
+                  model = model.copy(metaModelId = metaModelId),
                   metaModelId = metaModel.id
                 )
               ).map { modelEntity =>

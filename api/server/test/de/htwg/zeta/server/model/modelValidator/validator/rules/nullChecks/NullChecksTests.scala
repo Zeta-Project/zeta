@@ -1,14 +1,16 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -19,9 +21,9 @@ import org.scalatest.Matchers
 
 class NullChecksTests extends FlatSpec with Matchers {
 
-  def nodesToModel(nodes: Seq[Node]): Model = Model("", MetaModel("", Seq.empty, Seq.empty, Seq.empty, ""), nodes, Seq.empty, "")
+  def nodesToModel(nodes: Seq[Node]): Model = Model("", UUID.randomUUID(), nodes, Seq.empty, "")
 
-  def edgesToModel(edges: Seq[Edge]): Model = Model("", MetaModel("", Seq.empty, Seq.empty, Seq.empty, ""), Seq.empty, edges, "")
+  def edgesToModel(edges: Seq[Edge]): Model = Model("", UUID.randomUUID(), Seq.empty, edges, "")
 
   val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty)
   val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
@@ -264,21 +266,21 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new ElementsNoNullValues
 
     val nonNullEdge = Edge("", mReference, Seq(), Seq(), Map.empty)
-    val nonNullModel = Model("", MetaModel("", Seq.empty, Seq.empty, Seq.empty, ""), Seq.empty, Seq(nonNullEdge), "")
+    val nonNullModel = Model("", UUID.randomUUID(), Seq.empty, Seq(nonNullEdge), "")
     rule.check(nonNullModel) should be(true)
 
     val nullEdge = null
-    val nullModel = Model("", MetaModel("", Seq.empty, Seq.empty, Seq.empty, ""), Seq.empty, Seq(nullEdge), "")
+    val nullModel = Model("", UUID.randomUUID(), Seq.empty, Seq(nullEdge), "")
     rule.check(nullModel) should be(false)
   }
 
   "ElementsNotNull" should "check for null in elements" in {
     val rule = new ElementsNotNull
 
-    val nonNullModel = Model("", MetaModel("", Seq.empty, Seq.empty, Seq.empty, ""), Seq.empty, Seq.empty, "")
+    val nonNullModel = Model("", UUID.randomUUID(), Seq.empty, Seq.empty, "")
     rule.check(nonNullModel) should be(true)
 
-    val nullModel = Model("", MetaModel("", Seq.empty, Seq.empty, Seq.empty, ""), null, Seq.empty, "")
+    val nullModel = Model("", UUID.randomUUID(), null, Seq.empty, "")
     rule.check(nullModel) should be(false)
   }
 

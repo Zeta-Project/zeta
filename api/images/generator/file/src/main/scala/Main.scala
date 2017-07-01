@@ -35,7 +35,7 @@ class MyTransformer() extends Transformer {
     val f = File(entity.id, filename, content)
 
     fullAccessRepository.file.create(File(entity.id, filename, content)).map { _ =>
-      logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModel.name}')")
+      logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModelId}')")
       p.success(this)
     }.recover {
       case e: Exception => p.failure(e)

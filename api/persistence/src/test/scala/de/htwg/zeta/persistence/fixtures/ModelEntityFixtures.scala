@@ -75,7 +75,7 @@ object ModelEntityFixtures {
 
   val model1 = Model(
     name = "model1",
-    metaModel = MetaModelEntityFixtures.metaModel1,
+    metaModelId = MetaModelEntityFixtures.entity1.id,
     nodes = Seq(node1, node2),
     edges = Seq(edge1, edge2),
     uiState = "uiState1"
@@ -83,7 +83,7 @@ object ModelEntityFixtures {
 
   val model2 = Model(
     name = "model2",
-    metaModel = MetaModelEntityFixtures.metaModel2,
+    metaModelId = MetaModelEntityFixtures.entity2.id,
     nodes = Seq(node1),
     edges = Seq(edge1),
     uiState = "uiState2"
