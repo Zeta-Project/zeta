@@ -6,8 +6,8 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import play.api.libs.json.Format
 import play.api.libs.json.Json
-import play.api.libs.json.OFormat
 
 /** Immutable container for model definitions
  *
@@ -43,6 +43,6 @@ case class Model(
 
 object Model {
 
-  implicit val playJsonModelFormat: OFormat[Model] = Json.format[Model]
+  implicit val playJsonModelFormat: Format[Model] = Json.format[Model]
 
 }

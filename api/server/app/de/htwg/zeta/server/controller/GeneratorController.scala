@@ -1,24 +1,20 @@
 package de.htwg.zeta.server.controller
 
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.util.UUID
 import javax.inject.Inject
 
 import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
@@ -31,31 +27,29 @@ import de.htwg.zeta.server.model.result.Failure
 import de.htwg.zeta.server.model.result.Success
 import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import java.io
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 
 class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
 
-  def generate(metaModelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Persistence.restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelUuid)
-      .flatMap(createGenerators(_).map {
+  def generate(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    Persistence.restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelId)
+      .flatMap(createGenerators(_, request.identity.id).map {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)
-      }(Implicits.global))(Implicits.global)
+      })
       .recover {
-        case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
-      }(Implicits.global)
+        case _: Exception => NotFound(s"MetaModel with id: ${metaModelId.toString} was not found")
+      }
   }
 
-
-  private def createGenerators(metaModel: MetaModelEntity): Future[Unreliable[List[File]]] = {
+  private def createGenerators(metaModel: MetaModelEntity, userId: UUID): Future[Unreliable[List[File]]] = {
     val hierarchyContainer = Cache()
     parseMetaModel(metaModel, hierarchyContainer) match {
       case Success(dia) =>
-        createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer)
-      case f @ Failure(_) => Future.successful(f)
+        createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer, userId)
+      case f@Failure(_) => Future.successful(f)
     }
   }
 
@@ -71,35 +65,18 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
 
     tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style").
       flatMap(_ => tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape")).
-      flatMap(_ => tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), GeneratorController.DiagramName)).
+      flatMap(_ => tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), GeneratorController.diagramName)).
       flatMap {
         case Some(dia) :: _ => Success(dia)
-        case _ => Failure(s"No ${GeneratorController.DiagramName} available")
+        case _ => Failure(s"No ${GeneratorController.diagramName} available")
       }
   }
 
-  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Future[Unreliable[List[File]]] = {
+  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
+  Future[Unreliable[List[File]]] = {
+    val repo = Persistence.restrictedAccessRepository(userId).file
 
-    // TODO remove old
-    val currentDir = {
-      val root = if (System.getenv("PWD") != null) System.getenv("PWD") else System.getProperty("user.dir")
-      s"$root/server/model_specific"
-    }
-    val generatorOutputLocation: String = s"$currentDir/${metaModel.id}/"
-    val vrGeneratorOutputLocation = s"$currentDir/vr/${metaModel.id}/"
-
-    createGeneratorFiles(diagram, hierarchyContainer).flatMap(gen => {
-      createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {
-        Files.createDirectories(Paths.get(generatorOutputLocation))
-        Files.createDirectories(Paths.get(vrGeneratorOutputLocation))
-        gen.foreach(f => Files.write(Paths.get(generatorOutputLocation + f.name), f.content.getBytes))
-        vrGen.foreach(f => Files.write(Paths.get(vrGeneratorOutputLocation + f.name), f.content.getBytes))
-        gen ::: vrGen
-      })
-    })
-
-
-    val allGen: Unreliable[(List[File], List[File])] = createGeneratorFiles(diagram, hierarchyContainer).flatMap(gen => {
+    val allGen: Unreliable[(List[File], List[File])] = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id).flatMap(gen => {
       createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {
         (gen, vrGen)
       })
@@ -107,20 +84,19 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
 
     allGen match {
       case Success((gen: List[File], vrGen: List[File])) =>
-        val retValue: Unreliable[List[File]] = Success(gen ::: vrGen)
-        // TODO safe in persistence
-        Future.successful(retValue)
-      case f @ Failure(_) => Future.successful(f)
+        Future.sequence((gen ++ vrGen).map(repo.createOrUpdate)).map(_ =>
+          Success(gen ::: vrGen)
+        )
+      case f@Failure(_) => Future.successful(f)
     }
-
   }
 
-  private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
+  private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache, metaModelId: UUID): Unreliable[List[File]] = {
     val styles = hierarchyContainer.styleHierarchy.nodeView.values.map(_.data).toList
     val generators: List[() => Unreliable[List[File]]] = List(
-      () => StyleGenerator.doGenerateResult(styles).map(List(_)),
-      () => ShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes),
-      () => DiagramGenerator.doGenerateResult(diagram)
+      () => StyleGenerator.doGenerateResult(styles, metaModelId).map(List(_)),
+      () => ShapeGenerator.doGenerateResult(hierarchyContainer, diagram.nodes, metaModelId),
+      () => DiagramGenerator.doGenerateResult(diagram, metaModelId)
     )
 
     generate(generators)
@@ -138,7 +114,7 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
 
 
   @tailrec
-  private def generate(generators: List[() => Unreliable[List[File]]], carry: List[File] = Nil): Unreliable[List[File]] =
+  private def generate(generators: List[() => Unreliable[List[File]]], carry: List[File] = Nil): Unreliable[List[File]] = {
     generators match {
       case Nil => Success(carry)
       case head :: tail => head() match {
@@ -146,8 +122,11 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
         case Success(list) => generate(tail, carry ::: list)
       }
     }
+  }
 }
 
 object GeneratorController {
-  private[GeneratorController] val DiagramName = "Diagram"
+
+  private[GeneratorController] val diagramName = "Diagram"
+
 }

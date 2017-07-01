@@ -176,7 +176,7 @@ class ScalaRoutes @Inject()(
 
   def getWebjars(file: String): Action[AnyContent] = WebJarAssets.at(file)
 
-  def getMode_specific(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
+  def getMode_specific(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(id, name) _)
 
   def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(WebAppController.get(path) _)
 }

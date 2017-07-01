@@ -2,6 +2,7 @@ package de.htwg.zeta.server.generator.generators.style
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.server.generator.model.style.DASH
 import de.htwg.zeta.server.generator.model.style.DASHDOT
 import de.htwg.zeta.server.generator.model.style.DASHDOTDOT
@@ -12,7 +13,6 @@ import de.htwg.zeta.server.generator.model.style.color.Transparent
 import de.htwg.zeta.server.generator.model.style.gradient.Gradient
 import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
 import de.htwg.zeta.server.model.result.Unreliable
-import de.htwg.zeta.common.models.entity.File
 
 /**
  * The StyleGenerator object, responsible for generation of style.js
@@ -26,8 +26,8 @@ object StyleGenerator {
    * @param styles the Styles
    * @return Generator as File
    */
-  def doGenerateResult(styles: List[Style]): Unreliable[File] = {
-    Unreliable(() => File(UUID.randomUUID, fileName, doGenerateContent(styles)), "failed trying to create the Style generators")
+  def doGenerateResult(styles: List[Style], metaModelId: UUID): Unreliable[File] = {
+    Unreliable(() => File(metaModelId, fileName, doGenerateContent(styles)), "failed trying to create the Style generators")
   }
 
   /**
@@ -59,7 +59,7 @@ object StyleGenerator {
   }
 
   /** Generates a case of the switch-case in the getStyle function */
-  private def generateStyleCase(s: Style) = {
+  private def generateStyleCase(s: Style): String = {
     s"""
       |case '${s.name}':
       |  style = {
@@ -138,7 +138,7 @@ object StyleGenerator {
   }
 
   /** generates all text style attributes for the style */
-  private def createFontAttributes(s: Style) = {
+  private def createFontAttributes(s: Style): String = {
     s"""
 text: {
   ${fontAttributes(s)}

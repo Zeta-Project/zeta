@@ -12,38 +12,38 @@ import de.htwg.zeta.server.model.result.Unreliable
  */
 object ShapeGenerator {
 
-  private val JOINTJS_SHAPE_FILENAME = "shape.js"
-  private val JOINTJS_CONNECTION_FILENAME = "connectionstyle.js"
-  private val JOINTJS_INSPECTOR_FILENAME = "inspector.js"
-  private val JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME = "elementAndInlineStyle.js"
+  private val jointsJsShapeFilename = "shape.js"
+  private val jointsJsConnectionFilename = "connectionstyle.js"
+  private val jointsJsInspectorFilename = "inspector.js"
+  private val jointsJsShapeAndInlineStyleFilename = "elementAndInlineStyle.js"
 
 
   /**
    * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js as Result
    */
-  def doGenerateResult(cache: Cache, nodes: List[Node]): Unreliable[List[File]] = {
-    Unreliable(() => doGenerateGenerators(cache, nodes), "failed trying to create the Shape generators")
+  def doGenerateResult(cache: Cache, nodes: List[Node], metaModelId: UUID): Unreliable[List[File]] = {
+    Unreliable(() => doGenerateGenerators(cache, nodes, metaModelId), "failed trying to create the Shape generators")
   }
 
   /**
    * creates the files shape.js, inspector.js, connectionstyle.js and elementAndInlineStyle.js
    */
-  private def doGenerateGenerators(cache: Cache, nodes: List[Node]): List[File] = {
+  private def doGenerateGenerators(cache: Cache, nodes: List[Node], metaModelId: UUID): List[File] = {
     val attrs = GeneratorShapeDefinition.attrsInspector
     val packageName = "zeta"
     val shapes = cache.shapeHierarchy.nodeView.values.map(s => s.data)
 
     // Shapes
-    val shape = File(UUID.randomUUID, JOINTJS_SHAPE_FILENAME, GeneratorShapeDefinition.generate(shapes, packageName))
+    val shape = File(metaModelId, jointsJsShapeFilename, GeneratorShapeDefinition.generate(shapes, packageName))
 
     // ConnectionStyle
-    val connectionStyle = File(UUID.randomUUID, JOINTJS_CONNECTION_FILENAME, GeneratorConnectionDefinition.generate(cache.connections.values))
+    val connectionStyle = File(metaModelId, jointsJsConnectionFilename, GeneratorConnectionDefinition.generate(cache.connections.values))
 
     // Inspector
-    val inspector = File(UUID.randomUUID, JOINTJS_INSPECTOR_FILENAME, GeneratorInspectorDefinition.generate(shapes, packageName, attrs, nodes))
+    val inspector = File(metaModelId, jointsJsInspectorFilename, GeneratorInspectorDefinition.generate(shapes, packageName, attrs, nodes))
 
     // ElementAndInlineStyle
-    val elementAndInlineStyle = File(UUID.randomUUID, JOINTJS_SHAPE_AND_INLINE_STYLE_FILENAME,
+    val elementAndInlineStyle = File(metaModelId, jointsJsShapeAndInlineStyleFilename,
       GeneratorShapeAndInlineStyle.generate(shapes, packageName, attrs))
 
     List(shape, connectionStyle, inspector, elementAndInlineStyle)
