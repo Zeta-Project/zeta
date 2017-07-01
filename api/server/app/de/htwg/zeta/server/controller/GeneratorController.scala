@@ -6,8 +6,8 @@ import java.util.UUID
 import javax.inject.Inject
 
 import scala.annotation.tailrec
-import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits
 
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -31,6 +31,7 @@ import de.htwg.zeta.server.model.result.Failure
 import de.htwg.zeta.server.model.result.Success
 import de.htwg.zeta.server.model.result.Unreliable
 import de.htwg.zeta.server.util.auth.ZetaEnv
+import java.io
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -39,19 +40,23 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
 
   def generate(metaModelUuid: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     Persistence.restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelUuid)
-      .map(createGenerators(_) match {
+      .flatMap(createGenerators(_).map {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)
-      })(Implicits.global)
+      }(Implicits.global))(Implicits.global)
       .recover {
         case _: Exception => NotFound("Metamodel with id: " + metaModelUuid + " was not found")
       }(Implicits.global)
   }
 
 
-  private def createGenerators(metaModel: MetaModelEntity): Unreliable[List[File]] = {
+  private def createGenerators(metaModel: MetaModelEntity): Future[Unreliable[List[File]]] = {
     val hierarchyContainer = Cache()
-    parseMetaModel(metaModel, hierarchyContainer).flatMap(dia => createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer))
+    parseMetaModel(metaModel, hierarchyContainer) match {
+      case Success(dia) =>
+        createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer)
+      case f @ Failure(_) => Future.successful(f)
+    }
   }
 
   private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Unreliable[Diagram] = {
@@ -73,8 +78,9 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
       }
   }
 
-  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
+  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache): Future[Unreliable[List[File]]] = {
 
+    // TODO remove old
     val currentDir = {
       val root = if (System.getenv("PWD") != null) System.getenv("PWD") else System.getProperty("user.dir")
       s"$root/server/model_specific"
@@ -91,6 +97,22 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
         gen ::: vrGen
       })
     })
+
+
+    val allGen: Unreliable[(List[File], List[File])] = createGeneratorFiles(diagram, hierarchyContainer).flatMap(gen => {
+      createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {
+        (gen, vrGen)
+      })
+    })
+
+    allGen match {
+      case Success((gen: List[File], vrGen: List[File])) =>
+        val retValue: Unreliable[List[File]] = Success(gen ::: vrGen)
+        // TODO safe in persistence
+        Future.successful(retValue)
+      case f @ Failure(_) => Future.successful(f)
+    }
+
   }
 
   private def createGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
