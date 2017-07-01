@@ -23,7 +23,7 @@ import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for model definitions
+ * REST-ful API for model definitions
  */
 class ModelRestApi() extends Controller with Logging {
 
@@ -47,31 +47,19 @@ class ModelRestApi() extends Controller with Logging {
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    (request.body \ "metaModelId").validate[UUID].fold(
+    request.body.validate[Model].fold(
       error => Future.successful(Results.BadRequest(JsError.toJson(error))),
-      metaModelId => {
-        (request.body \ "model").validate[Model].fold(
-          errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-          model => {
-            val repo = restrictedAccessRepository(request.identity.id)
-            repo.metaModelEntity.read(metaModelId).flatMap(metaModel => {
-              repo.modelEntity.create(
-                ModelEntity(
-                  id = UUID.randomUUID(),
-                  // TODO fix
-                  model = model.copy(metaModelId = metaModelId),
-                  metaModelId = metaModel.id
-                )
-              ).map { modelEntity =>
-                Results.Ok(Json.toJson(modelEntity))
-              }
-            }).recover {
-              case e: Exception => Results.BadRequest(e.getMessage)
-            }
-          }
+      model => restrictedAccessRepository(request.identity.id).modelEntity.create(
+        ModelEntity(
+          id = UUID.randomUUID(),
+          model = model,
+          metaModelId = model.metaModelId
         )
-      }
-    )
+      ).map { modelEntity =>
+        Results.Ok(Json.toJson(modelEntity))
+      }).recover {
+      case e: Exception => Results.BadRequest(e.getMessage)
+    }
   }
 
   /** updates whole model structure */
@@ -79,8 +67,9 @@ class ModelRestApi() extends Controller with Logging {
     request.body.validate[Model].fold(
       errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
       model => {
-        restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map { updated =>
-          Results.Ok(Json.toJson(updated))
+        restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
+          updated =>
+            Results.Ok(Json.toJson(updated))
         }.recover {
           case e: Exception => Results.BadRequest(e.getMessage)
         }
@@ -145,8 +134,9 @@ class ModelRestApi() extends Controller with Logging {
 
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntity.delete(id).map { _ =>
-      Ok("")
+    restrictedAccessRepository(request.identity.id).modelEntity.delete(id).map {
+      _ =>
+        Ok("")
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }
