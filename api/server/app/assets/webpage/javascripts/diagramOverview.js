@@ -7,9 +7,7 @@
 
         var data = JSON.stringify({
             "name": name,
-            "classes": [],
-            "references": [],
-            "enums": [],
+            "elements": [],
             "uiState": ""
         });
 
