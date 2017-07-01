@@ -39,8 +39,7 @@
         const model = {
             name: name,
             metaModelId: window.metaModelId,
-            nodes: [],
-            edges: [],
+            elements: [],
             uiState: ""
         };
 
