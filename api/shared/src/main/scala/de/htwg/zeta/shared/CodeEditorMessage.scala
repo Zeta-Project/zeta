@@ -1,4 +1,4 @@
-package shared
+package de.htwg.zeta.shared
 
 import java.util.UUID
 

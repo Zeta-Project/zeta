@@ -2,6 +2,7 @@ package controller
 
 import java.util.UUID
 
+import de.htwg.zeta.shared.CodeEditorMessage
 import org.scalajs.dom
 import org.scalajs.dom.CloseEvent
 import org.scalajs.dom.ErrorEvent
@@ -10,10 +11,9 @@ import org.scalajs.dom.MessageEvent
 import org.scalajs.dom.WebSocket
 import org.scalajs.dom.console
 import org.scalajs.dom.window
-import shared.CodeEditorMessage
-import shared.CodeEditorMessage.DocLoaded
-import shared.CodeEditorMessage.DocNotFound
-import shared.CodeEditorMessage.TextOperation
+import de.htwg.zeta.shared.CodeEditorMessage.DocLoaded
+import de.htwg.zeta.shared.CodeEditorMessage.DocNotFound
+import de.htwg.zeta.shared.CodeEditorMessage.TextOperation
 import upickle.default
 
 class WebSocketConnection(

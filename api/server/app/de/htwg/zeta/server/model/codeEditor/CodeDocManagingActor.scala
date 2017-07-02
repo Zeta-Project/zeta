@@ -3,16 +3,14 @@ package de.htwg.zeta.server.model.codeEditor
 import java.util.UUID
 
 import scala.collection.mutable
-
 import akka.actor.ActorLogging
 import akka.actor.Props
 import de.htwg.zeta.server.actor.AbstractMediatorActor
+import de.htwg.zeta.shared.CodeEditorMessage.DocAdded
+import de.htwg.zeta.shared.CodeEditorMessage.DocDeleted
+import de.htwg.zeta.shared.CodeEditorMessage.TextOperation
 import scalot.Server
 import scalot.Operation
-import shared.CodeEditorMessage.DocAdded
-import shared.CodeEditorMessage.DocDeleted
-import shared.CodeEditorMessage.TextOperation
-
 
 object CodeDocManagingActor {
 

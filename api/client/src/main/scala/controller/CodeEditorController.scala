@@ -2,21 +2,21 @@ package controller
 
 import java.util.UUID
 
+import de.htwg.zeta.shared.CodeEditorMessage.DocAdded
+import de.htwg.zeta.shared.CodeEditorMessage.DocDeleted
+import de.htwg.zeta.shared.CodeEditorMessage.DocLoaded
+import de.htwg.zeta.shared.CodeEditorMessage.DocNotFound
+import de.htwg.zeta.shared.CodeEditorMessage.TextOperation
+
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 import scala.scalajs.js.JSON
-
 import org.scalajs.dom.console
 import org.scalajs.jquery
 import org.scalajs.jquery.JQueryAjaxSettings
 import org.scalajs.jquery.JQueryXHR
 import scalot.ApplyResult
 import scalot.Client
-import shared.CodeEditorMessage.DocAdded
-import shared.CodeEditorMessage.DocDeleted
-import shared.CodeEditorMessage.DocLoaded
-import shared.CodeEditorMessage.DocNotFound
-import shared.CodeEditorMessage.TextOperation
 import view.CodeEditorView
 
 case class CodeEditorController(dslType: String, metaModelId: UUID) {

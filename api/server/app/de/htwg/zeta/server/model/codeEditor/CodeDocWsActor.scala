@@ -3,19 +3,18 @@ package de.htwg.zeta.server.model.codeEditor
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
-
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.persistence.Persistence
-import shared.CodeEditorMessage
-import shared.CodeEditorMessage.DocAdded
-import shared.CodeEditorMessage.DocDeleted
-import shared.CodeEditorMessage.DocLoaded
-import shared.CodeEditorMessage.DocNotFound
-import shared.CodeEditorMessage.TextOperation
+import de.htwg.zeta.shared.CodeEditorMessage
+import de.htwg.zeta.shared.CodeEditorMessage.DocAdded
+import de.htwg.zeta.shared.CodeEditorMessage.DocDeleted
+import de.htwg.zeta.shared.CodeEditorMessage.DocLoaded
+import de.htwg.zeta.shared.CodeEditorMessage.DocNotFound
+import de.htwg.zeta.shared.CodeEditorMessage.TextOperation
 import upickle.default
 
 
