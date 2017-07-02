@@ -41,7 +41,6 @@ GET           /metamodel/socket/:metaModelId                                    
 
 ### model editor
 GET           /model/editor/:modelId                                                 controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
-GET           /model/socket/:graphType/:instanceId                                   controllers.ScalaRoutes.getModelSocket(instanceId:java.util.UUID, graphType:String)
 
 ### vr
 GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: java.util.UUID)

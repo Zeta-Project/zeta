@@ -6,14 +6,11 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import akka.actor.ActorRef
 import akka.actor.ActorSystem
-import akka.actor.Props
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.model.model.ModelWsActor
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -40,9 +37,4 @@ class ModelController @Inject()(
       case e: Exception => BadRequest(e.getMessage)
     }
   }
-
-  def modelSocket(instanceId: UUID, graphType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
-    ModelWsActor.props(out, instanceId, graphType)
-  }
-
 }
