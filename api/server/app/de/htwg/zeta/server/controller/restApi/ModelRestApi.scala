@@ -10,6 +10,7 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelUiFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -47,34 +48,38 @@ class ModelRestApi() extends Controller with Logging {
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[Model].fold(
-      error => Future.successful(Results.BadRequest(JsError.toJson(error))),
-      model => restrictedAccessRepository(request.identity.id).modelEntity.create(
-        ModelEntity(
-          id = UUID.randomUUID(),
-          model = model,
-          metaModelId = model.metaModelId
-        )
-      ).map { modelEntity =>
-        Results.Ok(Json.toJson(modelEntity))
-      }).recover {
-      case e: Exception => Results.BadRequest(e.getMessage)
-    }
+    ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
+      jsRes.fold(
+        error => Future.successful(Results.BadRequest(JsError.toJson(error))),
+        model => restrictedAccessRepository(request.identity.id).modelEntity.create(
+          ModelEntity(
+            id = UUID.randomUUID(),
+            model = model,
+            metaModelId = model.metaModelId
+          )
+        ).map { modelEntity =>
+          Results.Ok(Json.toJson(modelEntity))
+        }).recover {
+        case e: Exception => Results.BadRequest(e.getMessage)
+      }
+    })
   }
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[Model].fold(
-      errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-      model => {
-        restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
-          updated =>
-            Results.Ok(Json.toJson(updated))
-        }.recover {
-          case e: Exception => Results.BadRequest(e.getMessage)
+    ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
+      jsRes.fold(
+        errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+        model => {
+          restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
+            updated =>
+              Results.Ok(Json.toJson(updated))
+          }.recover {
+            case e: Exception => Results.BadRequest(e.getMessage)
+          }
         }
-      }
-    )
+      )
+    })
   }
 
   /** updates model definition only */
