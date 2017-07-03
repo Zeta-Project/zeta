@@ -6,6 +6,7 @@ import scala.collection.mutable
 import scala.collection.immutable.List
 import scala.collection.immutable.Seq
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
@@ -22,7 +23,6 @@ import play.api.libs.json.Writes
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsError
 import play.api.libs.json.JsArray
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] with Writes[Model] {
@@ -39,34 +39,50 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
       } else {
         modelElementsNotUnique
       }
-    }).flatMap((model: Model) => {
-      // TODO FIXME nicolas make this great again.
-
-      val nodes = model.nodes
-      val edges = model.edges
-
-      def flatEdge(source: String, seq: Seq[ToEdges]): Stream[(String, String)] = seq.toStream.flatMap(_.edgeNames).map(t => (source, t))
-
-      def flatNode(source: String, seq: Seq[ToNodes]): Stream[(String, String)] = seq.toStream.flatMap(_.nodeNames).map(t => (source, t))
-
-      val toEdges: Stream[(String, String)] = nodes.toStream.flatMap(n => Stream(flatEdge(n.name, n.inputs), flatEdge(n.name, n.outputs)).flatten)
-      val toNodes: Stream[(String, String)] = edges.toStream.flatMap(e => Stream(flatNode(e.name, e.source), flatNode(e.name, e.target)).flatten)
-
-      val edgesMap = edges.map(e => (e.name, e)).toMap
-      val nodesMap = nodes.map(n => (n.name, n)).toMap
+    }).flatMap(checkLinks)
+  }
 
 
-      toEdges.find(p => !edgesMap.contains(p._2)).map(p =>
-        s"invalid link to edge: '${p._1}' -> '${p._2}' ('${p._2}' is missing or doesn't match expected type)"
-      ).orElse {
-        toNodes.find(p => !nodesMap.contains(p._2)).map(p =>
-          s"invalid link to node: '${p._1}' -> '${p._2}' ('${p._2}' is missing or doesn't match expected type)"
-        )
-      } match {
-        case Some(error) => JsError(error)
-        case None => JsSuccess(model)
+  private def checkLinks(model: Model): JsResult[Model] = {
+    val edgesMap = model.edges.map(e => (e.name, e)).toMap
+    val nodesMap = model.nodes.map(n => (n.name, n)).toMap
+
+    def checkGenericLink[T](source: String, map: Map[String, _], sup: T => Seq[String])(t: T): List[String] = {
+      sup(t).toStream.flatMap(n => {
+        if (map.contains(n)) {
+          Nil
+        } else {
+          List(s"invalid link to node: '${source}' -> '${n}' ('${n}' is missing or doesn't match expected type)")
+        }
+      }).headOption.toList
+    }
+
+    def checkNodes(n: Node): Option[String] = {
+      val checkToEdge = checkGenericLink[ToEdges](n.name, edgesMap, _.edgeNames) _
+      n.inputs.toStream.flatMap(checkToEdge).headOption match {
+        case None => n.outputs.toStream.flatMap(checkToEdge).headOption
+        case some @ Some(_) => some
       }
-    })
+    }
+
+
+    def checkEdges(e: Edge): Option[String] = {
+      val checkToNode = checkGenericLink[ToNodes](e.name, nodesMap, _.nodeNames) _
+      e.source.toStream.flatMap(checkToNode).headOption match {
+        case None => e.target.toStream.flatMap(checkToNode).headOption
+        case some @ Some(_) => some
+      }
+    }
+
+    val ret = model.nodes.toStream.flatMap(checkNodes(_).toList).headOption match {
+      case None => model.edges.toStream.flatMap(checkEdges(_).toList).headOption
+      case some @ Some(_) => some
+    }
+
+    ret match {
+      case Some(error) => JsError(error)
+      case None => JsSuccess(model)
+    }
   }
 
   override def reads(json: JsValue): JsResult[Future[JsResult[Model]]] = {
