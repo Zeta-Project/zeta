@@ -9,7 +9,6 @@ import scala.util.Failure
 import scala.util.Success
 
 import akka.actor.Actor
-import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
@@ -22,6 +21,7 @@ import de.htwg.zeta.persistence.actorCache.FileCacheActor.Found
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Update
 import de.htwg.zeta.persistence.general.FilePersistence
+import grizzled.slf4j.Logging
 
 private[actorCache] object FileCacheActor {
 
@@ -43,7 +43,7 @@ private[actorCache] object FileCacheActor {
 
 }
 
-private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDuration: FiniteDuration) extends Actor with ActorLogging {
+private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDuration: FiniteDuration) extends Actor with Logging {
 
   private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
@@ -58,7 +58,7 @@ private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDurat
   }
 
   private def create(cache: Future[Cache], file: File, sender: ActorRef): Future[Cache] = {
-    log.info(s"creating - ${file.id.toString} - ${file.name}") // scalastyle:ignore multiple.string.literals
+    trace(s"creating - ${file.id.toString} - ${file.name}") // scalastyle:ignore multiple.string.literals
     cache.flatMap { cache =>
       underlying.create(file).map { file =>
         sender ! Success(file)
@@ -74,7 +74,7 @@ private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDurat
   }
 
   private def read(cache: Future[Cache], id: UUID, name: String, sender: ActorRef): Future[Cache] = {
-    log.info(s"reading - ${id.toString} - $name")
+    trace(s"reading - ${id.toString} - $name")
     cache.flatMap { cache =>
       cache.entities.get(id -> name).fold[Future[Found]] {
         underlying.read(id, name).map(Found(_, inCache = false))
@@ -98,7 +98,7 @@ private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDurat
   }
 
   private def update(cache: Future[Cache], file: File, sender: ActorRef): Future[Cache] = {
-    log.info(s"updating - ${file.id.toString} - ${file.name}")
+    trace(s"updating - ${file.id.toString} - ${file.name}")
     cache.flatMap { cache =>
       underlying.update(file).map { file =>
         sender ! Success(file)
@@ -114,7 +114,7 @@ private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDurat
   }
 
   private def delete(cache: Future[Cache], id: UUID, name: String, sender: ActorRef): Future[Cache] = {
-    log.info(s"deleting - ${id.toString} - $name")
+    trace(s"deleting - ${id.toString} - $name")
     cache.flatMap { cache =>
       underlying.delete(id, name).map { _ =>
         sender ! Success(Unit)
@@ -130,7 +130,7 @@ private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDurat
   }
 
   private def cleanUp(cache: Future[Cache]): Future[Cache] = {
-    log.info("cleaning cache")
+    trace("cleaning cache")
     cache.map { cache =>
       cache.copy(
         cache.used.map(id => (id, cache.entities(id))).toMap,

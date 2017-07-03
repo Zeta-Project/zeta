@@ -231,7 +231,7 @@
             <div id="chat-users"><font>Online:</font></div>
             <div id="chat-messages"></div>
             <div class="chat-input">
-                <input type="text" id="chat-input-textfield" onkeypress="chat.keyPressed(event)"></input>
+                <input type="text" id="chat-input-textfield" onkeypress="chat.keyPressed(event)"/>
             </div>
         </div>
         <div class="show-hide-chat">
@@ -241,9 +241,9 @@
     </div>
 
     <script type="text/javascript">
-    window._global_uuid = "@(model.id)";
-    window._global_graph_type = "@(model.metaModelId)";
-    window._global_userID = "@(user.id)";
+    window._global_uuid = "@(model.id.toString)";
+    window._global_graph_type = "@(model.metaModelId.toString)";
+    window._global_userID = "@(user.id.toString)";
     window._global_userName = "@(user.fullName)";
     window._global_model_name = "@(model.model.name)";
     @if(model.model.uiState.nonEmpty) {

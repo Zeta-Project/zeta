@@ -10,7 +10,6 @@ import scala.util.Failure
 import scala.util.Success
 
 import akka.actor.Actor
-import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
@@ -23,6 +22,7 @@ import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Found
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Update
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import grizzled.slf4j.Logging
 
 
 private[actorCache] object LoginInfoCacheActor {
@@ -45,7 +45,7 @@ private[actorCache] object LoginInfoCacheActor {
 
 }
 
-private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, cacheDuration: FiniteDuration) extends Actor with ActorLogging {
+private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, cacheDuration: FiniteDuration) extends Actor with Logging {
 
   private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
@@ -60,7 +60,7 @@ private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, 
   }
 
   private def create(cache: Future[Cache], loginInfo: LoginInfo, userId: UUID, sender: ActorRef): Future[Cache] = {
-    log.info(s"creating - ${loginInfo.toString}") // scalastyle:ignore multiple.string.literals
+    trace(s"creating - ${loginInfo.toString}") // scalastyle:ignore multiple.string.literals
     cache.flatMap { cache =>
       underlying.create(loginInfo, userId).map { _ =>
         sender ! Success(Unit)
@@ -76,7 +76,7 @@ private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, 
   }
 
   private def read(cache: Future[Cache], loginInfo: LoginInfo, sender: ActorRef): Future[Cache] = {
-    log.info(s"reading - ${loginInfo.toString}")
+    trace(s"reading - ${loginInfo.toString}")
     cache.flatMap { cache =>
       cache.entities.get(loginInfo).fold[Future[Found]] {
         underlying.read(loginInfo).map(Found(_, inCache = false))
@@ -100,7 +100,7 @@ private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, 
   }
 
   private def update(cache: Future[Cache], old: LoginInfo, updated: LoginInfo, sender: ActorRef): Future[Cache] = {
-    log.info(s"updating - ${old.toString} to ${updated.toString}")
+    trace(s"updating - ${old.toString} to ${updated.toString}")
     cache.flatMap { cache =>
       underlying.update(old, updated).map { _ =>
         sender ! Success(Unit)
@@ -116,7 +116,7 @@ private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, 
   }
 
   private def delete(cache: Future[Cache], loginInfo: LoginInfo, sender: ActorRef): Future[Cache] = {
-    log.info(s"deleting - ${loginInfo.toString}")
+    trace(s"deleting - ${loginInfo.toString}")
     cache.flatMap { cache =>
       underlying.delete(loginInfo).map { _ =>
         sender ! Success(Unit)
@@ -132,7 +132,7 @@ private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, 
   }
 
   private def cleanUp(cache: Future[Cache]): Future[Cache] = {
-    log.info("cleaning cache")
+    trace("cleaning cache")
     cache.map { cache =>
       cache.copy(
         cache.used.map(id => (id, cache.entities(id))).toMap,

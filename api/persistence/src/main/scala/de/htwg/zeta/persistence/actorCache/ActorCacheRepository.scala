@@ -39,7 +39,7 @@ class ActorCacheRepository(underlying: Repository) extends Repository {
   private val numberActorsPerEntityType = 10
 
   /** The minimum duration to cache the entities. */
-  private val cacheDuration = Duration(10, TimeUnit.MINUTES) // scalastyle:ignore magic.number
+  private val cacheDuration = Duration(10, TimeUnit.SECONDS) // scalastyle:ignore magic.number
 
   /** The time an actor has for a properly respond. */
   private val timeout: Timeout = Duration(10, TimeUnit.SECONDS) // scalastyle:ignore magic.number
