@@ -22,6 +22,7 @@ import play.api.libs.json.Writes
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsError
 import play.api.libs.json.JsArray
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] with Writes[Model] {
@@ -76,7 +77,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
       repo.metaModelEntity.read(metaModelId).map(entity => {
         val unchecked: JsResult[Model] =
           for {
-            elements <- (json \ "elements").validate(Reads.list(new ModelElementReads(entity.metaModel)))
+            elements <- (json \ "elements").validate(Reads.list(ModelElementReads(entity.metaModel)))
             uiState <- (json \ "uiState").validate[String]
           } yield {
             val (nodes, edges) =
@@ -109,4 +110,3 @@ object ModelFormat extends Writes[Model] {
     )
   }
 }
-

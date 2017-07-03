@@ -10,8 +10,8 @@ import play.api.libs.json.JsValue
 
 
 class ModelElementReads private(metaModel: MetaModel) extends Reads[Either[Node, Edge]] {
-  val nodeReads = new NodeFormat(metaModel)
-  val edgeReads = new EdgeFormat(metaModel)
+  val nodeReads = NodeFormat(metaModel)
+  val edgeReads = EdgeFormat(metaModel)
 
   override def reads(json: JsValue): JsResult[Either[Node, Edge]] = {
     def hasKey(name: String) = (json \ name).toOption.isDefined

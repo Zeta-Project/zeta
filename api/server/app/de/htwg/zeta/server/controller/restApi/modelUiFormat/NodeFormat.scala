@@ -45,7 +45,7 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
       traverse = MClass.MClassTraverseWrapper(clazz, MetaModel.MetaModelTraverseWrapper(metaModel))
       output <- (json \ "outputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasOutput))
       input <- (json \ "inputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasInput))
-      attr <- (json \ "attributes").validate(new AttributeFormat(clazz.attributes, name))
+      attr <- (json \ "attributes").validate(AttributeFormat(clazz.attributes, name))
 
     } yield {
       Node(name, clazz, output, input, attr)
@@ -75,4 +75,3 @@ object NodeFormat extends Writes[Node] {
   }
 
 }
-

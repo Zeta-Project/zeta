@@ -47,7 +47,7 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
       // Todo not sure if check is correct or needs to be swapped
       source <- json.\("source").validate[Map[String, Seq[String]]].flatMap(extractToNodes(mReference.source))
       target <- json.\("target").validate[Map[String, Seq[String]]].flatMap(extractToNodes(mReference.target))
-      attributes <- json.\("attributes").validate(new AttributeFormat(mReference.attributes, name))
+      attributes <- json.\("attributes").validate(AttributeFormat(mReference.attributes, name))
     } yield {
       Edge(name, mReference, source, target, attributes)
     }

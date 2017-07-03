@@ -15,6 +15,8 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.Reads
 import play.api.libs.json.JsValue
 import play.api.libs.json.Writes
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 
 class ModelEntityFormat(userID: UUID) extends Reads[Future[JsResult[ModelEntity]]] with Writes[ModelEntity] {
