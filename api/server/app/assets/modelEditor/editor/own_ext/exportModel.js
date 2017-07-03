@@ -19,6 +19,7 @@ var modelExporter = (function modelExporter () {
 
         var data = JSON.stringify({
             name: window._global_model_name,
+            metaModelId: window._global_graph_type,
             elements: elements,
             uiState: uiState
         });
