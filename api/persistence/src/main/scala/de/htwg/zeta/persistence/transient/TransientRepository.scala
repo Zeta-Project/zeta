@@ -25,46 +25,46 @@ import de.htwg.zeta.persistence.general.Repository
 class TransientRepository extends Repository {
 
   /** Persistence for AccessAuthorisation */
-  override val accessAuthorisation = new TransientPersistence[AccessAuthorisation]
+  override val accessAuthorisation = new TransientEntityPersistence[AccessAuthorisation]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
-  override val eventDrivenTask = new TransientPersistence[EventDrivenTask]
+  override val eventDrivenTask = new TransientEntityPersistence[EventDrivenTask]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.BondedTask]] */
-  override val bondedTask = new TransientPersistence[BondedTask]
+  override val bondedTask = new TransientEntityPersistence[BondedTask]
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
-  override val timedTask = new TransientPersistence[TimedTask]
+  override val timedTask = new TransientEntityPersistence[TimedTask]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Generator]] */
-  override val generator = new TransientPersistence[Generator]
+  override val generator = new TransientEntityPersistence[Generator]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Filter]] */
-  override val filter = new TransientPersistence[Filter]
+  override val filter = new TransientEntityPersistence[Filter]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.GeneratorImage]] */
-  override val generatorImage = new TransientPersistence[GeneratorImage]
+  override val generatorImage = new TransientEntityPersistence[GeneratorImage]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.FilterImage]] */
-  override val filterImage = new TransientPersistence[FilterImage]
+  override val filterImage = new TransientEntityPersistence[FilterImage]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Settings]] */
-  override val settings = new TransientPersistence[Settings]
+  override val settings = new TransientEntityPersistence[Settings]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.MetaModelEntity]] */
-  override val metaModelEntity = new TransientPersistence[MetaModelEntity]
+  override val metaModelEntity = new TransientEntityPersistence[MetaModelEntity]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.ModelEntity]] */
-  override val modelEntity = new TransientPersistence[ModelEntity]
+  override val modelEntity = new TransientEntityPersistence[ModelEntity]
 
   /** Persistence for the [[de.htwg.zeta.common.models.entity.Log]] */
-  override val log = new TransientPersistence[Log]
+  override val log = new TransientEntityPersistence[Log]
 
   /** Persistence for the [[User]] */
-  override val user = new TransientPersistence[User]
+  override val user = new TransientEntityPersistence[User]
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelRelease]] */
-  override val metaModelRelease = new TransientPersistence[MetaModelRelease]
+  override val metaModelRelease = new TransientEntityPersistence[MetaModelRelease]
 
   /** Versioned Persistence for [[entity.File]] */
   override val file: FilePersistence = new TransientFilePersistence

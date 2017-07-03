@@ -45,87 +45,87 @@ class ActorCacheRepository(underlying: Repository) extends Repository {
   private val timeout: Timeout = Duration(10, TimeUnit.SECONDS) // scalastyle:ignore magic.number
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.AccessAuthorisation]] */
-  override def accessAuthorisation: EntityPersistence[AccessAuthorisation] = {
+  override val accessAuthorisation: EntityPersistence[AccessAuthorisation] = {
     new ActorCacheEntityPersistence(system, underlying.accessAuthorisation, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.BondedTask]] */
-  override def bondedTask: EntityPersistence[BondedTask] = {
+  override val bondedTask: EntityPersistence[BondedTask] = {
     new ActorCacheEntityPersistence(system, underlying.bondedTask, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.EventDrivenTask]] */
-  override def eventDrivenTask: EntityPersistence[EventDrivenTask] = {
+  override val eventDrivenTask: EntityPersistence[EventDrivenTask] = {
     new ActorCacheEntityPersistence(system, underlying.eventDrivenTask, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Filter]] */
-  override def filter: EntityPersistence[Filter] = {
+  override val filter: EntityPersistence[Filter] = {
     new ActorCacheEntityPersistence(system, underlying.filter, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.FilterImage]] */
-  override def filterImage: EntityPersistence[FilterImage] = {
+  override val filterImage: EntityPersistence[FilterImage] = {
     new ActorCacheEntityPersistence(system, underlying.filterImage, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Generator]] */
-  override def generator: EntityPersistence[Generator] = {
+  override val generator: EntityPersistence[Generator] = {
     new ActorCacheEntityPersistence(system, underlying.generator, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.GeneratorImage]] */
-  override def generatorImage: EntityPersistence[GeneratorImage] = {
+  override val generatorImage: EntityPersistence[GeneratorImage] = {
     new ActorCacheEntityPersistence(system, underlying.generatorImage, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Log]] */
-  override def log: EntityPersistence[Log] = {
+  override val log: EntityPersistence[Log] = {
     new ActorCacheEntityPersistence(system, underlying.log, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelEntity]] */
-  override def metaModelEntity: EntityPersistence[MetaModelEntity] = {
+  override val metaModelEntity: EntityPersistence[MetaModelEntity] = {
     new ActorCacheEntityPersistence(system, underlying.metaModelEntity, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.MetaModelRelease]] */
-  override def metaModelRelease: EntityPersistence[MetaModelRelease] = {
+  override val metaModelRelease: EntityPersistence[MetaModelRelease] = {
     new ActorCacheEntityPersistence(system, underlying.metaModelRelease, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.ModelEntity]] */
-  override def modelEntity: EntityPersistence[ModelEntity] = {
+  override val modelEntity: EntityPersistence[ModelEntity] = {
     new ActorCacheEntityPersistence(system, underlying.modelEntity, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.Settings]] */
-  override def settings: EntityPersistence[Settings] = {
+  override val settings: EntityPersistence[Settings] = {
     new ActorCacheEntityPersistence(system, underlying.settings, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.TimedTask]] */
-  override def timedTask: EntityPersistence[TimedTask] = {
+  override val timedTask: EntityPersistence[TimedTask] = {
     new ActorCacheEntityPersistence(system, underlying.timedTask, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.User]] */
-  override def user: EntityPersistence[User] = {
+  override val user: EntityPersistence[User] = {
     new ActorCacheEntityPersistence(system, underlying.user, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[de.htwg.zeta.common.models.entity.File]] */
-  override def file: FilePersistence = {
+  override val file: FilePersistence = {
     new ActorCacheFilePersistence(system, underlying.file, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[com.mohiva.play.silhouette.api.LoginInfo]] */
-  override def loginInfo: LoginInfoPersistence = {
+  override val loginInfo: LoginInfoPersistence = {
     new ActorCacheLoginInfoPersistence(system, underlying.loginInfo, numberActorsPerEntityType, cacheDuration, timeout)
   }
 
   /** Persistence for [[com.mohiva.play.silhouette.api.util.PasswordInfo]] */
-  override def passwordInfo: PasswordInfoPersistence = {
+  override val passwordInfo: PasswordInfoPersistence = {
     new ActorCachePasswordInfoPersistence(system, underlying.passwordInfo, numberActorsPerEntityType, cacheDuration, timeout)
   }
 

@@ -1,5 +1,7 @@
 package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import play.api.libs.json.Format
@@ -16,9 +18,9 @@ import play.api.libs.json.Json
 case class Node(
     name: String,
     clazz: MClass,
-    outputs: Set[ToEdges],
-    inputs: Set[ToEdges],
-    attributes: Map[String, Set[AttributeValue]]
+    outputs: Seq[ToEdges],
+    inputs: Seq[ToEdges],
+    attributes: Map[String, Seq[AttributeValue]]
 ) extends ModelElement with HasAttributes
 
 object Node {

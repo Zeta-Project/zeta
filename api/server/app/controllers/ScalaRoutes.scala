@@ -79,9 +79,6 @@ class ScalaRoutes @Inject()(
   // ### model editor
   def getModelEditor(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(modelId) _)
 
-  def getModelSocket(instanceId: UUID, graphType: String): WebSocket = AuthenticatedSocket(ModelController.modelSocket(instanceId, graphType) _)
-
-
   // ### vr
   def getModelVrEditor(modelId: UUID): Action[AnyContent] =
     AuthenticatedGet(ModelController.vrModelEditor(modelId) _)
@@ -165,10 +162,10 @@ class ScalaRoutes @Inject()(
 
 
   // ### Code Editor
-  def getCodeeditorEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
+  def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
     AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
 
-  def getCodeeditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
+  def getCodeEditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
 
 
   // # Map static resources from the /public folder to the /assets URL path
@@ -176,7 +173,7 @@ class ScalaRoutes @Inject()(
 
   def getWebjars(file: String): Action[AnyContent] = WebJarAssets.at(file)
 
-  def getMode_specific(file: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(file) _)
+  def getMode_specific(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(id, name) _)
 
   def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(WebAppController.get(path) _)
 }

@@ -1,7 +1,6 @@
 package de.htwg.zeta.server.routing
 
 import controllers.WebJarAssets
-import de.htwg.zeta.server.controller.BackendController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.SignInController
@@ -12,9 +11,10 @@ import de.htwg.zeta.server.controller.ActivateAccountController
 import de.htwg.zeta.server.controller.MetaModelController
 import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.GeneratorController
-import de.htwg.zeta.server.controller.CodeEditorController
 import de.htwg.zeta.server.controller.DynamicFileController
 import de.htwg.zeta.server.controller.WebAppController
+import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
+import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -25,7 +25,7 @@ trait WebController {
 
   protected val webCont: WebControllerContainer
 
-  protected lazy val BackendController: BackendController = webCont.backendController.get()
+  protected lazy val BackendController: GeneratorControlController = webCont.backendController.get()
   protected lazy val ApplicationController: ApplicationController = webCont.applicationController.get()
   protected lazy val SignUpController: SignUpController = webCont.signUpController.get()
   protected lazy val SignInController: SignInController = webCont.signInController.get()

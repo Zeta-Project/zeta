@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
@@ -14,9 +16,9 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
     "edgeType",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Set.empty,
-    Set.empty,
-    Set[MAttribute]()
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
   )
   val rule = new EdgeTargetsUpperBound("edgeType", "targetType", 2)
 
@@ -24,27 +26,27 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
     val targetType = MClass(
       name = "targetType",
       abstractness = false,
-      superTypeNames = Set(),
-      inputs = Set(),
-      outputs = Set(),
-      attributes = Set()
+      superTypeNames = Seq(),
+      inputs = Seq(),
+      outputs = Seq(),
+      attributes = Seq()
     )
 
-    val twoTargetNodes = ToNodes(clazz = targetType, nodeNames = Set("1", "2"))
+    val twoTargetNodes = ToNodes(clazz = targetType, nodeNames = Seq("1", "2"))
 
-    val edgeTwoTargetNodes = Edge("", mReference, Set(), Set(twoTargetNodes), Map.empty)
+    val edgeTwoTargetNodes = Edge("", mReference, Seq(), Seq(twoTargetNodes), Map.empty)
 
     rule.isValid(edgeTwoTargetNodes).get should be(true)
 
 
-    val oneTargetNode = ToNodes(clazz = targetType, nodeNames = Set("1"))
+    val oneTargetNode = ToNodes(clazz = targetType, nodeNames = Seq("1"))
 
-    val edgeOneTargetNode = Edge("", mReference, Set(), Set(oneTargetNode), Map.empty)
+    val edgeOneTargetNode = Edge("", mReference, Seq(), Seq(oneTargetNode), Map.empty)
 
     rule.isValid(edgeOneTargetNode).get should be(true)
 
 
-    val edgeNoTargetNodes = Edge("", mReference, Set(), Set(), Map.empty)
+    val edgeNoTargetNodes = Edge("", mReference, Seq(), Seq(), Map.empty)
 
     rule.isValid(edgeNoTargetNodes).get should be(true)
   }
@@ -53,15 +55,15 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
     val targetType = MClass(
       name = "targetType",
       abstractness = false,
-      superTypeNames = Set(),
-      inputs = Set(),
-      outputs = Set(),
-      attributes = Set()
+      superTypeNames = Seq(),
+      inputs = Seq(),
+      outputs = Seq(),
+      attributes = Seq()
     )
 
-    val threeTargetNodes = ToNodes(clazz = targetType, nodeNames = Set("1", "2", "2"))
+    val threeTargetNodes = ToNodes(clazz = targetType, nodeNames = Seq("1", "2", "2"))
 
-    val edgeThreeTargetNodes = Edge("", mReference, Set(), Set(threeTargetNodes), Map.empty)
+    val edgeThreeTargetNodes = Edge("", mReference, Seq(), Seq(threeTargetNodes), Map.empty)
 
     rule.isValid(edgeThreeTargetNodes).get should be(false)
   }
@@ -71,11 +73,11 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
       "differentEdgeType",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val edge = Edge("", differentReference, Set(), Set(), Map.empty)
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 
@@ -85,11 +87,11 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class", abstractness = false, Set.empty, Set.empty, Set.empty, Set[MAttribute]())
+    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
     val targetLinkDef = MClassLinkDef(class1.name, 7, 0, deleteIfLower = false)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set.empty, Set(targetLinkDef),
-      Set[MAttribute]())
-    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq(targetLinkDef),
+      Seq[MAttribute]())
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeTargetsUpperBound.generateFor(metaModel)
 
     result.size should be(1)

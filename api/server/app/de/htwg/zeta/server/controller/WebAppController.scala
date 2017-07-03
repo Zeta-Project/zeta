@@ -2,6 +2,9 @@ package de.htwg.zeta.server.controller
 
 import javax.inject.Inject
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import play.api.http.HttpVerbs
@@ -13,8 +16,6 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Result
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /**
  * @author Philipp Daniels
@@ -22,12 +23,17 @@ import scala.concurrent.Future
 class WebAppController @Inject()(ws: WSClient, config: play.api.Configuration) extends Controller {
 
   private val defaultHost = "localhost"
-  private val defaultPort = 3000
+  private val defaultPort = 8080
 
-  private def getUrl(path: String) = {
+  private lazy val urlPostfix: String = {
     val host = config.getString("zeta.webapp.host").getOrElse(defaultHost).toString
     val port = config.getInt("zeta.webapp.port").getOrElse(defaultPort).toString
-    s"http://$host:$port/" + path
+
+    s"http://$host:$port/"
+  }
+
+  private def getUrl(path: String): String = {
+    urlPostfix + path
   }
 
   /** Views the `Sign In` page.
@@ -43,7 +49,7 @@ class WebAppController @Inject()(ws: WSClient, config: play.api.Configuration) e
     }
   }
 
-  private def processGetResponse(response: WSResponseHeaders, body: Source[ByteString, _]) = {
+  private def processGetResponse(response: WSResponseHeaders, body: Source[ByteString, _]): Result = {
     if (response.status == OK) {
       val contentType = response.headers.get(CONTENT_TYPE).flatMap(_.headOption).getOrElse("application/octet-stream")
       Ok.chunked(body).as(contentType)

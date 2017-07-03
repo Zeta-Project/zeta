@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -11,28 +13,28 @@ import org.scalatest.Matchers
 class NodesNoAttributesTest extends FlatSpec with Matchers {
 
   val rule = new NodesNoAttributes("nodeType")
-  val mClass = MClass("nodeType", abstractness = false, Set.empty, Set.empty, Set.empty, Set[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
 
   "isValid" should "return true on nodes of type nodeType with no attributes" in {
-    val node = Node("", mClass, Set(), Set(), Map.empty)
+    val node = Node("", mClass, Seq(), Seq(), Map.empty)
     rule.isValid(node).get should be (true)
   }
 
   it should "return false on nodes of type nodeType with attributes" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("")))
-    val node = Node("", mClass, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("")))
+    val node = Node("", mClass, Seq(), Seq(), attribute)
     rule.isValid(node).get should be (false)
   }
 
   it should "return true on nodes of type nodeType with empty attribute values" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set())
-    val node = Node("", mClass, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
+    val node = Node("", mClass, Seq(), Seq(), attribute)
     rule.isValid(node).get should be (true)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Set.empty, Set.empty, Set.empty, Set[MAttribute]())
-    val node = Node("", differentMClass, Set(), Set(), Map.empty)
+    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be (None)
   }
 
@@ -41,8 +43,8 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mClass = MClass("class", abstractness = false, superTypeNames = Set.empty, Set.empty, Set.empty, Set[MAttribute]())
-    val metaModel = TestUtil.classesToMetaModel(Set(mClass))
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodesNoAttributes.generateFor(metaModel)
 
     result.size should be (1)

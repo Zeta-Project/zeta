@@ -12,7 +12,7 @@ import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapper
-import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapperHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWrapperHandler
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sLoginInfo

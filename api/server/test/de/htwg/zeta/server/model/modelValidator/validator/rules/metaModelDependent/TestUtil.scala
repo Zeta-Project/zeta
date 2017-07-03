@@ -1,27 +1,29 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 object TestUtil {
 
-  def classesToMetaModel(elements: Set[MClass]) = {
+  def classesToMetaModel(elements: Seq[MClass]): MetaModel = {
     MetaModel(
       name = "",
       classes = elements,
-      references = Set.empty,
-      enums = Set.empty,
+      references = Seq.empty,
+      enums = Seq.empty,
       uiState = ""
     )
   }
 
-  def referencesToMetaModel(elements: Set[MReference]) = {
+  def referencesToMetaModel(elements: Seq[MReference]): MetaModel = {
     MetaModel(
       name = "",
-      classes = Set.empty,
+      classes = Seq.empty,
       references = elements,
-      enums = Set.empty,
+      enums = Seq.empty,
       uiState = ""
     )
   }

@@ -42,7 +42,8 @@ services:
       - mongodb
       - database
       - webapp
-    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp", "run"]
+      - generatorControl
+    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production -Dzeta.mongodb.server=mongodb", "run"]
 
   webapp:
     image: node:boron

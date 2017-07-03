@@ -14,7 +14,7 @@
  <logger name="com.gargoylesoftware.htmlunit.javascript" level="OFF"/>
  <logger name="de.htwg.zeta.server.model.result.Unreliable" level="DEBUG"/>
 
- <root level="WARN">
+ <root level="INFO">
   <appender-ref ref="STDOUT"/>
  </root>
 

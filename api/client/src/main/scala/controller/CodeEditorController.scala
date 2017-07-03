@@ -2,25 +2,22 @@ package controller
 
 import java.util.UUID
 
-import org.scalajs.dom.console
-import org.scalajs.jquery
-import org.scalajs.jquery.JQueryAjaxSettings
-import org.scalajs.jquery.JQueryXHR
-
-import scalot.ApplyResult
-import scalot.Client
-
-import shared.CodeEditorMessage.DocAdded
-import shared.CodeEditorMessage.DocDeleted
-import shared.CodeEditorMessage.DocLoaded
-import shared.CodeEditorMessage.DocNotFound
-import shared.CodeEditorMessage.TextOperation
-
-import view.CodeEditorView
+import de.htwg.zeta.shared.CodeEditorMessage.DocAdded
+import de.htwg.zeta.shared.CodeEditorMessage.DocDeleted
+import de.htwg.zeta.shared.CodeEditorMessage.DocLoaded
+import de.htwg.zeta.shared.CodeEditorMessage.DocNotFound
+import de.htwg.zeta.shared.CodeEditorMessage.TextOperation
 
 import scala.scalajs.js
 import scala.scalajs.js.Dynamic.literal
 import scala.scalajs.js.JSON
+import org.scalajs.dom.console
+import org.scalajs.jquery
+import org.scalajs.jquery.JQueryAjaxSettings
+import org.scalajs.jquery.JQueryXHR
+import scalot.ApplyResult
+import scalot.Client
+import view.CodeEditorView
 
 case class CodeEditorController(dslType: String, metaModelId: UUID) {
 
@@ -28,38 +25,43 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
 
   val view = new CodeEditorView(controller = this, metaModelId = metaModelId, dslType = dslType, autoSave = autoSave)
   val ws = new WebSocketConnection(controller = this, metaModelId = metaModelId, dslType = dslType)
-  val clientId = UUID.randomUUID().toString
   var document: Client = null
 
-  def docLoadedMessage(msg: DocLoaded) = {
-    document = new Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id.toString)
+  def docLoadedMessage(msg: DocLoaded): js.Dynamic = {
+    console.log(s"docLoadedMessage(${msg.toString})")
+    document = Client(str = msg.str, revision = msg.revision, title = msg.title, docType = msg.docType, id = msg.id.toString)
     view.displayDoc(document)
   }
 
-  def docNotFoundMessage(msg: DocNotFound) = {
+  def docNotFoundMessage(msg: DocNotFound): js.Dynamic = {
+    console.log(s"docNotFoundMessage(${msg.toString})")
     addDocument(msg.metaModelId.toString, msg.dslType)
     view.displayDoc(document)
   }
 
-  def addDocument(title: String, docType: String) = {
+  def addDocument(title: String, docType: String): Unit = {
+    console.log(s"addDocument(${title.toString}, ${docType.toString})")
     document = Client(str = "", revision = 0, title = title, docType = docType, id = UUID.randomUUID.toString)
     ws.sendMessage(
       DocAdded(str = "", revision = 0, docType = docType, title = title, id = UUID.fromString(document.id), dslType = dslType, metaModelId = metaModelId)
     )
   }
 
-  def deleteDocument(id: UUID) = {
+  def deleteDocument(id: UUID): Unit = {
+    console.log(s"deleteDocument(${id.toString})")
+    console.log(s"deleteDocument(${id.toString})")
     ws.sendMessage(DocDeleted(id, dslType))
   }
 
-  /*
+  /**
    * Saves the code via the REST API in the database.
    * Before we can access the REST API, we have to get an oAuth access token.
    * The function authorized() checks, if there is an access token already and if it is still valid.
    * authorized() takes a function, here fnSave(), that takes the valid token and some information about it as parameter.
    * This function fnSave() is a callback function which will be called inside authorized().
    */
-  def saveCode() = {
+  def saveCode(): js.Dynamic = {
+    console.log("saveCode()")
     jquery.jQuery.ajax(literal(
       `type` = "PUT",
       url = s"/metamodels/$metaModelId/$dslType",
@@ -77,7 +79,8 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
   }
 
   /** Apply changes to the corresponding doc */
-  def operationFromRemote(op: TextOperation) = {
+  def operationFromRemote(op: TextOperation): Unit = {
+    console.log(s"operationFromRemote(${op.toString})")
     val res = document.applyRemote(op.op)
     res.apply match {
       case Some(apply) if op.docId == view.selectedId =>
@@ -85,14 +88,14 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
       case _ =>
     }
     res.send match {
-      case Some(send) => {
+      case Some(send) =>
         ws.sendMessage(TextOperation(send, op.docId))
-      }
       case _ =>
     }
   }
 
-  def operationFromLocal(op: scalot.Operation, docId: UUID) = {
+  def operationFromLocal(op: scalot.Operation, docId: UUID): Any = {
+    console.log(s"operationFromLocal(${op.toString}, ${docId.toString})")
     document.applyLocal(op) match {
       case ApplyResult(Some(send), _) =>
         ws.sendMessage(TextOperation(send, docId))
@@ -100,6 +103,10 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
           saveCode()
         }
       case _ =>
+        if (autoSave) {
+          saveCode()
+        }
     }
+
   }
 }

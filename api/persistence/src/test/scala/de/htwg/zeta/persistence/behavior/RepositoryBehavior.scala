@@ -55,7 +55,6 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
       )
     }
 
-
     "BondedTask" should behave like entityPersistenceBehavior[BondedTask](
       repository.bondedTask,
       BondedTaskFixtures.entity1,

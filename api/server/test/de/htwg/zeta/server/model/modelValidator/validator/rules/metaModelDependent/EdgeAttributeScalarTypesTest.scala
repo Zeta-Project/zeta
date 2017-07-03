@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
@@ -17,22 +19,22 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
     "reference",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Set.empty,
-    Set.empty,
-    Set[MAttribute]()
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
   )
   val rule = new EdgeAttributeScalarTypes("reference", "attributeType", StringType)
 
   "the rule" should "be true for valid edges" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("value")))
-    val edge = Edge("edgeId", mReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
+    val edge = Edge("edgeId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "be false for invalid edges" in {
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MInt(42)))
-    val edge = Edge("edgeId", mReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MInt(42)))
+    val edge = Edge("edgeId", mReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -42,12 +44,12 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
       "differentMReference",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val attribute: Map[String, Set[AttributeValue]] = Map("attributeType" -> Set(MString("value")))
-    val edge = Edge("edgeId", differentMReference, Set(), Set(), attribute)
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
+    val edge = Edge("edgeId", differentMReference, Seq(), Seq(), attribute)
 
     rule.isValid(edge) should be(None)
   }
@@ -58,15 +60,15 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val enumType = MEnum("enumName", Set("enumValue1", "enumValue2"))
+    val enumType = MEnum("enumName", Seq("enumValue1", "enumValue2"))
 
     val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enumType, enumType.symbols.head, constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set.empty, Set.empty, Set[MAttribute]
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
       (enumAttribute, scalarAttribute))
-    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributeScalarTypes.generateFor(metaModel)
 
     result.size should be(1)

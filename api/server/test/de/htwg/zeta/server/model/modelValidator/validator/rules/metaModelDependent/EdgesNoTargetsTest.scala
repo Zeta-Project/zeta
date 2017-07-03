@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
@@ -14,14 +16,14 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
     "edgeType",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Set.empty,
-    Set.empty,
-    Set[MAttribute]()
+    Seq.empty,
+    Seq.empty,
+    Seq[MAttribute]()
   )
   val rule = new EdgesNoTargets("edgeType")
 
   "check" should "return true on edges of type edgeType with no targets" in {
-    val edge = Edge("", mReference, Set(), Set(), Map.empty)
+    val edge = Edge("", mReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
@@ -29,13 +31,13 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
     val target = MClass(
       name = "",
       abstractness = false,
-      superTypeNames = Set(),
-      inputs = Set(),
-      outputs = Set(),
-      attributes = Set()
+      superTypeNames = Seq(),
+      inputs = Seq(),
+      outputs = Seq(),
+      attributes = Seq()
     )
-    val toNode = ToNodes(clazz = target, nodeNames = Set(""))
-    val edge = Edge("", mReference, Set(), Set(toNode), Map.empty)
+    val toNode = ToNodes(clazz = target, nodeNames = Seq(""))
+    val edge = Edge("", mReference, Seq(), Seq(toNode), Map.empty)
 
     rule.isValid(edge).get should be(false)
   }
@@ -44,13 +46,13 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
     val target = MClass(
       name = "",
       abstractness = false,
-      superTypeNames = Set(),
-      inputs = Set(),
-      outputs = Set(),
-      attributes = Set()
+      superTypeNames = Seq(),
+      inputs = Seq(),
+      outputs = Seq(),
+      attributes = Seq()
     )
-    val toNode = ToNodes(clazz = target, nodeNames = Set())
-    val edge = Edge("", mReference, Set(), Set(toNode), Map.empty)
+    val toNode = ToNodes(clazz = target, nodeNames = Seq())
+    val edge = Edge("", mReference, Seq(), Seq(toNode), Map.empty)
 
     rule.isValid(edge).get should be(true)
   }
@@ -60,11 +62,11 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       "differenteEdgeType",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Set.empty,
-      Set.empty,
-      Set[MAttribute]()
+      Seq.empty,
+      Seq.empty,
+      Seq[MAttribute]()
     )
-    val edge = Edge("", differentReference, Set(), Set(), Map.empty)
+    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 
@@ -74,8 +76,8 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Set.empty, Set.empty, Set[MAttribute]())
-    val metaModel = TestUtil.referencesToMetaModel(Set(reference))
+    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgesNoTargets.generateFor(metaModel)
 
     result.size should be (1)

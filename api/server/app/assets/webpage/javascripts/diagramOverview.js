@@ -7,9 +7,7 @@
 
         var data = JSON.stringify({
             "name": name,
-            "classes": [],
-            "references": [],
-            "enums": [],
+            "elements": [],
             "uiState": ""
         });
 
@@ -33,16 +31,16 @@
     };
 
     var createModelInstance = function () {
-        var name = $("#inputModelName").val();
-        if (name === "") return;
-        var id = window.metaModelId;
-        var data = {
-            "metaModelId": id,
-            "model": {
-                elements: [],
-                name: name,
-                uiState: ""
-            }
+        const name = $("#inputModelName").val();
+        if (name === "") {
+            return;
+        }
+
+        const model = {
+            name: name,
+            metaModelId: window.metaModelId,
+            elements: [],
+            uiState: ""
         };
 
         $.ajax({
@@ -52,7 +50,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            data: JSON.stringify(data),
+            data: JSON.stringify(model),
             success: function (data, textStatus, jqXHR) {
                 window.location.replace("/overview/" + window.metaModelId);
             },
@@ -86,7 +84,7 @@
         $("#btnCreateMetaModel").click(createProject);
 
         $("#inputProjectName").keypress(function (e) {
-            if (e.which == 13) {
+            if (e.which === 13) {
                 createProject();
                 return false;
             }
@@ -95,11 +93,11 @@
         $(".delete-project").click(function () {
 
             event.preventDefault();
-            var metamodelId = this.dataset.metamodelId;
+            const metaModelId = this.dataset.metamodelId;
 
             $.ajax({
                 type: 'DELETE',
-                url: '/metamodels/' + metamodelId,
+                url: '/metamodels/' + metaModelId,
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

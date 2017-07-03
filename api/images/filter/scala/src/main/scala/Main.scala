@@ -105,9 +105,9 @@ object Main extends App {
   def checkInstance(fn: BaseFilter, entity: ModelEntity) = {
     val checked = fn.filter(entity)
     if (checked) {
-      logger.info(s"${entity.model.metaModel.name} ${entity.id} ✓")
+      logger.info(s"${entity.model.metaModelId} ${entity.id} ✓")
     } else {
-      logger.info(s"${entity.model.metaModel.name} ${entity.id}")
+      logger.info(s"${entity.model.metaModelId} ${entity.id}")
     }
     Future.successful(entity.id, checked)
   }

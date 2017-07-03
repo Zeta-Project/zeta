@@ -1,13 +1,14 @@
 package de.htwg.zeta.server.generator.generators.diagram
 
-import de.htwg.zeta.server.generator.model.diagram.Diagram
-import de.htwg.zeta.server.generator.model.diagram.edge.Edge
-import de.htwg.zeta.server.generator.model.diagram.node.Node
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import scala.collection.immutable.Seq
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
+import de.htwg.zeta.server.generator.model.diagram.Diagram
+import de.htwg.zeta.server.generator.model.diagram.edge.Edge
+import de.htwg.zeta.server.generator.model.diagram.node.Node
 
 /**
  * ValidatorGenerator is responsible for the creation of the String for validator.js
@@ -69,7 +70,7 @@ object ValidatorGenerator {
     """
   }
 
-  def generateInOutMatrixForMClass(inputs: Set[MReferenceLinkDef], mcName: String): String = {
+  def generateInOutMatrixForMClass(inputs: Seq[MReferenceLinkDef], mcName: String): String = {
     s"""
     $mcName: {
       ${

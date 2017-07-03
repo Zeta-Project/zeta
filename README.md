@@ -1,7 +1,45 @@
 # Zeta
 > Model-Driven Generation of Graphical Editors
 
-## Overview
+## Development
+
+Check out this repository. It needs to be located in an folder called **Zeta**
+
+To start the Zeta in development mode. You need: 
+
+*  [IntelliJ Ultimate Edition.](https://www.jetbrains.com/idea/download/) This is [free for students.](https://www.jetbrains.com/student/)
+*  [MongoDB.](https://www.mongodb.com/download-center)
+*  [NodeJs.](https://nodejs.org/en/download/) *This is legacy and will be removed in the future*
+*  yarn: `npm install -g yarn` *This is legacy and will be removed in the future*
+
+You need to start 3 things:
+
+*  MongoDB: 
+   * in commandline: `mongod(.exe) --dbpath "*full path to where i want my dockerfiles to be stored*".`
+*  Webapp:
+   * If you are working under windows. Execute all webapp commands in MINGW (comes with git).
+   * make sure yarn is installed. 
+   * cd into the webapp directory
+   * call: `yarn`
+   * call: `./node_modules/.bin/bower install --allow-root`
+   * to start, call: `yarn run dev`
+* IntelliJ
+   * File | Open -> folder Zeta/api
+   * VCS | Enable Version Control Integration -> git
+   * navigate to build.sbt and enable sbt integration if asked.
+   * View | Tool Windows | SBT -> press the blue refresh button
+   * Run | Edit Configurations... -> `+` -> Play 2 App 
+       * Play2 Module = `api`
+       * Environment variables -> `...`
+           * name = `ZETA_DEPLOYMENT`  value = `development`
+   * Run the new Configuration
+   
+   
+If you change something in the code. You just need to press refresh and IntelliJ will recompile the project.
+
+**If you intend to change anything in the webapp. Remove it from the webapp and add it into the play app**
+
+## Overview Production
 
 List of services in docker-compose:
 
@@ -13,7 +51,7 @@ List of services in docker-compose:
 - **proxy** Nginx web server
 
 ## Prerequisites
-The development stack is completely based on Docker. Therefore you first need to install Docker and make sure that your system fulfill the below dependencies.
+The production stack is completely based on Docker. Therefore you first need to install Docker and make sure that your system fulfill the below dependencies.
 
 **install dependencies:**
 

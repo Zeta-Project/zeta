@@ -36,7 +36,7 @@ def baseSettings = {
     scalastyleFailOnError := true,
     compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
     compile in Compile := ((compile in Compile) dependsOn compileScalastyle).value,
-    wartremoverWarnings ++= Warts.unsafe,
+    wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
 
     dockerRepository := Some("modigen")
   )
@@ -132,7 +132,6 @@ lazy val client = baseProject("client", file("client")).settings(
     "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
     "org.scala-js" %%% "scalajs-dom" % "0.8.1",
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
-    // "com.github.jahoefne" %%% "scalot" % "0.1",
     "com.lihaoyi" %%% "scalarx" % "0.2.8",
     "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
     "com.lihaoyi" %%% "upickle" % "0.3.4"
@@ -172,12 +171,11 @@ lazy val sharedJs = shared.js
 lazy val common = baseProject("common", file("common")).settings(
   Seq(
     version := "0.1",
-    resolvers += "Atlassian Releases" at "https://maven.atlassian.com/public/",
+    resolvers += Resolver.jcenterRepo,
 
     libraryDependencies ++= Seq(
       // silhouette
       "com.mohiva" %% "play-silhouette" % "4.0.0",
-
       "com.typesafe.play" %% "play-json" % "2.5.7",
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
@@ -190,7 +188,8 @@ lazy val common = baseProject("common", file("common")).settings(
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
       "org.scalaz" %% "scalaz-core" % "7.2.8",
       "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "com.github.jahoefne" % "scalot_2.11" % "1.0"
     )
   )
 )

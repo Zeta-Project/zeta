@@ -9,9 +9,9 @@ import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapper
-import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapperHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWrapperHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.PasswordInfoWrapper
-import de.htwg.zeta.persistence.mongo.MongoHandler.PasswordInfoWrapperHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoWrapperHandler
 import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoHandler
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.keyProjection

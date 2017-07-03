@@ -2,6 +2,8 @@ package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
@@ -109,8 +111,8 @@ object MetaModelEntityFixtures {
     lowerBound = 0
   )
 
-  val enum1 = MEnum("enum1", Set("enumValue1", "enumValue2"))
-  val enum2 = MEnum("enum2", Set.empty)
+  val enum1 = MEnum("enum1", Seq("enumValue1", "enumValue2"))
+  val enum2 = MEnum("enum2", Seq.empty)
 
   val enumAttribute = MAttribute(
     name = "enumAttribute",
@@ -164,52 +166,52 @@ object MetaModelEntityFixtures {
   val class1 = MClass(
     name = "class1",
     abstractness = true,
-    superTypeNames = Set(className1, className2),
-    inputs = Set(referenceLinkDef1, referenceLinkDef2),
-    outputs = Set.empty,
-    attributes = Set(intAttribute, doubleAttribute, enumAttribute)
+    superTypeNames = Seq(className1, className2),
+    inputs = Seq(referenceLinkDef1, referenceLinkDef2),
+    outputs = Seq.empty,
+    attributes = Seq(intAttribute, doubleAttribute, enumAttribute)
   )
 
   val class2 = MClass(
     name = "class2",
     abstractness = false,
-    superTypeNames = Set(className2),
-    inputs = Set.empty,
-    outputs = Set(referenceLinkDef1, referenceLinkDef2),
-    attributes = Set(stringAttribute, boolAttribute)
+    superTypeNames = Seq(className2),
+    inputs = Seq.empty,
+    outputs = Seq(referenceLinkDef1, referenceLinkDef2),
+    attributes = Seq(stringAttribute, boolAttribute)
   )
 
   val reference1 = MReference(
     name = referenceName1,
     sourceDeletionDeletesTarget = true,
     targetDeletionDeletesSource = true,
-    source = Set(classLinkDef1, classLinkDef2),
-    target = Set.empty,
-    attributes = Set(enumAttribute, stringAttribute)
+    source = Seq(classLinkDef1, classLinkDef2),
+    target = Seq.empty,
+    attributes = Seq(enumAttribute, stringAttribute)
   )
 
   val reference2 = MReference(
     name = referenceName2,
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Set.empty,
-    target = Set(classLinkDef1, classLinkDef2),
-    attributes = Set(intAttribute, doubleAttribute)
+    source = Seq.empty,
+    target = Seq(classLinkDef1, classLinkDef2),
+    attributes = Seq(intAttribute, doubleAttribute)
   )
 
   val metaModel1 = MetaModel(
     name = "metaModel1",
-    classes = Set(class1, class2),
-    references = Set(reference1, reference2),
-    enums = Set(enum1, enum2),
+    classes = Seq(class1, class2),
+    references = Seq(reference1, reference2),
+    enums = Seq(enum1, enum2),
     uiState = "uiState1"
   )
 
   val metaModel2: MetaModel = MetaModel(
     name = "metaModel2",
-    classes = Set(class1),
-    references = Set(reference1),
-    enums = Set(enum1),
+    classes = Seq(class1),
+    references = Seq(reference1),
+    enums = Seq(enum1),
     uiState = "uiState2"
   )
 

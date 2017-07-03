@@ -8,14 +8,20 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelUiFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelEntityFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.NodeFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.EdgeFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
+import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -23,7 +29,7 @@ import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for model definitions
+ * REST-ful API for model definitions
  */
 class ModelRestApi() extends Controller with Logging {
 
@@ -31,15 +37,15 @@ class ModelRestApi() extends Controller with Logging {
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedAccessRepository(request.identity.id).modelEntity
     repo.readAllIds().flatMap { ids =>
-      Future.sequence(ids.map(repo.read)).map(_.map(info =>
+      Future.sequence(ids.toList.map(repo.read)).map(_.map(info =>
         info.copy(links = Some(Seq(
           HLink.get("self", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request)),
           HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(info.metaModelId).absoluteURL()(request)),
           HLink.delete("remove", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request))
         )))
       ))
-    }.map(list =>
-      Ok(Json.toJson(list))
+    }.map((list: List[ModelEntity]) =>
+      Ok(JsArray(list.map(ModelEntityFormat.writes)))
     ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -47,44 +53,38 @@ class ModelRestApi() extends Controller with Logging {
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    (request.body \ "metaModelId").validate[UUID].fold(
-      error => Future.successful(Results.BadRequest(JsError.toJson(error))),
-      metaModelId => {
-        (request.body \ "model").validate[Model].fold(
-          errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-          model => {
-            val repo = restrictedAccessRepository(request.identity.id)
-            repo.metaModelEntity.read(metaModelId).flatMap(metaModel => {
-              repo.modelEntity.create(
-                ModelEntity(
-                  id = UUID.randomUUID(),
-                  model = model.copy(metaModel = metaModel.metaModel),
-                  metaModelId = metaModel.id
-                )
-              ).map { modelEntity =>
-                Results.Ok(Json.toJson(modelEntity))
-              }
-            }).recover {
-              case e: Exception => Results.BadRequest(e.getMessage)
-            }
-          }
-        )
+    ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
+      jsRes.fold(
+        error => Future.successful(Results.BadRequest(JsError.toJson(error))),
+        model => restrictedAccessRepository(request.identity.id).modelEntity.create(
+          ModelEntity(
+            id = UUID.randomUUID(),
+            model = model,
+            metaModelId = model.metaModelId
+          )
+        ).map { modelEntity =>
+          Ok(ModelEntityFormat.writes(modelEntity))
+        }).recover {
+        case e: Exception => Results.BadRequest(e.getMessage)
       }
-    )
+    })
   }
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[Model].fold(
-      errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
-      model => {
-        restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map { updated =>
-          Results.Ok(Json.toJson(updated))
-        }.recover {
-          case e: Exception => Results.BadRequest(e.getMessage)
+    ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
+      jsRes.fold(
+        errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+        model => {
+          restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
+            updated =>
+              Ok(ModelEntityFormat.writes(updated))
+          }.recover {
+            case e: Exception => Results.BadRequest(e.getMessage)
+          }
         }
-      }
-    )
+      )
+    })
   }
 
   /** updates model definition only */
@@ -101,28 +101,30 @@ class ModelRestApi() extends Controller with Logging {
         HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(m.metaModelId).absoluteURL()(request)),
         HLink.delete("remove", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request))
       )))
-      Results.Ok(Json.toJson(out))
+      Ok(ModelEntityFormat.writes(out))
     })
   }
 
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => Results.Ok(Json.toJson(m.model)))
+    protectedRead(id, request, (m: ModelEntity) => Ok(ModelFormat.writes(m.model)))
   }
 
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val nodes = m.model.nodeMap.values
-      Results.Ok(Json.toJson(nodes))
+      Ok(JsArray(nodes.map(NodeFormat.writes).toList))
     })
   }
 
   /** returns specific node of a specific model as json object */
   def getNode(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val node = m.model.nodeMap.get(name)
-      node.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      m.model.nodeMap.get(name) match {
+        case Some(node: Node) => Ok(NodeFormat.writes(node))
+        case None => NotFound
+      }
     })
   }
 
@@ -130,23 +132,23 @@ class ModelRestApi() extends Controller with Logging {
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val edges = m.model.edgeMap.values
-      Results.Ok(Json.toJson(edges))
+      Ok(JsArray(edges.map(EdgeFormat.writes).toList))
     })
   }
 
   /** returns specific edge of a specific model as json object */
   def getEdge(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val edge = m.model.edgeMap.get(name)
-      edge.map(m => Results.Ok(Json.toJson(m))).getOrElse(Results.NotFound)
+      m.model.edgeMap.get(name) match {
+        case Some(edge) => Ok(EdgeFormat.writes(edge))
+        case None => NotFound
+      }
     })
   }
 
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntity.delete(id).map { _ =>
-      Ok("")
-    }.recover {
+    restrictedAccessRepository(request.identity.id).modelEntity.delete(id).map(_ => Ok("")).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
@@ -170,7 +172,9 @@ class ModelRestApi() extends Controller with Logging {
       restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.metaModelId).map(metaModelEntity => {
         metaModelEntity.validator match {
           case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
-            case Some(validator) => Ok(Json.toJson(validator.validate(modelEntity.model).filterNot(_.valid)))
+            case Some(validator) =>
+              val results: Seq[ModelValidationResult] = validator.validate(modelEntity.model).filterNot(_.valid)
+              Ok(JsArray(results.map(ModelValidationResult.modelValidationResultWrites.writes)))
             case None => InternalServerError("Error loading model validator.")
           }
           case None =>

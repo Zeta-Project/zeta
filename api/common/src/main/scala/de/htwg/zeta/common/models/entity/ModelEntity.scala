@@ -7,7 +7,7 @@ import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
-
+// TODO remove metaModelId as it is already defined in Model#metaModelId
 case class ModelEntity(
     id: UUID,
     model: Model,
