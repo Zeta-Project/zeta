@@ -2,9 +2,11 @@ package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
 
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
+import scala.reflect.ClassTag
 import scala.util.Failure
 import scala.util.Success
 
@@ -13,13 +15,12 @@ import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
 import de.htwg.zeta.common.models.entity.Entity
-import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Cache
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.CleanUp
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Delete
-import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Found
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Update
+import de.htwg.zeta.persistence.actorCache.EntityCacheActor.success
 import de.htwg.zeta.persistence.general.EntityPersistence
 import grizzled.slf4j.Logging
 
@@ -35,9 +36,7 @@ private[actorCache] object EntityCacheActor {
 
   private case object CleanUp
 
-  private case class Found[E <: Entity](entity: E, inCache: Boolean)
-
-  private case class Cache[E <: Entity](entities: Map[UUID, E], used: Set[UUID])
+  private val success: Future[Unit] = Future.successful(())
 
   def props[E <: Entity](underlying: EntityPersistence[E], cacheDuration: FiniteDuration): Props = Props(new EntityCacheActor(underlying, cacheDuration))
 
@@ -45,100 +44,83 @@ private[actorCache] object EntityCacheActor {
 
 private[actorCache] class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDuration: FiniteDuration) extends Actor with Logging {
 
-  private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
+  private val cache: mutable.Map[UUID, Future[E]] = mutable.Map.empty
 
-  override def receive: Receive = state(Future.successful(Cache(Map.empty, Set.empty)))
+  private val used: mutable.Set[UUID] = mutable.Set.empty
+
+  private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
   private type F = E => E
 
-  private def state(cache: Future[Cache[E]]): Receive = {
-    case Create(entity: E) => context.become(state(create(cache, entity, sender)))
-    case Read(id) => context.become(state(read(cache, id, sender)))
-    case Update(id, updateEntity: F) => context.become(state(update(cache, id, updateEntity, sender)))
-    case Delete(id) => context.become(state(delete(cache, id, sender)))
-    case CleanUp => context.become(state(cleanUp(cache)))
+  override def receive: Receive = {
+    case Create(entity: E) => create(entity, sender)
+    case Read(id) => read(id, sender)
+    case Update(id, updateEntity: F) => update(id, updateEntity, sender)
+    case Delete(id) => delete(id, sender)
+    case CleanUp => cleanUp()
   }
 
-  private def create(cache: Future[Cache[E]], entity: E, sender: ActorRef): Future[Cache[E]] = {
+  private def create(entity: E, sender: ActorRef): Unit = {
     trace("creating - " + entity.id.toString)
-    cache.flatMap { cache =>
-      underlying.create(entity).map { entity =>
-        sender ! Success(entity)
-        cache.copy(
-          entities = cache.entities + (entity.id -> entity),
-          used = cache.used + entity.id
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
+
+    val current = cache.getOrElse(entity.id, success).recoverWith { case _ => success }.flatMap(_ => underlying.create(entity))
+
+    current.onComplete {
+      case Success(_) => sender ! Success(entity)
+      case Failure(e) => sender ! Failure(e)
     }
+
+    cache += (entity.id -> current)
+    used += entity.id
   }
 
-  private def read(cache: Future[Cache[E]], id: UUID, sender: ActorRef): Future[Cache[E]] = {
+  private def read(id: UUID, sender: ActorRef): Unit = {
     trace("reading - " + id.toString)
-    cache.flatMap { cache =>
-      cache.entities.get(id).fold[Future[Found[E]]] {
-        underlying.read(id).map(Found(_, inCache = false))
-      } { entity =>
-        Future(Found(entity, inCache = true))
-      }.map { found =>
-        sender ! Success(found.entity)
-        if (found.inCache) {
-          cache.copy(used = cache.used + id)
-        } else {
-          cache.copy(
-            entities = cache.entities + (id -> found.entity),
-            used = cache.used + id
-          )
-        }
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
+
+    val current = cache.get(id).fold(underlying.read(id))(_.recoverWith { case _ => underlying.read(id) })
+
+    current.onComplete {
+      case Success(entity) => sender ! Success(entity)
+      case Failure(e) => sender ! Failure(e)
     }
+
+    cache.update(id, current)
+    used.add(id)
   }
 
-  private def update(cache: Future[Cache[E]], id: UUID, updateEntity: E => E, sender: ActorRef): Future[Cache[E]] = {
+  private def update(id: UUID, updateEntity: E => E, sender: ActorRef): Unit = {
     trace("updating - " + id.toString)
-    cache.flatMap { cache =>
-      underlying.update(id, updateEntity).map { entity =>
-        sender ! Success(entity)
-        cache.copy(
-          entities = cache.entities + (entity.id -> entity),
-          used = cache.used + entity.id
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
+
+    val current = cache.getOrElse(id, success).recoverWith { case _ => success }.flatMap(_ => underlying.update(id, updateEntity))
+
+    current.onComplete {
+      case Success(entity) => sender ! Success(entity)
+      case Failure(e) => sender ! Failure(e)
     }
+
+    cache.update(id, current)
+    used.add(id)
   }
 
-  private def delete(cache: Future[Cache[E]], id: UUID, sender: ActorRef): Future[Cache[E]] = {
+  private def delete(id: UUID, sender: ActorRef): Unit = {
     trace("deleting - " + id.toString)
-    cache.flatMap { cache =>
-      underlying.delete(id).map { _ =>
-        sender ! Success(Unit)
-        cache.copy(
-          entities = cache.entities - id,
-          used = cache.used - id
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
+    val current = cache.getOrElse(id, success).recoverWith { case _ => success }.flatMap(_ => underlying.delete(id))
+
+    current.onComplete {
+      case Success(_) => sender ! Success(Unit)
+      case Failure(e) => sender ! Failure(e)
     }
+
+    cache.remove(id)
+    used.remove(id)
   }
 
-  private def cleanUp(cache: Future[Cache[E]]): Future[Cache[E]] = {
+  private def cleanUp(): Unit = {
     trace("cleaning cache")
-    cache.map { cache =>
-      cache.copy(
-        cache.used.map(id => (id, cache.entities(id))).toMap,
-        Set.empty
-      )
-    }
+
+    val unused = cache.keySet.filter(!used.contains(_))
+    unused.foreach(cache.remove)
+    used.clear()
   }
 
   override def postStop(): Unit = {
