@@ -3,19 +3,22 @@
 
 ## Development
 
+### Setup Development
+
 Check out this repository. It needs to be located in an folder called **Zeta**
 
-To start the Zeta in development mode. You need: 
+To setup the Zeta for development mode. You need: 
 
 *  [IntelliJ Ultimate Edition.](https://www.jetbrains.com/idea/download/) This is [free for students.](https://www.jetbrains.com/student/)
 *  [MongoDB.](https://www.mongodb.com/download-center)
 *  [NodeJs.](https://nodejs.org/en/download/) *This is legacy and will be removed in the future*
 *  yarn: `npm install -g yarn` *This is legacy and will be removed in the future*
 
-You need to start 3 things:
+You need to setup 3 things:
 
 *  MongoDB: 
-   * in commandline: `mongod(.exe) --dbpath "*full path to where i want my dockerfiles to be stored*".`
+   * to start, call in commandline: `mongod(.exe) --dbpath "*full path to where i want my dockerfiles to be stored*"`. 
+   * you can also create a batch/shell script containing this command. In windows you should replace `mongod` with the full path to mongod in double quotes. It also helps to add a `pause` / `read` at the end to catch possible errors if MongoDB shuts down unexpectedly.
 *  Webapp:
    * If you are working under windows. Execute all webapp commands in MINGW (comes with git).
    * make sure yarn is installed. 
@@ -34,6 +37,17 @@ You need to start 3 things:
            * name = `ZETA_DEPLOYMENT`  value = `development`
    * Run the new Configuration
    
+### Start Development
+
+To start Zeta in development mode, you need to start 3 things.
+
+* MongoDB
+  * execute your script **or** call in commandline: `mongod(.exe) --dbpath "*full path to where i want my dockerfiles to be stored*"`.
+* Webapp
+  * In commandline navigate to Zeta/webapp/ 
+  * Now call: `yarn run dev`
+* IntelliJ
+  * Start the Play2 configuration you crated
    
 If you change something in the code. You just need to press refresh and IntelliJ will recompile the project.
 
