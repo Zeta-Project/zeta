@@ -44,7 +44,7 @@ class MetaModelLoader(metaModelId: String, andThen: MetaModel => Unit) {
   private def loadMetaModel(): Unit = {
     jquery.jQuery.ajax(literal(
       `type` = "GET",
-      url = s"/metamodels/$metaModelId/definition",
+      url = s"/rest/v1/metamodels/$metaModelId/definition",
       contentType = "application/json; charset=utf-8",
       dataType = "json",
       success = { (data: js.Dynamic, textStatus: String, jqXHR: JQueryXHR) =>
@@ -74,7 +74,7 @@ case class ModelLoader(modelId: UUID) {
      */
 
     val res = jquery.jQuery.ajax(literal(
-      url = s"/metamodels/$modelId/definition/mclasses",
+      url = s"/rest/v1/metamodels/$modelId/definition/mclasses",
       `type` = "GET",
       async = false,
       contentType = "application/json; charset=utf-8",
@@ -92,7 +92,7 @@ case class ModelLoader(modelId: UUID) {
      */
 
     val res = jquery.jQuery.ajax(literal(
-      url = s"/metamodels/$modelId/definition/mreferences",
+      url = s"/rest/v1/metamodels/$modelId/definition/mreferences",
       `type` = "GET",
       async = false,
       contentType = "application/json; charset=utf-8",

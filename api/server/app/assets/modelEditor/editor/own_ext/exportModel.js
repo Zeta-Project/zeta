@@ -26,7 +26,7 @@ var modelExporter = (function modelExporter () {
 
         $.ajax({
             type: 'PUT',
-            url: '/models/' + window._global_uuid + "/definition",
+            url: '/rest/v1/models/' + window._global_uuid + "/definition",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
