@@ -1,10 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="database-collection">
   <template>
-    <iron-signals on-iron-signal-database-sync="onDocumentChanged"></iron-signals>
   </template>
   <script>
     (function() {
@@ -29,31 +27,6 @@
             type: String,
             readOnly: true,
             notify: true
-          }
-        },
-
-        onDocumentChanged(e) {
-          var doc = e.detail;
-          var self = this;
-
-          // run through all docs and find the doc which to update.
-          for (var i = 0; i < self.docs.length; i++) {
-            if (self.docs[i]._id === doc._id) {
-              if (doc._deleted) {
-                this.fire('removed', self.docs[i]);
-                self.splice('docs', i, 1);
-              } else {
-                this.fire('updated', self.docs[i]);
-                self.set('docs.' + i, doc);
-              }
-              return true;
-            }
-          }
-          // end of all docs reached. The doc need to be inserted
-          if (doc._id >= self.startkey && doc._id <= self.endkey) {
-            self.push('docs', doc);
-            this.fire('created', doc);
-            return true;
           }
         },
 
