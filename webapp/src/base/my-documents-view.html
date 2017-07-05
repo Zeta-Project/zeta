@@ -30,7 +30,7 @@
       }
     </style>
 
-    <my-documents type="[[type]]" items="{{items}}"></my-documents>
+    <my-documents type="[[type]]" rest-list="[[restList]]" items="{{items}}"></my-documents>
 
     <iron-list items="[[items]]" as="item">
       <template>
@@ -46,6 +46,7 @@
 
       properties: {
         type: String,
+        restList: String
       },
 
       ready() {
