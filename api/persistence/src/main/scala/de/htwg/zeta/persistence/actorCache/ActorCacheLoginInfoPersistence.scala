@@ -57,7 +57,7 @@ class ActorCacheLoginInfoPersistence(
    */
   override def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = {
     (router ? Create(loginInfo, id)).flatMap {
-      case Success(Unit) => Future.successful(Unit)
+      case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
     }
   }
@@ -82,7 +82,7 @@ class ActorCacheLoginInfoPersistence(
    */
   override def update(old: LoginInfo, updated: LoginInfo): Future[Unit] = {
     (router ? Update(old, updated)).flatMap {
-      case Success(Unit) => Future.successful(())
+      case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
     }
   }
@@ -94,7 +94,7 @@ class ActorCacheLoginInfoPersistence(
    */
   override def delete(loginInfo: LoginInfo): Future[Unit] = {
     (router ? Delete(loginInfo)).flatMap {
-      case Success(Unit) => Future.successful(())
+      case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
     }
   }

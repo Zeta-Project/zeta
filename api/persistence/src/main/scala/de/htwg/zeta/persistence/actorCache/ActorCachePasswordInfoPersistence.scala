@@ -109,7 +109,7 @@ class ActorCachePasswordInfoPersistence(
    */
   override def remove(loginInfo: LoginInfo): Future[Unit] = {
     (router ? Remove(loginInfo)).flatMap {
-      case Success(Unit) => Future.successful(())
+      case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
     }
   }

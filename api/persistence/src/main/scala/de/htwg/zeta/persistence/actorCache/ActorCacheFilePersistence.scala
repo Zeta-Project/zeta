@@ -33,10 +33,10 @@ class ActorCacheFilePersistence(
 ) extends FilePersistence {
 
   private def hashMapping: ConsistentHashMapping = {
-    case Create(file) => file.id.hashCode
-    case Read(id, _) => id.hashCode
-    case Update(file) => file.id.hashCode
-    case Delete(id, _) => id.hashCode
+    case Create(file) => file.key.hashCode
+    case Read(id, name) => (id, name).hashCode
+    case Update(file) => file.key.hashCode
+    case Delete(id, name) => (id, name).hashCode
   }
 
   private val router: ActorRef = system.actorOf(
@@ -94,7 +94,7 @@ class ActorCacheFilePersistence(
    */
   override def delete(id: UUID, name: String): Future[Unit] = {
     (router ? Delete(id, name)).flatMap {
-      case Success(Unit) => Future.successful(())
+      case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
     }
   }

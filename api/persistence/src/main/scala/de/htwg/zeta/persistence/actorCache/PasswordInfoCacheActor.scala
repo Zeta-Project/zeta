@@ -1,5 +1,6 @@
 package de.htwg.zeta.persistence.actorCache
 
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
@@ -13,13 +14,12 @@ import akka.actor.Props
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Add
-import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Cache
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.CleanUp
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Find
-import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Found
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Remove
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Save
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Update
+import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.unitFuture
 import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 import grizzled.slf4j.Logging
 
@@ -38,9 +38,7 @@ private[actorCache] object PasswordInfoCacheActor {
 
   private case object CleanUp
 
-  private case class Found(authInfo: Option[PasswordInfo], inCache: Boolean)
-
-  private case class Cache(entities: Map[LoginInfo, Option[PasswordInfo]], used: Set[LoginInfo])
+  private val unitFuture: Future[Unit] = Future.successful(())
 
   def props(underlying: PasswordInfoPersistence, cacheDuration: FiniteDuration): Props = Props(new PasswordInfoCacheActor(underlying, cacheDuration))
 
@@ -48,115 +46,71 @@ private[actorCache] object PasswordInfoCacheActor {
 
 private[actorCache] class PasswordInfoCacheActor(underlying: PasswordInfoPersistence, cacheDuration: FiniteDuration) extends Actor with Logging {
 
+  private val cache: mutable.Map[LoginInfo, Future[Option[PasswordInfo]]] = mutable.Map.empty
+
+  private val used: mutable.Set[LoginInfo] = mutable.Set.empty
+
   private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
-  override def receive: Receive = state(Future.successful(Cache(Map.empty, Set.empty)))
-
-  private def state(cache: Future[Cache]): Receive = {
-    case Add(loginInfo, authInfo) => context.become(state(add(cache, loginInfo, authInfo, sender)))
-    case Find(loginInfo) => context.become(state(find(cache, loginInfo, sender)))
-    case Update(loginInfo, authInfo) => context.become(state(update(cache, loginInfo, authInfo, sender)))
-    case Save(loginInfo, authInfo) => context.become(state(save(cache, loginInfo, authInfo, sender)))
-    case Remove(loginInfo) => context.become(state(remove(cache, loginInfo, sender)))
-    case CleanUp => context.become(state(cleanUp(cache)))
+  override def receive: Receive = {
+    case Add(loginInfo, authInfo) => add(loginInfo, authInfo)
+    case Find(loginInfo) => find(loginInfo)
+    case Update(loginInfo, authInfo) => update(loginInfo, authInfo)
+    case Save(loginInfo, authInfo) => save(loginInfo, authInfo)
+    case Remove(loginInfo) => remove(loginInfo)
+    case CleanUp => cleanUp()
   }
 
-  private def add(cache: Future[Cache], loginInfo: LoginInfo, authInfo: PasswordInfo, sender: ActorRef): Future[Cache] = {
-    trace(s"adding - ${loginInfo.toString}") // scalastyle:ignore multiple.string.literals
-    cache.flatMap { cache =>
-      underlying.add(loginInfo, authInfo).map { authInfo =>
-        sender ! Success(authInfo)
-        cache.copy(
-          entities = cache.entities + (loginInfo -> Some(authInfo)),
-          used = cache.used + loginInfo
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
+  private def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Unit = {
+    val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.add(loginInfo, authInfo))
+    replyToSender(entry, sender)
+    cache += (loginInfo -> entry.map(Some(_)))
+    used += loginInfo
+  }
+
+  private def find(loginInfo: LoginInfo): Unit = {
+    val entry = cache.get(loginInfo).fold(underlying.find(loginInfo))(_.recoverWith { case _ => underlying.find(loginInfo) })
+    replyToSender(entry, sender)
+    cache += (loginInfo -> entry)
+    used += loginInfo
+  }
+
+  private def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Unit = {
+    val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.update(loginInfo, authInfo))
+    replyToSender(entry, sender)
+    cache += (loginInfo -> entry.map(Option(_)))
+    used += loginInfo
+  }
+
+  private def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Unit = {
+    val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.save(loginInfo, authInfo))
+    replyToSender(entry, sender)
+    cache += (loginInfo -> entry.map(Option(_)))
+    used += loginInfo
+  }
+
+  private def remove(loginInfo: LoginInfo): Unit = {
+    val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.remove(loginInfo))
+    replyToSender(entry, sender)
+    cache -= loginInfo
+    used -= loginInfo
+  }
+
+  private def mapOrRecoverToUnit(f: Option[Future[Option[PasswordInfo]]]): Future[Unit] = {
+    f.fold(unitFuture)(_.flatMap(_ => unitFuture).recoverWith { case _ => unitFuture })
+  }
+
+  private def replyToSender[T](f: Future[T], target: ActorRef): Unit = {
+    f.onComplete {
+      case Success(s) => target ! Success(s)
+      case Failure(e) => target ! Failure(e)
     }
   }
 
-  private def find(cache: Future[Cache], loginInfo: LoginInfo, sender: ActorRef): Future[Cache] = {
-    trace(s"finding - ${loginInfo.toString}")
-    cache.flatMap { cache =>
-      cache.entities.get(loginInfo).fold[Future[Found]] {
-        underlying.find(loginInfo).map(Found(_, inCache = false))
-      } { authInfo =>
-        Future(Found(authInfo, inCache = true))
-      }.map { found =>
-        sender ! Success(found.authInfo)
-        if (found.inCache) {
-          cache.copy(used = cache.used + loginInfo)
-        } else {
-          cache.copy(
-            entities = cache.entities + (loginInfo -> found.authInfo),
-            used = cache.used + loginInfo
-          )
-        }
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
-    }
-  }
-
-  private def update(cache: Future[Cache], loginInfo: LoginInfo, authInfo: PasswordInfo, sender: ActorRef): Future[Cache] = {
-    trace(s"updating - ${loginInfo.toString}")
-    cache.flatMap { cache =>
-      underlying.update(loginInfo, authInfo).map { authInfo =>
-        sender ! Success(authInfo)
-        cache.copy(
-          entities = cache.entities + (loginInfo -> Some(authInfo)),
-          used = cache.used + loginInfo
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
-    }
-  }
-
-  private def save(cache: Future[Cache], loginInfo: LoginInfo, authInfo: PasswordInfo, sender: ActorRef): Future[Cache] = {
-    trace(s"updating - ${loginInfo.toString}")
-    cache.flatMap { cache =>
-      underlying.save(loginInfo, authInfo).map { authInfo =>
-        sender ! Success(authInfo)
-        cache.copy(
-          entities = cache.entities + (loginInfo -> Some(authInfo)),
-          used = cache.used + loginInfo
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
-    }
-  }
-
-  private def remove(cache: Future[Cache], loginInfo: LoginInfo, sender: ActorRef): Future[Cache] = {
-    trace(s"deleting - ${loginInfo.toString}")
-    cache.flatMap { cache =>
-      underlying.remove(loginInfo).map { _ =>
-        sender ! Success(Unit)
-        cache.copy(
-          entities = cache.entities - loginInfo,
-          used = cache.used - loginInfo
-        )
-      }.recover { case e: Exception =>
-        sender ! Failure(e)
-        cache
-      }
-    }
-  }
-
-  private def cleanUp(cache: Future[Cache]): Future[Cache] = {
-    trace("cleaning cache")
-    cache.map { cache =>
-      cache.copy(
-        cache.used.map(id => (id, cache.entities(id))).toMap,
-        Set.empty
-      )
-    }
+  private def cleanUp(): Unit = {
+    val unused = cache.keySet.filter(!used.contains(_))
+    unused.foreach(cache.remove)
+    used.clear()
   }
 
   override def postStop(): Unit = {
