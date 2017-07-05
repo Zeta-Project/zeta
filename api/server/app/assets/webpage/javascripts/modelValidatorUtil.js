@@ -16,7 +16,7 @@ var modelValidatorUtil = (function ($) {
 
         $.ajax({
             type: 'GET',
-            url: '/models/' + modelId + '/validation',
+            url: '/rest/v1/models/' + modelId + '/validation',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -55,7 +55,7 @@ var modelValidatorUtil = (function ($) {
 
         $.ajax({
             type: 'GET',
-            url: '/metamodels/' + metaModelId + '/validator?generate=false&noContent=false',
+            url: '/rest/v1/metamodels/' + metaModelId + '/validator?generate=false&noContent=false',
             success: function (data, textStatus, jqXHR) {
 
                 if (options.openWindow === true) {
@@ -84,7 +84,7 @@ var modelValidatorUtil = (function ($) {
     generate = function (metaModelId, options) {
         $.ajax({
             type: 'GET',
-            url: '/metamodels/' + metaModelId + '/validator?generate=true&noContent=true',
+            url: '/rest/v1/metamodels/' + metaModelId + '/validator?generate=true&noContent=true',
             success: function (data, textStatus, jqXHR) {
 
                 if (typeof options.success === 'function') {
