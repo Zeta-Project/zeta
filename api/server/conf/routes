@@ -49,24 +49,24 @@ GET           /model/vreditor/:modelId                                          
 GET           /generator/:metaModelId                                                controllers.ScalaRoutes.getGenerate(metaModelId: java.util.UUID)
 
 ### MetaModel REST API
-GET           /rest/v1/metamodels                                                            controllers.ScalaRoutes.getMetamodelsNoArgs
-POST          /rest/v1/metamodels                                                            controllers.ScalaRoutes.postMetamodels
-PUT           /rest/v1/metamodels/:metaModelId                                               controllers.ScalaRoutes.putMetamodels(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId                                               controllers.ScalaRoutes.getMetamodels(metaModelId: java.util.UUID)
-DELETE        /rest/v1/metamodels/:metaModelId                                               controllers.ScalaRoutes.deleteMetamodels(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.getMetamodelsDefinition(metaModelId: java.util.UUID)
-PUT           /rest/v1/metamodels/:metaModelId/definition                                    controllers.ScalaRoutes.putMetamodelsDefinition(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/definition/mclasses                           controllers.ScalaRoutes.getMetamodelsDefinitionMclassesNoArgs(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/definition/mreferences                        controllers.ScalaRoutes.getMetamodelsDefinitionMreferencesNoArgs(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/definition/mclasses/:mClassName               controllers.ScalaRoutes.getMetamodelsDefinitionMclasses(metaModelId: java.util.UUID, mClassName: String)
-GET           /rest/v1/metamodels/:metaModelId/definition/mreferences/:mReferenceName        controllers.ScalaRoutes.getMetamodelsDefinitionMReferences(metaModelId: java.util.UUID, mReferenceName: String)
-GET           /rest/v1/metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.getMetamodelsShape(metaModelId: java.util.UUID)
-PUT           /rest/v1/metamodels/:metaModelId/shape                                         controllers.ScalaRoutes.putMetamodelsShape(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/style                                         controllers.ScalaRoutes.getMetamodelsStyle(metaModelId: java.util.UUID)
-PUT           /rest/v1/metamodels/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
-PUT           /rest/v1/metamodels/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
-GET           /rest/v1/metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
+GET           /rest/v1/meta-models                                                            controllers.ScalaRoutes.getMetamodelsNoArgs
+POST          /rest/v1/meta-models                                                            controllers.ScalaRoutes.postMetamodels
+PUT           /rest/v1/meta-models/:metaModelId                                               controllers.ScalaRoutes.putMetamodels(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId                                               controllers.ScalaRoutes.getMetamodels(metaModelId: java.util.UUID)
+DELETE        /rest/v1/meta-models/:metaModelId                                               controllers.ScalaRoutes.deleteMetamodels(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/definition                                    controllers.ScalaRoutes.getMetamodelsDefinition(metaModelId: java.util.UUID)
+PUT           /rest/v1/meta-models/:metaModelId/definition                                    controllers.ScalaRoutes.putMetamodelsDefinition(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/definition/mclasses                           controllers.ScalaRoutes.getMetamodelsDefinitionMclassesNoArgs(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/definition/mreferences                        controllers.ScalaRoutes.getMetamodelsDefinitionMreferencesNoArgs(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/definition/mclasses/:mClassName               controllers.ScalaRoutes.getMetamodelsDefinitionMclasses(metaModelId: java.util.UUID, mClassName: String)
+GET           /rest/v1/meta-models/:metaModelId/definition/mreferences/:mReferenceName        controllers.ScalaRoutes.getMetamodelsDefinitionMReferences(metaModelId: java.util.UUID, mReferenceName: String)
+GET           /rest/v1/meta-models/:metaModelId/shape                                         controllers.ScalaRoutes.getMetamodelsShape(metaModelId: java.util.UUID)
+PUT           /rest/v1/meta-models/:metaModelId/shape                                         controllers.ScalaRoutes.putMetamodelsShape(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/style                                         controllers.ScalaRoutes.getMetamodelsStyle(metaModelId: java.util.UUID)
+PUT           /rest/v1/meta-models/:metaModelId/style                                         controllers.ScalaRoutes.putMetamodelsStyle(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
+PUT           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
+GET           /rest/v1/meta-models/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 HEAD          /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
 ### Model REST API
