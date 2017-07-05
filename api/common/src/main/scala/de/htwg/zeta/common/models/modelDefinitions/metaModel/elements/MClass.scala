@@ -4,8 +4,13 @@ import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
+import play.api.libs.json.Format
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json
-import play.api.libs.json.OFormat
 
 
 /** The MClass implementation
@@ -23,11 +28,11 @@ case class MClass(
     superTypeNames: Seq[String],
     inputs: Seq[MReferenceLinkDef],
     outputs: Seq[MReferenceLinkDef],
-    attributes: Seq[MAttribute]
+    attributes: Seq[MAttribute],
+    methods: Map[MethodDeclaration, MethodImplementation]
 ) extends MObject
 
 object MClass {
-
 
   case class MClassTraverseWrapper(value: MClass, metaModel: MetaModelTraverseWrapper) {
     def superTypes: Seq[MClassTraverseWrapper] = {
@@ -120,12 +125,48 @@ object MClass {
           if (attribute.isDefined) attribute else find(remaining.filter(_ != head))
         }
       }
+
       find(typeHierarchy.map(_.value))
     }
 
   }
 
+  implicit val methodPlayJsonFormat = new Format[Map[MethodDeclaration, MethodImplementation]] {
 
-  implicit val playJsonFormat: OFormat[MClass] = Json.format[MClass]
+    private val sString = "string"
+    private val sBool = "bool"
+    private val sInt = "int"
+    private val sDouble = "double"
+
+    private val sName = "name"
+    private val sParameters = "parameters"
+    private val sType = "type"
+
+    override def writes(map: Map[MethodDeclaration, MethodImplementation]): JsValue = {
+      val a = map.toList.map(e => JsObject(Map(
+        sName -> JsString(e._1.name),
+        sParameters -> JsArray(e._1.parameters.map(parameter => JsObject(Map(
+          sName -> JsString(parameter.name),
+          sType -> AttributeType.playJsonFormat.writes(parameter.typ)))))
+
+      )))
+      null // TODO
+    }
+
+    override def reads(json: JsValue): JsResult[Map[MethodDeclaration, MethodImplementation]] = {
+
+      /* json match {
+        case JsString(`sString`) => JsSuccess(StringType)
+        case JsString(`sBool`) => JsSuccess(BoolType)
+        case JsString(`sInt`) => JsSuccess(IntType)
+        case JsString(`sDouble`) => JsSuccess(DoubleType)
+        case _ => MEnum.playJsonFormat.reads(json)
+      } */
+      null // TODO
+    }
+
+  }
+
+  implicit val playJsonFormat: Format[MClass] = Json.format[MClass]
 
 }
