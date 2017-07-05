@@ -64,7 +64,7 @@ case class CodeEditorController(dslType: String, metaModelId: UUID) {
     console.log("saveCode()")
     jquery.jQuery.ajax(literal(
       `type` = "PUT",
-      url = s"/rest/v1/metamodels/$metaModelId/$dslType",
+      url = s"/rest/v1/meta-models/$metaModelId/$dslType",
       contentType = "application/json; charset=utf-8",
       dataType = "json",
       data = JSON.stringify(js.Dictionary(

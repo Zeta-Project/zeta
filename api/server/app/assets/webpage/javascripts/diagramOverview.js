@@ -13,7 +13,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/rest/v1/metamodels',
+            url: '/rest/v1/meta-models',
             data: data,
             headers: {
                 'Accept': 'application/json',
@@ -97,7 +97,7 @@
 
             $.ajax({
                 type: 'DELETE',
-                url: '/rest/v1/metamodels/' + metaModelId,
+                url: '/rest/v1/meta-models/' + metaModelId,
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
