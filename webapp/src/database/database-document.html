@@ -1,10 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="database-document">
   <template>
-    <iron-signals on-iron-signal-database-sync="onDocumentChanged"></iron-signals>
   </template>
   <script>
     (function() {
@@ -37,14 +35,6 @@
         observers: [
           '_start(byId)'
         ],
-
-        onDocumentChanged: function(e) {
-          if (e.detail._id === this.byId) {
-            // received a change. Changes do not include attachments.
-            // load the complete document from the database.
-            this._start(this.byId);
-          }
-        },
 
         _start: function() {
           if (this.auto) {
