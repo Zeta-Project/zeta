@@ -259,33 +259,31 @@ class MetaModelRestApi @Inject()() extends Controller {
    *
    * @param id           ID of the meta model to load or generate the validator.
    * @param generateOpt  Force a (re)generation.
-   * @param noContentOpt Expect a NoContent result on success. Helpful, when you just want to generate the validator.
+   * @param get          Return a result body.
    * @param request      The HTTP-Request.
    * @return The validator.
    */
-  def getValidator(id: UUID, generateOpt: Option[Boolean], noContentOpt: Option[Boolean])(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getValidator(id: UUID, generateOpt: Option[Boolean], get: Boolean)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (metaModelEntity: MetaModelEntity) => {
 
       val generate = generateOpt.getOrElse(false)
-      val noContent = noContentOpt.getOrElse(false)
 
       if (generate) {
 
         new ValidatorGenerator(metaModelEntity).generateValidator() match {
-          case ValidatorGeneratorResult(false, msg) => BadRequest(msg)
+          case ValidatorGeneratorResult(false, msg) => if (get) BadRequest(msg) else BadRequest
           case ValidatorGeneratorResult(_, validator) =>
             restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.copy(validator = Some(validator)))
-            if (noContent) NoContent else Created(validator)
+            if (get) Created(validator) else Created
         }
 
       } else {
 
         metaModelEntity.validator match {
-          case Some(validatorText) => Ok(validatorText)
+          case Some(validatorText) => if (get) Ok(validatorText) else Ok
           case None =>
-            val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
-            Conflict(
-              s"""No validator generated yet. Try calling $url first.""")
+            val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true)).absoluteURL()(request)
+            if (get) Conflict(s"""No validator generated yet. Try calling $url first.""") else Conflict
         }
 
       }
