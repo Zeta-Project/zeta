@@ -8,6 +8,6 @@ import de.htwg.zeta.persistence.mongo.MongoRepository
  */
 class MongoRepositorySpec extends RepositoryBehavior {
 
-  "MongoRepository" should behave like repositoryBehavior(new MongoRepository("localhost:27017", "test"), restricted = false)
+  "MongoRepository" should behave like repositoryBehavior(PersistenceMongoDb("test"), restricted = false)
 
 }
