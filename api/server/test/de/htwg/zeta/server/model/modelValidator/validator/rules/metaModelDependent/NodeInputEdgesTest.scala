@@ -14,7 +14,7 @@ import org.scalatest.Matchers
 class NodeInputEdgesTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputEdges("nodeType", Seq("input1", "input2"))
-  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
 
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
@@ -38,7 +38,7 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val differentClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val node = Node("", differentClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be (None)
   }
@@ -53,7 +53,7 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
     val inputMLinkDef1 = MReferenceLinkDef(mReference1.name, -1, 0, deleteIfLower = false)
     val inputMLinkDef2 = MReferenceLinkDef(mReference2.name, -1, 0, deleteIfLower = false)
 
-    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef1, inputMLinkDef2),Seq.empty, Seq[MAttribute]())
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef1, inputMLinkDef2),Seq.empty, Seq[MAttribute](), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeInputEdges.generateFor(metaModel)
 

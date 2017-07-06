@@ -14,7 +14,7 @@ import org.scalatest.Matchers
 class NodeInputsUpperBoundTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputsUpperBound("nodeType", "inputType", 2)
-  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
 
   "isValid" should "return true on nodes of type nodeType having 2 or less input edges of type inputType" in {
     val inputType = MReference("inputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
@@ -39,7 +39,7 @@ class NodeInputsUpperBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
@@ -53,7 +53,7 @@ class NodeInputsUpperBoundTest extends FlatSpec with Matchers {
     val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
     val inputMLinkDef = MReferenceLinkDef(mReference.name, 7, 0, deleteIfLower = false)
 
-    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef), Seq.empty, Seq[MAttribute]())
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef), Seq.empty, Seq[MAttribute](), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeInputsUpperBound.generateFor(metaModel)
 

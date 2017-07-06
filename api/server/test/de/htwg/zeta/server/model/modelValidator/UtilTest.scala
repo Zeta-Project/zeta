@@ -30,7 +30,8 @@ class UtilTest extends FlatSpec with Matchers {
     superTypeNames = Seq.empty,
     inputs = Seq.empty,
     outputs = Seq.empty,
-    attributes = Seq[MAttribute]()
+    attributes = Seq[MAttribute](),
+    methods = Map.empty
   )
 
   val mReference = MReference(
@@ -73,7 +74,8 @@ class UtilTest extends FlatSpec with Matchers {
       superTypeNames = Seq.empty,
       inputs = Seq.empty,
       outputs = Seq.empty,
-      attributes = Seq[MAttribute]()
+      attributes = Seq[MAttribute](),
+      methods = Map.empty
     ),
     MReference(
       name = "mReference3",
@@ -89,7 +91,8 @@ class UtilTest extends FlatSpec with Matchers {
       superTypeNames = Seq.empty,
       inputs = Seq.empty,
       outputs = Seq.empty,
-      attributes = Seq[MAttribute]()
+      attributes = Seq[MAttribute](),
+      methods = Map.empty
     )
 
   )
@@ -127,7 +130,8 @@ class UtilTest extends FlatSpec with Matchers {
     superTypeNames = Seq(),
     inputs = Seq(),
     outputs = Seq(superClassOneOutput),
-    attributes = Seq(abstractSuperClassOneAttribute)
+    attributes = Seq(abstractSuperClassOneAttribute),
+    methods = Map.empty
   )
   val abstractSuperClassTwo = MClass(
     name = "abstractSuperClassTwo",
@@ -135,7 +139,8 @@ class UtilTest extends FlatSpec with Matchers {
     superTypeNames = Seq(),
     inputs = Seq(superClassTwoInput),
     outputs = Seq(),
-    attributes = Seq()
+    attributes = Seq(),
+    methods = Map.empty
   )
   val subClassOne = MClass(
     name = "subClassOne",
@@ -143,7 +148,8 @@ class UtilTest extends FlatSpec with Matchers {
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq()
+    attributes = Seq(),
+    methods = Map.empty
   )
   val subClassTwo = MClass(
     name = "subClassTwo",
@@ -151,7 +157,8 @@ class UtilTest extends FlatSpec with Matchers {
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq()
+    attributes = Seq(),
+    methods = Map.empty
   )
 
   val metaModel = MetaModel(

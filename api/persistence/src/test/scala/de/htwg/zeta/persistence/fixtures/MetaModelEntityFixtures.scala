@@ -25,6 +25,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodDeclaration
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodImplementation
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodParameter
 
 object MetaModelEntityFixtures {
 
@@ -169,7 +172,15 @@ object MetaModelEntityFixtures {
     superTypeNames = Seq(className1, className2),
     inputs = Seq(referenceLinkDef1, referenceLinkDef2),
     outputs = Seq.empty,
-    attributes = Seq(intAttribute, doubleAttribute, enumAttribute)
+    attributes = Seq(intAttribute, doubleAttribute, enumAttribute),
+    methods = Map(
+      MethodDeclaration(
+        "foo", Seq(
+          MethodParameter("p1", StringType),
+          MethodParameter("p2", DoubleType)
+        )
+      ) -> MethodImplementation("code", Some(IntType))
+    )
   )
 
   val class2 = MClass(
@@ -178,7 +189,8 @@ object MetaModelEntityFixtures {
     superTypeNames = Seq(className2),
     inputs = Seq.empty,
     outputs = Seq(referenceLinkDef1, referenceLinkDef2),
-    attributes = Seq(stringAttribute, boolAttribute)
+    attributes = Seq(stringAttribute, boolAttribute),
+    methods = Map.empty
   )
 
   val reference1 = MReference(

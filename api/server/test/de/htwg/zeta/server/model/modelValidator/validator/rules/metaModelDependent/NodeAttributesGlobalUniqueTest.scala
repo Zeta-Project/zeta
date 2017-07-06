@@ -13,8 +13,8 @@ import org.scalatest.Matchers
 
 class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
-  val mClass1 = MClass("nodeType1", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
-  val mClass2 = MClass("nodeType2", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass1 = MClass("nodeType1", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass2 = MClass("nodeType2", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
   val rule = new NodeAttributesGlobalUnique(Seq("nodeType1", "nodeType2"), "attributeType")
 
   "check" should "return success validation results on correct attributes" in {
@@ -63,7 +63,7 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     val nonGlobalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
-      (nonGlobalUniqueAttribute, globalUniqueAttribute))
+      (nonGlobalUniqueAttribute, globalUniqueAttribute), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributesGlobalUnique.generateFor(metaModel)
 

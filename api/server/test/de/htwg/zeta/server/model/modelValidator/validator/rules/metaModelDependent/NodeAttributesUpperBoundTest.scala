@@ -14,7 +14,7 @@ import org.scalatest.Matchers
 class NodeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
   val rule = new NodeAttributesUpperBound("nodeType", "attributeType", 2)
-  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
 
   "isValid" should "return true on nodes with 2 or less attributes of type attributeType" in {
     val noAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
@@ -45,7 +45,7 @@ class NodeAttributesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
@@ -59,7 +59,7 @@ class NodeAttributesUpperBoundTest extends FlatSpec with Matchers {
   "generateFor" should "generate this rule from the meta model" in {
     val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, 7, 0)
-    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](attribute))
+    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](attribute), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributesUpperBound.generateFor(metaModel)
 

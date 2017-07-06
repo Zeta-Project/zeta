@@ -34,7 +34,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
-      attributes = Seq()
+      attributes = Seq(),
+      methods = Map.empty
     )
     val toNode = ToNodes(clazz = source, nodeNames = Seq(""))
     val edge = Edge("", mReference, Seq(toNode), Seq(), Map.empty)
@@ -49,7 +50,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
-      attributes = Seq()
+      attributes = Seq(),
+      methods = Map.empty
     )
     val toNode = ToNodes(clazz = source, nodeNames = Seq())
     val edge = Edge("", mReference, Seq(toNode), Seq(), Map.empty)

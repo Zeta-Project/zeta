@@ -30,7 +30,8 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
-      attributes = Seq()
+      attributes = Seq(),
+      methods = Map.empty
     )
 
     val twoSourceNodes = ToNodes(clazz = sourceType, nodeNames = Seq("1", "2"))
@@ -59,7 +60,8 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       superTypeNames = Seq(),
       inputs = Seq(),
       outputs = Seq(),
-      attributes = Seq()
+      attributes = Seq(),
+      methods = Map.empty
     )
 
     val threeSourceNodes = ToNodes(clazz = sourceType, nodeNames = Seq("1", "2", "2"))
@@ -88,7 +90,7 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val sourceLinkDef1 = MClassLinkDef(class1.name, 7, 0, deleteIfLower = false)
     val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(sourceLinkDef1), Seq.empty, Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))

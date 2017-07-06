@@ -28,7 +28,7 @@ class MClassUiFormat(val enumMap: Map[String, MEnum]) extends Format[MClass] {
       outputs <- json.\("outputs").validate(Reads.list(MReferenceLinkDefFormat))
       attributes <- json.\("attributes").validate(attributeListReads)
     } yield {
-      MClass(name, abstractness, superTypes, inputs, outputs, attributes)
+      MClass(name, abstractness, superTypes, inputs, outputs, attributes, Map.empty)
     }
   }
 
@@ -46,6 +46,7 @@ object MClassUiFormat extends Writes[MClass] {
       "inputs" -> JsArray(mc.inputs.map(MReferenceLinkDefFormat.writes)),
       "outputs" -> JsArray(mc.outputs.map(MReferenceLinkDefFormat.writes)),
       "attributes" -> JsArray(mc.attributes.map(MAttributeFormat.writes))
+      // TODO methods
     )
   }
 }
