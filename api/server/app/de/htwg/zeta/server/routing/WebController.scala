@@ -1,20 +1,21 @@
 package de.htwg.zeta.server.routing
 
 import controllers.WebJarAssets
-import de.htwg.zeta.server.controller.ApplicationController
-import de.htwg.zeta.server.controller.SignUpController
-import de.htwg.zeta.server.controller.SignInController
-import de.htwg.zeta.server.controller.ForgotPasswordController
-import de.htwg.zeta.server.controller.ResetPasswordController
-import de.htwg.zeta.server.controller.ChangePasswordController
 import de.htwg.zeta.server.controller.ActivateAccountController
+import de.htwg.zeta.server.controller.ApplicationController
+import de.htwg.zeta.server.controller.ChangePasswordController
+import de.htwg.zeta.server.controller.DynamicFileController
+import de.htwg.zeta.server.controller.ForgotPasswordController
+import de.htwg.zeta.server.controller.GeneratorController
 import de.htwg.zeta.server.controller.MetaModelController
 import de.htwg.zeta.server.controller.ModelController
-import de.htwg.zeta.server.controller.GeneratorController
-import de.htwg.zeta.server.controller.DynamicFileController
+import de.htwg.zeta.server.controller.ResetPasswordController
+import de.htwg.zeta.server.controller.SignInController
+import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
+import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -43,4 +44,5 @@ trait WebController {
   protected lazy val MetaModelRestApi: MetaModelRestApi = webCont.metaModelRestApi.get()
   protected lazy val ModelRestApi: ModelRestApi = webCont.modelRestApi.get()
   protected lazy val WebAppController: WebAppController = webCont.webApp.get()
+  protected lazy val GeneratorImageRestApi: GeneratorImageRestApi = webCont.generatorImageRestApi.get()
 }
