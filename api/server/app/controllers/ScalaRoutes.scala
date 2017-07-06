@@ -160,6 +160,8 @@ class ScalaRoutes @Inject()(
 
   def getModelsValidation(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
 
+  /* ### Generator Image REST API */
+  def getGeneratorImagesNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorImageRestApi.showForUser() _)
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
