@@ -3,7 +3,6 @@ package de.htwg.zeta.persistence.mongo
 import java.util.UUID
 
 import scala.collection.immutable.Seq
-
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.common.models.document.DockerSettings
@@ -16,6 +15,10 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.GeneratorImageOptions
+import de.htwg.zeta.common.models.entity.GeneratorMetaModelReleaseProperty
+import de.htwg.zeta.common.models.entity.GeneratorNameProperty
+import de.htwg.zeta.common.models.entity.GeneratorOptionProperties
 import de.htwg.zeta.common.models.entity.Log
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.MetaModelRelease
@@ -139,6 +142,10 @@ object MongoHandler {
 
   implicit val filterHandler: BSONDocumentHandler[Filter] = Macros.handler[Filter]
 
+  private implicit val generatorMMRPropertyHandler: BSONDocumentHandler[GeneratorMetaModelReleaseProperty] = Macros.handler[GeneratorMetaModelReleaseProperty]
+  private implicit val generatorNamePropertyHandler: BSONDocumentHandler[GeneratorNameProperty] = Macros.handler[GeneratorNameProperty]
+  private implicit val generatorOptionPropertiesHandler: BSONDocumentHandler[GeneratorOptionProperties] = Macros.handler[GeneratorOptionProperties]
+  private implicit val generatorImageOptionsHandler: BSONDocumentHandler[GeneratorImageOptions] = Macros.handler[GeneratorImageOptions]
   implicit val generatorImageHandler: BSONDocumentHandler[GeneratorImage] = Macros.handler[GeneratorImage]
 
   implicit val filterImageHandler: BSONDocumentHandler[FilterImage] = Macros.handler[FilterImage]
