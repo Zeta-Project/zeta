@@ -102,7 +102,7 @@
       _submit() {
         if (!this.bf.validate()) return;
         var data = this.getData();
-        this.$.backend.createGenerator(this.generator._id, JSON.stringify(data));
+        this.$.backend.createGenerator(this.generator.id, JSON.stringify(data));
         this.$.dialog.opened = false;
       }
     });
