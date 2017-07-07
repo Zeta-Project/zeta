@@ -74,7 +74,7 @@ object LinkhelperGenerator {
   private def generateMappingEntryAttribute(edge: Edge, name: String): String = {
     Try(edge.connection.vars.filter{case (attribute, _) => attribute.name == name}.head) match {
       case Success(i) => i._2 match {
-        case Some(text) => s"""$name: "${text.id}" """
+        case Some(text) => s"""${text.id}: "$name" """
         case _ => ""
       }
       case _ => ""
