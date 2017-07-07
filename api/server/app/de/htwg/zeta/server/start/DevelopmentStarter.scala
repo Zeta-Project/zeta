@@ -86,7 +86,8 @@ class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLo
       "" // file must end with empty line
     )
 
-    val genControlJar = new File(this.getClass.getResource("").getPath + "startGeneratorControl.jar")
+    val path = new File(this.getClass.getResource("").toURI).getAbsolutePath
+    val genControlJar = new File(path + "startGeneratorControl.jar")
     genControlJar.createNewFile()
 
     val manifest = new java.util.jar.Manifest(new ByteArrayInputStream(manifestLines.mkString("\n").getBytes("UTF-8")))

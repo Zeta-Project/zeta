@@ -94,7 +94,7 @@ class ActorCacheEntityPersistence[E <: Entity](
    */
   override def delete(id: UUID): Future[Unit] = {
     (router ? Delete(id)).flatMap {
-      case Success(Unit) => Future.successful(())
+      case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
     }
   }

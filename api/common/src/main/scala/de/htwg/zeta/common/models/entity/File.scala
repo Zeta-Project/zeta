@@ -9,7 +9,11 @@ case class File(
     id: UUID,
     name: String,
     content: String
-) extends Entity
+) extends Entity {
+
+  val key: (UUID, String) = (id, name)
+
+}
 
 object File {
 
