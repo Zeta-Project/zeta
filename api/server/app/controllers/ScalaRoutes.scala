@@ -163,8 +163,11 @@ class ScalaRoutes @Inject()(
   /* ### Generator Image REST API */
   def getGeneratorImagesNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorImageRestApi.showForUser() _)
 
-  /* ### Generator Image REST API */
+  /* ### Generator REST API */
   def getGeneratorsNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.showForUser() _)
+
+  /* ### Filter REST API */
+  def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
