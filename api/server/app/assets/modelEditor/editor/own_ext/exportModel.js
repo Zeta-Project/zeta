@@ -105,7 +105,7 @@ var modelExporter = (function modelExporter () {
             // add attributes
             link.attributes.labels.forEach(function(label) {
                 var attributeName = linkhelper.mapping[link.attributes.mReference][label.id];
-                element.attributes[attributeName] = label.attrs.text.text;
+                element.attributes[attributeName] = [label.attrs.text.text];
             });
 
             elements.push(element);
