@@ -83,8 +83,10 @@ DELETE        /rest/v1/models/:modelId                                          
 GET           /rest/v1/models/:modelId/validation                                            controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
 
 ### GeneratorImage REST API
-
 GET           /rest/v1/generator-images                                              controllers.ScalaRoutes.getGeneratorImagesNoArgs
+
+### Generator REST API
+GET           /rest/v1/generators                                                    controllers.ScalaRoutes.getGeneratorsNoArgs
 
 ### Code Editor
 GET           /codeEditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
