@@ -95,6 +95,9 @@ GET           /rest/v1/filters                                                  
 ### MetaModelRelease REST API
 GET           /rest/v1/meta-model-releases                                           controllers.ScalaRoutes.getMetaModelReleasesNoArgs
 
+### BondedTask REST API
+GET           /rest/v1/bonded-tasks                                                  controllers.ScalaRoutes.getBondedTasksNoArgs
+
 ### Code Editor
 GET           /codeEditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
 GET           /codeEditor/socket/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditorSocket(metaModelId: java.util.UUID, dslType: String)
