@@ -70,9 +70,9 @@
         pattern="/:type/:id"
         data="{{routeData}}"></app-route>
 
-    <database-document auto by-id="[[routeData.id]]" doc="{{project}}"></database-document>
+    <database-document auto by-id="[[routeData.id]]" doc="{{project}}" rest-single="/rest/v1/[[routeData.type]]/[[routeData.id]]"></database-document>
 
-    <filebrowser-linked-filetree docs="{{linkedTree}}" doc="{{project}}"></filebrowser-linked-filetree>
+    <filebrowser-linked-filetree docs="{{linkedTree}}" doc="{{project}}" type="[[routeData.type]]"></filebrowser-linked-filetree>
 
     <div role="listbox">
       <a href$="[[backlink]]">
