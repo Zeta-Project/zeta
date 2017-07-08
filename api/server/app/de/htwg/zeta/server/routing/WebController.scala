@@ -23,6 +23,7 @@ import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
+import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
 
 /**
@@ -55,4 +56,5 @@ trait WebController {
   protected lazy val MetaModelReleaseRestApi: MetaModelReleaseRestApi = webCont.metaModelReleaseRestApi.get()
   protected lazy val BondedTaskRestApi: BondedTaskRestApi = webCont.bondedTaskRestApi.get()
   protected lazy val EventDrivenTaskRestApi: EventDrivenTaskRestApi = webCont.eventDrivenTaskRestApi.get()
+  protected lazy val TimedTaskRestApi: TimedTaskRestApi = webCont.timedTaskRestApi.get()
 }
