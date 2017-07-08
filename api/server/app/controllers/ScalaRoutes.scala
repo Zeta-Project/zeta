@@ -172,6 +172,9 @@ class ScalaRoutes @Inject()(
   /* ### Filter REST API */
   def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
 
+  /* ### Filter REST API */
+  def getMetaModelReleasesNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelReleaseRestApi.showForUser() _)
+
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
     AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
