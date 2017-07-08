@@ -19,6 +19,7 @@ import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.BondedTaskRestApi
+import de.htwg.zeta.server.controller.restApi.EventDrivenTaskRestApi
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
@@ -52,4 +53,5 @@ class WebControllerContainer @Inject() private(
     val generatorRestApi: Provider[GeneratorRestApi],
     val filterRestApi: Provider[FilterRestApi],
     val metaModelReleaseRestApi: Provider[MetaModelReleaseRestApi],
-    val bondedTaskRestApi: Provider[BondedTaskRestApi])
+    val bondedTaskRestApi: Provider[BondedTaskRestApi],
+    val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi])
