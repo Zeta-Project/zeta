@@ -21,6 +21,7 @@ import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlC
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
+import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -48,4 +49,5 @@ class WebControllerContainer @Inject() private(
     val webApp: Provider[WebAppController],
     val generatorImageRestApi: Provider[GeneratorImageRestApi],
     val generatorRestApi: Provider[GeneratorRestApi],
-    val filterRestApi: Provider[FilterRestApi])
+    val filterRestApi: Provider[FilterRestApi],
+    val metaModelReleaseRestApi: Provider[MetaModelReleaseRestApi])

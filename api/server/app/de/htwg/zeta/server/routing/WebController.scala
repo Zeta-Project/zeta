@@ -18,6 +18,7 @@ import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlC
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
+import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -49,4 +50,5 @@ trait WebController {
   protected lazy val GeneratorImageRestApi: GeneratorImageRestApi = webCont.generatorImageRestApi.get()
   protected lazy val GeneratorRestApi: GeneratorRestApi = webCont.generatorRestApi.get()
   protected lazy val FilterRestApi: FilterRestApi = webCont.filterRestApi.get()
+  protected lazy val MetaModelReleaseRestApi: MetaModelReleaseRestApi = webCont.metaModelReleaseRestApi.get()
 }
