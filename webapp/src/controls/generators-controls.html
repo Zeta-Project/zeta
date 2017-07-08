@@ -89,7 +89,7 @@
         schema.definitions.MetaModelRelease = {
           "type": "string",
           "description": "A Meta Model Release",
-          "enum": this.metaModels.map((item) => item._id),
+          "enum": this.metaModels.map((item) => item.id),
           "required": true
         };
         return schema;
