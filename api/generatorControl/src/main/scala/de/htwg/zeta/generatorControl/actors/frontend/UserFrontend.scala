@@ -28,7 +28,7 @@ private case object RegisterUserFrontend
 
 object UserFrontend extends FrontendManagerGenerator {
 
-  val userFrontendService: String = "UserFrontendService"
+  val serviceName: String = "UserFrontendService"
 
   case class CreateUserFrontend(ident: UUID, out: ActorRef, userId: UUID, modelId: UUID) extends FrontendManager.Create
 
