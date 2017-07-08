@@ -20,7 +20,6 @@ class DeveloperStarter(developer: DeveloperConfig) extends Starter {
 
   def start(): Unit = {
     debug(DeveloperStarter.LogStart.format(developer.toString))
-    // Thread.sleep(DeveloperStarter.MilliSecWaitForOtherActors)  // FIXME is the sleep necessary
     val system = createActorSystem(Mediator.locatedOnNode, developer.seeds, developer.port)
 
     ClusterSharding(system).start(
@@ -32,9 +31,9 @@ class DeveloperStarter(developer: DeveloperConfig) extends Starter {
     )
 
     val receptionist: ClusterClientReceptionist = ClusterClientReceptionist(system)
-    receptionist.registerService(system.actorOf(FrontendManager.props(DeveloperFrontend), DeveloperFrontend.developerFrontendService))
-    receptionist.registerService(system.actorOf(FrontendManager.props(GeneratorFrontend), GeneratorFrontend.generatorFrontendService))
-    receptionist.registerService(system.actorOf(FrontendManager.props(UserFrontend), UserFrontend.userFrontendService))
+    receptionist.registerService(system.actorOf(FrontendManager.props(DeveloperFrontend), DeveloperFrontend.serviceName))
+    receptionist.registerService(system.actorOf(FrontendManager.props(GeneratorFrontend), GeneratorFrontend.serviceName))
+    receptionist.registerService(system.actorOf(FrontendManager.props(UserFrontend), UserFrontend.serviceName))
 
 
     val journalAddress = ClusterManager.getJournalPath(developer.port, developer.seeds)
