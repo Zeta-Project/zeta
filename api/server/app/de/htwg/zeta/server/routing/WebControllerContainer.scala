@@ -26,6 +26,7 @@ import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
+import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
 
 /**
@@ -54,4 +55,5 @@ class WebControllerContainer @Inject() private(
     val filterRestApi: Provider[FilterRestApi],
     val metaModelReleaseRestApi: Provider[MetaModelReleaseRestApi],
     val bondedTaskRestApi: Provider[BondedTaskRestApi],
-    val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi])
+    val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi],
+    val timedTaskRestApi: Provider[TimedTaskRestApi])

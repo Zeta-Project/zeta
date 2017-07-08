@@ -181,6 +181,9 @@ class ScalaRoutes @Inject()(
   /* ### EventDrivenTask REST API */
   def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.showForUser() _)
 
+  /* ### TimedTask REST API */
+  def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
+
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
     AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
