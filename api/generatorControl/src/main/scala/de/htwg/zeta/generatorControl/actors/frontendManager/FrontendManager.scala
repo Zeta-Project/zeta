@@ -23,7 +23,10 @@ class FrontendManager[R <: Create](gen: FrontendManagerGenerator) extends Actor 
 
 
   private def tellChild(ident: UUID, msg: Any): Unit = {
-    context.child(ident.toString).foreach(_.!(msg))
+    context.child(ident.toString) match {
+      case Some (ref) => ref ! msg
+      case None =>  warn(s"failed to send message to: $ident. No child with this UUID was found.")
+    }
   }
 
   override def receive: Receive = {
@@ -31,7 +34,7 @@ class FrontendManager[R <: Create](gen: FrontendManagerGenerator) extends Actor 
       val ident = uuid.toString
       context.child(ident) match {
         case None =>
-          context.system.actorOf(props(devMediator), ident)
+          context.actorOf(props(devMediator), ident)
         case Some(_) =>
           info(s"actor with id: $ident already exists")
       }
