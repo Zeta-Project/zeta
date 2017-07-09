@@ -12,6 +12,7 @@ import com.typesafe.config.impl.ConfigImpl
 import de.htwg.zeta.common.cluster.ClusterAddressSettings
 import de.htwg.zeta.common.cluster.ClusterManager
 import de.htwg.zeta.common.cluster.HostIP
+import de.htwg.zeta.persistence.Persistence
 import grizzled.slf4j.Logging
 import play.api.ApplicationLoader
 import play.api.Configuration
@@ -61,6 +62,8 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
     val clusterAddressBinding: GuiceableModule =
       GuiceableModule.fromPlayBinding(bind[ClusterAddressSettings].to(settings).in[Singleton])
     val modules: List[GuiceableModule] = clusterAddressBinding :: overrides(context).toList
+
+    GeneratorImageSetup(Persistence.fullAccessRepository)
 
     initialBuilder
       .in(context.environment)
