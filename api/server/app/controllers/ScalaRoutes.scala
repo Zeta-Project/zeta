@@ -1,6 +1,7 @@
 package controllers
 
 import java.util.UUID
+import java.util.UUID
 import javax.inject.Inject
 
 import de.htwg.zeta.server.routing.RouteController
@@ -165,6 +166,7 @@ class ScalaRoutes @Inject()(
 
   /* ### Generator REST API */
   def getGeneratorsNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.showForUser() _)
+  def getGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.get(id) _)
 
   /* ### Filter REST API */
   def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
