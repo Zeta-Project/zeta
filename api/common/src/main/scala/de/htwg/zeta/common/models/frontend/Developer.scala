@@ -5,14 +5,14 @@ import java.util.UUID
 import scala.collection.immutable.Queue
 
 import de.htwg.zeta.common.models.worker.Job
-import julienrf.json.derived
+import grizzled.slf4j.Logging
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.libs.json.Json
-import play.api.libs.json.OFormat
-import play.api.libs.json.OWrites
 import play.api.libs.json.Writes
-import play.api.libs.json.__
+import play.api.libs.json.Reads
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsResult
 
 /**
  * Request messages which can be send by a Tool-Developer
@@ -24,8 +24,65 @@ case class CreateGenerator(imageId: UUID, options: String) extends DeveloperRequ
 case class RunModelRelease(model: String) extends DeveloperRequest
 case class CancelWorkByUser(id: String) extends DeveloperRequest
 
-object DeveloperRequest {
-  implicit val format: OFormat[DeveloperRequest] = derived.flat.oformat((__ \ "action").format[String])
+
+object DeveloperRequest extends Logging {
+
+  private object DeveloperRequestFormat extends Reads[DeveloperRequest] {
+
+    def readRunGenerator(json: JsValue): JsResult[RunGenerator] = {
+      for {
+        generatorId <- json.\("generator").validate[UUID]
+        filterId <- json.\("filter").validate[UUID]
+      } yield {
+        RunGenerator(generatorId, filterId)
+      }
+    }
+
+    def readRunFilter(json: JsValue): JsResult[RunFilter] = {
+      for {
+        filterId <- json.\("filter").validate[UUID]
+      } yield {
+        RunFilter(filterId)
+      }
+    }
+
+    def readCreateGenerator(json: JsValue): JsResult[CreateGenerator] = {
+      for {
+        imageId <- json.\("image").validate[UUID]
+        options <- json.\("options").validate[String]
+      } yield {
+        CreateGenerator(imageId, options)
+      }
+    }
+
+    def readRunModelRelease(json: JsValue): JsResult[RunModelRelease] = {
+      for {
+        model <- json.\("model").validate[String]
+      } yield {
+        RunModelRelease(model)
+      }
+    }
+
+    def readCancelWorkByUser(json: JsValue): JsResult[CancelWorkByUser] = {
+      for {
+        id <- json.\("id").validate[String]
+      } yield {
+        CancelWorkByUser(id)
+      }
+    }
+
+    override def reads(json: JsValue): JsResult[DeveloperRequest] = {
+      json.\("action").validate[String].flatMap {
+        case "RunGenerator" => readRunGenerator(json)
+        case "RunFilter" => readRunFilter(json)
+        case "CreateGenerator" => readCreateGenerator(json)
+        case "RunModelRelease" => readRunModelRelease(json)
+        case "CancelWorkByUser" => readCancelWorkByUser(json)
+      }
+    }
+  }
+
+  implicit val reads: Reads[DeveloperRequest] = DeveloperRequestFormat
 }
 
 /**
