@@ -2,7 +2,6 @@ package de.htwg.zeta.persistence
 
 import java.util.UUID
 
-import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheRepository
@@ -10,6 +9,7 @@ import de.htwg.zeta.persistence.general.Repository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.mongo.MongoRepository
 import de.htwg.zeta.persistence.transient.TransientTokenCache
+import grizzled.slf4j.Logging
 
 
 /** Persistence. */
@@ -32,7 +32,7 @@ object Persistence {
 
 }
 
-object PersistenceMongoDb {
+object PersistenceMongoDb extends Logging {
 
   private val settingServer = "zeta.mongodb.server"
   private val settingPort = "zeta.mongodb.port"
@@ -52,6 +52,7 @@ object PersistenceMongoDb {
     val configServer = getString(settingServer, defaultServer)
     val configPort = getInt(settingPort, defaultPort)
     val configDb = getString(settingDb, defaultDb)
+    info(s"Mongo connection: $configServer:$configPort")
     new MongoRepository(s"$configServer:$configPort", if (db.length == 0) configDb else db)
   }
 
