@@ -25,7 +25,7 @@ class FrontendManager[R <: Create](gen: FrontendManagerGenerator) extends Actor 
   private def tellChild(ident: UUID, msg: Any): Unit = {
     context.child(ident.toString) match {
       case Some (ref) => ref ! msg
-      case None =>  warn(s"failed to send message to: $ident. No child with this UUID was found.")
+      case None =>  warn(s"failed to send msg: $msg to: $ident. No child with this UUID was found.")
     }
   }
 
