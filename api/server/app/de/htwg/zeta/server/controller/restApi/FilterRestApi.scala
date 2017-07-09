@@ -3,6 +3,7 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.persistence.Persistence
@@ -14,7 +15,7 @@ import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-
+import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
@@ -43,5 +44,22 @@ class FilterRestApi() extends Controller with Logging {
     val entries = list.map(FilterFormat.writes)
     val json = JsArray(entries)
     Ok(json)
+  }
+
+  /**
+   * Get a single Generator instance
+   * @param id Identifier of Generator
+   * @param request The request
+   * @return The result
+   */
+  def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    val repo = Persistence.fullAccessRepository.filter
+    repo.read(id).flatMap(entity => {
+      Future(Ok(FilterFormat.writes(entity)))
+    }).recover {
+      case e: Exception =>
+        info("exception while trying to read from DB", e)
+        Results.BadRequest(e.getMessage)
+    }
   }
 }
