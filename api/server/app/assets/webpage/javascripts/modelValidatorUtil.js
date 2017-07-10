@@ -83,7 +83,7 @@ var modelValidatorUtil = (function ($) {
 
     generate = function (metaModelId, options) {
         $.ajax({
-            type: 'HEAD',
+            type: 'GET',
             url: '/metamodels/' + metaModelId + '/validator?generate=true',
             success: function (data, textStatus, jqXHR) {
 

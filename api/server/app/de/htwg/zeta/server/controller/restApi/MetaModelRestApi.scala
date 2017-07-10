@@ -253,9 +253,7 @@ class MetaModelRestApi @Inject()() extends Controller {
    * The following HTTP status codes can be returned:
    * * 200 OK - The validator was loaded from memory and is contained in the response.
    * * 201 CREATED - The validator has been generated or regenerated and is contained in the response.
-   * * 204 NO_CONTENT - The validator has been successfully loaded or generated and is NOT contained in the response.
-   * * 400 BAD_REQUEST - There was an error loading or generating the validator OR you have no access to the meta model.
-   * * 409 CONFLICT - A validator was not yet generated.
+   * * 409 CONFLICT - A validator was not yet generated, or could not be generated.
    *
    * @param id           ID of the meta model to load or generate the validator.
    * @param generateOpt  Force a (re)generation.
@@ -271,7 +269,7 @@ class MetaModelRestApi @Inject()() extends Controller {
       if (generate) {
 
         new ValidatorGenerator(metaModelEntity).generateValidator() match {
-          case ValidatorGeneratorResult(false, msg) => if (get) BadRequest(msg) else BadRequest
+          case ValidatorGeneratorResult(false, msg) => if (get) Conflict(msg) else Conflict
           case ValidatorGeneratorResult(_, validator) =>
             restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.copy(validator = Some(validator)))
             if (get) Created(validator) else Created
