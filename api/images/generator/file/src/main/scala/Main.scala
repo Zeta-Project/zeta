@@ -4,24 +4,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.Persistence.fullAccessRepository
 import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.remote.Remote
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class MyTransformer() extends Transformer {
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def transform(entity: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
+  def transform(entity: ModelEntity): Future[Transformer] = {
     logger.info("Start example")
     val p = Promise[Transformer]
 
@@ -31,8 +31,6 @@ class MyTransformer() extends Transformer {
         |Number of nodes : ${entity.model.nodeMap.size}
         |Number of edges : ${entity.model.edgeMap.size}
       """.stripMargin
-
-    val f = File(entity.id, filename, content)
 
     fullAccessRepository.file.create(File(entity.id, filename, content)).map { _ =>
       logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModelId}')")
@@ -44,7 +42,7 @@ class MyTransformer() extends Transformer {
     p.future
   }
 
-  def exit()(implicit remote: Remote): Future[Result] = {
+  def exit(): Future[Result] = {
     val result = Success("The generator finished")
     Future.successful(result)
   }
@@ -54,7 +52,7 @@ class MyTransformer() extends Transformer {
  * Main class of file generator
  */
 object Main extends Template[CreateOptions, String] {
-  override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
+  override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     val repository = Persistence.fullAccessRepository
     for {
       image <- repository.generatorImage.read(imageId)
@@ -119,7 +117,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer] =
+  override def getTransformer(file: File, filter: Filter): Future[Transformer] =
     Future.successful(new MyTransformer())
 
   /**
@@ -128,7 +126,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer] =
+  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] =
     Future.successful(new MyTransformer())
 
   /**
@@ -136,7 +134,7 @@ object Main extends Template[CreateOptions, String] {
    *
    * @return A Generator
    */
-  override def runGeneratorWithOptions(options: String)(implicit remote: Remote): Future[Result] = {
+  override def runGeneratorWithOptions(options: String): Future[Result] = {
     Future.successful(Error(s"Call a generator from a generator is not supported in this example"))
   }
 
