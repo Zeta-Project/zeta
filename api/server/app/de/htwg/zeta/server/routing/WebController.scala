@@ -6,7 +6,7 @@ import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.ChangePasswordController
 import de.htwg.zeta.server.controller.DynamicFileController
 import de.htwg.zeta.server.controller.ForgotPasswordController
-import de.htwg.zeta.server.controller.GeneratorController
+import de.htwg.zeta.server.controller.ModelEditorGeneratorController
 import de.htwg.zeta.server.controller.MetaModelController
 import de.htwg.zeta.server.controller.ModelController
 import de.htwg.zeta.server.controller.ResetPasswordController
@@ -43,7 +43,7 @@ trait WebController {
   protected lazy val WebpageController: WebpageController = webCont.webpageController.get()
   protected lazy val MetaModelController: MetaModelController = webCont.metaModelController.get()
   protected lazy val ModelController: ModelController = webCont.modelController.get()
-  protected lazy val GeneratorController: GeneratorController = webCont.generatorController.get()
+  protected lazy val GeneratorController: ModelEditorGeneratorController = webCont.generatorController.get()
   protected lazy val CodeEditorController: CodeEditorController = webCont.codeEditorController.get()
   protected lazy val WebJarAssets: WebJarAssets = webCont.webJarAssets.get()
   protected lazy val DynamicFileController: DynamicFileController = webCont.dynamicFileController.get()
