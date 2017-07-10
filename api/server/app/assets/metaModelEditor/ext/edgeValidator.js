@@ -1,3 +1,4 @@
+
 /**
  * edgeValidator is used to determine which types of links can be used with which types of elements.
  *
