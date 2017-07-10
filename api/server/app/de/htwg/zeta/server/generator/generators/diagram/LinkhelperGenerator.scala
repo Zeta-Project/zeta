@@ -3,6 +3,9 @@ package de.htwg.zeta.server.generator.generators.diagram
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 
+import scala.util.Success
+import scala.util.Try
+
 /**
  * Created by julian on 10.02.16.
  */
@@ -26,6 +29,7 @@ object LinkhelperGenerator {
     var linkhelper = {
       ${generatePlacingTexts(diagram)}
       $generateHelperMethods
+      ${generateMapping(diagram.edges)}
     };
     """
 
@@ -50,6 +54,30 @@ object LinkhelperGenerator {
         text = "";
       }
       return text;
-    }
+    },
     """
+
+  private def generateMapping(edges: Iterable[Edge]) =
+    s"""
+      mapping: {
+        ${edges.map(generateMappingEntry).mkString(",")}
+      }
+    """
+
+  private def generateMappingEntry(edge: Edge) =
+  s"""
+    ${edge.mcoreElement.name}: {
+      ${edge.mcoreElement.attributes.map(attribute => generateMappingEntryAttribute(edge, attribute.name)).mkString(",")}
+    }
+  """
+
+  private def generateMappingEntryAttribute(edge: Edge, name: String): String = {
+    Try(edge.connection.vars.filter{case (attribute, _) => attribute.name == name}.head) match {
+      case Success(i) => i._2 match {
+        case Some(text) => s"""${text.id}: "$name" """
+        case _ => ""
+      }
+      case _ => ""
+    }
+  }
 }

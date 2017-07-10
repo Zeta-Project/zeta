@@ -9,6 +9,8 @@ import de.htwg.zeta.server.generator.parser.PlacingSketch
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 import de.htwg.zeta.server.generator.parser.IDtoStyle
 
+import scala.util.Try
+
 /**
  * Created by julian on 20.10.15.
  * representation of a Connection
@@ -25,12 +27,11 @@ final class Connection private(
     val placing: List[Placing] = List[Placing]()
 ) extends ShapeContainerElement {
   val textMap: Map[String, Text] = {
-    val textMaps = for {p <- placing} yield {
-      p.shape.textMap
+    val textMaps: Iterable[Option[Map[String, Text]]] = for {p <- placing} yield {
+      p.text.map(text => Map(text.id -> text))
     }
     textMaps.filter(_.isDefined).map(_.get).foldLeft(Map[String, Text]()) { (ret, m) => ret ++ m }
   }
-
 }
 
 object Connection extends CommonParserMethods {
