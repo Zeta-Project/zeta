@@ -210,7 +210,7 @@ def projectT(name: String, d: sbt.File) = {
         "com.typesafe.akka" %% "akka-persistence" % akkaVersion
       )
     )
-  ).enablePlugins(JavaAppPackaging)
+  ).enablePlugins(JavaAppPackaging).enablePlugins(DockerSpotifyClientPlugin)
 }
 
 lazy val generatorControl = projectT("generatorControl", file("generatorControl")).settings(
@@ -270,7 +270,7 @@ def image(name: String, d: sbt.File) = {
         "org.scala-lang" % "scala-compiler" % "2.11.8"
       )
     )
-  ).enablePlugins(JavaAppPackaging).dependsOn(common).dependsOn(persistence)
+  ).enablePlugins(JavaAppPackaging).enablePlugins(DockerSpotifyClientPlugin).dependsOn(common).dependsOn(persistence)
 }
 
 
