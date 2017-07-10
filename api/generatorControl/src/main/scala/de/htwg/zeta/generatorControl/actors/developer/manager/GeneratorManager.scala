@@ -15,6 +15,10 @@ import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.Repository
 
 object GeneratorManager {
+  protected val messageReceive = "GeneratorManager - Received CreateGenerator 'imageId: {}'"
+  protected val messageImageFound = "GeneratorManager - GeneratorImage found in database '{}'"
+  protected val messageImageNotFound = "GeneratorManager - GeneratorImageNotFoundFailure: {}"
+
   def props(worker: ActorRef, repository: Repository): Props = Props(new GeneratorManager(worker, repository))
 }
 
@@ -24,14 +28,19 @@ class GeneratorManager(worker: ActorRef, repository: Repository) extends Actor w
 
   def createGenerator(create: CreateGenerator): Future[Unit] = {
     val reply = sender
-    generatorImageRepo.read(create.imageId).map(image =>
+    generatorImageRepo.read(create.imageId).map(image => {
+      log.info(GeneratorManager.messageImageFound, image.id)
       worker ! CreateGeneratorJob(image.dockerImage, create.imageId, create.options)
-    ).recover {
-      case e: Exception => reply ! GeneratorImageNotFoundFailure(e.getMessage)
+    }).recover {
+      case e: Exception =>
+        log.error(GeneratorManager.messageImageNotFound, e.getMessage)
+        reply ! GeneratorImageNotFoundFailure(e.getMessage)
     }
   }
 
   def receive: Receive = {
-    case create: CreateGenerator => createGenerator(create)
+    case create: CreateGenerator =>
+      log.info(GeneratorManager.messageReceive, create.imageId)
+      createGenerator(create)
   }
 }
