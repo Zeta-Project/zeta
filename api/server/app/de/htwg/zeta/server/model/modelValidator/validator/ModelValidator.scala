@@ -17,6 +17,10 @@ trait ModelValidator {
 
   /**
    * The rules to validate a specific meta model with.
+   *
+   * Attention! This field will be referenced via reflection in
+   * [[de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator]]
+   * If you intend to change the name or type, you also have to change it there!
    */
   val metaModelDependentRules: Seq[ElementsRule]
 
