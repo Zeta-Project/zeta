@@ -31,7 +31,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 
-class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
+class ModelEditorGeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
 
   def generate(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     Persistence.restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelId)
@@ -49,7 +49,7 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
     parseMetaModel(metaModel, hierarchyContainer) match {
       case Success(dia) =>
         createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer, userId)
-      case f@Failure(_) => Future.successful(f)
+      case f @ Failure(_) => Future.successful(f)
     }
   }
 
@@ -63,12 +63,12 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
       }
     }
 
-    tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style").
-      flatMap(_ => tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape")).
-      flatMap(_ => tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), GeneratorController.diagramName)).
-      flatMap {
+    tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style")
+      .flatMap(_ => tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape"))
+      .flatMap(_ => tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), ModelEditorGeneratorController.diagramName))
+      .flatMap {
         case Some(dia) :: _ => Success(dia)
-        case _ => Failure(s"No ${GeneratorController.diagramName} available")
+        case _ => Failure(s"No ${ModelEditorGeneratorController.diagramName} available")
       }
   }
 
@@ -87,7 +87,7 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
         Future.sequence((gen ++ vrGen).map(repo.createOrUpdate)).map(_ =>
           Success(gen ::: vrGen)
         )
-      case f@Failure(_) => Future.successful(f)
+      case f @ Failure(_) => Future.successful(f)
     }
   }
 
@@ -125,8 +125,8 @@ class GeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Con
   }
 }
 
-object GeneratorController {
+object ModelEditorGeneratorController {
 
-  private[GeneratorController] val diagramName = "Diagram"
+  private[ModelEditorGeneratorController] val diagramName = "Diagram"
 
 }
