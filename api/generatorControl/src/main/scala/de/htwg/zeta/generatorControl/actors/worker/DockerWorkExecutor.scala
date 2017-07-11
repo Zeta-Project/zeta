@@ -25,6 +25,7 @@ import com.spotify.docker.client.LogStream
 import com.spotify.docker.client.exceptions.ContainerNotFoundException
 import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
+import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.entity.Log
 import de.htwg.zeta.common.models.frontend.JobLog
@@ -250,8 +251,18 @@ private class WorkProcessor(
       .cmd(work.job.cmd ::: List("--session", work.owner.toString) ::: List("--work", work.id))
       .attachStdout(work.job.stream)
       .attachStderr(work.job.stream)
+      .env(buildEnv())
       .hostConfig(hostConfig)
       .build()
+  }
+
+  private def buildEnv(): List[String] = {
+    val config = ConfigFactory.load()
+    List(
+      s"ZETA_MONGODB_SERVER=${config.getString("zeta.mongodb.server")}",
+      s"ZETA_MONGODB_PORT=${config.getInt("zeta.mongodb.port")}",
+      s"ZETA_MONGODB_DB=${config.getString("zeta.mongodb.db")}"
+    )
   }
 
   private def processStream(id: String): LogStream = {
