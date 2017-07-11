@@ -131,7 +131,7 @@ object Main extends Template[CreateOptions, String] {
     for {
       image <- repository.generatorImage.read(imageId)
       metaModel <- repository.metaModelEntity.read(UUID.fromString(options.metaModelRelease))
-      generator <- repository.generator.create(Generator(user, options.name, image.id))
+      generator <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
       created <- repository.file.create(file(Settings.generatorFile, metaModel))
     } yield Success()
   }

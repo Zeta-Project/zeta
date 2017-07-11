@@ -26,7 +26,7 @@ object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
       image <- repository.generatorImage.read(imageId)
-      _ <- repository.generator.create(Generator(user, options.name, image.id))
+      _ <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
       _ <- repository.file.create(createFile(Settings.generatorFile))
     } yield {
       Success()
