@@ -247,7 +247,7 @@ private class WorkProcessor(
     ContainerConfig.builder()
       .hostConfig(hostConfig)
       .image(work.job.image)
-      .cmd(work.job.cmd ::: List("--session", work.session) ::: List("--work", work.id))
+      .cmd(work.job.cmd ::: List("--session", work.owner.toString) ::: List("--work", work.id))
       .attachStdout(work.job.stream)
       .attachStderr(work.job.stream)
       .hostConfig(hostConfig)
