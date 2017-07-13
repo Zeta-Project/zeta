@@ -231,7 +231,6 @@ lazy val generatorControl = projectT("generatorControl", file("generatorControl"
       "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
       "com.spotify"               % "docker-client"             % "6.1.1",
       "commons-io"                % "commons-io"                % "2.4"           % "test",
-      "org.julienrf"              %% "play-json-derived-codecs" % "3.3",
       "org.rogach"                %% "scallop"                  % "2.0.2",
       "com.github.romix.akka"     %% "akka-kryo-serialization"  % "0.4.1",
       "com.neovisionaries"        % "nv-websocket-client"       % "1.30"

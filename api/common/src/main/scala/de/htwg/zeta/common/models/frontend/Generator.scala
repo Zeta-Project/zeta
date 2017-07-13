@@ -2,12 +2,13 @@ package de.htwg.zeta.common.models.frontend
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.frontend.SafeFormats.safeRead
+import de.htwg.zeta.common.models.frontend.SafeFormats.safeWrite
 import grizzled.slf4j.Logging
 import play.api.libs.json.Format
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 
 sealed trait GeneratorRequest extends Request
 
@@ -19,14 +20,14 @@ object GeneratorRequest extends Logging {
 
   implicit val format: Format[GeneratorRequest] = new Format[GeneratorRequest] {
 
-    override def writes(o: GeneratorRequest): JsValue = {
+    override def writes(o: GeneratorRequest): JsValue = safeWrite{
       o match {
         case o: RunGeneratorFromGenerator => writeRunGeneratorFromGenerator(o)
         case o: ToGenerator => writeToGenerator(o)
       }
     }
 
-    private def writeRunGeneratorFromGenerator(o: RunGeneratorFromGenerator): JsObject = {
+    private def writeRunGeneratorFromGenerator(o: RunGeneratorFromGenerator): JsValue = safeWrite{
       Json.obj(
         "action" -> "RunGeneratorFromGenerator",
         "parent" -> o.parent,
@@ -36,7 +37,7 @@ object GeneratorRequest extends Logging {
       )
     }
 
-    private def writeToGenerator(o: ToGenerator): JsObject = {
+    private def writeToGenerator(o: ToGenerator): JsValue = safeWrite {
       Json.obj(
         "action" -> "RunGeneratorFromGenerator",
         "index" -> o.index,
@@ -47,14 +48,14 @@ object GeneratorRequest extends Logging {
     }
 
 
-    override def reads(json: JsValue): JsResult[GeneratorRequest] = {
+    override def reads(json: JsValue): JsResult[GeneratorRequest] = safeRead {
       json.\("action").validate[String].flatMap {
         case "RunGeneratorFromGenerator" => readRunGeneratorFromGenerator(json)
         case "ToGenerator" => readToGenerator(json)
       }
     }
 
-    private def readRunGeneratorFromGenerator(json: JsValue): JsResult[GeneratorRequest] = {
+    private def readRunGeneratorFromGenerator(json: JsValue): JsResult[GeneratorRequest] = safeRead {
       for {
         parent <- json.\("parent").validate[String]
         key <- json.\("key").validate[String]
@@ -65,7 +66,7 @@ object GeneratorRequest extends Logging {
       }
     }
 
-    private def readToGenerator(json: JsValue): JsResult[ToGenerator] = {
+    private def readToGenerator(json: JsValue): JsResult[ToGenerator] = safeRead {
       for {
         index <- json.\("index").validate[Int]
         key <- json.\("key").validate[String]
@@ -93,7 +94,7 @@ object StartGeneratorError {
 
   implicit val format: Format[StartGeneratorError] = new Format[StartGeneratorError] {
 
-    override def writes(o: StartGeneratorError): JsValue = {
+    override def writes(o: StartGeneratorError): JsValue = safeWrite {
       Json.obj(
         "type" -> "StartGeneratorError",
         "key" -> o.key,
@@ -101,7 +102,7 @@ object StartGeneratorError {
       )
     }
 
-    override def reads(json: JsValue): JsResult[StartGeneratorError] = {
+    override def reads(json: JsValue): JsResult[StartGeneratorError] = safeRead {
       for {
         key <- json.\("key").validate[String]
         reason <- json.\("reason").validate[String]
@@ -118,7 +119,7 @@ object FromGenerator {
 
   implicit val format: Format[FromGenerator] = new Format[FromGenerator] {
 
-    override def writes(o: FromGenerator): JsValue = {
+    override def writes(o: FromGenerator): JsValue = safeWrite {
       Json.obj(
         "type" -> "FromGenerator",
         "index" -> o.index,
@@ -127,7 +128,7 @@ object FromGenerator {
       )
     }
 
-    override def reads(json: JsValue): JsResult[FromGenerator] = {
+    override def reads(json: JsValue): JsResult[FromGenerator] = safeRead {
       for {
         index <- json.\("index").validate[Int]
         key <- json.\("key").validate[String]
@@ -146,19 +147,23 @@ object GeneratorCompleted {
   implicit val format: Format[GeneratorCompleted] = new Format[GeneratorCompleted] {
 
     override def writes(o: GeneratorCompleted): JsValue = {
-      Json.obj(
-        "type" -> "FromGenerator",
-        "key" -> o.key,
-        "result" -> o.result
-      )
+      safeWrite {
+        Json.obj(
+          "type" -> "FromGenerator",
+          "key" -> o.key,
+          "result" -> o.result
+        )
+      }
     }
 
     override def reads(json: JsValue): JsResult[GeneratorCompleted] = {
-      for {
-        key <- json.\("key").validate[String]
-        result <- json.\("result").validate[Int]
-      } yield {
-        GeneratorCompleted(key, result)
+      safeRead {
+        for {
+          key <- json.\("key").validate[String]
+          result <- json.\("result").validate[Int]
+        } yield {
+          GeneratorCompleted(key, result)
+        }
       }
     }
 
@@ -171,21 +176,26 @@ object GeneratorResponse {
   implicit val format: Format[GeneratorResponse] = new Format[GeneratorResponse] {
 
     override def writes(o: GeneratorResponse): JsValue = {
-      o match {
-        case o: StartGeneratorError => StartGeneratorError.format.writes(o)
-        case o: FromGenerator => FromGenerator.format.writes(o)
-        case o: GeneratorCompleted => GeneratorCompleted.format.writes(o)
+      safeWrite {
+        o match {
+          case o: StartGeneratorError => StartGeneratorError.format.writes(o)
+          case o: FromGenerator => FromGenerator.format.writes(o)
+          case o: GeneratorCompleted => GeneratorCompleted.format.writes(o)
+        }
       }
     }
 
     override def reads(json: JsValue): JsResult[GeneratorResponse] = {
-      json.\("action").validate[String].flatMap {
-        case "StartGeneratorError" => StartGeneratorError.format.reads(json)
-        case "FromGenerator" => FromGenerator.format.reads(json)
-        case "GeneratorCompleted" => GeneratorCompleted.format.reads(json)
+      safeRead {
+        json.\("action").validate[String].flatMap {
+          case "StartGeneratorError" => StartGeneratorError.format.reads(json)
+          case "FromGenerator" => FromGenerator.format.reads(json)
+          case "GeneratorCompleted" => GeneratorCompleted.format.reads(json)
+        }
       }
     }
 
   }
+
 
 }

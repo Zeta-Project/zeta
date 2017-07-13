@@ -20,10 +20,15 @@ import play.api.libs.json.JsResult
  * Request messages which can be send by a Tool-Developer
  */
 sealed trait DeveloperRequest extends Request
+
 case class RunGenerator(generatorId: UUID, filterId: UUID) extends DeveloperRequest
+
 case class RunFilter(filterId: UUID) extends DeveloperRequest
+
 case class CreateGenerator(imageId: UUID, options: String) extends DeveloperRequest
+
 case class RunModelRelease(model: String) extends DeveloperRequest
+
 case class CancelWorkByUser(id: String) extends DeveloperRequest
 
 object DeveloperRequest extends Logging {
@@ -111,16 +116,25 @@ object DeveloperRequest extends Logging {
  * Response messages which can be send to a Tool-Developer
  */
 sealed trait DeveloperResponse extends Response
+
 sealed trait ErrorResponse extends DeveloperResponse {
   def message: String
 }
+
 case class GeneratorImageNotFoundFailure(message: String = "Generator Image was not found") extends ErrorResponse
+
 case class ExecuteGeneratorError(message: String = "Generator or Filter was not found") extends ErrorResponse
+
 case class ExecuteFilterError(message: String = "Filter was not found") extends ErrorResponse
+
 case class ServiceUnavailable(message: String = "Service not available") extends ErrorResponse
+
 case class JobInfo(id: String, job: Job, state: String) extends DeveloperResponse
+
 case class JobInfoList(jobs: List[JobInfo], running: Int, pending: Int, waiting: Int, canceled: Int) extends DeveloperResponse
+
 case class JobLogMessage(message: String, sort: String) extends DeveloperResponse
+
 case class JobLog(job: String, messages: Queue[JobLogMessage] = Queue.empty) extends DeveloperResponse {
   override def toString: String = messages.map(log => log.message).mkString
 }
@@ -192,7 +206,7 @@ object DeveloperResponse extends Logging {
     }
   }
 
-  implicit val write = DeveloperResponseWrites
+  implicit val write: Writes[DeveloperResponse] = DeveloperResponseWrites
 
 }
 
