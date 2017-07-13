@@ -9,11 +9,12 @@ import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
-import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
+import play.api.libs.json.JsError
+import play.api.libs.json.JsResult
 
 /**
  * Request messages which can be send by a Tool-Developer
@@ -27,7 +28,7 @@ case class CancelWorkByUser(id: String) extends DeveloperRequest
 
 object DeveloperRequest extends Logging {
 
-  private object DeveloperRequestFormat extends Reads[DeveloperRequest] {
+  private object DeveloperRequestReads extends Reads[DeveloperRequest] {
 
     def readRunGenerator(json: JsValue): JsResult[RunGenerator] = {
       for {
@@ -71,25 +72,48 @@ object DeveloperRequest extends Logging {
       }
     }
 
-    override def reads(json: JsValue): JsResult[DeveloperRequest] = {
-      json.\("action").validate[String].flatMap {
+    def readAction(json: JsValue)(action: String): JsResult[DeveloperRequest] = {
+      action match {
         case "RunGenerator" => readRunGenerator(json)
         case "RunFilter" => readRunFilter(json)
         case "CreateGenerator" => readCreateGenerator(json)
         case "RunModelRelease" => readRunModelRelease(json)
         case "CancelWorkByUser" => readCancelWorkByUser(json)
+        case _ => JsError("Invalid action")
+      }
+    }
+
+    def checkForJsError[A](json: JsValue, res: JsResult[A]): JsResult[A] = {
+      res match {
+        case e: JsError => warn(s"json Parsing for json: $json failed with msg: $e")
+        case _ =>
+      }
+      res
+    }
+
+    override def reads(json: JsValue): JsResult[DeveloperRequest] = {
+      try {
+        val res = json.\("action").validate[String].flatMap(readAction(json))
+        checkForJsError(json, res)
+      }
+      catch {
+        case e: Exception =>
+          error(s"error occured while trying to read json: $json. ", e)
+          throw e
       }
     }
   }
 
-  implicit val reads: Reads[DeveloperRequest] = DeveloperRequestFormat
+  implicit val reads: Reads[DeveloperRequest] = DeveloperRequestReads
 }
 
 /**
  * Response messages which can be send to a Tool-Developer
  */
 sealed trait DeveloperResponse extends Response
-sealed trait ErrorResponse extends DeveloperResponse { def message: String }
+sealed trait ErrorResponse extends DeveloperResponse {
+  def message: String
+}
 case class GeneratorImageNotFoundFailure(message: String = "Generator Image was not found") extends ErrorResponse
 case class ExecuteGeneratorError(message: String = "Generator or Filter was not found") extends ErrorResponse
 case class ExecuteFilterError(message: String = "Filter was not found") extends ErrorResponse
@@ -104,13 +128,13 @@ case class JobLog(job: String, messages: Queue[JobLogMessage] = Queue.empty) ext
 object DeveloperResponse extends Logging {
   private val attribute = "type"
 
-  implicit val write = new Writes[DeveloperResponse] {
+  private object DeveloperResponseWrites extends Writes[DeveloperResponse] {
     override def writes(response: DeveloperResponse): JsObject = {
       try {
         processWrites(response)
       } catch {
-        case e: Throwable =>
-          error("Failed parse jsob")
+        case _: Throwable =>
+          error("Failed parse job")
           createErrorResponse("Unknown parse error")
       }
     }
@@ -167,5 +191,8 @@ object DeveloperResponse extends Logging {
       )
     }
   }
+
+  implicit val write = DeveloperResponseWrites
+
 }
 
