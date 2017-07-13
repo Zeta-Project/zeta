@@ -2,6 +2,8 @@ package de.htwg.zeta.common.models.frontend
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.frontend.SafeFormats.safeRead
+import de.htwg.zeta.common.models.frontend.SafeFormats.safeWrite
 import play.api.libs.json.Format
 import play.api.libs.json.JsArray
 import play.api.libs.json.Json
@@ -28,7 +30,7 @@ object ExecuteBondedTask {
 
   implicit val format: Format[ExecuteBondedTask] = new Format[ExecuteBondedTask] {
 
-    override def writes(o: ExecuteBondedTask): JsValue = {
+    override def writes(o: ExecuteBondedTask): JsValue = safeWrite {
       Json.obj(
         "type" -> "ExecuteBondedTask",
         "model" -> o.modelId,
@@ -36,7 +38,7 @@ object ExecuteBondedTask {
       )
     }
 
-    override def reads(json: JsValue): JsResult[ExecuteBondedTask] = {
+    override def reads(json: JsValue): JsResult[ExecuteBondedTask] = safeRead {
       for {
         modelId <- json.\("model").validate[UUID]
         taskId <- json.\("task").validate[UUID]
@@ -55,14 +57,14 @@ object SavedModel {
 
   implicit val format: Format[SavedModel] = new Format[SavedModel] {
 
-    override def writes(o: SavedModel): JsValue = {
+    override def writes(o: SavedModel): JsValue = safeWrite {
       Json.obj(
         "type" -> "SavedModel",
         "model" -> o.modelId
       )
     }
 
-    override def reads(json: JsValue): JsResult[SavedModel] = {
+    override def reads(json: JsValue): JsResult[SavedModel] = safeRead {
       for {
         modelId <- json.\("model").validate[UUID]
       } yield {
@@ -78,14 +80,14 @@ object UserRequest {
 
   implicit val format: Format[UserRequest] = new Format[UserRequest] {
 
-    override def writes(o: UserRequest): JsValue = {
+    override def writes(o: UserRequest): JsValue = safeWrite {
       o match {
         case o: ExecuteBondedTask => ExecuteBondedTask.format.writes(o)
         case o: SavedModel => SavedModel.format.writes(o)
       }
     }
 
-    override def reads(json: JsValue): JsResult[UserRequest] = {
+    override def reads(json: JsValue): JsResult[UserRequest] = safeRead {
       json.\("action").validate[String].flatMap {
         case "ExecuteBondedTask" => ExecuteBondedTask.format.reads(json)
         case "SavedModel" => SavedModel.format.reads(json)
@@ -104,7 +106,7 @@ object BondedTaskNotExecutable {
 
   implicit val format: Format[BondedTaskNotExecutable] = new Format[BondedTaskNotExecutable] {
 
-    override def writes(o: BondedTaskNotExecutable): JsValue = {
+    override def writes(o: BondedTaskNotExecutable): JsValue = safeWrite {
       Json.obj(
         "type" -> "BondedTaskNotExecutable",
         "task" -> o.taskId,
@@ -112,7 +114,7 @@ object BondedTaskNotExecutable {
       )
     }
 
-    override def reads(json: JsValue): JsResult[BondedTaskNotExecutable] = {
+    override def reads(json: JsValue): JsResult[BondedTaskNotExecutable] = safeRead {
       for {
         taskId <- json.\("task").validate[UUID]
         reason <- json.\("reason").validate[String]
@@ -131,7 +133,7 @@ object Entry {
 
   implicit val format: Format[Entry] = new Format[Entry] {
 
-    override def writes(o: Entry): JsValue = {
+    override def writes(o: Entry): JsValue = safeWrite {
       Json.obj(
         "type" -> "Entry",
         "task" -> o.taskId,
@@ -140,7 +142,7 @@ object Entry {
       )
     }
 
-    override def reads(json: JsValue): JsResult[Entry] = {
+    override def reads(json: JsValue): JsResult[Entry] = safeRead {
       for {
         taskId <- json.\("task").validate[UUID]
         menu <- json.\("menu").validate[String]
@@ -160,14 +162,14 @@ object BondedTaskList {
 
   implicit val format: Format[BondedTaskList] = new Format[BondedTaskList] {
 
-    override def writes(o: BondedTaskList): JsValue = {
+    override def writes(o: BondedTaskList): JsValue = safeWrite {
       Json.obj(
         "type" -> "Entry",
         "tasks" -> JsArray(o.tasks.map(Entry.format.writes))
       )
     }
 
-    override def reads(json: JsValue): JsResult[BondedTaskList] = {
+    override def reads(json: JsValue): JsResult[BondedTaskList] = safeRead {
       for {
         tasks <- json.\("tasks").validate[List[Entry]]
       } yield {
@@ -185,7 +187,7 @@ object BondedTaskCompleted {
 
   implicit val format: Format[BondedTaskCompleted] = new Format[BondedTaskCompleted] {
 
-    override def writes(o: BondedTaskCompleted): JsValue = {
+    override def writes(o: BondedTaskCompleted): JsValue = safeWrite {
       Json.obj(
         "type" -> "BondedTaskCompleted",
         "task" -> o.taskId,
@@ -193,7 +195,7 @@ object BondedTaskCompleted {
       )
     }
 
-    override def reads(json: JsValue): JsResult[BondedTaskCompleted] = {
+    override def reads(json: JsValue): JsResult[BondedTaskCompleted] = safeRead {
       for {
         taskId <- json.\("task").validate[UUID]
         status <- json.\("status").validate[Int]
@@ -212,14 +214,14 @@ object BondedTaskStarted {
 
   implicit val format: Format[BondedTaskStarted] = new Format[BondedTaskStarted] {
 
-    override def writes(o: BondedTaskStarted): JsValue = {
+    override def writes(o: BondedTaskStarted): JsValue = safeWrite {
       Json.obj(
         "type" -> "BondedTaskStarted",
         "task" -> o.taskId
       )
     }
 
-    override def reads(json: JsValue): JsResult[BondedTaskStarted] = {
+    override def reads(json: JsValue): JsResult[BondedTaskStarted] = safeRead {
       for {
         taskId <- json.\("task").validate[UUID]
       } yield {
@@ -235,7 +237,7 @@ object UserResponse {
 
   implicit val format: Format[UserResponse] = new Format[UserResponse] {
 
-    override def writes(o: UserResponse): JsValue = {
+    override def writes(o: UserResponse): JsValue = safeWrite {
       o match {
         case o: BondedTaskNotExecutable => BondedTaskNotExecutable.format.writes(o)
         case o: BondedTaskList => BondedTaskList.format.writes(o)
@@ -244,7 +246,7 @@ object UserResponse {
       }
     }
 
-    override def reads(json: JsValue): JsResult[UserResponse] = {
+    override def reads(json: JsValue): JsResult[UserResponse] = safeRead {
       json.\("type").validate[String].flatMap {
         case "BondedTaskNotExecutable" => BondedTaskNotExecutable.format.reads(json)
         case "BondedTaskList" => BondedTaskList.format.reads(json)
