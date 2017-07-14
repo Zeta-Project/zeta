@@ -23,11 +23,12 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodDeclaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodImplementation
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodParameter
+
 
 object MetaModelEntityFixtures {
 
@@ -168,23 +169,25 @@ object MetaModelEntityFixtures {
 
   val class1 = MClass(
     name = "class1",
+    description = "descriptionClass1",
     abstractness = true,
     superTypeNames = Seq(className1, className2),
     inputs = Seq(referenceLinkDef1, referenceLinkDef2),
     outputs = Seq.empty,
     attributes = Seq(intAttribute, doubleAttribute, enumAttribute),
     methods = Map(
-      MethodDeclaration(
-        "foo", Seq(
-          MethodParameter("p1", StringType),
-          MethodParameter("p2", DoubleType)
+      Declaration(
+        "f1", Seq(
+          Parameter("p1", StringType),
+          Parameter("p2", DoubleType)
         )
-      ) -> MethodImplementation("code", Some(IntType))
+      ) -> Implementation("code1", Some(IntType))
     )
   )
 
   val class2 = MClass(
     name = "class2",
+    description = "descriptionClass2",
     abstractness = false,
     superTypeNames = Seq(className2),
     inputs = Seq.empty,
@@ -195,20 +198,31 @@ object MetaModelEntityFixtures {
 
   val reference1 = MReference(
     name = referenceName1,
+    description = "descriptionReference1",
     sourceDeletionDeletesTarget = true,
     targetDeletionDeletesSource = true,
     source = Seq(classLinkDef1, classLinkDef2),
     target = Seq.empty,
-    attributes = Seq(enumAttribute, stringAttribute)
+    attributes = Seq(enumAttribute, stringAttribute),
+    methods = Map(
+      Declaration(
+        "f2", Seq(
+          Parameter("p3", StringType),
+          Parameter("p4", DoubleType)
+        )
+      ) -> Implementation("code2", Some(IntType))
+    )
   )
 
   val reference2 = MReference(
     name = referenceName2,
+    description = "descriptionReference2",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     source = Seq.empty,
     target = Seq(classLinkDef1, classLinkDef2),
-    attributes = Seq(intAttribute, doubleAttribute)
+    attributes = Seq(intAttribute, doubleAttribute),
+    methods = Map.empty
   )
 
   val metaModel1 = MetaModel(

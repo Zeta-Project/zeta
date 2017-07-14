@@ -11,9 +11,9 @@ import org.scalatest.Matchers
 class NodesTest extends FlatSpec with Matchers {
 
   val rule = new Nodes(Seq("nodeType1", "nodeType2"))
-  val mClass1 = MClass("nodeType1", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
-  val mClass2 = MClass("nodeType2", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
-  val mClass3 = MClass("nodeType3", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass1 = MClass("nodeType1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass2 = MClass("nodeType2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass3 = MClass("nodeType3", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
 
   "isValid" should "return true on valid edges" in {
 
@@ -35,8 +35,8 @@ class NodesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mClass1 = MClass("class1", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
-    val mClass2 = MClass("class2", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val mClass1 = MClass("class1", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val mClass2 = MClass("class2", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass1, mClass2))
     val result = Nodes.generateFor(metaModel)
 

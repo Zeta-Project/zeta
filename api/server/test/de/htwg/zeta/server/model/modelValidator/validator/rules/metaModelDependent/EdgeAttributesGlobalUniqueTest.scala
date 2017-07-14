@@ -14,11 +14,14 @@ import org.scalatest.Matchers
 class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   val mReference = MReference(
-    "edgeType", sourceDeletionDeletesTarget = false,
+    "edgeType",
+    "",
+    sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     Seq.empty,
     Seq.empty,
-    Seq[MAttribute]()
+    Seq[MAttribute](),
+    Map.empty
   )
   val rule = new EdgeAttributesGlobalUnique("edgeType", "attributeType")
 
@@ -114,11 +117,13 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     )
     val reference = MReference(
       "reference",
+      "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute](globalUniqueAttribute, nonGlobalUniqueAttribute)
+      Seq[MAttribute](globalUniqueAttribute, nonGlobalUniqueAttribute),
+      Map.empty
     )
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesGlobalUnique.generateFor(metaModel)

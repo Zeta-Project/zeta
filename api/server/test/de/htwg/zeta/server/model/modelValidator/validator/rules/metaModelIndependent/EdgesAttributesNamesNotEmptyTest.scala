@@ -11,7 +11,8 @@ import org.scalatest.Matchers
 class EdgesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
 
   val rule = new EdgesAttributesNamesNotEmpty
-  val mReference = MReference("edgeType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty)
+  val mReference = MReference("edgeType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty,
+    Map.empty)
 
   "isValid" should "return true on non-empty attribute names" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeName1" -> Seq())

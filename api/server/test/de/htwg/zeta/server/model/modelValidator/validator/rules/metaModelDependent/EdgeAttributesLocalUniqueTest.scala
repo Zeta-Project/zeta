@@ -16,11 +16,13 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   val rule = new EdgeAttributesLocalUnique("edgeType", "attributeType")
   val mReference = MReference(
     "edgeType",
+    "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     Seq.empty,
     Seq.empty,
-    Seq[MAttribute]()
+    Seq[MAttribute](),
+    Map.empty
   )
 
   "isValid" should "return true on valid edges" in {
@@ -40,11 +42,13 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   it should "return None on non-matching edges" in {
     val mReference = MReference(
       "differentEdgeType",
+      "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute]()
+      Seq[MAttribute](),
+      Map.empty
     )
     val edge = Edge("edgeOneId", mReference, Seq(), Seq(), Map.empty)
 
@@ -82,11 +86,13 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
     )
     val reference = MReference(
       "reference",
+      "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute)
+      Seq[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute),
+      Map.empty
     )
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesLocalUnique.generateFor(metaModel)

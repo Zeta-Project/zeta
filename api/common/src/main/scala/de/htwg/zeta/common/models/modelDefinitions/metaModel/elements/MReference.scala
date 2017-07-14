@@ -2,6 +2,8 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
@@ -16,11 +18,13 @@ import play.api.libs.json.Json
  */
 case class MReference(
     name: String,
+    description: String,
     sourceDeletionDeletesTarget: Boolean,
     targetDeletionDeletesSource: Boolean,
     source: Seq[MClassLinkDef],
     target: Seq[MClassLinkDef],
-    attributes: Seq[MAttribute]
+    attributes: Seq[MAttribute],
+    methods: Map[Declaration, Implementation]
 ) extends MObject
 
 object MReference {

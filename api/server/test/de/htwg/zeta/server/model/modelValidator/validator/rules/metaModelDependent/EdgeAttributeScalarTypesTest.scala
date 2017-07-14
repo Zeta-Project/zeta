@@ -17,11 +17,13 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
 
   val mReference = MReference(
     "reference",
+    "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     Seq.empty,
     Seq.empty,
-    Seq[MAttribute]()
+    Seq[MAttribute](),
+    Map.empty
   )
   val rule = new EdgeAttributeScalarTypes("reference", "attributeType", StringType)
 
@@ -42,11 +44,13 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
   it should "return None for non-matching edges" in {
     val differentMReference = MReference(
       "differentMReference",
+      "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute]()
+      Seq[MAttribute](),
+      Map.empty
     )
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
     val edge = Edge("edgeId", differentMReference, Seq(), Seq(), attribute)
@@ -66,8 +70,8 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
-      (enumAttribute, scalarAttribute))
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
+      (enumAttribute, scalarAttribute), Map.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributeScalarTypes.generateFor(metaModel)
 

@@ -3,6 +3,7 @@ package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.Reads
 import play.api.libs.json.JsResult
 import play.api.libs.json.Format
@@ -18,13 +19,15 @@ class MReferenceUiFormat(val enumMap: Map[String, MEnum]) extends Format[MRefere
   override def reads(json: JsValue): JsResult[MReference] = {
     for {
       name <- json.\("name").validate[String](Reads.minLength[String](1))
+      description <- json.\("description").validate[String]
       sourceDeletionDeletesTarget <- json.\("sourceDeletionDeletesTarget").validate[Boolean]
       targetDeletionDeletesSource <- json.\("targetDeletionDeletesSource").validate[Boolean]
       source <- json.\("source").validate(Reads.list(MClassLinkDefFormat))
       target <- json.\("target").validate(Reads.list(MClassLinkDefFormat))
       attributes <- json.\("attributes").validate(attributeListReads)
+      methods <- json.\("methods").validate(Method.methodsPlayJsonFormat)
     } yield {
-      MReference(name, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes)
+      MReference(name, description, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes, methods)
     }
   }
 
@@ -41,7 +44,8 @@ object MReferenceUiFormat extends Writes[MReference] {
       "targetDeletionDeletesSource" -> mr.targetDeletionDeletesSource,
       "source" -> JsArray(mr.source.map(MClassLinkDefFormat.writes)),
       "target" -> JsArray(mr.target.map(MClassLinkDefFormat.writes)),
-      "attributes" -> JsArray(mr.attributes.map(MAttributeFormat.writes))
+      "attributes" -> JsArray(mr.attributes.map(MAttributeFormat.writes)),
+      "methods" -> Method.methodsPlayJsonFormat.writes(mr.methods)
     )
   }
 }

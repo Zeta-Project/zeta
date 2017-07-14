@@ -13,7 +13,7 @@ import org.scalatest.Matchers
 
 class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
 
-  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
   val rule = new NodeAttributesLocalUnique("nodeType", "attributeType")
 
   "isValid" should "return true on valid nodes" in {
@@ -31,7 +31,7 @@ class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return None for non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
@@ -47,7 +47,7 @@ class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val nonLocalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
+    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
       (nonLocalUniqueAttribute, localUniqueAttribute), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributesLocalUnique.generateFor(metaModel)

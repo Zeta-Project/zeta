@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
@@ -8,8 +10,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.NoAmbiguousAttributes
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
-
-import scala.collection.immutable.Seq
 
 class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
 
@@ -60,47 +60,57 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
 
   val superClass = MClass(
     name = "superClass",
+    description = "",
     abstractness = false,
     superTypeNames = Seq(),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq(superClassAttribute)
+    attributes = Seq(superClassAttribute),
+    methods = Map.empty
   )
 
   val nonAmbiguousSuperClass = MClass(
     name = "nonAmbiguousSuperClass",
+    description = "",
     abstractness = false,
     superTypeNames = Seq(),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq(nonAmbiguousSuperClassAttribute)
+    attributes = Seq(nonAmbiguousSuperClassAttribute),
+    methods = Map.empty
   )
 
   val ambiguousSuperClass = MClass(
     name = "ambiguousSuperClass",
+    description = "",
     abstractness = false,
     superTypeNames = Seq(),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq(ambiguousSuperClassAttribute)
+    attributes = Seq(ambiguousSuperClassAttribute),
+    methods = Map.empty
   )
 
   val nonAmbiguousSubClass = MClass(
     name = "nonAmbiguousSubClass",
+    description = "",
     abstractness = false,
     superTypeNames = Seq(superClass.name, nonAmbiguousSuperClass.name),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq()
+    attributes = Seq(),
+    methods = Map.empty
   )
 
   val ambiguousSubClass = MClass(
     name = "ambiguousSubClass",
+    description = "",
     abstractness = false,
     superTypeNames = Seq(superClass.name, ambiguousSuperClass.name),
     inputs = Seq(),
     outputs = Seq(),
-    attributes = Seq()
+    attributes = Seq(),
+    methods = Map.empty
   )
 
   val nonAmbiguousMetaModel = MetaModel(

@@ -2,16 +2,17 @@ package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import play.api.libs.json.Reads
-import play.api.libs.json.JsResult
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.Format
 import play.api.libs.json.JsArray
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
@@ -22,13 +23,15 @@ class MClassUiFormat(val enumMap: Map[String, MEnum]) extends Format[MClass] {
   override def reads(json: JsValue): JsResult[MClass] = {
     for {
       name <- json.\("name").validate[String](Reads.minLength[String](1))
+      description <- json.\("description").validate[String]
       abstractness <- json.\("abstract").validate[Boolean]
       superTypes <- json.\("superTypes").validate[Seq[String]]
       inputs <- json.\("inputs").validate(Reads.list(MReferenceLinkDefFormat))
       outputs <- json.\("outputs").validate(Reads.list(MReferenceLinkDefFormat))
       attributes <- json.\("attributes").validate(attributeListReads)
+      methods <- json.\("methods").validate(Method.methodsPlayJsonFormat)
     } yield {
-      MClass(name, abstractness, superTypes, inputs, outputs, attributes, Map.empty)
+      MClass(name, description, abstractness, superTypes, inputs, outputs, attributes, methods)
     }
   }
 
@@ -45,8 +48,8 @@ object MClassUiFormat extends Writes[MClass] {
       "superTypes" -> JsArray(mc.superTypeNames.map(JsString)),
       "inputs" -> JsArray(mc.inputs.map(MReferenceLinkDefFormat.writes)),
       "outputs" -> JsArray(mc.outputs.map(MReferenceLinkDefFormat.writes)),
-      "attributes" -> JsArray(mc.attributes.map(MAttributeFormat.writes))
-      // TODO methods
+      "attributes" -> JsArray(mc.attributes.map(MAttributeFormat.writes)),
+      "methods" -> Method.methodsPlayJsonFormat.writes(mc.methods)
     )
   }
 }

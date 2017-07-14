@@ -14,17 +14,20 @@ import org.scalatest.Matchers
 class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
   val mReference = MReference(
     "edgeType",
+    "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     Seq.empty,
     Seq.empty,
-    Seq[MAttribute]()
+    Seq[MAttribute](),
+    Map.empty
   )
   val rule = new EdgeTargetsLowerBound("edgeType", "targetType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or more target nodes of type targetType" in {
     val targetType = MClass(
       name = "targetType",
+      description = "",
       abstractness = false,
       superTypeNames = Seq(),
       inputs = Seq(),
@@ -49,6 +52,7 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
   it should "return false on edges of type edgeType having less than 2 target nodes of type targetType" in {
     val targetType = MClass(
       name = "targetType",
+      description = "",
       abstractness = false,
       superTypeNames = Seq(),
       inputs = Seq(),
@@ -71,11 +75,13 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
   it should "return None on non-matching edges" in {
     val differentMRef = MReference(
       "invalidReference",
+      description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute]()
+      Seq[MAttribute](),
+      Map.empty
     )
     val edge = Edge("", differentMRef, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
@@ -87,10 +93,10 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val class1 = MClass("class", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val targetLinkDef = MClassLinkDef(class1.name, -1, 5, deleteIfLower = false)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq(targetLinkDef),
-      Seq[MAttribute]())
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq(targetLinkDef),
+      Seq[MAttribute](), Map.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeTargetsLowerBound.generateFor(metaModel)
 

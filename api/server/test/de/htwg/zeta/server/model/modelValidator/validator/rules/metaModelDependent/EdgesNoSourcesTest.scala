@@ -14,11 +14,13 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
 
   val mReference = MReference(
     "edgeType",
+    "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     Seq.empty,
     Seq.empty,
-    Seq[MAttribute]()
+    Seq[MAttribute](),
+    Map.empty
   )
   val rule = new EdgesNoSources("edgeType")
 
@@ -30,6 +32,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   it should "return false on edges of type edgeType with sources" in {
     val source = MClass(
       name = "",
+      description = "",
       abstractness = false,
       superTypeNames = Seq(),
       inputs = Seq(),
@@ -46,6 +49,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   it should "return true on edges of type edgeType with empty source list" in {
     val source = MClass(
       name = "",
+      description = "",
       abstractness = false,
       superTypeNames = Seq(),
       inputs = Seq(),
@@ -62,11 +66,13 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   it should "return None on non-matching edges" in {
     val differentReference = MReference(
       "differenteEdgeType",
+      "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute]()
+      Seq[MAttribute](),
+      Map.empty
     )
     val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
@@ -78,7 +84,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]())
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty,
+      Seq[MAttribute](), Map.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgesNoSources.generateFor(metaModel)
 

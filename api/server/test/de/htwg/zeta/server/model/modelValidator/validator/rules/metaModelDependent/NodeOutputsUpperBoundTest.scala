@@ -13,10 +13,10 @@ import org.scalatest.Matchers
 
 class NodeOutputsUpperBoundTest extends FlatSpec with Matchers {
   val rule = new NodeOutputsUpperBound("nodeType", "outputType", 2)
-  val mClass = MClass("nodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
 
   "isValid" should "return true on nodes of type nodeType having 2 or less output edges of type outputType" in {
-    val outputType = MReference("outputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
     val twoOutputEdges = ToEdges(outputType, Seq(outputType.name, outputType.name))
     val nodeTwoOutputEdges = Node("", mClass, Seq(twoOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeTwoOutputEdges).get should be(true)
@@ -31,14 +31,14 @@ class NodeOutputsUpperBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return false on nodes of type nodeType having more than 2 output edges of type outputType" in {
-    val outputType = MReference("outputType", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
     val threeOutputEdges = ToEdges(outputType, Seq(outputType.name, outputType.name, outputType.name))
     val nodeThreeOutputEdges = Node("", mClass, Seq(threeOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeThreeOutputEdges).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
@@ -49,10 +49,10 @@ class NodeOutputsUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mReference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq())
+    val mReference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
     val outputMLinkDef = MReferenceLinkDef(mReference.name, 7, 0, deleteIfLower = false)
 
-    val mClass = MClass("class", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(outputMLinkDef), Seq[MAttribute](), Map.empty)
+    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(outputMLinkDef), Seq[MAttribute](), Map.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeOutputsUpperBound.generateFor(metaModel)
 

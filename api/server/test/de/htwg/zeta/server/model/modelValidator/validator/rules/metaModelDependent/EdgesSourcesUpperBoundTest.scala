@@ -15,17 +15,20 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
 
   val mReference = MReference(
     "edgeType",
+    "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
     Seq.empty,
     Seq.empty,
-    Seq[MAttribute]()
+    Seq[MAttribute](),
+    Map.empty
   )
   val rule = new EdgeSourcesUpperBound("edgeType", "sourceType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or less source nodes of type sourceType" in {
     val sourceType = MClass(
       name = "sourceType",
+      description = "",
       abstractness = false,
       superTypeNames = Seq(),
       inputs = Seq(),
@@ -56,6 +59,7 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
   it should "return false on edges of type edgeType having more than 2 source nodes of type sourceType" in {
     val sourceType = MClass(
       name = "sourceType",
+      description = "",
       abstractness = false,
       superTypeNames = Seq(),
       inputs = Seq(),
@@ -74,11 +78,13 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
   it should "return None on non-matching edges" in {
     val differentReference = MReference(
       "differentEdgeType",
+      "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
       Seq.empty,
       Seq.empty,
-      Seq[MAttribute]()
+      Seq[MAttribute](),
+      Map.empty
     )
     val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
@@ -90,9 +96,10 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val class1 = MClass("class", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
     val sourceLinkDef1 = MClassLinkDef(class1.name, 7, 0, deleteIfLower = false)
-    val reference = MReference("reference", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(sourceLinkDef1), Seq.empty, Seq.empty)
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(sourceLinkDef1), Seq.empty,
+      Seq.empty, Map.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeSourcesUpperBound.generateFor(metaModel)
 

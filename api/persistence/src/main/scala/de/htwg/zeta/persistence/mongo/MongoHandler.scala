@@ -44,10 +44,10 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodDeclaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MethodImplementation
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -212,14 +212,14 @@ object MongoHandler {
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
-  private implicit object MapMethodHandler extends BSONDocumentReader[Map[MethodDeclaration, MethodImplementation]]
-    with BSONDocumentWriter[Map[MethodDeclaration, MethodImplementation]] {
+  private implicit object MapMethodHandler extends BSONDocumentReader[Map[Declaration, Implementation]]
+    with BSONDocumentWriter[Map[Declaration, Implementation]] {
 
-    override def read(doc: BSONDocument): Map[MethodDeclaration, MethodImplementation] = {
+    override def read(doc: BSONDocument): Map[Declaration, Implementation] = {
       null // TODO
     }
 
-    override def write(map: Map[MethodDeclaration, MethodImplementation]): BSONDocument = {
+    override def write(map: Map[Declaration, Implementation]): BSONDocument = {
       null // TODO
     }
 
