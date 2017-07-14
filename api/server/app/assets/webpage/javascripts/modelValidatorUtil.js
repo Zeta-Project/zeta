@@ -55,7 +55,7 @@ var modelValidatorUtil = (function ($) {
 
         $.ajax({
             type: 'GET',
-            url: '/metamodels/' + metaModelId + '/validator?generate=false&noContent=false',
+            url: '/metamodels/' + metaModelId + '/validator?generate=false',
             success: function (data, textStatus, jqXHR) {
 
                 if (options.openWindow === true) {
@@ -84,7 +84,7 @@ var modelValidatorUtil = (function ($) {
     generate = function (metaModelId, options) {
         $.ajax({
             type: 'GET',
-            url: '/metamodels/' + metaModelId + '/validator?generate=true&noContent=true',
+            url: '/metamodels/' + metaModelId + '/validator?generate=true',
             success: function (data, textStatus, jqXHR) {
 
                 if (typeof options.success === 'function') {

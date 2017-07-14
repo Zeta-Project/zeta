@@ -100,7 +100,14 @@ var modelExporter = (function modelExporter () {
             // In the Metamodel a connection can have multiple sources/targets
             // but in joint.js this is not possible
             element.source[link.attributes.sourceAttribute] = [link.attributes.source.id];
-            element.target[link.attributes.targetAttribute] = [link.attributes.target.id];
+            element.target[link.attributes.targetAttribute] = [link.attributes.target.id]
+
+            // add attributes
+            link.attributes.labels.forEach(function(label) {
+                var attributeName = linkhelper.mapping[link.attributes.mReference][label.id];
+                element.attributes[attributeName] = [label.attrs.text.text];
+            });
+
             elements.push(element);
         });
         return elements;

@@ -153,6 +153,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (descriptionAttribute ?) ~
       (anchorAttribute ?) <~ "}" ^^ {
       case name ~ parent ~ style ~ attrs ~ geos ~ desc ~ anch =>
+        debug(s"parsing shape: $name")
         ShapeSketch(name, OptionToStyle(style)(cache), parent, attrs, geos, desc, anch, cache)
     }
   }
@@ -187,6 +188,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (anonymousStyle ?) ~
       rep(c_placing) <~ "}" ^^ {
       case name ~ style ~ typ ~ anonymousStyle ~ placings =>
+        debug(s"parsing connection: $name")
         val newConnection = ConnectionSketch(name, OptionToStyle(style)(cache), typ, anonymousStyle, placings)
         cache + newConnection
         newConnection
@@ -314,6 +316,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       (("(" ~ "style" ~ ":" ~> ident <~ ")") ?) ~
       ("{" ~> rep(diagramShape | palette | container | onCreate | onUpdate | onDelete | actions) <~ "}") ^^ {
       case name ~ mcoreElement ~ corporatestyle ~ args =>
+        debug(s"parsing node: $name")
         createNodeSketch(name, mcoreElement, corporatestyle, args)
     }
   }
@@ -395,6 +398,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       ("to" ~ ":" ~> ident) ~
       (rep(palette | container | onCreate | onUpdate | onDelete | actions) <~ "}") ^^ {
       case edgeName ~ mcoreElement ~ styleOpt ~ diaCon ~ from ~ to ~ args =>
+        debug(s"parsing edge: $edgeName")
         createEdgeSketch(styleOpt, edgeName, mcoreElement, diaCon, from, to, args)
     }
   }
@@ -474,6 +478,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
       ("(" ~ "style" ~ ":" ~> ident <~ ")").? ~
       ("{" ~> rep(actionGroup | nodeOrEdge) <~ "}") ^^ {
       case name ~ metaModelName ~ style ~ arguments =>
+        debug(s"parsed syntax of diagram $name")
         val actionGroups = arguments.filter(i => i._1 == "actionGroup").map(i => i._2.asInstanceOf[ActionGroup].name -> i._2.asInstanceOf[ActionGroup]).toMap
 
         val nodes: List[Node] = arguments.collect {

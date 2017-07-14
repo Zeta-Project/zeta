@@ -17,7 +17,7 @@ sealed class Placing private (
     val shapeCon: GeometricModel,
     val shape: Shape
 ) {
-  def text = shapeCon match {
+  def text: Option[Text] = shapeCon match {
     case t: Text => Some(t)
     case _ => None
   }

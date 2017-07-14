@@ -178,7 +178,7 @@ class ModelRestApi() extends Controller with Logging {
             case None => InternalServerError("Error loading model validator.")
           }
           case None =>
-            val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true), None).absoluteURL()(request)
+            val url = routes.ScalaRoutes.getMetamodelsValidator(id, Some(true)).absoluteURL()(request)
             Conflict(
               s"""No validator generated yet. Try calling $url first.""")
         }
