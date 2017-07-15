@@ -185,6 +185,7 @@ class ScalaRoutes @Inject()(
 
   /* ### EventDrivenTask REST API */
   def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.showForUser() _)
+  def deleteEventDrivenTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.delete(id) _)
 
   /* ### TimedTask REST API */
   def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
