@@ -35,6 +35,9 @@
         this.$.view.link = function(item) {
           return '/app/log/' + item.id;
         }
+        this.$.view.restDelete = function(item) {
+          return '/rest/v1/timed-tasks/' + item.id;
+        }
       }
     });
   </script>

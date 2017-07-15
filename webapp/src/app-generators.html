@@ -32,6 +32,9 @@
         this.$.view.link = function(item) {
           return '/app/editor/generators/' + item.id;
         }
+        this.$.view.restDelete = function(item) {
+          return '/rest/v1/generators/' + item.id;
+        }
       }
     });
   </script>
