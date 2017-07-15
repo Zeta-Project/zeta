@@ -7,5 +7,6 @@ case class Filter(
     id: UUID,
     name: String,
     description: String,
-    instanceIds: Seq[UUID]
+    instanceIds: Seq[UUID],
+    deleted: Option[Boolean] = Some(false)
 ) extends Entity

@@ -94,6 +94,7 @@ DELETE        /rest/v1/generators/:id                                           
 ### Generator REST API
 GET           /rest/v1/filters                                                       controllers.ScalaRoutes.getFiltersNoArgs
 GET           /rest/v1/filters/:id                                                   controllers.ScalaRoutes.getFilters(id: java.util.UUID)
+DELETE        /rest/v1/filters/:id                                                   controllers.ScalaRoutes.deleteFilters(id: java.util.UUID)
 
 ### MetaModelRelease REST API
 GET           /rest/v1/meta-model-releases                                           controllers.ScalaRoutes.getMetaModelReleasesNoArgs
