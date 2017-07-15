@@ -7,7 +7,6 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.server.controller.restApi.format.GeneratorFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -15,7 +14,6 @@ import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
@@ -23,25 +21,31 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  */
 class GeneratorRestApi() extends Controller with Logging {
 
+  private val repo = Persistence.fullAccessRepository.generator
+
   /**
    * Lists all generator.
    * @param request The request
    * @return The result
    */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = Persistence.fullAccessRepository.generator
-    repo.readAllIds().flatMap(getIds(repo)).map(getJsonArray).recover {
-      case e: Exception => BadRequest(e.getMessage)
+    getEntities.map(getResultJsonArray).recover {
+      case e: Exception =>
+        error("Exception while trying to read all `Generator` from DB", e)
+        BadRequest(e.getMessage)
     }
   }
 
-  private def getIds(repo: EntityPersistence[Generator])(ids: Set[UUID]) = {
-    val list = ids.toList.map(repo.read)
-    Future.sequence(list)
+  private def getEntities: Future[List[Generator]] = {
+    repo.readAllIds().flatMap(ids => {
+      val entities = ids.toList.map(repo.read)
+      Future.sequence(entities)
+    })
   }
 
-  private def getJsonArray(list: List[Generator]) = {
-    val entries = list.map(GeneratorFormat.writes)
+  private def getResultJsonArray(list: List[Generator]): Result = {
+    val entities = list.filter(e => !e.deleted.getOrElse(false))
+    val entries = entities.map(GeneratorFormat.writes)
     val json = JsArray(entries)
     Ok(json)
   }
@@ -53,13 +57,34 @@ class GeneratorRestApi() extends Controller with Logging {
    * @return The result
    */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = Persistence.fullAccessRepository.generator
-    repo.read(id).flatMap(entity => {
-      Future(Ok(GeneratorFormat.writes(entity)))
-    }).recover {
+    repo.read(id).map(getResultJsonValue).recover {
       case e: Exception =>
-        info("exception while trying to read from DB", e)
-        Results.BadRequest(e.getMessage)
+        error("Exception while trying to read a single `Generator` from DB", e)
+        BadRequest(e.getMessage)
     }
+  }
+
+  private def getResultJsonValue(entity: Generator) = {
+    val json = GeneratorFormat.writes(entity)
+    Ok(json)
+  }
+
+  /**
+   * Flag Generator instance as deleted
+   * @param id Identifier of Generator
+   * @param request The request
+   * @return The result
+   */
+  def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    flagAsDeleted(id).map(_ => Ok("")).recover {
+      case e: Exception =>
+        error("Exception while trying to flag `Generator` as deleted at DB", e)
+        BadRequest(e.getMessage)
+    }
+  }
+
+  private def flagAsDeleted(id: UUID): Future[Generator] = {
+    val deleted = Some(true)
+    repo.update(id, entity => entity.copy(deleted = deleted))
   }
 }
