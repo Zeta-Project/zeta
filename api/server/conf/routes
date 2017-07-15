@@ -100,6 +100,7 @@ GET           /rest/v1/meta-model-releases                                      
 
 ### BondedTask REST API
 GET           /rest/v1/bonded-tasks                                                  controllers.ScalaRoutes.getBondedTasksNoArgs
+DELETE        /rest/v1/bonded-tasks/:id                                              controllers.ScalaRoutes.deleteBondedTasks(id: java.util.UUID)
 
 ### EventDrivenTask REST API
 GET           /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.getEventDrivenTasksNoArgs
