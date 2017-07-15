@@ -7,7 +7,6 @@ import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
-import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
 
 
@@ -34,41 +33,28 @@ object Method {
 
   implicit val parameterPlayJsonFormat: Format[Parameter] = Json.format[Parameter]
 
+  private implicit val methodKeyPlayJsonFormat: Format[(Declaration, Implementation)] = Json.format[(Declaration, Implementation)]
+
   implicit val methodsPlayJsonFormat = new Format[Map[Declaration, Implementation]] {
 
-    private val sString = "string"
-    private val sBool = "bool"
-    private val sInt = "int"
-    private val sDouble = "double"
+    private val sDeclaration = "declaration"
+    private val sImplementation = "implementation"
 
-    private val sName = "name"
-    private val sParameters = "parameters"
-    private val sType = "type"
-
-    override def writes(map: Map[Declaration, Implementation]): JsValue = {
-      val a = map.toList.map(e => JsObject(Map(
-        sName -> JsString(e._1.name),
-        sParameters -> JsArray(e._1.parameters.map(parameter => JsObject(Map(
-          sName -> JsString(parameter.name),
-          sType -> AttributeType.playJsonFormat.writes(parameter.typ)))))
-
-      )))
-      null // TODO
+    override def writes(value: Map[Declaration, Implementation]): JsValue = {
+      JsArray(value.map(entry => JsObject(Map(
+        sDeclaration -> declarationPlayJsonFormat.writes(entry._1),
+        sImplementation -> implementationPlayJsonFormat.writes(entry._2)
+      ))).toSeq)
     }
 
     override def reads(json: JsValue): JsResult[Map[Declaration, Implementation]] = {
-
-      /* json match {
-        case JsString(`sString`) => JsSuccess(StringType)
-        case JsString(`sBool`) => JsSuccess(BoolType)
-        case JsString(`sInt`) => JsSuccess(IntType)
-        case JsString(`sDouble`) => JsSuccess(DoubleType)
-        case _ => MEnum.playJsonFormat.reads(json)
-      } */
-      null // TODO
+      json.validate[JsArray].map(_.value.map { value =>
+        val obj = value.validate[JsObject]
+        val declaration = obj.map(_.value(sDeclaration).as[Declaration]).get
+        val implementation = obj.map(_.value(sImplementation).as[Implementation]).get
+        (declaration, implementation)
+      }.toMap)
     }
-
   }
-
 
 }
