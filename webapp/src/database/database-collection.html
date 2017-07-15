@@ -3,6 +3,7 @@
 
 <dom-module id="database-collection">
   <template>
+    <iron-ajax id="ajax" method="GET" url="[[restList]]" content-type="application/json" handle-as="json"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -34,12 +35,7 @@
         },
 
         generateRequest() {
-          var ajax = document.createElement('iron-ajax');
-          ajax.url = this.restList;
-          ajax.contentType = 'application/json';
-          ajax.handleAs = 'json';
-          ajax.method = 'GET';
-          ajax.generateRequest().completes.then(e => {
+          this.$.ajax.generateRequest().completes.then(e => {
             this.docs = e.response;
           }).catch(e => {
             this._setLastError(e);

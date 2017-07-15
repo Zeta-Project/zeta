@@ -3,6 +3,7 @@
 
 <dom-module id="database-document">
   <template>
+    <iron-ajax id="ajaxDelete" method="DELETE" url="[[restDelete]]" content-type="application/json" handle-as="json"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -51,17 +52,6 @@
           }
         },
 
-        _restRequest(method, url, params = null, body = null) {
-          var ajax = document.createElement('iron-ajax');
-          ajax.url = url;
-          ajax.contentType = 'application/json';
-          ajax.handleAs = 'json';
-          ajax.method = method;
-          ajax.params = params;
-          ajax.body = body;
-          return ajax.generateRequest();
-        },
-
         generateRequest() {
           var ajax = document.createElement('iron-ajax');
           ajax.url = this.restSingle;
@@ -96,7 +86,7 @@
         },
 
         deleteDocument(doc) {
-          this._restRequest('DELETE', this.restDelete).completes.then(e => {
+          this.$.ajaxDelete.generateRequest().completes.then(e => {
               
           }).catch(e => {
             console.error("database-document", "deleteDocument", "failed:", e);
