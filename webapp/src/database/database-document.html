@@ -101,37 +101,6 @@
           }).catch(e => {
             console.error("database-document", "deleteDocument", "failed:", e);
           });
-        },
-
-        saveDocument: function(doc) {
-          return new Promise((resolve, reject) => {
-            var ajax = document.createElement('iron-ajax');
-            ajax.url = '/db/' + doc.id + '?rev=' + doc._rev;
-            ajax.contentType = 'application/json';
-            ajax.body = doc;
-            ajax.handleAs = 'json';
-            ajax.method = 'PUT';
-            ajax.generateRequest().completes.then(e => {
-              doc._rev = e.response.rev;
-              resolve(doc);
-            }).catch(e => {
-              reject(e);
-            });
-          });
-        },
-
-        saveAttachment: function(doc, attachmentId, file, type) {
-          var ajax = document.createElement('iron-ajax');
-          ajax.url = '/db/' + doc.id + '/' + attachmentId + '?rev=' + doc._rev;
-          ajax.contentType = type;
-          ajax.body = file;
-          ajax.handleAs = 'json';
-          ajax.method = 'PUT';
-          ajax.generateRequest().completes.then(e => {
-            this._rev = e.response.rev;
-          }).catch(function(e) {
-            console.log(e);
-          });
         }
       });
     })();

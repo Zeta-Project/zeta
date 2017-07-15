@@ -39,9 +39,7 @@
           ajax.contentType = 'application/json';
           ajax.handleAs = 'json';
           ajax.method = 'GET';
-          var request = ajax.generateRequest();
-          var newDocs = [];
-          request.completes.then(e => {
+          ajax.generateRequest().completes.then(e => {
             this.docs = e.response;
           }).catch(e => {
             this._setLastError(e);
@@ -52,27 +50,7 @@
           if (this.auto) {
             this.generateRequest();
           }
-        },
-
-        save: function(docs) {
-          return new Promise((resolve, reject) => {
-            var ajax = document.createElement('iron-ajax');
-            ajax.url = '/db/_bulk_docs';
-            ajax.contentType = 'application/json';
-            ajax.body = {
-              docs : docs
-            };
-            ajax.handleAs = 'json';
-            ajax.method = 'POST';
-
-            var request = ajax.generateRequest();
-            request.completes.then(function(e) {
-              resolve(doc);
-            }).catch(function(e) {
-              reject(e);
-            });
-          });
-        },
+        }
       });
     })();
   </script>
