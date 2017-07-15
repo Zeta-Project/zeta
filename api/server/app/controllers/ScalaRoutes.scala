@@ -167,6 +167,7 @@ class ScalaRoutes @Inject()(
   /* ### Generator REST API */
   def getGeneratorsNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.showForUser() _)
   def getGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.get(id) _)
+  def deleteGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.delete(id) _)
 
   /* ### Filter REST API */
   def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)

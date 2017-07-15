@@ -88,6 +88,7 @@ GET           /rest/v1/generator-images                                         
 ### Generator REST API
 GET           /rest/v1/generators                                                    controllers.ScalaRoutes.getGeneratorsNoArgs
 GET           /rest/v1/generators/:id                                                controllers.ScalaRoutes.getGenerators(id: java.util.UUID)
+DELETE        /rest/v1/generators/:id                                                controllers.ScalaRoutes.deleteGenerators(id: java.util.UUID)
 
 ### Generator REST API
 GET           /rest/v1/filters                                                       controllers.ScalaRoutes.getFiltersNoArgs
