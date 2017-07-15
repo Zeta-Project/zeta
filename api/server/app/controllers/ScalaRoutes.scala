@@ -178,6 +178,7 @@ class ScalaRoutes @Inject()(
 
   /* ### BondedTask REST API */
   def getBondedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.showForUser() _)
+  def deleteBondedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.delete(id) _)
 
   /* ### EventDrivenTask REST API */
   def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.showForUser() _)
