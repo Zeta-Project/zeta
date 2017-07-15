@@ -187,6 +187,7 @@ class ScalaRoutes @Inject()(
 
   /* ### TimedTask REST API */
   def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
+  def deleteTimedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.delete(id) _)
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =

@@ -11,7 +11,8 @@ case class TimedTask(
     generatorId: UUID,
     filterId: UUID,
     interval: Int,
-    start: String
+    start: String,
+    deleted: Option[Boolean] = Some(false)
 ) extends Entity {
 
   def delay: Int = {
