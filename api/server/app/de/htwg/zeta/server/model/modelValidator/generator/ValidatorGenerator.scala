@@ -56,10 +56,10 @@ object ValidatorGenerator {
     val dslPackage = classOf[AttributesInEdges].getPackage.getName
 
     s"""import $validatorPackage.$validatorName
-       |import $dslPackage._
-       |new $validatorName {
-       |override val metaModelDependentRules = Seq($validatorContents)
-       |}""".stripMargin
+      |import $dslPackage._
+      |new $validatorName {
+      |override val metaModelDependentRules = Seq($validatorContents)
+      |}""".stripMargin
   }
 
 
