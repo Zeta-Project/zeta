@@ -55,7 +55,7 @@
       }
     </style>
 
-    <database-document id="db"></database-document>
+    <database-document id="db" type="[[type]]" rest-delete="[[restDelete]]"></database-document>
     <div>
       <div class="item">
         <div class="pad">
@@ -81,14 +81,16 @@
       is: 'my-item',
 
       delete() {
-        this.$.db.deleteDocument(this.item);
+        this.$.db.deleteDocument();
       },
 
       properties: {
         item: Object,
         primary: String,
         secondary: Array,
-        link: String
+        link: String,
+        type: String,
+        restDelete: String
       }
     });
   </script>

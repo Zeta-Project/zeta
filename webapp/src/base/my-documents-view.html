@@ -34,7 +34,7 @@
 
     <iron-list items="[[items]]" as="item">
       <template>
-        <my-item class="unselectable" primary="[[primary(item)]]" secondary="[[secondary(item)]]" link="[[link(item)]]" item="[[item]]"></my-item>
+        <my-item class="unselectable" primary="[[primary(item)]]" secondary="[[secondary(item)]]" link="[[link(item)]]" item="[[item]]" type="[[type]]" rest-delete="[[restDelete(item)]]"></my-item>
       </template>
     </iron-list>
   </template>
@@ -49,16 +49,17 @@
         restList: String
       },
 
-      ready() {
-        this.primary = function() {
-          return '';
-        }
-        this.secondary = function() {
-          return [];
-        }
-        this.link = function() {
-          return '';
-        }
+      primary() {
+        return '';
+      },
+      secondary() {
+        return [];
+      },
+      link() {
+        return '';
+      },
+      restDelete() {
+        return '';
       }
     });
   </script>

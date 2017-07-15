@@ -30,7 +30,12 @@
             readOnly: true,
             notify: true
           },
+          type: String,
           restSingle: {
+            type: String,
+            value: '/rest/v1/failed'
+          },
+          restDelete: {
             type: String,
             value: '/rest/v1/failed'
           }
@@ -46,6 +51,17 @@
           }
         },
 
+        _restRequest(method, url, params = null, body = null) {
+          var ajax = document.createElement('iron-ajax');
+          ajax.url = url;
+          ajax.contentType = 'application/json';
+          ajax.handleAs = 'json';
+          ajax.method = method;
+          ajax.params = params;
+          ajax.body = body;
+          return ajax.generateRequest();
+        },
+
         generateRequest() {
           var ajax = document.createElement('iron-ajax');
           ajax.url = this.restSingle;
@@ -55,11 +71,9 @@
           ajax.params = {
             attachments: this.attachments
           };
-
-          var request = ajax.generateRequest();
-          request.completes.then((e) => {
+          ajax.generateRequest().completes.then(e => {
             this.doc = e.response;
-          }).catch((e) => {
+          }).catch(e => {
             this._setLastError(e);
           });
         },
@@ -72,20 +86,21 @@
             ajax.body = doc;
             ajax.handleAs = 'json';
             ajax.method = 'PUT';
-
-            var request = ajax.generateRequest();
-            request.completes.then(function(e) {
+            ajax.generateRequest().completes.then(e => {
               doc._rev = e.response.rev;
               resolve(doc);
-            }).catch(function(e) {
+            }).catch(e => {
               reject(e);
             });
           });
         },
 
         deleteDocument(doc) {
-          doc._deleted = true;
-          return this.saveDocument(doc);
+          this._restRequest('DELETE', this.restDelete).completes.then(e => {
+              
+          }).catch(e => {
+            console.error("database-document", "deleteDocument", "failed:", e);
+          });
         },
 
         saveDocument: function(doc) {
@@ -96,12 +111,10 @@
             ajax.body = doc;
             ajax.handleAs = 'json';
             ajax.method = 'PUT';
-
-            var request = ajax.generateRequest();
-            request.completes.then(function(e) {
+            ajax.generateRequest().completes.then(e => {
               doc._rev = e.response.rev;
               resolve(doc);
-            }).catch(function(e) {
+            }).catch(e => {
               reject(e);
             });
           });
@@ -114,33 +127,10 @@
           ajax.body = file;
           ajax.handleAs = 'json';
           ajax.method = 'PUT';
-          var self = this;
-
-          var request = ajax.generateRequest();
-          request.completes.then(function(e) {
-            self._rev = e.response.rev;
+          ajax.generateRequest().completes.then(e => {
+            this._rev = e.response.rev;
           }).catch(function(e) {
             console.log(e);
-          });
-        },
-
-        exist: function(id) {
-          return new Promise(function(resolve, reject) {
-            var ajax = document.createElement('iron-ajax');
-            ajax.url = '/db/' + id;
-            ajax.contentType = 'application/json';
-            ajax.handleAs = 'json';
-            ajax.method = 'GET';
-            ajax.params = {
-              attachments: self.attachments
-            };
-
-            var request = ajax.generateRequest();
-            request.completes.then(function() {
-              resolve();
-            }).catch(function(e) {
-              reject(e);
-            });
           });
         }
       });
