@@ -17,7 +17,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonCyclicClassTwo = MClass(
@@ -28,7 +28,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonCyclicClassThree = MClass(
@@ -39,7 +39,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonCyclicClassFour = MClass(
@@ -50,7 +50,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonCyclicMetaModel = MetaModel(
@@ -58,7 +58,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     classes = Seq(nonCyclicClassOne, nonCyclicClassTwo, nonCyclicClassThree, nonCyclicClassFour),
     references = Seq(),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val cyclicClassOne = MClass(
@@ -69,7 +70,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val cyclicClassTwo = MClass(
@@ -80,7 +81,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val cyclicClassThree = MClass(
@@ -91,7 +92,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val cyclicClassFour = MClass(
@@ -102,7 +103,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val cyclicClassFive = MClass(
@@ -113,7 +114,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val cyclicClassSix = MClass(
@@ -124,7 +125,7 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val cyclicMetaModel = MetaModel(
@@ -132,7 +133,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     classes = Seq(cyclicClassOne, cyclicClassTwo, cyclicClassThree, cyclicClassFour, cyclicClassFive, cyclicClassSix),
     references = Seq(),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val rule = new NoCyclicInheritance

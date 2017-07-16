@@ -12,7 +12,7 @@ import org.scalatest.Matchers
 
 class NodesNoOutputsTest extends FlatSpec with Matchers {
   val rule = new NodesNoOutputs("nodeType")
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with no outputs" in {
     val node = Node("", mClass, Seq(), Seq(), Map.empty)
@@ -20,21 +20,21 @@ class NodesNoOutputsTest extends FlatSpec with Matchers {
   }
 
   it should "return false on nodes of type nodeType with outputs" in {
-    val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = ToEdges(output, Seq(output.name))
     val node = Node("", mClass, Seq(toEdge), Seq(), Map.empty)
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty output list" in {
-    val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = ToEdges(output, Seq())
     val node = Node("", mClass, Seq(toEdge), Seq(), Map.empty)
     rule.isValid(node).get should be(true)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
@@ -45,7 +45,7 @@ class NodesNoOutputsTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodesNoOutputs.generateFor(metaModel)
 

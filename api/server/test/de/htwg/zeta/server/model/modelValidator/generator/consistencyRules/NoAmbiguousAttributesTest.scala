@@ -65,7 +65,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(superClassAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonAmbiguousSuperClass = MClass(
@@ -76,7 +76,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(nonAmbiguousSuperClassAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val ambiguousSuperClass = MClass(
@@ -87,7 +87,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(ambiguousSuperClassAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonAmbiguousSubClass = MClass(
@@ -98,7 +98,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val ambiguousSubClass = MClass(
@@ -109,7 +109,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonAmbiguousMetaModel = MetaModel(
@@ -117,7 +117,8 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val ambiguousMetaModel = MetaModel(
@@ -125,7 +126,8 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val rule = new NoAmbiguousAttributes

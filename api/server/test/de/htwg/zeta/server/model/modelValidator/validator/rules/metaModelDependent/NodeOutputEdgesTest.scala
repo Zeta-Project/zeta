@@ -14,30 +14,30 @@ import org.scalatest.Matchers
 class NodeOutputEdgesTest extends FlatSpec with Matchers {
 
   val rule = new NodeOutputEdges("nodeType", Seq("output1", "output2"))
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with valid output edges" in {
 
-    val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdges1 = ToEdges(output1, Seq(output1.name))
     val node1 = Node("", mClass, Seq(toEdges1), Seq(), Map.empty)
     rule.isValid(node1).get should be(true)
 
-    val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdges2 = ToEdges(output2, Seq(output1.name, output2.name))
     val node2 = Node("", mClass, Seq(toEdges2), Seq(), Map.empty)
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with invalid output edges" in {
-    val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdges = ToEdges(output, Seq(output.name))
     val node = Node("", mClass, Seq(toEdges), Seq(), Map.empty)
     rule.isValid(node).get should be(false)
   }
 
   it should "return None on non-matching edges" in {
-    val differentClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val differentClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val node = Node("", differentClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
@@ -48,13 +48,13 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mReference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
-    val mReference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val mReference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
+    val mReference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val outputMLinkDef1 = MReferenceLinkDef(mReference1.name, -1, 0, deleteIfLower = false)
     val outputMLinkDef2 = MReferenceLinkDef(mReference2.name, -1, 0, deleteIfLower = false)
 
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(outputMLinkDef1, outputMLinkDef2), Seq[MAttribute](),
-      Map.empty)
+      Seq.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeOutputEdges.generateFor(metaModel)
 

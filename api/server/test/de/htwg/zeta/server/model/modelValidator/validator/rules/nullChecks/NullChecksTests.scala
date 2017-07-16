@@ -25,8 +25,8 @@ class NullChecksTests extends FlatSpec with Matchers {
   def edgesToModel(edges: Seq[Edge]): Model = Model("", UUID.randomUUID(), Seq.empty, edges, "")
 
   val mReference = MReference("edgeType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty,
-    Map.empty)
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    Seq.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "EdgeAttributesNamesNotNull" should "check for null in edge attributes names" in {
     val rule = new EdgeAttributesNamesNotNull

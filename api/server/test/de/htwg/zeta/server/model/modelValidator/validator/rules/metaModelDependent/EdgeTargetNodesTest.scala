@@ -19,7 +19,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     Seq.empty, Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new EdgeTargetNodes("edgeType", Seq("target1", "target2"))
 
@@ -33,7 +33,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq(),
-      methods = Map.empty
+      methods = Seq.empty
     )
 
     val toNodes1 = ToNodes(clazz = target1, nodeNames = Seq(""))
@@ -50,7 +50,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq(),
-      methods = Map.empty
+      methods = Seq.empty
     )
 
     val toNodes2 = ToNodes(clazz = target1, nodeNames = Seq("", ""))
@@ -70,7 +70,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       inputs = Seq(),
       outputs = Seq(),
       attributes = Seq(),
-      methods = Map.empty
+      methods = Seq.empty
     )
 
     val invalidToNodes = ToNodes(clazz = invalidTarget, nodeNames = Seq(""))
@@ -89,7 +89,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](),
-      Map.empty
+      Seq.empty
     )
     val edge = Edge("", differentMReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
@@ -101,12 +101,12 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val class1 = MClass("class1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
-    val class2 = MClass("class2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val class1 = MClass("class1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+    val class2 = MClass("class2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val targetLinkDef1 = MClassLinkDef(class1.name, -1, 0, deleteIfLower = false)
     val targetLinkDef2 = MClassLinkDef(class2.name, -1, 0, deleteIfLower = false)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq(targetLinkDef1,
-      targetLinkDef2), Seq[MAttribute](), Map.empty)
+      targetLinkDef2), Seq[MAttribute](), Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeTargetNodes.generateFor(metaModel)
 

@@ -32,7 +32,7 @@ class UtilTest extends FlatSpec with Matchers {
     inputs = Seq.empty,
     outputs = Seq.empty,
     attributes = Seq[MAttribute](),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val mReference = MReference(
@@ -43,7 +43,7 @@ class UtilTest extends FlatSpec with Matchers {
     source = Seq.empty,
     target = Seq.empty,
     attributes = Seq[MAttribute](),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val modelElements = Seq(
@@ -63,7 +63,7 @@ class UtilTest extends FlatSpec with Matchers {
       source = Seq.empty,
       target = Seq.empty,
       attributes = Seq[MAttribute](),
-      methods = Map.empty
+      methods = Seq.empty
     ),
     MReference(
       name = "mReference2",
@@ -73,7 +73,7 @@ class UtilTest extends FlatSpec with Matchers {
       source = Seq.empty,
       target = Seq.empty,
       attributes = Seq[MAttribute](),
-      methods = Map.empty
+      methods = Seq.empty
     ),
     MClass(
       name = "mClass1",
@@ -83,7 +83,7 @@ class UtilTest extends FlatSpec with Matchers {
       inputs = Seq.empty,
       outputs = Seq.empty,
       attributes = Seq[MAttribute](),
-      methods = Map.empty
+      methods = Seq.empty
     ),
     MReference(
       name = "mReference3",
@@ -93,7 +93,7 @@ class UtilTest extends FlatSpec with Matchers {
       source = Seq.empty,
       target = Seq.empty,
       attributes = Seq[MAttribute](),
-      methods = Map.empty
+      methods = Seq.empty
     ),
     MClass(
       name = "mClass2",
@@ -103,7 +103,7 @@ class UtilTest extends FlatSpec with Matchers {
       inputs = Seq.empty,
       outputs = Seq.empty,
       attributes = Seq[MAttribute](),
-      methods = Map.empty
+      methods = Seq.empty
     )
 
   )
@@ -132,7 +132,7 @@ class UtilTest extends FlatSpec with Matchers {
     source = Seq(),
     target = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
   val superClassOneOutput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
   val superClassTwoInput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
@@ -145,7 +145,7 @@ class UtilTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(superClassOneOutput),
     attributes = Seq(abstractSuperClassOneAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
   val abstractSuperClassTwo = MClass(
     name = "abstractSuperClassTwo",
@@ -155,7 +155,7 @@ class UtilTest extends FlatSpec with Matchers {
     inputs = Seq(superClassTwoInput),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
   val subClassOne = MClass(
     name = "subClassOne",
@@ -165,7 +165,7 @@ class UtilTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
   val subClassTwo = MClass(
     name = "subClassTwo",
@@ -175,7 +175,7 @@ class UtilTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val metaModel = MetaModel(
@@ -183,7 +183,8 @@ class UtilTest extends FlatSpec with Matchers {
     classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo),
     references = Seq(superClassOneToSuperClassTwo),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val simplifiedGraph: scala.Seq[Util.El] = Util.simplifyMetaModelGraph(metaModel)

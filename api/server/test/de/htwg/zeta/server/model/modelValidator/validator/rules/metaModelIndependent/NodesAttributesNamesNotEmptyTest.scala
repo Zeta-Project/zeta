@@ -12,7 +12,7 @@ import org.scalatest.Matchers
 class NodesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
 
   val rule = new NodesAttributesNamesNotEmpty
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on non-empty attribute names" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeName1" -> Seq())

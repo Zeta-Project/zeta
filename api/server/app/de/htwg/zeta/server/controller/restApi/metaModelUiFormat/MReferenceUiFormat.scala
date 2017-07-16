@@ -25,7 +25,7 @@ class MReferenceUiFormat(val enumMap: Map[String, MEnum]) extends Format[MRefere
       source <- json.\("source").validate(Reads.list(MClassLinkDefFormat))
       target <- json.\("target").validate(Reads.list(MClassLinkDefFormat))
       attributes <- json.\("attributes").validate(attributeListReads)
-      methods <- json.\("methods").validate(Method.methodsPlayJsonFormat)
+      methods <- json.\("methods").validate(Reads.list(Method.playJsonFormat))
     } yield {
       MReference(name, description, sourceDeletionDeletesTarget, targetDeletionDeletesSource, source, target, attributes, methods)
     }
@@ -45,7 +45,7 @@ object MReferenceUiFormat extends Writes[MReference] {
       "source" -> JsArray(mr.source.map(MClassLinkDefFormat.writes)),
       "target" -> JsArray(mr.target.map(MClassLinkDefFormat.writes)),
       "attributes" -> JsArray(mr.attributes.map(MAttributeFormat.writes)),
-      "methods" -> Method.methodsPlayJsonFormat.writes(mr.methods)
+      "methods" -> JsArray(mr.methods.map(Method.playJsonFormat.writes))
     )
   }
 }

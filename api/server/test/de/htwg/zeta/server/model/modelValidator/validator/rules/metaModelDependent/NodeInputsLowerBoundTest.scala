@@ -14,11 +14,11 @@ import org.scalatest.Matchers
 class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputsLowerBound("nodeType", "inputType", 2)
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType having 2 or more input edges of type inputType" in {
 
-    val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val twoInputEdges = ToEdges(inputType, Seq(inputType.name, inputType.name))
     val nodeTwoInputEdge = Node("", mClass, Seq(), Seq(twoInputEdges), Map.empty)
     rule.isValid(nodeTwoInputEdge).get should be(true)
@@ -30,7 +30,7 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
 
   it should "return false on nodes of type nodeType having less than 2 input edges of type inputType" in {
 
-    val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val noInputEdges = ToEdges(inputType, Seq())
     val nodeNoInputEdges = Node("", mClass, Seq(), Seq(noInputEdges), Map.empty)
     rule.isValid(nodeNoInputEdges).get should be(false)
@@ -41,7 +41,7 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
@@ -52,10 +52,10 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mReference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Map.empty)
+    val mReference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val inputMLinkDef = MReferenceLinkDef(mReference.name, -1, 5, deleteIfLower = false)
 
-    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef), Seq.empty, Seq[MAttribute](), Map.empty)
+    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq(inputMLinkDef), Seq.empty, Seq[MAttribute](), Seq.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeInputsLowerBound.generateFor(metaModel)
 

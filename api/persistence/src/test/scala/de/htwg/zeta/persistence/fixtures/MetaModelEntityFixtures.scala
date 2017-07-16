@@ -23,8 +23,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
@@ -175,13 +174,16 @@ object MetaModelEntityFixtures {
     inputs = Seq(referenceLinkDef1, referenceLinkDef2),
     outputs = Seq.empty,
     attributes = Seq(intAttribute, doubleAttribute, enumAttribute),
-    methods = Map(
-      Declaration(
-        "f1", Seq(
+    methods = Seq(
+      Method(
+        name = "f1",
+        parameters = Seq(
           Parameter("p1", StringType),
           Parameter("p2", DoubleType)
-        )
-      ) -> Implementation("code1", Some(IntType))
+        ),
+        returnType = Some(IntType),
+        code = "code1"
+      )
     )
   )
 
@@ -193,7 +195,7 @@ object MetaModelEntityFixtures {
     inputs = Seq.empty,
     outputs = Seq(referenceLinkDef1, referenceLinkDef2),
     attributes = Seq(stringAttribute, boolAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val reference1 = MReference(
@@ -204,13 +206,16 @@ object MetaModelEntityFixtures {
     source = Seq(classLinkDef1, classLinkDef2),
     target = Seq.empty,
     attributes = Seq(enumAttribute, stringAttribute),
-    methods = Map(
-      Declaration(
-        "f2", Seq(
+    methods = Seq(
+      Method(
+        name = "f2",
+        parameters = Seq(
           Parameter("p3", StringType),
           Parameter("p4", DoubleType)
-        )
-      ) -> Implementation("code2", Some(IntType))
+        ),
+        returnType = None,
+        code = "code2"
+      )
     )
   )
 
@@ -222,7 +227,7 @@ object MetaModelEntityFixtures {
     source = Seq.empty,
     target = Seq(classLinkDef1, classLinkDef2),
     attributes = Seq(intAttribute, doubleAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val metaModel1 = MetaModel(
@@ -230,7 +235,8 @@ object MetaModelEntityFixtures {
     classes = Seq(class1, class2),
     references = Seq(reference1, reference2),
     enums = Seq(enum1, enum2),
-    uiState = "uiState1"
+    uiState = "uiState1",
+    methods = Seq.empty
   )
 
   val metaModel2: MetaModel = MetaModel(
@@ -238,7 +244,8 @@ object MetaModelEntityFixtures {
     classes = Seq(class1),
     references = Seq(reference1),
     enums = Seq(enum1),
-    uiState = "uiState2"
+    uiState = "uiState2",
+    methods = Seq.empty
   )
 
   val entity1 = MetaModelEntity(

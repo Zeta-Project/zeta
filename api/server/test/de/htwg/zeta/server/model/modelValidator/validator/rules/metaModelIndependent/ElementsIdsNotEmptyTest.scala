@@ -13,8 +13,8 @@ import org.scalatest.Matchers
 class ElementsIdsNotEmptyTest extends FlatSpec with Matchers {
   val rule = new ElementsIdsNotEmpty
   val mReference = MReference("edgeType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty,
-    Map.empty)
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    Seq.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "check" should "return true on elements with non-empty ids" in {
     val elements = Seq(

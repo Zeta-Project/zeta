@@ -21,7 +21,7 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new EdgeAttributesLowerBound("edgeType", "attributeType", 2)
 
@@ -57,7 +57,7 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](),
-      Map.empty
+      Seq.empty
     )
     val edge = Edge("edgeId", differentReference, Seq(), Seq(), Map.empty)
 
@@ -73,7 +73,7 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
     val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, -1, 5)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
-      (attribute), Map.empty)
+      (attribute), Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesLowerBound.generateFor(metaModel)
 

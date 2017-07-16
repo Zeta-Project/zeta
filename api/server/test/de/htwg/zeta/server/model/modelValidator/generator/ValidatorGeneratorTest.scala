@@ -2,13 +2,13 @@ package de.htwg.zeta.server.model.modelValidator.generator
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
-
-import scala.collection.immutable.Seq
 
 class ValidatorGeneratorTest extends FlatSpec with Matchers {
 
@@ -17,7 +17,8 @@ class ValidatorGeneratorTest extends FlatSpec with Matchers {
     classes = Seq(),
     references = Seq(),
     enums = Seq(),
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val metaModelEntity = MetaModelEntity(

@@ -14,7 +14,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
   val rule = new NodeAttributeScalarTypes("nodeType", "attributeType", StringType)
 
   "isValid" should "be true for valid nodes" in {
@@ -32,7 +32,7 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Map.empty)
+    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
@@ -50,7 +50,7 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
     val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment =
       false, "", ordered = false, transient = false, -1, 0)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](enumAttribute,
-      scalarAttribute), Map.empty)
+      scalarAttribute), Seq.empty)
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeAttributeScalarTypes.generateFor(metaModel)
 

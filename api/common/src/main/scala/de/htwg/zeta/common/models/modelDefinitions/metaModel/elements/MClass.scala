@@ -4,8 +4,6 @@ import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
@@ -27,7 +25,7 @@ case class MClass(
     inputs: Seq[MReferenceLinkDef],
     outputs: Seq[MReferenceLinkDef],
     attributes: Seq[MAttribute],
-    methods: Map[Declaration, Implementation]
+    methods: Seq[Method]
 ) extends MObject
 
 object MClass {
@@ -128,8 +126,6 @@ object MClass {
     }
 
   }
-
-  private implicit val methodFormatPlayJsonFormat: Format[Map[Declaration, Implementation]] = Method.methodsPlayJsonFormat
 
   implicit val playJsonFormat: Format[MClass] = Json.format[MClass]
 

@@ -11,6 +11,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.JsArray
@@ -93,6 +94,7 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
         uiState <- json.\("uiState").validate[String]
         enumOpt <- elems.validate(Reads.list(MEnumOptReads))
         elements <- elems.validate(Reads.list(new MObjectFormat(enumOpt))).flatMap(checkObjectsUnique)
+        methods <- json.\("methods").validate(Reads.list(Method.playJsonFormat))
       } yield {
         val (classes, references, enums) =
           elements.foldLeft((List[MClass](), List[MReference](), List[MEnum]()))((trip, mo) => (trip, mo) match {
@@ -101,7 +103,7 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
             case ((cls, refs, ens), me: MEnum) => (cls, refs, me :: ens)
           })
 
-        MetaModel(name, classes, references, enums, uiState)
+        MetaModel(name, classes, references, enums, uiState, methods)
       }
 
     mm.flatMap(validateMLinks)
@@ -112,7 +114,8 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
     Json.obj(
       "name" -> mm.name,
       "elements" -> JsArray(elems.map(MObjectFormat.writes)),
-      "uiState" -> mm.uiState
+      "uiState" -> mm.uiState,
+      "methods" -> JsArray(mm.methods.map(Method.playJsonFormat.writes))
     )
   }
 }

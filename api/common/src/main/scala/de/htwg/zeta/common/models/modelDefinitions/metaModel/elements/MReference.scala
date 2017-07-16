@@ -2,8 +2,6 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
@@ -24,7 +22,7 @@ case class MReference(
     source: Seq[MClassLinkDef],
     target: Seq[MClassLinkDef],
     attributes: Seq[MAttribute],
-    methods: Map[Declaration, Implementation]
+    methods: Seq[Method]
 ) extends MObject
 
 object MReference {

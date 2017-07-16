@@ -22,7 +22,7 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
 
   "isValid" should "return true on valid edges" in {
@@ -48,7 +48,7 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](),
-      Map.empty
+      Seq.empty
     )
     val edge = Edge("edgeOneId", mReference, Seq(), Seq(), Map.empty)
 
@@ -92,7 +92,7 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](localUniqueAttribute, nonLocalUniqueAttribute),
-      Map.empty
+      Seq.empty
     )
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesLocalUnique.generateFor(metaModel)

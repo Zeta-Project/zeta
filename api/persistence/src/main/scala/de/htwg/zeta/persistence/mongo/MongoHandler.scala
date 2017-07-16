@@ -44,8 +44,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
@@ -213,35 +212,9 @@ object MongoHandler {
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
-
   private implicit val methodParameterHandler: BSONDocumentHandler[Parameter] = Macros.handler[Parameter]
 
-  private implicit val methodDeclarationHandler: BSONDocumentHandler[Declaration] = Macros.handler[Declaration]
-
-  private implicit val methodImplementationHandler: BSONDocumentHandler[Implementation] = Macros.handler[Implementation]
-
-  private implicit val methodKeyHandler: BSONDocumentHandler[(Declaration, Implementation)] = Macros.handler[(Declaration, Implementation)]
-
-  private implicit object MapMethodHandler extends BSONReader[BSONArray, Map[Declaration, Implementation]]
-    with BSONWriter[Map[Declaration, Implementation], BSONArray] {
-
-    private val sDeclaration = "declaration"
-    private val sImplementation = "implementation"
-
-    override def write(value: Map[Declaration, Implementation]): BSONArray = {
-      BSONArray(value.map(entry => BSONDocument(
-        sDeclaration -> entry._1,
-        sImplementation -> entry._2
-      )))
-    }
-
-    override def read(array: BSONArray): Map[Declaration, Implementation] = {
-      array.values.map {
-        case doc: BSONDocument => (doc.getAs[Declaration](sDeclaration).get, doc.getAs[Implementation](sImplementation).get)
-      }.toMap
-    }
-
-  }
+  private implicit val methodHandler: BSONDocumentHandler[Method] = Macros.handler[Method]
 
   private implicit val mClassHandler: BSONDocumentHandler[MClass] = Macros.handler[MClass]
 

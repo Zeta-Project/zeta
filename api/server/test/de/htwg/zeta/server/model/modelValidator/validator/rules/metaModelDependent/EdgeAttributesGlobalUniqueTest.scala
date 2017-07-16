@@ -21,7 +21,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new EdgeAttributesGlobalUnique("edgeType", "attributeType")
 
@@ -123,7 +123,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](globalUniqueAttribute, nonGlobalUniqueAttribute),
-      Map.empty
+      Seq.empty
     )
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesGlobalUnique.generateFor(metaModel)

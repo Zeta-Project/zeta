@@ -18,7 +18,7 @@ class EdgesTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val mReference2 = MReference(
     "edgeType2",
@@ -28,7 +28,7 @@ class EdgesTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val mReference3 = MReference(
     "edgeType3",
@@ -38,7 +38,7 @@ class EdgesTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new Edges(Seq("edgeType1", "edgeType2"))
 
@@ -62,9 +62,9 @@ class EdgesTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val reference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty,
-      Seq[MAttribute](), Map.empty)
+      Seq[MAttribute](), Seq.empty)
     val reference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty,
-      Seq[MAttribute](), Map.empty)
+      Seq[MAttribute](), Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference1, reference2))
     val result = Edges.generateFor(metaModel)
 

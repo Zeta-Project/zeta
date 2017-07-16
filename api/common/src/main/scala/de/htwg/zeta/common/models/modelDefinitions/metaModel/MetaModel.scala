@@ -7,6 +7,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
@@ -24,7 +25,8 @@ case class MetaModel(
     classes: Seq[MClass],
     references: Seq[MReference],
     enums: Seq[MEnum],
-    uiState: String
+    uiState: String,
+    methods: Seq[Method]
 ) {
 
   /** Classes mapped to their own names. */
@@ -47,6 +49,9 @@ case class MetaModel(
   ) { enums =>
     enums.filter(Option(_).isDefined).map(enum => (enum.name, enum)).toMap
   }
+
+  /** Methods mapped to their own names. */
+  val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)

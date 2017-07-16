@@ -21,7 +21,7 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new EdgeAttributesUpperBound("edgeType", "attributeType", 2)
 
@@ -65,7 +65,7 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](),
-      Map.empty
+      Seq.empty
     )
     val edge = Edge("edgeId", differentReference, Seq.empty, Seq.empty, Map.empty)
 
@@ -81,7 +81,7 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
     val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, 7, 0)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
-      (attribute), Map.empty)
+      (attribute), Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributesUpperBound.generateFor(metaModel)
 

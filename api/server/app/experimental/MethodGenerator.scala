@@ -11,8 +11,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Declaration
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Implementation
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 
 // scalastyle:off
@@ -20,21 +19,18 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Par
 object MethodGenerator extends App with AttributeConversions {
 
 
-  val methods: Map[Declaration, Implementation] = Map(
-    Declaration("add", List(
-      Parameter("n1", IntType),
-      Parameter("n2", IntType)
-    )) -> Implementation(
-      """|println("Test"f)
-         |n1 + n2""".stripMargin,
-      Some(IntType)),
-    Declaration("add2", List(
-      Parameter("n1", IntType),
-      Parameter("n2", IntType),
-      Parameter("n3", IntType)
-    )) -> Implementation(
-      """|n1 + n2 + n3""".stripMargin,
-      Some(IntType))
+  val methods: Seq[Method] = Seq(
+    Method(
+      name = "add",
+      parameters = Seq(
+        Parameter("n1", IntType),
+        Parameter("n2", IntType)
+      ),
+      returnType = Some(IntType),
+      code =
+        """|println("Test")
+           |n1 + n2""".stripMargin
+    )
   )
 
   def add(n1: Int, n2: Int): MInt = {
@@ -47,8 +43,11 @@ object MethodGenerator extends App with AttributeConversions {
   val x: MInt = 4
 
 
+  var generated = methods.map(generate).mkString("\n\n") + "\nadd(2, 3)"
 
-  val generated = methods.toSeq.map(generate).mkString("\n\n") + "\nadd(2, 3)"
+  generated = s"object Test {\n$generated\n}"
+
+  generated = generated + "\n\nTest.add(4, 4, 5+6)"
 
   println(generated)
 
@@ -58,9 +57,9 @@ object MethodGenerator extends App with AttributeConversions {
   println(toolbox.compile(toolbox.parse(generated)))
 
 
-  private def generate(method: (Declaration, Implementation)): String = {
-    s"""|  def ${method._1.name}(${generateParameters(method._1.parameters)}): ${generateReturnType(method._2.returnType)} = {
-        |${method._2.code.lines.map("    " + _).mkString("\n")}
+  private def generate(method: Method): String = {
+    s"""|  def ${method.name}(${generateParameters(method.parameters)}): ${generateReturnType(method.returnType)} = {
+        |${method.code.lines.map("    " + _).mkString("\n")}
         |  }""".stripMargin
   }
 

@@ -66,7 +66,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(superClassAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonAmbiguousSuperClass = MClass(
@@ -77,7 +77,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(nonAmbiguousSuperClassAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val ambiguousSuperClass = MClass(
@@ -88,7 +88,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(ambiguousSuperClassAttribute),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonAmbiguousSubClass = MClass(
@@ -99,7 +99,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val ambiguousSubClass = MClass(
@@ -110,7 +110,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     inputs = Seq(),
     outputs = Seq(),
     attributes = Seq(),
-    methods = Map.empty
+    methods = Seq.empty
   )
 
   val nonAmbiguousMetaModel = MetaModel(
@@ -118,7 +118,8 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   val ambiguousMetaModel = MetaModel(
@@ -126,7 +127,8 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = ""
+    uiState = "",
+    methods = Seq.empty
   )
 
   "checkConsistencs" should "return a valid result on a valid meta model" in {

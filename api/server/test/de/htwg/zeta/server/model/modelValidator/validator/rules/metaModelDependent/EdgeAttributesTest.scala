@@ -24,7 +24,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new EdgeAttributes("reference", Seq("stringAttribute", "boolAttribute"))
 
@@ -60,7 +60,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](),
-      Map.empty
+      Seq.empty
     )
 
     val attributes: Map[String, Seq[AttributeValue]] = Map(
@@ -84,7 +84,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MInt(0), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, -1, 0)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
-      (attribute, attribute2), Map.empty)
+      (attribute, attribute2), Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgeAttributes.generateFor(metaModel)
 

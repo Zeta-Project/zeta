@@ -19,7 +19,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     Seq.empty,
     Seq.empty,
     Seq[MAttribute](),
-    Map.empty
+    Seq.empty
   )
   val rule = new EdgesNoAttributes("edgeType")
 
@@ -49,7 +49,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
       Seq.empty,
       Seq.empty,
       Seq[MAttribute](),
-      Map.empty
+      Seq.empty
     )
     val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
@@ -62,7 +62,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty,
-      Seq[MAttribute](), Map.empty)
+      Seq[MAttribute](), Seq.empty)
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgesNoAttributes.generateFor(metaModel)
 
