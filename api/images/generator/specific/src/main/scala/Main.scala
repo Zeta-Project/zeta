@@ -6,6 +6,7 @@ import scala.concurrent.Future
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -41,15 +42,15 @@ object Main extends Template[CreateOptions, String] {
     compiledGenerator(file)
   }
 
-  def matchMClassMethod(entity: MClass): String = {
+  private def matchMClassMethod(entity: MClass): String = {
     s"""case "${entity.name}" => transform${entity.name}Node(node)"""
   }
 
-  def matchMReferenceMethod(entity: MReference): String = {
+  private def matchMReferenceMethod(entity: MReference): String = {
     s"""case "${entity.name}" => transform${entity.name}Edge(edge)"""
   }
 
-  def getMClassTypeMethod(entity: MClass): String = {
+  private def getMClassTypeMethod(entity: MClass): String = {
     s"""
       |def transform${entity.name}Node(node: Node): Node = {
       |  node
@@ -57,7 +58,7 @@ object Main extends Template[CreateOptions, String] {
     """.stripMargin
   }
 
-  def getMReferenceTypeMethod(entity: MReference): String = {
+  private def getMReferenceTypeMethod(entity: MReference): String = {
     s"""
       |def transform${entity.name}Edge(edge: Edge): Edge = {
       |  edge
@@ -65,7 +66,7 @@ object Main extends Template[CreateOptions, String] {
     """.stripMargin
   }
 
-  def methodPrototypes(mClass: Iterable[MClass], mReference: Iterable[MReference]): String = {
+  private def methodPrototypes(mClass: Iterable[MClass], mReference: Iterable[MReference]): String = {
     s"""
       |${mClass.map(getMClassTypeMethod).mkString(sepMethods)}
       |
@@ -73,7 +74,7 @@ object Main extends Template[CreateOptions, String] {
     """.stripMargin
   }
 
-  def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]): String = {
+  private def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]): String = {
     s"""
       |class MyTransformer() extends Transformer {
       | def transform(entity: ModelEntity)(implicit entitys: Documents, files: Files, remote: Remote) : Future[Transformer] = {
@@ -103,7 +104,7 @@ object Main extends Template[CreateOptions, String] {
     """.stripMargin
   }
 
-  def compiledGenerator(file: File): Future[Transformer] = {
+  private def compiledGenerator(file: File): Future[Transformer] = {
     val content = s"""
       import scala.concurrent.Future
       import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
@@ -131,16 +132,27 @@ object Main extends Template[CreateOptions, String] {
     for {
       image <- repository.generatorImage.read(imageId)
       metaModel <- repository.metaModelEntity.read(UUID.fromString(options.metaModelRelease))
-      generator <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
-      created <- repository.file.create(file(Settings.generatorFile, metaModel))
+      file <- createFile(metaModel)
+      _ <- createGenerator(options, image, file)
     } yield Success()
   }
 
-  def file(name: String, entity: MetaModelEntity): File = {
-    val mClassList = entity.metaModel.classMap.values
-    val mReferenceList = entity.metaModel.referenceMap.values
+  private def createFile(metaModel: MetaModelEntity): Future[File] = {
+    val mClassList = metaModel.metaModel.classMap.values
+    val mReferenceList = metaModel.metaModel.referenceMap.values
     val content = createFileContent(mClassList, mReferenceList)
-    File(UUID.randomUUID, name, content)
+    val entity = File(UUID.randomUUID, Settings.generatorFile, content)
+    repository.file.create(entity)
+  }
+
+  private def createGenerator(options: CreateOptions, image: GeneratorImage, file: File): Future[Generator] = {
+    val entity = Generator(
+      id = UUID.randomUUID(),
+      name = options.name,
+      imageId = image.id,
+      files = Map(file.id -> file.name)
+    )
+    repository.generator.create(entity)
   }
 
   /**

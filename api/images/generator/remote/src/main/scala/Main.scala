@@ -7,6 +7,7 @@ import scala.concurrent.Promise
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
@@ -32,67 +33,32 @@ object Main extends Template[CreateOptions, RemoteOptions] {
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
       image <- repository.generatorImage.read(imageId)
-      generator <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
-      created <- repository.file.create(createFileContent())
+      file <- createFile()
+      _ <- createGenerator(options, image, file)
     } yield {
       Success()
     }
   }
 
-  case class MyGenerator(generatorId: UUID = UUID.randomUUID) extends Transformer {
-
-    def transformBasicActorNode(node: Node) = {
-      val actorName = "AttributeValue"
-      val filename = s"${actorName}.scala"
-      val content =
-        s"""
-          |class ${actorName}() extends Actor {
-          |   def receive = {
-          |
-        |   }
-          | }
-        """
-
-      File(UUID.randomUUID, filename, content)
-    }
-
-    def transformPersistentActorNode(node: Node) = "transformPersistentActorNode"
-
-    def transformNode(node: Node) = {
-      node.clazz.name match {
-        case "BasicActor" => transformBasicActorNode(node)
-        case "PersistentActor" => transformPersistentActorNode(node)
-      }
-    }
-
-    def transform(entity: ModelEntity): Future[Transformer] = {
-      val p = Promise[Transformer]
-
-      val r1 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("BasicActor", entity.id))
-      val r2 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("PersistentActor", entity.id))
-
-      val merged = r1.merge(r2)
-
-      merged.materialize.subscribe(n => n match {
-        case OnNext(file) => logger.info(file.toString)
-        case OnCompleted => p.success(this)
-        case OnError(err) => p.failure(err)
-      })
-
-      p.future
-    }
-
-    def exit(): Future[Result] = {
-      val result = Success("The generator finished")
-      Future.successful(result)
-    }
+  private def createGenerator(options: CreateOptions, image: GeneratorImage, file: File): Future[Generator] = {
+    val entity = Generator(
+      id = UUID.randomUUID(),
+      name = options.name,
+      imageId = image.id,
+      files = Map(file.id -> file.name)
+    )
+    repository.generator.create(entity)
   }
 
-  def createFileContent(): File = {
-    File(UUID.randomUUID, Settings.generatorFile, "This is a demo of the remote capabilities which doesn't require a template to configure.")
+  private def createFile(): Future[File] = {
+    val content = "This is a demo of the remote capabilities which doesn't require a template to configure."
+    val entity = File(UUID.randomUUID, Settings.generatorFile, content)
+    repository.file.create(entity)
   }
 
-  def compiledGenerator(file: File) = Future.successful(MyGenerator(cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)))
+  private def compiledGenerator(file: File) = {
+    Future.successful(MyGenerator(cmd.generator.toOption.fold(UUID.randomUUID)(UUID.fromString)))
+  }
 
   /**
    * Initialize the generator
@@ -134,5 +100,54 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       p.success(Success())
     }
     p.future
+  }
+
+  private case class MyGenerator(generatorId: UUID = UUID.randomUUID) extends Transformer {
+
+    private def transformBasicActorNode(node: Node) = {
+      val actorName = "AttributeValue"
+      val filename = s"${actorName}.scala"
+      val content =
+        s"""
+          |class ${actorName}() extends Actor {
+          |   def receive = {
+          |
+          |   }
+          | }
+        """
+
+      File(UUID.randomUUID, filename, content)
+    }
+
+    private def transformPersistentActorNode(node: Node) = "transformPersistentActorNode"
+
+    private def transformNode(node: Node) = {
+      node.clazz.name match {
+        case "BasicActor" => transformBasicActorNode(node)
+        case "PersistentActor" => transformPersistentActorNode(node)
+      }
+    }
+
+    def transform(entity: ModelEntity): Future[Transformer] = {
+      val p = Promise[Transformer]
+
+      val r1 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("BasicActor", entity.id))
+      val r2 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("PersistentActor", entity.id))
+
+      val merged = r1.merge(r2)
+
+      merged.materialize.subscribe(n => n match {
+        case OnNext(file) => logger.info(file.toString)
+        case OnCompleted => p.success(this)
+        case OnError(err) => p.failure(err)
+      })
+
+      p.future
+    }
+
+    def exit(): Future[Result] = {
+      val result = Success("The generator finished")
+      Future.successful(result)
+    }
   }
 }

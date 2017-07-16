@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -6,11 +7,11 @@ import scala.concurrent.Promise
 import scala.reflect.ClassTag
 import scala.reflect.runtime
 import scala.tools.reflect.ToolBox
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.generator.Result
@@ -209,11 +210,20 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
       generator <- repository.generator.read(generatorId)
       filter <- repository.filter.read(filterId)
       ok <- checkFilter(filter)
-      file <- repository.file.read(generator.id, Settings.generatorFile)
+      file <- getFile(Settings.generatorFile, generator)
       fn <- getTransformer(file, filter)
       end <- executeTransformation(fn, filter)
     } yield {
       end
+    }
+  }
+
+  private def getFile(fileName: String, generator: Generator): Future[File] = {
+    generator.files.find { case (_, name) => name == fileName } match {
+      case Some((id, name)) => repository.file.read(id, name)
+      case None =>
+        logger.error("Could not find '{}' in Generator {}", fileName, generator.id.toString: Any)
+        throw new FileNotFoundException(s"Could not find '$fileName' in Generator ${generator.id}")
     }
   }
 
@@ -228,7 +238,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     for {
       generator <- repository.generator.read(generatorId)
       model <- repository.modelEntity.read(modelId)
-      file <- repository.file.read(generator.id, Settings.generatorFile)
+      file <- getFile(Settings.generatorFile, generator)
       fn <- getTransformer(file, model)
       end <- executeTransformation(fn, model)
     } yield {

@@ -1,15 +1,17 @@
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /**
  * Main class of basic generator
@@ -26,14 +28,24 @@ object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
       image <- repository.generatorImage.read(imageId)
-      _ <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
-      _ <- repository.file.create(createFile(Settings.generatorFile))
+      file <- createFile()
+      _ <- createGenerator(options, image, file)
     } yield {
       Success()
     }
   }
 
-  private def createFile(name: String): File = {
+  private def createGenerator(options: CreateOptions, image: GeneratorImage, file: File): Future[Generator] = {
+    val entity = Generator(
+      id = UUID.randomUUID(),
+      name = options.name,
+      imageId = image.id,
+      files = Map(file.id -> file.name)
+    )
+    repository.generator.create(entity)
+  }
+
+  private def createFile(): Future[File] = {
     val content =
       s"""
         |class MyTransformer() extends Transformer {
@@ -55,7 +67,8 @@ object Main extends Template[CreateOptions, String] {
         |}
         |
       """.stripMargin
-    File(UUID.randomUUID, name, content)
+    val entity = File(UUID.randomUUID, Settings.generatorFile, content)
+    repository.file.create(entity)
   }
 
   private def compiledGenerator(file: File): Future[Transformer] = {
