@@ -111,6 +111,9 @@ DELETE        /rest/v1/event-driven-tasks/:id                                   
 GET           /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.getTimedTasksNoArgs
 DELETE        /rest/v1/timed-tasks/:id                                               controllers.ScalaRoutes.deleteTimedTasks(id: java.util.UUID)
 
+### File REST API
+GET           /rest/v1/files/:id/:name                                                controllers.ScalaRoutes.getFiles(id: java.util.UUID, name: String)
+
 ### Code Editor
 GET           /codeEditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
 GET           /codeEditor/socket/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditorSocket(metaModelId: java.util.UUID, dslType: String)
