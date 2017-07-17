@@ -4,6 +4,7 @@
 <dom-module id="database-document">
   <template>
     <iron-ajax id="ajaxDelete" method="DELETE" url="[[restDelete]]" content-type="application/json" handle-as="json"></iron-ajax>
+    <iron-ajax id="ajaxPut" method="PUT" url="[[restUpdate]]" content-type="application/json" handle-as="json"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -18,10 +19,6 @@
             value: false
           },
           byId: String,
-          attachments: {
-            type: Boolean,
-            value: false
-          },
           doc: {
             type: Object,
             notify: true
@@ -37,6 +34,10 @@
             value: '/rest/v1/failed'
           },
           restDelete: {
+            type: String,
+            value: '/rest/v1/failed'
+          },
+          restUpdate: {
             type: String,
             value: '/rest/v1/failed'
           }
@@ -58,9 +59,6 @@
           ajax.contentType = 'application/json';
           ajax.handleAs = 'json';
           ajax.method = 'GET';
-          ajax.params = {
-            attachments: this.attachments
-          };
           ajax.generateRequest().completes.then(e => {
             this.doc = e.response;
           }).catch(e => {
@@ -91,6 +89,15 @@
           }).catch(e => {
             console.error("database-document", "deleteDocument", "failed:", e);
           });
+        },
+        updateDocument(doc) {
+          this.$.ajaxPut.body = doc;
+          this.$.ajaxPut.generateRequest().completes.then(e => {
+            this.$.ajaxPut.body = null;
+          }).catch(e => {
+            this.$.ajaxPut.body = null;
+            console.error("database-document", "updateDocument", "failed:", e)
+          })
         }
       });
     })();

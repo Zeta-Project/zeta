@@ -4,8 +4,6 @@
 <link rel="import" href="../bower_components/juicy-ace-editor/juicy-ace-editor.html">
 
 <link rel="import" href="./database/database-document.html">
-<link rel="import" href="./database/database-file.html">
-<link rel="import" href="./job/job-manager.html">
 
 <dom-module id="app-editor">
   <template>
@@ -45,19 +43,18 @@
         data="{{routeData}}"
         tail="{{attachment}}"></app-route>
 
-    <database-document by-id="[[docId]]" auto doc="{{doc}}"></database-document>
+    <database-document id="db" auto doc="{{doc}}"
+      rest-single="/rest/v1/files/[[docId]]/[[docName]]"
+      rest-update="/rest/v1/files/[[docId]]/[[docName]]"></database-document>
 
-    <database-file id="database" doc-id="[[docId]]" attachment-id="[[attachmentId]]" file="{{file}}"></database-file>
-
-    <juicy-ace-editor id="editor"
-      tabsize="2"
-      theme="ace/theme/tomorrow"
-      mode$="{{filetype}}"
-      on-change="_fileChanged"
-      readonly$="{{readonly}}">{{file}}
-    </juicy-ace-editor>
-
-    <job-manager id="backend"></job-manager>
+    <template is="dom-if" if="{{doc}}">
+      <juicy-ace-editor id="editor"
+        tabsize="2"
+        theme="ace/theme/tomorrow"
+        mode$="{{filetype}}"
+        on-change="_fileChanged"
+        readonly$="{{readonly}}">[[doc.content]]</juicy-ace-editor>
+    </template>
   </template>
 
   <script>
@@ -70,10 +67,6 @@
         routeData: Object,
         attachment: Object,
         contentType: String,
-        file: {
-          type: String,
-          notify: true
-        },
         readonly: {
           type: Boolean,
           notify: true
@@ -86,65 +79,81 @@
           type: String,
           notify: true
         },
-        attachmentId: {
-          type: String,
-          computed: '_computeAttachmentId(attachment.path)'
-        },
         docId: {
           type: String,
           computed: '_computeDocId(attachment.path)'
         },
-        doc: Object
+        docName: {
+          type: String,
+          computed: '_computeDocName(attachment.path)'
+        },
+        doc: Object,
+        
       },
 
       observers: [
-        '_fileChanged(doc.*)'
+        '_dbRequest(docId, docName)'
       ],
+
+      _computeDocId(id) {
+        switch(this.routeData.mode) {
+          case 'file':
+            return id.split('/').slice(1, 2).toString();
+          default:
+            console.warn('Unknown mode:', this.routeData.mode);
+        }
+      },
+      _computeDocName(id) {
+        switch(this.routeData.mode) {
+          case 'file':
+            return this._resolveFilename(id);
+          default:
+            console.warn('Unknown mode:', this.routeData.mode);
+        }
+      },
+
+      _resolveFilename(id) {
+        // remove file id
+        var fileName = id.split('/').slice(2).join('/');
+        // compute the filetype
+        var filetype = fileName.substr(fileName.lastIndexOf('.') + 1);
+        this._setFiletype(filetype);
+        return fileName;
+      },
+
+      _dbRequest(docId, docName) {
+        // Trigger auto db request
+        this.$.db.byId = docId + docName;
+      },
 
       _modeChanged(mode) {
         this.readonly = (mode === 'file') ? false : true;
       },
 
-      _computeDocId(id) {
-        if (this.routeData.mode === 'file') {
-          return this.routeData.project;
-        } else if (this.routeData.mode === 'link') {
-          return id.split('/').slice(1, 2);
-        }
-      },
       _setFiletype(type) {
         if (['html', 'text', 'scala', 'dockerfile'].indexOf(type) !== -1) {
           this.filetype = 'ace/mode/' + type;
           this.contentType = 'file/' + type
         }
       },
-      // attachment ids are internally separated with a '-'
-      // The webapp use '/' for pretty urls. To download the attachment, we need to convert the id.
-      _computeAttachmentId(id) {
-        if (id && this.routeData.mode === 'file') {
-          // remove the first /
-          var tmp = id.substr(id.lastIndexOf('/') + 1, id.length);
-          // compute the filetype
-          var filetype = tmp.substr(tmp.lastIndexOf('.') + 1);
-          this._setFiletype(filetype);
-          // get the real attachment id.
-          return id.split('/').join('~').replace('~', '');
-        } else if (id && this.routeData.mode === 'link') {
-            // remove the first /
-            var tmp = id.substr(id.lastIndexOf('/') + 1, id.length);
-            // compute the filetype
-            var filetype = tmp.substr(tmp.lastIndexOf('.') + 1);
-            this._setFiletype(filetype);
-            // get the real attachment id.
-            var splitted = id.split('/');
-            return id.split('/').slice(2, splitted.length).join('~');
-          }
+
+      _fileChanged(e) {
+        if (this.doc && this.docName && this.contentType) {
+          this._throttleFileUpdate(() => {
+            var content = e.target.editor.getValue();
+            this.$.db.updateDocument(Object.assign({}, this.doc, {content}));
+          }, 500);
+        }
       },
 
-      _fileChanged() {
-        if (this.file && this.doc && this.attachmentId && this.contentType) {
-          this.$.backend.manageFile(this.doc, this.attachmentId, this.file.trim(), this.$.editor.editor.getValue().trim(), this.contentType);
+      _throttleFileUpdate(callback, timeout) {
+        if (this._fileUpdate) {
+          clearTimeout(this._fileUpdate);
         }
+        this._fileUpdate = setTimeout(() => {
+          callback();
+          this._fileUpdate = null;
+        }, timeout);
       }
     });
   </script>

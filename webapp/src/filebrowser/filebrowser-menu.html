@@ -11,7 +11,6 @@
 <link rel="import" href="../database/database-document.html">
 <link rel="import" href="../base/my-icons.html">
 <link rel="import" href="./filebrowser-filetree.html">
-<link rel="import" href="./filebrowser-linked-filetree.html">
 
 <dom-module id="filebrowser-menu">
   <template>
@@ -72,8 +71,6 @@
 
     <database-document auto by-id="[[routeData.id]]" doc="{{project}}" rest-single="/rest/v1/[[routeData.type]]/[[routeData.id]]"></database-document>
 
-    <filebrowser-linked-filetree docs="{{linkedTree}}" doc="{{project}}" type="[[routeData.type]]"></filebrowser-linked-filetree>
-
     <div role="listbox">
       <a href$="[[backlink]]">
         <paper-icon-item>
@@ -101,23 +98,19 @@
         baseLink: String,
         backlink: String,
         tree: Array,
-        linkedTree: Object,
         project: Object,
       },
 
-      observers: ['_computeBasLink(routeData.*)', '_computeTree(project, linkedTree)'],
+      observers: ['_computeBasLink(routeData.*)', '_computeTree(project)'],
 
-      _computeTree(project, linkedTree) {
-        if (project && project._attachments) {
-          var sep = '~';
-          // get the filenames from the linkedTree
-          var linkedTreeFiles = Object.keys(linkedTree);
+      _computeTree(project) {
+        if (project && project.files) {
           // get the filenames
-          var files = Object.keys(project._attachments).concat(linkedTreeFiles);
+          var files = Object.keys(project.files).map(e => project.files[e]);
           // sort the filenames by directory
-          files = this.sortFiles(files, sep);
+          files = this.sortFiles(files);
           // build a nested tree from the files.
-          this.tree = this.buildNestedTree(files, sep);
+          this.tree = this.buildNestedTree(files);
         } else {
           this.tree = [];
         }
@@ -152,6 +145,7 @@
         var sep = sep || urlSep;
         var tree = [];
         var folderPtr = {'': tree};
+        var fileIds = Object.keys(this.project.files);
 
         for (var i = 0; i < files.length; i++) {
           var path = '';
@@ -171,16 +165,11 @@
             }
             before = folders[j];
           }
-          let link;
-          // check if it is a linked file
-          if (this.linkedTree.hasOwnProperty(files[i])) {
-            link = (this.baseLink + sep + 'link' + sep + this.linkedTree[files[i]]).split(sep).join(urlSep);
-          } else {
-            link = (this.baseLink + sep + 'file' + sep + files[i]).split(sep).join(urlSep);
-          }
           // push the file
+          const id = fileIds.find(e => this.project.files[e] === files[i]);
+          const link = (this.baseLink + sep + 'file' + sep + id + sep + files[i])
           folderPtr[before].push({
-            link: link,
+            link,
             name: folders[j],
             type: 'file'
           });

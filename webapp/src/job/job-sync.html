@@ -1,14 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/web-socket/web-socket.html">
 <link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
-<link rel="import" href="../database/database-file.html">
 
 <dom-module id="job-sync">
   <template>
-    <iron-signals id="signal"
-      on-iron-signal-send-job="sendjob"
-      on-iron-signal-manage-file="manageFile">
-    </iron-signals>
+    <iron-signals id="signal" on-iron-signal-send-job="sendjob"></iron-signals>
   </template>
   <script>
     Polymer({
@@ -16,7 +12,6 @@
 
       properties: {
         source: String,
-        file: Object,
         jobs: {
           type: Array,
           notify: true,
@@ -24,33 +19,8 @@
         }
       },
 
-      ready() {
-        this.db = document.createElement("database-file");
-      },
-
       sendjob(e) {
-        this.saveManagedFile().then(() => {
-          this.socket.send(JSON.stringify(e.detail));
-        });
-      },
-
-      manageFile(e) {
-        this.file = e.detail;
-      },
-
-      saveManagedFile() {
-        var f = this.file;
-        this.file = null;
-
-        return new Promise((resolve, reject) => {
-          if (f && f.current !== f.saved) {
-            this.db.save(f.doc, f.attachmentId, f.current, f.contentType).then(() => {
-              resolve();
-            });
-          } else {
-            resolve();
-          }
-        });
+        this.socket.send(JSON.stringify(e.detail));
       },
 
       attached() {
