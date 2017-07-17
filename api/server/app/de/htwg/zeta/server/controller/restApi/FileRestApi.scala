@@ -53,7 +53,11 @@ class FileRestApi() extends Controller with Logging {
     parseJson(request.body).flatMap(result => {
       result.fold(
         errors => jsErrorToResult(errors),
-        file => repo.update(file).map(_ => Ok(""))
+        file => repo.update(file).map(_ => Ok("")).recover {
+          case e: Exception =>
+            error("Exception while trying to update a `File` at DB", e)
+            BadRequest(e.getMessage)
+        }
       )
     })
   }

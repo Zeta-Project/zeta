@@ -176,6 +176,7 @@ class ScalaRoutes @Inject()(
   def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
   def getFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.get(id) _)
   def deleteFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.delete(id) _)
+  def postFilters: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, FilterRestApi.insert _)
 
   /* ### Filter REST API */
   def getMetaModelReleasesNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelReleaseRestApi.showForUser() _)
