@@ -5,14 +5,19 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.controller.restApi.format.FileFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
+import play.api.data.validation.ValidationError
+import play.api.libs.json.JsError
+import play.api.libs.json.JsPath
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
@@ -33,7 +38,36 @@ class FileRestApi() extends Controller with Logging {
     }).recover {
       case e: Exception =>
         error("Exception while trying to read a single `File` from DB", e)
-        Results.BadRequest(e.getMessage)
+        BadRequest(e.getMessage)
     }
+  }
+
+  /**
+   * Update existing File instance
+   * @param id Identifier of File
+   * @param name Name of File
+   * @param request The request
+   * @return The result
+   */
+  def update(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+    parseJson(request.body).flatMap(result => {
+      result.fold(
+        errors => jsErrorToResult(errors),
+        file => repo.update(file).map(_ => Ok(""))
+      )
+    })
+  }
+
+  private def parseJson(json: JsValue) = {
+    json.validate(FileFormat()) match {
+      case s: JsSuccess[File] => Future.successful(s)
+      case e: JsError => Future.successful(e)
+    }
+  }
+
+  private def jsErrorToResult(errors: Seq[(JsPath, Seq[ValidationError])]): Future[Result] = {
+    val json = JsError.toJson(errors)
+    val result = BadRequest(json)
+    Future.successful(result)
   }
 }
