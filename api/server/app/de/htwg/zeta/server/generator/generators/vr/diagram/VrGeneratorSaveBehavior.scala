@@ -93,7 +93,7 @@ object VrGeneratorSaveBehavior {
       |   var modelAttributes = {
       |     id: 'model',
       |     method: 'GET',
-      |     url: 'http://localhost:9000/models/' + modelId,
+      |     url: '/rest/v1/models/' + modelId,
       |     withCredentials: true,
       |     headers: {'authorization': token},
       |     success: _onModelSuccess,
@@ -292,7 +292,7 @@ object VrGeneratorSaveBehavior {
       |   var myResponse = JSON.stringify(elements);
       |   var updateModelAttributes = {
       |     method: 'PUT',
-      |     url: 'http://localhost:9000/models/' + modelId + '/definition',
+      |     url: '/rest/v1/models/' + modelId + '/definition',
       |     contentType: 'application/json', // charset=UTF-8
       |     body: myResponse,
       |     id: 'update',

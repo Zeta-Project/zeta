@@ -7,11 +7,17 @@ services:
       - ./sbt/generatorControl:/root
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command: ["sbt", "project generatorControl", "run --master-port 2551 --master-num 1 --workers 3 --worker-seeds generatorControl:2551 --dev-port 2552 --dev-seeds generatorControl:2551"]
+    environment:
+      - ZETA_MONGODB_SERVER=mongodb
+    links:
+      - mongodb
 
   mongodb:
     image: mongo:3.3
     volumes:
       - ./mongodb:/data/db
+    ports:
+      - localhost:27017:27017
 
   couchbase-server:
     image: couchbase:community-4.5.1
@@ -63,4 +69,12 @@ services:
       - database
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+
+  images:
+    image: 1science/sbt:0.13-oracle-jdk-8
+    volumes:
+      - ./api:/app
+      - ./sbt/images:/root
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["./createDockerImages.sh"]
 

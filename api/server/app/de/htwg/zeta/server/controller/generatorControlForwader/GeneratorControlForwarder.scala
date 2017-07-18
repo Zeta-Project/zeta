@@ -19,14 +19,15 @@ class GeneratorControlForwarder(remoteClient: RemoteService, out: ActorRef, fact
   private val ident: UUID = UUID.randomUUID()
   private val outForwarder: ActorRef = context.actorOf(DirectForwarder.props(out))
 
-  context.setReceiveTimeout(Duration(5, TimeUnit.MINUTES))
-
-  send(factory(ident, outForwarder))
+  override def preStart(): Unit = {
+    info("Start")
+    context.setReceiveTimeout(Duration(5, TimeUnit.MINUTES))
+    send(factory(ident, outForwarder))
+  }
 
   private def send(msg: Any): Unit = {
     remoteClient.send(msg, self)
   }
-
 
   override def receive: Receive = {
     case ReceiveTimeout => send(FrontendManager.KeepHandlerAlive(ident))

@@ -139,7 +139,7 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
       val reason = s"Received job $job cannot be enqueued because of max pending work!"
       reply ! JobCannotBeEnqueued(job, reason)
     } else if (jobCanBeEnqueued(job)) {
-      val work = Work(job = job, owner = developer, dockerSettings = jobSettings.docker.copy())
+      val work = createWork(job)
       persist(WorkEnqueued(work)) { event =>
         workState = workState.updated(event)
         self ! NextWork
@@ -149,6 +149,14 @@ class WorkQueue(developer: UUID) extends PersistentActor with ActorLogging {
       val reason = s"Received job $job cannot be enqueued!"
       reply ! JobCannotBeEnqueued(job, reason)
     }
+  }
+
+  private def createWork(job: Job): Work = {
+    Work(
+      job = job,
+      owner = developer,
+      dockerSettings = jobSettings.docker.copy()
+    )
   }
 
   private def processNextWork(): Unit = {

@@ -9,19 +9,17 @@ import scala.tools.reflect.ToolBox
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Transformer
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.remote.Remote
-import de.htwg.zeta.common.models.remote.RemoteGenerator
+import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.server.generator.Result
+import de.htwg.zeta.server.generator.Transformer
 import org.rogach.scallop.ScallopConf
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError
-import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import play.api.libs.json.JsSuccess
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
 
@@ -64,7 +62,6 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val mat = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  implicit val remote: Remote = RemoteGenerator(cmd.session.getOrElse(""), cmd.work.getOrElse(""), cmd.parent.toOption, cmd.key.toOption)
 
   val repository = Persistence.fullAccessRepository
 
@@ -242,40 +239,36 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   /**
    * Call the generator (called by another generator) to run with options
    *
-   * @param remote    Access to docker container
    * @param options   the options for the generator
    * @return The Result of the generator
    */
-  def runGeneratorWithOptions(options: T)(implicit remote: Remote): Future[Result]
+  def runGeneratorWithOptions(options: T): Future[Result]
 
   /**
    * Initialize the generator
    *
    * @param file      The file which was loaded for the generator
-   * @param remote    Access to docker container
    * @param filter    the Filter
    * @return A Generator
    */
-  def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer]
+  def getTransformer(file: File, filter: Filter): Future[Transformer]
 
   /**
    * Initialize the model transformer
    *
    * @param file      The file which was loaded for the generator
-   * @param remote    Access to docker container
    * @param model     the modelEntity
    * @return A Generator
    */
-  def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer]
+  def getTransformer(file: File, model: ModelEntity): Future[Transformer]
 
   /**
    * Create assets for the model transformer
    *
    * @param options   The Options for the creation of the generator
    * @param imageId     The id of the image for the generator
-   * @param remote    Access to docker container
    * @return The result of the generator creation
    */
-  def createTransformer(options: S, imageId: UUID)(implicit remote: Remote): Future[Result]
+  def createTransformer(options: S, imageId: UUID): Future[Result]
 
 }

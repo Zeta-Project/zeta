@@ -34,8 +34,8 @@
         Repeat after minutes:
         &#13;<br/>
         <input id="interval" label="interval" type="number" name="repeat" min="1" value="1"></input>
-        <my-dropdown type="Generator" label="Generator" selected="{{doc.generator}}"></my-dropdown>
-        <my-dropdown type="Filter" label="Filter" selected="{{doc.filter}}"></my-dropdown>
+        <my-dropdown type="Generator" label="Generator" rest-list="/rest/v1/generators" selected="{{doc.generator}}"></my-dropdown>
+        <my-dropdown type="Filter" label="Filter" rest-list="/rest/v1/filters" selected="{{doc.filter}}"></my-dropdown>
 
 
       </form>

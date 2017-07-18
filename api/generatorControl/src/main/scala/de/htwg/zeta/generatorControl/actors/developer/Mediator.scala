@@ -92,7 +92,7 @@ class Mediator() extends Actor with ActorLogging {
   val workQueue: ActorRef = context.actorOf(WorkQueue.props(developerId), "workQueue")
 
   val filters: ActorRef = context.actorOf(FiltersManager.props(workQueue, repo), "filters")
-  val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, repo), "generators")
+  val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, Persistence.fullAccessRepository), "generators")
   val modelRelease: ActorRef = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
   val bondedTasks: ActorRef = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
   val eventDrivenTasks: ActorRef = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")

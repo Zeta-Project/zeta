@@ -1,6 +1,7 @@
 package controllers
 
 import java.util.UUID
+import java.util.UUID
 import javax.inject.Inject
 
 import de.htwg.zeta.server.routing.RouteController
@@ -163,6 +164,33 @@ class ScalaRoutes @Inject()(
 
   def getModelsValidation(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
 
+  /* ### Generator Image REST API */
+  def getGeneratorImagesNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorImageRestApi.showForUser() _)
+
+  /* ### Generator REST API */
+  def getGeneratorsNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.showForUser() _)
+  def getGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.get(id) _)
+  def deleteGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.delete(id) _)
+
+  /* ### Filter REST API */
+  def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
+  def getFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.get(id) _)
+  def deleteFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.delete(id) _)
+
+  /* ### Filter REST API */
+  def getMetaModelReleasesNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelReleaseRestApi.showForUser() _)
+
+  /* ### BondedTask REST API */
+  def getBondedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.showForUser() _)
+  def deleteBondedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.delete(id) _)
+
+  /* ### EventDrivenTask REST API */
+  def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.showForUser() _)
+  def deleteEventDrivenTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.delete(id) _)
+
+  /* ### TimedTask REST API */
+  def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
+  def deleteTimedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.delete(id) _)
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =

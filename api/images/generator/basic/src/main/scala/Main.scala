@@ -1,17 +1,15 @@
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
 import de.htwg.zeta.server.generator.Transformer
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.remote.Remote
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
-import de.htwg.zeta.common.models.entity.File
 
 /**
  * Main class of basic generator
@@ -23,13 +21,12 @@ object Main extends Template[CreateOptions, String] {
    *
    * @param options   The Options for the creation of the generator
    * @param imageId     The id of the image for the generator
-   * @param remote    Access to docker container
    * @return The result of the generator creation
    */
-  override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
+  override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
       image <- repository.generatorImage.read(imageId)
-      _ <- repository.generator.create(Generator(user, options.name, image.id))
+      _ <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
       _ <- repository.file.create(createFile(Settings.generatorFile))
     } yield {
       Success()
@@ -84,10 +81,9 @@ object Main extends Template[CreateOptions, String] {
    *
    * @param file      The file which was loaded for the generator
    * @param filter    not used.
-   * @param remote    unused.
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, filter: Filter): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -96,10 +92,9 @@ object Main extends Template[CreateOptions, String] {
    *
    * @param file      The file which was loaded for the generator
    * @param model     the modelEntity
-   * @param remote    Access to docker container
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -107,10 +102,9 @@ object Main extends Template[CreateOptions, String] {
    * Initialize the generator
    *
    * @param options   the options for the generator
-   * @param remote    Access to docker container
    * @return A Generator
    */
-  override def runGeneratorWithOptions(options: String)(implicit remote: Remote): Future[Result] = {
+  override def runGeneratorWithOptions(options: String): Future[Result] = {
     Future.successful(Error(s"Call a generator from a generator is not supported in this example"))
   }
 }

@@ -12,7 +12,7 @@
       }
     </style>
 
-    <my-documents-view id="view" type="Generator"></my-documents-view>
+    <my-documents-view id="view" type="Generator" rest-list="/rest/v1/generators"></my-documents-view>
   </template>
 
   <script>
@@ -30,7 +30,10 @@
           ];
         }
         this.$.view.link = function(item) {
-          return '/app/editor/generators/' + item._id;
+          return '/app/editor/generators/' + item.id;
+        }
+        this.$.view.restDelete = function(item) {
+          return '/rest/v1/generators/' + item.id;
         }
       }
     });

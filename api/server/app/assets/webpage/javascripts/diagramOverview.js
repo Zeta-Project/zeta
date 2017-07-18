@@ -14,7 +14,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/metamodels',
+            url: '/rest/v1/meta-models',
             data: data,
             headers: {
                 'Accept': 'application/json',
@@ -46,7 +46,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '/models',
+            url: '/rest/v1/models',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -64,7 +64,7 @@
     var deleteModelInstance = function (modelId) {
         $.ajax({
             type: 'DELETE',
-            url: '/models/' + modelId,
+            url: '/rest/v1/models/' + modelId,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -98,7 +98,7 @@
 
             $.ajax({
                 type: 'DELETE',
-                url: '/metamodels/' + metaModelId,
+                url: '/rest/v1/meta-models/' + metaModelId,
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

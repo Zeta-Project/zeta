@@ -24,8 +24,8 @@
 
       <form is="iron-form" id="form">
         <paper-input required label="Name" value="{{doc.name}}"></paper-input>
-        <my-dropdown type="MetaModelRelease" label="Meta Model" selected="{{doc.metaModelRelease}}"></my-dropdown>
-        <my-dropdown type="ToolImage" label="Tool Generator" selected="{{doc.image}}"></my-dropdown>
+        <my-dropdown type="MetaModelRelease" label="Meta Model" rest-list="/rest/v1/meta-model-releases" selected="{{doc.metaModelRelease}}"></my-dropdown>
+        <my-dropdown type="ToolImage" label="Tool Generator" rest-list="/rest/v1/tool-images" selected="{{doc.image}}"></my-dropdown>
       </form>
 
       <div class="buttons">

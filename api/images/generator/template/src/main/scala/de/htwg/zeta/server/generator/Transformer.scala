@@ -19,16 +19,16 @@ case class Warning(message: String = "warning", status: Int = 2) extends Result
 case class Error(message: String = "error", status: Int = 1) extends Result
 
 trait Transformer {
-  def prepare(modelId: UUID)(implicit remote: Remote): Future[Transformer] = {
+  def prepare(modelId: UUID): Future[Transformer] = {
     Future.successful(this)
   }
 
-  def prepare(modelIds: List[UUID])(implicit remote: Remote): Future[Transformer] = {
+  def prepare(modelIds: List[UUID]): Future[Transformer] = {
     Future.successful(this)
   }
 
-  def transform(entity: ModelEntity)(implicit remote: Remote): Future[Transformer]
+  def transform(entity: ModelEntity): Future[Transformer]
 
-  def exit()(implicit remote: Remote): Future[Result]
+  def exit(): Future[Result]
 
 }

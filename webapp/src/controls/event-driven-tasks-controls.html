@@ -26,8 +26,8 @@
       <form is="iron-form" id="form">
         <paper-input required label="Name" value="{{doc.name}}"></paper-input>
         <my-event-dropdown selected="{{doc.event}}"></my-event-dropdown>
-        <my-dropdown type="Generator" label="Generator" selected="{{doc.generator}}"></my-dropdown>
-        <my-dropdown type="Filter" label="Filter" selected="{{doc.filter}}"></my-dropdown>
+        <my-dropdown type="Generator" label="Generator" rest-list="/rest/v1/generators" selected="{{doc.generator}}"></my-dropdown>
+        <my-dropdown type="Filter" label="Filter" rest-list="/rest/v1/filters" selected="{{doc.filter}}"></my-dropdown>
       </form>
 
       <div class="buttons">

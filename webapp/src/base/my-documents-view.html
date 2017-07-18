@@ -30,11 +30,11 @@
       }
     </style>
 
-    <my-documents type="[[type]]" items="{{items}}"></my-documents>
+    <my-documents type="[[type]]" rest-list="[[restList]]" items="{{items}}"></my-documents>
 
     <iron-list items="[[items]]" as="item">
       <template>
-        <my-item class="unselectable" primary="[[primary(item)]]" secondary="[[secondary(item)]]" link="[[link(item)]]" item="[[item]]"></my-item>
+        <my-item class="unselectable" primary="[[primary(item)]]" secondary="[[secondary(item)]]" link="[[link(item)]]" item="[[item]]" type="[[type]]" rest-delete="[[restDelete(item)]]"></my-item>
       </template>
     </iron-list>
   </template>
@@ -46,18 +46,20 @@
 
       properties: {
         type: String,
+        restList: String
       },
 
-      ready() {
-        this.primary = function() {
-          return '';
-        }
-        this.secondary = function() {
-          return [];
-        }
-        this.link = function() {
-          return '';
-        }
+      primary() {
+        return '';
+      },
+      secondary() {
+        return [];
+      },
+      link() {
+        return '';
+      },
+      restDelete() {
+        return '';
       }
     });
   </script>

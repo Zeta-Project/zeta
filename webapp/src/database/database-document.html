@@ -1,10 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="database-document">
   <template>
-    <iron-signals on-iron-signal-database-sync="onDocumentChanged"></iron-signals>
+    <iron-ajax id="ajaxDelete" method="DELETE" url="[[restDelete]]" content-type="application/json" handle-as="json"></iron-ajax>
   </template>
   <script>
     (function() {
@@ -31,20 +30,21 @@
             type: String,
             readOnly: true,
             notify: true
+          },
+          type: String,
+          restSingle: {
+            type: String,
+            value: '/rest/v1/failed'
+          },
+          restDelete: {
+            type: String,
+            value: '/rest/v1/failed'
           }
         },
 
         observers: [
           '_start(byId)'
         ],
-
-        onDocumentChanged: function(e) {
-          if (e.detail._id === this.byId) {
-            // received a change. Changes do not include attachments.
-            // load the complete document from the database.
-            this._start(this.byId);
-          }
-        },
 
         _start: function() {
           if (this.auto) {
@@ -53,100 +53,43 @@
         },
 
         generateRequest() {
-          var self = this;
           var ajax = document.createElement('iron-ajax');
-          ajax.url = '/db/' + self.byId;
+          ajax.url = this.restSingle;
           ajax.contentType = 'application/json';
           ajax.handleAs = 'json';
           ajax.method = 'GET';
           ajax.params = {
-            attachments: self.attachments
+            attachments: this.attachments
           };
-
-          var request = ajax.generateRequest();
-          request.completes.then(function(e) {
-            self.doc = e.response;
-          }).catch(function(e) {
-            self._setLastError(e);
+          ajax.generateRequest().completes.then(e => {
+            this.doc = e.response;
+          }).catch(e => {
+            this._setLastError(e);
           });
         },
 
         createDocument(doc) {
           return new Promise((resolve, reject) => {
             var ajax = document.createElement('iron-ajax');
-            ajax.url = '/db/' + doc._id;
+            ajax.url = '/db/' + doc.id;
             ajax.contentType = 'application/json';
             ajax.body = doc;
             ajax.handleAs = 'json';
             ajax.method = 'PUT';
-
-            var request = ajax.generateRequest();
-            request.completes.then(function(e) {
+            ajax.generateRequest().completes.then(e => {
               doc._rev = e.response.rev;
               resolve(doc);
-            }).catch(function(e) {
+            }).catch(e => {
               reject(e);
             });
           });
         },
 
         deleteDocument(doc) {
-          doc._deleted = true;
-          return this.saveDocument(doc);
-        },
-
-        saveDocument: function(doc) {
-          return new Promise((resolve, reject) => {
-            var ajax = document.createElement('iron-ajax');
-            ajax.url = '/db/' + doc._id + '?rev=' + doc._rev;
-            ajax.contentType = 'application/json';
-            ajax.body = doc;
-            ajax.handleAs = 'json';
-            ajax.method = 'PUT';
-
-            var request = ajax.generateRequest();
-            request.completes.then(function(e) {
-              doc._rev = e.response.rev;
-              resolve(doc);
-            }).catch(function(e) {
-              reject(e);
-            });
-          });
-        },
-
-        saveAttachment: function(doc, attachmentId, file, type) {
-          var ajax = document.createElement('iron-ajax');
-          ajax.url = '/db/' + doc._id + '/' + attachmentId + '?rev=' + doc._rev;
-          ajax.contentType = type;
-          ajax.body = file;
-          ajax.handleAs = 'json';
-          ajax.method = 'PUT';
-          var self = this;
-          var request = ajax.generateRequest();
-          request.completes.then(function(e) {
-            self._rev = e.response.rev;
-          }).catch(function(e) {
-            console.log(e);
-          });
-        },
-
-        exist: function(id) {
-          return new Promise(function(resolve, reject) {
-            var ajax = document.createElement('iron-ajax');
-            ajax.url = '/db/' + id;
-            ajax.contentType = 'application/json';
-            ajax.handleAs = 'json';
-            ajax.method = 'GET';
-            ajax.params = {
-              attachments: self.attachments
-            };
-
-            var request = ajax.generateRequest();
-            request.completes.then(function() {
-              resolve();
-            }).catch(function(e) {
-              reject(e);
-            });
+          this.$.ajaxDelete.generateRequest().completes.then(e => {
+              
+          }).catch(e => {
+            console.error("database-document", "deleteDocument", "failed:", e);
           });
         }
       });

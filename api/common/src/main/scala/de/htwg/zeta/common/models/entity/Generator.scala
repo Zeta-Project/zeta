@@ -6,5 +6,6 @@ import java.util.UUID
 case class Generator(
     id: UUID,
     name: String,
-    imageId: UUID
+    imageId: UUID,
+    deleted: Option[Boolean] = Some(false)
 ) extends Entity

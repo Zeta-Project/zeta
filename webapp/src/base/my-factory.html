@@ -42,50 +42,33 @@
           }
         },
 
-        rand() {
-          const size = 16;
-          const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // abcdefghijklmnopqrstuvwxyz
-          let text = "";
-          for (let i = 0; i < size; i++) {
-            text += charSet.charAt(Math.floor(Math.random() * charSet.length));
-          }
-          return text;
-        },
-
         get(type) {
           if (type === 'MetaModelEntity') {
             return {
-              _id   : 'MetaModelEntity-' + this._userID + '-' + this.rand(),
               type  : 'MetaModelEntity'
             };
           } else if (type === 'ModelEntity') {
           return {
-            _id   : 'ModelEntity-' + this._userID + '-' + this.rand(),
             type  : 'ModelEntity'
           };
           } else if (type === 'EventDrivenTask') {
             return {
-              _id   : 'EventDrivenTask-' + this._userID + '-' + this.rand(),
               type  : 'EventDrivenTask'
             };
           } else if (type === 'BondedTask') {
             return {
-              _id   : 'BondedTask-' + this._userID + '-' + this.rand(),
               type  : 'BondedTask'
             };
           } else if (type === 'TimedTask') {
             return {
-              _id   : 'TimedTask-' + this._userID + '-' + this.rand(),
               type  : 'TimedTask'
             };
           } else if (type === 'Generator') {
             return {
-              _id   : 'Generator-' + this._userID + '-' + this.rand(),
               type  : 'Generator'
             };
           } else if (type === 'Filter') {
             return {
-              _id   : 'Filter-' + this._userID + '-' + this.rand(),
               type  : 'Filter'
             };
           }

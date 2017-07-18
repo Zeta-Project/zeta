@@ -7,8 +7,8 @@
       id="collection"
       auto
       docs="{{items}}"
-      startkey="[[_startkey]]"
-      endkey="[[_endkey]]"
+      type="[[type]]"
+      rest-list="[[restList]]"
       last-error="{{lastError}}">
     </database-collection>
   </template>
@@ -23,17 +23,7 @@
           notify: true
         },
         type: String,
-        _startkey: String,
-        _endkey: String
-      },
-
-      observers: [
-        '_calcRangeByType(type)'
-      ],
-
-      _calcRangeByType() {
-        this._startkey = this.type + '-';
-        this._endkey = this.type + '-\uffff';
+        restList: String
       }
     });
   </script>

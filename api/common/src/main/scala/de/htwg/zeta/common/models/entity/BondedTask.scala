@@ -9,5 +9,6 @@ case class BondedTask(
     generatorId: UUID,
     filterId: UUID,
     menu: String,
-    item: String
+    item: String,
+    deleted: Option[Boolean] = Some(false)
 ) extends Entity

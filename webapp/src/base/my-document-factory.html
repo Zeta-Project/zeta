@@ -30,20 +30,9 @@
         }
       },
 
-      rand() {
-        const size = 16;
-        const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // abcdefghijklmnopqrstuvwxyz
-        let text = "";
-        for (let i = 0; i < size; i++) {
-          text += charSet.charAt(Math.floor(Math.random() * charSet.length));
-        }
-        return text;
-      },
-
       get(type) {
         if (type === 'Tool') {
           return {
-            _id   : 'Tool-modigen-' + this.rand(),
             type  : 'Tool'
           };
         }

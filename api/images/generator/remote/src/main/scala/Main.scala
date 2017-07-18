@@ -4,15 +4,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Success
-import de.htwg.zeta.server.generator.Transformer
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
+import de.htwg.zeta.common.models.remote.RemoteGenerator
+import de.htwg.zeta.server.generator.Result
+import de.htwg.zeta.server.generator.Success
+import de.htwg.zeta.server.generator.Transformer
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Notification.OnCompleted
 import rx.lang.scala.Notification.OnError
@@ -24,11 +25,14 @@ import rx.lang.scala.Notification.OnNext
 object Main extends Template[CreateOptions, RemoteOptions] {
 
   private val logger = LoggerFactory.getLogger(getClass)
+  // TODO Remote /socket/generator is failing on authentication
+  private val remote: Remote = RemoteGenerator(cmd.session.getOrElse(""), cmd.work.getOrElse(""), cmd.parent.toOption, cmd.key.toOption)
 
-  override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
+
+  override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
       image <- repository.generatorImage.read(imageId)
-      generator <- repository.generator.create(Generator(user, options.name, image.id))
+      generator <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
       created <- repository.file.create(createFileContent())
     } yield {
       Success()
@@ -61,7 +65,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       }
     }
 
-    def transform(entity: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
+    def transform(entity: ModelEntity): Future[Transformer] = {
       val p = Promise[Transformer]
 
       val r1 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("BasicActor", entity.id))
@@ -78,7 +82,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       p.future
     }
 
-    def exit()(implicit remote: Remote): Future[Result] = {
+    def exit(): Future[Result] = {
       val result = Success("The generator finished")
       Future.successful(result)
     }
@@ -96,7 +100,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    * @param file The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, filter: Filter): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -106,7 +110,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    * @param file The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -115,7 +119,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    *
    * @return The Result of the generator
    */
-  override def runGeneratorWithOptions(options: RemoteOptions)(implicit remote: Remote): Future[Result] = {
+  override def runGeneratorWithOptions(options: RemoteOptions): Future[Result] = {
     logger.info(s"called with options $options")
     remote.emit[File](File(UUID.randomUUID, options.nodeType, "Started and sleep now"))
     Thread.sleep(10000)

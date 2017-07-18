@@ -23,7 +23,7 @@
     </style>
     <job-manager id="backend"></job-manager>
 
-    <my-documents type="MetaModelEntity" items="{{metaModels}}"></my-documents>
+    <my-documents type="MetaModelEntity" rest-list="/rest/v1/meta-models" items="{{metaModels}}"></my-documents>
 
     <paper-icon-button icon="myicons:add" toggles active="{{open}}"></paper-icon-button>
 
@@ -31,7 +31,7 @@
       <h2>Create Generator</h2>
 
       <form is="iron-form" id="form">
-        <my-item-dropdown type="GeneratorImage" label="Generator Image" selected="{{generator}}"></my-item-dropdown>
+        <my-item-dropdown type="GeneratorImage" label="Generator Image" rest-list="/rest/v1/generator-images" selected="{{generator}}"></my-item-dropdown>
 
         <p>[[generator.description]]</p>
 
@@ -89,7 +89,7 @@
         schema.definitions.MetaModelRelease = {
           "type": "string",
           "description": "A Meta Model Release",
-          "enum": this.metaModels.map((item) => item._id),
+          "enum": this.metaModels.map((item) => item.id),
           "required": true
         };
         return schema;
@@ -102,7 +102,7 @@
       _submit() {
         if (!this.bf.validate()) return;
         var data = this.getData();
-        this.$.backend.createGenerator(this.generator._id, JSON.stringify(data));
+        this.$.backend.createGenerator(this.generator.id, JSON.stringify(data));
         this.$.dialog.opened = false;
       }
     });

@@ -3,27 +3,33 @@ package de.htwg.zeta.generatorControl.actors.frontendManager
 import java.util.UUID
 
 import akka.actor.Actor
-import akka.actor.Props
 import akka.actor.ActorRef
+import akka.actor.Props
 import akka.cluster.sharding.ClusterSharding
 import de.htwg.zeta.generatorControl.actors.developer.Mediator
-import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.ForwardMessage
-import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.KeepHandlerAlive
-import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.KeepAlive
-import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.TerminateFrontend
-import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.Terminate
 import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.Create
+import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.ForwardMessage
+import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.KeepAlive
+import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.KeepHandlerAlive
+import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.Terminate
+import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager.TerminateFrontend
 import grizzled.slf4j.Logging
 
 /**
+ * TODO
  */
 class FrontendManager[R <: Create](gen: FrontendManagerGenerator) extends Actor with Logging {
   private val devMediator: ActorRef = ClusterSharding(context.system).shardRegion(Mediator.shardRegionName)
 
-
+  override def preStart(): Unit = {
+    info("Start")
+  }
 
   private def tellChild(ident: UUID, msg: Any): Unit = {
-    context.child(ident.toString).foreach(_.!(msg))
+    context.child(ident.toString) match {
+      case Some (ref) => ref ! msg
+      case None =>  warn(s"failed to send msg: $msg to: $ident. No child with this UUID was found.")
+    }
   }
 
   override def receive: Receive = {
@@ -31,7 +37,7 @@ class FrontendManager[R <: Create](gen: FrontendManagerGenerator) extends Actor 
       val ident = uuid.toString
       context.child(ident) match {
         case None =>
-          context.system.actorOf(props(devMediator), ident)
+          context.actorOf(props(devMediator), ident)
         case Some(_) =>
           info(s"actor with id: $ident already exists")
       }
@@ -42,7 +48,6 @@ class FrontendManager[R <: Create](gen: FrontendManagerGenerator) extends Actor 
 }
 
 object FrontendManager {
-
 
   trait FrontendManagerMessage {
     val ident: UUID

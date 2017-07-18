@@ -15,6 +15,7 @@ import akka.pattern.ask
 import akka.persistence.journal.leveldb.SharedLeveldbJournal
 import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
+import com.typesafe.config.impl.ConfigImpl
 import de.htwg.zeta.common.cluster.ClusterManager
 import grizzled.slf4j.Logging
 
@@ -43,7 +44,8 @@ protected trait Starter extends Logging {
 
   protected def createActorSystem(role: String, seeds: List[String], port: Int): ActorSystem = {
     val roles = List(role)
-    val config = ClusterManager.getClusterJoinConfig(roles, seeds, port).withFallback(ConfigFactory.load()).resolve()
+    val clusterConfig = ClusterManager.getClusterJoinConfig(roles, seeds, port).withFallback(ConfigFactory.load())
+    val config = ConfigImpl.systemPropertiesAsConfig().withFallback(clusterConfig).resolve()
     ActorSystem(Starter.Name, config)
   }
 }

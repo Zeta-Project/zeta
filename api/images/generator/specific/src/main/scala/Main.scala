@@ -10,7 +10,6 @@ import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.server.generator.Error
 import de.htwg.zeta.server.generator.Result
 import de.htwg.zeta.server.generator.Success
@@ -28,7 +27,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, filter: Filter)(implicit remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, filter: Filter): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -38,7 +37,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity)(implicit remote: Remote): Future[Transformer] = {
+  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -128,11 +127,11 @@ object Main extends Template[CreateOptions, String] {
    * @param imageId     The id of the image for the generator
    * @return The result of the generator creation
    */
-  override def createTransformer(options: CreateOptions, imageId: UUID)(implicit remote: Remote): Future[Result] = {
+  override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
       image <- repository.generatorImage.read(imageId)
       metaModel <- repository.metaModelEntity.read(UUID.fromString(options.metaModelRelease))
-      generator <- repository.generator.create(Generator(user, options.name, image.id))
+      generator <- repository.generator.create(Generator(UUID.randomUUID(), options.name, image.id))
       created <- repository.file.create(file(Settings.generatorFile, metaModel))
     } yield Success()
   }
@@ -149,7 +148,7 @@ object Main extends Template[CreateOptions, String] {
    *
    * @return A Generator
    */
-  override def runGeneratorWithOptions(options: String)(implicit remote: Remote): Future[Result] = {
+  override def runGeneratorWithOptions(options: String): Future[Result] = {
     Future.successful(Error(s"Call a generator from a generator is not supported in this example"))
   }
 }

@@ -11,6 +11,7 @@
       is: 'filebrowser-linked-filetree',
       properties: {
         doc: Object,
+        type: String,
         docs: {
           type: Object,
           notify: true,
@@ -20,12 +21,12 @@
         _tmpDocs: Array,
       },
       observers: [
-        '_prepareDocumentLoading(doc)', '_onType(type)'
+        '_prepareDocumentLoading(doc, type)'
       ],
 
-      _prepareDocumentLoading(doc) {
+      _prepareDocumentLoading(doc, type) {
         // for model project get the model releases.
-        if (doc._id.indexOf('model') === 0) {
+        if (type.indexOf('model') === 0) {
           this._rootFolder = 'releases';
           this.$.data.startkey = doc._id.replace('model', 'modelRelease') + '-0';
           this.$.data.endkey = doc._id.replace('model', 'modelRelease') + '-\uffff';

@@ -12,7 +12,7 @@
     }
     </style>
 
-    <my-documents type="[[type]]" items="{{items}}"></my-documents>
+    <my-documents type="[[type]]" rest-list="[[restList]]" items="{{items}}"></my-documents>
 
     <paper-dropdown-menu label="[[label]]" no-animations required>
       <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{selected}}">
@@ -30,6 +30,7 @@
       properties: {
         label: String,
         type: String,
+        restList: String,
         selected: {
           type: Object,
           notify: true
