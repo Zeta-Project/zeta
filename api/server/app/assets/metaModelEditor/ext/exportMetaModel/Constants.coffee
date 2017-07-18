@@ -8,6 +8,7 @@ class window.Constants
 
   @field:
     ATTRIBUTES: 'm_attributes'
+    METHODS: 'm_methods'
     LINKDEF_INPUT: 'linkdef_input'
     LINKDEF_OUTPUT: 'linkdef_output'
     LINKDEF_SOURCE: 'linkdef_source'

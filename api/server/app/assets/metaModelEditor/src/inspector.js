@@ -15,6 +15,7 @@ var inspector = (function inspector () {
     var M_ENUM;
     var M_METHOD;
     var M_DESCRIPTION;
+    var M_PARAMETER;
 
     var getDefs;
 
@@ -36,22 +37,22 @@ var inspector = (function inspector () {
 
         source : {
             label : 'Source',
-            index : 3
+            index : 4
         },
 
         target : {
             label : 'Target',
-            index : 4
+            index : 5
         },
 
         input : {
             label : 'Input',
-            index : 3
+            index : 4
         },
 
         output : {
             label : 'Output',
-            index : 4
+            index : 5
         },
 
         mEnum : {
@@ -61,8 +62,8 @@ var inspector = (function inspector () {
         ,
 
         m_method : {
-            label : "Method",
-            index : 3
+            label : "Methods",
+            index : 2
         }
     };
 
@@ -85,6 +86,21 @@ var inspector = (function inspector () {
             index : 1
         }
     };
+
+    M_PARAMETER = _.extend({
+        parametertype : {
+            type : 'select',
+            label : 'Type',
+            options : [
+                'Bool',
+                'Int',
+                'String',
+                'Double'
+            ],
+            defaultValue : '',
+            index : 2
+        }
+    }, M_OBJECT);
 
     M_BOUNDS = {
         upperBound : {
@@ -179,7 +195,7 @@ var inspector = (function inspector () {
 
         code : {
             type : 'text',
-            label : 'Expression',
+            label : 'Code',
             defaultValue : '',
             index : 1
         },
@@ -188,22 +204,25 @@ var inspector = (function inspector () {
             label : 'Parameter',
             item : {
                 type : 'object',
-                properties : _.extend({
-                    typ : {
-                        type : 'select',
-                        label : 'Type',
-                        options : [
-                            'Bool',
-                            'Int',
-                            'String',
-                            'Double'
-                        ],
-                        defaultValue : 'String',
-                        index : 4
-                    }
-                }, M_OBJECT)
-            }
+                lable : 'Parameter',
+                properties : M_PARAMETER
+            },
+            index : 3
+        },
+        returntype : {
+            type : 'select',
+            label : 'Returntype',
+            options : [
+                'Bool',
+                'Int',
+                'String',
+                'Double',
+                'Unit'
+            ],
+            index : 4,
+            defaultValue : 'String'
         }
+
     }, M_OBJECT, M_DESCRIPTION);
 
     M_LINKDEF = _.extend({
@@ -235,16 +254,17 @@ var inspector = (function inspector () {
             index : 1
         },
 
+
         m_methods : {
             type : 'list',
             label : 'Methods',
             item : {
-                type : 'Object',
-                label : 'Method',
+                type : 'object',
+                label : 'Attribute',
                 properties : M_METHOD
             },
             group : 'm_method',
-            index : 4
+            index : 2
         },
 
         'linkdef_input' : {
@@ -256,7 +276,7 @@ var inspector = (function inspector () {
                 properties : M_LINKDEF
             },
             group : 'input',
-            index : 2
+            index : 3
         },
 
         'linkdef_output' : {
@@ -268,7 +288,7 @@ var inspector = (function inspector () {
                 properties : M_LINKDEF
             },
             group : 'output',
-            index : 3
+            index : 4
         }
     }, M_OBJECT, M_DESCRIPTION);
 
@@ -341,6 +361,17 @@ var inspector = (function inspector () {
                 }, M_OBJECT)
             },
             group : 'mEnum'
+        },
+        m_methods : {
+            type : 'list',
+            label : 'Methods',
+            item : {
+                type : 'object',
+                label : 'Attribute',
+                properties : M_METHOD
+            },
+            group : 'm_method',
+            index : 2
         }
     };
 
