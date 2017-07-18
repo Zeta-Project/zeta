@@ -13,6 +13,8 @@ var inspector = (function inspector () {
     var M_CLASS;
     var M_REFERENCE;
     var M_ENUM;
+    var M_METHOD;
+    var M_DESCRIPTION;
 
     var getDefs;
 
@@ -56,6 +58,12 @@ var inspector = (function inspector () {
             label : 'Enums',
             index : 0
         }
+        ,
+
+        m_method : {
+            label : "Method",
+            index : 3
+        }
     };
 
     M_OBJECT = {
@@ -65,6 +73,16 @@ var inspector = (function inspector () {
             defaultValue : '',
             group : 'general',
             index : 0
+        }
+    };
+
+    M_DESCRIPTION = {
+        description : {
+            type : 'text',
+            label : 'Description',
+            defaultValue : '',
+            group : 'general',
+            index : 1
         }
     };
 
@@ -157,6 +175,37 @@ var inspector = (function inspector () {
         }
     }, M_OBJECT, M_BOUNDS);
 
+    M_METHOD = _.extend({
+
+        code : {
+            type : 'text',
+            label : 'Expression',
+            defaultValue : '',
+            index : 1
+        },
+        parameters : {
+            type : 'list',
+            label : 'Parameter',
+            item : {
+                type : 'object',
+                properties : _.extend({
+                    typ : {
+                        type : 'select',
+                        label : 'Type',
+                        options : [
+                            'Bool',
+                            'Int',
+                            'String',
+                            'Double'
+                        ],
+                        defaultValue : 'String',
+                        index : 4
+                    }
+                }, M_OBJECT)
+            }
+        }
+    }, M_OBJECT, M_DESCRIPTION);
+
     M_LINKDEF = _.extend({
         type : {
             type : 'select',
@@ -186,6 +235,18 @@ var inspector = (function inspector () {
             index : 1
         },
 
+        m_methods : {
+            type : 'list',
+            label : 'Methods',
+            item : {
+                type : 'Object',
+                label : 'Method',
+                properties : M_METHOD
+            },
+            group : 'm_method',
+            index : 4
+        },
+
         'linkdef_input' : {
             type : 'list',
             label : 'Input',
@@ -209,7 +270,7 @@ var inspector = (function inspector () {
             group : 'output',
             index : 3
         }
-    }, M_OBJECT);
+    }, M_OBJECT, M_DESCRIPTION);
 
     M_REFERENCE = _.extend({
         m_attributes : {
