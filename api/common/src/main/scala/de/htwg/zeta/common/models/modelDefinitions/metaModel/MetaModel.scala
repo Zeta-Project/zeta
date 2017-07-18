@@ -18,6 +18,7 @@ import play.api.libs.json.Json
  * @param classes    the classes of the actual MetaModel data
  * @param references the object graph containing the actual MetaModel data
  * @param enums      the object graph containing the actual MetaModel data
+ * @param methods    the object graph containing the actual MetaModel data
  * @param uiState    the ui-state of the browser client. Location is debatable
  */
 case class MetaModel(
@@ -25,8 +26,8 @@ case class MetaModel(
     classes: Seq[MClass],
     references: Seq[MReference],
     enums: Seq[MEnum],
-    uiState: String,
-    methods: Seq[Method]
+    methods: Seq[Method],
+    uiState: String
 ) {
 
   /** Classes mapped to their own names. */
