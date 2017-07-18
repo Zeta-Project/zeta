@@ -10,6 +10,7 @@ import play.api.libs.json.Json
 case class Method(
     name: String,
     parameters: Seq[Parameter],
+    description: String,
     returnType: Option[AttributeType],
     code: String
 )

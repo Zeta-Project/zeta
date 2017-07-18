@@ -181,6 +181,7 @@ object MetaModelEntityFixtures {
           Parameter("p1", StringType),
           Parameter("p2", DoubleType)
         ),
+        description = "description1",
         returnType = Some(IntType),
         code = "code1"
       )
@@ -213,6 +214,7 @@ object MetaModelEntityFixtures {
           Parameter("p3", StringType),
           Parameter("p4", DoubleType)
         ),
+        description = "description2",
         returnType = None,
         code = "code2"
       )

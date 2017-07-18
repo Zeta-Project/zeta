@@ -26,6 +26,7 @@ object MethodGenerator extends App with AttributeConversions {
         Parameter("n1", IntType),
         Parameter("n2", IntType)
       ),
+      description = "add 2 numbers",
       returnType = Some(IntType),
       code =
         """|println("Test")
