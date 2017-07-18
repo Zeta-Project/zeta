@@ -2,6 +2,8 @@ package de.htwg.zeta.generatorControl.actors.developer
 
 import java.util.UUID
 
+import scala.collection.mutable
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
@@ -39,14 +41,12 @@ import de.htwg.zeta.common.models.frontend.UserRequest
 import de.htwg.zeta.common.models.worker.RunBondedTask
 import de.htwg.zeta.generatorControl.actors.developer.manager.BondedTasksManager
 import de.htwg.zeta.generatorControl.actors.developer.manager.EventDrivenTasksManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.FiltersManager
 import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorConnectionManager
 import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorManager
 import de.htwg.zeta.generatorControl.actors.developer.manager.GeneratorRequestManager
 import de.htwg.zeta.generatorControl.actors.developer.manager.GetBondedTaskList
 import de.htwg.zeta.generatorControl.actors.developer.manager.ManualExecutionManager
 import de.htwg.zeta.generatorControl.actors.developer.manager.ModelReleaseManager
-import de.htwg.zeta.generatorControl.actors.developer.manager.TimedTasksManager
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterToDeveloper
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.ToDeveloper
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
@@ -54,9 +54,6 @@ import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerTo
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.Repository
 import play.api.libs.ws.ahc.AhcWSClient
-
-
-
 
 object Mediator {
   val locatedOnNode = "developer"
@@ -72,44 +69,31 @@ object Mediator {
     case MessageEnvelope(id, _) => (id.hashCode % numberOfShards).toString
   }
 
-  def props() = Props(new Mediator())
-
+  def props(): Props = Props(new Mediator())
 }
 
 class Mediator() extends Actor with ActorLogging {
-  implicit val mat = ActorMaterializer()
-  implicit val client = AhcWSClient()
+  private implicit val mat = ActorMaterializer()
+  private implicit val client = AhcWSClient()
 
-  // the ttl of the session to access the database
-  val ttl = 3600
-
-  val mediator: ActorRef = DistributedPubSub(context.system).mediator
-  val developerId: UUID = UUID.fromString(self.path.name)
+  private val mediator: ActorRef = DistributedPubSub(context.system).mediator
+  private val developerId: UUID = UUID.fromString(self.path.name)
   mediator ! Subscribe(developerId.toString, self)
 
-  val repo: Repository = Persistence.restrictedAccessRepository(developerId)
+  private val repo: Repository = Persistence.restrictedAccessRepository(developerId)
 
-  val workQueue: ActorRef = context.actorOf(WorkQueue.props(developerId), "workQueue")
+  private val workQueue: ActorRef = context.actorOf(WorkQueue.props(developerId), "workQueue")
 
-  val filters: ActorRef = context.actorOf(FiltersManager.props(workQueue, repo), "filters")
-  val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, Persistence.fullAccessRepository), "generators")
-  val modelRelease: ActorRef = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
-  val bondedTasks: ActorRef = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
-  val eventDrivenTasks: ActorRef = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")
-  val timedTasks: ActorRef = context.actorOf(TimedTasksManager.props(workQueue, repo), "timedTasks")
-  val manualExecution: ActorRef = context.actorOf(ManualExecutionManager.props(workQueue, repo), "manualExecution")
-  val generatorRequest: ActorRef = context.actorOf(GeneratorRequestManager.props(workQueue, repo), "generatorRequest")
-  val generatorConnection: ActorRef = context.actorOf(GeneratorConnectionManager.props(), "generatorConnection")
+  private val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, Persistence.fullAccessRepository), "generators")
+  private val modelRelease: ActorRef = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
+  private val bondedTasks: ActorRef = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
+  private val eventDrivenTasks: ActorRef = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")
+  private val manualExecution: ActorRef = context.actorOf(ManualExecutionManager.props(workQueue, Persistence.fullAccessRepository), "manualExecution")
+  private val generatorRequest: ActorRef = context.actorOf(GeneratorRequestManager.props(workQueue, Persistence.fullAccessRepository), "generatorRequest")
+  private val generatorConnection: ActorRef = context.actorOf(GeneratorConnectionManager.props(), "generatorConnection")
 
-
-  val listeners = List(self, bondedTasks, eventDrivenTasks, timedTasks, manualExecution, modelRelease, filters, generators, workQueue)
-
-
-  var developers: Map[UUID, ToolDeveloper] = Map()
-  var users: Map[UUID, ModelUser] = Map()
-
-
-
+  private val developers = mutable.Map.empty[UUID, ToolDeveloper]
+  private val users = mutable.Map.empty[UUID, ModelUser]
 
   def receive: Receive = {
     // Handle job messages from the Master or the Worker
@@ -117,9 +101,7 @@ class Mediator() extends Actor with ActorLogging {
     // Handle any request from a client to this actor
     case connection: Connection => handleConnection(connection)
     case request: Request => processRequest(request)
-    case request: Event =>
-      checkForBondedTask(request)
-      generatorConnection ! request
+    case event: Event => processEvent(event)
     // change from the database
     case changed: Changed => documentChange(changed)
     // Handle any response from this actor to the clients
@@ -143,6 +125,11 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
+  private def processEvent(event: Event): Unit = {
+    checkForBondedTask(event)
+    generatorConnection ! event
+  }
+
   private def processGeneratorRequest(request: GeneratorRequest): Unit = {
     request match {
       // request which are send from a generator or need to be send to a generator
@@ -151,7 +138,7 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  def documentChange(changed: Changed): Unit = {
+  private def documentChange(changed: Changed): Unit = {
     // Handle the update of bonded task lists to users
     changed.doc match {
       case _: BondedTask => resendBondedTasksToUsers()
@@ -160,26 +147,26 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  def handleConnection(connection: Connection): Unit = {
+  private def handleConnection(connection: Connection): Unit = {
     connection match {
       case Connected(c) => c match {
-        case developer @ ToolDeveloper(out, user) =>
+        case developer: ToolDeveloper =>
           workQueue forward GetJobInfoList
-          developers += (c.id -> developer)
-        case user @ ModelUser(out, id, model) =>
+          developers.put(c.id, developer)
+        case user: ModelUser =>
           bondedTasks forward GetBondedTaskList(user)
-          users += (c.id -> user)
+          users.put(c.id, user)
         case _ => generatorConnection ! connection
       }
       case Disconnected(c) => c match {
-        case developer @ ToolDeveloper(out, user) => developers -= developer.id
-        case user @ ModelUser(out, id, model) => users -= user.id
-        case generator @ GeneratorClient(out, id) => generatorConnection ! connection
+        case developer: ToolDeveloper => developers.remove(developer.id)
+        case user: ModelUser => users.remove(user.id)
+        case _: GeneratorClient => generatorConnection ! connection
       }
     }
   }
 
-  def handleDeveloperRequest(request: DeveloperRequest): Unit = {
+  private def handleDeveloperRequest(request: DeveloperRequest): Unit = {
     request match {
       case _: CreateGenerator => generators forward request
       case _: RunFilter => manualExecution forward request
@@ -189,46 +176,46 @@ class Mediator() extends Actor with ActorLogging {
     }
   }
 
-  def handleUserRequest(request: UserRequest): Unit = {
+  private def handleUserRequest(request: UserRequest): Unit = {
     request match {
       case ExecuteBondedTask(_, _) => bondedTasks forward request
       case SavedModel(_) => eventDrivenTasks forward request
     }
   }
 
-  def handleWorkerResponse(response: WorkerToDeveloper): Unit = response match {
+  private def handleWorkerResponse(response: WorkerToDeveloper): Unit = response match {
     case WorkerStreamedMessage(message) => sendToToolDeveloperClients(message)
     case _ =>
   }
 
-  def sendToToolDeveloperClients(message: Any): Unit = {
+  private def sendToToolDeveloperClients(message: Any): Unit = {
     developers foreach {
-      case (id, c) =>
+      case (_, c) =>
         c.out ! message
     }
   }
 
-  def sendToUserClients(message: Any): Unit = {
+  private def sendToUserClients(message: Any): Unit = {
     users foreach {
-      case (id, c) =>
+      case (_, c) =>
         c.out ! message
     }
   }
 
-  def resendBondedTasksToUsers(): Unit = {
+  private def resendBondedTasksToUsers(): Unit = {
     users.foreach {
-      case (id, user) =>
+      case (_, user) =>
         bondedTasks ! GetBondedTaskList(user)
     }
   }
 
-  def checkForBondedTask(request: Event): Unit = request match {
+  private def checkForBondedTask(request: Event): Unit = request match {
     case WorkEnqueued(work) => work.job match {
-      case RunBondedTask(taskId, generatorId, filterId, modelId, image) => sendToUserClients(BondedTaskStarted(taskId))
+      case RunBondedTask(taskId, _, _, _, _) => sendToUserClients(BondedTaskStarted(taskId))
       case _ => // no bonded task
     }
     case WorkCompleted(work, result) => work.job match {
-      case RunBondedTask(taskId, generatorId, filterId, modelId, image) => sendToUserClients(BondedTaskCompleted(taskId, result))
+      case RunBondedTask(taskId, _, _, _, _) => sendToUserClients(BondedTaskCompleted(taskId, result))
       case _ => // no bonded task
     }
     case _ => // no work completed
