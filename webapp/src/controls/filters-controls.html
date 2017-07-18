@@ -11,15 +11,11 @@
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 
 <link rel="import" href="../base/my-icons.html">
-<link rel="import" href="../base/my-factory.html">
 <link rel="import" href="../database/database-document.html">
-<link rel="import" href="../database/database-file.html">
 
 <dom-module id="filters-controls">
   <template>
-    <my-factory id="factory" doc="{{doc}}" type="Filter"></my-factory>
-    <database-document id="db"></database-document>
-    <database-file id="file"></database-file>
+    <database-document id="db" rest-create="/rest/v1/filters"></database-document>
     <paper-icon-button icon="myicons:add" toggles active="{{open}}"></paper-icon-button>
 
     <paper-dialog id="dialog" opened="{{open}}">
@@ -42,24 +38,20 @@
       is: 'filters-controls',
 
       properties: {
-        doc: Object
+        doc: {
+          type: Object,
+          value: { description: '', instanceIds: [], files: {} }
+        }
       },
 
       _submit() {
-var file = "class Filter() extends BaseFilter {\n\
-  def filter(entity: ModelEntity): Boolean = {\n\
-	   true\n\
-   }\n\
-}";
         if (!this.$.form.validate()) return;
-        this.doc.instances = [];
-        this.$.db.createDocument(this.doc).then((doc) => {
-          this.$.file.save(doc, 'filter.scala', file, 'text/plain');
-        }).then(() => {
-          this.$.factory.next();
+
+        this.doc.instanceIds = [];
+        this.$.db.createDocument(this.doc).then(() => {
+          this.doc = { description: '', instanceIds: [], files: {} };
           this.$.dialog.opened = false;
         }).catch(() => {
-          this.$.factory.next();
           this.$.dialog.opened = false;
         });
       }
