@@ -8,7 +8,8 @@
         var data = JSON.stringify({
             "name": name,
             "elements": [],
-            "uiState": ""
+            "uiState": "",
+            "methods": []
         });
 
         $.ajax({
