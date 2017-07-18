@@ -86,7 +86,7 @@ object Main extends Template[CreateOptions, String] {
         |${file.content}
         |
         |new MyTransformer()
-      """
+      """.stripMargin
     compile[Transformer](content)
   }
 

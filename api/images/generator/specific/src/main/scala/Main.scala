@@ -106,18 +106,18 @@ object Main extends Template[CreateOptions, String] {
 
   private def compiledGenerator(file: File): Future[Transformer] = {
     val content = s"""
-      import scala.concurrent.Future
-      import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
-      import de.htwg.zeta.common.models.entity.ModelEntity
-      import de.htwg.zeta.common.models.entity.{Repository => Documents}
-      import de.htwg.zeta.common.models.file.{Repository => Files}
-      import de.htwg.zeta.common.models.remote.Remote
-      import generator._
-
-      ${file.content}
-
-      new MyTransformer()
-      """
+      |import scala.concurrent.Future
+      |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
+      |import de.htwg.zeta.common.models.entity.ModelEntity
+      |import de.htwg.zeta.common.models.entity.{Repository => Documents}
+      |import de.htwg.zeta.common.models.file.{Repository => Files}
+      |import de.htwg.zeta.common.models.remote.Remote
+      |import generator._
+      |
+      |${file.content}
+      |
+      |new MyTransformer()
+    """
     compile[Transformer](content)
   }
 

@@ -114,7 +114,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
           |
           |   }
           | }
-        """
+        """.stripMargin
 
       File(UUID.randomUUID, filename, content)
     }
