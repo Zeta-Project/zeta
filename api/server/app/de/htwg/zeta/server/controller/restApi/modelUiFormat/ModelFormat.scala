@@ -94,6 +94,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
         val unchecked: JsResult[Model] =
           for {
             elements <- (json \ "elements").validate(Reads.list(ModelElementReads(entity.metaModel)))
+            attributes <- (json \ "attributes").validate(AttributeFormat(entity.metaModel.attributes, name))
             uiState <- (json \ "uiState").validate[String]
           } yield {
             val (nodes, edges) =
@@ -101,7 +102,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
                 case Left(node) => (node :: pair._1, pair._2)
                 case Right(edge) => (pair._1, edge :: pair._2)
               })
-            Model(name, metaModelId, nodes, edges, uiState)
+            Model(name, metaModelId, nodes, edges, attributes, uiState)
           }
         check(unchecked)
       })

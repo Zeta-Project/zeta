@@ -29,7 +29,7 @@ object PetriNetMetaModelFixture {
   private val state: MEnum = MEnum("State", List("Resting", "Producing", "Fired", "Consuming"))
 
   private val nameAttribute = MAttribute(
-    name = sProducer,
+    name = "name",
     globalUnique = false,
     localUnique = true,
     typ = StringType,
@@ -110,7 +110,7 @@ object PetriNetMetaModelFixture {
         localUnique = true,
         typ = IntType,
         default = MInt(0),
-        constant = true,
+        constant = false,
         singleAssignment = true,
         expression = "",
         ordered = true,
@@ -146,7 +146,7 @@ object PetriNetMetaModelFixture {
         parameters = List.empty,
         description = "check if the transition can fire",
         returnType = Some(BoolType),
-        code = "incomingProducer.forall(_.from.attribute.tokens > 0)"
+        code = "incomingProducer.forall(_.source.attributes.tokens > 0)"
       ),
       Method(
         name = "doFire",
@@ -154,8 +154,8 @@ object PetriNetMetaModelFixture {
         description = "fire the transition",
         returnType = None,
         code =
-          """|incomingProducer.foreach(_.from.attribute.tokens -= 1)
-             |outgoingConsumer.foreach(_.to.attribute.tokens += 1)""".stripMargin // scalastyle:ignore
+          """|incomingProducer.foreach(_.source.attributes.tokens -= 1)
+             |outgoingConsumer.foreach(_.target.attributes.tokens += 1)""".stripMargin // scalastyle:ignore
       )
     )
   )
@@ -165,16 +165,31 @@ object PetriNetMetaModelFixture {
     classes = List(place, transition),
     references = List(producer, consumer),
     enums = List(state),
-    attributes = List.empty,
+    attributes = List(
+      MAttribute(
+        name = "state",
+        globalUnique = false,
+        localUnique = true,
+        typ = state,
+        default = MInt(0),
+        constant = false,
+        singleAssignment = true,
+        expression = "",
+        ordered = true,
+        transient = false,
+        upperBound = 1,
+        lowerBound = 0
+      )
+    ),
     methods = List(
       Method(
         name = "printState",
         parameters = List.empty,
         description = "print the current state",
-        returnType = Some(BoolType),
+        returnType = None,
         // scalastyle:off
         code =
-          """|Place.list.foreach(place => println(s"${place.name}: ${place.attribute.tokens}"))
+          """|placeList.foreach(place => println(s"${place.id}: ${place.attributes.tokens}"))
              |println()""".stripMargin
         // scalastyle:on
       ),
@@ -183,7 +198,7 @@ object PetriNetMetaModelFixture {
         parameters = List.empty,
         description = "fire all ready transitions",
         returnType = None,
-        code = "Transition.list.filter(_.canFire).foreach(_.doFire())"
+        code = "transitionList.filter(_.canFire).foreach(_.doFire())"
       ),
       Method(
         name = "add",

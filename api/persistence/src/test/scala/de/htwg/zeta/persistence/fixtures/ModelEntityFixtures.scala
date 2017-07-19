@@ -78,6 +78,7 @@ object ModelEntityFixtures {
     metaModelId = MetaModelEntityFixtures.entity1.id,
     nodes = Seq(node1, node2),
     edges = Seq(edge1, edge2),
+    attributes = Map.empty,
     uiState = "uiState1"
   )
 
@@ -86,6 +87,7 @@ object ModelEntityFixtures {
     metaModelId = MetaModelEntityFixtures.entity2.id,
     nodes = Seq(node1),
     edges = Seq(edge1),
+    attributes = Map.empty,
     uiState = "uiState2"
   )
 

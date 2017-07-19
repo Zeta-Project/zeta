@@ -4,6 +4,7 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import play.api.libs.json.Format
@@ -22,6 +23,7 @@ case class Model(
     metaModelId: UUID,
     nodes: Seq[Node],
     edges: Seq[Edge],
+    attributes: Map[String, Seq[AttributeValue]],
     uiState: String
 ) {
 

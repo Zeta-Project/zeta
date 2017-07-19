@@ -20,9 +20,9 @@ import org.scalatest.Matchers
 
 class NullChecksTests extends FlatSpec with Matchers {
 
-  def nodesToModel(nodes: Seq[Node]): Model = Model("", UUID.randomUUID(), nodes, Seq.empty, "")
+  def nodesToModel(nodes: Seq[Node]): Model = Model("", UUID.randomUUID(), nodes, Seq.empty, Map.empty, "")
 
-  def edgesToModel(edges: Seq[Edge]): Model = Model("", UUID.randomUUID(), Seq.empty, edges, "")
+  def edgesToModel(edges: Seq[Edge]): Model = Model("", UUID.randomUUID(), Seq.empty, edges, Map.empty, "")
 
   val mReference = MReference("edgeType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq.empty,
     Seq.empty)
@@ -266,21 +266,21 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new ElementsNoNullValues
 
     val nonNullEdge = Edge("", mReference, Seq(), Seq(), Map.empty)
-    val nonNullModel = Model("", UUID.randomUUID(), Seq.empty, Seq(nonNullEdge), "")
+    val nonNullModel = Model("", UUID.randomUUID(), Seq.empty, Seq(nonNullEdge), Map.empty, "")
     rule.check(nonNullModel) should be(true)
 
     val nullEdge = null
-    val nullModel = Model("", UUID.randomUUID(), Seq.empty, Seq(nullEdge), "")
+    val nullModel = Model("", UUID.randomUUID(), Seq.empty, Seq(nullEdge), Map.empty, "")
     rule.check(nullModel) should be(false)
   }
 
   "ElementsNotNull" should "check for null in elements" in {
     val rule = new ElementsNotNull
 
-    val nonNullModel = Model("", UUID.randomUUID(), Seq.empty, Seq.empty, "")
+    val nonNullModel = Model("", UUID.randomUUID(), Seq.empty, Seq.empty, Map.empty, "")
     rule.check(nonNullModel) should be(true)
 
-    val nullModel = Model("", UUID.randomUUID(), null, Seq.empty, "")
+    val nullModel = Model("", UUID.randomUUID(), null, Seq.empty, Map.empty, "")
     rule.check(nullModel) should be(false)
   }
 

@@ -4,7 +4,9 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -31,10 +33,12 @@ object PetriNetModelFixture {
   private val sConsumer2 = "Consumer2"
   private val sProducer2 = "Producer2"
 
-  private val sTokens = "token"
+  private val sTokens = "tokens"
+  private val sName = "name"
+
 
   val transition1: Node = Node(
-    name = "transition1",
+    name = sTransition1,
     clazz = metaModel.classMap(sTransition),
     outputs = List(ToEdges(
       reference = metaModel.referenceMap(sConsumer),
@@ -44,11 +48,13 @@ object PetriNetModelFixture {
       reference = metaModel.referenceMap(sProducer),
       edgeNames = List(sProducer1)
     )),
-    attributes = Map.empty
+    attributes = Map(
+      sName -> List(MString(sTransition1))
+    )
   )
 
   val transition2: Node = Node(
-    name = "transition2",
+    name = sTransition2,
     clazz = metaModel.classMap(sTransition),
     outputs = List(ToEdges(
       reference = metaModel.referenceMap(sConsumer),
@@ -58,11 +64,13 @@ object PetriNetModelFixture {
       reference = metaModel.referenceMap(sProducer),
       edgeNames = List(sProducer2)
     )),
-    attributes = Map.empty
+    attributes = Map(
+      sName -> List(MString(sTransition2))
+    )
   )
 
   val place1: Node = Node(
-    name = "place1",
+    name = sPlace1,
     clazz = metaModel.classMap(sPlace),
     outputs = List(ToEdges(
       reference = metaModel.referenceMap(sProducer),
@@ -72,7 +80,10 @@ object PetriNetModelFixture {
       reference = metaModel.referenceMap(sConsumer),
       edgeNames = List(sConsumer2)
     )),
-    attributes = Map(sTokens -> List(MInt(1)))
+    attributes = Map(
+      sName -> List(MString(sPlace1)),
+      sTokens -> List(MInt(1))
+    )
   )
 
   val place2: Node = Node(
@@ -86,7 +97,10 @@ object PetriNetModelFixture {
       reference = metaModel.referenceMap(sConsumer),
       edgeNames = List(sConsumer1)
     )),
-    attributes = Map(sTokens -> List(MInt(0)))
+    attributes = Map(
+      sName -> List(MString(sPlace2)),
+      sTokens -> List(MInt(0))
+    )
   )
 
   val producer1: Edge = Edge(
@@ -100,7 +114,9 @@ object PetriNetModelFixture {
       clazz = metaModel.classMap(sTransition),
       nodeNames = List(sTransition1)
     )),
-    attributes = Map.empty
+    attributes = Map(
+      sName -> List(MString(sProducer1))
+    )
   )
 
   val producer2: Edge = Edge(
@@ -114,7 +130,9 @@ object PetriNetModelFixture {
       clazz = metaModel.classMap(sTransition),
       nodeNames = List(sTransition2)
     )),
-    attributes = Map.empty
+    attributes = Map(
+      sName -> List(MString(sProducer2))
+    )
   )
 
   val consumer1: Edge = Edge(
@@ -128,7 +146,9 @@ object PetriNetModelFixture {
       clazz = metaModel.classMap(sPlace),
       nodeNames = List(sPlace2)
     )),
-    attributes = Map.empty
+    attributes = Map(
+      sName -> List(MString(sConsumer1))
+    )
   )
 
   val consumer2: Edge = Edge(
@@ -142,15 +162,19 @@ object PetriNetModelFixture {
       clazz = metaModel.classMap(sPlace),
       nodeNames = List(sPlace1)
     )),
-    attributes = Map.empty
+    attributes = Map(
+      sName -> List(MString(sConsumer2))
+    )
   )
-
 
   val model: Model = Model(
     name = "SimplePetriNet",
     metaModelId = UUID.randomUUID(),
     nodes = List(place1, place2, transition1, transition2),
     edges = List(producer1, producer2, consumer1, consumer2),
+    attributes = Map(
+      "state" -> List(EnumSymbol("State", "Resting"))
+    ),
     uiState = "uiState"
   )
 
