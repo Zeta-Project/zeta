@@ -5,6 +5,7 @@ import java.util.UUID
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
@@ -35,6 +36,7 @@ object PetriNetModelFixture {
 
   private val sTokens = "tokens"
   private val sName = "name"
+  private val sFired = "fired"
 
 
   val transition1: Node = Node(
@@ -49,7 +51,8 @@ object PetriNetModelFixture {
       edgeNames = List(sProducer1)
     )),
     attributes = Map(
-      sName -> List(MString(sTransition1))
+      sName -> List(MString(sTransition1)),
+      sFired -> List(MBool(false))
     )
   )
 
@@ -65,7 +68,8 @@ object PetriNetModelFixture {
       edgeNames = List(sProducer2)
     )),
     attributes = Map(
-      sName -> List(MString(sTransition2))
+      sName -> List(MString(sTransition2)),
+      sFired -> List(MBool(false))
     )
   )
 
@@ -82,7 +86,7 @@ object PetriNetModelFixture {
     )),
     attributes = Map(
       sName -> List(MString(sPlace1)),
-      sTokens -> List(MInt(1))
+      sTokens -> List(MInt(3))
     )
   )
 

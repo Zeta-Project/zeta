@@ -3,7 +3,8 @@ package experimental.generated
 object Transition {
 
   case class Attributes(
-      name: String
+      name: String,
+      var fired: Boolean
   )
 
 }
@@ -18,9 +19,14 @@ case class Transition(id: String, attributes: Transition.Attributes, petriNet: P
     incomingProducer.forall(_.source.attributes.tokens > 0)
   }
 
-  def doFire(): Unit = {
+  def produce(): Unit = {
     incomingProducer.foreach(_.source.attributes.tokens -= 1)
+    attributes.fired = true
+  }
+
+  def consume(): Unit = {
     outgoingConsumer.foreach(_.target.attributes.tokens += 1)
+    attributes.fired = false
   }
 
 }

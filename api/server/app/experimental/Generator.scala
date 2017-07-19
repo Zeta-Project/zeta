@@ -213,11 +213,11 @@ object Generator {
 }
 
 
-object X extends App {
+object Generate extends App {
 
-  val a = Generator.generate(PetriNetMetaModelFixture.metaModel, PetriNetModelFixture.modelEntity)
+  val files = Generator.generate(PetriNetMetaModelFixture.metaModel, PetriNetModelFixture.modelEntity)
 
-  a.foreach { file =>
+  files.foreach { file =>
     println(file.name)
     println("------------------------------------------------------------------------------------")
     println(file.content)

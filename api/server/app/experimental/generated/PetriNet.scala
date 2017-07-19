@@ -11,7 +11,7 @@ object PetriNet {
 class PetriNet {
 
   val placeList: List[Place] = List(
-    Place("Place1", Place.Attributes("Place1", 1), this),
+    Place("Place1", Place.Attributes("Place1", 3), this),
     Place("Place2", Place.Attributes("Place2", 0), this)
   )
 
@@ -19,8 +19,8 @@ class PetriNet {
 
 
   val transitionList: List[Transition] = List(
-    Transition("Transition1", Transition.Attributes("Transition1"), this),
-    Transition("Transition2", Transition.Attributes("Transition2"), this)
+    Transition("Transition1", Transition.Attributes("Transition1", false), this),
+    Transition("Transition2", Transition.Attributes("Transition2", false), this)
   )
 
   val transitionMap: Map[String, Transition] = transitionList.map(transition => (transition.id, transition)).toMap
@@ -44,17 +44,34 @@ class PetriNet {
 
   val attributes = PetriNet.Attributes(State.Resting)
 
-  def printState(): Unit = {
-    placeList.foreach(place => println(s"${place.id}: ${place.attributes.tokens}"))
-    println()
-  }
+  def transform(): Boolean = {
 
-  def transform(): Unit = {
-    transitionList.filter(_.canFire).foreach(_.doFire())
-  }
+    attributes.state match {
 
-  def add(n1: Int, n2: Int): Int = {
-    n1 + n2
+      case State.Resting =>
+        val shuffled = scala.util.Random.shuffle(transitionList)
+        shuffled.find(_.canFire()).fold(
+          false
+        ) { ready =>
+          ready.produce()
+          attributes.state = State.Producing
+          true
+        }
+
+      case State.Producing =>
+        attributes.state = State.Fired
+        true
+
+      case State.Fired =>
+        attributes.state = State.Consuming
+        true
+
+      case State.Consuming =>
+        transitionList.filter(_.attributes.fired).foreach(_.consume())
+        attributes.state = State.Resting
+        true
+
+    }
   }
 
 }

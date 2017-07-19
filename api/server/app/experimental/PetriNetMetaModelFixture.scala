@@ -8,13 +8,13 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
@@ -139,7 +139,23 @@ object PetriNetMetaModelFixture {
       lowerBound = 0,
       deleteIfLower = false
     )),
-    attributes = List(nameAttribute),
+    attributes = List(
+      nameAttribute,
+      MAttribute(
+        name = "fired",
+        globalUnique = false,
+        localUnique = true,
+        typ = BoolType,
+        default = MBool(false),
+        constant = false,
+        singleAssignment = true,
+        expression = "",
+        ordered = true,
+        transient = false,
+        upperBound = 1,
+        lowerBound = 0
+      )
+    ),
     methods = List(
       Method(
         name = "canFire",
@@ -149,13 +165,22 @@ object PetriNetMetaModelFixture {
         code = "incomingProducer.forall(_.source.attributes.tokens > 0)"
       ),
       Method(
-        name = "doFire",
+        name = "produce",
         parameters = List.empty,
-        description = "fire the transition",
+        description = "produce the token",
         returnType = None,
         code =
           """|incomingProducer.foreach(_.source.attributes.tokens -= 1)
-             |outgoingConsumer.foreach(_.target.attributes.tokens += 1)""".stripMargin // scalastyle:ignore
+             |attributes.fired = true""".stripMargin // scalastyle:ignore
+      ),
+      Method(
+        name = "consume",
+        parameters = List.empty,
+        description = "consume the token",
+        returnType = None,
+        code =
+          """|outgoingConsumer.foreach(_.target.attributes.tokens += 1)
+             |attributes.fired = false""".stripMargin // scalastyle:ignore
       )
     )
   )
@@ -183,32 +208,38 @@ object PetriNetMetaModelFixture {
     ),
     methods = List(
       Method(
-        name = "printState",
-        parameters = List.empty,
-        description = "print the current state",
-        returnType = None,
-        // scalastyle:off
-        code =
-          """|placeList.foreach(place => println(s"${place.id}: ${place.attributes.tokens}"))
-             |println()""".stripMargin
-        // scalastyle:on
-      ),
-      Method(
         name = "transform",
         parameters = List.empty,
-        description = "fire all ready transitions",
-        returnType = None,
-        code = "transitionList.filter(_.canFire).foreach(_.doFire())"
-      ),
-      Method(
-        name = "add",
-        parameters = List(
-          Parameter("n1", IntType),
-          Parameter("n2", IntType)
-        ),
-        description = "add two numbers",
-        returnType = Some(IntType),
-        code = "n1 + n2"
+        description = "transform into the next state",
+        returnType = Some(BoolType),
+        code =
+          """
+           |attributes.state match {
+           |
+           |  case State.Resting =>
+           |    val shuffled = scala.util.Random.shuffle(transitionList)
+           |    shuffled.find(_.canFire()).fold(
+           |      false
+           |    ) { ready =>
+           |      ready.produce()
+           |      attributes.state = State.Producing
+           |      true
+           |    }
+           |
+           |  case State.Producing =>
+           |    attributes.state = State.Fired
+           |    true
+           |
+           |  case State.Fired =>
+           |    attributes.state = State.Consuming
+           |    true
+           |
+           |  case State.Consuming =>
+           |    transitionList.filter(_.attributes.fired).foreach(_.consume())
+           |    attributes.state = State.Resting
+           |    true
+           |
+           |}""".stripMargin
       )
     ),
     uiState = "uiState"
