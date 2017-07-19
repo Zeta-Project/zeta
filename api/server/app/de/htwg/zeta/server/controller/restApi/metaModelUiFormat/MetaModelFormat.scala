@@ -103,7 +103,7 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
             case ((cls, refs, ens), me: MEnum) => (cls, refs, me :: ens)
           })
 
-        MetaModel(name, classes, references, enums, uiState, methods)
+        MetaModel(name, classes, references, enums, methods, uiState)
       }
 
     mm.flatMap(validateMLinks)
