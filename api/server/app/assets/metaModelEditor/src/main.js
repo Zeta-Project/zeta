@@ -593,9 +593,6 @@ var Rappid = Backbone.Router.extend({
             console.log("SaveMetaModel - Data: ");
             console.log(data);
 
-            console.log(loadedMetaModel.uuid);
-            console.log(window.loadedMetaModel.uuid);
-
             $.ajax({
                 type: 'PUT',
                 url: '/rest/v1/meta-models/' + window.loadedMetaModel.uuid + '/definition',
