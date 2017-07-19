@@ -1,7 +1,6 @@
 package controllers
 
 import java.util.UUID
-import java.util.UUID
 import javax.inject.Inject
 
 import de.htwg.zeta.server.routing.RouteController

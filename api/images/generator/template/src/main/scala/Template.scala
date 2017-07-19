@@ -145,7 +145,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
 
   private def executeTransformation(generator: Transformer, filter: Filter): Future[Result] = {
     val p = Promise[Result]
-    logger.info("run the generator")
+    logger.info("Run the generator")
 
     val start: Future[Transformer] = generator.prepare(filter.instanceIds.toList)
     val futures = filter.instanceIds.foldLeft(start) {
@@ -177,15 +177,20 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    */
   protected def compile[E: ClassTag](file: String): Future[E] = {
     val p = Promise[E]
-
     try {
+      logger.info("Create toolbox")
       val toolbox = runtime.currentMirror.mkToolBox()
+      logger.info("Parse generator via toolbox")
       val tree = toolbox.parse(file)
+      logger.info("Compile generator via toolbox")
       val compiledCode = toolbox.eval(tree)
+      logger.info("Cast generator compile to Transformer")
       val fn = compiledCode.asInstanceOf[E]
       p.success(fn)
     } catch {
-      case e: Throwable => p.failure(e)
+      case e: Throwable =>
+        logger.error("Compile failed", e)
+        p.failure(e)
     }
     p.future
   }
@@ -219,7 +224,9 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
 
   private def getFile(fileName: String, generator: Generator): Future[File] = {
     generator.files.find { case (_, name) => name == fileName } match {
-      case Some((id, name)) => repository.file.read(id, name)
+      case Some((id, name)) =>
+        logger.info("Request file `{}` {} for generator {}", name, id.toString, generator.id.toString)
+        repository.file.read(id, name)
       case None =>
         logger.error("Could not find '{}' in Generator {}", fileName, generator.id.toString: Any)
         throw new FileNotFoundException(s"Could not find '$fileName' in Generator ${generator.id}")

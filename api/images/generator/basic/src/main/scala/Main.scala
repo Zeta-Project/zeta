@@ -51,16 +51,18 @@ object Main extends Template[CreateOptions, String] {
         |class MyTransformer() extends Transformer {
         |  private val logger = LoggerFactory.getLogger(getClass)
         |
-        |  def transform(entity: ModelEntity)(implicit documents: Documents, files: Files, remote: Remote) : Future[Transformer] = {
-        |    logger.info(s"User : $${entity.id}")
-        |    entity.model.elements.values.foreach { element => element match {
-        |      case node: Node => logger.info(node.`type`.name)
-        |      case edge: Edge => logger.info(edge.`type`.name)
-        |    }}
+        |  def transform(entity: ModelEntity) : Future[Transformer] = {
+        |    logger.info(s"Model : $${entity.id}")
+        |    entity.model.nodes.foreach { node =>
+        |      logger.info(node.name)
+        |    }
+        |    entity.model.edges.foreach { edge =>
+        |      logger.info(edge.name)
+        |    }
         |    Future.successful(this)
         |  }
         |
-        |  def exit()(implicit documents    : Documents, files: Files, remote: Remote) : Future[Result] = {
+        |  def exit() : Future[Result] = {
         |    val result = Success("The generator finished")
         |    Future.successful(result)
         |  }
@@ -76,11 +78,12 @@ object Main extends Template[CreateOptions, String] {
       s"""
         |import scala.concurrent.Future
         |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
-        |import de.htwg.zeta.common.models.document.ModelEntity
-        |import de.htwg.zeta.common.models.document.{Repository => Documents}
-        |import de.htwg.zeta.common.models.file.{Repository => Files}
-        |import de.htwg.zeta.common.models.remote.Remote
-        |import generator._
+        |import de.htwg.zeta.common.models.entity.ModelEntity
+        |import de.htwg.zeta.server.generator.Error
+        |import de.htwg.zeta.server.generator.Result
+        |import de.htwg.zeta.server.generator.Success
+        |import de.htwg.zeta.server.generator.Transformer
+        |import de.htwg.zeta.server.generator.Warning
         |import org.slf4j.LoggerFactory
         |
         |${file.content}
