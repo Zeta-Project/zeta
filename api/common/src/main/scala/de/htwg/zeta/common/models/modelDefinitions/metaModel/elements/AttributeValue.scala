@@ -70,7 +70,7 @@ object AttributeValue {
    * @param name     name of the symbol
    * @param enumName name of the the belonging MEnum
    */
-  case class EnumSymbol(name: String, enumName: String) extends AttributeValue
+  case class EnumSymbol(enumName: String, name: String) extends AttributeValue
 
   object EnumSymbol {
 

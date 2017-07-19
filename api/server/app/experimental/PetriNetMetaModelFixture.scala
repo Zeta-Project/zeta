@@ -1,5 +1,8 @@
 package experimental
 
+import java.util.UUID
+
+import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
@@ -23,8 +26,7 @@ object PetriNetMetaModelFixture {
   private val sConsumer = "Consumer"
   private val sProducer = "Producer"
 
-  private val enum1: MEnum = MEnum("Enum1", List("Symbol1", "Symbol2"))
-  private val enum2: MEnum = MEnum("Enum2", List("Symbol3", "Symbol4", "Symbol5"))
+  private val state: MEnum = MEnum("State", List("Resting", "Producing", "Fired", "Consuming"))
 
   private val nameAttribute = MAttribute(
     name = sProducer,
@@ -162,7 +164,7 @@ object PetriNetMetaModelFixture {
     name = "PetriNet",
     classes = List(place, transition),
     references = List(producer, consumer),
-    enums = List(enum1, enum2),
+    enums = List(state),
     attributes = List.empty,
     methods = List(
       Method(
@@ -195,6 +197,13 @@ object PetriNetMetaModelFixture {
       )
     ),
     uiState = "uiState"
+  )
+
+  val metaModelEntity: MetaModelEntity = MetaModelEntity(
+    id = UUID.randomUUID(),
+    rev = "",
+    name = "",
+    metaModel = metaModel
   )
 
 }

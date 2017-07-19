@@ -2,6 +2,7 @@ package experimental
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
@@ -151,6 +152,13 @@ object PetriNetModelFixture {
     nodes = List(place1, place2, transition1, transition2),
     edges = List(producer1, producer2, consumer1, consumer2),
     uiState = "uiState"
+  )
+
+  val modelEntity: ModelEntity = ModelEntity(
+    id = UUID.randomUUID(),
+    model = model,
+    metaModelId = UUID.randomUUID(),
+    links = None
   )
 
 }
