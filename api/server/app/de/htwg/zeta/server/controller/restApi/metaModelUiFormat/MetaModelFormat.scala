@@ -3,9 +3,9 @@ package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 import scala.collection.mutable
-
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
@@ -103,12 +103,14 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
             case ((cls, refs, ens), me: MEnum) => (cls, refs, me :: ens)
           })
 
-        val attributes = json.\("attributes").validate(Reads.list(new MAttributeFormat(enums.map(e => (e.name, e)).toMap))).get
+
+        /*TODO Fixing attributes -> this is just a workaround for a presentation */
+        //val attributes = json.\("attributes").validate(Reads.list(new MAttributeFormat(enums.map(e => (e.name, e)).toMap))).get
         MetaModel(name = name,
           classes = classes,
           references = references,
           enums = enums,
-          attributes = attributes,
+          attributes = Seq.empty[MAttribute],
           methods = methods,
           uiState = uiState
         )

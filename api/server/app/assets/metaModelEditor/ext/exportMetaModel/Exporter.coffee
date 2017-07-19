@@ -50,6 +50,8 @@ class window.Exporter
     @addClasses metaModel
     @addReferences metaModel
     @addEnums metaModel
+    #@addAttribute metaModel
+    #@addMethod metaModel
 
     metaModel
 
@@ -61,9 +63,11 @@ class window.Exporter
       metaModel.push
         mType: Constants.CLASS
         name: @graph.getName element
+        description: @graph.getDescription element
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
+        methods: @graph.getClassMethods element
         inputs: @graph.getInputs element
         outputs: @graph.getOutputs element
 
@@ -91,4 +95,32 @@ class window.Exporter
         name: thisMEnum.name
         symbols: thisMEnum.symbols
 
+  ###
+  # Iterates over the graph-elements and adds them to the metaModel object.
+  addAttribute: (metaModel) ->
+    mAttributes = []
+    for thisAttribute in @graph.getElements()
+      metaModel.push
+        mType: Constants.CLASS
+        name: @graph.getName element
+        abstract: @graph.isAbstract element
+        superTypes: @graph.getSuperTypes element
+        attributes: @graph.getAttributes element
+        inputs: @graph.getInputs element
+        outputs: @graph.getOutputs element
 
+    mAttributes
+
+  # Iterates over the graph-elements and adds them to the metaModel object.
+  addMethod: (metaModel) ->
+      metaModel.push
+        mType: Constants.METHODS
+        name: @graph.getName element
+        abstract: @graph.isAbstract element
+        superTypes: @graph.getSuperTypes element
+        attributes: @graph.getAttributes element
+        inputs: @graph.getInputs element
+        outputs: @graph.getOutputs element
+
+    mMethods
+  ###

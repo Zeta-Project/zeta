@@ -590,6 +590,7 @@ var Rappid = Backbone.Router.extend({
                 uiState: JSON.stringify(graph)
             });
 
+            console.log("SaveMetaModel - Data: ");
             console.log(data);
 
             $.ajax({

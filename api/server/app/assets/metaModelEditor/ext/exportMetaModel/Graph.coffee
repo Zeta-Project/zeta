@@ -35,9 +35,14 @@ class window.Graph
       reference.attributes.name
 
 
+
 # Returns the name of the given cell.
   getName: (cell) ->
     cell.attributes.name
+
+# Returns the name of the given cell.
+  getDescription: (cell) ->
+    cell.attributes.description
 
 
 # Returns all element-, reference and enum-names which are assigned more than once.
@@ -113,6 +118,16 @@ class window.Graph
           else mAttributes[mAttributes.length - 1][key] = value
     mAttributes
 
+# Returns the methodss of the cell.
+  getClassMethods: (cell) ->
+    mMethods = []
+    if cell.attributes[Constants.field.METHODS]?
+      for attributes in cell.attributes[Constants.field.METHODS]
+        mMethods.push({});
+        for key, value of attributes
+          mMethods[mMethods.length - 1][key] = value
+    mMethods
+
   isNumeric: (n) ->
     !isNaN(parseFloat(n)) && isFinite(n);
 
@@ -147,6 +162,7 @@ class window.Graph
 # Returns the sourceDeletionDeletesTarget value of the reference.
   getSourceDeletionDeletesTarget: (reference) ->
     reference.attributes[Constants.field.SOURCE_DELETION_DELETES_TARGET] || false
+
 
 
 # Returns the targetDeletionDeletesSource value of the reference.

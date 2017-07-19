@@ -33,7 +33,6 @@ var mCoreUtil = (function () {
             case 'object':
                 check = ELEMENT_TYPES.indexOf(element.attributes.type) !== -1;
         }
-
         return check;
     };
 
