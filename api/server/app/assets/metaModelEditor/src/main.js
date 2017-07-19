@@ -487,6 +487,7 @@ var Rappid = Backbone.Router.extend({
             $('#btn-zoom-out').on('click', _.bind(this.zoomOut, this));
             $('#btn-fullscreen').on('click', _.bind(this.toggleFullscreen, this));
             $('#btn-print').on('click', _.bind(this.paper.print, this.paper));
+            $('#btn-method-verification').on('click', _.bind(this.verifyMethods, this));
 
             // toFront/toBack must be registered on mousedown. SelectionView empties the selection
             // on document mouseup which happens before the click event. @TODO fix SelectionView?
@@ -728,6 +729,11 @@ var Rappid = Backbone.Router.extend({
             context.fill();
 
             return canvas[0].toDataURL('image/png');
+        }
+        ,
+
+        verifyMethods: function() {
+
         }
         ,
 
