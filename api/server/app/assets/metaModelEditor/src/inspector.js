@@ -91,7 +91,7 @@ var inspector = (function inspector () {
     };
 
     M_PARAMETER = _.extend({
-        parametertype : {
+        typ : {
             type : 'select',
             label : 'Type',
             options : [
@@ -300,16 +300,6 @@ var inspector = (function inspector () {
     }, M_OBJECT, M_DESCRIPTION, M_ATTRIBUTE_LIST, M_METHOD_LIST);
 
     M_REFERENCE = _.extend({
-        m_attributes : {
-            type : 'list',
-            label : 'Attributes',
-            item : {
-                type : 'object',
-                label : 'Attribute',
-                properties : M_ATTRIBUTE
-            },
-            group : 'm_attribute'
-        },
 
         sourceDeletionDeletesTarget : {
             type : 'toggle',
@@ -349,7 +339,7 @@ var inspector = (function inspector () {
             index : 3
         }
 
-    }, M_OBJECT);
+    }, M_OBJECT, M_ATTRIBUTE_LIST, M_METHOD_LIST);
 
     M_ENUM = _.extend({
         'm_enum' : {
