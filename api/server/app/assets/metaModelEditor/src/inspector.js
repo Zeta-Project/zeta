@@ -16,6 +16,9 @@ var inspector = (function inspector () {
     var M_METHOD;
     var M_DESCRIPTION;
     var M_PARAMETER;
+    var M_ATTRIBUTE_LIST;
+    var M_METHOD_LIST;
+
 
     var getDefs;
 
@@ -225,6 +228,34 @@ var inspector = (function inspector () {
 
     }, M_OBJECT, M_DESCRIPTION);
 
+    M_METHOD_LIST = {
+        m_methods : {
+            type : 'list',
+            label : 'Methods',
+            item : {
+                type : 'object',
+                label : 'Attribute',
+                properties : M_METHOD
+            },
+            group : 'm_method',
+            index : 2
+        }
+    };
+
+    M_ATTRIBUTE_LIST = {
+        m_attributes : {
+            type : 'list',
+            label : 'Attributes',
+            item : {
+                type : 'object',
+                label : 'Attribute',
+                properties : M_ATTRIBUTE
+            },
+            group : 'm_attribute',
+            index : 1
+        }
+    };
+
     M_LINKDEF = _.extend({
         type : {
             type : 'select',
@@ -242,30 +273,6 @@ var inspector = (function inspector () {
     }, M_BOUNDS);
 
     M_CLASS = _.extend({
-        m_attributes : {
-            type : 'list',
-            label : 'Attributes',
-            item : {
-                type : 'object',
-                label : 'Attribute',
-                properties : M_ATTRIBUTE
-            },
-            group : 'm_attribute',
-            index : 1
-        },
-
-
-        m_methods : {
-            type : 'list',
-            label : 'Methods',
-            item : {
-                type : 'object',
-                label : 'Attribute',
-                properties : M_METHOD
-            },
-            group : 'm_method',
-            index : 2
-        },
 
         'linkdef_input' : {
             type : 'list',
@@ -290,7 +297,7 @@ var inspector = (function inspector () {
             group : 'output',
             index : 4
         }
-    }, M_OBJECT, M_DESCRIPTION);
+    }, M_OBJECT, M_DESCRIPTION, M_ATTRIBUTE_LIST, M_METHOD_LIST);
 
     M_REFERENCE = _.extend({
         m_attributes : {
@@ -344,7 +351,7 @@ var inspector = (function inspector () {
 
     }, M_OBJECT);
 
-    M_ENUM = {
+    M_ENUM = _.extend({
         'm_enum' : {
             type : 'list',
             label : 'Enum',
@@ -361,19 +368,8 @@ var inspector = (function inspector () {
                 }, M_OBJECT)
             },
             group : 'mEnum'
-        },
-        m_methods : {
-            type : 'list',
-            label : 'Methods',
-            item : {
-                type : 'object',
-                label : 'Attribute',
-                properties : M_METHOD
-            },
-            group : 'm_method',
-            index : 2
         }
-    };
+    }, M_ATTRIBUTE_LIST, M_METHOD_LIST);
 
     /**
      * Creates the inspector definitions for the given cell.
