@@ -90,8 +90,9 @@ class NoAmbiguousOutputsTest extends FlatSpec with Matchers {
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   val ambiguousMetaModel = MetaModel(
@@ -99,8 +100,9 @@ class NoAmbiguousOutputsTest extends FlatSpec with Matchers {
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   val rule = new NoAmbiguousOutputs

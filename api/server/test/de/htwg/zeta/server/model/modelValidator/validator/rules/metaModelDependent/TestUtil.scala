@@ -14,8 +14,9 @@ object TestUtil {
       classes = elements,
       references = Seq.empty,
       enums = Seq.empty,
-      uiState = "",
-      methods = Seq.empty
+      methods = Seq.empty,
+      attributes = Seq.empty,
+      uiState = ""
     )
   }
 
@@ -25,8 +26,9 @@ object TestUtil {
       classes = Seq.empty,
       references = elements,
       enums = Seq.empty,
-      uiState = "",
-      methods = Seq.empty
+      methods = Seq.empty,
+      attributes = Seq.empty,
+      uiState = ""
     )
   }
 

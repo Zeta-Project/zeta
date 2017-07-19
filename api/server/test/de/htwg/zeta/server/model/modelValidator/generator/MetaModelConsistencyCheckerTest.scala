@@ -118,8 +118,9 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   val ambiguousMetaModel = MetaModel(
@@ -127,8 +128,9 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   "checkConsistencs" should "return a valid result on a valid meta model" in {

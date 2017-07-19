@@ -237,6 +237,7 @@ object MetaModelEntityFixtures {
     classes = Seq(class1, class2),
     references = Seq(reference1, reference2),
     enums = Seq(enum1, enum2),
+    attributes = Seq.empty,
     uiState = "uiState1",
     methods = Seq.empty
   )
@@ -246,6 +247,7 @@ object MetaModelEntityFixtures {
     classes = Seq(class1),
     references = Seq(reference1),
     enums = Seq(enum1),
+    attributes = Seq(stringAttribute, enumAttribute),
     uiState = "uiState2",
     methods = Seq.empty
   )

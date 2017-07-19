@@ -1,25 +1,25 @@
 package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 import scala.collection.immutable.Seq
+import scala.collection.mutable
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
+import play.api.libs.json.Format
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.Format
+import play.api.libs.json.Json
 import play.api.libs.json.JsResult
-import play.api.libs.json.Reads
 import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
 
 
 private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
@@ -103,10 +103,12 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
             case ((cls, refs, ens), me: MEnum) => (cls, refs, me :: ens)
           })
 
+        val attributes = json.\("attributes").validate(Reads.list(new MAttributeFormat(enums.map(e => (e.name, e)).toMap))).get
         MetaModel(name = name,
           classes = classes,
           references = references,
           enums = enums,
+          attributes = attributes,
           methods = methods,
           uiState = uiState
         )

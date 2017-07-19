@@ -17,8 +17,9 @@ class ValidatorGeneratorTest extends FlatSpec with Matchers {
     classes = Seq(),
     references = Seq(),
     enums = Seq(),
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   val metaModelEntity = MetaModelEntity(

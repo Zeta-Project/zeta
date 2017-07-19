@@ -58,8 +58,9 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     classes = Seq(nonCyclicClassOne, nonCyclicClassTwo, nonCyclicClassThree, nonCyclicClassFour),
     references = Seq(),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   val cyclicClassOne = MClass(
@@ -133,8 +134,9 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     classes = Seq(cyclicClassOne, cyclicClassTwo, cyclicClassThree, cyclicClassFour, cyclicClassFive, cyclicClassSix),
     references = Seq(),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    methods = Seq.empty,
+    attributes = Seq.empty,
+    uiState = ""
   )
 
   val rule = new NoCyclicInheritance

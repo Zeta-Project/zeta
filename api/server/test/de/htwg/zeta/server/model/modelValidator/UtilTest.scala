@@ -183,8 +183,9 @@ class UtilTest extends FlatSpec with Matchers {
     classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo),
     references = Seq(superClassOneToSuperClassTwo),
     enums = Seq.empty,
-    uiState = "",
-    methods = Seq.empty
+    attributes = Seq.empty,
+    methods = Seq.empty,
+    uiState = ""
   )
 
   val simplifiedGraph: scala.Seq[Util.El] = Util.simplifyMetaModelGraph(metaModel)

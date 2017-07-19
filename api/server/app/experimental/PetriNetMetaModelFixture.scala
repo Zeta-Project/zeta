@@ -163,6 +163,7 @@ object PetriNetMetaModelFixture {
     classes = List(place, transition),
     references = List(producer, consumer),
     enums = List(enum1, enum2),
+    attributes = List.empty,
     methods = List(
       Method(
         name = "printState",
