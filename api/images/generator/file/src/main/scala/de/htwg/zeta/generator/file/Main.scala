@@ -1,3 +1,5 @@
+package de.htwg.zeta.generator.file
+
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -9,12 +11,14 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.generator.template.Error
+import de.htwg.zeta.generator.template.Result
+import de.htwg.zeta.generator.template.Settings
+import de.htwg.zeta.generator.template.Success
+import de.htwg.zeta.generator.template.Template
+import de.htwg.zeta.generator.template.Transformer
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.Persistence.fullAccessRepository
-import de.htwg.zeta.server.generator.Error
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Success
-import de.htwg.zeta.server.generator.Transformer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

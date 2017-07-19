@@ -1,3 +1,5 @@
+package de.htwg.zeta.generator.remote
+
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,9 +14,11 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Success
-import de.htwg.zeta.server.generator.Transformer
+import de.htwg.zeta.generator.template.Result
+import de.htwg.zeta.generator.template.Settings
+import de.htwg.zeta.generator.template.Success
+import de.htwg.zeta.generator.template.Template
+import de.htwg.zeta.generator.template.Transformer
 import org.slf4j.LoggerFactory
 import rx.lang.scala.Notification.OnCompleted
 import rx.lang.scala.Notification.OnError

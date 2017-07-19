@@ -1,12 +1,7 @@
+package de.htwg.zeta.generator.template
+
 import java.io.FileNotFoundException
 import java.util.UUID
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.Promise
-import scala.reflect.ClassTag
-import scala.reflect.runtime
-import scala.tools.reflect.ToolBox
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
@@ -15,16 +10,21 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Transformer
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.reflect.ClassTag
+import scala.reflect.runtime
+import scala.tools.reflect.ToolBox
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session: ScallopOption[String] = opt[String]()

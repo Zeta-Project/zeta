@@ -1,3 +1,5 @@
+package de.htwg.zeta.generator.specific
+
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -11,10 +13,12 @@ import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.server.generator.Error
-import de.htwg.zeta.server.generator.Result
-import de.htwg.zeta.server.generator.Success
-import de.htwg.zeta.server.generator.Transformer
+import de.htwg.zeta.generator.template.Error
+import de.htwg.zeta.generator.template.Result
+import de.htwg.zeta.generator.template.Settings
+import de.htwg.zeta.generator.template.Success
+import de.htwg.zeta.generator.template.Template
+import de.htwg.zeta.generator.template.Transformer
 
 object Main extends Template[CreateOptions, String] {
   val sep = "\n"

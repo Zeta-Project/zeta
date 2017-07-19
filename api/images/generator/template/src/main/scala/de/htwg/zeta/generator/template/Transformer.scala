@@ -1,11 +1,10 @@
-package de.htwg.zeta.server.generator
+package de.htwg.zeta.generator.template
 
 import java.util.UUID
 
 import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.remote.Remote
 
 /**
  * Result of a generator
