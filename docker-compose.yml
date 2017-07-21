@@ -57,8 +57,6 @@ services:
       - ./webapp:/src
     command: "bash -c 'yarn; ./node_modules/.bin/bower install --allow-root; npm run dev'"
     working_dir: /src
-    links:
-      - database
 
   proxy:
     image: nginx
