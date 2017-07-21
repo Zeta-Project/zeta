@@ -1,6 +1,8 @@
 package de.htwg.zeta.server.controller.restApi
 
 import scala.concurrent.Future
+import scala.reflect.runtime.universe
+import scala.reflect.runtime.universe.TypeTag
 
 import grizzled.slf4j.Logging
 import play.api.data.validation.ValidationError
@@ -16,7 +18,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 /**
  * Base class with utilitis
  */
-class RestApiController[T] extends Controller with Logging {
+class RestApiController[T: TypeTag] extends Controller with Logging {
 
   protected def parseJson(json: JsValue, reader: Reads[T], callback: (T) => Future[Result]): Future[Result] = {
     val jsResult = json.validate(reader) match {
@@ -40,7 +42,7 @@ class RestApiController[T] extends Controller with Logging {
   private def processEntity(entity: T, callback: (T) => Future[Result]): Future[Result] = {
     callback(entity).recover {
       case e: Exception =>
-        error("Exception while trying to insert a `BondedTask` into DB", e)
+        error("Exception while trying to insert a `" + universe.typeOf[T].toString + "` into DB", e)
         BadRequest(e.getMessage)
     }
   }

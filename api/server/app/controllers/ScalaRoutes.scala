@@ -193,6 +193,7 @@ class ScalaRoutes @Inject()(
   /* ### TimedTask REST API */
   def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
   def deleteTimedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.delete(id) _)
+  def postTimedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, TimedTaskRestApi.insert _)
 
   /* ### File REST API */
   def getFiles(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(FileRestApi.get(id, name) _)

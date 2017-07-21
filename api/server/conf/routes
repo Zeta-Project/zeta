@@ -113,6 +113,7 @@ POST          /rest/v1/event-driven-tasks                                       
 ### TimedTask REST API
 GET           /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.getTimedTasksNoArgs
 DELETE        /rest/v1/timed-tasks/:id                                               controllers.ScalaRoutes.deleteTimedTasks(id: java.util.UUID)
+POST          /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.postTimedTasks
 
 ### File REST API
 GET           /rest/v1/files/:id/*name                                               controllers.ScalaRoutes.getFiles(id: java.util.UUID, name: String)

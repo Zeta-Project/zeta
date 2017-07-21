@@ -11,13 +11,11 @@
 <link rel="import" href="../base/my-icons.html">
 <link rel="import" href="../base/my-dropdown.html">
 <link rel="import" href="../base/my-event-dropdown.html">
-<link rel="import" href="../base/my-factory.html">
 <link rel="import" href="../database/database-document.html">
 
 <dom-module id="timed-tasks-controls">
   <template>
-    <my-factory id="factory" doc="{{doc}}" type="TimedTask"></my-factory>
-    <database-document id="db"></database-document>
+    <database-document id="db" rest-create="/rest/v1/timed-tasks"></database-document>
     <paper-icon-button icon="myicons:add" toggles active="{{open}}"></paper-icon-button>
 
     <paper-dialog id="dialog" opened="{{open}}">
@@ -34,8 +32,8 @@
         Repeat after minutes:
         &#13;<br/>
         <input id="interval" label="interval" type="number" name="repeat" min="1" value="1"></input>
-        <my-dropdown type="Generator" label="Generator" rest-list="/rest/v1/generators" selected="{{doc.generator}}"></my-dropdown>
-        <my-dropdown type="Filter" label="Filter" rest-list="/rest/v1/filters" selected="{{doc.filter}}"></my-dropdown>
+        <my-dropdown type="Generator" label="Generator" rest-list="/rest/v1/generators" selected="{{doc.generatorId}}"></my-dropdown>
+        <my-dropdown type="Filter" label="Filter" rest-list="/rest/v1/filters" selected="{{doc.filterId}}"></my-dropdown>
 
 
       </form>
@@ -52,7 +50,10 @@
       is: 'timed-tasks-controls',
 
       properties: {
-        doc: Object,
+        doc: {
+          type: Object,
+          value: {}
+        },
         open: Boolean
       },
 
@@ -69,17 +70,10 @@
       _submit() {
         this.doc.interval = this.$.interval.valueAsNumber;
         this.doc.start = new Date(this.$.start.valueAsNumber).toISOString();
-
-        if (undefined === this.doc.name
-          || undefined === this.doc.generator
-          || undefined === this.doc.filter
-          || undefined === this.doc.start
-          || undefined === this.doc.interval) return;
         this.$.db.createDocument(this.doc).then(() => {
-          this.$.factory.next();
+          this.doc = {}; // Clear doc
           this.$.dialog.opened = false;
         }).catch(() => {
-          this.$.factory.next();
           this.$.dialog.opened = false;
         });
       }
