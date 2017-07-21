@@ -47,8 +47,8 @@
       _submit() {
         if (!this.$.form.validate()) return;
 
-        this.doc.instanceIds = [];
         this.$.db.createDocument(this.doc).then(() => {
+          // Clear doc
           this.doc = { description: '', instanceIds: [], files: {} };
           this.$.dialog.opened = false;
         }).catch(() => {
