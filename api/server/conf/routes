@@ -108,6 +108,7 @@ POST          /rest/v1/bonded-tasks                                             
 ### EventDrivenTask REST API
 GET           /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.getEventDrivenTasksNoArgs
 DELETE        /rest/v1/event-driven-tasks/:id                                        controllers.ScalaRoutes.deleteEventDrivenTasks(id: java.util.UUID)
+POST          /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.postEventDrivenTasks
 
 ### TimedTask REST API
 GET           /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.getTimedTasksNoArgs

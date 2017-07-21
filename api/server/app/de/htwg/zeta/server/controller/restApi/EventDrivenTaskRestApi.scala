@@ -9,17 +9,16 @@ import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.server.controller.restApi.format.EventDrivenTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
+import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * RESTful API for filter definitions
  */
-class EventDrivenTaskRestApi() extends Controller with Logging {
+class EventDrivenTaskRestApi() extends RestApiController[EventDrivenTask] {
 
   private val repo = Persistence.fullAccessRepository.eventDrivenTask
 
@@ -67,5 +66,14 @@ class EventDrivenTaskRestApi() extends Controller with Logging {
   private def flagAsDeleted(id: UUID): Future[EventDrivenTask] = {
     val deleted = Some(true)
     repo.update(id, e => e.copy(deleted = deleted))
+  }
+
+  /**
+   * Add new BondedTask into DB
+   * @param request The request
+   * @return The result
+   */
+  def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+    parseJson(request.body, EventDrivenTaskFormat, (entity) => repo.create(entity).map(_ => Ok("")))
   }
 }

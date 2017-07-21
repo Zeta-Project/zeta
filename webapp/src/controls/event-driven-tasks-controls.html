@@ -11,13 +11,11 @@
 <link rel="import" href="../base/my-icons.html">
 <link rel="import" href="../base/my-dropdown.html">
 <link rel="import" href="../base/my-event-dropdown.html">
-<link rel="import" href="../base/my-factory.html">
 <link rel="import" href="../database/database-document.html">
 
 <dom-module id="event-driven-tasks-controls">
   <template>
-    <my-factory id="factory" doc="{{doc}}" type="EventDrivenTask"></my-factory>
-    <database-document id="db"></database-document>
+    <database-document id="db" rest-create="/rest/v1/event-driven-tasks"></database-document>
     <paper-icon-button icon="myicons:add" toggles active="{{open}}"></paper-icon-button>
 
     <paper-dialog id="dialog" opened="{{open}}">
@@ -26,8 +24,8 @@
       <form is="iron-form" id="form">
         <paper-input required label="Name" value="{{doc.name}}"></paper-input>
         <my-event-dropdown selected="{{doc.event}}"></my-event-dropdown>
-        <my-dropdown type="Generator" label="Generator" rest-list="/rest/v1/generators" selected="{{doc.generator}}"></my-dropdown>
-        <my-dropdown type="Filter" label="Filter" rest-list="/rest/v1/filters" selected="{{doc.filter}}"></my-dropdown>
+        <my-dropdown type="Generator" label="Generator" rest-list="/rest/v1/generators" selected="{{doc.generatorId}}"></my-dropdown>
+        <my-dropdown type="Filter" label="Filter" rest-list="/rest/v1/filters" selected="{{doc.filterId}}"></my-dropdown>
       </form>
 
       <div class="buttons">
@@ -42,16 +40,18 @@
       is: 'event-driven-tasks-controls',
 
       properties: {
-        doc: Object
+        doc: {
+          type: Object,
+          value: {}
+        }
       },
 
       _submit() {
         if (!this.$.form.validate()) return;
         this.$.db.createDocument(this.doc).then(() => {
-          this.$.factory.next();
+          this.doc = {};
           this.$.dialog.opened = false;
         }).catch(() => {
-          this.$.factory.next();
           this.$.dialog.opened = false;
         });
       }

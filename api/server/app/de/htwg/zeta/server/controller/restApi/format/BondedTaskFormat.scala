@@ -9,7 +9,7 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 
 /**
- * Parse JsValue to File and File to JsValue
+ * Parse JsValue to BondedTask and BondedTask to JsValue
  */
 object BondedTaskFormat extends Format[BondedTask] {
 
