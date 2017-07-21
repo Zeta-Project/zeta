@@ -15,7 +15,7 @@
 
 <dom-module id="bonded-tasks-controls">
   <template>
-    <database-document id="db" rest-create="/rest/v1/bonded-tasks"></database-document>
+    <database-document id="db" rest-create="/rest/v1/bonded-tasks" type="BondedTask"></database-document>
     <paper-icon-button icon="myicons:add" toggles active="{{open}}"></paper-icon-button>
 
     <paper-dialog id="dialog" opened="{{open}}">

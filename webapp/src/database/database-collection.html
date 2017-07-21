@@ -1,9 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="database-collection">
   <template>
     <iron-ajax id="ajax" method="GET" url="[[restList]]" content-type="application/json" handle-as="json"></iron-ajax>
+    <iron-signals on-iron-signal-db-create="_update" on-iron-signal-db-delete="_update"></iron-signals>
   </template>
   <script>
     (function() {
@@ -17,11 +19,11 @@
             type: Boolean,
             value: false
           },
-          type: {
+          type: String,
+          restList: {
             type: String,
             value: "/rest/v1/failed"
           },
-          restList: String,
           docs: {
             type: Array,
             notify: true,
@@ -44,6 +46,12 @@
 
         ready() {
           if (this.auto) {
+            this.generateRequest();
+          }
+        },
+
+        _update(e) {
+          if (e.detail === this.type) {
             this.generateRequest();
           }
         }

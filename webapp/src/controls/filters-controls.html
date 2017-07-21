@@ -15,7 +15,7 @@
 
 <dom-module id="filters-controls">
   <template>
-    <database-document id="db" rest-create="/rest/v1/filters"></database-document>
+    <database-document id="db" rest-create="/rest/v1/filters" type="Filter"></database-document>
     <paper-icon-button icon="myicons:add" toggles active="{{open}}"></paper-icon-button>
 
     <paper-dialog id="dialog" opened="{{open}}">
