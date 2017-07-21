@@ -44,7 +44,7 @@
         tail="{{attachment}}"></app-route>
 
     <database-document id="db" auto doc="{{doc}}"
-      rest-single="/rest/v1/files/[[docId]]/[[docName]]"
+      rest-single="[[restSingle]]"
       rest-update="/rest/v1/files/[[docId]]/[[docName]]"></database-document>
 
     <template is="dom-if" if="{{doc}}">
@@ -88,7 +88,10 @@
           computed: '_computeDocName(attachment.path)'
         },
         doc: Object,
-        
+        restSingle: {
+          type: String,
+          computed: '_restSingle(docName)'
+        }
       },
 
       observers: [
@@ -110,6 +113,10 @@
           default:
             console.warn('Unknown mode:', this.routeData.mode);
         }
+      },
+
+      _restSingle(id) {
+        return '/rest/v1/files/' + this.docId + '/' + this.docName;
       },
 
       _resolveFilename(id) {

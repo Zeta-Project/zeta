@@ -111,6 +111,12 @@
           files = this.sortFiles(files);
           // build a nested tree from the files.
           this.tree = this.buildNestedTree(files);
+
+          const file = Object.keys(project.files).find(() => true);
+          if (file && this.route.path === '/' + this.routeData.type + '/' + project.id) {
+            this.$.redirect.href = '/app/editor/' + this.routeData.type + '/' + project.id + '/file/' + file + '/' + project.files[file];
+            this.$.redirect.click();
+          }
         } else {
           this.tree = [];
         }
