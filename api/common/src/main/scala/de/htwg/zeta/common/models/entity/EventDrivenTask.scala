@@ -9,5 +9,5 @@ case class EventDrivenTask(
     generatorId: UUID,
     filterId: UUID,
     event: String,
-    deleted: Option[Boolean] = Some(false)
+    deleted: Boolean = false
 ) extends Entity

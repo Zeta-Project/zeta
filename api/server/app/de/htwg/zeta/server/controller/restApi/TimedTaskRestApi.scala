@@ -43,7 +43,7 @@ class TimedTaskRestApi() extends RestApiController[TimedTask] {
   }
 
   private def getJsonArray(list: List[TimedTask]) = {
-    val entities = list.filter(e => !e.deleted.getOrElse(false))
+    val entities = list.filter(e => !e.deleted)
     val entries = entities.map(TimedTaskFormat.writes)
     val json = JsArray(entries)
     Ok(json)
@@ -64,8 +64,7 @@ class TimedTaskRestApi() extends RestApiController[TimedTask] {
   }
 
   private def flagAsDeleted(id: UUID): Future[TimedTask] = {
-    val deleted = Some(true)
-    repo.update(id, e => e.copy(deleted = deleted))
+    repo.update(id, e => e.copy(deleted = true))
   }
 
   /**

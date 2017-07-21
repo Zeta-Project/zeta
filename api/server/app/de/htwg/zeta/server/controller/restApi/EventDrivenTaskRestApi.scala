@@ -43,7 +43,7 @@ class EventDrivenTaskRestApi() extends RestApiController[EventDrivenTask] {
   }
 
   private def getResultJsonArray(list: List[EventDrivenTask]) = {
-    val entities = list.filter(e => !e.deleted.getOrElse(false))
+    val entities = list.filter(e => !e.deleted)
     val entries = entities.map(EventDrivenTaskFormat.writes)
     val json = JsArray(entries)
     Ok(json)
@@ -64,8 +64,7 @@ class EventDrivenTaskRestApi() extends RestApiController[EventDrivenTask] {
   }
 
   private def flagAsDeleted(id: UUID): Future[EventDrivenTask] = {
-    val deleted = Some(true)
-    repo.update(id, e => e.copy(deleted = deleted))
+    repo.update(id, e => e.copy(deleted = true))
   }
 
   /**

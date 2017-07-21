@@ -7,5 +7,5 @@ case class Generator(
     name: String,
     imageId: UUID,
     files: Map[UUID, String] = Map(),
-    deleted: Option[Boolean] = Some(false)
+    deleted: Boolean = false
 ) extends Entity

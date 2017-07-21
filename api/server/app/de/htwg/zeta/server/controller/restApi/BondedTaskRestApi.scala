@@ -43,7 +43,7 @@ class BondedTaskRestApi() extends RestApiController[BondedTask] {
   }
 
   private def getResultJsonArray(list: List[BondedTask]) = {
-    val entities = list.filter(e => !e.deleted.getOrElse(false))
+    val entities = list.filter(e => !e.deleted)
     val entries = entities.map(BondedTaskFormat.writes)
     val json = JsArray(entries)
     Ok(json)
@@ -64,8 +64,7 @@ class BondedTaskRestApi() extends RestApiController[BondedTask] {
   }
 
   private def flagAsDeleted(id: UUID): Future[BondedTask] = {
-    val deleted = Some(true)
-    repo.update(id, e => e.copy(deleted = deleted))
+    repo.update(id, e => e.copy(deleted = true))
   }
 
   /**
