@@ -94,6 +94,8 @@ To start all services simply run the below command.
 docker-compose up -d api
 ```
 
+On first run this can take up to 30min (thx to SBT). After this time Zeta is available via [http://localhost:9000](http://localhost:9000)
+
 ## Create a Generator
 Two steps are required to create a generator.
 
