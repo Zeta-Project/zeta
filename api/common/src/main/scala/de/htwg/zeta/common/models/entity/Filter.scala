@@ -8,5 +8,6 @@ case class Filter(
     name: String,
     description: String,
     instanceIds: Seq[UUID],
-    deleted: Option[Boolean] = Some(false)
+    files: Map[UUID, String] = Map(),
+    deleted: Boolean = false
 ) extends Entity

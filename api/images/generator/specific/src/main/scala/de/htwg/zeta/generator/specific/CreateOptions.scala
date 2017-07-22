@@ -1,3 +1,5 @@
+package de.htwg.zeta.generator.specific
+
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 

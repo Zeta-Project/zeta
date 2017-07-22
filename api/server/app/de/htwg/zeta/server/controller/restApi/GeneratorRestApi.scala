@@ -44,7 +44,7 @@ class GeneratorRestApi() extends Controller with Logging {
   }
 
   private def getResultJsonArray(list: List[Generator]): Result = {
-    val entities = list.filter(e => !e.deleted.getOrElse(false))
+    val entities = list.filter(e => !e.deleted)
     val entries = entities.map(GeneratorFormat.writes)
     val json = JsArray(entries)
     Ok(json)
@@ -84,7 +84,6 @@ class GeneratorRestApi() extends Controller with Logging {
   }
 
   private def flagAsDeleted(id: UUID): Future[Generator] = {
-    val deleted = Some(true)
-    repo.update(id, entity => entity.copy(deleted = deleted))
+    repo.update(id, entity => entity.copy(deleted = true))
   }
 }

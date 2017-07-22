@@ -51,17 +51,6 @@
           image: image,
           options: options
         });
-      },
-
-      manageFile(doc, attachmentId, saved, current, contentType) {
-        const file = {
-          doc: doc,
-          attachmentId: attachmentId,
-          saved: saved,
-          current: current,
-          contentType: contentType
-        };
-        this.$.signal.fire('iron-signal', {name: 'manage-file', data: file})
       }
     });
   </script>

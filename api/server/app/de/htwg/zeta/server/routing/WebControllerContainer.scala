@@ -9,9 +9,9 @@ import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.ChangePasswordController
 import de.htwg.zeta.server.controller.DynamicFileController
 import de.htwg.zeta.server.controller.ForgotPasswordController
-import de.htwg.zeta.server.controller.ModelEditorGeneratorController
 import de.htwg.zeta.server.controller.MetaModelController
 import de.htwg.zeta.server.controller.ModelController
+import de.htwg.zeta.server.controller.ModelEditorGeneratorController
 import de.htwg.zeta.server.controller.ResetPasswordController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
@@ -20,6 +20,7 @@ import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.BondedTaskRestApi
 import de.htwg.zeta.server.controller.restApi.EventDrivenTaskRestApi
+import de.htwg.zeta.server.controller.restApi.FileRestApi
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
@@ -56,4 +57,5 @@ class WebControllerContainer @Inject() private(
     val metaModelReleaseRestApi: Provider[MetaModelReleaseRestApi],
     val bondedTaskRestApi: Provider[BondedTaskRestApi],
     val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi],
-    val timedTaskRestApi: Provider[TimedTaskRestApi])
+    val timedTaskRestApi: Provider[TimedTaskRestApi],
+    val fileRestApi: Provider[FileRestApi])

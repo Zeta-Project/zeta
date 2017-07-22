@@ -86,7 +86,8 @@ class AccessRestrictedFilePersistence(
       if (accessGranted) {
         f
       } else {
-        Future.failed(new IllegalStateException("access denied"))
+
+        Future.failed(new IllegalStateException(s"Access denied: " + File.toString))
       }
     )
   }

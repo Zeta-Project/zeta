@@ -4,11 +4,12 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.reflect.runtime.universe
+import scala.reflect.runtime.universe.TypeTag
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
-
 
 /** Persistence-Layer to restrict the access to the entity-persistence.
  *
@@ -18,7 +19,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  * @tparam E type of the entity
  * @param manifest implicit manifest of the entity type
  */
-class AccessRestrictedEntityPersistence[E <: Entity]( // scalastyle:ignore
+class AccessRestrictedEntityPersistence[E <: Entity: TypeTag]( // scalastyle:ignore
     ownerId: UUID,
     accessAuthorisation: EntityPersistence[AccessAuthorisation],
     underlaying: EntityPersistence[E])(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
@@ -86,7 +87,7 @@ class AccessRestrictedEntityPersistence[E <: Entity]( // scalastyle:ignore
       if (accessGranted) {
         f
       } else {
-        Future.failed(new IllegalStateException("access denied"))
+        Future.failed(new IllegalStateException(s"Access denied: ${universe.typeOf[E].toString}"))
       }
     )
   }

@@ -95,6 +95,7 @@ DELETE        /rest/v1/generators/:id                                           
 GET           /rest/v1/filters                                                       controllers.ScalaRoutes.getFiltersNoArgs
 GET           /rest/v1/filters/:id                                                   controllers.ScalaRoutes.getFilters(id: java.util.UUID)
 DELETE        /rest/v1/filters/:id                                                   controllers.ScalaRoutes.deleteFilters(id: java.util.UUID)
+POST          /rest/v1/filters                                                       controllers.ScalaRoutes.postFilters
 
 ### MetaModelRelease REST API
 GET           /rest/v1/meta-model-releases                                           controllers.ScalaRoutes.getMetaModelReleasesNoArgs
@@ -102,14 +103,21 @@ GET           /rest/v1/meta-model-releases                                      
 ### BondedTask REST API
 GET           /rest/v1/bonded-tasks                                                  controllers.ScalaRoutes.getBondedTasksNoArgs
 DELETE        /rest/v1/bonded-tasks/:id                                              controllers.ScalaRoutes.deleteBondedTasks(id: java.util.UUID)
+POST          /rest/v1/bonded-tasks                                                  controllers.ScalaRoutes.postBondedTasks
 
 ### EventDrivenTask REST API
 GET           /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.getEventDrivenTasksNoArgs
 DELETE        /rest/v1/event-driven-tasks/:id                                        controllers.ScalaRoutes.deleteEventDrivenTasks(id: java.util.UUID)
+POST          /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.postEventDrivenTasks
 
 ### TimedTask REST API
 GET           /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.getTimedTasksNoArgs
 DELETE        /rest/v1/timed-tasks/:id                                               controllers.ScalaRoutes.deleteTimedTasks(id: java.util.UUID)
+POST          /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.postTimedTasks
+
+### File REST API
+GET           /rest/v1/files/:id/*name                                               controllers.ScalaRoutes.getFiles(id: java.util.UUID, name: String)
+PUT           /rest/v1/files/:id/*name                                               controllers.ScalaRoutes.putFiles(id: java.util.UUID, name: String)
 
 ### Code Editor
 GET           /codeEditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)

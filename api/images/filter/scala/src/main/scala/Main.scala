@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -8,19 +9,20 @@ import scala.tools.reflect.ToolBox
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.persistence.Persistence
-import filter.BaseFilter
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.persistence.Persistence
+import filter.BaseFilter
 import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.ahc.AhcWSClient
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
-  val filter = opt[String](required = true)
-  val session = opt[String](required = true)
-  val work = opt[String](required = true)
+  val filter: ScallopOption[String] = opt[String](required = true)
+  val session: ScallopOption[String] = opt[String](required = true)
+  val work: ScallopOption[String] = opt[String](required = true)
   verify()
 }
 
@@ -36,18 +38,13 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-
-  private val repository = cmd.session.toOption.fold(
-    Persistence.fullAccessRepository
-  )(session =>
-    Persistence.restrictedAccessRepository(UUID.fromString(session))
-  )
+  private val repository = Persistence.fullAccessRepository
 
   cmd.filter.foreach({ id =>
-
+    logger.info("Run filter: " + id)
     val result = for {
       filter <- repository.filter.read(UUID.fromString(id))
-      file <- repository.file.read(filter.id, "filter.scala")
+      file <- getFile("filter.scala", filter)
       fn <- compileFilter(file)
       instances <- checkInstances(fn)
       saved <- saveResult(filter, instances)
@@ -55,7 +52,7 @@ object Main extends App {
       saved
     }
 
-    result foreach { result =>
+    result foreach { _ =>
       logger.info("Successful executed filter")
       System.exit(0)
     }
@@ -67,7 +64,16 @@ object Main extends App {
     }
   })
 
-  def compileFilter(file: File): Future[BaseFilter] = {
+  private def getFile(fileName: String, filter: Filter): Future[File] = {
+    filter.files.find { case (_, name) => name == fileName } match {
+      case Some((id, name)) => repository.file.read(id, name)
+      case None =>
+        logger.error("Could not find '{}' in Generator {}", fileName, filter.id.toString: Any)
+        throw new FileNotFoundException(s"Could not find '$fileName' in Generator ${filter.id}")
+    }
+  }
+
+  private def compileFilter(file: File): Future[BaseFilter] = {
     val p = Promise[BaseFilter]
     logger.info("compile filter")
 
@@ -92,22 +98,20 @@ object Main extends App {
     p.future
   }
 
-  def checkInstances(filter: BaseFilter): Future[List[UUID]] = {
-    val p = Promise[List[String]]
+  private def checkInstances(filter: BaseFilter): Future[List[UUID]] = {
     logger.info("Check all models")
-
     val allFilterIds = repository.modelEntity.readAllIds()
     val allFilters = allFilterIds.flatMap(ids => Future.sequence(ids.map(repository.modelEntity.read)) )
     allFilters.flatMap(filters => Future.sequence(filters.map(checkInstance(filter, _)))).map(x => x.map(_._1).toList)
 
   }
 
-  def checkInstance(fn: BaseFilter, entity: ModelEntity) = {
+  private def checkInstance(fn: BaseFilter, entity: ModelEntity) = {
     val checked = fn.filter(entity)
     if (checked) {
-      logger.info(s"${entity.model.metaModelId} ${entity.id} ✓")
+      logger.info(s"Check successful: metaModel ${entity.model.metaModelId}, model ${entity.id}")
     } else {
-      logger.info(s"${entity.model.metaModelId} ${entity.id}")
+      logger.info(s"Check failed: metaModel ${entity.model.metaModelId}, model ${entity.id}")
     }
     Future.successful(entity.id, checked)
   }

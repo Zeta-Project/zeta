@@ -1,7 +1,6 @@
 package controllers
 
 import java.util.UUID
-import java.util.UUID
 import javax.inject.Inject
 
 import de.htwg.zeta.server.routing.RouteController
@@ -176,6 +175,7 @@ class ScalaRoutes @Inject()(
   def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
   def getFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.get(id) _)
   def deleteFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.delete(id) _)
+  def postFilters: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, FilterRestApi.insert _)
 
   /* ### Filter REST API */
   def getMetaModelReleasesNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelReleaseRestApi.showForUser() _)
@@ -183,14 +183,21 @@ class ScalaRoutes @Inject()(
   /* ### BondedTask REST API */
   def getBondedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.showForUser() _)
   def deleteBondedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.delete(id) _)
+  def postBondedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, BondedTaskRestApi.insert _)
 
   /* ### EventDrivenTask REST API */
   def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.showForUser() _)
   def deleteEventDrivenTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.delete(id) _)
+  def postEventDrivenTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, EventDrivenTaskRestApi.insert _)
 
   /* ### TimedTask REST API */
   def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
   def deleteTimedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.delete(id) _)
+  def postTimedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, TimedTaskRestApi.insert _)
+
+  /* ### File REST API */
+  def getFiles(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(FileRestApi.get(id, name) _)
+  def putFiles(id: UUID, name: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, FileRestApi.update(id, name) _)
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =

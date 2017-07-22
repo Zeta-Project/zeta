@@ -1,3 +1,5 @@
+package de.htwg.zeta.generator.remote
+
 import java.util.UUID
 
 import play.api.libs.json.Json
