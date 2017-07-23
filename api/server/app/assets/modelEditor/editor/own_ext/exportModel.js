@@ -21,8 +21,12 @@ var modelExporter = (function modelExporter () {
             name: window._global_model_name,
             metaModelId: window._global_graph_type,
             elements: elements,
+            attributes: {}, // TODO
             uiState: uiState
         });
+
+        console.log("SaveModel - Data: ");
+        console.log(data);
 
         $.ajax({
             type: 'PUT',

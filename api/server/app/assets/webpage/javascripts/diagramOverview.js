@@ -41,6 +41,7 @@
             name: name,
             metaModelId: window.metaModelId,
             elements: [],
+            attributes: [],
             uiState: ""
         };
 
