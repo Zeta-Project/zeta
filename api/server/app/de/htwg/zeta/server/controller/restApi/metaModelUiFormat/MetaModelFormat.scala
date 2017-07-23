@@ -103,14 +103,12 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
             case ((cls, refs, ens), me: MEnum) => (cls, refs, me :: ens)
           })
 
-
-        /*TODO Fixing attributes -> this is just a workaround for a presentation */
-        //val attributes = json.\("attributes").validate(Reads.list(new MAttributeFormat(enums.map(e => (e.name, e)).toMap))).get
+        val attributes = json.\("attributes").validate(Reads.list(new MAttributeFormat(enums.map(e => (e.name, e)).toMap))).get
         MetaModel(name = name,
           classes = classes,
           references = references,
           enums = enums,
-          attributes = Seq.empty[MAttribute],
+          attributes = attributes,
           methods = methods,
           uiState = uiState
         )
@@ -126,6 +124,7 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
       "elements" -> JsArray(elems.map(MObjectFormat.writes)),
       "uiState" -> mm.uiState,
       "methods" -> JsArray(mm.methods.map(Method.playJsonFormat.writes))
+      // TODO add attributes
     )
   }
 }

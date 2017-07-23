@@ -34,7 +34,7 @@ var Rappid = Backbone.Router.extend({
 
             this.initializeToolbar();
 
-            $("[data-hide]").on("click", function(){
+            $("[data-hide]").on("click", function () {
                 $("." + $(this).attr("data-hide")).hide();
             });
             linkTypeSelector.init(this.graph);
@@ -563,7 +563,7 @@ var Rappid = Backbone.Router.extend({
 
                 if (metaModel.isValid()) {
                     // Send exported Metamodel to server
-                    this.saveMetaModel(metaModel.getMetaModel(), this.graph.toJSON());
+                    this.saveMetaModel(metaModel.getMetaModel(), [], [], this.graph.toJSON()); // TODO add attributes and methods
                 } else {
                     var errorMessage = "";
                     metaModel.getMessages().forEach(function (message) {
@@ -578,15 +578,19 @@ var Rappid = Backbone.Router.extend({
         /**
          * Saves the meta model and graph on the server.
          * @param metaModel
+         * @param attributes
+         * @param methods
          * @param graph
          */
-        saveMetaModel: function (metaModel, graph) {
+        saveMetaModel: function (metaModel, attributes, methods, graph) {
             var showFailure = this.showExportFailure;
             var showSuccess = this.showExportSuccess;
 
             var data = JSON.stringify({
                 name: window.loadedMetaModel.name,
                 elements: metaModel,
+                attributes: attributes,
+                methods: methods,
                 uiState: JSON.stringify(graph)
             });
 
@@ -733,7 +737,7 @@ var Rappid = Backbone.Router.extend({
         }
         ,
 
-        verifyMethods: function() {
+        verifyMethods: function () {
 
         }
         ,
@@ -812,9 +816,9 @@ var Rappid = Backbone.Router.extend({
 
         },
 
-        showExportSuccess: function() {
-            $("#success-panel").fadeOut('slow', function() {
-                $("#error-panel").fadeOut('slow', function() {
+        showExportSuccess: function () {
+            $("#success-panel").fadeOut('slow', function () {
+                $("#error-panel").fadeOut('slow', function () {
                     $("#success-panel").show();
                     $("#success-panel").find("div").text("Success, metamodel saved!");
                     $("#success-panel").fadeIn('slow');
@@ -822,9 +826,9 @@ var Rappid = Backbone.Router.extend({
             });
         },
 
-        showExportFailure: function(reason) {
-            $("#success-panel").fadeOut('slow', function() {
-                $("#error-panel").fadeOut('slow', function() {
+        showExportFailure: function (reason) {
+            $("#success-panel").fadeOut('slow', function () {
+                $("#error-panel").fadeOut('slow', function () {
                     $("#error-panel").show();
                     $("#error-panel").find("div").text(reason);
                     $("#error-panel").fadeIn('slow');
@@ -833,4 +837,4 @@ var Rappid = Backbone.Router.extend({
         }
 // ---------- customization end
     })
-    ;
+;

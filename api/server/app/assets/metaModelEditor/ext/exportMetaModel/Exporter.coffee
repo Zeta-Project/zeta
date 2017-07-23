@@ -50,8 +50,6 @@ class window.Exporter
     @addClasses metaModel
     @addReferences metaModel
     @addEnums metaModel
-    #@addAttribute metaModel
-    #@addMethod metaModel
 
     metaModel
 
@@ -63,13 +61,14 @@ class window.Exporter
       metaModel.push
         mType: Constants.CLASS
         name: @graph.getName element
-        description: @graph.getDescription element
+        description: "TODO" # @graph.getDescription is not working when empty
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
         methods: @graph.getClassMethods element
         inputs: @graph.getInputs element
         outputs: @graph.getOutputs element
+
 
 
   # Iterates over the graph-references and adds them to the metaModel object.
@@ -79,9 +78,11 @@ class window.Exporter
       metaModel.push
         mType: Constants.REFERENCE
         name: @graph.getName reference
+        description: "TODO" # @graph.getDescription is not working when empty
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
         targetDeletionDeletesSource: @graph.getTargetDeletionDeletesSource reference
         attributes: @graph.getAttributes reference
+        methods: [] # TODO
         source: @graph.getSources reference
         target: @graph.getTargets reference
 
