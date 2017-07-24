@@ -123,7 +123,7 @@ class window.Graph
     mAttributes
 
 # Returns the methodss of the cell.
-  getClassMethods: (cell) ->
+  getEntityMethods: (cell) ->
     mMethods = []
     if cell.attributes[Constants.field.METHODS]?
       for attributes in cell.attributes[Constants.field.METHODS]

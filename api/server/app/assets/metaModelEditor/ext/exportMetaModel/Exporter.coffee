@@ -65,7 +65,7 @@ class window.Exporter
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
-        methods: @graph.getClassMethods element
+        methods: @graph.getEntityMethods element
         inputs: @graph.getInputs element
         outputs: @graph.getOutputs element
 
@@ -82,7 +82,7 @@ class window.Exporter
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
         targetDeletionDeletesSource: @graph.getTargetDeletionDeletesSource reference
         attributes: @graph.getAttributes reference
-        methods: [] # TODO
+        methods: @graph.getEntityMethods reference
         source: @graph.getSources reference
         target: @graph.getTargets reference
 
