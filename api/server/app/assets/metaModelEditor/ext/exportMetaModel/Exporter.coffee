@@ -61,7 +61,7 @@ class window.Exporter
       metaModel.push
         mType: Constants.CLASS
         name: @graph.getName element
-        description: "TODO" # @graph.getDescription is not working when empty
+        description: @graph.getDescription element
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
@@ -78,7 +78,7 @@ class window.Exporter
       metaModel.push
         mType: Constants.REFERENCE
         name: @graph.getName reference
-        description: "TODO" # @graph.getDescription is not working when empty
+        description: "" #TODO @graph.getDescription reference
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
         targetDeletionDeletesSource: @graph.getTargetDeletionDeletesSource reference
         attributes: @graph.getAttributes reference

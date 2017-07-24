@@ -42,7 +42,11 @@ class window.Graph
 
 # Returns the name of the given cell.
   getDescription: (cell) ->
-    cell.attributes.description
+    result = cell.attributes.description
+
+    if result == "" or typeof(result) isnt 'string'
+      ""
+
 
 
 # Returns all element-, reference and enum-names which are assigned more than once.
