@@ -38,27 +38,22 @@ object AttributeValue {
 
   implicit val playJsonFormat = new Format[AttributeValue] {
 
-    private val sString = "string"
-    private val sBool = "bool"
-    private val sInt = "int"
-    private val sDouble = "double"
-
     override def writes(value: AttributeValue): JsValue = {
       value match {
-        case MString(v) => JsObject(Map(sString -> JsString(v)))
-        case MBool(v) => JsObject(Map(sBool -> JsBoolean(v)))
-        case MInt(v) => JsObject(Map(sInt -> JsNumber(v)))
-        case MDouble(v) => JsObject(Map(sDouble -> JsNumber(v)))
+        case MString(v) => JsObject(Map(StringType.asString -> JsString(v)))
+        case MBool(v) => JsObject(Map(BoolType.asString -> JsBoolean(v)))
+        case MInt(v) => JsObject(Map(IntType.asString -> JsNumber(v)))
+        case MDouble(v) => JsObject(Map(DoubleType.asString -> JsNumber(v)))
         case EnumSymbol(name, enumName) => JsArray(Seq(JsString(name), JsString(enumName)))
       }
     }
 
     override def reads(json: JsValue): JsResult[AttributeValue] = {
       json match {
-        case JsObject(Seq(JsString(`sString`), JsString(v))) => JsSuccess(MString(v))
-        case JsObject(Seq(JsString(`sBool`), JsBoolean(v))) => JsSuccess(MBool(v))
-        case JsObject(Seq(JsString(`sInt`), JsNumber(v))) => JsSuccess(MInt(v.toInt))
-        case JsObject(Seq(JsString(`sDouble`), JsNumber(v))) => JsSuccess(MDouble(v.toDouble))
+        case JsObject(Seq(JsString(StringType.asString), JsString(v))) => JsSuccess(MString(v))
+        case JsObject(Seq(JsString(BoolType.asString), JsBoolean(v))) => JsSuccess(MBool(v))
+        case JsObject(Seq(JsString(IntType.asString), JsNumber(v))) => JsSuccess(MInt(v.toInt))
+        case JsObject(Seq(JsString(DoubleType.asString), JsNumber(v))) => JsSuccess(MDouble(v.toDouble))
         case JsArray(Seq(JsString(name), JsString(enumName))) => JsSuccess(EnumSymbol(name, enumName))
       }
     }

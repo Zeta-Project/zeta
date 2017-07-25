@@ -247,8 +247,6 @@ object PetriNetMetaModelFixture {
 
   val metaModelEntity: MetaModelEntity = MetaModelEntity(
     id = UUID.randomUUID(),
-    rev = "",
-    name = "",
     metaModel = metaModel
   )
 

@@ -9,6 +9,10 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import play.api.libs.json.Format
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+
 
 /** Immutable container for model definitions
  *
@@ -45,6 +49,28 @@ case class Model(
 
 object Model {
 
-  implicit val playJsonModelFormat: Format[Model] = Json.format[Model]
+  def empty(name: String, metaModelId: UUID): Model = {
+    Model(
+      name = name,
+      metaModelId = metaModelId,
+      nodes = Seq.empty,
+      edges = Seq.empty,
+      attributes = Map.empty,
+      uiState = ""
+    )
+  }
+
+  implicit val playJsonFormat: Format[Model] = Json.format[Model]
+
+  val playJsonReadsEmpty: Reads[Model] = new Reads[Model] {
+    override def reads(json: JsValue): JsResult[Model] = {
+      for {
+        name <- (json \ "name").validate[String]
+        metaModelId <- (json \ "metaModelId").validate[UUID]
+      } yield {
+        Model.empty(name, metaModelId)
+      }
+    }
+  }
 
 }

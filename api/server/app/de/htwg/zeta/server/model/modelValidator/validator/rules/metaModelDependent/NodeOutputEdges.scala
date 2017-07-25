@@ -17,9 +17,9 @@ class NodeOutputEdges(val nodeType: String, val outputTypes: Seq[String]) extend
   override val possibleFix: String =
     s"Remove all output edges that are not of types ${outputTypes.mkString("{", ", ", "}")} from nodes of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.outputs.map(_.reference.name).foldLeft(true) { (acc, outputName) =>
+  def rule(node: Node): Boolean = node.outputs.map(_.referenceName).foldLeft(true) { (acc, outputName) =>
     if (outputTypes.contains(outputName)) acc else false
   }
 

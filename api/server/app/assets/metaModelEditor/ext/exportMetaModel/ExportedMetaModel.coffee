@@ -7,37 +7,73 @@ class window.ExportedMetaModel
   constructor: () ->
     @valid = false
     @messages = null
-    @metaModel = null
-    @metaModelString = null
+    # @metaModel = null
+    @classes = null
+    @references = null
+    @enums = null
+    @attributes = null
+    @methods = null
+    # @metaModelString = null
 
 
   setValid: (valid) ->
     @valid = valid
 
-
-  setMessages: (messages) ->
-    @messages = messages
-
-
-  setMetaModel: (metaModel) ->
-    @metaModel = metaModel
-    @metaModelString = @toString()
-
-
   isValid: () ->
     @valid
 
 
+  setMessages: (messages) ->
+    @messages = messages
+
   getMessages: () ->
     @messages
 
+  # setMetaModel: (metaModel) ->
+  #  @metaModel = metaModel
+    # @metaModelString = @toString()
 
-  getMetaModel: () ->
-    @metaModel
+  # getMetaModel: () ->
+   # @metaModel
 
 
-  toString: (prettify) ->
-    if prettify
-      JSON.stringify @metaModel, null, 2
-    else
-      JSON.stringify @metaModel
+  setClasses: (classes) ->
+    @classes = classes
+
+  getClasses: () ->
+    @classes
+
+
+  setReferences: (references) ->
+    @references = references
+
+  getReferences: () ->
+    @references
+
+
+  setEnums: (enums) ->
+    @enums = enums
+
+  getEnums: () ->
+    @enums
+
+
+  setAttributes: (attributes) ->
+    @attributes = attributes
+
+  getAttributes: () ->
+    @attributes
+
+
+  setMethods: (methods) ->
+    @methods = methods
+
+  getMethods: () ->
+    @methods
+
+
+  # toString: (prettify) ->
+  #  if prettify
+  #    JSON.stringify @metaModel, null, 2
+  #  else
+  #    JSON.stringify @metaModel

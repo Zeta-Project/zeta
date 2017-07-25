@@ -27,14 +27,14 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on valid edges" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
-    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), attribute)
+    val edge = Edge("edgeOneId", mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on invalid edges" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("dupValue"), MString("dupValue"), MString("valueThree")))
-    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), attribute)
+    val edge = Edge("edgeOneId", mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -50,7 +50,7 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("edgeOneId", mReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("edgeOneId", mReference.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(edge) should be(None)
   }

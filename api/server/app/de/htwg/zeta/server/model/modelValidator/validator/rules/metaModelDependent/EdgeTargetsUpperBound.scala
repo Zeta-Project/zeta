@@ -15,9 +15,9 @@ class EdgeTargetsUpperBound(val edgeType: String, val targetType: String, val up
   override val possibleFix: String =
     s"Remove target nodes of type $targetType from edges of type $edgeType until there are a maximum of $upperBound target nodes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.target.find(_.clazz.name == targetType) match {
+  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.target.find(_.className == targetType) match {
     case Some(target) => target.nodeNames.size <= upperBound
     case None => true
   }

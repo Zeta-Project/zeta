@@ -17,9 +17,9 @@ class NodeOutputsUpperBound(val nodeType: String, val outputType: String, val up
   override val possibleFix: String =
     s"Remove output edges of type $outputType from nodes of type $nodeType until there are a maximum of $upperBound output edges."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = if (upperBound == -1) true else node.outputs.find(_.reference.name == outputType) match {
+  def rule(node: Node): Boolean = if (upperBound == -1) true else node.outputs.find(_.referenceName == outputType) match {
     case Some(output) => output.edgeNames.size <= upperBound
     case None => true
   }

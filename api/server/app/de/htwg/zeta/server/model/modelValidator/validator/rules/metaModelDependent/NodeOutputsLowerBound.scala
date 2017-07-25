@@ -15,9 +15,9 @@ class NodeOutputsLowerBound(val nodeType: String, val outputType: String, val lo
   override val description: String = s"Nodes of type $nodeType must have at least $lowerBound output edges of type $outputType."
   override val possibleFix: String = s"Add output edges of type $outputType to nodes of type $nodeType until there are at least $lowerBound output edges."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.outputs.find(_.reference.name == outputType) match {
+  def rule(node: Node): Boolean = node.outputs.find(_.referenceName == outputType) match {
     case Some(output) => output.edgeNames.size >= lowerBound
     case None => lowerBound == 0
   }

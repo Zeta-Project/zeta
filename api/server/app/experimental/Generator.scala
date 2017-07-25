@@ -174,7 +174,7 @@ object Generator {
 
   private def generateClassInstance(clazz: MClass, model: Model): String = {
     s"  val ${clazz.name.firstToLower}List: List[${clazz.name.capitalize}] = List(\n" +
-      model.nodes.filter(_.clazz.name == clazz.name).map { node =>
+      model.nodes.filter(_.className == clazz.name).map { node =>
         s"""    ${clazz.name.capitalize}("${node.name}", ${clazz.name.capitalize}.${generateAttributeInstance(clazz.attributes, node.attributes)}, this)"""
       }.mkString(",\n") +
       "\n  )\n\n" + generateMap(clazz.name)
@@ -182,9 +182,9 @@ object Generator {
 
   private def generateReferenceInstance(reference: MReference, model: Model): String = {
     s"  val ${reference.name.firstToLower}List: List[${reference.name.capitalize}] = List(\n" +
-      model.edges.filter(_.reference.name == reference.name).map { edge =>
-        s"""    ${reference.name.capitalize}("${edge.name}", ${edge.source.head.clazz.name.firstToLower}Map("${edge.source.head.nodeNames.head
-        }"), ${edge.target.head.clazz.name.firstToLower}Map("${
+      model.edges.filter(_.referenceName == reference.name).map { edge =>
+        s"""    ${reference.name.capitalize}("${edge.name}", ${edge.source.head.className.firstToLower}Map("${edge.source.head.nodeNames.head
+        }"), ${edge.target.head.className.firstToLower}Map("${
           edge.target.head.nodeNames.head}"), ${reference.name.capitalize}.${generateAttributeInstance(reference.attributes, edge.attributes)
           }, this)""".stripMargin
       }.mkString(",\n") +

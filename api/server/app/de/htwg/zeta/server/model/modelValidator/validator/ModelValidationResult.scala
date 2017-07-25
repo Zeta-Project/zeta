@@ -39,12 +39,12 @@ object ModelValidationResult {
         case Some(node: Node) => Json.obj(
           "id" -> JsString(node.name),
           "type" -> JsString("node"),
-          "typeName" -> JsString(node.clazz.name)
+          "typeName" -> JsString(node.className)
         )
         case Some(edge: Edge) => Json.obj(
           "id" -> JsString(edge.name),
           "type" -> JsString("edge"),
-          "typeName" -> JsString(edge.reference.name)
+          "typeName" -> JsString(edge.referenceName)
         )
         case None => JsNull
       }

@@ -11,6 +11,10 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.Format
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+
 
 /**
  * Immutable container for MetaModel definitions
@@ -63,6 +67,27 @@ case class MetaModel(
 
 object MetaModel {
 
+  def empty(name: String): MetaModel = {
+    MetaModel(
+      name = name,
+      classes = Seq.empty,
+      references = Seq.empty,
+      enums = Seq.empty,
+      attributes = Seq.empty,
+      methods = Seq.empty,
+      uiState = ""
+    )
+  }
+
+  implicit val playJsonFormat: Format[MetaModel] = Json.format[MetaModel]
+
+  val playJsonReadsEmpty: Reads[MetaModel] = new Reads[MetaModel] {
+    override def reads(json: JsValue): JsResult[MetaModel] = {
+      (json \ "name").validate[String].map(empty)
+    }
+  }
+
+
   case class MetaModelTraverseWrapper(value: MetaModel) {
 
     def classes: Map[String, MClassTraverseWrapper] = {
@@ -109,7 +134,5 @@ object MetaModel {
     }
 
   }
-
-  implicit val playJsonFormat: Format[MetaModel] = Json.format[MetaModel]
 
 }

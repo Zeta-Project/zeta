@@ -27,7 +27,7 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
         case JsSuccess(list, _) =>
           val (k, v) = kv
           metaModel.referenceMap.get(k) match {
-            case Some(t: MReference) if typeHas(t.name) => JsSuccess(ToEdges(t, v) :: list)
+            case Some(t: MReference) if typeHas(t.name) => JsSuccess(ToEdges(t.name, v) :: list)
             case None => invalidToEdgesError
           }
         case e: JsError => e
@@ -48,7 +48,7 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
       attr <- (json \ "attributes").validate(AttributeFormat(clazz.attributes, name))
 
     } yield {
-      Node(name, clazz, output, input, attr)
+      Node(name, clazz.name, output, input, attr)
     }
   }
 
@@ -61,13 +61,13 @@ object NodeFormat extends Writes[Node] {
   def apply(metaModel: MetaModel): NodeFormat = new NodeFormat(metaModel)
 
   private def writeEdges(seq: Seq[ToEdges]): Map[String, Seq[String]] = {
-    seq.map(te => (te.reference.name, te.edgeNames)).toMap
+    seq.map(te => (te.referenceName, te.edgeNames)).toMap
   }
 
   override def writes(o: Node): JsValue = {
     Json.obj(
       "id" -> o.name,
-      "mClass" -> o.clazz.name,
+      "mClass" -> o.className,
       "outputs" -> writeEdges(o.outputs),
       "inputs" -> writeEdges(o.inputs),
       "attributes" -> AttributeFormat.writes(o.attributes)

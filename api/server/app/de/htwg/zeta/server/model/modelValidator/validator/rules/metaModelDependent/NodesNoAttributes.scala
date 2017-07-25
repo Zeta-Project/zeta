@@ -16,7 +16,7 @@ class NodesNoAttributes(val nodeType: String) extends SingleNodeRule with DslRul
   override val description: String = s"Nodes of type $nodeType must not have attributes."
   override val possibleFix: String = s"Remote all attributes from nodes of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
   def rule(node: Node): Boolean = node.attributes.values.flatten.isEmpty
 

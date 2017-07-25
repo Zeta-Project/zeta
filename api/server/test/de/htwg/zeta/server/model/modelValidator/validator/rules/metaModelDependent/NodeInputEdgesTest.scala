@@ -19,27 +19,27 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
     val input1 = MReference("input1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = ToEdges(reference = input1, edgeNames = Seq(input1.name))
-    val node1 = Node("", mClass, Seq(), Seq(toEdges1), Map.empty)
+    val toEdges1 = ToEdges(referenceName = input1.name, edgeNames = Seq(input1.name))
+    val node1 = Node("", mClass.name, Seq(), Seq(toEdges1), Map.empty)
     rule.isValid(node1).get should be (true)
 
     val input2 = MReference("input2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = ToEdges(reference = input1, edgeNames = Seq(input1.name, input2.name))
-    val node2 = Node("", mClass, Seq(), Seq(toEdges2), Map.empty)
+    val toEdges2 = ToEdges(referenceName = input1.name, edgeNames = Seq(input1.name, input2.name))
+    val node2 = Node("", mClass.name, Seq(), Seq(toEdges2), Map.empty)
     rule.isValid(node2).get should be (true)
   }
 
   it should "return false on nodes of type nodeType with invalid input edges" in {
 
     val input = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = ToEdges(reference = input, edgeNames = Seq(input.name))
-    val node = Node("", mClass, Seq(), Seq(toEdges), Map.empty)
+    val toEdges = ToEdges(referenceName = input.name, edgeNames = Seq(input.name))
+    val node = Node("", mClass.name, Seq(), Seq(toEdges), Map.empty)
     rule.isValid(node).get should be (false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be (None)
   }
 

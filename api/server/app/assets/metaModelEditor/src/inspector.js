@@ -9,7 +9,9 @@ var inspector = (function inspector () {
     var M_OBJECT;
     var M_BOUNDS;
     var M_ATTRIBUTE;
-    var M_LINKDEF;
+
+    var M_CLASS_LINK_DEF;
+    var M_REFERENCE_LINK_DEF;
     var M_CLASS;
     var M_REFERENCE;
     var M_ENUM;
@@ -131,7 +133,7 @@ var inspector = (function inspector () {
             index : 3
         },
 
-        type : {
+        typ : {
             type : 'select',
             label : 'Type',
             options : [
@@ -207,7 +209,7 @@ var inspector = (function inspector () {
             label : 'Parameter',
             item : {
                 type : 'object',
-                lable : 'Parameter',
+                label : 'Parameter',
                 properties : M_PARAMETER
             },
             index : 3
@@ -256,8 +258,24 @@ var inspector = (function inspector () {
         }
     };
 
-    M_LINKDEF = _.extend({
-        type : {
+    M_CLASS_LINK_DEF = _.extend({
+        className : {
+            type : 'select',
+            options : [],
+            label : 'Type',
+            index : 0
+        },
+
+        deleteIfLower: {
+            type : 'toggle',
+            label : 'Delete if lower',
+            defaultValue: false,
+            index : 3
+        }
+    }, M_BOUNDS);
+
+    M_REFERENCE_LINK_DEF = _.extend({
+        referenceName : {
             type : 'select',
             options : [],
             label : 'Type',
@@ -280,7 +298,7 @@ var inspector = (function inspector () {
             item : {
                 type : 'object',
                 label : 'Link definitions',
-                properties : M_LINKDEF
+                properties : M_REFERENCE_LINK_DEF
             },
             group : 'input',
             index : 3
@@ -292,7 +310,7 @@ var inspector = (function inspector () {
             item : {
                 type : 'object',
                 label : 'Link definitions',
-                properties : M_LINKDEF
+                properties : M_REFERENCE_LINK_DEF
             },
             group : 'output',
             index : 4
@@ -321,7 +339,7 @@ var inspector = (function inspector () {
             item : {
                 type : 'object',
                 label : 'Link definitions',
-                properties : M_LINKDEF
+                properties : M_CLASS_LINK_DEF
             },
             group : 'source',
             index : 3
@@ -333,7 +351,7 @@ var inspector = (function inspector () {
             item : {
                 type : 'object',
                 label : 'Link definitions',
-                properties : M_LINKDEF
+                properties : M_CLASS_LINK_DEF
             },
             group : 'target',
             index : 3
@@ -383,8 +401,8 @@ var inspector = (function inspector () {
                 }
             });
 
-            defs.inputs['linkdef_input'].item.properties.type.options = linkdefOptions;
-            defs.inputs['linkdef_output'].item.properties.type.options = linkdefOptions;
+            defs.inputs.linkdef_input.item.properties.referenceName.options = linkdefOptions;
+            defs.inputs.linkdef_output.item.properties.referenceName.options = linkdefOptions;
 
         } else if (mCoreUtil.isReference(cell)) {
             defs.inputs = _.cloneDeep(M_REFERENCE);
@@ -395,8 +413,8 @@ var inspector = (function inspector () {
                 }
             });
 
-            defs.inputs['linkdef_source'].item.properties.type.options = linkdefOptions;
-            defs.inputs['linkdef_target'].item.properties.type.options = linkdefOptions;
+            defs.inputs.linkdef_source.item.properties.className.options = linkdefOptions;
+            defs.inputs.linkdef_target.item.properties.className.options = linkdefOptions;
 
         } else if (mCoreUtil.isMEnumContainer(cell)) {
 
@@ -405,8 +423,8 @@ var inspector = (function inspector () {
         }
 
         // Add enum types to m_attribute type dropdown.
-        if (cell.attributes['m_attributes']) {
-            defs.inputs['m_attributes'].item.properties.type.options = defs.inputs['m_attributes'].item.properties.type.options.concat(mEnum.getMEnumNames());
+        if (cell.attributes.m_attributes) {
+            defs.inputs.m_attributes.item.properties.typ.options = defs.inputs.m_attributes.item.properties.typ.options.concat(mEnum.getMEnumNames());
         }
 
         return defs;

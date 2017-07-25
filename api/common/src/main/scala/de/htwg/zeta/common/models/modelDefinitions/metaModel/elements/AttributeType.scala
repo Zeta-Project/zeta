@@ -55,6 +55,8 @@ object AttributeType {
     /** The symbols. */
     val symbols: Seq[EnumSymbol] = values.map(value => EnumSymbol(name, value))
 
+    val symbolMap: Map[String, EnumSymbol] = symbols.map(symbol => (symbol.name, symbol)).toMap
+
   }
 
   object MEnum {
@@ -63,27 +65,22 @@ object AttributeType {
 
   implicit val playJsonFormat = new Format[AttributeType] {
 
-    private val sString = "string"
-    private val sBool = "bool"
-    private val sInt = "int"
-    private val sDouble = "double"
-
     override def writes(typ: AttributeType): JsValue = {
       typ match {
-        case StringType => JsString(sString)
-        case BoolType => JsString(sBool)
-        case IntType => JsString(sInt)
-        case DoubleType => JsString(sDouble)
+        case StringType => JsString(StringType.asString)
+        case BoolType => JsString(BoolType.asString)
+        case IntType => JsString(IntType.asString)
+        case DoubleType => JsString(DoubleType.asString)
         case enum: MEnum => MEnum.playJsonFormat.writes(enum)
       }
     }
 
     override def reads(json: JsValue): JsResult[AttributeType] = {
       json match {
-        case JsString(`sString`) => JsSuccess(StringType)
-        case JsString(`sBool`) => JsSuccess(BoolType)
-        case JsString(`sInt`) => JsSuccess(IntType)
-        case JsString(`sDouble`) => JsSuccess(DoubleType)
+        case JsString(StringType.asString) => JsSuccess(StringType)
+        case JsString(BoolType.asString) => JsSuccess(BoolType)
+        case JsString(IntType.asString) => JsSuccess(IntType)
+        case JsString(DoubleType.asString) => JsSuccess(DoubleType)
         case _ => MEnum.playJsonFormat.reads(json)
       }
     }

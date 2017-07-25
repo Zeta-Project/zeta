@@ -3,7 +3,6 @@ package experimental
 import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
@@ -16,8 +15,6 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
 
 
 object PetriNetModelFixture {
-
-  private val metaModel: MetaModel = PetriNetMetaModelFixture.metaModel
 
   private val sPlace = "Place"
   private val sTransition = "Transition"
@@ -41,13 +38,13 @@ object PetriNetModelFixture {
 
   val transition1: Node = Node(
     name = sTransition1,
-    clazz = metaModel.classMap(sTransition),
+    className = sTransition,
     outputs = List(ToEdges(
-      reference = metaModel.referenceMap(sConsumer),
+      referenceName = sConsumer,
       edgeNames = List(sConsumer1)
     )),
     inputs = List(ToEdges(
-      reference = metaModel.referenceMap(sProducer),
+      referenceName = sProducer,
       edgeNames = List(sProducer1)
     )),
     attributes = Map(
@@ -58,13 +55,13 @@ object PetriNetModelFixture {
 
   val transition2: Node = Node(
     name = sTransition2,
-    clazz = metaModel.classMap(sTransition),
+    className = sTransition,
     outputs = List(ToEdges(
-      reference = metaModel.referenceMap(sConsumer),
+      referenceName = sConsumer,
       edgeNames = List(sConsumer2)
     )),
     inputs = List(ToEdges(
-      reference = metaModel.referenceMap(sProducer),
+      referenceName = sProducer,
       edgeNames = List(sProducer2)
     )),
     attributes = Map(
@@ -75,13 +72,13 @@ object PetriNetModelFixture {
 
   val place1: Node = Node(
     name = sPlace1,
-    clazz = metaModel.classMap(sPlace),
+    className = sPlace,
     outputs = List(ToEdges(
-      reference = metaModel.referenceMap(sProducer),
+      referenceName = sProducer,
       edgeNames = List(sProducer1)
     )),
     inputs = List(ToEdges(
-      reference = metaModel.referenceMap(sConsumer),
+      referenceName = sConsumer,
       edgeNames = List(sConsumer2)
     )),
     attributes = Map(
@@ -92,13 +89,13 @@ object PetriNetModelFixture {
 
   val place2: Node = Node(
     name = sPlace2,
-    clazz = metaModel.classMap(sPlace),
+    className = sPlace,
     outputs = List(ToEdges(
-      reference = metaModel.referenceMap(sProducer),
+      referenceName = sProducer,
       edgeNames = List(sProducer2)
     )),
     inputs = List(ToEdges(
-      reference = metaModel.referenceMap(sConsumer),
+      referenceName = sConsumer,
       edgeNames = List(sConsumer1)
     )),
     attributes = Map(
@@ -109,13 +106,13 @@ object PetriNetModelFixture {
 
   val producer1: Edge = Edge(
     name = sProducer1,
-    reference = metaModel.referenceMap(sProducer),
+    referenceName = sProducer,
     source = List(ToNodes(
-      clazz = metaModel.classMap(sPlace),
+      className = sPlace,
       nodeNames = List(sPlace1)
     )),
     target = List(ToNodes(
-      clazz = metaModel.classMap(sTransition),
+      className = sTransition,
       nodeNames = List(sTransition1)
     )),
     attributes = Map(
@@ -125,13 +122,13 @@ object PetriNetModelFixture {
 
   val producer2: Edge = Edge(
     name = sProducer2,
-    reference = metaModel.referenceMap(sProducer),
+    referenceName = sProducer,
     source = List(ToNodes(
-      clazz = metaModel.classMap(sPlace),
+      className = sPlace,
       nodeNames = List(sPlace2)
     )),
     target = List(ToNodes(
-      clazz = metaModel.classMap(sTransition),
+      className = sTransition,
       nodeNames = List(sTransition2)
     )),
     attributes = Map(
@@ -141,13 +138,13 @@ object PetriNetModelFixture {
 
   val consumer1: Edge = Edge(
     name = sConsumer1,
-    reference = metaModel.referenceMap(sConsumer),
+    referenceName = sConsumer,
     source = List(ToNodes(
-      clazz = metaModel.classMap(sTransition),
+      className = sTransition,
       nodeNames = List(sTransition1)
     )),
     target = List(ToNodes(
-      clazz = metaModel.classMap(sPlace),
+      className = sPlace,
       nodeNames = List(sPlace2)
     )),
     attributes = Map(
@@ -157,13 +154,13 @@ object PetriNetModelFixture {
 
   val consumer2: Edge = Edge(
     name = sConsumer2,
-    reference = metaModel.referenceMap(sConsumer),
+    referenceName = sConsumer,
     source = List(ToNodes(
-      clazz = metaModel.classMap(sTransition),
+      className = sTransition,
       nodeNames = List(sTransition2)
     )),
     target = List(ToNodes(
-      clazz = metaModel.classMap(sPlace),
+      className = sPlace,
       nodeNames = List(sPlace1)
     )),
     attributes = Map(
@@ -184,9 +181,7 @@ object PetriNetModelFixture {
 
   val modelEntity: ModelEntity = ModelEntity(
     id = UUID.randomUUID(),
-    model = model,
-    metaModelId = UUID.randomUUID(),
-    links = None
+    model = model
   )
 
 }

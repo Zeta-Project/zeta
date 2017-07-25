@@ -15,7 +15,7 @@ class EdgesNoTargets(val edgeType: String) extends SingleEdgeRule with DslRule {
   override val description: String = s"Edges of type $edgeType must not have target nodes."
   override val possibleFix: String = s"Remove all target nodes from edges of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = edge.target.flatten(_.nodeNames).isEmpty
 

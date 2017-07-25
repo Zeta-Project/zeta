@@ -14,9 +14,9 @@ class EdgeSourcesLowerBound(val edgeType: String, val sourceType: String, val lo
   override val description: String = s"Edges of type $edgeType must have at least $lowerBound source nodes of type $sourceType."
   override val possibleFix: String = s"Add source nodes of type $sourceType to edge of type $edgeType until there are at least $lowerBound source nodes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.source.find(_.clazz.name == sourceType) match {
+  def rule(edge: Edge): Boolean = edge.source.find(_.className == sourceType) match {
     case Some(source) => source.nodeNames.size >= lowerBound
     case None => lowerBound == 0
   }

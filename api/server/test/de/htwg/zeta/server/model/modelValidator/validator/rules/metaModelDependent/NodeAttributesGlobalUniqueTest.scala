@@ -20,13 +20,13 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   "check" should "return success validation results on correct attributes" in {
 
     val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value1")))
-    val node1 = Node("", mClass1, Seq(), Seq(), attribute1)
+    val node1 = Node("", mClass1.name, Seq(), Seq(), attribute1)
 
     val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value2")))
-    val node2 = Node("", mClass1, Seq(), Seq(), attribute2)
+    val node2 = Node("", mClass1.name, Seq(), Seq(), attribute2)
 
     val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value3")))
-    val node3 = Node("", mClass2, Seq(), Seq(), attribute3)
+    val node3 = Node("", mClass2.name, Seq(), Seq(), attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
 
@@ -36,13 +36,13 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   it should "return failure validation results on invalid attributes" in {
     val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("duplicateValue")))
-    val node1 = Node("", mClass1, Seq(), Seq(), attribute1)
+    val node1 = Node("", mClass1.name, Seq(), Seq(), attribute1)
 
     val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
-    val node2 = Node("", mClass1, Seq(), Seq(), attribute2)
+    val node2 = Node("", mClass1.name, Seq(), Seq(), attribute2)
 
     val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("duplicateValue")))
-    val node3 = Node("", mClass2, Seq(), Seq(), attribute3)
+    val node3 = Node("", mClass2.name, Seq(), Seq(), attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
 

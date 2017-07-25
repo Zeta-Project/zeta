@@ -47,11 +47,11 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelElements = Seq(
-    Node(name = "node1", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Node(name = "node2", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(name = "edge1", reference = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
-    Node(name = "node3", clazz = mClass, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(name = "edge2", reference = mReference, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
+    Node(name = "node1", className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Node(name = "node2", className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Edge(name = "edge1", referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
+    Node(name = "node3", className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Edge(name = "edge2", referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
   )
 
   val mObjects = Seq(

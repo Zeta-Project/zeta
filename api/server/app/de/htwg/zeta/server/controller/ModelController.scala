@@ -32,7 +32,7 @@ class ModelController @Inject()(
 
   def vrModelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     restrictedAccessRepository(request.identity.id).modelEntity.read(modelId).map { model =>
-      Ok(views.html.VrEditor(model.metaModelId))
+      Ok(views.html.VrEditor(model.model.metaModelId))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }

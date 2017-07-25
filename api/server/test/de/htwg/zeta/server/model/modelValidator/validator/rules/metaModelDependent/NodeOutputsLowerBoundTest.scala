@@ -18,30 +18,30 @@ class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType having 2 or more output edges of type outputType" in {
 
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val twoOutputEdges = ToEdges(outputType, Seq(outputType.name, outputType.name))
-    val nodeTwoOutputEdges = Node("", mClass, Seq(twoOutputEdges), Seq(), Map.empty)
+    val twoOutputEdges = ToEdges(outputType.name, Seq(outputType.name, outputType.name))
+    val nodeTwoOutputEdges = Node("", mClass.name, Seq(twoOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeTwoOutputEdges).get should be(true)
 
-    val threeOutputEdges = ToEdges(outputType, Seq(outputType.name, outputType.name, outputType.name))
-    val nodeThreeOutputEdges = Node("", mClass, Seq(threeOutputEdges), Seq(), Map.empty)
+    val threeOutputEdges = ToEdges(outputType.name, Seq(outputType.name, outputType.name, outputType.name))
+    val nodeThreeOutputEdges = Node("", mClass.name, Seq(threeOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeThreeOutputEdges).get should be(true)
   }
 
   it should "return false on nodes of type nodeType having less than 2 output edges of type outputType" in {
 
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val noOutputEdges = ToEdges(outputType, Seq())
-    val nodeNoOutputEdges = Node("", mClass, Seq(noOutputEdges), Seq(), Map.empty)
+    val noOutputEdges = ToEdges(outputType.name, Seq())
+    val nodeNoOutputEdges = Node("", mClass.name, Seq(noOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeNoOutputEdges).get should be(false)
 
-    val oneOutputEdge = ToEdges(outputType, Seq(outputType.name))
-    val nodeOneOutputEdge = Node("", mClass, Seq(oneOutputEdge), Seq(), Map.empty)
+    val oneOutputEdge = ToEdges(outputType.name, Seq(outputType.name))
+    val nodeOneOutputEdge = Node("", mClass.name, Seq(oneOutputEdge), Seq(), Map.empty)
     rule.isValid(nodeOneOutputEdge).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
 

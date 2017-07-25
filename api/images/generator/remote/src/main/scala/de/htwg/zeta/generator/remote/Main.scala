@@ -97,8 +97,8 @@ object Main extends Template[CreateOptions, RemoteOptions] {
 
     repository.modelEntity.read(options.modelId).map { entity =>
       entity.model.nodeMap.values.foreach { node: Node =>
-        if (node.clazz.name == options.nodeType) {
-          remote.emit[File](File(UUID.randomUUID, options.nodeType, node.clazz.name))
+        if (node.className == options.nodeType) {
+          remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))
         }
       }
       p.success(Success())
@@ -126,7 +126,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     private def transformPersistentActorNode(node: Node) = "transformPersistentActorNode"
 
     private def transformNode(node: Node) = {
-      node.clazz.name match {
+      node.className match {
         case "BasicActor" => transformBasicActorNode(node)
         case "PersistentActor" => transformPersistentActorNode(node)
       }

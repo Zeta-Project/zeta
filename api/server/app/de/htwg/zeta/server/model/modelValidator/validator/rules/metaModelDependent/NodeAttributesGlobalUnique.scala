@@ -36,7 +36,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
 
   override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = {
 
-    val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.clazz.name))
+    val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.className))
 
     val attributes: Seq[(String, Seq[AttributeValue])] = nodes.flatMap(_.attributes).filter(_._1 == attributeType)
     val attributeValues: Seq[AttributeValue] = attributes.flatMap(_._2)

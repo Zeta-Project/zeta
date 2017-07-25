@@ -15,7 +15,7 @@ class EdgeAttributesUpperBound(val edgeType: String, val attributeType: String, 
   override val possibleFix: String =
     s"Remove attributes of type $attributeType from edges of type $edgeType until there are a maximum of $upperBound attributes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.attributes.get(attributeType) match {
     case Some(attribute) => attribute.size <= upperBound

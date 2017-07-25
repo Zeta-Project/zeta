@@ -37,15 +37,15 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoSourceNodes = ToNodes(clazz = sourceType, nodeNames = Seq("1", "2"))
+    val twoSourceNodes = ToNodes(className = sourceType.name, nodeNames = Seq("1", "2"))
 
-    val edgeTwoSourceNodes = Edge("", mReference, Seq(twoSourceNodes), Seq(), Map.empty)
+    val edgeTwoSourceNodes = Edge("", mReference.name, Seq(twoSourceNodes), Seq(), Map.empty)
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
-    val threeSourceNodes = ToNodes(clazz = sourceType, nodeNames = Seq("1", "2", "2"))
+    val threeSourceNodes = ToNodes(className = sourceType.name, nodeNames = Seq("1", "2", "2"))
 
-    val edgeThreeSourceNodes = Edge("", mReference, Seq(threeSourceNodes), Seq(), Map.empty)
+    val edgeThreeSourceNodes = Edge("", mReference.name, Seq(threeSourceNodes), Seq(), Map.empty)
 
     rule.isValid(edgeThreeSourceNodes).get should be(true)
   }
@@ -62,13 +62,13 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val oneSourceNode = ToNodes(clazz = sourceType, nodeNames = Seq("1"))
+    val oneSourceNode = ToNodes(className = sourceType.name, nodeNames = Seq("1"))
 
-    val edgeOneSourceNode = Edge("", mReference, Seq(oneSourceNode), Seq(), Map.empty)
+    val edgeOneSourceNode = Edge("", mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
 
     rule.isValid(edgeOneSourceNode).get should be(false)
 
-    val edgeNoSourceNodes = Edge("", mReference, Seq(), Seq(), Map.empty)
+    val edgeNoSourceNodes = Edge("", mReference.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(edgeNoSourceNodes).get should be(false)
   }
@@ -84,7 +84,7 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentMRef, Seq(), Seq(), Map.empty)
+    val edge = Edge("", differentMRef.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

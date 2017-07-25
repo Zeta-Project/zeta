@@ -25,7 +25,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
   val rule = new EdgesNoSources("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no sources" in {
-    val edge = Edge("", mReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("", mReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
@@ -40,8 +40,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = ToNodes(clazz = source, nodeNames = Seq(""))
-    val edge = Edge("", mReference, Seq(toNode), Seq(), Map.empty)
+    val toNode = ToNodes(className = source.name, nodeNames = Seq(""))
+    val edge = Edge("", mReference.name, Seq(toNode), Seq(), Map.empty)
 
     rule.isValid(edge).get should be(false)
   }
@@ -57,8 +57,8 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = ToNodes(clazz = source, nodeNames = Seq())
-    val edge = Edge("", mReference, Seq(toNode), Seq(), Map.empty)
+    val toNode = ToNodes(className = source.name, nodeNames = Seq())
+    val edge = Edge("", mReference.name, Seq(toNode), Seq(), Map.empty)
 
     rule.isValid(edge).get should be(true)
   }
@@ -74,7 +74,7 @@ class EdgesNoSourcesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("", differentReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

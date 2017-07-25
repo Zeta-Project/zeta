@@ -18,31 +18,31 @@ class NodeAttributesLowerBoundTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on nodes with 2 or more attributes of type attributeType" in {
     val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2")))
-    val twoAttributeNode = Node("", mClass, Seq(), Seq(), twoAttributes)
+    val twoAttributeNode = Node("", mClass.name, Seq(), Seq(), twoAttributes)
 
     rule.isValid(twoAttributeNode).get should be(true)
 
     val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3")))
-    val threeAttributesNode = Node("", mClass, Seq(), Seq(), threeAttributes)
+    val threeAttributesNode = Node("", mClass.name, Seq(), Seq(), threeAttributes)
 
     rule.isValid(threeAttributesNode).get should be(true)
   }
 
   it should "return false on nodes with less than 2 attributes of type attributeType" in {
     val noAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
-    val noAttributesNode = Node("", mClass, Seq(), Seq(), noAttributes)
+    val noAttributesNode = Node("", mClass.name, Seq(), Seq(), noAttributes)
 
     rule.isValid(noAttributesNode).get should be(false)
 
     val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
-    val oneAttributeNode = Node("", mClass, Seq(), Seq(), oneAttribute)
+    val oneAttributeNode = Node("", mClass.name, Seq(), Seq(), oneAttribute)
 
     rule.isValid(oneAttributeNode).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }

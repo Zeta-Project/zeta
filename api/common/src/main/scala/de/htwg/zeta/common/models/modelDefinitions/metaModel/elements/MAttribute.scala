@@ -1,7 +1,22 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import play.api.libs.json.Format
-import play.api.libs.json.Json
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
 
 /**
  * The MAttribute implementation
@@ -36,6 +51,81 @@ case class MAttribute(
 
 object MAttribute {
 
-  implicit val playJsonFormat: Format[MAttribute] = Json.format[MAttribute]
+  private val sName = "name"
+  private val sGlobalUnique = "globalUnique"
+  private val sLocalUnique = "localUnique"
+  private val sTyp = "type" // TODO this should be changed to "typ" in Frontend
+  private val sDefault = "default"
+  private val sConstant = "constant"
+  private val sSingleAssignment = "singleAssignment"
+  private val sExpression = "expression"
+  private val sOrdered = "ordered"
+  private val sTransient = "transient"
+  private val sUpperBound = "upperBound"
+  private val sLowerBound = "lowerBound"
+
+  implicit val playJsonFormat: Format[MAttribute] = new Format[MAttribute] {
+
+    override def reads(json: JsValue): JsResult[MAttribute] = {
+      for {
+        name <- (json \ sName).validate[String]
+        globalUnique <- (json \ sGlobalUnique).validate[Boolean]
+        localUnique <- (json \ sLocalUnique).validate[Boolean]
+        typ <- (json \ sTyp).validate[AttributeType]
+        default <- typ match {
+          case StringType => (json \ sDefault).validate[String].map(MString)
+          case BoolType => (json \ sDefault).validate[Boolean].map(MBool)
+          case IntType => (json \ sDefault).validate[Int].map(MInt)
+          case DoubleType => (json \ sDefault).validate[Double].map(MDouble)
+          case enum: MEnum => (json \ sDefault).validate[String].map(enum.symbolMap(_))
+        }
+        constant <- (json \ sConstant).validate[Boolean]
+        singleAssignment <- (json \ sSingleAssignment).validate[Boolean]
+        expression <- (json \ sExpression).validate[String]
+        ordered <- (json \ sOrdered).validate[Boolean]
+        transient <- (json \ sTransient).validate[Boolean]
+        upperBound <- (json \ sUpperBound).validate[Int]
+        lowerBound <- (json \ sLowerBound).validate[Int]
+      } yield {
+        MAttribute(
+          name = name,
+          globalUnique = globalUnique,
+          localUnique = localUnique,
+          typ = typ,
+          default = default,
+          constant = constant,
+          singleAssignment = singleAssignment,
+          expression = expression,
+          ordered = ordered,
+          transient = transient,
+          upperBound = upperBound,
+          lowerBound = lowerBound
+        )
+      }
+    }
+
+    override def writes(attribute: MAttribute): JsValue = {
+      JsObject(Map(
+        sName -> JsString(attribute.name),
+        sGlobalUnique -> JsBoolean(attribute.globalUnique),
+        sLocalUnique -> JsBoolean(attribute.localUnique),
+        sTyp -> AttributeType.playJsonFormat.writes(attribute.typ),
+        sDefault -> (attribute.default match {
+          case MString(s) => JsString(s)
+          case MBool(b) => JsBoolean(b)
+          case MDouble(d) => JsNumber(d)
+          case MInt(i) => JsNumber(i)
+          case EnumSymbol(_, value) => JsString(value)
+        }),
+        sConstant -> JsBoolean(attribute.constant),
+        sSingleAssignment -> JsBoolean(attribute.singleAssignment),
+        sExpression -> JsString(attribute.expression),
+        sOrdered -> JsBoolean(attribute.ordered),
+        sTransient -> JsBoolean(attribute.transient),
+        sUpperBound -> JsNumber(attribute.upperBound),
+        sLowerBound -> JsNumber(attribute.lowerBound)
+      ))
+    }
+  }
 
 }

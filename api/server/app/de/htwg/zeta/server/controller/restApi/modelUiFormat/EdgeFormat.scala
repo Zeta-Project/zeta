@@ -29,7 +29,7 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
           val (k, v) = kv
           metaModel.classMap.get(k) match {
             case Some(t: MClass) if classLinks.exists(mLink => mLink.className == t.name) =>
-              JsSuccess(ToNodes(t, v) :: list)
+              JsSuccess(ToNodes(t.name, v) :: list)
             case None => invalidToNodesError
           }
         case e: JsError => e
@@ -40,16 +40,13 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
   override def reads(json: JsValue): JsResult[Edge] = {
     for {
       name <- json.\("id").validate[String]
-      mReference <- json.\("mReference").validate[String].flatMap(refName => metaModel.referenceMap.get(refName) match {
-        case Some(mRef) => JsSuccess(mRef)
-        case None => unknownMReferenceError
-      })
+      mReference <- json.\("mReference").validate[String]
       // Todo not sure if check is correct or needs to be swapped
-      source <- json.\("source").validate[Map[String, Seq[String]]].flatMap(extractToNodes(mReference.source))
-      target <- json.\("target").validate[Map[String, Seq[String]]].flatMap(extractToNodes(mReference.target))
+      source <- json.\("source").validate[Map[String, Seq[String]]].map(_.map(e => ToNodes(e._1, e._2)))
+      target <- json.\("target").validate[Map[String, Seq[String]]].map(_.map(e => ToNodes(e._1, e._2)))
       // attributes <- json.\("attributes").validate(AttributeFormat(mReference.attributes, name)) // TODO FIXME
     } yield {
-      Edge(name, mReference, source, target, Map.empty)
+      Edge(name, mReference, source.toList, target.toList, Map.empty)
     }
   }
 
@@ -62,13 +59,13 @@ object EdgeFormat extends Writes[Edge] {
   def apply(metaModel: MetaModel): EdgeFormat = new EdgeFormat(metaModel)
 
   private def writeNodes(seq: Seq[ToNodes]): Map[String, Seq[String]] = {
-    seq.map(tn => (tn.clazz.name, tn.nodeNames)).toMap
+    seq.map(tn => (tn.className, tn.nodeNames)).toMap
   }
 
   override def writes(o: Edge): JsValue = {
     Json.obj(
       "id" -> o.name,
-      "mReference" -> o.reference.name,
+      "mReference" -> o.referenceName,
       "source" -> writeNodes(o.source),
       "target" -> writeNodes(o.target),
       "attributes" -> AttributeFormat.writes(o.attributes)

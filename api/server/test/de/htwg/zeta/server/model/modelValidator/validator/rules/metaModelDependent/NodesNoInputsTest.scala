@@ -16,27 +16,27 @@ class NodesNoInputsTest extends FlatSpec with Matchers {
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with no inputs" in {
-    val node = Node("", mClass, Seq(), Seq(), Map.empty)
+    val node = Node("", mClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with inputs" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdge = ToEdges(input, Seq(""))
-    val node = Node("", mClass, Seq(), Seq(toEdge), Map.empty)
+    val toEdge = ToEdges(input.name, Seq(""))
+    val node = Node("", mClass.name, Seq(), Seq(toEdge), Map.empty)
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty input list" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdge = ToEdges(input, Seq())
-    val node = Node("", mClass, Seq(), Seq(toEdge), Map.empty)
+    val toEdge = ToEdges(input.name, Seq())
+    val node = Node("", mClass.name, Seq(), Seq(toEdge), Map.empty)
     rule.isValid(node).get should be(true)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
 

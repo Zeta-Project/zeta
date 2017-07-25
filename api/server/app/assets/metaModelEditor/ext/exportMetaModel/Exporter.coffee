@@ -22,7 +22,11 @@ class window.Exporter
     exportedModel.setMessages validationResult.getMessages()
 
     if validationResult.isValid()
-      exportedModel.setMetaModel @createMetaModel()
+      exportedModel.setClasses @createClasses()
+      exportedModel.setReferences @createReferences()
+      exportedModel.setEnums @createEnums()
+      exportedModel.setAttributes @createAttributes()
+      exportedModel.setMethods @createMethods()
 
     exportedModel
 
@@ -43,41 +47,24 @@ class window.Exporter
     validationResult
 
 
-  # Builds the metaModel JSON object and returns it.
-  createMetaModel: () ->
-    metaModel = []
-
-    @addClasses metaModel
-    @addReferences metaModel
-    @addEnums metaModel
-    @addAttributes metaModel
-
-    metaModel
-
-
-  # Iterates over the graph-elements and adds them to the metaModel object.
-  addClasses: (metaModel) ->
+  createClasses: () ->
+    classes = []
     for element in @graph.getElements()
-
-      metaModel.push
-        mType: Constants.CLASS
+      classes.push
         name: @graph.getName element
         description: @graph.getDescription element
-        abstract: @graph.isAbstract element
-        superTypes: @graph.getSuperTypes element
+        abstractness: @graph.isAbstract element
+        superTypeNames: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
         methods: @graph.getEntityMethods element
         inputs: @graph.getInputs element
         outputs: @graph.getOutputs element
+    classes
 
-
-
-  # Iterates over the graph-references and adds them to the metaModel object.
-  addReferences: (metaModel) ->
+  createReferences: () ->
+    references = []
     for reference in @graph.getReferences()
-
-      metaModel.push
-        mType: Constants.REFERENCE
+      references.push
         name: @graph.getName reference
         description: "" #TODO @graph.getDescription reference
         sourceDeletionDeletesTarget: @graph.getSourceDeletionDeletesTarget reference
@@ -86,17 +73,22 @@ class window.Exporter
         methods: @graph.getEntityMethods reference
         source: @graph.getSources reference
         target: @graph.getTargets reference
+    references
 
-
-  # Iterates over the values of the mEnumContainer and adds them to the metaModel object.
-  addEnums: (metaModel) ->
-    #TODO: on a saved and re-opened instance, menums are not set
+  createEnums: () ->
+    enums = []
+    #TODO: on a saved and re-opened instance, mEnums are not set
     for thisMEnum in mEnum.getMEnums()
-      metaModel.push
-        mType: Constants.ENUM
+      enums.push
         name: thisMEnum.name
-        symbols: thisMEnum.symbols
+        values: thisMEnum.symbols
+    enums
 
+
+
+  createAttributes: () ->
+    attributes = []
+    ### TODO
   addAttributes: (metaModel) ->
   #TODO: on a saved and re-opened instance, menums are not set
     console.log("addAttribute -> get Attributes:")
@@ -104,34 +96,33 @@ class window.Exporter
       console.log(thisMAttribute)
       console.log("- - - - - - - - - - - -")
 
-
+    attibutes
 
   ###
   # Iterates over the graph-elements and adds them to the metaModel object.
   addAttribute: (metaModel) ->
-    mAttributes = []
     for thisAttribute in @graph.getElements()
-      metaModel.push
+      attributes.push
         mType: Constants.CLASS
         name: @graph.getName element
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
         inputs: @graph.getInputs element
-        outputs: @graph.getOutputs element
+        outputs: @graph.getOutputs element ###
+    attributes
 
-    mAttributes
 
-  # Iterates over the graph-elements and adds them to the metaModel object.
-  addMethod: (metaModel) ->
-      metaModel.push
+  createMethods: (metaModel) ->
+    methods = []
+    ### TODO
+    for method in @graph.getElements()
+      methods.push
         mType: Constants.METHODS
         name: @graph.getName element
         abstract: @graph.isAbstract element
         superTypes: @graph.getSuperTypes element
         attributes: @graph.getAttributes element
         inputs: @graph.getInputs element
-        outputs: @graph.getOutputs element
-
-    mMethods
-  ###
+        outputs: @graph.getOutputs element ###
+    methods

@@ -16,13 +16,13 @@ class EdgesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on non-empty attribute names" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeName1" -> Seq())
-    val edge = Edge("", mReference, Seq(), Seq(), attribute)
+    val edge = Edge("", mReference.name, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be (true)
   }
 
   it should "return false on empty attribute names" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("" -> Seq())
-    val edge = Edge("", mReference, Seq(), Seq(), attribute)
+    val edge = Edge("", mReference.name, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be (false)
   }
 

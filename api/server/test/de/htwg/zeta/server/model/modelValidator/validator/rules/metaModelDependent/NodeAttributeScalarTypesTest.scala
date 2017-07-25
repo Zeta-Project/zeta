@@ -19,21 +19,21 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
 
   "isValid" should "be true for valid nodes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("")))
-    val node = Node("", mClass, Seq(), Seq(), attribute)
+    val node = Node("", mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(true)
   }
 
   it should "be false for invalid nodes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MInt(0)))
-    val node = Node("", mClass, Seq(), Seq(), attribute)
+    val node = Node("", mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }
