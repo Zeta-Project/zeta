@@ -23,6 +23,7 @@ var Rappid = Backbone.Router.extend({
             this.initializeStencil();
             this.initializeSelection();
             this.initializeMEnum();
+            this.initializeMAttribute();
 
             if (window.loadedMetaModel.loadOnStart === true) {
                 this.graph.fromJSON(_.extend({}, window.loadedMetaModel.graph));
@@ -245,6 +246,8 @@ var Rappid = Backbone.Router.extend({
         },
 
         createInspector: function (cellView) {
+            console.log("createInspector");
+            console.log(cellView);
             this.destroyInspector();
 
             var inspectorDefs = inspector.getDefs(cellView.model, this.graph.getElements(), this.graph.getLinks());
@@ -477,6 +480,7 @@ var Rappid = Backbone.Router.extend({
 
             $('#btn-clear').on('click', _.bind(function () {
                 var enumContainer = mEnum.getMEnumContainer();
+                var attributeContainer = mAttribute.getMAttributeContainer();
                 this.graph.clear();
                 this.graph.addCell(enumContainer);
             }, this));
@@ -633,6 +637,14 @@ var Rappid = Backbone.Router.extend({
             mEnum.init(this.graph);
             if (!this.graph.getCell(mEnum.MENUM_CONTAINER_ID)) {
                 this.graph.addCell(mEnum.getMEnumContainer());
+            }
+        }
+        ,
+
+        initializeMAttribute: function () {
+            mAttribute.init(this.graph);
+            if (!this.graph.getCell(mAttribute.MATTRIBUTE_CONTAINER_ID)) {
+                this.graph.addCell(mAttribute.getMAttributeContainer());
             }
         }
         ,

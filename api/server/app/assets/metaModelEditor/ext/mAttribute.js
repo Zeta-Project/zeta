@@ -11,10 +11,13 @@ var mAttribute = (function () {
     var getMAttribute;
 
     init = function init(graph) {
+        console.log("init graph in mAttribute");
         _graph = graph;
     };
 
     getMAttributeContainer = function getMAttributeContainer() {
+        console.log("Attribute _graph");
+        console.log(_graph);
         var mAttributeContainer = _graph.getCell(MATTRIBUTE_CONTAINER_ID);
         if (!mAttributeContainer) {
             mAttributeContainer = new joint.dia.Element({
@@ -66,7 +69,7 @@ var mAttribute = (function () {
     };
 
     return {
-        MAttribute_CONTAINER_ID : MAttribute_CONTAINER_ID,
+        MATTRIBUTE_CONTAINER_ID : MATTRIBUTE_CONTAINER_ID,
         init: init,
         getMAttributeContainer: getMAttributeContainer,
         getMAttributeNames: getMAttributeNames,

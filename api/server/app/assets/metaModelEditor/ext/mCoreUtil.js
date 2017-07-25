@@ -10,12 +10,14 @@ var mCoreUtil = (function () {
     var REFERENCE_TYPES = ['uml.Aggregation', 'uml.Composition', 'uml.Association'];
     var ABSTRACT_TYPES = ['uml.Abstract', 'uml.Interface'];
     var M_ENUM_CONTAINER_TYPE = 'mcore.Enum';
+    var M_ATTRIBUTE_CONTAINER_TYPE = 'mcore.Attribute';
 
     var isElement;
     var isGeneralization;
     var isReference;
     var isAbstract;
     var isMEnumContainer;
+    var isMAttributeContainer;
 
     /**
      * Checks whether the given object is a MoDiGen-Metamodel-Element.
@@ -119,12 +121,34 @@ var mCoreUtil = (function () {
         return check;
     };
 
+    /**
+     * Checks whether the element is the isMAttributeContainer.
+     * isMAttributeContainer is implemented as a normal class on the paper, so it has to be distinguished.
+     *
+     * @param element
+     * @returns {boolean}
+     */
+    isMAttributeContainer = function isMAttributeContainer(element) {
+        var check = false;
+
+        switch (typeof element) {
+            case 'string':
+                check = element === M_ATTRIBUTE_CONTAINER_TYPE;
+                break;
+            case 'object':
+                check = element.attributes.type === M_ATTRIBUTE_CONTAINER_TYPE;
+        }
+
+        return check;
+    };
+
     return {
         isElement: isElement,
         isGeneralization: isGeneralization,
         isReference: isReference,
         isAbstract: isAbstract,
-        isMEnumContainer: isMEnumContainer
+        isMEnumContainer: isMEnumContainer,
+        isMAttributeContainer: isMAttributeContainer
     };
 
 })();

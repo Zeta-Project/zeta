@@ -5,6 +5,8 @@ class window.Constants
   @CLASS: 'mClass'
   @REFERENCE: 'mReference'
   @ENUM: 'mEnum'
+  @ATTRIBUTE: 'mAttribute'
+  @METHOD: 'mMethod'
 
   @field:
     ATTRIBUTES: 'm_attributes'

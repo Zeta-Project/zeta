@@ -50,6 +50,7 @@ class window.Exporter
     @addClasses metaModel
     @addReferences metaModel
     @addEnums metaModel
+    @addAttributes metaModel
 
     metaModel
 
@@ -95,6 +96,15 @@ class window.Exporter
         mType: Constants.ENUM
         name: thisMEnum.name
         symbols: thisMEnum.symbols
+
+  addAttributes: (metaModel) ->
+  #TODO: on a saved and re-opened instance, menums are not set
+    console.log("addAttribute -> get Attributes:")
+    for thisMAttribute in mAttribute.getMAttributes()
+      console.log(thisMAttribute)
+      console.log("- - - - - - - - - - - -")
+
+
 
   ###
   # Iterates over the graph-elements and adds them to the metaModel object.
