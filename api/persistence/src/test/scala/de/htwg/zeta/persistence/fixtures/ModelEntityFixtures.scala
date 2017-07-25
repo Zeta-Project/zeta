@@ -22,28 +22,28 @@ object ModelEntityFixtures {
   val edgeName2 = "edgeName2"
 
   val toNodes1 = ToNodes(
-    clazz = MetaModelEntityFixtures.class1,
+    className = MetaModelEntityFixtures.class1.name,
     nodeNames = Seq(nodeName1, nodeName2)
   )
 
   val toNodes2 = ToNodes(
-    clazz = MetaModelEntityFixtures.class2,
+    className = MetaModelEntityFixtures.class2.name,
     nodeNames = Seq.empty
   )
 
   val toEdges1 = ToEdges(
-    reference = MetaModelEntityFixtures.reference1,
+    referenceName = MetaModelEntityFixtures.reference1.name,
     edgeNames = Seq(edgeName1)
   )
 
   val toEdges2 = ToEdges(
-    reference = MetaModelEntityFixtures.reference2,
+    referenceName = MetaModelEntityFixtures.reference2.name,
     edgeNames = Seq(edgeName2)
   )
 
   val node1 = Node(
     name = "name1",
-    clazz = MetaModelEntityFixtures.class1,
+    className = MetaModelEntityFixtures.class1.name,
     outputs = Seq(toEdges1, toEdges2),
     inputs = Seq.empty,
     attributes = Map("attribute1" -> Seq(MInt(1)))
@@ -51,7 +51,7 @@ object ModelEntityFixtures {
 
   val node2 = Node(
     name = "name2",
-    clazz = MetaModelEntityFixtures.class2,
+    className = MetaModelEntityFixtures.class2.name,
     outputs = Seq.empty,
     inputs = Seq(toEdges1, toEdges2),
     attributes = Map("attribute2" -> Seq(MDouble(2), MDouble(3)))
@@ -59,7 +59,7 @@ object ModelEntityFixtures {
 
   val edge1 = Edge(
     name = "edge1",
-    reference = MetaModelEntityFixtures.reference1,
+    referenceName = MetaModelEntityFixtures.reference1.name,
     source = Seq(toNodes1, toNodes2),
     target = Seq.empty,
     attributes = Map("attribute3" -> Seq(MInt(-1)))
@@ -67,7 +67,7 @@ object ModelEntityFixtures {
 
   val edge2 = Edge(
     name = "edge2",
-    reference = MetaModelEntityFixtures.reference2,
+    referenceName = MetaModelEntityFixtures.reference2.name,
     source = Seq.empty,
     target = Seq(toNodes1, toNodes2),
     attributes = Map.empty
@@ -93,25 +93,19 @@ object ModelEntityFixtures {
 
   val entity1 = ModelEntity(
     id = UUID.randomUUID(),
-    model = model1,
-    metaModelId = UUID.randomUUID(),
-    links = Some(MetaModelEntityFixtures.links1)
+    model = model1
   )
 
   val entity2 = ModelEntity(
     id = UUID.randomUUID(),
-    model = model2,
-    metaModelId = UUID.randomUUID(),
-    links = Some(MetaModelEntityFixtures.links2)
+    model = model2
   )
 
-  val entity2Updated: ModelEntity = entity2.copy(links = Some(MetaModelEntityFixtures.links1))
+  val entity2Updated: ModelEntity = entity2.copy(model = entity2.model.copy(uiState = "updatedState"))
 
   val entity3 = ModelEntity(
     id = UUID.randomUUID(),
-    model = model1,
-    metaModelId = UUID.randomUUID(),
-    links = None
+    model = model1
   )
 
 }

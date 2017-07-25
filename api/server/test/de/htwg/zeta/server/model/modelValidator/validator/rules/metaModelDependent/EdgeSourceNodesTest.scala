@@ -38,9 +38,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes1 = ToNodes(clazz = source1, nodeNames = Seq(""))
+    val toNodes1 = ToNodes(className = source1.name, nodeNames = Seq(""))
 
-    val edge1 = Edge("", mReference, Seq(toNodes1), Seq(), Map.empty)
+    val edge1 = Edge("", mReference.name, Seq(toNodes1), Seq(), Map.empty)
 
     rule.isValid(edge1).get should be(true)
 
@@ -55,9 +55,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes2 = ToNodes(clazz = source1, nodeNames = Seq("", ""))
+    val toNodes2 = ToNodes(className = source1.name, nodeNames = Seq("", ""))
 
-    val edge2 = Edge("", mReference, Seq(toNodes2), Seq(), Map.empty)
+    val edge2 = Edge("", mReference.name, Seq(toNodes2), Seq(), Map.empty)
 
     rule.isValid(edge2).get should be(true)
 
@@ -75,9 +75,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val invalidToNodes = ToNodes(clazz = invalidSource, nodeNames = Seq(""))
+    val invalidToNodes = ToNodes(className = invalidSource.name, nodeNames = Seq(""))
 
-    val edge1 = Edge("", mReference, Seq(invalidToNodes), Seq(), Map.empty)
+    val edge1 = Edge("", mReference.name, Seq(invalidToNodes), Seq(), Map.empty)
 
     rule.isValid(edge1).get should be(false)
   }
@@ -93,7 +93,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentMReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("", differentMReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

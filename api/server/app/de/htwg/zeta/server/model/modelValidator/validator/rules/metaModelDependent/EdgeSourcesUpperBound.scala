@@ -15,9 +15,9 @@ class EdgeSourcesUpperBound(val edgeType: String, val sourceType: String, val up
   override val possibleFix: String =
     s"Remove source nodes of type $sourceType from edges of type $edgeType until there are a maximum of $upperBound source nodes."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.source.find(_.clazz.name == sourceType) match {
+  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.source.find(_.className == sourceType) match {
     case Some(source) => source.nodeNames.size <= upperBound
     case None => true
   }

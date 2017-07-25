@@ -15,7 +15,7 @@ class EdgesNoAttributes(val edgeType: String) extends SingleEdgeRule with DslRul
   override val description: String = s"Edges of type $edgeType must not have attributes."
   override val possibleFix: String = s"Remote all attributes from edges of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = edge.attributes.values.flatten.isEmpty
 

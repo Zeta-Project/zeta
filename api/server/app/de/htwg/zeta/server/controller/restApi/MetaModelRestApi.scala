@@ -3,7 +3,6 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.collection.immutable.Seq
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -11,7 +10,6 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
@@ -30,10 +28,8 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json
-import play.api.libs.json.Reads
+import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -52,10 +48,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     val repo = restrictedAccessRepository(request.identity.id).metaModelEntity
     repo.readAllIds().flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
-        new MetaModelShortInfo(id = mm.id, name = mm.metaModel.name, links = Some(Seq(
-          HLink.get("self", routes.ScalaRoutes.getMetamodels(mm.id).absoluteURL()(request)),
-          HLink.delete("remove", routes.ScalaRoutes.getMetamodels(mm.id).absoluteURL()(request))
-        )))
+        MetaModelShortInfo(id = mm.id, name = mm.metaModel.name)
       })
     }).map((set: Set[MetaModelShortInfo]) => Ok(JsArray(set.toList.map(MetaModelShortInfo.writes.writes)))).recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -68,16 +61,16 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(NameReads).fold(
+    request.body.validate(MetaModel.playJsonReadsEmpty).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      name => {
+      metaModel => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.create(
           MetaModelEntity(
             id = UUID.randomUUID(),
-            metaModel = MetaModel.empty(name)
+            metaModel = metaModel
           )
         ).map { metaModelEntity =>
           Created(Json.toJson(metaModelEntity))
@@ -86,14 +79,6 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         }
       }
     )
-  }
-
-  private object NameReads extends Reads[String] {
-
-    override def reads(json: JsValue): JsResult[String] = {
-      json.\("name").validate[String]
-    }
-
   }
 
   /** Updates whole MetaModel structure (MetaModel itself, DSLs...)
@@ -135,13 +120,9 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
 
   /** returns whole metamodels incl. dsl definitions and HATEOAS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
-      val out: MetaModelEntity = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ScalaRoutes.getMetamodels(m.id).absoluteURL()(request)),
-        HLink.delete("remove", routes.ScalaRoutes.getMetamodels(m.id).absoluteURL()(request))
-      )))
-      Ok(MetaModelEntityUiFormat.writes(out))
-    })
+    protectedRead(id, request, metaModelEntity =>
+      Ok(MetaModelEntityUiFormat.writes(metaModelEntity))
+    )
   }
 
   /** returns pure MetaModel without dsl definitions */

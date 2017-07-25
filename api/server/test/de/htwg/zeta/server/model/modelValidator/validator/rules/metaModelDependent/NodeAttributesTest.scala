@@ -23,7 +23,7 @@ class NodeAttributesTest extends FlatSpec with Matchers {
       "att1" -> Seq(MString("")),
       "att2" -> Seq(MBool(false))
     )
-    val node = Node("", mClass, Seq(), Seq(), attributes)
+    val node = Node("", mClass.name, Seq(), Seq(), attributes)
 
     rule.isValid(node).get should be(true)
   }
@@ -34,14 +34,14 @@ class NodeAttributesTest extends FlatSpec with Matchers {
       "att2" -> Seq(MBool(false)),
       "att3" -> Seq(MInt(0))
     )
-    val node = Node("", mClass, Seq(), Seq(), attributes)
+    val node = Node("", mClass.name, Seq(), Seq(), attributes)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }

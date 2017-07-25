@@ -24,19 +24,19 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   val rule = new EdgesNoAttributes("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no attributes" in {
-    val edge = Edge("", mReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("", mReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on edges of type edgeType with attributes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
-    val edge = Edge("", mReference, Seq(), Seq(), attribute)
+    val edge = Edge("", mReference.name, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(false)
   }
 
   it should "return true on edges of type edgeType with empty attribute values" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
-    val edge = Edge("", mReference, Seq(), Seq(), attribute)
+    val edge = Edge("", mReference.name, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(true)
   }
 
@@ -51,7 +51,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentReference, Seq(), Seq(), Map.empty)
+    val edge = Edge("", differentReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

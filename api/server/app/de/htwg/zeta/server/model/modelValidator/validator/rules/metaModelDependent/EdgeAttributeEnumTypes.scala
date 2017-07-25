@@ -16,7 +16,7 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
   override val description: String = s"Attributes of type $attributeType in edges of type $edgeType must be of type enum $enumName."
   override val possibleFix: String = s"Remove attribute values of attribute $attributeType in edge $edgeType which are not of type enum $enumName."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = edge.attributes.get(attributeType) match {
     case None => true

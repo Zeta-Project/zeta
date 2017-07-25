@@ -28,17 +28,17 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
   "check" should "return true on edges with 2 or less attributes of type attributeType" in {
 
     val noAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq.empty)
-    val noAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), noAttributes)
+    val noAttributesEdge = Edge("edgeId", mReference.name, Seq(), Seq(), noAttributes)
 
     rule.isValid(noAttributesEdge).get should be(true)
 
     val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
-    val oneAttributeEdge = Edge("edgeId", mReference, Seq(), Seq(), oneAttribute)
+    val oneAttributeEdge = Edge("edgeId", mReference.name, Seq(), Seq(), oneAttribute)
 
     rule.isValid(oneAttributeEdge).get should be(true)
 
     val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2")))
-    val twoAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), twoAttributes)
+    val twoAttributesEdge = Edge("edgeId", mReference.name, Seq(), Seq(), twoAttributes)
 
     rule.isValid(twoAttributesEdge).get should be(true)
 
@@ -46,12 +46,12 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
   it should "return false on edges with more than 2 attributes of type attributeType" in {
     val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3")))
-    val threeAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), threeAttributes)
+    val threeAttributesEdge = Edge("edgeId", mReference.name, Seq(), Seq(), threeAttributes)
 
     rule.isValid(threeAttributesEdge).get should be(false)
 
     val fourAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3"), MString("att4")))
-    val fourAttributesEdge = Edge("edgeId", mReference, Seq(), Seq(), fourAttributes)
+    val fourAttributesEdge = Edge("edgeId", mReference.name, Seq(), Seq(), fourAttributes)
 
     rule.isValid(fourAttributesEdge).get should be(false)
   }
@@ -67,7 +67,7 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("edgeId", differentReference, Seq.empty, Seq.empty, Map.empty)
+    val edge = Edge("edgeId", differentReference.name, Seq.empty, Seq.empty, Map.empty)
 
     rule.isValid(edge) should be(None)
   }

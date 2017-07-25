@@ -7,21 +7,21 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
+import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelUiFormat
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelEntityFormat
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.NodeFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.EdgeFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelEntityFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelUiFormat
+import de.htwg.zeta.server.controller.restApi.modelUiFormat.NodeFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
+import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
-import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -37,13 +37,7 @@ class ModelRestApi() extends Controller with Logging {
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedAccessRepository(request.identity.id).modelEntity
     repo.readAllIds().flatMap { ids =>
-      Future.sequence(ids.toList.map(repo.read)).map(_.map(info =>
-        info.copy(links = Some(Seq(
-          HLink.get("self", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request)),
-          HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(info.metaModelId).absoluteURL()(request)),
-          HLink.delete("remove", routes.ScalaRoutes.getModels(info.id).absoluteURL()(request))
-        )))
-      ))
+      Future.sequence(ids.toList.map(repo.read))
     }.map((list: List[ModelEntity]) =>
       Ok(JsArray(list.map(ModelEntityFormat.writes)))
     ).recover {
@@ -53,28 +47,31 @@ class ModelRestApi() extends Controller with Logging {
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
-      jsRes.fold(
-        error => Future.successful(Results.BadRequest(JsError.toJson(error))),
-        model => restrictedAccessRepository(request.identity.id).modelEntity.create(
-          ModelEntity(
-            id = UUID.randomUUID(),
-            model = model,
-            metaModelId = model.metaModelId
-          )
-        ).map { modelEntity =>
-          Ok(ModelEntityFormat.writes(modelEntity))
-        }).recover {
-        case e: Exception => Results.BadRequest(e.getMessage)
-      }
-    })
+    request.body.validate(Model.playJsonReadsEmpty).fold(
+      faulty => {
+        faulty.foreach(error(_))
+        Future.successful(BadRequest(JsError.toJson(faulty)))
+      },
+      model => restrictedAccessRepository(request.identity.id).modelEntity.create(
+        ModelEntity(
+          id = UUID.randomUUID(),
+          model = model
+        )
+      ).map { modelEntity =>
+        Ok(ModelEntityFormat.writes(modelEntity))
+      }).recover {
+      case e: Exception => Results.BadRequest(e.getMessage)
+    }
   }
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
     ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
       jsRes.fold(
-        errors => Future.successful(Results.BadRequest(JsError.toJson(errors))),
+        faulty => {
+          faulty.foreach(error(_))
+          Future.successful(BadRequest(JsError.toJson(faulty)))
+        },
         model => {
           restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
             updated =>
@@ -95,14 +92,9 @@ class ModelRestApi() extends Controller with Logging {
 
   /** returns whole model structure incl. HATEOS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => {
-      val out = m.copy(links = Some(Seq(
-        HLink.put("update", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request)),
-        HLink.get("meta_model", routes.ScalaRoutes.getMetamodels(m.metaModelId).absoluteURL()(request)),
-        HLink.delete("remove", routes.ScalaRoutes.getModels(m.id).absoluteURL()(request))
-      )))
-      Ok(ModelEntityFormat.writes(out))
-    })
+    protectedRead(id, request, modelEntity =>
+      Ok(ModelEntityFormat.writes(modelEntity))
+    )
   }
 
   /** returns model definition only */
@@ -169,7 +161,7 @@ class ModelRestApi() extends Controller with Logging {
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedReadFuture(id, request, (modelEntity: ModelEntity) => {
 
-      restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.metaModelId).map(metaModelEntity => {
+      restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.model.metaModelId).map(metaModelEntity => {
         metaModelEntity.validator match {
           case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
             case Some(validator) =>

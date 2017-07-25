@@ -10,15 +10,15 @@ import play.api.libs.json.Json
 
 /** Represents an MReference type instance.
  *
- * @param name       the name of the edge
- * @param reference  the MReference instance that represents the edge's type
- * @param source     the nodes that are the origin of relationships
- * @param target     the nodes that can be reached
- * @param attributes a map with attribute names and the assigned values
+ * @param name          the name of the edge
+ * @param referenceName the name of the MReference instance that represents the edge's type
+ * @param source        the nodes that are the origin of relationships
+ * @param target        the nodes that can be reached
+ * @param attributes    a map with attribute names and the assigned values
  */
 case class Edge(
     name: String,
-    reference: MReference,
+    referenceName: String,
     source: Seq[ToNodes],
     target: Seq[ToNodes],
     attributes: Map[String, Seq[AttributeValue]]

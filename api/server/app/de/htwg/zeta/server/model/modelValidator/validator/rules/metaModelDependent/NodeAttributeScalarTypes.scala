@@ -29,7 +29,7 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
   override val possibleFix: String =
     s"Remove attribute values of attribute $attributeType in node $nodeType which are not of data type ${attributeDataType.asString}."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
   def rule(node: Node): Boolean = {
 

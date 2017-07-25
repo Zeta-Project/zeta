@@ -22,7 +22,7 @@ class EdgeAttributesLocalUnique(val edgeType: String, val attributeType: String)
   override val description: String = s"Attribute values of attribute type $attributeType in Edge of type $edgeType must be unique locally."
   override val possibleFix: String = s"Remove all but one of the duplicated attribute values of type $attributeType in Edge of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = {
 

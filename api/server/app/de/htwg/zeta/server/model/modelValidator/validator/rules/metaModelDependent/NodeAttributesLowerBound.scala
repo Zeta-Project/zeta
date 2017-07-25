@@ -15,7 +15,7 @@ class NodeAttributesLowerBound(val nodeType: String, val attributeType: String, 
   override val description: String = s"Nodes of type $nodeType must have at least $lowerBound attributes of type $attributeType."
   override val possibleFix: String = s"Add attributes of type $attributeType to nodes of type $nodeType until there are at least $lowerBound attributes."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
   def rule(node: Node): Boolean = node.attributes.get(attributeType) match {
     case Some(attribute) => attribute.size >= lowerBound

@@ -26,7 +26,6 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -238,8 +237,6 @@ object MongoHandler {
   private implicit val dslHandler: BSONDocumentHandler[Dsl] = Macros.handler[Dsl]
 
   private implicit val diagramHandler: BSONDocumentHandler[Diagram] = Macros.handler[Diagram]
-
-  private implicit val hLinkHandler: BSONDocumentHandler[HLink] = Macros.handler[HLink]
 
   private implicit val shapeHandler: BSONDocumentHandler[Shape] = Macros.handler[Shape]
 

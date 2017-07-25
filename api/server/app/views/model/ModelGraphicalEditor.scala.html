@@ -70,14 +70,14 @@
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/src/main.js")"></script>
 
         <!-- model specific files-->
-    <script src="@(s"/model_specific/${model.metaModelId}/inspector.js") "> </script>
-    <script src="@(s"/model_specific/${model.metaModelId}/style.js")"></script>
-    <script src="@(s"/model_specific/${model.metaModelId}/shape.js")"></script>
-    <script src="@(s"/model_specific/${model.metaModelId}/stencil.js")"></script>
-    <script src="@(s"/model_specific/${model.metaModelId}/connectionstyle.js")"></script>
-    <script src="@(s"/model_specific/${model.metaModelId}/linkhelper.js")"></script>
-    <script src="@(s"/model_specific/${model.metaModelId}/validator.js")"></script>
-    <script src="@(s"/model_specific/${model.metaModelId}/elementAndInlineStyle.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/inspector.js") "> </script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/style.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/shape.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/stencil.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/connectionstyle.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/linkhelper.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/validator.js")"></script>
+    <script src="@(s"/model_specific/${model.model.metaModelId}/elementAndInlineStyle.js")"></script>
 
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/linkTypeSelector.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/exportModel.js")"></script>
@@ -141,10 +141,10 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="btnValidator">
                 <li><a href="#" id="validatorValidate" data-model-id="@(model.id)">Validate Model</a></li>
-                <li><a href="#" id="validatorShow" data-meta-model-id="@(model.metaModelId)">Show Validation Rules</a></li>
+                <li><a href="#" id="validatorShow" data-meta-model-id="@(model.model.metaModelId)">Show Validation Rules</a></li>
                 <li><a href="#" id="validatorUnhighlight">Unhighlight highlighted Cells</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(model.metaModelId)">Generate / Update Validator</a></li>
+                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(model.model.metaModelId)">Generate / Update Validator</a></li>
             </ul>
         </div>
 
@@ -242,7 +242,7 @@
 
     <script type="text/javascript">
     window._global_uuid = "@(model.id.toString)";
-    window._global_graph_type = "@(model.metaModelId.toString)";
+    window._global_graph_type = "@(model.model.metaModelId.toString)";
     window._global_userID = "@(user.id.toString)";
     window._global_userName = "@(user.fullName)";
     window._global_model_name = "@(model.model.name)";

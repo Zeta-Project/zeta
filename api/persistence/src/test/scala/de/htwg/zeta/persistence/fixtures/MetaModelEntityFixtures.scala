@@ -5,7 +5,6 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.helper.HLink
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -30,17 +29,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 
 object MetaModelEntityFixtures {
-
-  val links1 = Seq(
-    HLink(rel = "rel1", href = "href1", method = "method1"),
-    HLink(rel = "rel2", href = "href2", method = "method2")
-  )
-
-  val links2 = Seq(
-    HLink(rel = "rel3", href = "href3", method = "method3"),
-    HLink(rel = "rel4", href = "href4", method = "method4"),
-    HLink(rel = "rel5", href = "href5", method = "method5")
-  )
 
   val dsl1 = Dsl(
     diagram = Some(Diagram("diagramCode1")),
@@ -256,16 +244,14 @@ object MetaModelEntityFixtures {
     id = UUID.randomUUID,
     metaModel = metaModel1,
     dsl = dsl1,
-    validator = Some("validator1"),
-    links = Some(links1)
+    validator = Some("validator1")
   )
 
   val entity2 = MetaModelEntity(
     id = UUID.randomUUID,
     metaModel = metaModel2,
     dsl = dsl2,
-    validator = Some("validator2"),
-    links = Some(links2)
+    validator = Some("validator2")
   )
 
   val entity2Updated: MetaModelEntity = entity2.copy(dsl = dsl1)
@@ -274,8 +260,7 @@ object MetaModelEntityFixtures {
     id = UUID.randomUUID,
     metaModel = metaModel1,
     dsl = dsl2,
-    validator = Some("validator3"),
-    links = Some(links2)
+    validator = Some("validator3")
   )
 
 }

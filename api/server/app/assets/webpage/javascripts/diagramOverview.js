@@ -36,10 +36,7 @@
 
         const model = {
             name: name,
-            metaModelId: window.metaModelId,
-            elements: [],
-            attributes: [],
-            uiState: ""
+            metaModelId: window.metaModelId
         };
 
         $.ajax({

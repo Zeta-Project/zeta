@@ -9,10 +9,10 @@ import play.api.libs.json.Json
 
 /** Represents nodes in reach of an edge.
  *
- * @param clazz     the MClass instance that represents the type of the nodes
+ * @param className the name of the MClass instance that represents the type of the nodes
  * @param nodeNames the names of the nodes
  */
-case class ToNodes(clazz: MClass, nodeNames: Seq[String]) extends Link
+case class ToNodes(className: String, nodeNames: Seq[String]) extends Link
 
 object ToNodes {
 

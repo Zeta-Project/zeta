@@ -15,7 +15,7 @@ class EdgesNoSources(val edgeType: String) extends SingleEdgeRule with DslRule {
   override val description: String = s"Edges of type $edgeType must not have source nodes."
   override val possibleFix: String = s"Remove all source nodes from edges of type $edgeType."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = edge.source.flatten(_.nodeNames).isEmpty
 

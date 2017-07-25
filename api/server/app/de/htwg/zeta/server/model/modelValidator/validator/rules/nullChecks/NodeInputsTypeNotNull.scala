@@ -11,5 +11,5 @@ class NodeInputsTypeNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.inputs).map(_.reference).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.flatMap(_.inputs).map(_.referenceName).contains(null) // scalastyle:ignore null
 }

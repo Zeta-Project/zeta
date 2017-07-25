@@ -18,35 +18,35 @@ class NodeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on nodes with 2 or less attributes of type attributeType" in {
     val noAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
-    val noAttributesNode = Node("", mClass, Seq(), Seq(), noAttributes)
+    val noAttributesNode = Node("", mClass.name, Seq(), Seq(), noAttributes)
 
     rule.isValid(noAttributesNode).get should be(true)
 
     val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
-    val oneAttributeNode = Node("", mClass, Seq(), Seq(), oneAttribute)
+    val oneAttributeNode = Node("", mClass.name, Seq(), Seq(), oneAttribute)
 
     rule.isValid(oneAttributeNode).get should be(true)
 
     val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2")))
-    val twoAttributesNode = Node("", mClass, Seq(), Seq(), twoAttributes)
+    val twoAttributesNode = Node("", mClass.name, Seq(), Seq(), twoAttributes)
 
     rule.isValid(twoAttributesNode).get should be(true)
   }
 
   it should "return false on nodes with more than 2 attributes of type attributeType" in {
     val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3")))
-    val threeAttributesNode = Node("", mClass, Seq(), Seq(), threeAttributes)
+    val threeAttributesNode = Node("", mClass.name, Seq(), Seq(), threeAttributes)
 
     rule.isValid(threeAttributesNode).get should be(false)
 
     val fourAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3"), MString("att4")))
-    val fourAttributesNode = Node("", mClass, Seq(), Seq(), fourAttributes)
+    val fourAttributesNode = Node("", mClass.name, Seq(), Seq(), fourAttributes)
     rule.isValid(fourAttributesNode).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }

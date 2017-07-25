@@ -11,5 +11,5 @@ class NodeOutputsTypeNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.nodes.toSeq.flatMap(_.outputs).map(_.reference).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.toSeq.flatMap(_.outputs).map(_.referenceName).contains(null) // scalastyle:ignore null
 }

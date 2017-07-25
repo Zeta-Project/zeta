@@ -30,7 +30,7 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
     s"""Remove attribute values of attribute $attributeType in edge $edgeType which are not of data type
       |${attributeDataType.asString}.""".stripMargin
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.reference.name == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = {
 

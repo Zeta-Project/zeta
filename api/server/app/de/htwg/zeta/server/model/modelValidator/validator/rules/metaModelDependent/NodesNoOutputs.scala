@@ -16,7 +16,7 @@ class NodesNoOutputs(val nodeType: String) extends SingleNodeRule with DslRule {
   override val description: String = s"Nodes of type $nodeType must not have output edges."
   override val possibleFix: String = s"Remove all output edges from node of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.clazz.name == nodeType) Some(rule(node)) else None
+  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
   def rule(node: Node): Boolean = node.outputs.flatten(_.edgeNames).isEmpty
 

@@ -15,7 +15,7 @@ class Nodes(val nodeTypes: Seq[String]) extends SingleNodeRule with DslRule {
   override val description: String = s"Model is only allowed to contain nodes of types ${nodeTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove nodes which are not of types ${nodeTypes.mkString("{", ", ", "}")}."
 
-  override def isValid(node: Node): Option[Boolean] = Some(nodeTypes.contains(node.clazz.name))
+  override def isValid(node: Node): Option[Boolean] = Some(nodeTypes.contains(node.className))
 
   override val dslStatement: String = s"""Nodes areOfTypes ${Util.stringSeqToSeqString(nodeTypes)}"""
 }

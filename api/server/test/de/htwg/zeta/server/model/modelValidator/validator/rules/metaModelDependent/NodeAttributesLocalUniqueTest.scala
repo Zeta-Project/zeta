@@ -18,21 +18,21 @@ class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on valid nodes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value1"), MString("value2"), MString("value3")))
-    val node = Node("", mClass, Seq(), Seq(), attribute)
+    val node = Node("", mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(true)
   }
 
   it should "return false on invalid nodes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("duplicateValue"), MString("value"), MString("duplicateValue")))
-    val node = Node("", mClass, Seq(), Seq(), attribute)
+    val node = Node("", mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "return None for non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass, Seq(), Seq(), Map.empty)
+    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }

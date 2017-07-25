@@ -32,7 +32,7 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
     def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
 
 
-    val edges = Util.getEdges(elements).filter(_.reference.name == edgeType)
+    val edges = Util.getEdges(elements).filter(_.referenceName == edgeType)
     val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributes).filter(_._1 == attributeType).flatMap(_._2)
 
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
