@@ -254,8 +254,6 @@ object MetaModelEntityFixtures {
 
   val entity1 = MetaModelEntity(
     id = UUID.randomUUID,
-    rev = "rev1",
-    name = "metaModelEntity1",
     metaModel = metaModel1,
     dsl = dsl1,
     validator = Some("validator1"),
@@ -264,8 +262,6 @@ object MetaModelEntityFixtures {
 
   val entity2 = MetaModelEntity(
     id = UUID.randomUUID,
-    rev = "rev2",
-    name = "metaModelEntity2",
     metaModel = metaModel2,
     dsl = dsl2,
     validator = Some("validator2"),
@@ -276,8 +272,6 @@ object MetaModelEntityFixtures {
 
   val entity3 = MetaModelEntity(
     id = UUID.randomUUID,
-    rev = "rev3",
-    name = "metaModelEntity3",
     metaModel = metaModel1,
     dsl = dsl2,
     validator = Some("validator3"),

@@ -24,8 +24,6 @@ class ValidatorGeneratorTest extends FlatSpec with Matchers {
 
   val metaModelEntity = MetaModelEntity(
     id = UUID.randomUUID(),
-    rev = "",
-    name = "metaModelEntity",
     metaModel = metaModel
   )
 

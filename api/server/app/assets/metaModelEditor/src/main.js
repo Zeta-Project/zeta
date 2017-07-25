@@ -558,14 +558,14 @@ var Rappid = Backbone.Router.extend({
             }, this);
 
             $('#btn-export-mm').on('click', _.bind(function (evt) {
-                var exporter = new Exporter(this.graph);
-                var metaModel = exporter.export();
+                const exporter = new Exporter(this.graph);
+                const metaModel = exporter.export();
 
                 if (metaModel.isValid()) {
                     // Send exported Metamodel to server
-                    this.saveMetaModel(metaModel.getMetaModel(), [], [], this.graph.toJSON()); // TODO add attributes and methods
+                    this.saveMetaModel(metaModel, this.graph.toJSON());
                 } else {
-                    var errorMessage = "";
+                    let errorMessage = "";
                     metaModel.getMessages().forEach(function (message) {
                         errorMessage += message + '\n';
                     });
@@ -578,19 +578,19 @@ var Rappid = Backbone.Router.extend({
         /**
          * Saves the meta model and graph on the server.
          * @param metaModel
-         * @param attributes
-         * @param methods
          * @param graph
          */
-        saveMetaModel: function (metaModel, attributes, methods, graph) {
-            var showFailure = this.showExportFailure;
-            var showSuccess = this.showExportSuccess;
+        saveMetaModel: function (metaModel, graph) {
+            const showFailure = this.showExportFailure;
+            const showSuccess = this.showExportSuccess;
 
-            var data = JSON.stringify({
+            const data = JSON.stringify({
                 name: window.loadedMetaModel.name,
-                elements: metaModel,
-                attributes: attributes,
-                methods: methods,
+                classes: metaModel.getClasses(),
+                references: metaModel.getReferences(),
+                enums: metaModel.getEnums(),
+                attributes: metaModel.getAttributes(),
+                methods: metaModel.getMethods(),
                 uiState: JSON.stringify(graph)
             });
 

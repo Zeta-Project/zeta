@@ -1,15 +1,12 @@
 (function ($) {
     'use strict';
-    var createProject = function () {
+    const createProject = function () {
 
-        var name = $("#inputProjectName").val();
+        const name = $("#inputProjectName").val();
         if (name === "") return;
 
-        var data = JSON.stringify({
+        const data = JSON.stringify({
             "name": name,
-            "elements": [],
-            "uiState": "",
-            "methods": []
         });
 
         $.ajax({
@@ -31,7 +28,7 @@
 
     };
 
-    var createModelInstance = function () {
+    const createModelInstance = function () {
         const name = $("#inputModelName").val();
         if (name === "") {
             return;
@@ -62,7 +59,7 @@
         });
     };
 
-    var deleteModelInstance = function (modelId) {
+    const deleteModelInstance = function (modelId) {
         $.ajax({
             type: 'DELETE',
             url: '/rest/v1/models/' + modelId,
@@ -193,14 +190,14 @@
             })
         });
 
-        var showError = function (text) {
+        const showError = function (text) {
             $("#error-panel").fadeOut('slow', function () {
                 $("#error-panel").find("div").text(text);
                 $("#error-panel").fadeIn('slow');
             });
         };
 
-        var showSuccess = function (text) {
+        const showSuccess = function (text) {
             $("#success-panel").fadeOut('slow', function () {
                 $("#success-panel").show();
                 $("#success-panel").find("div").text(text);

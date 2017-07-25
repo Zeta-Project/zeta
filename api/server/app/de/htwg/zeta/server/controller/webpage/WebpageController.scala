@@ -28,7 +28,7 @@ class WebpageController @Inject()(ws: WSClient) extends Controller {
     val repo = restrictedAccessRepository(request.identity.id).metaModelEntity
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.map(entity => {
-        MetaModelShortInfo(entity.id, entity.name, entity.links)
+        MetaModelShortInfo(entity.id, entity.metaModel.name, entity.links)
       }))
     }
   }

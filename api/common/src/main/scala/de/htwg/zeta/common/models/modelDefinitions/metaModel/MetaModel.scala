@@ -63,6 +63,18 @@ case class MetaModel(
 
 object MetaModel {
 
+  def empty(name: String): MetaModel = {
+    MetaModel(
+      name = name,
+      classes = Seq.empty,
+      references = Seq.empty,
+      enums = Seq.empty,
+      attributes = Seq.empty,
+      methods = Seq.empty,
+      uiState = ""
+    )
+  }
+
   case class MetaModelTraverseWrapper(value: MetaModel) {
 
     def classes: Map[String, MClassTraverseWrapper] = {

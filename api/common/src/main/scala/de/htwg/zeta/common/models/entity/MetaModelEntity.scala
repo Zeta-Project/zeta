@@ -13,8 +13,6 @@ import play.api.libs.json.Json
 
 case class MetaModelEntity(
     id: UUID,
-    rev: String,
-    name: String,
     metaModel: MetaModel,
     dsl: Dsl = Dsl(),
     validator: Option[String] = None,
