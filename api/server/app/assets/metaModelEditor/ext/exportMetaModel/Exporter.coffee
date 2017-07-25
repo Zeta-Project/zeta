@@ -81,7 +81,7 @@ class window.Exporter
     for thisMEnum in mEnum.getMEnums()
       enums.push
         name: thisMEnum.name
-        symbols: thisMEnum.symbols
+        values: thisMEnum.symbols
     enums
 
 

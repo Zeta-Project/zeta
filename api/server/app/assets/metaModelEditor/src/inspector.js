@@ -401,8 +401,8 @@ var inspector = (function inspector () {
                 }
             });
 
-            defs.inputs['linkdef_input'].item.properties.type.options = linkdefOptions;
-            defs.inputs['linkdef_output'].item.properties.type.options = linkdefOptions;
+            defs.inputs.linkdef_input.item.properties.referenceName.options = linkdefOptions;
+            defs.inputs.linkdef_output.item.properties.referenceName.options = linkdefOptions;
 
         } else if (mCoreUtil.isReference(cell)) {
             defs.inputs = _.cloneDeep(M_REFERENCE);
@@ -413,8 +413,8 @@ var inspector = (function inspector () {
                 }
             });
 
-            defs.inputs['linkdef_source'].item.properties.type.options = linkdefOptions;
-            defs.inputs['linkdef_target'].item.properties.type.options = linkdefOptions;
+            defs.inputs.linkdef_source.item.properties.className.options = linkdefOptions;
+            defs.inputs.linkdef_target.item.properties.className.options = linkdefOptions;
 
         } else if (mCoreUtil.isMEnumContainer(cell)) {
 
@@ -423,8 +423,8 @@ var inspector = (function inspector () {
         }
 
         // Add enum types to m_attribute type dropdown.
-        if (cell.attributes['m_attributes']) {
-            defs.inputs['m_attributes'].item.properties.type.options = defs.inputs['m_attributes'].item.properties.type.options.concat(mEnum.getMEnumNames());
+        if (cell.attributes.m_attributes) {
+            defs.inputs.m_attributes.item.properties.typ.options = defs.inputs.m_attributes.item.properties.typ.options.concat(mEnum.getMEnumNames());
         }
 
         return defs;
