@@ -75,11 +75,11 @@ object AttributeValue {
         Try {
           metaAttributes.map { metaAttribute =>
             (metaAttribute.name, metaAttribute.typ match {
-              case StringType => (json \ metaAttribute.name).validate[List[String]].map(_.map(MString)).get
-              case BoolType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MBool(v.toBoolean))).get
-              case IntType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MInt(v.toInt))).get
-              case DoubleType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MDouble(v.toDouble))).get
-              case enum: MEnum => (json \ metaAttribute.name).validate[List[String]].map(_.map(enum.symbolMap)).get
+              case StringType => (json \ metaAttribute.name).validate[List[String]].map(_.map(MString)).getOrElse(List(metaAttribute.default))
+              case BoolType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MBool(v.toBoolean))).getOrElse(List(metaAttribute.default))
+              case IntType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MInt(v.toInt))).getOrElse(List(metaAttribute.default))
+              case DoubleType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MDouble(v.toDouble))).getOrElse(List(metaAttribute.default))
+              case enum: MEnum => (json \ metaAttribute.name).validate[List[String]].map(_.map(enum.symbolMap)).getOrElse(List(metaAttribute.default))
             })
           }.toMap
         } match {
