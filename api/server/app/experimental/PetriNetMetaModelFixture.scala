@@ -8,6 +8,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
@@ -161,14 +162,14 @@ object PetriNetMetaModelFixture {
         name = "canFire",
         parameters = List.empty,
         description = "check if the transition can fire",
-        returnType = Some(BoolType),
+        returnType = BoolType,
         code = "incomingProducer.forall(_.source.attributes.tokens > 0)"
       ),
       Method(
         name = "produce",
         parameters = List.empty,
         description = "produce the token",
-        returnType = None,
+        returnType = UnitType,
         code =
           """|incomingProducer.foreach(_.source.attributes.tokens -= 1)
              |attributes.fired = true""".stripMargin // scalastyle:ignore
@@ -177,7 +178,7 @@ object PetriNetMetaModelFixture {
         name = "consume",
         parameters = List.empty,
         description = "consume the token",
-        returnType = None,
+        returnType = UnitType,
         code =
           """|outgoingConsumer.foreach(_.target.attributes.tokens += 1)
              |attributes.fired = false""".stripMargin // scalastyle:ignore
@@ -211,7 +212,7 @@ object PetriNetMetaModelFixture {
         name = "transform",
         parameters = List.empty,
         description = "transform into the next state",
-        returnType = Some(BoolType),
+        returnType = BoolType,
         code =
           """
            |attributes.state match {

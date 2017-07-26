@@ -8,12 +8,7 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
@@ -22,9 +17,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 
 // scalastyle:off indentation multiple.string.literals
@@ -83,7 +78,7 @@ object Generator {
 
   private def generateAttributes(attributes: Seq[MAttribute]): String = {
     "  case class Attributes(\n" +
-      attributes.map(a => s"    ${if (a.constant) "" else "var "}${a.name}: ${generateAttributeType(a.typ)}").mkString(",\n") +
+      attributes.map(a => s"    ${if (a.constant) "" else "var "}${a.name}: ${a.typ.asString}").mkString(",\n") +
       "\n  )"
   }
 
@@ -98,7 +93,7 @@ object Generator {
 
 
   private def generateMethod(method: Method): String = {
-    s"""|  def ${method.name}(${generateParameters(method.parameters)}): ${generateReturnType(method.returnType)} = {
+    s"""|  def ${method.name}(${generateParameters(method.parameters)}): ${method.returnType.asString} = {
         |${method.code.lines.map("    " + _).mkString("\n")}
         |  }
         |
@@ -110,21 +105,7 @@ object Generator {
   }
 
   private def generateParameter(p: Parameter): String = {
-    s"${p.name}: ${generateAttributeType(p.typ)}"
-  }
-
-  private def generateReturnType(typ: Option[AttributeType]): String = {
-    typ.fold("Unit")(generateAttributeType)
-  }
-
-  private def generateAttributeType(typ: AttributeType): String = {
-    typ match {
-      case StringType => "String"
-      case BoolType => "Boolean"
-      case IntType => "Int"
-      case DoubleType => "Double"
-      case enum: MEnum => enum.name
-    }
+    s"${p.name}: ${p.typ.asString}"
   }
 
   private def generateReference(metaModel: MetaModel, model: Model, name: String, fileId: UUID): File = {

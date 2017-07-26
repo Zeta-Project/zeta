@@ -222,7 +222,7 @@ class UtilTest extends FlatSpec with Matchers {
 
     val mEnum: MEnum = MEnum(name = "TestMEnum", values = Seq.empty)
 
-    mEnum.asString should be("MEnum")
+    mEnum.asString should be("TestMEnum")
   }
 
   "simplifyMetaModelGraph" should "convert the meta model to a simpler structure" in {

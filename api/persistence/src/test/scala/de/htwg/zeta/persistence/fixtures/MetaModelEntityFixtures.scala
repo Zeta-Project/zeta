@@ -15,6 +15,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
@@ -170,7 +171,7 @@ object MetaModelEntityFixtures {
           Parameter("p2", DoubleType)
         ),
         description = "description1",
-        returnType = Some(IntType),
+        returnType = IntType,
         code = "code1"
       )
     )
@@ -203,7 +204,7 @@ object MetaModelEntityFixtures {
           Parameter("p4", DoubleType)
         ),
         description = "description2",
-        returnType = None,
+        returnType = UnitType,
         code = "code2"
       )
     )

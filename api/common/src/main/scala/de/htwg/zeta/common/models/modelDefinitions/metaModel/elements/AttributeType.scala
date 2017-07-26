@@ -44,6 +44,12 @@ object AttributeType {
 
   }
 
+  case object UnitType extends AttributeType {
+
+    override val asString = "Unit"
+
+  }
+
   /** The MEnum implementation
    *
    * @param name   the name of the MENum instance
@@ -51,7 +57,7 @@ object AttributeType {
    */
   case class MEnum(name: String, values: Seq[String]) extends MObject with AttributeType {
 
-    override val asString: String = "MEnum"
+    override val asString: String = name
 
     /** The symbols. */
     val symbols: Seq[EnumSymbol] = values.map(value => EnumSymbol(name, value))
@@ -72,6 +78,7 @@ object AttributeType {
           case BoolType.asString => BoolType
           case IntType.asString => IntType
           case DoubleType.asString => DoubleType
+          case UnitType.asString => UnitType
           case enumName: String => enums.find(_.name == enumName).get
         }
       }
@@ -85,6 +92,7 @@ object AttributeType {
         case BoolType => JsString(BoolType.asString)
         case IntType => JsString(IntType.asString)
         case DoubleType => JsString(DoubleType.asString)
+        case UnitType => JsString(UnitType.asString)
         case enum: MEnum => MEnum.playJsonFormat.writes(enum)
       }
     }
@@ -96,6 +104,7 @@ object AttributeType {
       case BoolType.asString => BoolType
       case IntType.asString => IntType
       case DoubleType.asString => DoubleType
+      case UnitType.asString => UnitType
     }
   }
 

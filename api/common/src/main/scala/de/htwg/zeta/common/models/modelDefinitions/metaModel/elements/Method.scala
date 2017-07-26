@@ -15,7 +15,7 @@ case class Method(
     name: String,
     parameters: Seq[Parameter],
     description: String,
-    returnType: Option[AttributeType],
+    returnType: AttributeType,
     code: String
 )
 
@@ -50,7 +50,7 @@ object Method {
         name <- (json \ sName).validate[String]
         parameters <- (json \ "parameters").validate(Reads.list(Parameter.playJsonReads(enums)))
         description <- (json \ "description").validate[String]
-        returnType <- (json \ "returnType").validate(Reads.optionNoError(AttributeType.playJsonReads(enums)))
+        returnType <- (json \ "returnType").validate(AttributeType.playJsonReads(enums))
         code <- (json \ "code").validate[String]
       } yield {
         Method(name, parameters, description, returnType, code)
