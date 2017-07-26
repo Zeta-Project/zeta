@@ -28,6 +28,10 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
+import play.api.libs.json.JsResult
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+
 /**
  * REST-ful API for model definitions
  */
@@ -64,25 +68,50 @@ class ModelRestApi() extends Controller with Logging {
     }
   }
 
+
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
-      jsRes.fold(
-        faulty => {
-          faulty.foreach(error(_))
-          Future.successful(BadRequest(JsError.toJson(faulty)))
-        },
-        model => {
-          restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
-            updated =>
-              Ok(ModelEntityFormat.writes(updated))
-          }.recover {
-            case e: Exception => Results.BadRequest(e.getMessage)
+    val repo = restrictedAccessRepository(request.identity.id)
+    (request.body \ "metaModelId").validate[UUID].fold(
+      faulty => {
+        faulty.foreach(error(_))
+        Future.successful(BadRequest(JsError.toJson(faulty)))
+      },
+      metaModelId => repo.metaModelEntity.read(metaModelId).flatMap { metaModelEntity =>
+        request.body.validate(Model.playJsonReads(metaModelEntity)).fold(
+          faulty => {
+            faulty.foreach(error(_))
+            Future.successful(BadRequest(JsError.toJson(faulty)))
+          },
+          model => {
+            repo.modelEntity.update(id, _.copy(model = model)).map { updated =>
+              Ok(Json.toJson(updated))
+            }.recover {
+              case e: Exception => Results.BadRequest(e.getMessage)
+            }
           }
-        }
-      )
-    })
+        )
+      }
+    )
   }
+
+  /*
+ ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
+   jsRes.fold(
+     faulty => {
+       faulty.foreach(error(_))
+       Future.successful(BadRequest(JsError.toJson(faulty)))
+     },
+     model => {
+       restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
+         updated =>
+           Ok(ModelEntityFormat.writes(updated))
+       }.recover {
+         case e: Exception => Results.BadRequest(e.getMessage)
+       }
+     }
+   )
+ }) */
 
   /** updates model definition only */
   // FIXME duplicate method
