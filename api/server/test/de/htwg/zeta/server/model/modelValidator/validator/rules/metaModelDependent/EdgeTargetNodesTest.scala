@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -36,9 +38,9 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes1 = ToNodes(className = target1.name, nodeNames = Seq(""))
+    val toNodes1 = ToNodes(className = target1.name, nodeIds = Seq(UUID.randomUUID()))
 
-    val edge1 = Edge("", mReference.name, Seq(), Seq(toNodes1), Map.empty)
+    val edge1 = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNodes1), Map.empty)
 
     rule.isValid(edge1).get should be(true)
 
@@ -53,9 +55,9 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes2 = ToNodes(className = target1.name, nodeNames = Seq("", ""))
+    val toNodes2 = ToNodes(className = target1.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
 
-    val edge2 = Edge("", mReference.name, Seq(), Seq(toNodes2), Map.empty)
+    val edge2 = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNodes2), Map.empty)
 
     rule.isValid(edge2).get should be(true)
 
@@ -73,9 +75,9 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val invalidToNodes = ToNodes(className = invalidTarget.name, nodeNames = Seq(""))
+    val invalidToNodes = ToNodes(className = invalidTarget.name, nodeIds = Seq(UUID.randomUUID()))
 
-    val edge1 = Edge("", mReference.name, Seq(), Seq(invalidToNodes), Map.empty)
+    val edge1 = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(invalidToNodes), Map.empty)
 
     rule.isValid(edge1).get should be(false)
   }
@@ -91,7 +93,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentMReference.name, Seq(), Seq(), Map.empty)
+    val edge = Edge(UUID.randomUUID(), differentMReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

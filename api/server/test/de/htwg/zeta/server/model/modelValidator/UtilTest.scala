@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -47,11 +49,11 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelElements = Seq(
-    Node(name = "node1", className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Node(name = "node2", className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(name = "edge1", referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
-    Node(name = "node3", className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(name = "edge2", referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
+    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Edge(id = UUID.randomUUID(), referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
+    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
+    Edge(id = UUID.randomUUID(), referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
   )
 
   val mObjects = Seq(
@@ -194,14 +196,14 @@ class UtilTest extends FlatSpec with Matchers {
   "getNodes" should "return all nodes" in {
     val nodes = Util.getNodes(modelElements)
     nodes.size should be(3)
-    nodes.map(_.name) should be(Seq("node1", "node2", "node3"))
+    nodes.map(_.id) should be(Seq("node1", "node2", "node3"))
     nodes.forall(_.isInstanceOf[Node]) should be(true)
   }
 
   "getEdges" should "return all edges" in {
     val edges = Util.getEdges(modelElements)
     edges.size should be(2)
-    edges.map(_.name) should be(Seq("edge1", "edge2"))
+    edges.map(_.id) should be(Seq("edge1", "edge2"))
     edges.forall(_.isInstanceOf[Edge]) should be(true)
   }
 

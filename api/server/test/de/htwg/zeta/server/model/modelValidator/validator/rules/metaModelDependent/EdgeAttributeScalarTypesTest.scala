@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
@@ -29,14 +31,14 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
 
   "the rule" should "be true for valid edges" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
-    val edge = Edge("edgeId", mReference.name, Seq(), Seq(), attribute)
+    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "be false for invalid edges" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MInt(42)))
-    val edge = Edge("edgeId", mReference.name, Seq(), Seq(), attribute)
+    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -53,7 +55,7 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
       Seq.empty
     )
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
-    val edge = Edge("edgeId", differentMReference.name, Seq(), Seq(), attribute)
+    val edge = Edge(UUID.randomUUID(), differentMReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge) should be(None)
   }

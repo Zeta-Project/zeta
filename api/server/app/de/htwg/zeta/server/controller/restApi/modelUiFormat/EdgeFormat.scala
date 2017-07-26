@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.controller.restApi.modelUiFormat
 
+import java.util.UUID
+
 import scala.collection.immutable.List
 import scala.collection.immutable.Seq
 
@@ -22,7 +24,7 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
   val unknownMReferenceError = JsError("Unknown mReference")
 
 
-  private def extractToNodes(classLinks: Seq[MClassLinkDef])(m: Map[String, Seq[String]]): JsResult[List[ToNodes]] = {
+  private def extractToNodes(classLinks: Seq[MClassLinkDef])(m: Map[String, Seq[UUID]]): JsResult[List[ToNodes]] = {
     m.toList.reverse.foldLeft[JsResult[List[ToNodes]]](JsSuccess(Nil))((res, kv) => {
       res match {
         case JsSuccess(list, _) =>
@@ -39,14 +41,14 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
 
   override def reads(json: JsValue): JsResult[Edge] = {
     for {
-      name <- json.\("id").validate[String]
+      id <- json.\("id").validate[UUID]
       mReference <- json.\("mReference").validate[String]
       // Todo not sure if check is correct or needs to be swapped
-      source <- json.\("source").validate[Map[String, Seq[String]]].map(_.map(e => ToNodes(e._1, e._2)))
-      target <- json.\("target").validate[Map[String, Seq[String]]].map(_.map(e => ToNodes(e._1, e._2)))
+      source <- json.\("source").validate[Map[String, Seq[UUID]]].map(_.map(e => ToNodes(e._1, e._2)))
+      target <- json.\("target").validate[Map[String, Seq[UUID]]].map(_.map(e => ToNodes(e._1, e._2)))
       // attributes <- json.\("attributes").validate(AttributeFormat(mReference.attributes, name)) // TODO FIXME
     } yield {
-      Edge(name, mReference, source.toList, target.toList, Map.empty)
+      Edge(id, mReference, source.toList, target.toList, Map.empty)
     }
   }
 
@@ -58,13 +60,13 @@ object EdgeFormat extends Writes[Edge] {
 
   def apply(metaModel: MetaModel): EdgeFormat = new EdgeFormat(metaModel)
 
-  private def writeNodes(seq: Seq[ToNodes]): Map[String, Seq[String]] = {
-    seq.map(tn => (tn.className, tn.nodeNames)).toMap
+  private def writeNodes(seq: Seq[ToNodes]): Map[String, Seq[UUID]] = {
+    seq.map(tn => (tn.className, tn.nodeIds)).toMap
   }
 
   override def writes(o: Edge): JsValue = {
     Json.obj(
-      "id" -> o.name,
+      "id" -> o.id,
       "mReference" -> o.referenceName,
       "source" -> writeNodes(o.source),
       "target" -> writeNodes(o.target),

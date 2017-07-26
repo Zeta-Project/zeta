@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -37,21 +39,21 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoSourceNodes = ToNodes(className = sourceType.name, nodeNames = Seq("1", "2"))
+    val twoSourceNodes = ToNodes(className = sourceType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
 
-    val edgeTwoSourceNodes = Edge("", mReference.name, Seq(twoSourceNodes), Seq(), Map.empty)
+    val edgeTwoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(twoSourceNodes), Seq(), Map.empty)
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
 
-    val oneSourceNode = ToNodes(className = sourceType.name, nodeNames = Seq("1"))
+    val oneSourceNode = ToNodes(className = sourceType.name, nodeIds = Seq(UUID.randomUUID()))
 
-    val edgeOneSourceNode = Edge("", mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
+    val edgeOneSourceNode = Edge(UUID.randomUUID(), mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
 
     rule.isValid(edgeOneSourceNode).get should be(true)
 
 
-    val edgeNoSourceNodes = Edge("", mReference.name, Seq(), Seq(), Map.empty)
+    val edgeNoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(edgeNoSourceNodes).get should be(true)
   }
@@ -68,9 +70,9 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val threeSourceNodes = ToNodes(className = sourceType.name, nodeNames = Seq("1", "2", "2"))
+    val threeSourceNodes = ToNodes(className = sourceType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
 
-    val edgeThreeSourceNodes = Edge("", mReference.name, Seq(threeSourceNodes), Seq(), Map.empty)
+    val edgeThreeSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(threeSourceNodes), Seq(), Map.empty)
 
     rule.isValid(edgeThreeSourceNodes).get should be(false)
   }
@@ -86,7 +88,7 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

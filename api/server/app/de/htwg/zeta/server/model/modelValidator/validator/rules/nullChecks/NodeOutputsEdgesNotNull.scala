@@ -11,5 +11,5 @@ class NodeOutputsEdgesNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.outputs).map(_.edgeNames).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.flatMap(_.outputs).map(_.edgeIds).contains(null) // scalastyle:ignore null
 }

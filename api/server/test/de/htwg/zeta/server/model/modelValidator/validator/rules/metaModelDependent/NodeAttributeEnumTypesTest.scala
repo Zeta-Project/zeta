@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
@@ -21,7 +23,7 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
   "isValid" should "be true for valid nodes" in {
     val mEnum = MEnum("enumName", Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumSymbol("enumName", mEnum.name)))
-    val node = Node("", mClass.name, Seq(), Seq(), attribute)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(true)
   }
@@ -29,14 +31,14 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be false for invalid nodes" in {
     val differentEnum = MEnum(name = "differentEnumName", values = Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumSymbol("differentEnumName", differentEnum.name)))
-    val node = Node("", mClass.name, Seq(), Seq(), attribute)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "be None for non-matching nodes" in {
     val differentClass = MClass("differentClass", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), differentClass.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(node) should be(None)
   }

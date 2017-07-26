@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
@@ -33,7 +35,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "stringAttribute" -> Seq(MString("test")),
       "boolAttribute" -> Seq(MBool(true))
     )
-    val edge = Edge("edgeId", mReference.name, Seq(), Seq(), attributes)
+    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributes)
 
     rule.isValid(edge).get should be(true)
   }
@@ -45,7 +47,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "invalidAttribute" -> Seq(MDouble(1.0))
     )
 
-    val edge = Edge("edgeId", mReference.name, Seq(), Seq(), attributes)
+    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributes)
 
     rule.isValid(edge).get should be(false)
   }
@@ -68,7 +70,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "boolAttribute" -> Seq(MBool(true))
     )
 
-    val edge = Edge("edgeId", nonMatchingReference.name, Seq(), Seq(), attributes)
+    val edge = Edge(UUID.randomUUID(), nonMatchingReference.name, Seq(), Seq(), attributes)
 
     rule.isValid(edge) should be(None)
   }

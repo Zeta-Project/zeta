@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -15,27 +17,27 @@ class NodesNoOutputsTest extends FlatSpec with Matchers {
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with no outputs" in {
-    val node = Node("", mClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with outputs" in {
     val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdge = ToEdges(output.name, Seq(output.name))
-    val node = Node("", mClass.name, Seq(toEdge), Seq(), Map.empty)
+    val toEdge = ToEdges(output.name, Seq(UUID.randomUUID()))
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(toEdge), Seq(), Map.empty)
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty output list" in {
     val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = ToEdges(output.name, Seq())
-    val node = Node("", mClass.name, Seq(toEdge), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(toEdge), Seq(), Map.empty)
     rule.isValid(node).get should be(true)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
 

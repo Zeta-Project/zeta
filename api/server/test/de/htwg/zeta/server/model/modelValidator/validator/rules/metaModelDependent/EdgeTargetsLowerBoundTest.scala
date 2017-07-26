@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -36,15 +38,15 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoTargetNodes = ToNodes(className = targetType.name, nodeNames = Seq("1", "2"))
+    val twoTargetNodes = ToNodes(className = targetType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
 
-    val edgeTwoTargetNodes = Edge("", mReference.name, Seq(), Seq(twoTargetNodes), Map.empty)
+    val edgeTwoTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(twoTargetNodes), Map.empty)
 
     rule.isValid(edgeTwoTargetNodes).get should be(true)
 
-    val threeTargetNodes = ToNodes(className = targetType.name, nodeNames = Seq("1", "2", "2"))
+    val threeTargetNodes = ToNodes(className = targetType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
 
-    val edgeThreeTargetNodes = Edge("", mReference.name, Seq(), Seq(threeTargetNodes), Map.empty)
+    val edgeThreeTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(threeTargetNodes), Map.empty)
 
     rule.isValid(edgeThreeTargetNodes).get should be(true)
   }
@@ -61,13 +63,13 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val oneTargetNode = ToNodes(className = targetType.name, nodeNames = Seq("1"))
+    val oneTargetNode = ToNodes(className = targetType.name, nodeIds = Seq(UUID.randomUUID()))
 
-    val edgeOneTargetNode = Edge("", mReference.name, Seq(), Seq(oneTargetNode), Map.empty)
+    val edgeOneTargetNode = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(oneTargetNode), Map.empty)
 
     rule.isValid(edgeOneTargetNode).get should be(false)
 
-    val edgeNoTargetNodes = Edge("", mReference.name, Seq(), Seq(), Map.empty)
+    val edgeNoTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
 
     rule.isValid(edgeNoTargetNodes).get should be(false)
   }
@@ -83,7 +85,7 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge("", differentMRef.name, Seq(), Seq(), Map.empty)
+    val edge = Edge(UUID.randomUUID(), differentMRef.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge) should be(None)
   }
 

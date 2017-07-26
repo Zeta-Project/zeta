@@ -140,9 +140,9 @@ class ModelRestApi() extends Controller with Logging {
   }
 
   /** returns specific node of a specific model as json object */
-  def getNode(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => {
-      m.model.nodeMap.get(name) match {
+  def getNode(modelId: UUID, nodeId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(modelId, request, (m: ModelEntity) => {
+      m.model.nodeMap.get(nodeId) match {
         case Some(node: Node) => Ok(NodeFormat.writes(node))
         case None => NotFound
       }
@@ -158,9 +158,9 @@ class ModelRestApi() extends Controller with Logging {
   }
 
   /** returns specific edge of a specific model as json object */
-  def getEdge(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => {
-      m.model.edgeMap.get(name) match {
+  def getEdge(modelId: UUID, edgeId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(modelId, request, (m: ModelEntity) => {
+      m.model.edgeMap.get(edgeId) match {
         case Some(edge) => Ok(EdgeFormat.writes(edge))
         case None => NotFound
       }

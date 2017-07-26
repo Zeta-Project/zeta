@@ -11,5 +11,5 @@ class ElementsIdNotNull extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !(model.nodes ++ model.edges).map(_.name).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !(model.nodes ++ model.edges).map(_.id).contains(null) // scalastyle:ignore null
 }

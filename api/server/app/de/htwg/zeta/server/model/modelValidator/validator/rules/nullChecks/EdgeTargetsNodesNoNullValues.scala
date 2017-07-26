@@ -11,5 +11,5 @@ class EdgeTargetsNodesNoNullValues extends ModelRule {
   override val description: String = ""
   override val possibleFix: String = ""
 
-  override def check(model: Model): Boolean = !model.edges.flatMap(_.target).flatMap(_.nodeNames).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.edges.flatMap(_.target).flatMap(_.nodeIds).contains(null) // scalastyle:ignore null
 }

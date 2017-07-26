@@ -37,12 +37,12 @@ object ModelValidationResult {
     override def writes(o: ModelValidationResult): JsValue = {
       val element = o.modelElement match {
         case Some(node: Node) => Json.obj(
-          "id" -> JsString(node.name),
+          "id" -> JsString(node.id.toString),
           "type" -> JsString("node"),
           "typeName" -> JsString(node.className)
         )
         case Some(edge: Edge) => Json.obj(
-          "id" -> JsString(edge.name),
+          "id" -> JsString(edge.id.toString),
           "type" -> JsString("edge"),
           "typeName" -> JsString(edge.referenceName)
         )

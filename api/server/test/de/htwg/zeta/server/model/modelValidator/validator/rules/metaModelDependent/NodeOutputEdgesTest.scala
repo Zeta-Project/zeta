@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -19,26 +21,26 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType with valid output edges" in {
 
     val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = ToEdges(output1.name, Seq(output1.name))
-    val node1 = Node("", mClass.name, Seq(toEdges1), Seq(), Map.empty)
+    val toEdges1 = ToEdges(output1.name, Seq(UUID.randomUUID()))
+    val node1 = Node(UUID.randomUUID(), mClass.name, Seq(toEdges1), Seq(), Map.empty)
     rule.isValid(node1).get should be(true)
 
     val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = ToEdges(output2.name, Seq(output1.name, output2.name))
-    val node2 = Node("", mClass.name, Seq(toEdges2), Seq(), Map.empty)
+    val toEdges2 = ToEdges(output2.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val node2 = Node(UUID.randomUUID(), mClass.name, Seq(toEdges2), Seq(), Map.empty)
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with invalid output edges" in {
     val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = ToEdges(output.name, Seq(output.name))
-    val node = Node("", mClass.name, Seq(toEdges), Seq(), Map.empty)
+    val toEdges = ToEdges(output.name, Seq(UUID.randomUUID()))
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(toEdges), Seq(), Map.empty)
     rule.isValid(node).get should be(false)
   }
 
   it should "return None on non-matching edges" in {
     val differentClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), differentClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
 

@@ -33,17 +33,17 @@ case class Model(
 ) {
 
   /** Nodes mapped to their own names. */
-  val nodeMap: Map[String, Node] = Option(nodes).fold(
-    Map.empty[String, Node]
+  val nodeMap: Map[UUID, Node] = Option(nodes).fold(
+    Map.empty[UUID, Node]
   ) { nodes =>
-    nodes.filter(Option(_).isDefined).map(node => (node.name, node)).toMap
+    nodes.filter(Option(_).isDefined).map(node => (node.id, node)).toMap
   }
 
   /** Edges mapped to their own names. */
-  val edgeMap: Map[String, Edge] = Option(edges).fold(
-    Map.empty[String, Edge]
+  val edgeMap: Map[UUID, Edge] = Option(edges).fold(
+    Map.empty[UUID, Edge]
   ) { edges =>
-    edges.filter(Option(_).isDefined).map(edge => (edge.name, edge)).toMap
+    edges.filter(Option(_).isDefined).map(edge => (edge.id, edge)).toMap
   }
 
 }

@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.controller.restApi.modelUiFormat
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 import scala.collection.immutable.List
 
@@ -21,7 +23,7 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
   private val unknownMClassError = JsError("Unknown mClass")
   private val invalidToEdgesError = JsError("edge reference has invalid type")
 
-  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[String]]): JsResult[List[ToEdges]] = {
+  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[UUID]]): JsResult[List[ToEdges]] = {
     m.toList.reverse.foldLeft[JsResult[List[ToEdges]]](JsSuccess(Nil))((res, kv) => {
       res match {
         case JsSuccess(list, _) =>
@@ -37,18 +39,18 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
 
   override def reads(json: JsValue): JsResult[Node] = {
     for {
-      name <- (json \ "id").validate[String]
+      id <- (json \ "id").validate[UUID]
       clazz <- (json \ "mClass").validate[String].flatMap(className => metaModel.classMap.get(className) match {
         case Some(mClass) => JsSuccess(mClass)
         case None => unknownMClassError
       })
       traverse = MClass.MClassTraverseWrapper(clazz, MetaModel.MetaModelTraverseWrapper(metaModel))
-      output <- (json \ "outputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasOutput))
-      input <- (json \ "inputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasInput))
-      attr <- (json \ "attributes").validate(AttributeFormat(clazz.attributes, name))
+      output <- (json \ "outputs").validate[Map[String, Seq[UUID]]].flatMap(extractEdges(traverse.typeHasOutput))
+      input <- (json \ "inputs").validate[Map[String, Seq[UUID]]].flatMap(extractEdges(traverse.typeHasInput))
+      attr <- (json \ "attributes").validate(AttributeFormat(clazz.attributes, id.toString))
 
     } yield {
-      Node(name, clazz.name, output, input, attr)
+      Node(id, clazz.name, output, input, attr)
     }
   }
 
@@ -60,13 +62,13 @@ object NodeFormat extends Writes[Node] {
 
   def apply(metaModel: MetaModel): NodeFormat = new NodeFormat(metaModel)
 
-  private def writeEdges(seq: Seq[ToEdges]): Map[String, Seq[String]] = {
-    seq.map(te => (te.referenceName, te.edgeNames)).toMap
+  private def writeEdges(seq: Seq[ToEdges]): Map[String, Seq[UUID]] = {
+    seq.map(te => (te.referenceName, te.edgeIds)).toMap
   }
 
   override def writes(o: Node): JsValue = {
     Json.obj(
-      "id" -> o.name,
+      "id" -> o.id,
       "mClass" -> o.className,
       "outputs" -> writeEdges(o.outputs),
       "inputs" -> writeEdges(o.inputs),

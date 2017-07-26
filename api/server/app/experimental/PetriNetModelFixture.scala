@@ -21,15 +21,15 @@ object PetriNetModelFixture {
   private val sConsumer = "Consumer"
   private val sProducer = "Producer"
 
-  private val sPlace1 = "Place1"
-  private val sTransition1 = "Transition1"
-  private val sConsumer1 = "Consumer1"
-  private val sProducer1 = "Producer1"
+  private val sPlace1: UUID = UUID.randomUUID()
+  private val sTransition1: UUID = UUID.randomUUID()
+  private val sConsumer1: UUID = UUID.randomUUID()
+  private val sProducer1: UUID = UUID.randomUUID()
 
-  private val sPlace2 = "Place2"
-  private val sTransition2 = "Transition2"
-  private val sConsumer2 = "Consumer2"
-  private val sProducer2 = "Producer2"
+  private val sPlace2: UUID = UUID.randomUUID()
+  private val sTransition2: UUID = UUID.randomUUID()
+  private val sConsumer2: UUID = UUID.randomUUID()
+  private val sProducer2: UUID = UUID.randomUUID()
 
   private val sTokens = "tokens"
   private val sName = "name"
@@ -37,134 +37,134 @@ object PetriNetModelFixture {
 
 
   val transition1: Node = Node(
-    name = sTransition1,
+    id = sTransition1,
     className = sTransition,
     outputs = List(ToEdges(
       referenceName = sConsumer,
-      edgeNames = List(sConsumer1)
+      edgeIds = List(sConsumer1)
     )),
     inputs = List(ToEdges(
       referenceName = sProducer,
-      edgeNames = List(sProducer1)
+      edgeIds = List(sProducer1)
     )),
     attributes = Map(
-      sName -> List(MString(sTransition1)),
+      sName -> List(MString("Transition1")),
       sFired -> List(MBool(false))
     )
   )
 
   val transition2: Node = Node(
-    name = sTransition2,
+    id = sTransition2,
     className = sTransition,
     outputs = List(ToEdges(
       referenceName = sConsumer,
-      edgeNames = List(sConsumer2)
+      edgeIds = List(sConsumer2)
     )),
     inputs = List(ToEdges(
       referenceName = sProducer,
-      edgeNames = List(sProducer2)
+      edgeIds = List(sProducer2)
     )),
     attributes = Map(
-      sName -> List(MString(sTransition2)),
+      sName -> List(MString("Transition2")),
       sFired -> List(MBool(false))
     )
   )
 
   val place1: Node = Node(
-    name = sPlace1,
+    id = sPlace1,
     className = sPlace,
     outputs = List(ToEdges(
       referenceName = sProducer,
-      edgeNames = List(sProducer1)
+      edgeIds = List(sProducer1)
     )),
     inputs = List(ToEdges(
       referenceName = sConsumer,
-      edgeNames = List(sConsumer2)
+      edgeIds = List(sConsumer2)
     )),
     attributes = Map(
-      sName -> List(MString(sPlace1)),
+      sName -> List(MString("Place1")),
       sTokens -> List(MInt(3))
     )
   )
 
   val place2: Node = Node(
-    name = sPlace2,
+    id = sPlace2,
     className = sPlace,
     outputs = List(ToEdges(
       referenceName = sProducer,
-      edgeNames = List(sProducer2)
+      edgeIds = List(sProducer2)
     )),
     inputs = List(ToEdges(
       referenceName = sConsumer,
-      edgeNames = List(sConsumer1)
+      edgeIds = List(sConsumer1)
     )),
     attributes = Map(
-      sName -> List(MString(sPlace2)),
+      sName -> List(MString("Place2")),
       sTokens -> List(MInt(0))
     )
   )
 
   val producer1: Edge = Edge(
-    name = sProducer1,
+    id = sProducer1,
     referenceName = sProducer,
     source = List(ToNodes(
       className = sPlace,
-      nodeNames = List(sPlace1)
+      nodeIds = List(sPlace1)
     )),
     target = List(ToNodes(
       className = sTransition,
-      nodeNames = List(sTransition1)
+      nodeIds = List(sTransition1)
     )),
     attributes = Map(
-      sName -> List(MString(sProducer1))
+      sName -> List(MString("Producer1"))
     )
   )
 
   val producer2: Edge = Edge(
-    name = sProducer2,
+    id = sProducer2,
     referenceName = sProducer,
     source = List(ToNodes(
       className = sPlace,
-      nodeNames = List(sPlace2)
+      nodeIds = List(sPlace2)
     )),
     target = List(ToNodes(
       className = sTransition,
-      nodeNames = List(sTransition2)
+      nodeIds = List(sTransition2)
     )),
     attributes = Map(
-      sName -> List(MString(sProducer2))
+      sName -> List(MString("Producer2"))
     )
   )
 
   val consumer1: Edge = Edge(
-    name = sConsumer1,
+    id = sConsumer1,
     referenceName = sConsumer,
     source = List(ToNodes(
       className = sTransition,
-      nodeNames = List(sTransition1)
+      nodeIds = List(sTransition1)
     )),
     target = List(ToNodes(
       className = sPlace,
-      nodeNames = List(sPlace2)
+      nodeIds = List(sPlace2)
     )),
     attributes = Map(
-      sName -> List(MString(sConsumer1))
+      sName -> List(MString("Consumer1"))
     )
   )
 
   val consumer2: Edge = Edge(
-    name = sConsumer2,
+    id = sConsumer2,
     referenceName = sConsumer,
     source = List(ToNodes(
       className = sTransition,
-      nodeNames = List(sTransition2)
+      nodeIds = List(sTransition2)
     )),
     target = List(ToNodes(
       className = sPlace,
-      nodeNames = List(sPlace1)
+      nodeIds = List(sPlace1)
     )),
     attributes = Map(
-      sName -> List(MString(sConsumer2))
+      sName -> List(MString("Consumer2"))
     )
   )
 

@@ -15,34 +15,34 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
 
 object ModelEntityFixtures {
 
-  val nodeName1 = "nodeName1"
-  val nodeName2 = "nodeName2"
+  val nodeId1: UUID = UUID.randomUUID()
+  val nodeId2: UUID = UUID.randomUUID()
 
-  val edgeName1 = "edgeName1"
-  val edgeName2 = "edgeName2"
+  val edgeId1: UUID = UUID.randomUUID()
+  val edgeId2: UUID = UUID.randomUUID()
 
   val toNodes1 = ToNodes(
     className = MetaModelEntityFixtures.class1.name,
-    nodeNames = Seq(nodeName1, nodeName2)
+    nodeIds = Seq(nodeId1, nodeId2)
   )
 
   val toNodes2 = ToNodes(
     className = MetaModelEntityFixtures.class2.name,
-    nodeNames = Seq.empty
+    nodeIds = Seq.empty
   )
 
   val toEdges1 = ToEdges(
     referenceName = MetaModelEntityFixtures.reference1.name,
-    edgeNames = Seq(edgeName1)
+    edgeIds = Seq(edgeId1)
   )
 
   val toEdges2 = ToEdges(
     referenceName = MetaModelEntityFixtures.reference2.name,
-    edgeNames = Seq(edgeName2)
+    edgeIds = Seq(edgeId2)
   )
 
   val node1 = Node(
-    name = "name1",
+    id = UUID.randomUUID(),
     className = MetaModelEntityFixtures.class1.name,
     outputs = Seq(toEdges1, toEdges2),
     inputs = Seq.empty,
@@ -50,7 +50,7 @@ object ModelEntityFixtures {
   )
 
   val node2 = Node(
-    name = "name2",
+    id = UUID.randomUUID(),
     className = MetaModelEntityFixtures.class2.name,
     outputs = Seq.empty,
     inputs = Seq(toEdges1, toEdges2),
@@ -58,7 +58,7 @@ object ModelEntityFixtures {
   )
 
   val edge1 = Edge(
-    name = "edge1",
+    id = UUID.randomUUID(),
     referenceName = MetaModelEntityFixtures.reference1.name,
     source = Seq(toNodes1, toNodes2),
     target = Seq.empty,
@@ -66,7 +66,7 @@ object ModelEntityFixtures {
   )
 
   val edge2 = Edge(
-    name = "edge2",
+    id = UUID.randomUUID(),
     referenceName = MetaModelEntityFixtures.reference2.name,
     source = Seq.empty,
     target = Seq(toNodes1, toNodes2),

@@ -1,5 +1,7 @@
 package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -13,9 +15,9 @@ import play.api.libs.json.Writes
 /** Represents nodes in reach of an edge.
  *
  * @param className the name of the MClass instance that represents the type of the nodes
- * @param nodeNames the names of the nodes
+ * @param nodeIds the names of the nodes
  */
-case class ToNodes(className: String, nodeNames: Seq[String]) extends Link
+case class ToNodes(className: String, nodeIds: Seq[UUID]) extends Link
 
 object ToNodes {
 
@@ -23,9 +25,9 @@ object ToNodes {
     override def reads(json: JsValue): JsResult[ToNodes] = {
       for {
         clazz <- (json \ "className").validate[String].map(metaModel.classMap)
-        nodeNames <- (json \ "nodeNames").validate[List[String]]
+        nodeIds <- (json \ "nodeIds").validate[List[UUID]]
       } yield {
-        ToNodes(clazz.name, nodeNames)
+        ToNodes(clazz.name, nodeIds)
       }
     }
   }

@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
@@ -16,25 +18,25 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with no attributes" in {
-    val node = Node("", mClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node).get should be (true)
   }
 
   it should "return false on nodes of type nodeType with attributes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("")))
-    val node = Node("", mClass.name, Seq(), Seq(), attribute)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
     rule.isValid(node).get should be (false)
   }
 
   it should "return true on nodes of type nodeType with empty attribute values" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
-    val node = Node("", mClass.name, Seq(), Seq(), attribute)
+    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
     rule.isValid(node).get should be (true)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be (None)
   }
 

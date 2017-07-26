@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -43,15 +45,15 @@ class EdgesTest extends FlatSpec with Matchers {
   val rule = new Edges(Seq("edgeType1", "edgeType2"))
 
   "isValid" should "return true on valid edges" in {
-    val edge1 = Edge("edgeId", mReference1.name, Seq(), Seq(), Map.empty)
+    val edge1 = Edge(UUID.randomUUID(), mReference1.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge1).get should be(true)
 
-    val edge2 = Edge("edgeId", mReference2.name, Seq(), Seq(), Map.empty)
+    val edge2 = Edge(UUID.randomUUID(), mReference2.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge2).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val edge3 = Edge("edgeId", mReference3.name, Seq(), Seq(), Map.empty)
+    val edge3 = Edge(UUID.randomUUID(), mReference3.name, Seq(), Seq(), Map.empty)
     rule.isValid(edge3).get should be(false)
   }
 

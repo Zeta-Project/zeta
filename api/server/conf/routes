@@ -3,50 +3,50 @@
 # ~~~~
 
 # backend connection
-GET           /socket/developer                                                      controllers.ScalaRoutes.getSocketDeveloper
-GET           /socket/generator/:id                                                  controllers.ScalaRoutes.getSocketGenerator(id: java.util.UUID)
-GET           /socket/user/:model                                                    controllers.ScalaRoutes.getSocketUser(model: java.util.UUID)
+GET           /socket/developer                                                               controllers.ScalaRoutes.getSocketDeveloper
+GET           /socket/generator/:id                                                           controllers.ScalaRoutes.getSocketGenerator(id: java.util.UUID)
+GET           /socket/user/:model                                                             controllers.ScalaRoutes.getSocketUser(model: java.util.UUID)
 
 # Home page
-GET           /                                                                      controllers.ScalaRoutes.getIndex
-GET           /user                                                                  controllers.ScalaRoutes.getUser
-GET           /signOut                                                               controllers.ScalaRoutes.getSignout
+GET           /                                                                               controllers.ScalaRoutes.getIndex
+GET           /user                                                                           controllers.ScalaRoutes.getUser
+GET           /signOut                                                                        controllers.ScalaRoutes.getSignout
 
-GET           /signUp                                                                controllers.ScalaRoutes.getSignUp
-POST          /signUp                                                                controllers.ScalaRoutes.postSignUp
+GET           /signUp                                                                         controllers.ScalaRoutes.getSignUp
+POST          /signUp                                                                         controllers.ScalaRoutes.postSignUp
 
-GET           /signIn                                                                controllers.ScalaRoutes.getSignIn
-POST          /signIn                                                                controllers.ScalaRoutes.postSignIn
+GET           /signIn                                                                         controllers.ScalaRoutes.getSignIn
+POST          /signIn                                                                         controllers.ScalaRoutes.postSignIn
 
-GET           /password/forgot                                                       controllers.ScalaRoutes.getPasswordForgot
-POST          /password/forgot                                                       controllers.ScalaRoutes.postPasswordForgot
-GET           /password/reset/:token                                                 controllers.ScalaRoutes.getPasswordReset(token: java.util.UUID)
-POST          /password/reset/:token                                                 controllers.ScalaRoutes.postPasswordReset(token: java.util.UUID)
-GET           /password/change                                                       controllers.ScalaRoutes.getPasswordChange
-POST          /password/change                                                       controllers.ScalaRoutes.postPasswordChange
+GET           /password/forgot                                                                controllers.ScalaRoutes.getPasswordForgot
+POST          /password/forgot                                                                controllers.ScalaRoutes.postPasswordForgot
+GET           /password/reset/:token                                                          controllers.ScalaRoutes.getPasswordReset(token: java.util.UUID)
+POST          /password/reset/:token                                                          controllers.ScalaRoutes.postPasswordReset(token: java.util.UUID)
+GET           /password/change                                                                controllers.ScalaRoutes.getPasswordChange
+POST          /password/change                                                                controllers.ScalaRoutes.postPasswordChange
 
-GET           /account/email/:email                                                  controllers.ScalaRoutes.getAccountEmail(email: String)
-GET           /account/activate/:token                                               controllers.ScalaRoutes.getAccountActivate(token: java.util.UUID)
+GET           /account/email/:email                                                           controllers.ScalaRoutes.getAccountEmail(email: String)
+GET           /account/activate/:token                                                        controllers.ScalaRoutes.getAccountActivate(token: java.util.UUID)
 
 
 ### Webpage
-GET           /webpage                                                               controllers.ScalaRoutes.getWebpage
-GET           /overview                                                              controllers.ScalaRoutes.getOverviewNoArgs
-GET           /overview/:id                                                          controllers.ScalaRoutes.getOverview(id: java.util.UUID)
+GET           /webpage                                                                        controllers.ScalaRoutes.getWebpage
+GET           /overview                                                                       controllers.ScalaRoutes.getOverviewNoArgs
+GET           /overview/:id                                                                   controllers.ScalaRoutes.getOverview(id: java.util.UUID)
 
 
 # metamodel editor
-GET           /metamodel/editor/:metaModelId                                         controllers.ScalaRoutes.getMetamodelEditor(metaModelId: java.util.UUID)
-GET           /metamodel/socket/:metaModelId                                         controllers.ScalaRoutes.getMetamodelSocket(metaModelId: java.util.UUID)
+GET           /metamodel/editor/:metaModelId                                                  controllers.ScalaRoutes.getMetamodelEditor(metaModelId: java.util.UUID)
+GET           /metamodel/socket/:metaModelId                                                  controllers.ScalaRoutes.getMetamodelSocket(metaModelId: java.util.UUID)
 
 ### model editor
-GET           /model/editor/:modelId                                                 controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
+GET           /model/editor/:modelId                                                          controllers.ScalaRoutes.getModelEditor(modelId: java.util.UUID)
 
 ### vr
-GET           /model/vreditor/:modelId                                               controllers.ScalaRoutes.getModelVrEditor(modelId: java.util.UUID)
+GET           /model/vreditor/:modelId                                                        controllers.ScalaRoutes.getModelVrEditor(modelId: java.util.UUID)
 
 # temporary
-GET           /generator/:metaModelId                                                controllers.ScalaRoutes.getGenerate(metaModelId: java.util.UUID)
+GET           /generator/:metaModelId                                                         controllers.ScalaRoutes.getGenerate(metaModelId: java.util.UUID)
 
 ### MetaModel REST API
 GET           /rest/v1/meta-models                                                            controllers.ScalaRoutes.getMetamodelsNoArgs
@@ -67,67 +67,67 @@ PUT           /rest/v1/meta-models/:metaModelId/style                           
 GET           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
 GET           /rest/v1/meta-models/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
-HEAD          /metamodels/:metaModelId/validator                                     controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
+HEAD          /metamodels/:metaModelId/validator                                              controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
 ### Model REST API
-GET           /rest/v1/models                                                                controllers.ScalaRoutes.getModelsNoArgs
-POST          /rest/v1/models                                                                controllers.ScalaRoutes.postModels
-PUT           /rest/v1/models/:modelId                                                       controllers.ScalaRoutes.putModels(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId                                                       controllers.ScalaRoutes.getModels(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/definition                                            controllers.ScalaRoutes.getModelsDefinition(modelId: java.util.UUID)
-PUT           /rest/v1/models/:modelId/definition                                            controllers.ScalaRoutes.putModelsDefinition(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/definition/nodes                                      controllers.ScalaRoutes.getModelsDefinitionNodesNoArgs(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/definition/nodes/:nodeName                            controllers.ScalaRoutes.getModelsDefinitionNodes(modelId: java.util.UUID, nodeName: String)
-GET           /rest/v1/models/:modelId/definition/edges                                      controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/definition/edges/:edgeName                            controllers.ScalaRoutes.getModelDefinitionEdges(modelId: java.util.UUID, edgeName: String)
-DELETE        /rest/v1/models/:modelId                                                       controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/validation                                            controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
+GET           /rest/v1/models                                                                 controllers.ScalaRoutes.getModelsNoArgs
+POST          /rest/v1/models                                                                 controllers.ScalaRoutes.postModels
+PUT           /rest/v1/models/:modelId                                                        controllers.ScalaRoutes.putModels(modelId: java.util.UUID)
+GET           /rest/v1/models/:modelId                                                        controllers.ScalaRoutes.getModels(modelId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition                                             controllers.ScalaRoutes.getModelsDefinition(modelId: java.util.UUID)
+PUT           /rest/v1/models/:modelId/definition                                             controllers.ScalaRoutes.putModelsDefinition(modelId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition/nodes                                       controllers.ScalaRoutes.getModelsDefinitionNodesNoArgs(modelId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition/nodes/:nodeId                               controllers.ScalaRoutes.getModelsDefinitionNodes(modelId: java.util.UUID, nodeId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition/edges                                       controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition/edges/:edgeId                               controllers.ScalaRoutes.getModelDefinitionEdges(modelId: java.util.UUID, edgeId: java.util.UUID)
+DELETE        /rest/v1/models/:modelId                                                        controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
+GET           /rest/v1/models/:modelId/validation                                             controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
 
 ### GeneratorImage REST API
-GET           /rest/v1/generator-images                                              controllers.ScalaRoutes.getGeneratorImagesNoArgs
+GET           /rest/v1/generator-images                                                       controllers.ScalaRoutes.getGeneratorImagesNoArgs
 
 ### Generator REST API
-GET           /rest/v1/generators                                                    controllers.ScalaRoutes.getGeneratorsNoArgs
-GET           /rest/v1/generators/:id                                                controllers.ScalaRoutes.getGenerators(id: java.util.UUID)
-DELETE        /rest/v1/generators/:id                                                controllers.ScalaRoutes.deleteGenerators(id: java.util.UUID)
+GET           /rest/v1/generators                                                             controllers.ScalaRoutes.getGeneratorsNoArgs
+GET           /rest/v1/generators/:id                                                         controllers.ScalaRoutes.getGenerators(id: java.util.UUID)
+DELETE        /rest/v1/generators/:id                                                         controllers.ScalaRoutes.deleteGenerators(id: java.util.UUID)
 
 ### Generator REST API
-GET           /rest/v1/filters                                                       controllers.ScalaRoutes.getFiltersNoArgs
-GET           /rest/v1/filters/:id                                                   controllers.ScalaRoutes.getFilters(id: java.util.UUID)
-DELETE        /rest/v1/filters/:id                                                   controllers.ScalaRoutes.deleteFilters(id: java.util.UUID)
-POST          /rest/v1/filters                                                       controllers.ScalaRoutes.postFilters
+GET           /rest/v1/filters                                                                controllers.ScalaRoutes.getFiltersNoArgs
+GET           /rest/v1/filters/:id                                                            controllers.ScalaRoutes.getFilters(id: java.util.UUID)
+DELETE        /rest/v1/filters/:id                                                            controllers.ScalaRoutes.deleteFilters(id: java.util.UUID)
+POST          /rest/v1/filters                                                                controllers.ScalaRoutes.postFilters
 
 ### MetaModelRelease REST API
-GET           /rest/v1/meta-model-releases                                           controllers.ScalaRoutes.getMetaModelReleasesNoArgs
+GET           /rest/v1/meta-model-releases                                                    controllers.ScalaRoutes.getMetaModelReleasesNoArgs
 
 ### BondedTask REST API
-GET           /rest/v1/bonded-tasks                                                  controllers.ScalaRoutes.getBondedTasksNoArgs
-DELETE        /rest/v1/bonded-tasks/:id                                              controllers.ScalaRoutes.deleteBondedTasks(id: java.util.UUID)
-POST          /rest/v1/bonded-tasks                                                  controllers.ScalaRoutes.postBondedTasks
+GET           /rest/v1/bonded-tasks                                                           controllers.ScalaRoutes.getBondedTasksNoArgs
+DELETE        /rest/v1/bonded-tasks/:id                                                       controllers.ScalaRoutes.deleteBondedTasks(id: java.util.UUID)
+POST          /rest/v1/bonded-tasks                                                           controllers.ScalaRoutes.postBondedTasks
 
 ### EventDrivenTask REST API
-GET           /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.getEventDrivenTasksNoArgs
-DELETE        /rest/v1/event-driven-tasks/:id                                        controllers.ScalaRoutes.deleteEventDrivenTasks(id: java.util.UUID)
-POST          /rest/v1/event-driven-tasks                                            controllers.ScalaRoutes.postEventDrivenTasks
+GET           /rest/v1/event-driven-tasks                                                     controllers.ScalaRoutes.getEventDrivenTasksNoArgs
+DELETE        /rest/v1/event-driven-tasks/:id                                                 controllers.ScalaRoutes.deleteEventDrivenTasks(id: java.util.UUID)
+POST          /rest/v1/event-driven-tasks                                                     controllers.ScalaRoutes.postEventDrivenTasks
 
 ### TimedTask REST API
-GET           /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.getTimedTasksNoArgs
-DELETE        /rest/v1/timed-tasks/:id                                               controllers.ScalaRoutes.deleteTimedTasks(id: java.util.UUID)
-POST          /rest/v1/timed-tasks                                                   controllers.ScalaRoutes.postTimedTasks
+GET           /rest/v1/timed-tasks                                                            controllers.ScalaRoutes.getTimedTasksNoArgs
+DELETE        /rest/v1/timed-tasks/:id                                                        controllers.ScalaRoutes.deleteTimedTasks(id: java.util.UUID)
+POST          /rest/v1/timed-tasks                                                            controllers.ScalaRoutes.postTimedTasks
 
 ### File REST API
-GET           /rest/v1/files/:id/*name                                               controllers.ScalaRoutes.getFiles(id: java.util.UUID, name: String)
-PUT           /rest/v1/files/:id/*name                                               controllers.ScalaRoutes.putFiles(id: java.util.UUID, name: String)
+GET           /rest/v1/files/:id/*name                                                        controllers.ScalaRoutes.getFiles(id: java.util.UUID, name: String)
+PUT           /rest/v1/files/:id/*name                                                        controllers.ScalaRoutes.putFiles(id: java.util.UUID, name: String)
 
 ### Code Editor
-GET           /codeEditor/editor/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
-GET           /codeEditor/socket/:metaModelId/:dslType                               controllers.ScalaRoutes.getCodeEditorSocket(metaModelId: java.util.UUID, dslType: String)
+GET           /codeEditor/editor/:metaModelId/:dslType                                        controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
+GET           /codeEditor/socket/:metaModelId/:dslType                                        controllers.ScalaRoutes.getCodeEditorSocket(metaModelId: java.util.UUID, dslType: String)
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                                                          controllers.ScalaRoutes.getAssets(file)
-GET           /webjars/*file                                                         controllers.ScalaRoutes.getWebjars(file)
-GET           /model_specific/:id/*file                                              controllers.ScalaRoutes.getMode_specific(id: java.util.UUID, file: String)
+GET           /assets/*file                                                                   controllers.ScalaRoutes.getAssets(file)
+GET           /webjars/*file                                                                  controllers.ScalaRoutes.getWebjars(file)
+GET           /model_specific/:id/*file                                                       controllers.ScalaRoutes.getMode_specific(id: java.util.UUID, file: String)
 
-GET           /app                                                                   controllers.ScalaRoutes.getWebApp(page = "")
-GET           /app/*path                                                             controllers.ScalaRoutes.getWebApp(path)
+GET           /app                                                                            controllers.ScalaRoutes.getWebApp(page = "")
+GET           /app/*path                                                                      controllers.ScalaRoutes.getWebApp(path)
 

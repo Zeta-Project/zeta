@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import java.util.UUID
+
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -18,29 +20,29 @@ class NodeInputsUpperBoundTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on nodes of type nodeType having 2 or less input edges of type inputType" in {
     val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val twoInputEdges = ToEdges(inputType.name, Seq(inputType.name, inputType.name))
-    val nodeTwoInputEdge = Node("", mClass.name, Seq(), Seq(twoInputEdges), Map.empty)
+    val twoInputEdges = ToEdges(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val nodeTwoInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(twoInputEdges), Map.empty)
     rule.isValid(nodeTwoInputEdge).get should be(true)
 
-    val oneInputEdge = ToEdges(inputType.name, Seq(inputType.name))
-    val nodeOneInputEdge = Node("", mClass.name, Seq(), Seq(oneInputEdge), Map.empty)
+    val oneInputEdge = ToEdges(inputType.name, Seq(UUID.randomUUID()))
+    val nodeOneInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(oneInputEdge), Map.empty)
     rule.isValid(nodeOneInputEdge).get should be(true)
 
     val noInputEdges = ToEdges(inputType.name, Seq())
-    val nodeNoInputEdges = Node("", mClass.name, Seq(), Seq(noInputEdges), Map.empty)
+    val nodeNoInputEdges = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(noInputEdges), Map.empty)
     rule.isValid(nodeNoInputEdges).get should be(true)
   }
 
   it should "return false on nodes of type nodeType having more than 2 input edges of type inputType" in {
     val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val threeInputEdges = ToEdges(inputType.name, Seq(inputType.name, inputType.name, inputType.name))
-    val nodeThreeInputEdges = Node("", mClass.name, Seq(), Seq(threeInputEdges), Map.empty)
+    val threeInputEdges = ToEdges(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val nodeThreeInputEdges = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(threeInputEdges), Map.empty)
     rule.isValid(nodeThreeInputEdges).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
     val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node("", differentMClass.name, Seq(), Seq(), Map.empty)
+    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
     rule.isValid(node) should be(None)
   }
 

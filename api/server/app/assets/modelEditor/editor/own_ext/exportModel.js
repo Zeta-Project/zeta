@@ -2,7 +2,8 @@ var modelExporter = (function modelExporter () {
     'use strict';
 
     var exportModel;
-    var _buildElements;
+    var _buildNodes;
+    var _buildEdges;
     var _getAttributeValue;
     var _graph;
     var _showExportSuccess;
@@ -14,13 +15,15 @@ var modelExporter = (function modelExporter () {
         });
 
         _graph = graph;
-        var elements = _buildElements();
+        const nodes = _buildNodes();
+        const edges = _buildEdges();
         var uiState = JSON.stringify(_graph.toJSON());
 
         var data = JSON.stringify({
             name: window._global_model_name,
             metaModelId: window._global_graph_type,
-            elements: elements,
+            nodes: nodes,
+            edges: edges,
             attributes: {}, // TODO
             uiState: uiState
         });
@@ -46,13 +49,12 @@ var modelExporter = (function modelExporter () {
     };
 
 
-    _buildElements = function() {
+    _buildNodes = function() {
         var elements = [];
-
         _graph.getElements().forEach(function(ele) {
             var element = {
                 id: ele.id,
-                mClass: ele.attributes.mClass,
+                className: ele.attributes.mClass,
                 outputs: {},
                 inputs: {},
                 attributes: {}
@@ -93,10 +95,16 @@ var modelExporter = (function modelExporter () {
             elements.push(element);
         });
 
+        return elements;
+    };
+
+
+    _buildEdges = function() {
+        var elements = [];
         _graph.getLinks().forEach(function(link) {
             var element = {
                 id: link.id,
-                mReference: link.attributes.mReference,
+                referenceName: link.attributes.mReference,
                 source: {},
                 target: {},
                 attributes: {}
@@ -104,7 +112,7 @@ var modelExporter = (function modelExporter () {
             // In the Metamodel a connection can have multiple sources/targets
             // but in joint.js this is not possible
             element.source[link.attributes.sourceAttribute] = [link.attributes.source.id];
-            element.target[link.attributes.targetAttribute] = [link.attributes.target.id]
+            element.target[link.attributes.targetAttribute] = [link.attributes.target.id];
 
             // add attributes
             link.attributes.labels.forEach(function(label) {
