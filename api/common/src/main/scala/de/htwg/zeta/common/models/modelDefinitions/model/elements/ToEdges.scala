@@ -2,9 +2,12 @@ package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import play.api.libs.json.Format
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /** Represents outgoing edges of a node
  *
@@ -15,6 +18,17 @@ case class ToEdges(referenceName: String, edgeNames: Seq[String]) extends Link
 
 object ToEdges {
 
-  implicit val playJsonToEdgesFormat: Format[ToEdges] = Json.format[ToEdges]
+  def playJsonReads(metaModel: MetaModel): Reads[ToEdges] = new Reads[ToEdges] {
+    override def reads(json: JsValue): JsResult[ToEdges] = {
+      for {
+        reference <- (json \ "referenceName").validate[String].map(metaModel.referenceMap)
+        edgeNames <- (json \ "edgeNames").validate[List[String]]
+      } yield {
+        ToEdges(reference.name, edgeNames)
+      }
+    }
+  }
+
+  implicit val playJsonWrites: Writes[ToEdges] = Json.writes[ToEdges]
 
 }

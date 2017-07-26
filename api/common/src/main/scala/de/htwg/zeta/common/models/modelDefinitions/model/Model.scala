@@ -4,14 +4,15 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import play.api.libs.json.Format
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 
 /** Immutable container for model definitions
@@ -60,13 +61,41 @@ object Model {
     )
   }
 
-  implicit val playJsonFormat: Format[Model] = Json.format[Model]
+  private val sName = "name"
+  private val sMetaModelId = "metaModelId"
+  private val sNodes = "nodes"
+  private val sEdges = "edges"
+  private val sAttributes = "attributes"
+  private val sUiState = "uiState"
+
+  def playJsonReads(metaModelEntity: MetaModelEntity): Reads[Model] = new Reads[Model] {
+    override def reads(json: JsValue): JsResult[Model] = {
+      for {
+        name <- (json \ sName).validate[String]
+        nodes <- (json \ sNodes).validate(Reads.list(Node.playJsonReads(metaModelEntity.metaModel)))
+        edges <- (json \ sEdges).validate(Reads.list(Edge.playJsonReads(metaModelEntity.metaModel)))
+        attributes <- (json \ sAttributes).validate(AttributeValue.playJsonReads(metaModelEntity.metaModel, metaModelEntity.metaModel.attributes))
+        uiState <- (json \ sUiState).validate[String]
+      } yield {
+        Model(
+          name = name,
+          metaModelId = metaModelEntity.id,
+          nodes = nodes,
+          edges = edges,
+          attributes = attributes,
+          uiState = uiState
+        )
+      }
+    }
+  }
+
+  implicit val playJsonWrites: Writes[Model] = Json.writes[Model]
 
   val playJsonReadsEmpty: Reads[Model] = new Reads[Model] {
     override def reads(json: JsValue): JsResult[Model] = {
       for {
-        name <- (json \ "name").validate[String]
-        metaModelId <- (json \ "metaModelId").validate[UUID]
+        name <- (json \ sName).validate[String]
+        metaModelId <- (json \ sMetaModelId).validate[UUID]
       } yield {
         Model.empty(name, metaModelId)
       }
