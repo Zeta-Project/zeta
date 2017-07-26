@@ -1,5 +1,8 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
+import scala.collection.immutable.Seq
+import scala.util.Try
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
@@ -10,13 +13,14 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import play.api.libs.json.Format
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNumber
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /**
  * The MAttribute implementation
@@ -64,19 +68,19 @@ object MAttribute {
   private val sUpperBound = "upperBound"
   private val sLowerBound = "lowerBound"
 
-  implicit val playJsonFormat: Format[MAttribute] = new Format[MAttribute] {
+  def playJsonReads(enums: Seq[MEnum]): Reads[MAttribute] = new Reads[MAttribute] {
 
     override def reads(json: JsValue): JsResult[MAttribute] = {
       for {
         name <- (json \ sName).validate[String]
         globalUnique <- (json \ sGlobalUnique).validate[Boolean]
         localUnique <- (json \ sLocalUnique).validate[Boolean]
-        typ <- (json \ sTyp).validate[AttributeType]
+        typ <- (json \ sTyp).validate(AttributeType.playJsonReads(enums))
         default <- typ match {
           case StringType => (json \ sDefault).validate[String].map(MString)
-          case BoolType => (json \ sDefault).validate[Boolean].map(MBool)
-          case IntType => (json \ sDefault).validate[Int].map(MInt)
-          case DoubleType => (json \ sDefault).validate[Double].map(MDouble)
+          case BoolType => (json \ sDefault).validate[String].map(v => MBool(v.toBoolean))
+          case IntType => (json \ sDefault).validate[String].map(v => MInt(v.toInt))
+          case DoubleType => (json \ sDefault).validate[String].map(v => MDouble(v.toDouble))
           case enum: MEnum => (json \ sDefault).validate[String].map(enum.symbolMap(_))
         }
         constant <- (json \ sConstant).validate[Boolean]
@@ -104,12 +108,15 @@ object MAttribute {
       }
     }
 
+  }
+
+  implicit val playJsonWrites: Writes[MAttribute] = new Writes[MAttribute] {
     override def writes(attribute: MAttribute): JsValue = {
       JsObject(Map(
         sName -> JsString(attribute.name),
         sGlobalUnique -> JsBoolean(attribute.globalUnique),
         sLocalUnique -> JsBoolean(attribute.localUnique),
-        sTyp -> AttributeType.playJsonFormat.writes(attribute.typ),
+        sTyp -> AttributeType.playJsonWrites.writes(attribute.typ),
         sDefault -> (attribute.default match {
           case MString(s) => JsString(s)
           case MBool(b) => JsBoolean(b)

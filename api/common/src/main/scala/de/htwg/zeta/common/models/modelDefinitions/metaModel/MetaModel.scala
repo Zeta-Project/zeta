@@ -9,11 +9,11 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import play.api.libs.json.Format
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 
 /**
@@ -67,6 +67,8 @@ case class MetaModel(
 
 object MetaModel {
 
+  private val sName = "name"
+
   def empty(name: String): MetaModel = {
     MetaModel(
       name = name,
@@ -79,11 +81,36 @@ object MetaModel {
     )
   }
 
-  implicit val playJsonFormat: Format[MetaModel] = Json.format[MetaModel]
+  implicit val playJsonReads: Reads[MetaModel] = new Reads[MetaModel] {
+    override def reads(json: JsValue): JsResult[MetaModel] = {
+      for {
+        name <- (json \ sName).validate[String]
+        enums <- (json \ "enums").validate(Reads.list[MEnum])
+        classes <- (json \ "classes").validate(Reads.list(MClass.playJsonReads(enums)))
+        references <- (json \ "references").validate(Reads.list(MReference.playJsonReads(enums)))
+        attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
+        methods <-  (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
+        uiState <- (json \ "uiState").validate[String]
+      } yield {
+        MetaModel(
+          name = name,
+          classes = classes,
+          references = references,
+          enums = enums,
+          attributes = attributes,
+          methods = methods,
+          uiState = uiState
+        )
+      }
+    }
+  }
+
+
+  implicit val playJsonWrites: Writes[MetaModel] = Json.writes[MetaModel]
 
   val playJsonReadsEmpty: Reads[MetaModel] = new Reads[MetaModel] {
     override def reads(json: JsValue): JsResult[MetaModel] = {
-      (json \ "name").validate[String].map(empty)
+      (json \ sName).validate[String].map(empty)
     }
   }
 

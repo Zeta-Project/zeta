@@ -5,7 +5,6 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.Format
 import play.api.libs.json.JsArray
 import play.api.libs.json.Json
@@ -29,9 +28,8 @@ class MClassUiFormat(val enumMap: Map[String, MEnum]) extends Format[MClass] {
       inputs <- json.\("inputs").validate(Reads.list(MReferenceLinkDefFormat))
       outputs <- json.\("outputs").validate(Reads.list(MReferenceLinkDefFormat))
       attributes <- json.\("attributes").validate(attributeListReads)
-      methods <- json.\("methods").validate(Reads.list(Method.playJsonFormat))
     } yield {
-      MClass(name, description, abstractness, superTypes, inputs, outputs, attributes, methods)
+      MClass(name, description, abstractness, superTypes, inputs, outputs, attributes, Seq.empty)
     }
   }
 
@@ -48,8 +46,7 @@ object MClassUiFormat extends Writes[MClass] {
       "superTypes" -> JsArray(mc.superTypeNames.map(JsString)),
       "inputs" -> JsArray(mc.inputs.map(MReferenceLinkDefFormat.writes)),
       "outputs" -> JsArray(mc.outputs.map(MReferenceLinkDefFormat.writes)),
-      "attributes" -> JsArray(mc.attributes.map(MAttributeFormat.writes)),
-      "methods" -> JsArray(mc.methods.map(Method.playJsonFormat.writes))
+      "attributes" -> JsArray(mc.attributes.map(MAttributeFormat.writes))
     )
   }
 }

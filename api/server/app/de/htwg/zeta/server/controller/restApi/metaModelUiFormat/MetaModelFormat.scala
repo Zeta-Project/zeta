@@ -5,10 +5,8 @@ import scala.collection.immutable.Seq
 import scala.collection.mutable
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
@@ -94,7 +92,6 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
         uiState <- json.\("uiState").validate[String]
         enumOpt <- elems.validate(Reads.list(MEnumOptReads))
         elements <- elems.validate(Reads.list(new MObjectFormat(enumOpt))).flatMap(checkObjectsUnique)
-        methods <- json.\("methods").validate(Reads.list(Method.playJsonFormat))
       } yield {
         val (classes, references, enums) =
           elements.foldLeft((List[MClass](), List[MReference](), List[MEnum]()))((trip, mo) => (trip, mo) match {
@@ -109,7 +106,7 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
           references = references,
           enums = enums,
           attributes = attributes,
-          methods = methods,
+          methods = Seq.empty,
           uiState = uiState
         )
       }
@@ -122,9 +119,7 @@ private[metaModelUiFormat] object MetaModelFormat extends Format[MetaModel] {
     Json.obj(
       "name" -> mm.name,
       "elements" -> JsArray(elems.map(MObjectFormat.writes)),
-      "uiState" -> mm.uiState,
-      "methods" -> JsArray(mm.methods.map(Method.playJsonFormat.writes))
-      // TODO add attributes
+      "uiState" -> mm.uiState
     )
   }
 }

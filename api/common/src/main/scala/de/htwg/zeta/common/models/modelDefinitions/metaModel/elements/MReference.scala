@@ -2,8 +2,12 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.collection.immutable.Seq
 
-import play.api.libs.json.Format
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 /** The MReference implementation
  *
@@ -27,6 +31,32 @@ case class MReference(
 
 object MReference {
 
-  implicit val playJsonFormat: Format[MReference] = Json.format[MReference]
+  def playJsonReads(enums: Seq[MEnum]): Reads[MReference] = new Reads[MReference] {
+    override def reads(json: JsValue): JsResult[MReference] = {
+      for {
+        name <- (json \ "name").validate[String]
+        description <- (json \ "description").validate[String]
+        sourceDeletionDeletesTarget <- (json \ "sourceDeletionDeletesTarget").validate[Boolean]
+        targetDeletionDeletesSource <- (json \ "targetDeletionDeletesSource").validate[Boolean]
+        source <- (json \ "source").validate(Reads.list[MClassLinkDef])
+        target <- (json \ "target").validate(Reads.list[MClassLinkDef])
+        attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
+        methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
+      } yield {
+        MReference(
+          name = name,
+          description = description,
+          sourceDeletionDeletesTarget = sourceDeletionDeletesTarget,
+          targetDeletionDeletesSource = targetDeletionDeletesSource,
+          source = source,
+          target = target,
+          attributes = attributes,
+          methods = methods
+        )
+      }
+    }
+  }
+
+  implicit val playJsonWrites: Writes[MReference] = Json.writes[MReference]
 
 }

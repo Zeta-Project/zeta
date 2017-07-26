@@ -76,15 +76,15 @@ object AttributeValue {
           metaAttributes.map { metaAttribute =>
             (metaAttribute.name, metaAttribute.typ match {
               case StringType => (json \ metaAttribute.name).validate[List[String]].map(_.map(MString)).get
-              case BoolType => (json \ metaAttribute.name).validate[List[Boolean]].map(_.map(MBool)).get
-              case IntType => (json \ metaAttribute.name).validate[List[Int]].map(_.map(MInt)).get
-              case DoubleType => (json \ metaAttribute.name).validate[List[Double]].map(_.map(MDouble)).get
+              case BoolType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MBool(v.toBoolean))).get
+              case IntType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MInt(v.toInt))).get
+              case DoubleType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MDouble(v.toDouble))).get
               case enum: MEnum => (json \ metaAttribute.name).validate[List[String]].map(_.map(enum.symbolMap)).get
             })
           }.toMap
         } match {
           case Success(s) => JsSuccess(s)
-          case Failure(e) => JsError(e.getMessage)
+          case Failure(e) => JsError("--> " + e.getMessage)
         }
       }
     }

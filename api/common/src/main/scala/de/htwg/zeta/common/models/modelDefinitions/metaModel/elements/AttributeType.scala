@@ -7,8 +7,9 @@ import play.api.libs.json.Format
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
-import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 
 sealed trait AttributeType {
@@ -63,8 +64,21 @@ object AttributeType {
     implicit val playJsonFormat: Format[MEnum] = Json.format[MEnum]
   }
 
-  implicit val playJsonFormat = new Format[AttributeType] {
+  def playJsonReads(enums: Seq[MEnum]): Reads[AttributeType] = {
+    new Reads[AttributeType] {
+      override def reads(json: JsValue): JsResult[AttributeType] = {
+        json.validate[String].map {
+          case StringType.asString => StringType
+          case BoolType.asString => BoolType
+          case IntType.asString => IntType
+          case DoubleType.asString => DoubleType
+          case enumName: String => enums.find(_.name == enumName).get
+        }
+      }
+    }
+  }
 
+  implicit val playJsonWrites = new Writes[AttributeType] {
     override def writes(typ: AttributeType): JsValue = {
       typ match {
         case StringType => JsString(StringType.asString)
@@ -74,17 +88,6 @@ object AttributeType {
         case enum: MEnum => MEnum.playJsonFormat.writes(enum)
       }
     }
-
-    override def reads(json: JsValue): JsResult[AttributeType] = {
-      json match {
-        case JsString(StringType.asString) => JsSuccess(StringType)
-        case JsString(BoolType.asString) => JsSuccess(BoolType)
-        case JsString(IntType.asString) => JsSuccess(IntType)
-        case JsString(DoubleType.asString) => JsSuccess(DoubleType)
-        case _ => MEnum.playJsonFormat.reads(json)
-      }
-    }
-
   }
 
   def parse(s: String): AttributeType = {

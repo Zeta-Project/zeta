@@ -4,8 +4,12 @@ import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
-import play.api.libs.json.Format
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 
 /** The MClass implementation
@@ -127,6 +131,34 @@ object MClass {
 
   }
 
-  implicit val playJsonFormat: Format[MClass] = Json.format[MClass]
+  def playJsonReads(enums: Seq[MEnum]): Reads[MClass] = {
+    new Reads[MClass] {
+      override def reads(json: JsValue): JsResult[MClass] = {
+        for {
+          name <- (json \ "name").validate[String]
+          description <- (json \ "description").validate[String]
+          abstractness <- (json \ "abstractness").validate[Boolean]
+          superTypeNames <- (json \ "superTypeNames").validate(Reads.list[String])
+          inputs <- (json \ "inputs").validate(Reads.list[MReferenceLinkDef])
+          outputs <- (json \ "outputs").validate(Reads.list[MReferenceLinkDef])
+          attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
+          methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
+        } yield {
+          MClass(
+            name = name,
+            description = description,
+            abstractness = abstractness,
+            superTypeNames = superTypeNames,
+            inputs = inputs,
+            outputs = outputs,
+            attributes = attributes,
+            methods = methods
+          )
+        }
+      }
+    }
+  }
+
+  implicit val playJsonWrites: Writes[MClass] = Json.writes[MClass]
 
 }
