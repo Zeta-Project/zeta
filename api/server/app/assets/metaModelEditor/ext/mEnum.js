@@ -11,13 +11,11 @@ var mEnum = (function () {
     var getMEnum;
 
     init = function init(graph) {
-        console.log("init grapfh in MEnum");
         _graph = graph;
     };
 
     getMEnumContainer = function getMEnumContainer() {
-        console.log("enum _graph");
-        console.log(_graph);
+
         var mEnumContainer = _graph.getCell(MENUM_CONTAINER_ID);
         if (!mEnumContainer) {
             mEnumContainer = new joint.dia.Element({

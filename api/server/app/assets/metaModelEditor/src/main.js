@@ -246,8 +246,6 @@ var Rappid = Backbone.Router.extend({
         },
 
         createInspector: function (cellView) {
-            console.log("createInspector");
-            console.log(cellView);
             this.destroyInspector();
 
             var inspectorDefs = inspector.getDefs(cellView.model, this.graph.getElements(), this.graph.getLinks());

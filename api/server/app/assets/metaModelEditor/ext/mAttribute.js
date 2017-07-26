@@ -16,9 +16,8 @@ var mAttribute = (function () {
     };
 
     getMAttributeContainer = function getMAttributeContainer() {
-        console.log("Attribute _graph");
-        console.log(_graph);
         var mAttributeContainer = _graph.getCell(MATTRIBUTE_CONTAINER_ID);
+
         if (!mAttributeContainer) {
             mAttributeContainer = new joint.dia.Element({
                 size: {

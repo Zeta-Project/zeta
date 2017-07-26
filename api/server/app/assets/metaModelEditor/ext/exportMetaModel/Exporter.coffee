@@ -88,41 +88,31 @@ class window.Exporter
 
   createAttributes: () ->
     attributes = []
-    ### TODO
-  addAttributes: (metaModel) ->
-  #TODO: on a saved and re-opened instance, menums are not set
-    console.log("addAttribute -> get Attributes:")
-    for thisMAttribute in mAttribute.getMAttributes()
-      console.log(thisMAttribute)
-      console.log("- - - - - - - - - - - -")
-
-    attibutes
-
-  ###
-  # Iterates over the graph-elements and adds them to the metaModel object.
-  addAttribute: (metaModel) ->
-    for thisAttribute in @graph.getElements()
+    for thisAttribute in mEnum.getMEnumContainer().attributes['m_attributes']
       attributes.push
-        mType: Constants.CLASS
-        name: @graph.getName element
-        abstract: @graph.isAbstract element
-        superTypes: @graph.getSuperTypes element
-        attributes: @graph.getAttributes element
-        inputs: @graph.getInputs element
-        outputs: @graph.getOutputs element ###
+        name: thisAttribute.name
+        upperBound: thisAttribute.upperBound
+        lowerBound: thisAttribute.lowerBound
+        default: thisAttribute.default
+        type: thisAttribute.typ
+        expression: thisAttribute.expression
+        localUnique: thisAttribute.localUnique
+        globalUnique: thisAttribute.globalUnique
+        constant: thisAttribute.constant
+        ordered: thisAttribute.ordered
+        transient: thisAttribute.transient
+        singleAssignment: thisAttribute.singleAssignment
+
     attributes
 
 
-  createMethods: (metaModel) ->
+  createMethods: () ->
     methods = []
-    ### TODO
-    for method in @graph.getElements()
+    for thisMethod in mEnum.getMEnumContainer().attributes['m_methods']
       methods.push
-        mType: Constants.METHODS
-        name: @graph.getName element
-        abstract: @graph.isAbstract element
-        superTypes: @graph.getSuperTypes element
-        attributes: @graph.getAttributes element
-        inputs: @graph.getInputs element
-        outputs: @graph.getOutputs element ###
+        name: thisMethod.name
+        parameters: thisMethod.parameters
+        description: thisMethod.description
+        returnType: thisMethod.returntype
+        code: thisMethod.code
     methods
