@@ -28,7 +28,7 @@ object AttributeType {
 
   case object BoolType extends AttributeType {
 
-    override val asString = "Bool"
+    override val asString = "Boolean"
 
   }
 

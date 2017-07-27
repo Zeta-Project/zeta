@@ -214,9 +214,9 @@ var inspector = (function inspector () {
             },
             index : 3
         },
-        returntype : {
+        returnType : {
             type : 'select',
-            label : 'Returntype',
+            label : 'ReturnType',
             options : [
                 'Bool',
                 'Int',

@@ -113,6 +113,6 @@ class window.Exporter
         name: thisMethod.name
         parameters: thisMethod.parameters
         description: thisMethod.description
-        returnType: thisMethod.returntype
+        returnType: thisMethod.returnType
         code: thisMethod.code
     methods
