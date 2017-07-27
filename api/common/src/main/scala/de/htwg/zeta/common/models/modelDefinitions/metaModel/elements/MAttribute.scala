@@ -58,7 +58,7 @@ object MAttribute {
   private val sName = "name"
   private val sGlobalUnique = "globalUnique"
   private val sLocalUnique = "localUnique"
-  private val sTyp = "type" // TODO this should be changed to "typ" in Frontend
+  private val sTyp = "typ"
   private val sDefault = "default"
   private val sConstant = "constant"
   private val sSingleAssignment = "singleAssignment"

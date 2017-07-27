@@ -94,7 +94,7 @@ class window.Exporter
         upperBound: thisAttribute.upperBound
         lowerBound: thisAttribute.lowerBound
         default: thisAttribute.default
-        type: thisAttribute.typ
+        typ: thisAttribute.typ
         expression: thisAttribute.expression
         localUnique: thisAttribute.localUnique
         globalUnique: thisAttribute.globalUnique

@@ -106,6 +106,8 @@ class window.Graph
       for attributes in cell.attributes[Constants.field.ATTRIBUTES]
         mAttributes.push({});
         for key, value of attributes
+          if key == 'type'
+            key = 'typ'
           if key == 'default'
             switch attributes.type
               when 'Bool'
@@ -122,7 +124,7 @@ class window.Graph
           else mAttributes[mAttributes.length - 1][key] = value
     mAttributes
 
-# Returns the methodss of the cell.
+# Returns the methods of the cell.
   getEntityMethods: (cell) ->
     mMethods = []
     if cell.attributes[Constants.field.METHODS]?
