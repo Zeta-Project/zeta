@@ -1,0 +1,91 @@
+@import de.htwg.zeta.common.models.entity.File
+@(files: List[File])
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <title>Scala Code Viewer</title>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+        <script src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        <style>
+
+                #container {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                    display: flex;
+                    background: #2f3129;
+                    padding: 10px;
+                }
+
+                #sidebar {
+                    flex-grow: 0;
+                    color: white;
+                }
+
+                #sidebar a {
+                    color: white;
+                    text-decoration: none;
+                    padding: 2px;
+                    margin-right: 5px;
+                }
+
+                .editor {
+                    flex-grow: 1;
+                }
+
+        </style>
+
+        <script>
+            function initEditor(name) {
+                const editor = ace.edit("editor" + name);
+                editor.setTheme("ace/theme/monokai");
+                editor.getSession().setMode("ace/mode/scala");
+                editor.setReadOnly(true);
+                editor.setShowPrintMargin(false);
+            }
+            function showEditor(name) {
+                $('.editor').hide();
+                $('#editor' + name).show();
+            }
+
+
+        </script>
+
+    </head>
+    <body>
+
+        <div id="container">
+
+            <div id="sidebar" style="float: left">
+                @for(file <- files.sortBy(_.name)) {
+                    <a style="display: block" onclick="showEditor('@file.name.replace(".scala", "")');">@file.name</a>
+                }
+            </div>
+
+            @for(file <- files.sortBy(_.name)) {
+                <div id="editor@file.name.replace(".scala", "")" class="editor" style="display: none">@file.content</div>
+                <script>
+                    initEditor('@file.name.replace(".scala", "")');
+                </script>
+            }
+
+        </div>
+
+        <script>
+            showEditor('@files.minBy(_.name).name.replace(".scala", "")');
+        </script>
+
+    </body>
+</html>

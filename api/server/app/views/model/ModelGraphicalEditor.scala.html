@@ -2,7 +2,7 @@
 @import de.htwg.zeta.common.models.entity.User
 @import play.api.libs.json.Json
 
-@(model: ModelEntity, user: User)
+@(modelEntity: ModelEntity, user: User)
 
 @views.html.webpage.WebpageGeneralLayout("Model Editor", Some(user)) {
     <script>
@@ -70,14 +70,14 @@
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/src/main.js")"></script>
 
         <!-- model specific files-->
-    <script src="@(s"/model_specific/${model.model.metaModelId}/inspector.js") "> </script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/style.js")"></script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/shape.js")"></script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/stencil.js")"></script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/connectionstyle.js")"></script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/linkhelper.js")"></script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/validator.js")"></script>
-    <script src="@(s"/model_specific/${model.model.metaModelId}/elementAndInlineStyle.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/inspector.js") "> </script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/style.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/shape.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/stencil.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/connectionstyle.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/linkhelper.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/validator.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/elementAndInlineStyle.js")"></script>
 
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/linkTypeSelector.js")"></script>
     <script src="@routes.ScalaRoutes.getAssets("modelEditor/editor/own_ext/exportModel.js")"></script>
@@ -131,6 +131,7 @@
                 <span class="caret"></span>
             </button>
             <ul id="generators" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a target="_blank" href="@routes.ScalaRoutes.getScalaCodeViewer(modelEntity.id)">Scala</a></li>
             </ul>
         </div>
 
@@ -140,11 +141,11 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="btnValidator">
-                <li><a href="#" id="validatorValidate" data-model-id="@(model.id)">Validate Model</a></li>
-                <li><a href="#" id="validatorShow" data-meta-model-id="@(model.model.metaModelId)">Show Validation Rules</a></li>
+                <li><a href="#" id="validatorValidate" data-model-id="@(modelEntity.id)">Validate Model</a></li>
+                <li><a href="#" id="validatorShow" data-meta-model-id="@(modelEntity.model.metaModelId)">Show Validation Rules</a></li>
                 <li><a href="#" id="validatorUnhighlight">Unhighlight highlighted Cells</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(model.model.metaModelId)">Generate / Update Validator</a></li>
+                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(modelEntity.model.metaModelId)">Generate / Update Validator</a></li>
             </ul>
         </div>
 
@@ -241,14 +242,14 @@
     </div>
 
     <script type="text/javascript">
-    window._global_uuid = "@(model.id.toString)";
-    window._global_graph_type = "@(model.model.metaModelId.toString)";
+    window._global_uuid = "@(modelEntity.id.toString)";
+    window._global_graph_type = "@(modelEntity.model.metaModelId.toString)";
     window._global_userID = "@(user.id.toString)";
     window._global_userName = "@(user.fullName)";
-    window._global_model_name = "@(model.model.name)";
-    @if(model.model.uiState.nonEmpty) {
+    window._global_model_name = "@(modelEntity.model.name)";
+    @if(modelEntity.model.uiState.nonEmpty) {
     window._global_loadOnStart = true;
-    window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(model.model.uiState))));
+    window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(modelEntity.model.uiState))));
     }
     </script>
 

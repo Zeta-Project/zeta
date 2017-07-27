@@ -74,17 +74,23 @@ object AttributeValue {
       override def reads(json: JsValue): JsResult[Map[String, Seq[AttributeValue]]] = {
         Try {
           metaAttributes.map { metaAttribute =>
-            (metaAttribute.name, metaAttribute.typ match {
-              case StringType => (json \ metaAttribute.name).validate[List[String]].map(_.map(MString)).getOrElse(List(metaAttribute.default))
-              case BoolType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MBool(v.toBoolean))).getOrElse(List(metaAttribute.default))
-              case IntType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MInt(v.toInt))).getOrElse(List(metaAttribute.default))
-              case DoubleType => (json \ metaAttribute.name).validate[List[String]].map(_.map(v => MDouble(v.toDouble))).getOrElse(List(metaAttribute.default))
-              case enum: MEnum => (json \ metaAttribute.name).validate[List[String]].map(_.map(enum.symbolMap)).getOrElse(List(metaAttribute.default))
-            })
+            val rawAttribute = (json \ metaAttribute.name).validate[List[String]].getOrElse(List.empty)
+            val attribute = if (rawAttribute.nonEmpty) {
+              metaAttribute.typ match {
+                case StringType => rawAttribute.map(MString)
+                case BoolType => rawAttribute.map(v => MBool(v.toBoolean))
+                case IntType => rawAttribute.map(v => MInt(v.toInt))
+                case DoubleType => rawAttribute.map(v => MDouble(v.toDouble))
+                case enum: MEnum => rawAttribute.map(enum.symbolMap)
+              }
+            } else {
+              List(metaAttribute.default)
+            }
+            (metaAttribute.name, attribute)
           }.toMap
         } match {
           case Success(s) => JsSuccess(s)
-          case Failure(e) => JsError("--> " + e.getMessage)
+          case Failure(e) => JsError(e.getMessage)
         }
       }
     }

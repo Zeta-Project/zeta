@@ -214,4 +214,7 @@ class ScalaRoutes @Inject()(
   def getMode_specific(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(id, name) _)
 
   def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(WebAppController.get(path) _)
+
+  def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getScalaCodeViewer(modelId) _)
+
 }
