@@ -1184,12 +1184,13 @@ V = Vectorizer = (function() {
         },
 
         text: function(content, opt) {
+            console.log(content)
 
             // Replace all spaces with the Unicode No-break space (http://www.fileformat.info/info/unicode/char/a0/index.htm).
             // IE would otherwise collapse all spaces into one.
             content = sanitizeText(content);
             opt = opt || {};
-            var lines = content.split('\n');
+            var lines = content.replace(',', '\n').split('\n');
             var i = 0;
             var tspan;
 
