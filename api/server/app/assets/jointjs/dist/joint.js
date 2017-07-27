@@ -1184,7 +1184,6 @@ V = Vectorizer = (function() {
         },
 
         text: function(content, opt) {
-            console.log(content)
 
             // Replace all spaces with the Unicode No-break space (http://www.fileformat.info/info/unicode/char/a0/index.htm).
             // IE would otherwise collapse all spaces into one.
