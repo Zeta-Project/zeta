@@ -24,7 +24,6 @@ services:
     volumes:
       - ./api:/app
       - ./sbt/server:/root
-      - ./model_specific:/app/server/model_specific/
     environment:
       - APPLICATION_SECRET=superSecret
     stdin_open: true
