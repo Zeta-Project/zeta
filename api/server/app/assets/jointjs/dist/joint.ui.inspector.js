@@ -1020,7 +1020,8 @@ joint.ui.Inspector = Backbone.View.extend({
         'click .btn-list-add': 'addListItem',
         'click .btn-list-del': 'deleteListItem',
         'click .custom-btn-list-collapse': 'toggleListItem',
-        'click .custom-span-list-collapse': 'toggleListItem'
+        'click .custom-span-list-collapse': 'toggleListItem',
+        'click .text form-contorl' : 'checkClickOnInput'
     },
 
     initialize: function () {
@@ -1554,15 +1555,24 @@ joint.ui.Inspector = Backbone.View.extend({
 
         // Click on the "+"-span does not work. Has to be redirected to the button.
         var $target = $(evt.target);
-
         if ($target.hasClass("glyphicon")) {
             $target.parent().click();
             return;
         }
+        console.log("add Butone clickec");
 
         var $attribute = $target.closest('[data-attribute]');
         var path = $attribute.attr('data-attribute');
         var options = this.getOptions($attribute);
+
+        console.log("attribute");
+        console.log($attribute);
+
+        console.log("path");
+        console.log(path);
+
+        console.log("options: ");
+        console.log(options);
 
         // Take the index of the last list item and increase it by one.
         var $lastListItem = $attribute.children('.list-items').children('.list-item').last();
@@ -1571,16 +1581,33 @@ joint.ui.Inspector = Backbone.View.extend({
 
         var $listItem = $(joint.templates.inspector['list-item.html']({index: index}));
 
+        console.log("listItem");
+        console.log($listItem);
+
         this.renderTemplate($listItem, options.item, path + '/' + index);
 
         $target.parent().children('.list-items').append($listItem);
         $listItem.find('input').focus();
+        var blubber = $listItem.find('[data-property="code"]');
+        var $parent = $(evt.target).parent();
+
+        console.log("parent");
+        console.log($parent);
+
+        var xx = blubber.find(':input');
+        xx.on('click', _.bind(this.showMethodCodeEditor, this));
 
         this.trigger('render');
 
         if (this.options.live) {
             this.updateCell();
         }
+    },
+
+    showMethodCodeEditor: function() {
+        console.log("showEditor by a new object");
+
+        window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/style")
     },
 
     deleteListItem: function (evt) {
@@ -1677,5 +1704,11 @@ joint.ui.Inspector = Backbone.View.extend({
     openGroups: function () {
 
         this.$('.group').removeClass('closed');
+    },
+
+    checkClickOnInput: function(evt) {
+        var $parent = $(evt.target);
+        console.log($parent);
+
     }
 });

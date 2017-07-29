@@ -246,6 +246,7 @@ var Rappid = Backbone.Router.extend({
         },
 
         createInspector: function (cellView) {
+            console.log("call createInspector");
             this.destroyInspector();
 
             var inspectorDefs = inspector.getDefs(cellView.model, this.graph.getElements(), this.graph.getLinks());
@@ -256,6 +257,10 @@ var Rappid = Backbone.Router.extend({
                 cellView: cellView,
                 live: true
             });
+
+            for (group in this.inspector.groups) {
+                console.log(group);
+            }
 
             this.inspector.on('change:name', function (text) {
                 if (mCoreUtil.isReference(cellView.model)) {
@@ -284,8 +289,17 @@ var Rappid = Backbone.Router.extend({
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
 
+
+            var codeElement = $(this.inspector.el).find('[data-attribute="m_methods/0/code"]');
+            console.log("codeElement");
+            console.log(codeElement);
+            codeElement.on('click', _.bind(this.inspector.showMethodCodeEditor, this.inspector));
+
             var collapseButtons = $(this.inspector.el).find('.custom-btn-list-collapse');
+            console.log("button:");
+
             for (var i = 0; i < collapseButtons.length; ++i) {
+                console.log(collapseButtons[i]);
                 collapseButtons[i].click();
             }
 
@@ -596,8 +610,6 @@ var Rappid = Backbone.Router.extend({
                 uiState: JSON.stringify(graph)
             });
 
-            console.log("SaveMetaModel - Data: ");
-            console.log(data);
 
             $.ajax({
                 type: 'PUT',
@@ -751,6 +763,11 @@ var Rappid = Backbone.Router.extend({
 
         }
         ,
+
+        showMethodCodeEditor: function () {
+
+            console.log("show Method-Code-Editor")
+        },
 
 // ---------- customization start
 // Functions between customization start and end are created

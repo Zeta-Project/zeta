@@ -124,6 +124,7 @@ GET           /codeEditor/editor/:metaModelId/:dslType                          
 GET           /codeEditor/socket/:metaModelId/:dslType                                        controllers.ScalaRoutes.getCodeEditorSocket(metaModelId: java.util.UUID, dslType: String)
 
 GET           /scalaCodeViewer/:modelId                                                       controllers.ScalaRoutes.getScalaCodeViewer(modelId: java.util.UUID)
+GET           /methodCodeEditor/:metaModelId/:methodName                                      controllers.ScalaRoutes.getMethodCodeEditor(metaModelId: java.util.UUID, methodName: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                                                   controllers.ScalaRoutes.getAssets(file)

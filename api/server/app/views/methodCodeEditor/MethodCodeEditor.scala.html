@@ -5,6 +5,9 @@
     @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
         @playscalajs.html.selectScript("client", "/assets")
 
+        <script type="text/javascript">
+                client.Main().main("@id.toString", "@dslType");
+        </script>
 
         <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>
         <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ext-language_tools.js")"></script>

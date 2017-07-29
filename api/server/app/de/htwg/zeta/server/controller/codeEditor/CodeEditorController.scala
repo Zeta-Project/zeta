@@ -23,5 +23,9 @@ class CodeEditorController @Inject()(codeDocManager: CodeDocManagerContainer) ex
   def codeSocket(metaModelId: UUID, dslType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
     CodeDocWsActor.props(out, codeDocManager.manager, metaModelId, dslType)
   }
+
+  def methodCodeEditor(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName))
+  }
 }
 
