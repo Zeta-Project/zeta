@@ -76,6 +76,7 @@ object AttributeType {
         json.validate[String].map {
           case StringType.asString => StringType
           case BoolType.asString => BoolType
+          case "Bool" => BoolType // TODO frontend should always send "Boolean" instead of "Bool"
           case IntType.asString => IntType
           case DoubleType.asString => DoubleType
           case UnitType.asString => UnitType
