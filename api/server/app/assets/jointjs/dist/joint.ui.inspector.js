@@ -1607,7 +1607,7 @@ joint.ui.Inspector = Backbone.View.extend({
     showMethodCodeEditor: function() {
         console.log("showEditor by a new object");
 
-        window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/style")
+        window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestMethod/TestClass")
     },
 
     deleteListItem: function (evt) {

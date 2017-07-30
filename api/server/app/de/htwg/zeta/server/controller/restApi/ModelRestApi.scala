@@ -224,7 +224,6 @@ class ModelRestApi() extends Controller with Logging {
     protectedReadFuture[A](id, request, me => Future(trans(me)))
   }
 
-
   def getScalaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = restrictedAccessRepository(request.identity.id)
     for {

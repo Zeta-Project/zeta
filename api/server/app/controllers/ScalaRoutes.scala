@@ -134,6 +134,8 @@ class ScalaRoutes @Inject()(
   def headMetaModelsValidator(metaModelId: UUID, generate: Option[Boolean]): Action[AnyContent] =
     AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, generate, get = false) _)
 
+  def putMetaModelsMethodCode(metaModelId: UUID): Action[AnyContent] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateMethodCode(metaModelId) _)
+
   /* ### Model REST API
    * MRA => ModelRestApi
    */
@@ -217,6 +219,6 @@ class ScalaRoutes @Inject()(
 
   def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getScalaCodeViewer(modelId) _)
 
-  def getMethodCodeEditor(metaModelId: UUID, methodName: String) = AuthenticatedGet(CodeEditorController.methodCodeEditor(metaModelId, methodName) _)
+  def getMethodCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(CodeEditorController.methodCodeEditor(metaModelId, methodName, className) _)
 
 }

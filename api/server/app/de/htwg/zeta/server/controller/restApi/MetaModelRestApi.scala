@@ -253,6 +253,23 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     )
   }
 
+  /** updates method code */
+  def updateMethodCode(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    request.body.validate(Diagram.diagramFormat).fold(
+      faulty => {
+        faulty.forech(error(_))
+        Future.successful(BadRequest(JsError.toJson(faulty)))
+      },
+      diagram => {
+        restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
+          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
+        }.recover {
+          case e: Exception => BadRequest(e.getMessage)
+        }
+      }
+    )
+  }
+
   /**
    * Loads or generates the validator for a given meta model.
    *

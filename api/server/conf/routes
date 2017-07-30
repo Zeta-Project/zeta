@@ -67,6 +67,7 @@ PUT           /rest/v1/meta-models/:metaModelId/style                           
 GET           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
 GET           /rest/v1/meta-models/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
+PUT           /rest/vl/meta-models/:metaModelId/methodCode/:methodName/:code                  controllers.ScalaRoutes.getMetamodels
 HEAD          /metamodels/:metaModelId/validator                                              controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
 ### Model REST API
@@ -124,7 +125,8 @@ GET           /codeEditor/editor/:metaModelId/:dslType                          
 GET           /codeEditor/socket/:metaModelId/:dslType                                        controllers.ScalaRoutes.getCodeEditorSocket(metaModelId: java.util.UUID, dslType: String)
 
 GET           /scalaCodeViewer/:modelId                                                       controllers.ScalaRoutes.getScalaCodeViewer(modelId: java.util.UUID)
-GET           /methodCodeEditor/:metaModelId/:methodName                                      controllers.ScalaRoutes.getMethodCodeEditor(metaModelId: java.util.UUID, methodName: String)
+#GET           /methodCodeEditor/:metaModelId/:methodName                                      controllers.ScalaRoutes.getMethodCodeEditor(metaModelId: java.util.UUID, methodName: String)
+GET           /methodCodeEditor/:metaModelId/:methodName/:className                           controllers.ScalaRoutes.getMethodCodeEditor(metaModelId: java.util.UUID, methodName: String, className: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file                                                                   controllers.ScalaRoutes.getAssets(file)
