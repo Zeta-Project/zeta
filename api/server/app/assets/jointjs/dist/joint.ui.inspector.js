@@ -1608,8 +1608,7 @@ joint.ui.Inspector = Backbone.View.extend({
             }
 
         } else {
-            console.log("it's a main");
-            //window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestClass/TestMethod")
+            window.open("/methodMainCodeEditor/" + metaModelId + "/" + methodName)
         }
         //console.log(this.getModel());
 
