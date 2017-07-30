@@ -1565,15 +1565,6 @@ joint.ui.Inspector = Backbone.View.extend({
         var path = $attribute.attr('data-attribute');
         var options = this.getOptions($attribute);
 
-        console.log("attribute");
-        console.log($attribute);
-
-        console.log("path");
-        console.log(path);
-
-        console.log("options: ");
-        console.log(options);
-
         // Take the index of the last list item and increase it by one.
         var $lastListItem = $attribute.children('.list-items').children('.list-item').last();
         var lastIndex = $lastListItem.length === 0 ? -1 : parseInt($lastListItem.attr('data-index'), 10);
@@ -1581,21 +1572,14 @@ joint.ui.Inspector = Backbone.View.extend({
 
         var $listItem = $(joint.templates.inspector['list-item.html']({index: index}));
 
-        console.log("listItem");
-        console.log($listItem);
-
         this.renderTemplate($listItem, options.item, path + '/' + index);
 
         $target.parent().children('.list-items').append($listItem);
         $listItem.find('input').focus();
-        var blubber = $listItem.find('[data-property="code"]');
-        var $parent = $(evt.target).parent();
 
-        console.log("parent");
-        console.log($parent);
-
-        var xx = blubber.find(':input');
-        xx.on('click', _.bind(this.showMethodCodeEditor, this));
+        var methodCodeInput = $listItem.find('[data-property="code"]').find(':input');
+        //var xx = blubber.find(':input');
+        methodCodeInput.on('click', _.bind(this.showMethodCodeEditor, this));
 
         this.trigger('render');
 
@@ -1604,8 +1588,9 @@ joint.ui.Inspector = Backbone.View.extend({
         }
     },
 
-    showMethodCodeEditor: function() {
+    showMethodCodeEditor: function(evt) {
         console.log("showEditor by a new object");
+        console.log(evt);
 
         window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestMethod/TestClass")
     },

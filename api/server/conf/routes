@@ -67,7 +67,9 @@ PUT           /rest/v1/meta-models/:metaModelId/style                           
 GET           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
 GET           /rest/v1/meta-models/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
-PUT           /rest/vl/meta-models/:metaModelId/methodCode/:methodName/:code                  controllers.ScalaRoutes.getMetamodels
+PUT           /rest/vl/meta-models/:metaModelId/classMethodClassCode/:methodName/:className   controllers.ScalaRoutes.putMetaModelsClassMethodCode(metaModelId: java.util.UUID, className: String, methodName: String)
+PUT           /rest/vl/meta-models/:metaModelId/referenceMethodCode/:methodName/:referenceName        controllers.ScalaRoutes.putMetaModelsReferenceMethodCode(metaModelId: java.util.UUID, referenceName: String, methodName: String)
+PUT           /rest/vl/meta-models/:metaModelId/mainMethodClassCode/:methodName               controllers.ScalaRoutes.putMetaModelsMainMethodCode(metaModelId: java.util.UUID, methodName: String)
 HEAD          /metamodels/:metaModelId/validator                                              controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
 ### Model REST API
