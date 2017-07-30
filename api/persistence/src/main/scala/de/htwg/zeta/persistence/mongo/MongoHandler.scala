@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.mongo
 import java.util.UUID
 
 import scala.collection.immutable.Seq
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.common.models.document.DockerSettings
@@ -37,6 +38,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
@@ -164,6 +166,7 @@ object MongoHandler {
   private val sBool = "bool"
   private val sInt = "int"
   private val sDouble = "double"
+  private val sUnit = "unit"
   private val sEnum = "enum"
   private val sName = "name"
   private val sEnumName = "enumName"
@@ -176,6 +179,7 @@ object MongoHandler {
         case BoolType => BSONDocument(sType -> sBool)
         case IntType => BSONDocument(sType -> sInt)
         case DoubleType => BSONDocument(sType -> sDouble)
+        case UnitType => BSONDocument(sType -> sUnit)
         case MEnum(name, values) => BSONDocument(sType -> sEnum, sName -> name, sValues -> values)
       }
     }
@@ -186,6 +190,7 @@ object MongoHandler {
         case `sBool` => BoolType
         case `sInt` => IntType
         case `sDouble` => DoubleType
+        case `sUnit` => UnitType
         case `sEnum` => MEnum(doc.getAs[String](sName).get, doc.getAs[Seq[String]](sValues).get)
       }
     }

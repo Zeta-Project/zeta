@@ -5,6 +5,7 @@ import java.util.UUID
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
@@ -16,6 +17,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
@@ -83,7 +85,22 @@ object PetriNetMetaModelFixture {
       deleteIfLower = false
     )),
     attributes = List(nameAttribute),
-    methods = List.empty
+    methods = List(
+      Method(
+        name = "add",
+        parameters = List(Parameter("n1", IntType), Parameter("n2", IntType)),
+        description = "add n1 and n2",
+        returnType = IntType,
+        code = "n1 + n2"
+      ),
+      Method(
+        name = "sub",
+        parameters = List(Parameter("n3", DoubleType), Parameter("n4", DoubleType)),
+        description = "sub n4 from n3",
+        returnType = DoubleType,
+        code = "n3 - n4"
+      )
+    )
   )
 
   private val place: MClass = MClass(
