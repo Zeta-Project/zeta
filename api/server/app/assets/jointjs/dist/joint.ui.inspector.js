@@ -1589,10 +1589,31 @@ joint.ui.Inspector = Backbone.View.extend({
     },
 
     showMethodCodeEditor: function(evt) {
-        console.log("showEditor by a new object");
-        console.log(evt);
 
-        window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestMethod/TestClass")
+        var metaModelId = evt.view.loadedMetaModel.uuid;
+        var modelType = this.getModel().attributes.type;
+        var methodName = $(evt.currentTarget.parentElement.parentElement.parentElement.children[0]).find(":input")[0].value;
+
+        if (methodName == "") {
+            console.log("First the method needs a name");
+            return
+        }
+
+        if (modelType == "uml.Class" || modelType == "uml.Association") {
+            var modelName = this.getModel().attributes.name;
+            if (modelType == "uml.Class") {
+                window.open("/methodClassCodeEditor/" + metaModelId + "/" + methodName + "/" + modelName)
+            } else {
+                window.open("/methodReferenceCodeEditor/" + metaModelId + "/" + methodName + "/" + modelName)
+            }
+
+        } else {
+            console.log("it's a main");
+            //window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestClass/TestMethod")
+        }
+        //console.log(this.getModel());
+
+        //window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestClass/TestMethod")
     },
 
     deleteListItem: function (evt) {

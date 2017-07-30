@@ -226,6 +226,10 @@ class ScalaRoutes @Inject()(
 
   def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getScalaCodeViewer(modelId) _)
 
-  def getMethodCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(CodeEditorController.methodCodeEditor(metaModelId, methodName, className) _)
+  def getMethodClassCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(CodeEditorController.methodClassCodeEditor(metaModelId, methodName, className) _)
+
+  def getMethodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String) = AuthenticatedGet(CodeEditorController.methodReferenceCodeEditor(metaModelId, methodName, referenceName) _)
+
+  def getMethodMainCodeEditor(metaModelId: UUID, methodName: String) = AuthenticatedGet(CodeEditorController.methodMainCodeEditor(metaModelId, methodName) _)
 
 }

@@ -11,7 +11,6 @@ var mAttribute = (function () {
     var getMAttribute;
 
     init = function init(graph) {
-        console.log("init graph in mAttribute");
         _graph = graph;
     };
 

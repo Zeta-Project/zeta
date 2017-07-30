@@ -246,7 +246,6 @@ var Rappid = Backbone.Router.extend({
         },
 
         createInspector: function (cellView) {
-            console.log("call createInspector");
             this.destroyInspector();
 
             var inspectorDefs = inspector.getDefs(cellView.model, this.graph.getElements(), this.graph.getLinks());
@@ -257,10 +256,6 @@ var Rappid = Backbone.Router.extend({
                 cellView: cellView,
                 live: true
             });
-
-            for (group in this.inspector.groups) {
-                console.log(group);
-            }
 
             this.inspector.on('change:name', function (text) {
                 if (mCoreUtil.isReference(cellView.model)) {
@@ -274,6 +269,7 @@ var Rappid = Backbone.Router.extend({
                     });
                 }
             });
+
 
             this.inspector.render();
 
@@ -289,19 +285,45 @@ var Rappid = Backbone.Router.extend({
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
 
-
-            var codeElement = $(this.inspector.el).find('[data-attribute="m_methods/0/code"]');
-            console.log("codeElement");
-            console.log(codeElement);
-            codeElement.on('click', _.bind(this.inspector.showMethodCodeEditor, this.inspector));
+            // TODO must affect all Methods
+            //var codeElements = $(this.inspector.el).find('[data-attribute="m_methods/0/code"]');
+            var codeElements = document.querySelectorAll('[data-attribute="m_methods/*/code"]');
+            for (codeElement in codeElements) {
+                console.log("find MethodElement");
+                console.log(codeElement);
+                //codeElement.on('click', _.bind(this.inspector.showMethodCodeEditor, this.inspector));
+            }
 
             var collapseButtons = $(this.inspector.el).find('.custom-btn-list-collapse');
-            console.log("button:");
+
+            var inspectorElement = document.getElementsByClassName("inspector");
+
+            if (inspectorElement.length == 1) {
+                /*if (mCoreUtil.isReference(cellView.model)) {
+                    $(this.inspector).attr("methodElementType", "reference");
+                } else if (mCoreUtil.isMEnumContainer(cellView.model)) {
+                    $(this.inspector).attr("methodElementType", "main");
+                } else {
+                    $(this.inspector).attr("methodElementType", "class");
+                }*/
+
+                console.log("set Something");
+                if (mCoreUtil.isReference(cellView.model)) {
+                    $(inspectorElement).first().attr("methodElementType", "reference");
+                } else if (mCoreUtil.isMEnumContainer(cellView.model)) {
+                    $(inspectorElement).first().attr("methodElementType", "main");
+                } else {
+                    $(inspectorElement).first().attr("methodElementType", "class");
+                }
+            } else {
+                // TODO failure handling.
+                console.log("no inspector in ")
+            }
 
             for (var i = 0; i < collapseButtons.length; ++i) {
-                console.log(collapseButtons[i]);
                 collapseButtons[i].click();
             }
+
 
         },
 

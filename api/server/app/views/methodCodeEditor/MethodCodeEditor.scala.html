@@ -1,8 +1,12 @@
 @import java.util.UUID
 
 @import de.htwg.zeta.common.models.entity.User
+@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ClassMethodType
+@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MainMethodType
+@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MethodEntityType
+@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ReferenceMethodType
 
-@(user: Option[User], metaModelId: UUID, method: String, className: String)
+@(user: Option[User], metaModelId: UUID, methodName: String, entityType: MethodEntityType, existingCode: String)
 
 
 <!DOCTYPE html>
@@ -57,10 +61,15 @@
                     editor.setTheme("ace/theme/monokai");
                     editor.getSession().setMode("ace/mode/scala");
                     //editor.setShowPrintMargin(false);
+
+                    if (@existingCode.length > 0) {
+                        editor.setValue(" ", 1)
+
+                    }
                 }
 
                 function updateMethod() {
-                    if
+                    console.log("UpdateMethod")
                 }
 
 
@@ -76,6 +85,7 @@
 
                 <script>
                         initEditor();
+                        editor.on('change', this.updateMethod, this)
                 </script>
             </div>
         }

@@ -13,17 +13,19 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.Controller
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
-
 import java.util.UUID
 
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ClassMethodType
+import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MainMethodType
+import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MethodEntityType
+import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ReferenceMethodType
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.EdgeFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelEntityFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelFormat
@@ -40,8 +42,8 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 import play.api.libs.json.JsResult
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
@@ -58,14 +60,35 @@ class CodeEditorController @Inject()(codeDocManager: CodeDocManagerContainer) ex
     CodeDocWsActor.props(out, codeDocManager.manager, metaModelId, dslType)
   }
 
-  def methodCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+  def methodClassCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, ClassMethodType(className), ""))
+  }
+
+  def methodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, ReferenceMethodType(referenceName), ""))
+  }
+
+  def methodMainCodeEditor(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, MainMethodType, ""))
+  }
+
+  private def getExistingCode(metaModelId: UUID, methodName: String, entityType: MethodEntityType)(request: SecuredRequest[ZetaEnv, AnyContent]): String = {
     val repo = restrictedAccessRepository(request.identity.id)
     for {
       metaModelEntity <- repo.metaModelEntity.read(metaModelId)
     } yield {
       println(metaModelEntity)
     }
-    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, className))
+    ""
   }
+}
+
+object CodeEditorController {
+
+  trait MethodEntityType
+
+  case class ReferenceMethodType(entityName: String) extends MethodEntityType
+  case class ClassMethodType(entityName: String) extends MethodEntityType
+  case object MainMethodType extends MethodEntityType
 }
 
