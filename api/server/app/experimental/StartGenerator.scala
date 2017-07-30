@@ -1,6 +1,6 @@
 package experimental
 
-object Generate extends App {
+object StartGenerator extends App {
 
   val files = Generator.generate(PetriNetMetaModelFixture.metaModel, PetriNetModelFixture.modelEntity)
 

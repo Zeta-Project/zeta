@@ -25,12 +25,11 @@ import de.htwg.zeta.common.models.modelDefinitions.model.Model
 // scalastyle:off indentation multiple.string.literals
 object Generator {
 
-  private implicit class FirstToLower(s: String) {
-    def firstToLower: String = s.substring(0, 1).toLowerCase + s.substring(1)
+  private implicit class CamelCase(s: String) {
+    def toCamelCase: String = s.substring(0, 1).toLowerCase + s.substring(1)
   }
 
   def generate(metaModel: MetaModel, modelEntity: ModelEntity): Seq[File] = {
-
 
     val enums = metaModel.enums.map(enum => generateEnum(enum, modelEntity.id))
 
@@ -59,6 +58,13 @@ object Generator {
 
   private def generateClass(metaModel: MetaModel, model: Model, name: String, fileId: UUID): File = {
     val clazz = metaModel.classMap(name)
+
+    val methods = if (clazz.methods.nonEmpty) {
+      clazz.methods.map(generateMethod).mkString("\n") + "\n"
+    } else {
+      ""
+    }
+
     val content =
       s"""|object $name {
           |
@@ -66,29 +72,33 @@ object Generator {
           |
           |}
           |
-          |case class $name(id: String, attributes: $name.Attributes, ${metaModel.name.firstToLower}: ${metaModel.name.capitalize}) {
+          |case class $name(id: String, attributes: $name.Attributes, ${metaModel.name.toCamelCase}: ${metaModel.name.capitalize}) {
           |
           |""".stripMargin +
         metaModel.references.filter(_.target.head.className == name).map(reference => generateIncomingEdge(metaModel, reference.name)).mkString +
         metaModel.references.filter(_.source.head.className == name).map(reference => generateOutgoingEdge(metaModel, reference.name)).mkString +
-        clazz.methods.map(generateMethod).mkString +
+        methods +
         "}\n"
     File(fileId, s"$name.scala", content)
   }
 
   private def generateAttributes(attributes: Seq[MAttribute]): String = {
-    "  case class Attributes(\n" +
-      attributes.map(a => s"    ${if (a.constant) "" else "var "}${a.name}: ${a.typ.asString}").mkString(",\n") +
-      "\n  )"
+    if (attributes.nonEmpty) {
+      "  case class Attributes(\n" +
+        attributes.map(a => s"    ${if (a.constant) "" else "var "}${a.name}: ${a.typ.asString}").mkString(",\n") +
+        "\n  )"
+    } else {
+      "  case class Attributes()"
+    }
   }
 
 
   private def generateIncomingEdge(metaModel: MetaModel, name: String): String = {
-    s"  lazy val incoming${name.capitalize}: List[${name.capitalize}] = ${metaModel.name.firstToLower}.${name.firstToLower}List.filter(_.target == this)\n\n"
+    s"  lazy val incoming${name.capitalize}: List[${name.capitalize}] = ${metaModel.name.toCamelCase}.${name.toCamelCase}List.filter(_.target == this)\n\n"
   }
 
   private def generateOutgoingEdge(metaModel: MetaModel, name: String): String = {
-    s"  lazy val outgoing${name.capitalize}: List[${name.capitalize}] = ${metaModel.name.firstToLower}.${name.firstToLower}List.filter(_.source == this)\n\n"
+    s"  lazy val outgoing${name.capitalize}: List[${name.capitalize}] = ${metaModel.name.toCamelCase}.${name.toCamelCase}List.filter(_.source == this)\n\n"
   }
 
 
@@ -96,7 +106,6 @@ object Generator {
     s"""|  def ${method.name}(${generateParameters(method.parameters)}): ${method.returnType.asString} = {
         |${method.code.lines.map("    " + _).mkString("\n")}
         |  }
-        |
         |""".stripMargin
   }
 
@@ -110,25 +119,33 @@ object Generator {
 
   private def generateReference(metaModel: MetaModel, model: Model, name: String, fileId: UUID): File = {
     val reference = metaModel.referenceMap(name)
-    val content =
-      s"""|object $name {
+
+    val typeName = name.capitalize
+    val source = reference.source.head.className.capitalize
+    val target = reference.target.head.className.capitalize
+    val mainInstance = metaModel.name.toCamelCase
+    val mainType = metaModel.name.capitalize
+
+    val head =
+      s"""|object $typeName {
           |
           |${generateAttributes(reference.attributes)}
           |
           |}
           |
-          |case class $name(id: String, source: ${reference.source.head.className.capitalize}, target: ${
-        reference.target.head.className.capitalize
-      }, attributes: $name.Attributes, ${metaModel.name.firstToLower}: ${metaModel.name.capitalize}) {
-          |
-          |""".stripMargin +
-        reference.methods.map(generateMethod).mkString +
-        "}\n"
+          |case class $typeName(id: String, source: $source, target: $target, attributes: $name.Attributes, $mainInstance: $mainType)""".stripMargin
+
+    val content = if (reference.methods.nonEmpty) {
+      val methods = reference.methods.map(generateMethod).mkString("\n")
+      s"$head {\n\n$methods \n}\n"
+    } else {
+      head + "\n"
+    }
+
     File(fileId, s"$name.scala", content)
   }
 
   private def generateMain(metaModel: MetaModel, model: Model, fileId: UUID): File = {
-
 
     val content = {
       s"""object ${metaModel.name.capitalize} {
@@ -144,8 +161,7 @@ object Generator {
         metaModel.references.map(reference => generateReferenceInstance(reference, model)).mkString("\n\n") + "\n\n" +
         s"  val attributes = ${metaModel.name.capitalize}.${generateAttributeInstance(metaModel.attributes, model.attributes)}\n\n" +
         metaModel.methods.map(generateMethod).mkString +
-        "}\n"
-
+        "\n}\n"
 
     }
 
@@ -154,22 +170,41 @@ object Generator {
 
 
   private def generateClassInstance(clazz: MClass, model: Model): String = {
-    s"  val ${clazz.name.firstToLower}List: List[${clazz.name.capitalize}] = List(\n" +
+    val nodes = model.nodes.filter(_.className == clazz.name)
+
+    val instance = clazz.name.toCamelCase
+    val typ = clazz.name.capitalize
+
+    nodes.map { node =>
+      s"""  private val $instance${nodes.indexOf(node)} = $typ("${node.id}", $typ.${generateAttributeInstance(clazz.attributes, node.attributes)}, this)"""
+    }.mkString("\n") + "\n\n" +
+      s"  val ${clazz.name.toCamelCase}List: List[${clazz.name.capitalize}] = List(\n" +
       model.nodes.filter(_.className == clazz.name).map { node =>
-        s"""    ${clazz.name.capitalize}("${node.id}", ${clazz.name.capitalize}.${generateAttributeInstance(clazz.attributes, node.attributes)}, this)"""
+        s"    $instance${nodes.indexOf(node)}"
       }.mkString(",\n") +
       "\n  )\n\n" + generateMap(clazz.name)
   }
 
   private def generateReferenceInstance(reference: MReference, model: Model): String = {
-    s"  val ${reference.name.firstToLower}List: List[${reference.name.capitalize}] = List(\n" +
+    val edges = model.edges.filter(_.referenceName == reference.name)
+
+    val instance = reference.name.toCamelCase
+    val typ = reference.name.capitalize
+
+    edges.map { edge =>
+      val sourceNode = model.nodes.find(_.id == edge.source.head.nodeIds.head).get
+      val targetNode = model.nodes.find(_.id == edge.target.head.nodeIds.head).get
+      val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.source.head.className).indexOf(sourceNode)
+      val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.target.head.className).indexOf(targetNode)
+      val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributes)}"
+      s"""  private val $instance${edges.indexOf(edge)} = $typ("${edge.id}", $source, $target, $attributes, this)""".stripMargin
+    }.mkString("\n") + "\n\n" +
+      s"  val ${reference.name.toCamelCase}List: List[${reference.name.capitalize}] = List(\n" +
       model.edges.filter(_.referenceName == reference.name).map { edge =>
-        s"""    ${reference.name.capitalize}("${edge.id}", ${edge.source.head.className.firstToLower}Map("${edge.source.head.nodeIds.head
-        }"), ${edge.target.head.className.firstToLower}Map("${
-          edge.target.head.nodeIds.head}"), ${reference.name.capitalize}.${generateAttributeInstance(reference.attributes, edge.attributes)
-          }, this)""".stripMargin
+        s"    $instance${edges.indexOf(edge)}"
       }.mkString(",\n") +
       "\n  )\n\n" + generateMap(reference.name)
+
   }
 
   private def generateAttributeInstance(metaAttributes: Seq[MAttribute], attributes: Map[String, Seq[AttributeValue]]): String = {
@@ -187,8 +222,10 @@ object Generator {
   }
 
   private def generateMap(name: String): String = {
-    s"  val ${name.firstToLower}Map: Map[String, ${name.capitalize}] = ${name.firstToLower}List.map(${name
-      .firstToLower} => (${name.firstToLower}.id, ${name.firstToLower})).toMap\n"
+    s"  val ${name.toCamelCase}Map: Map[String, ${name.capitalize}] = ${name.toCamelCase}List.map(${
+      name
+        .toCamelCase
+    } => (${name.toCamelCase}.id, ${name.toCamelCase})).toMap\n"
   }
 
 }

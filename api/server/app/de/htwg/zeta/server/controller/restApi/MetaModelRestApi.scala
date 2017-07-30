@@ -254,48 +254,23 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
   }
 
   /** updates method code */
-  def updateClassMethodCode(metaModelId: UUID, className: String, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val methodCode = request.body.asText.getOrElse("")
-
-    restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.dsl.diagram).setTo(Some(methodCode))).map { metaModelEntity =>
-          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
-        }.recover {
-          case e: Exception => BadRequest(e.getMessage)
+  def updateMethodCode(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    val className = "clazzName" // TODO add as parameter
+    val methodName = "methodName" // TODO add as parameter
+    request.body.asText.fold(
+      Future.successful(BadRequest())
+    ) { code =>
+      restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.classes).using { classes =>
+        val clazz = classes.find(_.name == className).get
+        val method = clazz.methods.find(_.name == methodName).get
+        val updatedMethods = method.copy(code = code) +: clazz.methods.filter(_ != method)
+        clazz.copy(methods = updatedMethods) +: classes.filter(_ != clazz)
+      }).map { metaModelEntity =>
+        Ok(Json.toJson(metaModelEntity.metaModel))
+      }.recover {
+        case e: Exception => BadRequest(e.getMessage)
+      }
     }
-  }
-
-  /** updates method code */
-  def updateReferenceMethodCode(metaModelId: UUID, referenceName: String, methodName: String)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(String).fold(
-      faulty => {
-        faulty.foreach(error(_))
-        Future.successful(BadRequest(JsError.toJson(faulty)))
-      },
-      code => {
-        restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.dsl.diagram).setTo(Some(code))).map { metaModelEntity =>
-          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
-        }.recover {
-          case e: Exception => BadRequest(e.getMessage)
-        }
-      }
-    )
-  }
-
-  /** updates method code */
-  def updateMainMethodCode(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    request.body.validate(String).fold(
-      faulty => {
-        faulty.foreach(error(_))
-        Future.successful(BadRequest(JsError.toJson(faulty)))
-      },
-      code => {
-        restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.dsl.diagram).setTo(Some(code))).map { metaModelEntity =>
-          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
-        }.recover {
-          case e: Exception => BadRequest(e.getMessage)
-        }
-      }
-    )
   }
 
   /**
