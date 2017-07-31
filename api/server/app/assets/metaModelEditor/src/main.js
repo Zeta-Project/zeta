@@ -285,14 +285,16 @@ var Rappid = Backbone.Router.extend({
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
 
-            // TODO must affect all Methods
-            //var codeElements = $(this.inspector.el).find('[data-attribute="m_methods/0/code"]');
-            var codeElements = document.querySelectorAll('[data-attribute="m_methods/*/code"]');
-            for (codeElement in codeElements) {
+            inspectorHelpter = this.inspector;
+
+            $('[data-attribute^="m_methods/"][data-attribute$="/code"]').each( function(i, item) {
+                $(item).on('click', _.bind(inspectorHelpter.showMethodCodeEditor, inspectorHelpter));
+            });
+            /*for (codeElement in codeElements.) {
                 console.log("find MethodElement");
                 console.log(codeElement);
                 //codeElement.on('click', _.bind(this.inspector.showMethodCodeEditor, this.inspector));
-            }
+            }*/
 
             var collapseButtons = $(this.inspector.el).find('.custom-btn-list-collapse');
 
