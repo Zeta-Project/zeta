@@ -88,31 +88,35 @@ class window.Exporter
 
   createAttributes: () ->
     attributes = []
-    for thisAttribute in mEnum.getMEnumContainer().attributes['m_attributes']
-      attributes.push
-        name: thisAttribute.name
-        upperBound: thisAttribute.upperBound
-        lowerBound: thisAttribute.lowerBound
-        default: thisAttribute.default
-        typ: thisAttribute.typ
-        expression: thisAttribute.expression
-        localUnique: thisAttribute.localUnique
-        globalUnique: thisAttribute.globalUnique
-        constant: thisAttribute.constant
-        ordered: thisAttribute.ordered
-        transient: thisAttribute.transient
-        singleAssignment: thisAttribute.singleAssignment
+
+    if (mEnum.getMEnumContainer().attributes.hasOwnProperty('m_attributes'))
+      for thisAttribute in mEnum.getMEnumContainer().attributes['m_attributes']
+        attributes.push
+          name: thisAttribute.name
+          upperBound: thisAttribute.upperBound
+          lowerBound: thisAttribute.lowerBound
+          default: thisAttribute.default
+          typ: thisAttribute.typ
+          expression: thisAttribute.expression
+          localUnique: thisAttribute.localUnique
+          globalUnique: thisAttribute.globalUnique
+          constant: thisAttribute.constant
+          ordered: thisAttribute.ordered
+          transient: thisAttribute.transient
+          singleAssignment: thisAttribute.singleAssignment
 
     attributes
 
 
   createMethods: () ->
     methods = []
-    for thisMethod in mEnum.getMEnumContainer().attributes['m_methods']
-      methods.push
-        name: thisMethod.name
-        parameters: thisMethod.parameters
-        description: thisMethod.description
-        returnType: thisMethod.returnType
-        code: thisMethod.code
+
+    if (mEnum.getMEnumContainer().attributes.hasOwnProperty('m_methods'))
+      for thisMethod in mEnum.getMEnumContainer().attributes['m_methods']
+        methods.push
+          name: thisMethod.name
+          parameters: thisMethod.parameters
+          description: thisMethod.description
+          returnType: thisMethod.returnType
+          code: thisMethod.code
     methods
