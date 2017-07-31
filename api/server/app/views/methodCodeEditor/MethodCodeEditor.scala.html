@@ -70,19 +70,35 @@
                     }
 
                     editor.on('input', function () {
-                        console.log("UpdateMethod");
-                        var code = editor.getValue();
-                        console.log("code: ");
-                        console.log(code);
 
+                        entityTypeHelper = "@entityType";
+                        requestPath = "/rest/vl/meta-models/" + "@metaModelId.toString" + "/" ;
 
                         if ("@entityType" == "class") {
-                            console.log("it's a class")
+                            requestPath += "methodClassCode/@methodName/@entityName";
                         } else if ("@entityType" == "reference") {
-                            console.log("it's a reference")
-                        } else if ("@entityType" == "main")
-                            console.log("it's a main")
+                            requestPath += "methodReferenceCode/@methodName/@entityName";
+                        } else if ("@entityType" == "main") {
+                            requestPath += "methodMainCode/@methodName";
+                        }
+
+                        console.log("urlPath");
+                        console.log(requestPath);
+
+                        code = editor.getValue();
+
+                        $.ajax({
+                            url: requestPath,
+                            type: 'PUT',
+                            data: {
+                                data: code
+                            },
+                            success: function () {
+                            }
                         });
+
+
+                })
 
                 }
 

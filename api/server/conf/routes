@@ -67,9 +67,9 @@ PUT           /rest/v1/meta-models/:metaModelId/style                           
 GET           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.getMetamodelsDiagram(metaModelId: java.util.UUID)
 PUT           /rest/v1/meta-models/:metaModelId/diagram                                       controllers.ScalaRoutes.putMetamodelsDiagram(metaModelId: java.util.UUID)
 GET           /rest/v1/meta-models/:metaModelId/validator                                     controllers.ScalaRoutes.getMetamodelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
-PUT           /rest/vl/meta-models/:metaModelId/classMethodClassCode/:methodName/:className   controllers.ScalaRoutes.putMetaModelsClassMethodCode(metaModelId: java.util.UUID, className: String, methodName: String)
-PUT           /rest/vl/meta-models/:metaModelId/referenceMethodCode/:methodName/:referenceName        controllers.ScalaRoutes.putMetaModelsReferenceMethodCode(metaModelId: java.util.UUID, referenceName: String, methodName: String)
-PUT           /rest/vl/meta-models/:metaModelId/mainMethodClassCode/:methodName               controllers.ScalaRoutes.putMetaModelsMainMethodCode(metaModelId: java.util.UUID, methodName: String)
+PUT          /rest/vl/meta-models/:metaModelId/methodClassCode/:methodName/:className   controllers.ScalaRoutes.putMetaModelsClassMethodCode(metaModelId: java.util.UUID, className: String, methodName: String)
+PUT          /rest/vl/meta-models/:metaModelId/methodReferenceCode/:methodName/:referenceName        controllers.ScalaRoutes.putMetaModelsReferenceMethodCode(metaModelId: java.util.UUID, referenceName: String, methodName: String)
+PUT           /rest/vl/meta-models/:metaModelId/methodMainCode/:methodName               controllers.ScalaRoutes.putMetaModelsMainMethodCode(metaModelId: java.util.UUID, methodName: String)
 HEAD          /metamodels/:metaModelId/validator                                              controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
 ### Model REST API
@@ -130,7 +130,7 @@ GET           /scalaCodeViewer/:modelId                                         
 #GET           /methodCodeEditor/:metaModelId/:methodName                                     controllers.ScalaRoutes.getMethodCodeEditor(metaModelId: java.util.UUID, methodName: String)
 GET           /methodClassCodeEditor/:metaModelId/:methodName/:className                      controllers.ScalaRoutes.getMethodClassCodeEditor(metaModelId: java.util.UUID, methodName: String, className: String)
 GET           /methodReferenceCodeEditor/:metaModelId/:methodName/:referenceName              controllers.ScalaRoutes.getMethodReferenceCodeEditor(metaModelId: java.util.UUID, methodName: String, referenceName: String)
-GET           /methodMainCodeEditor/:metaModelId/:methodName                                    controllers.ScalaRoutes.getMethodMainCodeEditor(metaModelId: java.util.UUID, methodName: String)
+GET           /methodMainCodeEditor/:metaModelId/:methodName                                  controllers.ScalaRoutes.getMethodMainCodeEditor(metaModelId: java.util.UUID, methodName: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

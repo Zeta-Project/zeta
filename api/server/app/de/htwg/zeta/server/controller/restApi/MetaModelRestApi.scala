@@ -255,6 +255,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
 
   /** updates method code */
   def updateClassMethodCode(metaModelId: UUID, className: String, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    println("updateClassMethodCode")
     request.body.asText.fold(
       Future.successful(BadRequest("MethodError"))
     ) { code =>
