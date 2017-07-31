@@ -61,15 +61,15 @@ class CodeEditorController @Inject()(codeDocManager: CodeDocManagerContainer) ex
   }
 
   def methodClassCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, ClassMethodType(className), ""))
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, "class","", className))
   }
 
   def methodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, ReferenceMethodType(referenceName), ""))
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, "reference", "", referenceName))
   }
 
   def methodMainCodeEditor(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, MainMethodType, ""))
+    Ok(views.html.methodCodeEditor.MethodCodeEditor(Some(request.identity), metaModelId, methodName, "main", "", ""))
   }
 
   private def getExistingCode(metaModelId: UUID, methodName: String, entityType: MethodEntityType)(request: SecuredRequest[ZetaEnv, AnyContent]): String = {
@@ -87,8 +87,8 @@ object CodeEditorController {
 
   trait MethodEntityType
 
-  case class ReferenceMethodType(entityName: String) extends MethodEntityType
-  case class ClassMethodType(entityName: String) extends MethodEntityType
-  case object MainMethodType extends MethodEntityType
+  case class ReferenceMethodType(entityType: String = "reference", entityName: String) extends MethodEntityType
+  case class ClassMethodType(entityType: String = "class", entityName: String) extends MethodEntityType
+  case class MainMethodType(entityType: String = "main") extends MethodEntityType
 }
 

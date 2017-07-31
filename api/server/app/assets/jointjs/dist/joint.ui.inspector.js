@@ -1595,6 +1595,7 @@ joint.ui.Inspector = Backbone.View.extend({
         var methodName = $(evt.currentTarget.parentElement.parentElement.parentElement.children[0]).find(":input")[0].value;
 
         if (methodName == "") {
+            // TODO right Error-Message
             console.log("First the method needs a name");
             return
         }
@@ -1606,13 +1607,9 @@ joint.ui.Inspector = Backbone.View.extend({
             } else {
                 window.open("/methodReferenceCodeEditor/" + metaModelId + "/" + methodName + "/" + modelName)
             }
-
         } else {
             window.open("/methodMainCodeEditor/" + metaModelId + "/" + methodName)
         }
-        //console.log(this.getModel());
-
-        //window.open("/methodCodeEditor/c3ff8394-3579-4786-880d-0942dfc1503b/TestClass/TestMethod")
     },
 
     deleteListItem: function (evt) {

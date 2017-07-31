@@ -6,7 +6,7 @@
 @import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MethodEntityType
 @import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ReferenceMethodType
 
-@(user: Option[User], metaModelId: UUID, methodName: String, entityType: MethodEntityType, existingCode: String)
+@(user: Option[User], metaModelId: UUID, methodName: String, entityType: String, existingCode: String, entityName: String)
 
 
 <!DOCTYPE html>
@@ -62,14 +62,38 @@
                     editor.getSession().setMode("ace/mode/scala");
                     //editor.setShowPrintMargin(false);
 
-                    if (@existingCode.length > 0) {
-                        editor.setValue(" ", 1)
 
+                    editor.setValue("Hallo Welt", 1)
+
+                    if (@existingCode.length > 0) {
+                        editor.setValue("Hallo Welt", 1)
                     }
+
+                    editor.on('input', function () {
+                        console.log("UpdateMethod");
+                        var code = editor.getValue();
+                        console.log("code: ");
+                        console.log(code);
+
+
+                        if ("@entityType" == "class") {
+                            console.log("it's a class")
+                        } else if ("@entityType" == "reference") {
+                            console.log("it's a reference")
+                        } else if ("@entityType" == "main")
+                            console.log("it's a main")
+                        });
+
                 }
 
+
                 function updateMethod() {
-                    console.log("UpdateMethod")
+                    console.log("UpdateMethod");
+                    var code = this.editor.getValue();
+                    console.log("code: ");
+                    console.log(code)
+
+
                 }
 
 
@@ -85,7 +109,6 @@
 
                 <script>
                         initEditor();
-                        editor.on('change', this.updateMethod, this)
                 </script>
             </div>
         }
