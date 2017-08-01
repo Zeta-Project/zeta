@@ -1603,9 +1603,9 @@ joint.ui.Inspector = Backbone.View.extend({
         if (modelType == "uml.Class" || modelType == "uml.Association") {
             var modelName = this.getModel().attributes.name;
             if (modelType == "uml.Class") {
-                window.open("/codeEditorClassMethod/" + metaModelId + "/" + methodName + "/" + modelName)
+                window.open("/codeEditorClassMethod/" + metaModelId + "/" + modelName + "/" + methodName)
             } else {
-                window.open("/codeEditorReferenceMethod/" + metaModelId + "/" + methodName + "/" + modelName)
+                window.open("/codeEditorReferenceMethod/" + metaModelId + "/" + modelName + "/" + methodName)
             }
         } else {
             window.open("/codeEditorCommonMethod/" + metaModelId + "/" + methodName)
