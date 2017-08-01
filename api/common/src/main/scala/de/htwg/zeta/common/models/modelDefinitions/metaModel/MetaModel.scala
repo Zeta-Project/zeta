@@ -8,6 +8,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -34,7 +35,7 @@ case class MetaModel(
     attributes: Seq[MAttribute],
     methods: Seq[Method],
     uiState: String
-) {
+) extends MObject {
 
   /** Classes mapped to their own names. */
   val classMap: Map[String, MClass] = Option(classes).fold(
@@ -56,6 +57,9 @@ case class MetaModel(
   ) { enums =>
     enums.filter(Option(_).isDefined).map(enum => (enum.name, enum)).toMap
   }
+
+  /** Attributes mapped to their own names. */
+  val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
 
   /** Methods mapped to their own names. */
   val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap

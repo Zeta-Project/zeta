@@ -27,7 +27,15 @@ case class MReference(
     target: Seq[MClassLinkDef],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject
+) extends MObject {
+
+  /** Attributes mapped to their own names. */
+  val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
+
+  /** Methods mapped to their own names. */
+  val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
+
+}
 
 object MReference {
 
