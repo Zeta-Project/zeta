@@ -1,13 +1,8 @@
 @import java.util.UUID
 
 @import de.htwg.zeta.common.models.entity.User
-@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ClassMethodType
-@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MainMethodType
-@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MethodEntityType
-@import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ReferenceMethodType
 
 @(user: User, metaModelId: UUID, methodName: String, entityType: String, existingCode: String, entityName: String)
-
 
 <!DOCTYPE html>
 <html>
@@ -73,17 +68,12 @@
                             url: "@{entityType match {
                                 case "class" => routes.ScalaRoutes.putMetaModelsClassMethod(metaModelId, entityName, methodName)
                                 case "reference" => routes.ScalaRoutes.putMetaModelsReferenceMethod(metaModelId, entityName, methodName)
-                                case "main" => routes.ScalaRoutes.putMetaModelsMainMethod(metaModelId, methodName)
+                                case "common" => routes.ScalaRoutes.putMetaModelsMainMethod(metaModelId, methodName)
                             }}",
                             contentType: "text/plain",
                             data: editor.getValue(),
-                            success: function (data, textStatus, jqXHR) {
-                                console.log("method successfully saved");
-                            },
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                console.log("failed to save method");
-                            }
-
+                            success: (data, textStatus, jqXHR) => console.log("method successfully saved"),
+                            error: (jqXHR, textStatus, errorThrown) => console.log("failed to save method")
                         });
 
                     });

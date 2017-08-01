@@ -32,14 +32,15 @@ case class MClass(
     methods: Seq[Method]
 ) extends MObject {
 
+  /** Attributes mapped to their own names. */
   val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
 
+  /** Methods mapped to their own names. */
   val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
 
 }
 
 object MClass {
-
 
   case class MClassTraverseWrapper(value: MClass, metaModel: MetaModelTraverseWrapper) {
     def superTypes: Seq[MClassTraverseWrapper] = {
