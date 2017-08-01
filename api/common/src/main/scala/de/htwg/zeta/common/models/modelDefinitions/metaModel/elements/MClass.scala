@@ -30,9 +30,16 @@ case class MClass(
     outputs: Seq[MReferenceLinkDef],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject
+) extends MObject {
+
+  val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
+
+  val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
+
+}
 
 object MClass {
+
 
   case class MClassTraverseWrapper(value: MClass, metaModel: MetaModelTraverseWrapper) {
     def superTypes: Seq[MClassTraverseWrapper] = {

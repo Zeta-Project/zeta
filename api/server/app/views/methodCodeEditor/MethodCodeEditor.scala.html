@@ -6,7 +6,7 @@
 @import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.MethodEntityType
 @import de.htwg.zeta.server.controller.codeEditor.CodeEditorController.ReferenceMethodType
 
-@(user: Option[User], metaModelId: UUID, methodName: String, entityType: String, existingCode: String, entityName: String)
+@(user: User, metaModelId: UUID, methodName: String, entityType: String, existingCode: String, entityName: String)
 
 
 <!DOCTYPE html>
@@ -56,61 +56,39 @@
         </style>
 
         <script>
-                function initEditor() {
+                $(document).ready(() => {
                     const editor = ace.edit("editor");
                     editor.setTheme("ace/theme/monokai");
                     editor.getSession().setMode("ace/mode/scala");
                     //editor.setShowPrintMargin(false);
 
-
-                    editor.setValue("Hallo Welt", 1)
-
-                    if (@existingCode.length > 0) {
-                        editor.setValue("Hallo Welt", 1)
-                    }
-
                     editor.on('input', function () {
-
-                        entityTypeHelper = "@entityType";
-                        requestPath = "/rest/vl/meta-models/" + "@metaModelId.toString" + "/" ;
-
-                        if ("@entityType" == "class") {
-                            requestPath += "methodClassCode/@methodName/@entityName";
-                        } else if ("@entityType" == "reference") {
-                            requestPath += "methodReferenceCode/@methodName/@entityName";
-                        } else if ("@entityType" == "main") {
-                            requestPath += "methodMainCode/@methodName";
-                        }
-
-                        console.log("urlPath");
-                        console.log(requestPath);
-
-                        code = editor.getValue();
+                        console.log("UpdateMethod");
+                        var code = editor.getValue();
+                        console.log("code: ");
+                        console.log(code);
 
                         $.ajax({
-                            url: requestPath,
-                            type: 'PUT',
-                            data: {
-                                data: code
+                            type: "PUT",
+                            url: "@{entityType match {
+                                case "class" => routes.ScalaRoutes.putMetaModelsClassMethod(metaModelId, entityName, methodName)
+                                case "reference" => routes.ScalaRoutes.putMetaModelsReferenceMethod(metaModelId, entityName, methodName)
+                                case "main" => routes.ScalaRoutes.putMetaModelsMainMethod(metaModelId, methodName)
+                            }}",
+                            contentType: "text/plain",
+                            data: editor.getValue(),
+                            success: function (data, textStatus, jqXHR) {
+                                console.log("method successfully saved");
                             },
-                            success: function () {
+                            error: function (jqXHR, textStatus, errorThrown) {
+                                console.log("failed to save method");
                             }
+
                         });
 
+                    });
+                });
 
-                })
-
-                }
-
-
-                function updateMethod() {
-                    console.log("UpdateMethod");
-                    var code = this.editor.getValue();
-                    console.log("code: ");
-                    console.log(code)
-
-
-                }
 
 
         </script>
@@ -118,22 +96,12 @@
     </head>
     <body>
 
-        @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
+        @views.html.webpage.WebpageGeneralLayout("CodeEditor", Some(user)) {
 
             <div id="container">
-                <div id="editor" class="editor"></div>
-
-                <script>
-                        initEditor();
-                </script>
+                <div id="editor" class="editor">@existingCode</div>
             </div>
         }
-
-
-        <script>
-                $('#editor').show();
-        </script>
-
 
     </body>
 </html>
