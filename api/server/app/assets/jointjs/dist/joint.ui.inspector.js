@@ -1603,12 +1603,12 @@ joint.ui.Inspector = Backbone.View.extend({
         if (modelType == "uml.Class" || modelType == "uml.Association") {
             var modelName = this.getModel().attributes.name;
             if (modelType == "uml.Class") {
-                window.open("/methodClassCodeEditor/" + metaModelId + "/" + methodName + "/" + modelName)
+                window.open("/codeEditorClassMethod/" + metaModelId + "/" + methodName + "/" + modelName)
             } else {
-                window.open("/methodReferenceCodeEditor/" + metaModelId + "/" + methodName + "/" + modelName)
+                window.open("/codeEditorReferenceMethod/" + metaModelId + "/" + methodName + "/" + modelName)
             }
         } else {
-            window.open("/methodMainCodeEditor/" + metaModelId + "/" + methodName)
+            window.open("/codeEditorCommonMethod/" + metaModelId + "/" + methodName)
         }
     },
 

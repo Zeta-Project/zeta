@@ -58,11 +58,6 @@
                     //editor.setShowPrintMargin(false);
 
                     editor.on('input', function () {
-                        console.log("UpdateMethod");
-                        var code = editor.getValue();
-                        console.log("code: ");
-                        console.log(code);
-
                         $.ajax({
                             type: "PUT",
                             url: "@{entityType match {

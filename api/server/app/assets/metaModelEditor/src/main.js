@@ -290,26 +290,12 @@ var Rappid = Backbone.Router.extend({
             $('[data-attribute^="m_methods/"][data-attribute$="/code"]').each( function(i, item) {
                 $(item).on('click', _.bind(inspectorHelpter.showMethodCodeEditor, inspectorHelpter));
             });
-            /*for (codeElement in codeElements.) {
-                console.log("find MethodElement");
-                console.log(codeElement);
-                //codeElement.on('click', _.bind(this.inspector.showMethodCodeEditor, this.inspector));
-            }*/
 
             var collapseButtons = $(this.inspector.el).find('.custom-btn-list-collapse');
 
             var inspectorElement = document.getElementsByClassName("inspector");
 
             if (inspectorElement.length == 1) {
-                /*if (mCoreUtil.isReference(cellView.model)) {
-                    $(this.inspector).attr("methodElementType", "reference");
-                } else if (mCoreUtil.isMEnumContainer(cellView.model)) {
-                    $(this.inspector).attr("methodElementType", "main");
-                } else {
-                    $(this.inspector).attr("methodElementType", "class");
-                }*/
-
-                console.log("set Something");
                 if (mCoreUtil.isReference(cellView.model)) {
                     $(inspectorElement).first().attr("methodElementType", "reference");
                 } else if (mCoreUtil.isMEnumContainer(cellView.model)) {
