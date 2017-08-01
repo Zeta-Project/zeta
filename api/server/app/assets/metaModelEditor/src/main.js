@@ -254,7 +254,9 @@ var Rappid = Backbone.Router.extend({
                 inputs: inspectorDefs.inputs,
                 groups: inspectorDefs.groups,
                 cellView: cellView,
-                live: true
+                live: true,
+                saveFunction : this.externalSaveCall,
+                mainElement: this
             });
 
             this.inspector.on('change:name', function (text) {
@@ -634,6 +636,22 @@ var Rappid = Backbone.Router.extend({
                     showFailure("Error saving meta model: " + errorThrown);
                 }
             });
+        },
+
+        externalSaveCall: function (mainElement) {
+            const exporter = new Exporter(mainElement.graph);
+            const metaModel = exporter.export();
+
+            if (metaModel.isValid()) {
+                // Send exported Metamodel to server
+                mainElement.saveMetaModel(metaModel, mainElement.graph.toJSON());
+            } else {
+                let errorMessage = "";
+                metaModel.getMessages().forEach(function (message) {
+                    errorMessage += message + '\n';
+                });
+                mainElement.showExportFailure(errorMessage);
+            }
         },
 
         initializeToolbarTooltips: function () {

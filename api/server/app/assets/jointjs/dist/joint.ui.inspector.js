@@ -1590,9 +1590,14 @@ joint.ui.Inspector = Backbone.View.extend({
 
     showMethodCodeEditor: function(evt) {
 
+        this.options.saveFunction(this.options.mainElement);
+
         var metaModelId = evt.view.loadedMetaModel.uuid;
         var modelType = this.getModel().attributes.type;
         var methodName = $(evt.currentTarget.parentElement.parentElement.parentElement.children[0]).find(":input")[0].value;
+
+        console.log(this.options.saveFunction);
+        console.log(this.mainElement);
 
         if (methodName == "") {
             // TODO right Error-Message
