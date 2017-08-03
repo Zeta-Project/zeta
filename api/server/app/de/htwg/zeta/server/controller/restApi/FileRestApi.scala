@@ -63,7 +63,7 @@ class FileRestApi() extends Controller with Logging {
   }
 
   private def parseJson(json: JsValue) = {
-    json.validate(FileFormat()) match {
+    json.validate(FileFormat) match {
       case s: JsSuccess[File] => Future.successful(s)
       case e: JsError => Future.successful(e)
     }
