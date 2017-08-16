@@ -1455,11 +1455,13 @@ joint.ui.Inspector = Backbone.View.extend({
 
                     // Next 6 lines are added because of the todo.
                     var tmpId = {}
-                    cell.attributes.labels.forEach(function(label, index) {
-                        if(label.id != undefined) {
-                            tmpId[index] = label.id
-                        }
-                    })
+                    if(cell.attributes.labels != undefined) {
+                        cell.attributes.labels.forEach(function(label, index) {
+                            if(label.id != undefined) {
+                                tmpId[index] = label.id
+                            }
+                        })
+                    }
 
                     // this line causes the todo
                     joint.util.setByPath(cell.attributes, path, [], '/');
