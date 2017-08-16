@@ -8,8 +8,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
  */
 class NodeTypeNotNull extends ModelRule {
   override val name: String = getClass.getSimpleName
-  override val description: String = ""
-  override val possibleFix: String = ""
+  override val description: String = "The class type inside a node is Null."
+  override val possibleFix: String = "Replace the Null value by a valid class type."
 
   override def check(model: Model): Boolean = !model.nodes.map(_.clazz).contains(null) // scalastyle:ignore null
 }

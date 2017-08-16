@@ -8,8 +8,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
  */
 class NodeOutputsTypeNotNull extends ModelRule {
   override val name: String = getClass.getSimpleName
-  override val description: String = ""
-  override val possibleFix: String = ""
+  override val description: String = "The output type inside a node is Null."
+  override val possibleFix: String = "Replace Null value by a valid target type."
 
-  override def check(model: Model): Boolean = !model.nodes.toSeq.flatMap(_.outputs).map(_.reference).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.flatMap(_.outputs).map(_.reference).contains(null) // scalastyle:ignore null
 }

@@ -8,8 +8,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
  */
 class EdgeTypeNotNull extends ModelRule {
   override val name: String = getClass.getSimpleName
-  override val description: String = ""
-  override val possibleFix: String = ""
+  override val description: String = "The reference type inside an edge is Null."
+  override val possibleFix: String = "Replace the Null value by a valid reference type."
 
   override def check(model: Model): Boolean = !model.edges.map(_.reference).contains(null) // scalastyle:ignore null
 }

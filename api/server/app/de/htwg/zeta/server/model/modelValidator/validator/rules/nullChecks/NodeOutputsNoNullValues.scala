@@ -8,8 +8,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
  */
 class NodeOutputsNoNullValues extends ModelRule {
   override val name: String = getClass.getSimpleName
-  override val description: String = ""
-  override val possibleFix: String = ""
+  override val description: String = "The output list inside a node contains Null values."
+  override val possibleFix: String = "Remove the Null values."
 
   override def check(model: Model): Boolean = !model.nodes.flatMap(_.outputs).contains(null) // scalastyle:ignore null
 }
