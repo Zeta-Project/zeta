@@ -9,10 +9,10 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
@@ -33,20 +33,20 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
   def rule(node: Node): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Boolean = values.collect { case v: MString => v }.forall(_.attributeType == attributeDataType)
-    def handleBooleans(values: Seq[AttributeValue]): Boolean = values.collect { case v: MBool => v }.forall(_.attributeType == attributeDataType)
-    def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: MInt => v }.forall(_.attributeType == attributeDataType)
-    def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: MDouble => v }.forall(_.attributeType == attributeDataType)
+    def handleStrings(values: Seq[AttributeValue]): Boolean = values.collect { case v: StringValue => v }.forall(_.attributeType == attributeDataType)
+    def handleBooleans(values: Seq[AttributeValue]): Boolean = values.collect { case v: BoolValue => v }.forall(_.attributeType == attributeDataType)
+    def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: IntValue => v }.forall(_.attributeType == attributeDataType)
+    def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: DoubleValue => v }.forall(_.attributeType == attributeDataType)
 
-    node.attributes.get(attributeType) match {
+    node.attributeValues.get(attributeType) match {
       case None => true
       case Some(attribute) => attribute.headOption match {
         case None => true
         case Some(head) => head match {
-          case _: MString => handleStrings(attribute)
-          case _: MBool => handleBooleans(attribute)
-          case _: MInt => handleInts(attribute)
-          case _: MDouble => handleDoubles(attribute)
+          case _: StringValue => handleStrings(attribute)
+          case _: BoolValue => handleBooleans(attribute)
+          case _: IntValue => handleInts(attribute)
+          case _: DoubleValue => handleDoubles(attribute)
           case _ => true
         }
       }

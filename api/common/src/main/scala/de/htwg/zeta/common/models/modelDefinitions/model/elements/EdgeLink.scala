@@ -16,23 +16,23 @@ import play.api.libs.json.Writes
  * @param referenceName the name of the MReference instance that represents the type of the references
  * @param edgeIds       the names of the linked edges
  */
-case class ToEdges(referenceName: String, edgeIds: Seq[UUID]) extends Link
+case class EdgeLink(referenceName: String, edgeIds: Seq[UUID]) extends Link
 
-object ToEdges {
+object EdgeLink {
 
-  def playJsonReads(metaModel: MetaModel): Reads[ToEdges] = {
-    new Reads[ToEdges] {
-      override def reads(json: JsValue): JsResult[ToEdges] = {
+  def playJsonReads(metaModel: MetaModel): Reads[EdgeLink] = {
+    new Reads[EdgeLink] {
+      override def reads(json: JsValue): JsResult[EdgeLink] = {
         for {
           reference <- (json \ "referenceName").validate[String].map(metaModel.referenceMap)
           edgeIds <- (json \ "edgeIds").validate[List[UUID]]
         } yield {
-          ToEdges(reference.name, edgeIds)
+          EdgeLink(reference.name, edgeIds)
         }
       }
     }
   }
 
-  implicit val playJsonWrites: Writes[ToEdges] = Json.writes[ToEdges]
+  implicit val playJsonWrites: Writes[EdgeLink] = Json.writes[EdgeLink]
 
 }

@@ -11,5 +11,5 @@ class EdgesAttributesNamesNotEmpty extends SingleEdgeRule {
   override val description: String = "Attribute names of edges attributes must not be empty."
   override val possibleFix: String = "Add a name to every attribute."
 
-  override def isValid(edge: Edge): Option[Boolean] = Some(!edge.attributes.keys.toSeq.contains(""))
+  override def isValid(edge: Edge): Option[Boolean] = Some(!edge.attributeValues.keys.toSeq.contains(""))
 }

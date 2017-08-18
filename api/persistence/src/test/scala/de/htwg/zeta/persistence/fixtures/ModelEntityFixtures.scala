@@ -5,13 +5,13 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 
 object ModelEntityFixtures {
 
@@ -21,22 +21,22 @@ object ModelEntityFixtures {
   val edgeId1: UUID = UUID.randomUUID()
   val edgeId2: UUID = UUID.randomUUID()
 
-  val toNodes1 = ToNodes(
+  val toNodes1 = NodeLink(
     className = MetaModelEntityFixtures.class1.name,
     nodeIds = Seq(nodeId1, nodeId2)
   )
 
-  val toNodes2 = ToNodes(
+  val toNodes2 = NodeLink(
     className = MetaModelEntityFixtures.class2.name,
     nodeIds = Seq.empty
   )
 
-  val toEdges1 = ToEdges(
+  val toEdges1 = EdgeLink(
     referenceName = MetaModelEntityFixtures.reference1.name,
     edgeIds = Seq(edgeId1)
   )
 
-  val toEdges2 = ToEdges(
+  val toEdges2 = EdgeLink(
     referenceName = MetaModelEntityFixtures.reference2.name,
     edgeIds = Seq(edgeId2)
   )
@@ -46,7 +46,7 @@ object ModelEntityFixtures {
     className = MetaModelEntityFixtures.class1.name,
     outputs = Seq(toEdges1, toEdges2),
     inputs = Seq.empty,
-    attributes = Map("attribute1" -> Seq(MInt(1)))
+    attributeValues = Map("attribute1" -> Seq(IntValue(1)))
   )
 
   val node2 = Node(
@@ -54,7 +54,7 @@ object ModelEntityFixtures {
     className = MetaModelEntityFixtures.class2.name,
     outputs = Seq.empty,
     inputs = Seq(toEdges1, toEdges2),
-    attributes = Map("attribute2" -> Seq(MDouble(2), MDouble(3)))
+    attributeValues = Map("attribute2" -> Seq(DoubleValue(2), DoubleValue(3)))
   )
 
   val edge1 = Edge(
@@ -62,7 +62,7 @@ object ModelEntityFixtures {
     referenceName = MetaModelEntityFixtures.reference1.name,
     source = Seq(toNodes1, toNodes2),
     target = Seq.empty,
-    attributes = Map("attribute3" -> Seq(MInt(-1)))
+    attributeValues = Map("attribute3" -> Seq(IntValue(-1)))
   )
 
   val edge2 = Edge(
@@ -70,7 +70,7 @@ object ModelEntityFixtures {
     referenceName = MetaModelEntityFixtures.reference2.name,
     source = Seq.empty,
     target = Seq(toNodes1, toNodes2),
-    attributes = Map.empty
+    attributeValues = Map.empty
   )
 
   val model1 = Model(
@@ -78,7 +78,7 @@ object ModelEntityFixtures {
     metaModelId = MetaModelEntityFixtures.entity1.id,
     nodes = Seq(node1, node2),
     edges = Seq(edge1, edge2),
-    attributes = Map.empty,
+    attributeValues = Map.empty,
     uiState = "uiState1"
   )
 
@@ -87,7 +87,7 @@ object ModelEntityFixtures {
     metaModelId = MetaModelEntityFixtures.entity2.id,
     nodes = Seq(node1),
     edges = Seq(edge1),
-    attributes = Map.empty,
+    attributeValues = Map.empty,
     uiState = "uiState2"
   )
 

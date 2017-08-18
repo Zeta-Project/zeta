@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -31,7 +31,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false on edges of type edgeType with attributes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att")))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
     rule.isValid(edge).get should be(false)
   }

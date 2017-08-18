@@ -17,21 +17,21 @@ import play.api.libs.json.Writes
  * @param className the name of the MClass instance that represents the type of the nodes
  * @param nodeIds the names of the nodes
  */
-case class ToNodes(className: String, nodeIds: Seq[UUID]) extends Link
+case class NodeLink(className: String, nodeIds: Seq[UUID]) extends Link
 
-object ToNodes {
+object NodeLink {
 
-  def playJsonReads(metaModel: MetaModel): Reads[ToNodes] = new Reads[ToNodes] {
-    override def reads(json: JsValue): JsResult[ToNodes] = {
+  def playJsonReads(metaModel: MetaModel): Reads[NodeLink] = new Reads[NodeLink] {
+    override def reads(json: JsValue): JsResult[NodeLink] = {
       for {
         clazz <- (json \ "className").validate[String].map(metaModel.classMap)
         nodeIds <- (json \ "nodeIds").validate[List[UUID]]
       } yield {
-        ToNodes(clazz.name, nodeIds)
+        NodeLink(clazz.name, nodeIds)
       }
     }
   }
 
-  implicit val playJsonWrites: Writes[ToNodes] = Json.writes[ToNodes]
+  implicit val playJsonWrites: Writes[NodeLink] = Json.writes[NodeLink]
 
 }

@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -19,22 +19,22 @@ class NodeOutputsUpperBoundTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on nodes of type nodeType having 2 or less output edges of type outputType" in {
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val twoOutputEdges = ToEdges(outputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoOutputEdges = EdgeLink(outputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
     val nodeTwoOutputEdges = Node(UUID.randomUUID(), mClass.name, Seq(twoOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeTwoOutputEdges).get should be(true)
 
-    val oneOutputEdge = ToEdges(outputType.name, Seq(UUID.randomUUID()))
+    val oneOutputEdge = EdgeLink(outputType.name, Seq(UUID.randomUUID()))
     val nodeOneOutputEdge = Node(UUID.randomUUID(), mClass.name, Seq(oneOutputEdge), Seq(), Map.empty)
     rule.isValid(nodeOneOutputEdge).get should be(true)
 
-    val noOutputEdges = ToEdges(outputType.name, Seq())
+    val noOutputEdges = EdgeLink(outputType.name, Seq())
     val nodeNoOutputEdges = Node(UUID.randomUUID(), mClass.name, Seq(noOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeNoOutputEdges).get should be(true)
   }
 
   it should "return false on nodes of type nodeType having more than 2 output edges of type outputType" in {
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val threeOutputEdges = ToEdges(outputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeOutputEdges = EdgeLink(outputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
     val nodeThreeOutputEdges = Node(UUID.randomUUID(), mClass.name, Seq(threeOutputEdges), Seq(), Map.empty)
     rule.isValid(nodeThreeOutputEdges).get should be(false)
   }

@@ -5,6 +5,8 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -30,17 +32,22 @@ case class MClass(
     outputs: Seq[MReferenceLinkDef],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject {
-
-  /** Attributes mapped to their own names. */
-  val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
-
-  /** Methods mapped to their own names. */
-  val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
-
-}
+) extends MObject with HasMethods with HasAttributes
 
 object MClass {
+
+  trait HasClasses {
+
+    val classes: Seq[MClass]
+
+    /** Classes mapped to their own names. */
+    final val classMap: Map[String, MClass] = Option(classes).fold(
+      Map.empty[String, MClass]
+    ) { classes =>
+      classes.filter(Option(_).isDefined).map(clazz => (clazz.name, clazz)).toMap
+    }
+
+  }
 
   case class MClassTraverseWrapper(value: MClass, metaModel: MetaModelTraverseWrapper) {
     def superTypes: Seq[MClassTraverseWrapper] = {

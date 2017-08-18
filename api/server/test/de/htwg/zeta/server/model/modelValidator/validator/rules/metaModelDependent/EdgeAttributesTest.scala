@@ -6,10 +6,10 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -32,8 +32,8 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
 
   "the rule" should "be true for valid edge" in {
     val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "stringAttribute" -> Seq(MString("test")),
-      "boolAttribute" -> Seq(MBool(true))
+      "stringAttribute" -> Seq(StringValue("test")),
+      "boolAttribute" -> Seq(BoolValue(true))
     )
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributes)
 
@@ -42,9 +42,9 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
 
   it should "be false for invalid edges" in {
     val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "stringAttribute" -> Seq(MString("test")),
-      "boolAttribute" -> Seq(MBool(true)),
-      "invalidAttribute" -> Seq(MDouble(1.0))
+      "stringAttribute" -> Seq(StringValue("test")),
+      "boolAttribute" -> Seq(BoolValue(true)),
+      "invalidAttribute" -> Seq(DoubleValue(1.0))
     )
 
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributes)
@@ -66,8 +66,8 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     )
 
     val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "stringAttribute" -> Seq(MString("test")),
-      "boolAttribute" -> Seq(MBool(true))
+      "stringAttribute" -> Seq(StringValue("test")),
+      "boolAttribute" -> Seq(BoolValue(true))
     )
 
     val edge = Edge(UUID.randomUUID(), nonMatchingReference.name, Seq(), Seq(), attributes)
@@ -81,9 +81,9 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment = false,
+    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, -1, 0)
-    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MInt(0), constant = false, singleAssignment = false,
+    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, IntValue(0), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, -1, 0)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
       (attribute, attribute2), Seq.empty)

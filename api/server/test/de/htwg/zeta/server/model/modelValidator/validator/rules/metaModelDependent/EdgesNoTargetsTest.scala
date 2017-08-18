@@ -8,7 +8,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -42,7 +42,7 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = ToNodes(className = target.name, nodeIds = Seq(UUID.randomUUID()))
+    val toNode = NodeLink(className = target.name, nodeIds = Seq(UUID.randomUUID()))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNode), Map.empty)
 
     rule.isValid(edge).get should be(false)
@@ -59,7 +59,7 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = ToNodes(className = target.name, nodeIds = Seq())
+    val toNode = NodeLink(className = target.name, nodeIds = Seq())
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNode), Map.empty)
 
     rule.isValid(edge).get should be(true)

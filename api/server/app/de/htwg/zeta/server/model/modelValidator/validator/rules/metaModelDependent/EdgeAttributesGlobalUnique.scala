@@ -2,11 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
 import de.htwg.zeta.server.model.modelValidator.Util
@@ -25,23 +25,23 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
 
   override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = {
 
-    def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MString => v }.map(_.value)
-    def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MBool => v }.map(_.value.toString)
-    def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MInt => v }.map(_.value.toString)
-    def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: MDouble => v }.map(_.value.toString)
-    def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumSymbol => v }.map(_.toString)
+    def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: StringValue => v }.map(_.value)
+    def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: BoolValue => v }.map(_.value.toString)
+    def handleInts(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: IntValue => v }.map(_.value.toString)
+    def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: DoubleValue => v }.map(_.value.toString)
+    def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumValue => v }.map(_.toString)
 
 
     val edges = Util.getEdges(elements).filter(_.referenceName == edgeType)
-    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributes).filter(_._1 == attributeType).flatMap(_._2)
+    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributeValues).filter(_._1 == attributeType).flatMap(_._2)
 
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
       case None => Seq()
-      case Some(_: MString) => handleStrings(attributeValues)
-      case Some(_: MBool) => handleBooleans(attributeValues)
-      case Some(_: MInt) => handleInts(attributeValues)
-      case Some(_: MDouble) => handleDoubles(attributeValues)
-      case Some(_: EnumSymbol) => handleEnums(attributeValues)
+      case Some(_: StringValue) => handleStrings(attributeValues)
+      case Some(_: BoolValue) => handleBooleans(attributeValues)
+      case Some(_: IntValue) => handleInts(attributeValues)
+      case Some(_: DoubleValue) => handleDoubles(attributeValues)
+      case Some(_: EnumValue) => handleEnums(attributeValues)
     }
 
     // find duplicate values
@@ -49,15 +49,15 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
     def checkEdgeDuplicateValues(acc: Seq[ModelValidationResult], currentEdge: Edge): Seq[ModelValidationResult] = {
-      val attributeValues = currentEdge.attributes.flatMap(_._2).toSeq
+      val attributeValues = currentEdge.attributeValues.flatMap(_._2).toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()
-        case Some(_: MString) => handleStrings(attributeValues)
-        case Some(_: MBool) => handleBooleans(attributeValues)
-        case Some(_: MInt) => handleInts(attributeValues)
-        case Some(_: MDouble) => handleDoubles(attributeValues)
-        case Some(_: EnumSymbol) => handleEnums(attributeValues)
+        case Some(_: StringValue) => handleStrings(attributeValues)
+        case Some(_: BoolValue) => handleBooleans(attributeValues)
+        case Some(_: IntValue) => handleInts(attributeValues)
+        case Some(_: DoubleValue) => handleDoubles(attributeValues)
+        case Some(_: EnumValue) => handleEnums(attributeValues)
       }
 
       val valid = attributeValuesStrings.foldLeft(true) { (acc, currentString) =>

@@ -7,8 +7,8 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -20,14 +20,14 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
   val rule = new NodeAttributeScalarTypes("nodeType", "attributeType", StringType)
 
   "isValid" should "be true for valid nodes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("")))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(true)
   }
 
   it should "be false for invalid nodes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MInt(0)))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(IntValue(0)))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(false)
@@ -47,9 +47,9 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val enumType = MEnum("enumName", Seq("enumValue1", "enumValue2"))
-    val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enumType, enumType.symbols.head, constant = false,
+    val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enumType, enumType.values.head, constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment =
+    val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false, singleAssignment =
       false, "", ordered = false, transient = false, -1, 0)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](enumAttribute,
       scalarAttribute), Seq.empty)

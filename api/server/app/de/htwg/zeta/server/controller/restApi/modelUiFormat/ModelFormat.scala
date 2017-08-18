@@ -9,8 +9,8 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.persistence.Persistence
@@ -58,7 +58,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
     }
 
     def checkNodes(n: Node): Option[String] = {
-      val checkToEdge = checkGenericLink[ToEdges](n.id, edgesMap, _.edgeIds) _
+      val checkToEdge = checkGenericLink[EdgeLink](n.id, edgesMap, _.edgeIds) _
       n.inputs.toStream.flatMap(checkToEdge).headOption match {
         case None => n.outputs.toStream.flatMap(checkToEdge).headOption
         case some @ Some(_) => some
@@ -67,7 +67,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
 
 
     def checkEdges(e: Edge): Option[String] = {
-      val checkToNode = checkGenericLink[ToNodes](e.id, nodesMap, _.nodeIds) _
+      val checkToNode = checkGenericLink[NodeLink](e.id, nodesMap, _.nodeIds) _
       e.source.toStream.flatMap(checkToNode).headOption match {
         case None => e.target.toStream.flatMap(checkToNode).headOption
         case some @ Some(_) => some

@@ -8,7 +8,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -24,14 +24,14 @@ class NodesNoInputsTest extends FlatSpec with Matchers {
 
   it should "return false on nodes of type nodeType with inputs" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdge = ToEdges(input.name, Seq(UUID.randomUUID()))
+    val toEdge = EdgeLink(input.name, Seq(UUID.randomUUID()))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdge), Map.empty)
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty input list" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdge = ToEdges(input.name, Seq())
+    val toEdge = EdgeLink(input.name, Seq())
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdge), Map.empty)
     rule.isValid(node).get should be(true)
   }

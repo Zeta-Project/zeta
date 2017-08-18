@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -23,7 +23,7 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false on nodes of type nodeType with attributes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("")))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
     rule.isValid(node).get should be (false)
   }

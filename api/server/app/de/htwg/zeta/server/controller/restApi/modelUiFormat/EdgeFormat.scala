@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import play.api.libs.json.Writes
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsError
@@ -24,14 +24,14 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
   val unknownMReferenceError = JsError("Unknown mReference")
 
 
-  private def extractToNodes(classLinks: Seq[MClassLinkDef])(m: Map[String, Seq[UUID]]): JsResult[List[ToNodes]] = {
-    m.toList.reverse.foldLeft[JsResult[List[ToNodes]]](JsSuccess(Nil))((res, kv) => {
+  private def extractToNodes(classLinks: Seq[MClassLinkDef])(m: Map[String, Seq[UUID]]): JsResult[List[NodeLink]] = {
+    m.toList.reverse.foldLeft[JsResult[List[NodeLink]]](JsSuccess(Nil))((res, kv) => {
       res match {
         case JsSuccess(list, _) =>
           val (k, v) = kv
           metaModel.classMap.get(k) match {
             case Some(t: MClass) if classLinks.exists(mLink => mLink.className == t.name) =>
-              JsSuccess(ToNodes(t.name, v) :: list)
+              JsSuccess(NodeLink(t.name, v) :: list)
             case None => invalidToNodesError
           }
         case e: JsError => e
@@ -44,8 +44,8 @@ class EdgeFormat private(metaModel: MetaModel) extends Format[Edge] {
       id <- json.\("id").validate[UUID]
       mReference <- json.\("mReference").validate[String]
       // Todo not sure if check is correct or needs to be swapped
-      source <- json.\("source").validate[Map[String, Seq[UUID]]].map(_.map(e => ToNodes(e._1, e._2)))
-      target <- json.\("target").validate[Map[String, Seq[UUID]]].map(_.map(e => ToNodes(e._1, e._2)))
+      source <- json.\("source").validate[Map[String, Seq[UUID]]].map(_.map(e => NodeLink(e._1, e._2)))
+      target <- json.\("target").validate[Map[String, Seq[UUID]]].map(_.map(e => NodeLink(e._1, e._2)))
       // attributes <- json.\("attributes").validate(AttributeFormat(mReference.attributes, name)) // TODO FIXME
     } yield {
       Edge(id, mReference, source.toList, target.toList, Map.empty)
@@ -60,7 +60,7 @@ object EdgeFormat extends Writes[Edge] {
 
   def apply(metaModel: MetaModel): EdgeFormat = new EdgeFormat(metaModel)
 
-  private def writeNodes(seq: Seq[ToNodes]): Map[String, Seq[UUID]] = {
+  private def writeNodes(seq: Seq[NodeLink]): Map[String, Seq[UUID]] = {
     seq.map(tn => (tn.className, tn.nodeIds)).toMap
   }
 
@@ -70,7 +70,7 @@ object EdgeFormat extends Writes[Edge] {
       "mReference" -> o.referenceName,
       "source" -> writeNodes(o.source),
       "target" -> writeNodes(o.target),
-      "attributes" -> AttributeFormat.writes(o.attributes)
+      "attributes" -> AttributeFormat.writes(o.attributeValues)
     )
   }
 }

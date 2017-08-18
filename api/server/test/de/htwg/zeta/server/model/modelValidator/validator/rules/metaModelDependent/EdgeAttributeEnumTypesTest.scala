@@ -7,8 +7,8 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -29,8 +29,8 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   val rule = new EdgeAttributeEnumTypes("reference", "attributeType", "enumName")
 
   "the rule" should "be true for valid edges" in {
-    val mEnum = MEnum(name = "enumName", values = Seq())
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumSymbol("enumName", mEnum.name)))
+    val mEnum = MEnum(name = "enumName", valueNames = Seq())
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("enumName", mEnum.name)))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
@@ -53,8 +53,8 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   }
 
   it should "be false for invalid edges" in {
-    val differentEnum = MEnum(name = "differentEnumName", values = Seq())
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumSymbol("differentEnumName", differentEnum.name)))
+    val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("differentEnumName", differentEnum.name)))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
@@ -87,7 +87,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       globalUnique = false,
       localUnique = false,
       enumType,
-      enumType.symbols.head,
+      enumType.values.head,
       constant = false,
       singleAssignment = false,
       "",
@@ -101,7 +101,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       globalUnique = false,
       localUnique = false,
       StringType,
-      MString(""),
+      StringValue(""),
       constant = false,
       singleAssignment = false,
       "",

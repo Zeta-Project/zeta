@@ -17,7 +17,7 @@ class EdgeAttributes(val edgeType: String, val attributeTypes: Seq[String]) exte
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.attributes.keys.foldLeft(true) { (acc, attributeName) =>
+  def rule(edge: Edge): Boolean = edge.attributeValues.keys.foldLeft(true) { (acc, attributeName) =>
     if (attributeTypes.contains(attributeName)) acc else false
   }
 

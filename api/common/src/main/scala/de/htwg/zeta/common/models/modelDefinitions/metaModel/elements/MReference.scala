@@ -3,6 +3,8 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -27,17 +29,22 @@ case class MReference(
     target: Seq[MClassLinkDef],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject {
-
-  /** Attributes mapped to their own names. */
-  val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
-
-  /** Methods mapped to their own names. */
-  val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
-
-}
+) extends MObject with HasAttributes with HasMethods
 
 object MReference {
+
+  trait HasReferences {
+
+    val references: Seq[MReference]
+
+    /** References mapped to their own names. */
+    final val referenceMap: Map[String, MReference] = Option(references).fold(
+      Map.empty[String, MReference]
+    ) { references =>
+      references.filter(Option(_).isDefined).map(reference => (reference.name, reference)).toMap
+    }
+
+  }
 
   def playJsonReads(enums: Seq[MEnum]): Reads[MReference] = new Reads[MReference] {
     override def reads(json: JsValue): JsResult[MReference] = {

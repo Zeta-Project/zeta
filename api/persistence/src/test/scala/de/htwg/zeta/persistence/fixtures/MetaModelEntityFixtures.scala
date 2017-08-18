@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.fixtures
 import java.util.UUID
 
 import scala.collection.immutable.Seq
+import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
@@ -16,15 +17,14 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
@@ -48,7 +48,7 @@ object MetaModelEntityFixtures {
     globalUnique = true,
     localUnique = false,
     typ = StringType,
-    default = MString("stringValue"),
+    default = StringValue("stringValue"),
     constant = false,
     singleAssignment = true,
     expression = "stringExpression",
@@ -63,7 +63,7 @@ object MetaModelEntityFixtures {
     globalUnique = false,
     localUnique = false,
     typ = BoolType,
-    default = MBool(false),
+    default = BoolValue(false),
     constant = false,
     singleAssignment = true,
     expression = "boolExpression",
@@ -78,7 +78,7 @@ object MetaModelEntityFixtures {
     globalUnique = false,
     localUnique = true,
     typ = DoubleType,
-    default = MDouble(-1.5),
+    default = DoubleValue(-1.5),
     constant = true,
     singleAssignment = true,
     expression = "doubleExpression",
@@ -93,7 +93,7 @@ object MetaModelEntityFixtures {
     globalUnique = true,
     localUnique = false,
     typ = IntType,
-    default = MInt(2),
+    default = IntValue(2),
     constant = true,
     singleAssignment = false,
     expression = "intExpression",
@@ -111,7 +111,7 @@ object MetaModelEntityFixtures {
     globalUnique = false,
     localUnique = true,
     typ = enum1,
-    default = enum1.symbols.head,
+    default = enum1.values.head,
     constant = false,
     singleAssignment = true,
     expression = "enumExpression",
@@ -166,9 +166,9 @@ object MetaModelEntityFixtures {
     methods = Seq(
       Method(
         name = "f1",
-        parameters = Seq(
-          Parameter("p1", StringType),
-          Parameter("p2", DoubleType)
+        parameters = SortedMap(
+          "p1" -> StringType,
+          "p2" -> DoubleType
         ),
         description = "description1",
         returnType = IntType,
@@ -199,9 +199,9 @@ object MetaModelEntityFixtures {
     methods = Seq(
       Method(
         name = "f2",
-        parameters = Seq(
-          Parameter("p3", StringType),
-          Parameter("p4", DoubleType)
+        parameters = SortedMap(
+          "p3" -> StringType,
+          "p4" -> DoubleType
         ),
         description = "description2",
         returnType = UnitType,

@@ -8,11 +8,11 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsString
 import play.api.libs.json.JsNumber
@@ -58,11 +58,11 @@ private[metaModelUiFormat] class MAttributeFormat(val enumMap: Map[String, MEnum
   }
 
   private def validateTypeDefault(typ: AttributeType, default: JsValue): JsResult[AttributeValue] = (typ, default) match {
-    case (StringType, JsString(s)) => JsSuccess(AttributeValue.MString(s))
-    case (BoolType, JsBoolean(b)) => JsSuccess(AttributeValue.MBool(b))
-    case (DoubleType, JsNumber(n)) => JsSuccess(AttributeValue.MDouble(n.doubleValue))
-    case (IntType, CheckValidInt(i)) => JsSuccess(AttributeValue.MInt(i))
-    case (MEnum(enumName, values), JsString(name)) if values.contains(name) => JsSuccess(AttributeValue.EnumSymbol(name, enumName))
+    case (StringType, JsString(s)) => JsSuccess(AttributeValue.StringValue(s))
+    case (BoolType, JsBoolean(b)) => JsSuccess(AttributeValue.BoolValue(b))
+    case (DoubleType, JsNumber(n)) => JsSuccess(AttributeValue.DoubleValue(n.doubleValue))
+    case (IntType, CheckValidInt(i)) => JsSuccess(AttributeValue.IntValue(i))
+    case (MEnum(enumName, values), JsString(name)) if values.contains(name) => JsSuccess(AttributeValue.EnumValue(name, enumName))
     case _ => typeDefaultError
   }
 
@@ -100,11 +100,11 @@ private[metaModelUiFormat] object MAttributeFormat extends Writes[MAttribute] {
   }
 
   private def writesAttributeValue(av: AttributeValue): JsValue = av match {
-    case MString(v) => JsString(v)
-    case MBool(v) => JsBoolean(v)
-    case MInt(v) => JsNumber(v)
-    case MDouble(v) => JsNumber(v)
-    case EnumSymbol(name, _) => JsString(name)
+    case StringValue(v) => JsString(v)
+    case BoolValue(v) => JsBoolean(v)
+    case IntValue(v) => JsNumber(v)
+    case DoubleValue(v) => JsNumber(v)
+    case EnumValue(name, _) => JsString(name)
   }
 
 

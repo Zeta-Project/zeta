@@ -10,6 +10,11 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MCl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.HasEnums
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.HasClasses
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference.HasReferences
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -35,34 +40,7 @@ case class MetaModel(
     attributes: Seq[MAttribute],
     methods: Seq[Method],
     uiState: String
-) extends MObject {
-
-  /** Classes mapped to their own names. */
-  val classMap: Map[String, MClass] = Option(classes).fold(
-    Map.empty[String, MClass]
-  ) { classes =>
-    classes.filter(Option(_).isDefined).map(clazz => (clazz.name, clazz)).toMap
-  }
-
-  /** References mapped to their own names. */
-  val referenceMap: Map[String, MReference] = Option(references).fold(
-    Map.empty[String, MReference]
-  ) { references =>
-    references.filter(Option(_).isDefined).map(reference => (reference.name, reference)).toMap
-  }
-
-  /** Enums mapped to their own names. */
-  val enumMap: Map[String, MEnum] = Option(enums).fold(
-    Map.empty[String, MEnum]
-  ) { enums =>
-    enums.filter(Option(_).isDefined).map(enum => (enum.name, enum)).toMap
-  }
-
-  /** Attributes mapped to their own names. */
-  val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
-
-  /** Methods mapped to their own names. */
-  val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
+) extends MObject with HasClasses with HasReferences with HasEnums with HasAttributes with HasMethods {
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)

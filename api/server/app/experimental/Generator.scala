@@ -10,11 +10,11 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
@@ -44,7 +44,7 @@ object Generator {
   }
 
   private def generateEnum(enum: MEnum, fileId: UUID): File = {
-    val symbols = enum.symbols.map(symbol => s"  object ${symbol.name} extends ${enum.name}\n").mkString("\n")
+    val symbols = enum.values.map(symbol => s"  object ${symbol.name} extends ${enum.name}\n").mkString("\n")
     val content =
       s"""|sealed trait ${enum.name}
           |
@@ -159,7 +159,7 @@ object Generator {
         |""".stripMargin +
         metaModel.classes.map(clazz => generateClassInstance(clazz, model)).mkString("\n\n") + "\n\n" +
         metaModel.references.map(reference => generateReferenceInstance(reference, model)).mkString("\n\n") + "\n\n" +
-        s"  val attributes = ${metaModel.name.capitalize}.${generateAttributeInstance(metaModel.attributes, model.attributes)}\n\n" +
+        s"  val attributes = ${metaModel.name.capitalize}.${generateAttributeInstance(metaModel.attributes, model.attributeValues)}\n\n" +
         metaModel.methods.map(generateMethod).mkString +
         "\n}\n"
 
@@ -176,7 +176,7 @@ object Generator {
     val typ = clazz.name.capitalize
 
     nodes.map { node =>
-      s"""  private val $instance${nodes.indexOf(node)} = $typ("${node.id}", $typ.${generateAttributeInstance(clazz.attributes, node.attributes)}, this)"""
+      s"""  private val $instance${nodes.indexOf(node)} = $typ("${node.id}", $typ.${generateAttributeInstance(clazz.attributes, node.attributeValues)}, this)"""
     }.mkString("\n") + "\n\n" +
       s"  val ${clazz.name.toCamelCase}List: List[${clazz.name.capitalize}] = List(\n" +
       model.nodes.filter(_.className == clazz.name).map { node =>
@@ -196,7 +196,7 @@ object Generator {
       val targetNode = model.nodes.find(_.id == edge.target.head.nodeIds.head).get
       val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.source.head.className).indexOf(sourceNode)
       val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.target.head.className).indexOf(targetNode)
-      val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributes)}"
+      val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributeValues)}"
       s"""  private val $instance${edges.indexOf(edge)} = $typ("${edge.id}", $source, $target, $attributes, this)""".stripMargin
     }.mkString("\n") + "\n\n" +
       s"  val ${reference.name.toCamelCase}List: List[${reference.name.capitalize}] = List(\n" +
@@ -213,11 +213,11 @@ object Generator {
 
   private def generateAttributeValue(value: AttributeValue): String = {
     value match {
-      case MString(s) => "\"" + s + "\""
-      case MBool(b) => b.toString
-      case MInt(i) => i.toString
-      case MDouble(d) => d.toString
-      case EnumSymbol(enumName, name) => s"${enumName.capitalize}.${name.capitalize}"
+      case StringValue(s) => "\"" + s + "\""
+      case BoolValue(b) => b.toString
+      case IntValue(i) => i.toString
+      case DoubleValue(d) => d.toString
+      case EnumValue(enumName, name) => s"${enumName.capitalize}.${name.capitalize}"
     }
   }
 

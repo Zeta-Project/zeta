@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -21,11 +21,11 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType having 2 or more input edges of type inputType" in {
 
     val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val twoInputEdges = ToEdges(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoInputEdges = EdgeLink(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
     val nodeTwoInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(twoInputEdges), Map.empty)
     rule.isValid(nodeTwoInputEdge).get should be(true)
 
-    val threeInputEdges = ToEdges(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeInputEdges = EdgeLink(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
     val nodeThreeInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(threeInputEdges), Map.empty)
     rule.isValid(nodeThreeInputEdge).get should be(true)
   }
@@ -33,11 +33,11 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
   it should "return false on nodes of type nodeType having less than 2 input edges of type inputType" in {
 
     val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val noInputEdges = ToEdges(inputType.name, Seq())
+    val noInputEdges = EdgeLink(inputType.name, Seq())
     val nodeNoInputEdges = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(noInputEdges), Map.empty)
     rule.isValid(nodeNoInputEdges).get should be(false)
 
-    val oneInputEdge = ToEdges(inputType.name, Seq(UUID.randomUUID()))
+    val oneInputEdge = EdgeLink(inputType.name, Seq(UUID.randomUUID()))
     val nodeOneInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(oneInputEdge), Map.empty)
     rule.isValid(nodeOneInputEdge).get should be(false)
   }

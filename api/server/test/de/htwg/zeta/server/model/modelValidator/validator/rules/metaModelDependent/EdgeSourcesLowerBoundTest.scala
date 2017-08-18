@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -39,13 +39,13 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoSourceNodes = ToNodes(className = sourceType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoSourceNodes = NodeLink(className = sourceType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
 
     val edgeTwoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(twoSourceNodes), Seq(), Map.empty)
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
-    val threeSourceNodes = ToNodes(className = sourceType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeSourceNodes = NodeLink(className = sourceType.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
 
     val edgeThreeSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(threeSourceNodes), Seq(), Map.empty)
 
@@ -64,7 +64,7 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val oneSourceNode = ToNodes(className = sourceType.name, nodeIds = Seq(UUID.randomUUID()))
+    val oneSourceNode = NodeLink(className = sourceType.name, nodeIds = Seq(UUID.randomUUID()))
 
     val edgeOneSourceNode = Edge(UUID.randomUUID(), mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
 

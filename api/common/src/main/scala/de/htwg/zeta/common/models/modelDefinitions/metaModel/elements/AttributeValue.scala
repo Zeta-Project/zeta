@@ -29,41 +29,48 @@ sealed trait AttributeValue
 
 object AttributeValue {
 
-  case class MString(value: String) extends AttributeValue {
-    val attributeType = StringType
+  /** A mixin that offers the attributes field */
+  trait HasAttributeValues {
+
+    val attributeValues: Map[String, Seq[AttributeValue]]
+
   }
 
-  case class MBool(value: Boolean) extends AttributeValue {
-    val attributeType = BoolType
+  case class StringValue(value: String) extends AttributeValue {
+    val attributeType: AttributeType = StringType
   }
 
-  case class MInt(value: Int) extends AttributeValue {
-    val attributeType = IntType
+  case class BoolValue(value: Boolean) extends AttributeValue {
+    val attributeType: AttributeType = BoolType
   }
 
-  case class MDouble(value: Double) extends AttributeValue {
-    val attributeType = DoubleType
+  case class IntValue(value: Int) extends AttributeValue {
+    val attributeType: AttributeType = IntType
   }
 
-  implicit val playJsonFormat = new Format[AttributeValue] {
+  case class DoubleValue(value: Double) extends AttributeValue {
+    val attributeType: AttributeType = DoubleType
+  }
+
+  implicit val playJsonFormat: Format[AttributeValue] = new Format[AttributeValue] {
 
     override def writes(value: AttributeValue): JsValue = {
       value match {
-        case MString(v) => JsObject(Map(StringType.asString -> JsString(v)))
-        case MBool(v) => JsObject(Map(BoolType.asString -> JsBoolean(v)))
-        case MInt(v) => JsObject(Map(IntType.asString -> JsNumber(v)))
-        case MDouble(v) => JsObject(Map(DoubleType.asString -> JsNumber(v)))
-        case EnumSymbol(name, enumName) => JsArray(Seq(JsString(name), JsString(enumName)))
+        case StringValue(v) => JsObject(Map(StringType.asString -> JsString(v)))
+        case BoolValue(v) => JsObject(Map(BoolType.asString -> JsBoolean(v)))
+        case IntValue(v) => JsObject(Map(IntType.asString -> JsNumber(v)))
+        case DoubleValue(v) => JsObject(Map(DoubleType.asString -> JsNumber(v)))
+        case EnumValue(name, enumName) => JsArray(Seq(JsString(name), JsString(enumName)))
       }
     }
 
     override def reads(json: JsValue): JsResult[AttributeValue] = {
       json match {
-        case JsObject(Seq(JsString(StringType.asString), JsString(v))) => JsSuccess(MString(v))
-        case JsObject(Seq(JsString(BoolType.asString), JsBoolean(v))) => JsSuccess(MBool(v))
-        case JsObject(Seq(JsString(IntType.asString), JsNumber(v))) => JsSuccess(MInt(v.toInt))
-        case JsObject(Seq(JsString(DoubleType.asString), JsNumber(v))) => JsSuccess(MDouble(v.toDouble))
-        case JsArray(Seq(JsString(name), JsString(enumName))) => JsSuccess(EnumSymbol(name, enumName))
+        case JsObject(Seq(JsString(StringType.asString), JsString(v))) => JsSuccess(StringValue(v))
+        case JsObject(Seq(JsString(BoolType.asString), JsBoolean(v))) => JsSuccess(BoolValue(v))
+        case JsObject(Seq(JsString(IntType.asString), JsNumber(v))) => JsSuccess(IntValue(v.toInt))
+        case JsObject(Seq(JsString(DoubleType.asString), JsNumber(v))) => JsSuccess(DoubleValue(v.toDouble))
+        case JsArray(Seq(JsString(name), JsString(enumName))) => JsSuccess(EnumValue(name, enumName))
       }
     }
 
@@ -77,11 +84,11 @@ object AttributeValue {
             val rawAttribute = (json \ metaAttribute.name).validate[List[String]].getOrElse(List.empty)
             val attribute = if (rawAttribute.nonEmpty) {
               metaAttribute.typ match {
-                case StringType => rawAttribute.map(MString)
-                case BoolType => rawAttribute.map(v => MBool(v.toBoolean))
-                case IntType => rawAttribute.map(v => MInt(v.toInt))
-                case DoubleType => rawAttribute.map(v => MDouble(v.toDouble))
-                case enum: MEnum => rawAttribute.map(enum.symbolMap)
+                case StringType => rawAttribute.map(StringValue)
+                case BoolType => rawAttribute.map(v => BoolValue(v.toBoolean))
+                case IntType => rawAttribute.map(v => IntValue(v.toInt))
+                case DoubleType => rawAttribute.map(v => DoubleValue(v.toDouble))
+                case enum: MEnum => rawAttribute.map(enum.valueMap)
               }
             } else {
               List(metaAttribute.default)
@@ -96,16 +103,22 @@ object AttributeValue {
     }
   }
 
+  /** playJsonReads which overwrites attributes with the same name in the MetaModel from the Model. */
+  def playJsonReads(metaModel: MetaModel, metaAttributes: Seq[MAttribute], attributes: Seq[MAttribute]): Reads[Map[String, Seq[AttributeValue]]] = {
+    playJsonReads(metaModel, metaAttributes.filter(a => !attributes.map(_.name).contains(a.name)) ++ attributes)
+  }
+
+
   /** An Enum Symbol
    *
    * @param name     name of the symbol
    * @param enumName name of the the belonging MEnum
    */
-  case class EnumSymbol(enumName: String, name: String) extends AttributeValue
+  case class EnumValue(enumName: String, name: String) extends AttributeValue
 
-  object EnumSymbol {
+  object EnumValue {
 
-    implicit val playJsonFormat: OFormat[EnumSymbol] = Json.format[EnumSymbol]
+    implicit val playJsonFormat: OFormat[EnumValue] = Json.format[EnumValue]
 
   }
 

@@ -1,9 +1,9 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.collection.immutable.Seq
+import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -13,7 +13,7 @@ import play.api.libs.json.Writes
 
 case class Method(
     name: String,
-    parameters: Seq[Parameter],
+    parameters: SortedMap[String, AttributeType],
     description: String,
     returnType: AttributeType,
     code: String
@@ -21,45 +21,34 @@ case class Method(
 
 object Method {
 
-  private val sName = "name"
+  trait HasMethods {
 
-  case class Parameter(
-      name: String,
-      typ: AttributeType
-  )
+    val methods: Seq[Method]
 
-  object Parameter {
+    /** Methods mapped to their own names. */
+    final val methodMap: Map[String, Method] = methods.map(method => (method.name, method)).toMap
 
-    def playJsonReads(enums: Seq[MEnum]): Reads[Parameter] = new Reads[Parameter] {
-      override def reads(json: JsValue): JsResult[Parameter] = {
-        for {
-          name <- (json \ sName).validate[String]
-          typ <- (json \ "typ").validate(AttributeType.playJsonReads(enums))
-        } yield {
-          Parameter(name, typ)
-        }
-      }
-    }
-
-    implicit val playJsonWrites: Writes[Parameter] = Json.writes[Parameter]
   }
 
+  private val sName = "name"
+
+
   def playJsonReads(enums: Seq[MEnum]): Reads[Method] = new Reads[Method] {
+
+    // TODO implement sortedMap serializer for parameters
     override def reads(json: JsValue): JsResult[Method] = {
       for {
         name <- (json \ sName).validate[String]
-        parameters <- (json \ "parameters").validate(Reads.list(Parameter.playJsonReads(enums)))
+        parameters <- (json \ "parameters").validate(Reads.map(AttributeType.playJsonReads(enums))) // TODO this is not sorted
         description <- (json \ "description").validate[String]
         returnType <- (json \ "returnType").validate(AttributeType.playJsonReads(enums))
         code <- (json \ "code").validate[String]
       } yield {
-        Method(name, parameters, description, returnType, code)
+        Method(name, SortedMap(/* TODO */ parameters.toArray: _*), description, returnType, code)
       }
     }
   }
 
   implicit val playJsonWrites: Writes[Method] = Json.writes[Method]
-
-
 
 }

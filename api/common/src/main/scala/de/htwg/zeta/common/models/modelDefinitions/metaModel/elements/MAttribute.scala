@@ -8,11 +8,11 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNumber
 import play.api.libs.json.JsObject
@@ -55,6 +55,15 @@ case class MAttribute(
 
 object MAttribute {
 
+  trait HasAttributes {
+
+    val attributes: Seq[MAttribute]
+
+    /** Attributes mapped to their own names. */
+    final val attributeMap: Map[String, MAttribute] = attributes.map(attribute => (attribute.name, attribute)).toMap
+
+  }
+
   private val sName = "name"
   private val sGlobalUnique = "globalUnique"
   private val sLocalUnique = "localUnique"
@@ -77,11 +86,11 @@ object MAttribute {
         localUnique <- (json \ sLocalUnique).validate[Boolean]
         typ <- (json \ sTyp).validate(AttributeType.playJsonReads(enums))
         default <- typ match {
-          case StringType => (json \ sDefault).validate[String].map(MString)
-          case BoolType => (json \ sDefault).validate[String].map(v => MBool(v.toBoolean))
-          case IntType => (json \ sDefault).validate[String].map(v => MInt(v.toInt))
-          case DoubleType => (json \ sDefault).validate[String].map(v => MDouble(v.toDouble))
-          case enum: MEnum => (json \ sDefault).validate[String].map(enum.symbolMap(_))
+          case StringType => (json \ sDefault).validate[String].map(StringValue)
+          case BoolType => (json \ sDefault).validate[String].map(v => BoolValue(v.toBoolean))
+          case IntType => (json \ sDefault).validate[String].map(v => IntValue(v.toInt))
+          case DoubleType => (json \ sDefault).validate[String].map(v => DoubleValue(v.toDouble))
+          case enum: MEnum => (json \ sDefault).validate[String].map(enum.valueMap(_))
         }
         constant <- (json \ sConstant).validate[Boolean]
         singleAssignment <- (json \ sSingleAssignment).validate[Boolean]
@@ -118,11 +127,11 @@ object MAttribute {
         sLocalUnique -> JsBoolean(attribute.localUnique),
         sTyp -> AttributeType.playJsonWrites.writes(attribute.typ),
         sDefault -> (attribute.default match {
-          case MString(s) => JsString(s)
-          case MBool(b) => JsBoolean(b)
-          case MDouble(d) => JsNumber(d)
-          case MInt(i) => JsNumber(i)
-          case EnumSymbol(_, value) => JsString(value)
+          case StringValue(s) => JsString(s)
+          case BoolValue(b) => JsBoolean(b)
+          case DoubleValue(d) => JsNumber(d)
+          case IntValue(i) => JsNumber(i)
+          case EnumValue(_, value) => JsString(value)
         }),
         sConstant -> JsBoolean(attribute.constant),
         sSingleAssignment -> JsBoolean(attribute.singleAssignment),

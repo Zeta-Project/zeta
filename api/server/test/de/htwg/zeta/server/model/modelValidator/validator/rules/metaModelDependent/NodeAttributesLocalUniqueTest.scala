@@ -6,7 +6,7 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -19,14 +19,14 @@ class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   val rule = new NodeAttributesLocalUnique("nodeType", "attributeType")
 
   "isValid" should "return true on valid nodes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value1"), MString("value2"), MString("value3")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value1"), StringValue("value2"), StringValue("value3")))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(true)
   }
 
   it should "return false on invalid nodes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("duplicateValue"), MString("value"), MString("duplicateValue")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue"), StringValue("value"), StringValue("duplicateValue")))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
 
     rule.isValid(node).get should be(false)
@@ -45,9 +45,9 @@ class NodeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val localUniqueAttribute = MAttribute("attributeName", globalUnique = false, localUnique = true, StringType, MString(""), constant = false,
+    val localUniqueAttribute = MAttribute("attributeName", globalUnique = false, localUnique = true, StringType, StringValue(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val nonLocalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+    val nonLocalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
       (nonLocalUniqueAttribute, localUniqueAttribute), Seq.empty)

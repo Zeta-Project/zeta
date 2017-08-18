@@ -19,7 +19,7 @@ class NodeAttributesUpperBound(val nodeType: String, val attributeType: String, 
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = if (upperBound == -1) true else node.attributes.get(attributeType) match {
+  def rule(node: Node): Boolean = if (upperBound == -1) true else node.attributeValues.get(attributeType) match {
     case Some(attribute) => attribute.size <= upperBound
     case None => true
   }

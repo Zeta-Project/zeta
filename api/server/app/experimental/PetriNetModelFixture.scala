@@ -3,15 +3,15 @@ package experimental
 import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 
 
 object PetriNetModelFixture {
@@ -39,132 +39,132 @@ object PetriNetModelFixture {
   val transition1: Node = Node(
     id = sTransition1,
     className = sTransition,
-    outputs = List(ToEdges(
+    outputs = List(EdgeLink(
       referenceName = sConsumer,
       edgeIds = List(sConsumer1)
     )),
-    inputs = List(ToEdges(
+    inputs = List(EdgeLink(
       referenceName = sProducer,
       edgeIds = List(sProducer1)
     )),
-    attributes = Map(
-      sName -> List(MString("Transition1")),
-      sFired -> List(MBool(false))
+    attributeValues = Map(
+      sName -> List(StringValue("Transition1")),
+      sFired -> List(BoolValue(false))
     )
   )
 
   val transition2: Node = Node(
     id = sTransition2,
     className = sTransition,
-    outputs = List(ToEdges(
+    outputs = List(EdgeLink(
       referenceName = sConsumer,
       edgeIds = List(sConsumer2)
     )),
-    inputs = List(ToEdges(
+    inputs = List(EdgeLink(
       referenceName = sProducer,
       edgeIds = List(sProducer2)
     )),
-    attributes = Map(
-      sName -> List(MString("Transition2")),
-      sFired -> List(MBool(false))
+    attributeValues = Map(
+      sName -> List(StringValue("Transition2")),
+      sFired -> List(BoolValue(false))
     )
   )
 
   val place1: Node = Node(
     id = sPlace1,
     className = sPlace,
-    outputs = List(ToEdges(
+    outputs = List(EdgeLink(
       referenceName = sProducer,
       edgeIds = List(sProducer1)
     )),
-    inputs = List(ToEdges(
+    inputs = List(EdgeLink(
       referenceName = sConsumer,
       edgeIds = List(sConsumer2)
     )),
-    attributes = Map(
-      sName -> List(MString("Place1")),
-      sTokens -> List(MInt(3))
+    attributeValues = Map(
+      sName -> List(StringValue("Place1")),
+      sTokens -> List(IntValue(3))
     )
   )
 
   val place2: Node = Node(
     id = sPlace2,
     className = sPlace,
-    outputs = List(ToEdges(
+    outputs = List(EdgeLink(
       referenceName = sProducer,
       edgeIds = List(sProducer2)
     )),
-    inputs = List(ToEdges(
+    inputs = List(EdgeLink(
       referenceName = sConsumer,
       edgeIds = List(sConsumer1)
     )),
-    attributes = Map(
-      sName -> List(MString("Place2")),
-      sTokens -> List(MInt(0))
+    attributeValues = Map(
+      sName -> List(StringValue("Place2")),
+      sTokens -> List(IntValue(0))
     )
   )
 
   val producer1: Edge = Edge(
     id = sProducer1,
     referenceName = sProducer,
-    source = List(ToNodes(
+    source = List(NodeLink(
       className = sPlace,
       nodeIds = List(sPlace1)
     )),
-    target = List(ToNodes(
+    target = List(NodeLink(
       className = sTransition,
       nodeIds = List(sTransition1)
     )),
-    attributes = Map(
-      sName -> List(MString("Producer1"))
+    attributeValues = Map(
+      sName -> List(StringValue("Producer1"))
     )
   )
 
   val producer2: Edge = Edge(
     id = sProducer2,
     referenceName = sProducer,
-    source = List(ToNodes(
+    source = List(NodeLink(
       className = sPlace,
       nodeIds = List(sPlace2)
     )),
-    target = List(ToNodes(
+    target = List(NodeLink(
       className = sTransition,
       nodeIds = List(sTransition2)
     )),
-    attributes = Map(
-      sName -> List(MString("Producer2"))
+    attributeValues = Map(
+      sName -> List(StringValue("Producer2"))
     )
   )
 
   val consumer1: Edge = Edge(
     id = sConsumer1,
     referenceName = sConsumer,
-    source = List(ToNodes(
+    source = List(NodeLink(
       className = sTransition,
       nodeIds = List(sTransition1)
     )),
-    target = List(ToNodes(
+    target = List(NodeLink(
       className = sPlace,
       nodeIds = List(sPlace2)
     )),
-    attributes = Map(
-      sName -> List(MString("Consumer1"))
+    attributeValues = Map(
+      sName -> List(StringValue("Consumer1"))
     )
   )
 
   val consumer2: Edge = Edge(
     id = sConsumer2,
     referenceName = sConsumer,
-    source = List(ToNodes(
+    source = List(NodeLink(
       className = sTransition,
       nodeIds = List(sTransition2)
     )),
-    target = List(ToNodes(
+    target = List(NodeLink(
       className = sPlace,
       nodeIds = List(sPlace1)
     )),
-    attributes = Map(
-      sName -> List(MString("Consumer2"))
+    attributeValues = Map(
+      sName -> List(StringValue("Consumer2"))
     )
   )
 
@@ -173,8 +173,8 @@ object PetriNetModelFixture {
     metaModelId = UUID.randomUUID(),
     nodes = List(place1, place2, transition1, transition2),
     edges = List(producer1, producer2, consumer1, consumer2),
-    attributes = Map(
-      "state" -> List(EnumSymbol("State", "Resting"))
+    attributeValues = Map(
+      "state" -> List(EnumValue("State", "Resting"))
     ),
     uiState = "uiState"
   )

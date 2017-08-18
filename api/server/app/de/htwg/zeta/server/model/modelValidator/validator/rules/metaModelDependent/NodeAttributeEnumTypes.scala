@@ -6,7 +6,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
@@ -19,12 +19,12 @@ class NodeAttributeEnumTypes(val nodeType: String, val attributeType: String, va
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributes.get(attributeType) match {
+  def rule(node: Node): Boolean = node.attributeValues.get(attributeType) match {
     case None => true
     case Some(attribute) => attribute.headOption match {
       case None => true
       case Some(head) => head match {
-        case _: EnumSymbol => attribute.collect { case v: EnumSymbol => v }.forall(_.enumName == enumName)
+        case _: EnumValue => attribute.collect { case v: EnumValue => v }.forall(_.enumName == enumName)
         case _ => true
       }
     }

@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -40,7 +40,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes1 = ToNodes(className = source1.name, nodeIds = Seq(UUID.randomUUID()))
+    val toNodes1 = NodeLink(className = source1.name, nodeIds = Seq(UUID.randomUUID()))
 
     val edge1 = Edge(UUID.randomUUID(), mReference.name, Seq(toNodes1), Seq(), Map.empty)
 
@@ -57,7 +57,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes2 = ToNodes(className = source1.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val toNodes2 = NodeLink(className = source1.name, nodeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
 
     val edge2 = Edge(UUID.randomUUID(), mReference.name, Seq(toNodes2), Seq(), Map.empty)
 
@@ -77,7 +77,7 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val invalidToNodes = ToNodes(className = invalidSource.name, nodeIds = Seq(UUID.randomUUID()))
+    val invalidToNodes = NodeLink(className = invalidSource.name, nodeIds = Seq(UUID.randomUUID()))
 
     val edge1 = Edge(UUID.randomUUID(), mReference.name, Seq(invalidToNodes), Seq(), Map.empty)
 

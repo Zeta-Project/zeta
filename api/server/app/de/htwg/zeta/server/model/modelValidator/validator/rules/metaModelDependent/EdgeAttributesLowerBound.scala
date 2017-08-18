@@ -16,7 +16,7 @@ class EdgeAttributesLowerBound(val edgeType: String, val attributeType: String, 
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.attributes.get(attributeType) match {
+  def rule(edge: Edge): Boolean = edge.attributeValues.get(attributeType) match {
     case Some(attribute) => attribute.size >= lowerBound
     case None => lowerBound == 0
   }

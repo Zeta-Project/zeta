@@ -3,6 +3,7 @@ package de.htwg.zeta.persistence.mongo
 import java.util.UUID
 
 import scala.collection.immutable.Seq
+import scala.collection.immutable.SortedMap
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
@@ -40,23 +41,22 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import reactivemongo.bson.BSONArray
 import reactivemongo.bson.BSONBoolean
 import reactivemongo.bson.BSONDocument
@@ -201,21 +201,21 @@ object MongoHandler {
 
     override def write(value: AttributeValue): BSONDocument = {
       value match {
-        case MString(v) => BSONDocument(sType -> sString, sValue -> BSONString(v))
-        case MBool(v) => BSONDocument(sType -> sBool, sValue -> BSONBoolean(v))
-        case MInt(v) => BSONDocument(sType -> sInt, sValue -> BSONInteger(v))
-        case MDouble(v) => BSONDocument(sType -> sDouble, sValue -> BSONDouble(v))
-        case EnumSymbol(name, enumName) => BSONDocument(sType -> sEnum, sName -> name, sEnumName -> enumName)
+        case StringValue(v) => BSONDocument(sType -> sString, sValue -> BSONString(v))
+        case BoolValue(v) => BSONDocument(sType -> sBool, sValue -> BSONBoolean(v))
+        case IntValue(v) => BSONDocument(sType -> sInt, sValue -> BSONInteger(v))
+        case DoubleValue(v) => BSONDocument(sType -> sDouble, sValue -> BSONDouble(v))
+        case EnumValue(name, enumName) => BSONDocument(sType -> sEnum, sName -> name, sEnumName -> enumName)
       }
     }
 
     override def read(doc: BSONDocument): AttributeValue = {
       doc.getAs[String](sType).get match {
-        case `sString` => MString(doc.getAs[String](sValue).get)
-        case `sBool` => MBool(doc.getAs[Boolean](sValue).get)
-        case `sInt` => MInt(doc.getAs[Int](sValue).get)
-        case `sDouble` => MDouble(doc.getAs[Double](sValue).get)
-        case `sEnum` => EnumSymbol(doc.getAs[String](sName).get, doc.getAs[String](sEnumName).get)
+        case `sString` => StringValue(doc.getAs[String](sValue).get)
+        case `sBool` => BoolValue(doc.getAs[Boolean](sValue).get)
+        case `sInt` => IntValue(doc.getAs[Int](sValue).get)
+        case `sDouble` => DoubleValue(doc.getAs[Double](sValue).get)
+        case `sEnum` => EnumValue(doc.getAs[String](sName).get, doc.getAs[String](sEnumName).get)
       }
     }
 
@@ -223,7 +223,19 @@ object MongoHandler {
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
-  private implicit val methodParameterHandler: BSONDocumentHandler[Parameter] = Macros.handler[Parameter]
+  private implicit object ParametersHandler extends BSONWriter[SortedMap[String, AttributeType], BSONArray]
+    with BSONReader[ BSONArray, SortedMap[String, AttributeType]] {
+
+    override def write(parameters: SortedMap[String, AttributeType]): BSONArray = {
+      null // TODO implement
+    }
+
+    override def read(array: BSONArray): SortedMap[String, AttributeType] = {
+      null // TODO implement
+    }
+
+  }
+
 
   private implicit val methodHandler: BSONDocumentHandler[Method] = Macros.handler[Method]
 
@@ -257,9 +269,9 @@ object MongoHandler {
 
   implicit val edgeEntityHandler: BSONDocumentHandler[Edge] = Macros.handler[Edge]
 
-  implicit val toNodesEntityHandler: BSONDocumentHandler[ToNodes] = Macros.handler[ToNodes]
+  implicit val toNodesEntityHandler: BSONDocumentHandler[NodeLink] = Macros.handler[NodeLink]
 
-  implicit val toEdgesEntityHandler: BSONDocumentHandler[ToEdges] = Macros.handler[ToEdges]
+  implicit val toEdgesEntityHandler: BSONDocumentHandler[EdgeLink] = Macros.handler[EdgeLink]
 
   implicit val modelHandler: BSONDocumentHandler[Model] = Macros.handler[Model]
 

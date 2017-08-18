@@ -4,7 +4,7 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.NoAmbiguousAttributes
@@ -18,7 +18,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     globalUnique = false,
     localUnique = false,
     typ = StringType,
-    default = MString(""),
+    default = StringValue(""),
     constant = false,
     singleAssignment = false,
     expression = "",
@@ -33,7 +33,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     globalUnique = false,
     localUnique = false,
     typ = StringType,
-    default = MString(""),
+    default = StringValue(""),
     constant = false,
     singleAssignment = false,
     expression = "",
@@ -48,7 +48,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     globalUnique = true, // different value
     localUnique = false,
     typ = StringType,
-    default = MString(""),
+    default = StringValue(""),
     constant = false,
     singleAssignment = false,
     expression = "",

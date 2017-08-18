@@ -6,7 +6,7 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -28,14 +28,14 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
   )
 
   "isValid" should "return true on valid edges" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("valueOne"), MString("valueTwo"), MString("valueThree")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("valueOne"), StringValue("valueTwo"), StringValue("valueThree")))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("dupValue"), MString("dupValue"), MString("valueThree")))
+    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("dupValue"), StringValue("dupValue"), StringValue("valueThree")))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
 
     rule.isValid(edge).get should be(false)
@@ -63,7 +63,7 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       globalUnique = false,
       localUnique = true,
       StringType,
-      MString(""),
+      StringValue(""),
       constant = false,
       singleAssignment = false,
       "",
@@ -77,7 +77,7 @@ class EdgeAttributesLocalUniqueTest extends FlatSpec with Matchers {
       globalUnique = false,
       localUnique = false,
       StringType,
-      MString(""),
+      StringValue(""),
       constant = false,
       singleAssignment = false,
       "",

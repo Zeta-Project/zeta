@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -21,19 +21,19 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType with valid output edges" in {
 
     val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = ToEdges(output1.name, Seq(UUID.randomUUID()))
+    val toEdges1 = EdgeLink(output1.name, Seq(UUID.randomUUID()))
     val node1 = Node(UUID.randomUUID(), mClass.name, Seq(toEdges1), Seq(), Map.empty)
     rule.isValid(node1).get should be(true)
 
     val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = ToEdges(output2.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val toEdges2 = EdgeLink(output2.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
     val node2 = Node(UUID.randomUUID(), mClass.name, Seq(toEdges2), Seq(), Map.empty)
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with invalid output edges" in {
     val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = ToEdges(output.name, Seq(UUID.randomUUID()))
+    val toEdges = EdgeLink(output.name, Seq(UUID.randomUUID()))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(toEdges), Seq(), Map.empty)
     rule.isValid(node).get should be(false)
   }

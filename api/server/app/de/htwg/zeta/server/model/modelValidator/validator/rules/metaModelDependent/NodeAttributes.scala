@@ -17,7 +17,7 @@ class NodeAttributes(val nodeType: String, val attributeTypes: Seq[String]) exte
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributes.keys.foldLeft(true) { (acc, attributeName) =>
+  def rule(node: Node): Boolean = node.attributeValues.keys.foldLeft(true) { (acc, attributeName) =>
     if (attributeTypes.contains(attributeName)) acc else false
   }
 

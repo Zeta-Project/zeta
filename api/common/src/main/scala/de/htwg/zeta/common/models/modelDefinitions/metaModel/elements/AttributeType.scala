@@ -2,7 +2,7 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -53,21 +53,35 @@ object AttributeType {
   /** The MEnum implementation
    *
    * @param name   the name of the MENum instance
-   * @param values the names of the symbols
+   * @param valueNames the names of the values
    */
-  case class MEnum(name: String, values: Seq[String]) extends MObject with AttributeType {
+  case class MEnum(name: String, valueNames: Seq[String]) extends MObject with AttributeType {
 
     override val asString: String = name
 
     /** The symbols. */
-    val symbols: Seq[EnumSymbol] = values.map(value => EnumSymbol(name, value))
+    val values: Seq[EnumValue] = valueNames.map(value => EnumValue(name, value))
 
-    val symbolMap: Map[String, EnumSymbol] = symbols.map(symbol => (symbol.name, symbol)).toMap
+    val valueMap: Map[String, EnumValue] = values.map(symbol => (symbol.name, symbol)).toMap
 
   }
 
   object MEnum {
+
+    trait HasEnums {
+
+      val enums: Seq[MEnum]
+
+      /** Enums mapped to their own names. */
+      final val enumMap: Map[String, MEnum] = Option(enums).fold(
+        Map.empty[String, MEnum]
+      ) { enums =>
+        enums.filter(Option(_).isDefined).map(enum => (enum.name, enum)).toMap
+      }
+    }
+
     implicit val playJsonFormat: Format[MEnum] = Json.format[MEnum]
+
   }
 
   def playJsonReads(enums: Seq[MEnum]): Reads[AttributeType] = {

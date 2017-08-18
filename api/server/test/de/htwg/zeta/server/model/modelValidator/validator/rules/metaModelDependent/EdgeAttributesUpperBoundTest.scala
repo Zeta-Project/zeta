@@ -6,7 +6,7 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -34,12 +34,12 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
     rule.isValid(noAttributesEdge).get should be(true)
 
-    val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att")))
+    val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att")))
     val oneAttributeEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), oneAttribute)
 
     rule.isValid(oneAttributeEdge).get should be(true)
 
-    val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2")))
+    val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2")))
     val twoAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), twoAttributes)
 
     rule.isValid(twoAttributesEdge).get should be(true)
@@ -47,12 +47,12 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   it should "return false on edges with more than 2 attributes of type attributeType" in {
-    val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3")))
+    val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2"), StringValue("att3")))
     val threeAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), threeAttributes)
 
     rule.isValid(threeAttributesEdge).get should be(false)
 
-    val fourAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("att1"), MString("att2"), MString("att3"), MString("att4")))
+    val fourAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2"), StringValue("att3"), StringValue("att4")))
     val fourAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), fourAttributes)
 
     rule.isValid(fourAttributesEdge).get should be(false)
@@ -80,7 +80,7 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, MString(""), constant = false, singleAssignment = false,
+    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false, singleAssignment = false,
       "", ordered = false, transient = false, 7, 0)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
       (attribute), Seq.empty)

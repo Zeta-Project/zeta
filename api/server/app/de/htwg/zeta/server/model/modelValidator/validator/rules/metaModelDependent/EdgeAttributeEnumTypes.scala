@@ -5,7 +5,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 
 /**
@@ -18,12 +18,12 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.attributes.get(attributeType) match {
+  def rule(edge: Edge): Boolean = edge.attributeValues.get(attributeType) match {
     case None => true
     case Some(attribute) => attribute.headOption match {
       case None => true
       case Some(head) => head match {
-        case _: EnumSymbol => attribute.collect { case v: EnumSymbol => v }.forall(_.enumName == enumName)
+        case _: EnumValue => attribute.collect { case v: EnumValue => v }.forall(_.enumName == enumName)
         case _ => true
       }
     }

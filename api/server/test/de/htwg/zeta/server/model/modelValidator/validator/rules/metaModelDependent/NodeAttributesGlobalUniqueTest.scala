@@ -6,7 +6,7 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -21,13 +21,13 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   "check" should "return success validation results on correct attributes" in {
 
-    val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value1")))
+    val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value1")))
     val node1 = Node(UUID.randomUUID(), mClass1.name, Seq(), Seq(), attribute1)
 
-    val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value2")))
+    val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value2")))
     val node2 = Node(UUID.randomUUID(), mClass1.name, Seq(), Seq(), attribute2)
 
-    val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value3")))
+    val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value3")))
     val node3 = Node(UUID.randomUUID(), mClass2.name, Seq(), Seq(), attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
@@ -37,13 +37,13 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return failure validation results on invalid attributes" in {
-    val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("duplicateValue")))
+    val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
     val node1 = Node(UUID.randomUUID(), mClass1.name, Seq(), Seq(), attribute1)
 
-    val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("value")))
+    val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value")))
     val node2 = Node(UUID.randomUUID(), mClass1.name, Seq(), Seq(), attribute2)
 
-    val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(MString("duplicateValue")))
+    val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
     val node3 = Node(UUID.randomUUID(), mClass2.name, Seq(), Seq(), attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
@@ -60,9 +60,9 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val globalUniqueAttribute = MAttribute("attributeName", globalUnique = true, localUnique = false, StringType, MString(""), constant = false,
+    val globalUniqueAttribute = MAttribute("attributeName", globalUnique = true, localUnique = false, StringType, StringValue(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val nonGlobalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+    val nonGlobalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
       (nonGlobalUniqueAttribute, globalUniqueAttribute), Seq.empty)

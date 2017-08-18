@@ -29,7 +29,7 @@ private[metaModelUiFormat] object MEnumFormat extends Format[MEnum] {
     Json.obj(
       "mType" -> "mEnum",
       "name" -> o.name,
-      "symbols" -> JsArray(o.values.map(JsString))
+      "symbols" -> JsArray(o.valueNames.map(JsString))
     )
   }
 

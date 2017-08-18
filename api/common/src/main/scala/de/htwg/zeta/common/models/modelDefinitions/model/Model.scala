@@ -5,9 +5,16 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.HasEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node.HasNodes
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -28,25 +35,11 @@ case class Model(
     metaModelId: UUID,
     nodes: Seq[Node],
     edges: Seq[Edge],
-    attributes: Map[String, Seq[AttributeValue]],
+    attributes: Seq[MAttribute],
+    attributeValues: Map[String, Seq[AttributeValue]],
+    methods: Seq[Method],
     uiState: String
-) {
-
-  /** Nodes mapped to their own names. */
-  val nodeMap: Map[UUID, Node] = Option(nodes).fold(
-    Map.empty[UUID, Node]
-  ) { nodes =>
-    nodes.filter(Option(_).isDefined).map(node => (node.id, node)).toMap
-  }
-
-  /** Edges mapped to their own names. */
-  val edgeMap: Map[UUID, Edge] = Option(edges).fold(
-    Map.empty[UUID, Edge]
-  ) { edges =>
-    edges.filter(Option(_).isDefined).map(edge => (edge.id, edge)).toMap
-  }
-
-}
+) extends HasNodes with HasEdges with HasAttributes with HasMethods
 
 object Model {
 
@@ -56,7 +49,9 @@ object Model {
       metaModelId = metaModelId,
       nodes = Seq.empty,
       edges = Seq.empty,
-      attributes = Map.empty,
+      attributes = Seq.empty,
+      attributeValues = Map.empty,
+      methods = Seq.empty,
       uiState = ""
     )
   }
@@ -69,12 +64,16 @@ object Model {
   private val sUiState = "uiState"
 
   def playJsonReads(metaModelEntity: MetaModelEntity): Reads[Model] = new Reads[Model] {
+    val metaModel: MetaModel = metaModelEntity.metaModel
+
     override def reads(json: JsValue): JsResult[Model] = {
       for {
         name <- (json \ sName).validate[String]
-        nodes <- (json \ sNodes).validate(Reads.list(Node.playJsonReads(metaModelEntity.metaModel)))
-        edges <- (json \ sEdges).validate(Reads.list(Edge.playJsonReads(metaModelEntity.metaModel)))
-        attributes <- (json \ sAttributes).validate(AttributeValue.playJsonReads(metaModelEntity.metaModel, metaModelEntity.metaModel.attributes))
+        nodes <- (json \ sNodes).validate(Reads.list(Node.playJsonReads(metaModel)))
+        edges <- (json \ sEdges).validate(Reads.list(Edge.playJsonReads(metaModel)))
+        attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(metaModel.enums)))
+        attributeValues <- (json \ "attributeValues").validate(AttributeValue.playJsonReads(metaModel, metaModel.attributes, attributes))
+        methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(metaModel.enums)))
         uiState <- (json \ sUiState).validate[String]
       } yield {
         Model(
@@ -83,6 +82,8 @@ object Model {
           nodes = nodes,
           edges = edges,
           attributes = attributes,
+          attributeValues = attributeValues,
+          methods = methods,
           uiState = uiState
         )
       }

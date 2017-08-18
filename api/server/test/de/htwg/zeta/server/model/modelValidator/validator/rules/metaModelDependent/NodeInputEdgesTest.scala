@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -21,12 +21,12 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
     val input1 = MReference("input1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = ToEdges(referenceName = input1.name, edgeIds = Seq(UUID.randomUUID()))
+    val toEdges1 = EdgeLink(referenceName = input1.name, edgeIds = Seq(UUID.randomUUID()))
     val node1 = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdges1), Map.empty)
     rule.isValid(node1).get should be (true)
 
     val input2 = MReference("input2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = ToEdges(referenceName = input1.name, edgeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val toEdges2 = EdgeLink(referenceName = input1.name, edgeIds = Seq(UUID.randomUUID(), UUID.randomUUID()))
     val node2 = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdges2), Map.empty)
     rule.isValid(node2).get should be (true)
   }
@@ -34,7 +34,7 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   it should "return false on nodes of type nodeType with invalid input edges" in {
 
     val input = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = ToEdges(referenceName = input.name, edgeIds = Seq(UUID.randomUUID()))
+    val toEdges = EdgeLink(referenceName = input.name, edgeIds = Seq(UUID.randomUUID()))
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdges), Map.empty)
     rule.isValid(node).get should be (false)
   }

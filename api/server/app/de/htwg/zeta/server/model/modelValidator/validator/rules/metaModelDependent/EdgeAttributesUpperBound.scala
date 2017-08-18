@@ -17,7 +17,7 @@ class EdgeAttributesUpperBound(val edgeType: String, val attributeType: String, 
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.attributes.get(attributeType) match {
+  def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.attributeValues.get(attributeType) match {
     case Some(attribute) => attribute.size <= upperBound
     case None => true
   }

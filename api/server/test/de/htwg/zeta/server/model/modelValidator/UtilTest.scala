@@ -10,15 +10,15 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import de.htwg.zeta.server.model.modelValidator.Util.Att
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -49,11 +49,11 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelElements = Seq(
-    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(id = UUID.randomUUID(), referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty),
-    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[ToEdges](), inputs = Seq[ToEdges](), attributes = Map.empty),
-    Edge(id = UUID.randomUUID(), referenceName = mReference.name, source = Seq[ToNodes](), target = Seq[ToNodes](), attributes = Map.empty)
+    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[EdgeLink](), inputs = Seq[EdgeLink](), attributeValues = Map.empty),
+    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[EdgeLink](), inputs = Seq[EdgeLink](), attributeValues = Map.empty),
+    Edge(id = UUID.randomUUID(), referenceName = mReference.name, source = Seq[NodeLink](), target = Seq[NodeLink](), attributeValues = Map.empty),
+    Node(id = UUID.randomUUID(), className = mClass.name, outputs = Seq[EdgeLink](), inputs = Seq[EdgeLink](), attributeValues = Map.empty),
+    Edge(id = UUID.randomUUID(), referenceName = mReference.name, source = Seq[NodeLink](), target = Seq[NodeLink](), attributeValues = Map.empty)
   )
 
   val mObjects = Seq(
@@ -116,7 +116,7 @@ class UtilTest extends FlatSpec with Matchers {
     globalUnique = false,
     localUnique = false,
     typ = StringType,
-    default = MString(""),
+    default = StringValue(""),
     constant = false,
     singleAssignment = false,
     expression = "",
@@ -220,7 +220,7 @@ class UtilTest extends FlatSpec with Matchers {
     BoolType.asString should be("Bool")
     IntType.asString should be("Int")
 
-    val mEnum: MEnum = MEnum(name = "TestMEnum", values = Seq.empty)
+    val mEnum: MEnum = MEnum(name = "TestMEnum", valueNames = Seq.empty)
 
     mEnum.asString should be("TestMEnum")
   }

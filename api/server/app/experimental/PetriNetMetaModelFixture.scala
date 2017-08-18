@@ -10,9 +10,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
@@ -36,7 +36,7 @@ object PetriNetMetaModelFixture {
     globalUnique = false,
     localUnique = true,
     typ = StringType,
-    default = MString(""),
+    default = StringValue(""),
     constant = true,
     singleAssignment = true,
     expression = "",
@@ -127,7 +127,7 @@ object PetriNetMetaModelFixture {
         globalUnique = false,
         localUnique = true,
         typ = IntType,
-        default = MInt(0),
+        default = IntValue(0),
         constant = false,
         singleAssignment = true,
         expression = "",
@@ -164,7 +164,7 @@ object PetriNetMetaModelFixture {
         globalUnique = false,
         localUnique = true,
         typ = BoolType,
-        default = MBool(false),
+        default = BoolValue(false),
         constant = false,
         singleAssignment = true,
         expression = "",
@@ -214,7 +214,7 @@ object PetriNetMetaModelFixture {
         globalUnique = false,
         localUnique = true,
         typ = state,
-        default = MInt(0),
+        default = IntValue(0),
         constant = false,
         singleAssignment = true,
         expression = "",

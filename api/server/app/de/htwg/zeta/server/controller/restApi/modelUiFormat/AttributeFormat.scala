@@ -12,11 +12,11 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumSymbol
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MDouble
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import play.api.libs.json.JsNumber
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsBoolean
@@ -78,16 +78,16 @@ class AttributeFormat private(mAttributes: Seq[MAttribute], objectName: String)
   private def parseAttribute(json: JsValue, ma: MAttribute): JsResult[(String, List[AttributeValue])] = {
     val jsValues: JsResult[List[JsValue]] = json.\(ma.name).validate(Reads.list(ToJsResult))
     val attributeValues: JsResult[List[AttributeValue]] = ma.typ match {
-      case StringType => jsValues.flatMap(parseList("JsString") { case JsString(s) => JsSuccess(MString(s)) })
-      case BoolType => jsValues.flatMap(parseList("JsBoolean") { case JsBoolean(b) => JsSuccess(MBool(b)) })
-      case IntType => jsValues.flatMap(parseList("JsNumber") { case CheckValidInt(i) => JsSuccess(MInt(i)) })
-      case DoubleType => jsValues.flatMap(parseList("JsNumber") { case JsNumber(n) => JsSuccess(MDouble(n.toDouble)) })
+      case StringType => jsValues.flatMap(parseList("JsString") { case JsString(s) => JsSuccess(StringValue(s)) })
+      case BoolType => jsValues.flatMap(parseList("JsBoolean") { case JsBoolean(b) => JsSuccess(BoolValue(b)) })
+      case IntType => jsValues.flatMap(parseList("JsNumber") { case CheckValidInt(i) => JsSuccess(IntValue(i)) })
+      case DoubleType => jsValues.flatMap(parseList("JsNumber") { case JsNumber(n) => JsSuccess(DoubleValue(n.toDouble)) })
       case MEnum(name, values) =>
         val set = values.toSet
         jsValues.flatMap(parseList("JsString") {
           case JsString(s) =>
             if (set.contains(s)) {
-              JsSuccess(EnumSymbol(s, name))
+              JsSuccess(EnumValue(s, name))
             } else {
               JsError(s"Found element: $s isn't a valid symbol of enum $name")
             }
@@ -132,11 +132,11 @@ object AttributeFormat extends Writes[Map[String, Seq[AttributeValue]]] {
   def apply(mAttributes: Seq[MAttribute], objectName: String): AttributeFormat = new AttributeFormat(mAttributes, objectName)
 
   private def writeAttributeValue(av: AttributeValue): JsValue = av match {
-    case MString(s) => JsString(s)
-    case MBool(b) => JsBoolean(b)
-    case MInt(i) => JsNumber(BigDecimal(i))
-    case MDouble(d) => JsNumber(BigDecimal(d))
-    case EnumSymbol(s, _) => JsString(s)
+    case StringValue(s) => JsString(s)
+    case BoolValue(b) => JsBoolean(b)
+    case IntValue(i) => JsNumber(BigDecimal(i))
+    case DoubleValue(d) => JsNumber(BigDecimal(d))
+    case EnumValue(s, _) => JsString(s)
   }
 
 

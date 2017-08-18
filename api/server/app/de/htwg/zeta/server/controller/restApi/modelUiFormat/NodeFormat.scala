@@ -8,7 +8,7 @@ import scala.collection.immutable.List
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ToEdges
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsResult
@@ -23,13 +23,13 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
   private val unknownMClassError = JsError("Unknown mClass")
   private val invalidToEdgesError = JsError("edge reference has invalid type")
 
-  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[UUID]]): JsResult[List[ToEdges]] = {
-    m.toList.reverse.foldLeft[JsResult[List[ToEdges]]](JsSuccess(Nil))((res, kv) => {
+  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[UUID]]): JsResult[List[EdgeLink]] = {
+    m.toList.reverse.foldLeft[JsResult[List[EdgeLink]]](JsSuccess(Nil))((res, kv) => {
       res match {
         case JsSuccess(list, _) =>
           val (k, v) = kv
           metaModel.referenceMap.get(k) match {
-            case Some(t: MReference) if typeHas(t.name) => JsSuccess(ToEdges(t.name, v) :: list)
+            case Some(t: MReference) if typeHas(t.name) => JsSuccess(EdgeLink(t.name, v) :: list)
             case None => invalidToEdgesError
           }
         case e: JsError => e
@@ -62,7 +62,7 @@ object NodeFormat extends Writes[Node] {
 
   def apply(metaModel: MetaModel): NodeFormat = new NodeFormat(metaModel)
 
-  private def writeEdges(seq: Seq[ToEdges]): Map[String, Seq[UUID]] = {
+  private def writeEdges(seq: Seq[EdgeLink]): Map[String, Seq[UUID]] = {
     seq.map(te => (te.referenceName, te.edgeIds)).toMap
   }
 
@@ -72,7 +72,7 @@ object NodeFormat extends Writes[Node] {
       "mClass" -> o.className,
       "outputs" -> writeEdges(o.outputs),
       "inputs" -> writeEdges(o.inputs),
-      "attributes" -> AttributeFormat.writes(o.attributes)
+      "attributes" -> AttributeFormat.writes(o.attributeValues)
     )
   }
 

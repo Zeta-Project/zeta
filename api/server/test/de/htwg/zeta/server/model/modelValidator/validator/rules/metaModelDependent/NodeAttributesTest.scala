@@ -6,9 +6,9 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MBool
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MInt
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.MString
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -22,8 +22,8 @@ class NodeAttributesTest extends FlatSpec with Matchers {
 
   "isValid" should "return true for valid nodes" in {
     val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "att1" -> Seq(MString("")),
-      "att2" -> Seq(MBool(false))
+      "att1" -> Seq(StringValue("")),
+      "att2" -> Seq(BoolValue(false))
     )
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attributes)
 
@@ -32,9 +32,9 @@ class NodeAttributesTest extends FlatSpec with Matchers {
 
   it should "return false for invalid nodes" in {
     val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "att1" -> Seq(MString("")),
-      "att2" -> Seq(MBool(false)),
-      "att3" -> Seq(MInt(0))
+      "att1" -> Seq(StringValue("")),
+      "att2" -> Seq(BoolValue(false)),
+      "att3" -> Seq(IntValue(0))
     )
     val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attributes)
 
@@ -54,9 +54,9 @@ class NodeAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val attribute1 = MAttribute("attributeName1", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+    val attribute1 = MAttribute("attributeName1", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
-    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, MString(""), constant = false,
+    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
       singleAssignment = false, "", ordered = false, transient = false, -1, 0)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](attribute1,
       attribute2), Seq.empty)
