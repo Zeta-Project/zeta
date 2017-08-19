@@ -58,7 +58,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
     }
 
     def checkNodes(n: Node): Option[String] = {
-      val checkToEdge = checkGenericLink[EdgeLink](n.id, edgesMap, _.edgeIds) _
+      val checkToEdge = checkGenericLink[EdgeLink](n.id, edgesMap, _.edgeNames) _
       n.inputs.toStream.flatMap(checkToEdge).headOption match {
         case None => n.outputs.toStream.flatMap(checkToEdge).headOption
         case some @ Some(_) => some
@@ -67,7 +67,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
 
 
     def checkEdges(e: Edge): Option[String] = {
-      val checkToNode = checkGenericLink[NodeLink](e.id, nodesMap, _.nodeIds) _
+      val checkToNode = checkGenericLink[NodeLink](e.id, nodesMap, _.nodeNames) _
       e.source.toStream.flatMap(checkToNode).headOption match {
         case None => e.target.toStream.flatMap(checkToNode).headOption
         case some @ Some(_) => some

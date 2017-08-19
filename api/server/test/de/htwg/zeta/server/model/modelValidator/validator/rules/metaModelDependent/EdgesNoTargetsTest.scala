@@ -42,7 +42,7 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = NodeLink(className = target.name, nodeIds = Seq(UUID.randomUUID()))
+    val toNode = NodeLink(className = target.name, nodeNames = Seq(UUID.randomUUID()))
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNode), Map.empty)
 
     rule.isValid(edge).get should be(false)
@@ -59,7 +59,7 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = NodeLink(className = target.name, nodeIds = Seq())
+    val toNode = NodeLink(className = target.name, nodeNames = Seq())
     val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNode), Map.empty)
 
     rule.isValid(edge).get should be(true)

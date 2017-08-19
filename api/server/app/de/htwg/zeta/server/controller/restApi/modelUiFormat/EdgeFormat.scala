@@ -61,7 +61,7 @@ object EdgeFormat extends Writes[Edge] {
   def apply(metaModel: MetaModel): EdgeFormat = new EdgeFormat(metaModel)
 
   private def writeNodes(seq: Seq[NodeLink]): Map[String, Seq[UUID]] = {
-    seq.map(tn => (tn.className, tn.nodeIds)).toMap
+    seq.map(tn => (tn.className, tn.nodeNames)).toMap
   }
 
   override def writes(o: Edge): JsValue = {

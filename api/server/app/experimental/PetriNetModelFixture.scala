@@ -41,11 +41,11 @@ object PetriNetModelFixture {
     className = sTransition,
     outputs = List(EdgeLink(
       referenceName = sConsumer,
-      edgeIds = List(sConsumer1)
+      edgeNames = List(sConsumer1)
     )),
     inputs = List(EdgeLink(
       referenceName = sProducer,
-      edgeIds = List(sProducer1)
+      edgeNames = List(sProducer1)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Transition1")),
@@ -58,11 +58,11 @@ object PetriNetModelFixture {
     className = sTransition,
     outputs = List(EdgeLink(
       referenceName = sConsumer,
-      edgeIds = List(sConsumer2)
+      edgeNames = List(sConsumer2)
     )),
     inputs = List(EdgeLink(
       referenceName = sProducer,
-      edgeIds = List(sProducer2)
+      edgeNames = List(sProducer2)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Transition2")),
@@ -75,11 +75,11 @@ object PetriNetModelFixture {
     className = sPlace,
     outputs = List(EdgeLink(
       referenceName = sProducer,
-      edgeIds = List(sProducer1)
+      edgeNames = List(sProducer1)
     )),
     inputs = List(EdgeLink(
       referenceName = sConsumer,
-      edgeIds = List(sConsumer2)
+      edgeNames = List(sConsumer2)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Place1")),
@@ -92,11 +92,11 @@ object PetriNetModelFixture {
     className = sPlace,
     outputs = List(EdgeLink(
       referenceName = sProducer,
-      edgeIds = List(sProducer2)
+      edgeNames = List(sProducer2)
     )),
     inputs = List(EdgeLink(
       referenceName = sConsumer,
-      edgeIds = List(sConsumer1)
+      edgeNames = List(sConsumer1)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Place2")),
@@ -109,11 +109,11 @@ object PetriNetModelFixture {
     referenceName = sProducer,
     source = List(NodeLink(
       className = sPlace,
-      nodeIds = List(sPlace1)
+      nodeNames = List(sPlace1)
     )),
     target = List(NodeLink(
       className = sTransition,
-      nodeIds = List(sTransition1)
+      nodeNames = List(sTransition1)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Producer1"))
@@ -125,11 +125,11 @@ object PetriNetModelFixture {
     referenceName = sProducer,
     source = List(NodeLink(
       className = sPlace,
-      nodeIds = List(sPlace2)
+      nodeNames = List(sPlace2)
     )),
     target = List(NodeLink(
       className = sTransition,
-      nodeIds = List(sTransition2)
+      nodeNames = List(sTransition2)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Producer2"))
@@ -141,11 +141,11 @@ object PetriNetModelFixture {
     referenceName = sConsumer,
     source = List(NodeLink(
       className = sTransition,
-      nodeIds = List(sTransition1)
+      nodeNames = List(sTransition1)
     )),
     target = List(NodeLink(
       className = sPlace,
-      nodeIds = List(sPlace2)
+      nodeNames = List(sPlace2)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Consumer1"))
@@ -157,11 +157,11 @@ object PetriNetModelFixture {
     referenceName = sConsumer,
     source = List(NodeLink(
       className = sTransition,
-      nodeIds = List(sTransition2)
+      nodeNames = List(sTransition2)
     )),
     target = List(NodeLink(
       className = sPlace,
-      nodeIds = List(sPlace1)
+      nodeNames = List(sPlace1)
     )),
     attributeValues = Map(
       sName -> List(StringValue("Consumer2"))

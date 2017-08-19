@@ -23,22 +23,22 @@ object ModelEntityFixtures {
 
   val toNodes1 = NodeLink(
     className = MetaModelEntityFixtures.class1.name,
-    nodeIds = Seq(nodeId1, nodeId2)
+    nodeNames = Seq(nodeId1, nodeId2)
   )
 
   val toNodes2 = NodeLink(
     className = MetaModelEntityFixtures.class2.name,
-    nodeIds = Seq.empty
+    nodeNames = Seq.empty
   )
 
   val toEdges1 = EdgeLink(
     referenceName = MetaModelEntityFixtures.reference1.name,
-    edgeIds = Seq(edgeId1)
+    edgeNames = Seq(edgeId1)
   )
 
   val toEdges2 = EdgeLink(
     referenceName = MetaModelEntityFixtures.reference2.name,
-    edgeIds = Seq(edgeId2)
+    edgeNames = Seq(edgeId2)
   )
 
   val node1 = Node(

@@ -1,7 +1,5 @@
 package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -14,9 +12,9 @@ import play.api.libs.json.Writes
 /** Represents outgoing edges of a node
  *
  * @param referenceName the name of the MReference instance that represents the type of the references
- * @param edgeIds       the names of the linked edges
+ * @param edgeNames       the names of the linked edges
  */
-case class EdgeLink(referenceName: String, edgeIds: Seq[UUID]) extends Link
+case class EdgeLink(referenceName: String, edgeNames: Seq[String]) extends Link
 
 object EdgeLink {
 
@@ -25,9 +23,9 @@ object EdgeLink {
       override def reads(json: JsValue): JsResult[EdgeLink] = {
         for {
           reference <- (json \ "referenceName").validate[String].map(metaModel.referenceMap)
-          edgeIds <- (json \ "edgeIds").validate[List[UUID]]
+          edgeNames <- (json \ "edgeNames").validate[List[String]]
         } yield {
-          EdgeLink(reference.name, edgeIds)
+          EdgeLink(reference.name, edgeNames)
         }
       }
     }

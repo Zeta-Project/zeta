@@ -9,6 +9,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.HasAttributeValues
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.EdgeMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -32,7 +35,7 @@ case class Edge(
     attributes: Seq[MAttribute],
     attributeValues: Map[String, Seq[AttributeValue]],
     methods: Seq[Method]
-) extends ModelElement with HasAttributeValues
+) extends ModelElement with HasAttributeValues with AttributeMap with MethodMap
 
 object Edge {
 

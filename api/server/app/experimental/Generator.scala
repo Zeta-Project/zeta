@@ -192,8 +192,8 @@ object Generator {
     val typ = reference.name.capitalize
 
     edges.map { edge =>
-      val sourceNode = model.nodes.find(_.id == edge.source.head.nodeIds.head).get
-      val targetNode = model.nodes.find(_.id == edge.target.head.nodeIds.head).get
+      val sourceNode = model.nodes.find(_.id == edge.source.head.nodeNames.head).get
+      val targetNode = model.nodes.find(_.id == edge.target.head.nodeNames.head).get
       val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.source.head.className).indexOf(sourceNode)
       val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.target.head.className).indexOf(targetNode)
       val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributeValues)}"

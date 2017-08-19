@@ -17,7 +17,7 @@ class EdgeTargetsLowerBound(val edgeType: String, val targetType: String, val lo
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = edge.target.find(_.className == targetType) match {
-    case Some(target) => target.nodeIds.size >= lowerBound
+    case Some(target) => target.nodeNames.size >= lowerBound
     case None => lowerBound == 0
   }
 

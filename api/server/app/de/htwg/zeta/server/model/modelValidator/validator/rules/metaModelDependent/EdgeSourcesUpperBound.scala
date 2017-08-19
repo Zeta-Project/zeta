@@ -18,7 +18,7 @@ class EdgeSourcesUpperBound(val edgeType: String, val sourceType: String, val up
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
   def rule(edge: Edge): Boolean = if (upperBound == -1) true else edge.source.find(_.className == sourceType) match {
-    case Some(source) => source.nodeIds.size <= upperBound
+    case Some(source) => source.nodeNames.size <= upperBound
     case None => true
   }
 

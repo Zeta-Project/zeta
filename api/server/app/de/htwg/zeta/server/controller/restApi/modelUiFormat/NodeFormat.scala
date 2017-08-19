@@ -63,7 +63,7 @@ object NodeFormat extends Writes[Node] {
   def apply(metaModel: MetaModel): NodeFormat = new NodeFormat(metaModel)
 
   private def writeEdges(seq: Seq[EdgeLink]): Map[String, Seq[UUID]] = {
-    seq.map(te => (te.referenceName, te.edgeIds)).toMap
+    seq.map(te => (te.referenceName, te.edgeNames)).toMap
   }
 
   override def writes(o: Node): JsValue = {
