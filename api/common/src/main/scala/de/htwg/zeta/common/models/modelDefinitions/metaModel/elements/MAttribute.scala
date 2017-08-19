@@ -55,7 +55,7 @@ case class MAttribute(
 
 object MAttribute {
 
-  trait HasAttributes {
+  trait AttributeMap {
 
     val attributes: Seq[MAttribute]
 

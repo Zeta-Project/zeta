@@ -18,14 +18,14 @@ import play.api.libs.json.Writes
 
 /** Represents an MReference type instance.
  *
- * @param id              the name of the edge
+ * @param name            the name of the edge
  * @param referenceName   the name of the MReference instance that represents the edge's type
  * @param source          the nodes that are the origin of relationships
  * @param target          the nodes that can be reached
  * @param attributeValues a map with attribute names and the assigned values
  */
 case class Edge(
-    id: UUID,
+    name: String,
     referenceName: String,
     source: Seq[NodeLink],
     target: Seq[NodeLink],
@@ -36,15 +36,15 @@ case class Edge(
 
 object Edge {
 
-  trait HasEdges {
+  trait EdgeMap {
 
     val edges: Seq[Edge]
 
     /** Edges mapped to their own names. */
-    final val edgeMap: Map[UUID, Edge] = Option(edges).fold(
-      Map.empty[UUID, Edge]
+    final val edgeMap: Map[String, Edge] = Option(edges).fold(
+      Map.empty[String, Edge]
     ) { edges =>
-      edges.filter(Option(_).isDefined).map(edge => (edge.id, edge)).toMap
+      edges.filter(Option(_).isDefined).map(edge => (edge.name, edge)).toMap
     }
 
   }
@@ -53,7 +53,7 @@ object Edge {
     new Reads[Edge] {
       override def reads(json: JsValue): JsResult[Edge] = {
         for {
-          id <- (json \ "id").validate[UUID]
+          name <- (json \ "name").validate[String]
           reference <- (json \ "referenceName").validate[String].map(metaModel.referenceMap)
           source <- (json \ "source").validate(Reads.map[List[UUID]])
           target <- (json \ "target").validate(Reads.map[List[UUID]])
@@ -61,7 +61,7 @@ object Edge {
           attributeValues <- (json \ "attributeValues").validate(AttributeValue.playJsonReads(metaModel, reference.attributes, attributes))
           methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(metaModel.enums)))} yield {
           Edge(
-            id = id,
+            name = name,
             referenceName = reference.name,
             source = source.map(n => NodeLink(n._1, n._2)).toList,
             target = target.map(n => NodeLink(n._1, n._2)).toList,

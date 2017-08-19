@@ -3,8 +3,8 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -29,11 +29,11 @@ case class MReference(
     target: Seq[MClassLinkDef],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject with HasAttributes with HasMethods
+) extends MObject with AttributeMap with MethodMap
 
 object MReference {
 
-  trait HasReferences {
+  trait ReferenceMap {
 
     val references: Seq[MReference]
 

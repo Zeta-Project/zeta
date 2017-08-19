@@ -21,7 +21,7 @@ case class Method(
 
 object Method {
 
-  trait HasMethods {
+  trait MethodMap {
 
     val methods: Seq[Method]
 

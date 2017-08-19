@@ -5,8 +5,8 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -32,11 +32,11 @@ case class MClass(
     outputs: Seq[MReferenceLinkDef],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject with HasMethods with HasAttributes
+) extends MObject with AttributeMap with MethodMap
 
 object MClass {
 
-  trait HasClasses {
+  trait ClassMap {
 
     val classes: Seq[MClass]
 

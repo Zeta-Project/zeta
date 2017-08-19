@@ -9,12 +9,12 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.HasEdges
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node.HasNodes
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.EdgeMap
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node.NodeMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -39,7 +39,7 @@ case class Model(
     attributeValues: Map[String, Seq[AttributeValue]],
     methods: Seq[Method],
     uiState: String
-) extends HasNodes with HasEdges with HasAttributes with HasMethods
+) extends NodeMap with EdgeMap with AttributeMap with MethodMap
 
 object Model {
 
@@ -60,7 +60,6 @@ object Model {
   private val sMetaModelId = "metaModelId"
   private val sNodes = "nodes"
   private val sEdges = "edges"
-  private val sAttributes = "attributes"
   private val sUiState = "uiState"
 
   def playJsonReads(metaModelEntity: MetaModelEntity): Reads[Model] = new Reads[Model] {

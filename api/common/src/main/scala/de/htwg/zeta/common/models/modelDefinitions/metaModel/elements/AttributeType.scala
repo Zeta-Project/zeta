@@ -68,7 +68,7 @@ object AttributeType {
 
   object MEnum {
 
-    trait HasEnums {
+    trait EnumMap {
 
       val enums: Seq[MEnum]
 

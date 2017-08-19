@@ -9,8 +9,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.HasAttributeValues
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.HasAttributes
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.HasMethods
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -19,33 +19,33 @@ import play.api.libs.json.Writes
 
 /** Represents an MClass type instance.
  *
- * @param id              the name of the node
+ * @param name            the name of the node
  * @param className       the name of the MClass instance that represents the node's type
  * @param outputs         the outgoing edges
  * @param inputs          the incoming edges
  * @param attributeValues a map with attribute names and the assigned values
  */
 case class Node(
-    id: UUID,
+    name: String,
     className: String,
     outputs: Seq[EdgeLink],
     inputs: Seq[EdgeLink],
     attributes: Seq[MAttribute],
     attributeValues: Map[String, Seq[AttributeValue]],
     methods: Seq[Method]
-) extends ModelElement with HasAttributes with HasAttributeValues with HasMethods
+) extends ModelElement with AttributeMap with HasAttributeValues with MethodMap
 
 object Node {
 
-  trait HasNodes {
+  trait NodeMap {
 
     val nodes: Seq[Node]
 
     /** Nodes mapped to their own names. */
-    final val nodeMap: Map[UUID, Node] = Option(nodes).fold(
-      Map.empty[UUID, Node]
+    final val nodeMap: Map[String, Node] = Option(nodes).fold(
+      Map.empty[String, Node]
     ) { nodes =>
-      nodes.filter(Option(_).isDefined).map(node => (node.id, node)).toMap
+      nodes.filter(Option(_).isDefined).map(node => (node.name, node)).toMap
     }
 
   }
@@ -56,7 +56,7 @@ object Node {
     new Reads[Node] {
       override def reads(json: JsValue): JsResult[Node] = {
         for {
-          id <- (json \ "id").validate[UUID]
+          name <- (json \ "name").validate[String]
           clazz <- (json \ "className").validate[String].map(metaModel.classMap)
           outputs <- (json \ "outputs").validate(Reads.map[List[UUID]])
           inputs <- (json \ "inputs").validate(Reads.map[List[UUID]])
@@ -65,7 +65,7 @@ object Node {
           methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(metaModel.enums)))
         } yield {
           Node(
-            id = id,
+            name = name,
             className = clazz.name,
             outputs = outputs.map(e => EdgeLink(e._1, e._2)).toList,
             inputs = inputs.map(e => EdgeLink(e._1, e._2)).toList,
