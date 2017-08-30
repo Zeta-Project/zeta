@@ -36,10 +36,10 @@ services:
     command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production -Dzeta.mongodb.server=mongodb", "run"]
 
   webapp:
-    image: node:boron
+    image: node:6-alpine
     volumes:
       - ./webapp:/src
-    command: "bash -c 'yarn; npm run dev'"
+    command: "ash -c 'yarn; npm run dev'"
     working_dir: /src
 
   images:
