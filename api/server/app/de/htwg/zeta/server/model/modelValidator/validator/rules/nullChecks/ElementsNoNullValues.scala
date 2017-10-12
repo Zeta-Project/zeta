@@ -8,8 +8,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
  */
 class ElementsNoNullValues extends ModelRule {
   override val name: String = getClass.getSimpleName
-  override val description: String = ""
-  override val possibleFix: String = ""
+  override val description: String = "An edge or node is null."
+  override val possibleFix: String = "Remove the null value."
 
   override def check(model: Model): Boolean = !model.nodes.contains(null) && !model.edges.contains(null) // scalastyle:ignore null
 }

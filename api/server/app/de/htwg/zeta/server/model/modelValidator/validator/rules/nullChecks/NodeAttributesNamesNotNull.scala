@@ -8,8 +8,8 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
  */
 class NodeAttributesNamesNotNull extends ModelRule {
   override val name: String = getClass.getSimpleName
-  override val description: String = ""
-  override val possibleFix: String = ""
+  override val description: String = "The name of an attribute inside a node is Null."
+  override val possibleFix: String = "Replace the Null value with a valid String."
 
   override def check(model: Model): Boolean = !model.nodes.flatMap(_.attributeValues.keys).contains(null) // scalastyle:ignore null
 }

@@ -4,13 +4,15 @@
   "version": "1.0.0",
   "description": "MoDiGen Webapp for Tool-Developers.",
   "scripts": {
-    "dev": "polymer serve --hostname 0.0.0.0",
+    "dev": "polymer serve --hostname 0.0.0.0 --port 8080",
+    "install": "polymer install",
     "test": "polymer test",
     "watch": "gulp watch"
   },
+  "dependencies": {
+    "polymer-cli": "^1.5.2"
+  },
   "devDependencies": {
-    "bower": "^1.7.9",
-    "polymer-cli": "^0.13.0",
     "browser-sync": "^2.13.0",
     "gulp": "^3.9.1"
   }
