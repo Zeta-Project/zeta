@@ -23,7 +23,7 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
   private val unknownMClassError = JsError("Unknown mClass")
   private val invalidToEdgesError = JsError("edge reference has invalid type")
 
-  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[UUID]]): JsResult[List[EdgeLink]] = {
+  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[String]]): JsResult[List[EdgeLink]] = {
     m.toList.reverse.foldLeft[JsResult[List[EdgeLink]]](JsSuccess(Nil))((res, kv) => {
       res match {
         case JsSuccess(list, _) =>
@@ -39,18 +39,18 @@ class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
 
   override def reads(json: JsValue): JsResult[Node] = {
     for {
-      id <- (json \ "id").validate[UUID]
+      id <- (json \ "id").validate[String]
       clazz <- (json \ "mClass").validate[String].flatMap(className => metaModel.classMap.get(className) match {
         case Some(mClass) => JsSuccess(mClass)
         case None => unknownMClassError
       })
       traverse = MClass.MClassTraverseWrapper(clazz, MetaModel.MetaModelTraverseWrapper(metaModel))
-      output <- (json \ "outputs").validate[Map[String, Seq[UUID]]].flatMap(extractEdges(traverse.typeHasOutput))
-      input <- (json \ "inputs").validate[Map[String, Seq[UUID]]].flatMap(extractEdges(traverse.typeHasInput))
+      output <- (json \ "outputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasOutput))
+      input <- (json \ "inputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasInput))
       attr <- (json \ "attributes").validate(AttributeFormat(clazz.attributes, id.toString))
 
     } yield {
-      Node(id, clazz.name, output, input, attr)
+      Node(id, clazz.name, output, input, Seq.empty, attr, Seq.empty)
     }
   }
 
@@ -62,13 +62,13 @@ object NodeFormat extends Writes[Node] {
 
   def apply(metaModel: MetaModel): NodeFormat = new NodeFormat(metaModel)
 
-  private def writeEdges(seq: Seq[EdgeLink]): Map[String, Seq[UUID]] = {
+  private def writeEdges(seq: Seq[EdgeLink]): Map[String, Seq[String]] = {
     seq.map(te => (te.referenceName, te.edgeNames)).toMap
   }
 
   override def writes(o: Node): JsValue = {
     Json.obj(
-      "id" -> o.id,
+      "name" -> o.name,
       "mClass" -> o.className,
       "outputs" -> writeEdges(o.outputs),
       "inputs" -> writeEdges(o.inputs),

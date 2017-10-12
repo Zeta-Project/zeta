@@ -12,7 +12,7 @@ class ElementsIdsUnique extends ElementsRule {
   override val description: String = "Element Identifiers must be unique."
   override val possibleFix: String = "Make duplicate identifiers unique."
 
-  override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = elements.groupBy(_.id).values
+  override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = elements.groupBy(_.name).values
     .foldLeft(Seq[ModelValidationResult]()) { (acc, elements) =>
       acc ++ elements.map(el => ModelValidationResult(rule = this, valid = elements.size == 1, modelElement = Some(el)))
     }

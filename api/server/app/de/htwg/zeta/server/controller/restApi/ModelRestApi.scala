@@ -13,7 +13,6 @@ import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.EdgeFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelEntityFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelFormat
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelUiFormat
 import de.htwg.zeta.server.controller.restApi.modelUiFormat.NodeFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
@@ -21,16 +20,13 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
+import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
-
-import play.api.libs.json.JsResult
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
 
 /**
  * REST-ful API for model definitions
@@ -140,9 +136,9 @@ class ModelRestApi() extends Controller with Logging {
   }
 
   /** returns specific node of a specific model as json object */
-  def getNode(modelId: UUID, nodeId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getNode(modelId: UUID, nodeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
-      m.model.nodeMap.get(nodeId) match {
+      m.model.nodeMap.get(nodeName) match {
         case Some(node: Node) => Ok(NodeFormat.writes(node))
         case None => NotFound
       }
@@ -158,9 +154,9 @@ class ModelRestApi() extends Controller with Logging {
   }
 
   /** returns specific edge of a specific model as json object */
-  def getEdge(modelId: UUID, edgeId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getEdge(modelId: UUID, edgeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
-      m.model.edgeMap.get(edgeId) match {
+      m.model.edgeMap.get(edgeName) match {
         case Some(edge) => Ok(EdgeFormat.writes(edge))
         case None => NotFound
       }

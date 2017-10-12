@@ -4,6 +4,7 @@ package experimental
 import java.util.UUID
 
 import scala.collection.immutable.Seq
+import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.ModelEntity
@@ -19,7 +20,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Parameter
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 
 // scalastyle:off indentation multiple.string.literals
@@ -109,12 +110,12 @@ object Generator {
         |""".stripMargin
   }
 
-  private def generateParameters(p: Seq[Parameter]): String = {
-    p.map(generateParameter).mkString(", ")
+  private def generateParameters(p: SortedMap[String, AttributeType]): String = {
+    p.map((generateParameter _).tupled).mkString(", ")
   }
 
-  private def generateParameter(p: Parameter): String = {
-    s"${p.name}: ${p.typ.asString}"
+  private def generateParameter(name: String, typ: AttributeType): String = {
+    s"$name: ${typ.asString}"
   }
 
   private def generateReference(metaModel: MetaModel, model: Model, name: String, fileId: UUID): File = {
@@ -176,7 +177,8 @@ object Generator {
     val typ = clazz.name.capitalize
 
     nodes.map { node =>
-      s"""  private val $instance${nodes.indexOf(node)} = $typ("${node.id}", $typ.${generateAttributeInstance(clazz.attributes, node.attributeValues)}, this)"""
+      s"""  private val $instance${nodes.indexOf(node)} = $typ("${node.name}", $typ.${generateAttributeInstance(clazz.attributes, node.attributeValues)},
+        |this)""".stripMargin
     }.mkString("\n") + "\n\n" +
       s"  val ${clazz.name.toCamelCase}List: List[${clazz.name.capitalize}] = List(\n" +
       model.nodes.filter(_.className == clazz.name).map { node =>
@@ -192,12 +194,12 @@ object Generator {
     val typ = reference.name.capitalize
 
     edges.map { edge =>
-      val sourceNode = model.nodes.find(_.id == edge.source.head.nodeNames.head).get
-      val targetNode = model.nodes.find(_.id == edge.target.head.nodeNames.head).get
+      val sourceNode = model.nodes.find(_.name == edge.source.head.nodeNames.head).get
+      val targetNode = model.nodes.find(_.name == edge.target.head.nodeNames.head).get
       val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.source.head.className).indexOf(sourceNode)
       val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.target.head.className).indexOf(targetNode)
       val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributeValues)}"
-      s"""  private val $instance${edges.indexOf(edge)} = $typ("${edge.id}", $source, $target, $attributes, this)""".stripMargin
+      s"""  private val $instance${edges.indexOf(edge)} = $typ("${edge.name}", $source, $target, $attributes, this)""".stripMargin
     }.mkString("\n") + "\n\n" +
       s"  val ${reference.name.toCamelCase}List: List[${reference.name.capitalize}] = List(\n" +
       model.edges.filter(_.referenceName == reference.name).map { edge =>

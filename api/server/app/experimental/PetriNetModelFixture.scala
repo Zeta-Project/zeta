@@ -2,15 +2,17 @@ package experimental
 
 import java.util.UUID
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 
 
@@ -21,15 +23,15 @@ object PetriNetModelFixture {
   private val sConsumer = "Consumer"
   private val sProducer = "Producer"
 
-  private val sPlace1: UUID = UUID.randomUUID()
-  private val sTransition1: UUID = UUID.randomUUID()
-  private val sConsumer1: UUID = UUID.randomUUID()
-  private val sProducer1: UUID = UUID.randomUUID()
+  private val sPlace1: String = "place1"
+  private val sTransition1: String = "transition1"
+  private val sConsumer1: String = "consumer1"
+  private val sProducer1: String = "producer1"
 
-  private val sPlace2: UUID = UUID.randomUUID()
-  private val sTransition2: UUID = UUID.randomUUID()
-  private val sConsumer2: UUID = UUID.randomUUID()
-  private val sProducer2: UUID = UUID.randomUUID()
+  private val sPlace2: String = "place2"
+  private val sTransition2: String = "transition2"
+  private val sConsumer2: String = "consumer2"
+  private val sProducer2: String = "producer2"
 
   private val sTokens = "tokens"
   private val sName = "name"
@@ -37,7 +39,7 @@ object PetriNetModelFixture {
 
 
   val transition1: Node = Node(
-    id = sTransition1,
+    name = sTransition1,
     className = sTransition,
     outputs = List(EdgeLink(
       referenceName = sConsumer,
@@ -47,14 +49,16 @@ object PetriNetModelFixture {
       referenceName = sProducer,
       edgeNames = List(sProducer1)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Transition1")),
       sFired -> List(BoolValue(false))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val transition2: Node = Node(
-    id = sTransition2,
+    name = sTransition2,
     className = sTransition,
     outputs = List(EdgeLink(
       referenceName = sConsumer,
@@ -64,14 +68,16 @@ object PetriNetModelFixture {
       referenceName = sProducer,
       edgeNames = List(sProducer2)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Transition2")),
       sFired -> List(BoolValue(false))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val place1: Node = Node(
-    id = sPlace1,
+    name = sPlace1,
     className = sPlace,
     outputs = List(EdgeLink(
       referenceName = sProducer,
@@ -81,14 +87,16 @@ object PetriNetModelFixture {
       referenceName = sConsumer,
       edgeNames = List(sConsumer2)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Place1")),
       sTokens -> List(IntValue(3))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val place2: Node = Node(
-    id = sPlace2,
+    name = sPlace2,
     className = sPlace,
     outputs = List(EdgeLink(
       referenceName = sProducer,
@@ -98,14 +106,16 @@ object PetriNetModelFixture {
       referenceName = sConsumer,
       edgeNames = List(sConsumer1)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Place2")),
       sTokens -> List(IntValue(0))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val producer1: Edge = Edge(
-    id = sProducer1,
+    name = sProducer1,
     referenceName = sProducer,
     source = List(NodeLink(
       className = sPlace,
@@ -115,13 +125,15 @@ object PetriNetModelFixture {
       className = sTransition,
       nodeNames = List(sTransition1)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Producer1"))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val producer2: Edge = Edge(
-    id = sProducer2,
+    name = sProducer2,
     referenceName = sProducer,
     source = List(NodeLink(
       className = sPlace,
@@ -131,13 +143,15 @@ object PetriNetModelFixture {
       className = sTransition,
       nodeNames = List(sTransition2)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Producer2"))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val consumer1: Edge = Edge(
-    id = sConsumer1,
+    name = sConsumer1,
     referenceName = sConsumer,
     source = List(NodeLink(
       className = sTransition,
@@ -147,13 +161,15 @@ object PetriNetModelFixture {
       className = sPlace,
       nodeNames = List(sPlace2)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Consumer1"))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val consumer2: Edge = Edge(
-    id = sConsumer2,
+    name = sConsumer2,
     referenceName = sConsumer,
     source = List(NodeLink(
       className = sTransition,
@@ -163,9 +179,11 @@ object PetriNetModelFixture {
       className = sPlace,
       nodeNames = List(sPlace1)
     )),
+    attributes = Seq.empty,
     attributeValues = Map(
       sName -> List(StringValue("Consumer2"))
-    )
+    ),
+    methods = Seq.empty
   )
 
   val model: Model = Model(
@@ -173,9 +191,11 @@ object PetriNetModelFixture {
     metaModelId = UUID.randomUUID(),
     nodes = List(place1, place2, transition1, transition2),
     edges = List(producer1, producer2, consumer1, consumer2),
+    attributes = Seq.empty,
     attributeValues = Map(
       "state" -> List(EnumValue("State", "Resting"))
     ),
+    methods = Seq.empty,
     uiState = "uiState"
   )
 

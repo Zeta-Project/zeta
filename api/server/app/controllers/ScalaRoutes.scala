@@ -162,11 +162,11 @@ class ScalaRoutes @Inject()(
 
   def getModelsDefinitionNodesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNodes(modelId) _)
 
-  def getModelsDefinitionNodes(modelId: UUID, nodeId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeId) _)
+  def getModelsDefinitionNodes(modelId: UUID, nodeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeName) _)
 
   def getModelDefinitionEdgesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdges(modelId) _)
 
-  def getModelDefinitionEdges(modelId: UUID, edgeId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeId) _)
+  def getModelDefinitionEdges(modelId: UUID, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
 
   def deleteModels(modelId: UUID): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
 

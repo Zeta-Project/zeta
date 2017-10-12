@@ -33,8 +33,8 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
 
   private def check(unchecked: JsResult[Model]): JsResult[Model] = {
     unchecked.flatMap(model => {
-      val set: mutable.HashSet[UUID] = mutable.HashSet()
-      if (model.nodes.forall(n => set.add(n.id)) && model.edges.forall(e => set.add(e.id))) {
+      val set: mutable.HashSet[String] = mutable.HashSet()
+      if (model.nodes.forall(n => set.add(n.name)) && model.edges.forall(e => set.add(e.name))) {
         JsSuccess(model)
       } else {
         modelElementsNotUnique
@@ -44,10 +44,10 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
 
 
   private def checkLinks(model: Model): JsResult[Model] = {
-    val edgesMap = model.edges.map(e => (e.id, e)).toMap
-    val nodesMap = model.nodes.map(n => (n.id, n)).toMap
+    val edgesMap = model.edges.map(e => (e.name, e)).toMap
+    val nodesMap = model.nodes.map(n => (n.name, n)).toMap
 
-    def checkGenericLink[T](source: UUID, map: Map[UUID, _], sup: T => Seq[UUID])(t: T): List[String] = {
+    def checkGenericLink[T](source: String, map: Map[String, _], sup: T => Seq[String])(t: T): List[String] = {
       sup(t).toStream.flatMap(n => {
         if (map.contains(n)) {
           Nil
@@ -58,7 +58,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
     }
 
     def checkNodes(n: Node): Option[String] = {
-      val checkToEdge = checkGenericLink[EdgeLink](n.id, edgesMap, _.edgeNames) _
+      val checkToEdge = checkGenericLink[EdgeLink](n.name, edgesMap, _.edgeNames) _
       n.inputs.toStream.flatMap(checkToEdge).headOption match {
         case None => n.outputs.toStream.flatMap(checkToEdge).headOption
         case some @ Some(_) => some
@@ -67,7 +67,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
 
 
     def checkEdges(e: Edge): Option[String] = {
-      val checkToNode = checkGenericLink[NodeLink](e.id, nodesMap, _.nodeNames) _
+      val checkToNode = checkGenericLink[NodeLink](e.name, nodesMap, _.nodeNames) _
       e.source.toStream.flatMap(checkToNode).headOption match {
         case None => e.target.toStream.flatMap(checkToNode).headOption
         case some @ Some(_) => some
@@ -102,7 +102,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
                 case Left(node) => (node :: pair._1, pair._2)
                 case Right(edge) => (pair._1, edge :: pair._2)
               })
-            Model(name, metaModelId, nodes, edges, Map.empty, uiState)
+            Model(name, metaModelId, nodes, edges, Seq.empty, Map.empty, Seq.empty, uiState)
           }
         check(unchecked)
       })

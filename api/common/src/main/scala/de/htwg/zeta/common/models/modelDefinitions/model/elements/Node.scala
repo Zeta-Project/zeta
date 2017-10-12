@@ -1,15 +1,13 @@
 package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.HasAttributeValues
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -58,8 +56,8 @@ object Node {
         for {
           name <- (json \ "name").validate[String]
           clazz <- (json \ "className").validate[String].map(metaModel.classMap)
-          outputs <- (json \ "outputs").validate(Reads.map[List[UUID]])
-          inputs <- (json \ "inputs").validate(Reads.map[List[UUID]])
+          outputs <- (json \ "outputs").validate(Reads.map[List[String]])
+          inputs <- (json \ "inputs").validate(Reads.map[List[String]])
           attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(metaModel.enums)))
           attributeValues <- (json \ "attributeValues").validate(AttributeValue.playJsonReads(metaModel, clazz.attributes, attributes))
           methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(metaModel.enums)))

@@ -80,9 +80,9 @@ GET           /rest/v1/models/:modelId                                          
 GET           /rest/v1/models/:modelId/definition                                                 controllers.ScalaRoutes.getModelsDefinition(modelId: java.util.UUID)
 PUT           /rest/v1/models/:modelId/definition                                                 controllers.ScalaRoutes.putModelsDefinition(modelId: java.util.UUID)
 GET           /rest/v1/models/:modelId/definition/nodes                                           controllers.ScalaRoutes.getModelsDefinitionNodesNoArgs(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/definition/nodes/:nodeId                                   controllers.ScalaRoutes.getModelsDefinitionNodes(modelId: java.util.UUID, nodeId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition/nodes/:nodeName                                 controllers.ScalaRoutes.getModelsDefinitionNodes(modelId:java.util.UUID, nodeName: String)
 GET           /rest/v1/models/:modelId/definition/edges                                           controllers.ScalaRoutes.getModelDefinitionEdgesNoArgs(modelId: java.util.UUID)
-GET           /rest/v1/models/:modelId/definition/edges/:edgeId                                   controllers.ScalaRoutes.getModelDefinitionEdges(modelId: java.util.UUID, edgeId: java.util.UUID)
+GET           /rest/v1/models/:modelId/definition/edges/:edgeName                                 controllers.ScalaRoutes.getModelDefinitionEdges(modelId:java.util.UUID, edgeName: String)
 DELETE        /rest/v1/models/:modelId                                                            controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
 GET           /rest/v1/models/:modelId/validation                                                 controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
 
