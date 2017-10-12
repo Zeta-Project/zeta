@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelIndependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -21,23 +19,23 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
 
   "check" should "return true on elements with unique ids" in {
     val elements = Seq(
-      Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty),
-      Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), Map.empty),
-      Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty),
-      Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), Map.empty)
+      Edge.empty("id1", mReference.name, Seq(), Seq()),
+      Node.empty("id2", mClass.name, Seq(), Seq()),
+      Edge.empty("id3", mReference.name, Seq(), Seq()),
+      Node.empty("id4", mClass.name, Seq(), Seq())
     )
     val results = rule.check(elements)
     results.forall(_.valid) should be (true)
   }
 
   it should "return false on elements with duplicate ids" in {
-    val id1 = UUID.randomUUID()
-    val id2 = UUID.randomUUID()
+    val id1 = "name1"
+    val id2 = "name2"
     val elements = Seq(
-      Edge(id1, mReference.name, Seq(), Seq(), Map.empty),
-      Node(id2, mClass.name, Seq(), Seq(), Map.empty),
-      Edge(id2, mReference.name, Seq(), Seq(), Map.empty),
-      Node(id1, mClass.name, Seq(), Seq(), Map.empty)
+      Edge.empty(id1, mReference.name, Seq(), Seq()),
+      Node.empty(id2, mClass.name, Seq(), Seq()),
+      Edge.empty(id2, mReference.name, Seq(), Seq()),
+      Node.empty(id1, mClass.name, Seq(), Seq())
     )
     val results = rule.check(elements)
     results.forall(!_.valid) should be (true)

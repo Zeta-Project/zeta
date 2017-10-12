@@ -49,11 +49,11 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelElements = Seq(
-    Node.empty("", mClass.name, Seq.empty, Seq.empty),
-    Node.empty("", mClass.name, Seq.empty, Seq.empty),
-    Edge.empty("", mReference.name, Seq.empty, Seq.empty),
-    Node.empty("", mClass.name, Seq.empty, Seq.empty),
-    Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+    Node.empty("node1", mClass.name, Seq.empty, Seq.empty),
+    Node.empty("node2", mClass.name, Seq.empty, Seq.empty),
+    Edge.empty("edge1", mReference.name, Seq.empty, Seq.empty),
+    Node.empty("node3", mClass.name, Seq.empty, Seq.empty),
+    Edge.empty("edge2", mReference.name, Seq.empty, Seq.empty)
   )
 
   val mObjects = Seq(
@@ -217,7 +217,7 @@ class UtilTest extends FlatSpec with Matchers {
   "getAttributeTypeClassName" should "return the correct class name of an AttributeType" in {
     StringType.asString should be("String")
     DoubleType.asString should be("Double")
-    BoolType.asString should be("Bool")
+    BoolType.asString should be("Boolean")
     IntType.asString should be("Int")
 
     val mEnum: MEnum = MEnum(name = "TestMEnum", valueNames = Seq.empty)

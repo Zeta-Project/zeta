@@ -36,6 +36,17 @@ case class MClass(
 
 object MClass {
 
+  def empty(name: String): MClass = MClass(
+    name = name,
+    description = "",
+    abstractness = false,
+    superTypeNames = Seq.empty,
+    inputs = Seq.empty,
+    outputs = Seq.empty,
+    attributes = Seq.empty,
+    methods = Seq.empty
+  )
+
   trait ClassMap {
 
     val classes: Seq[MClass]

@@ -49,12 +49,12 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
 
     val oneSourceNode = NodeLink(className = sourceType.name, nodeNames = Seq(""))
 
-    val edgeOneSourceNode = Edge(UUID.randomUUID(), mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
+    val edgeOneSourceNode = emptyEdge.copy(target = Seq(oneSourceNode))
 
     rule.isValid(edgeOneSourceNode).get should be(true)
 
 
-    val edgeNoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
+    val edgeNoSourceNodes = emptyEdge
 
     rule.isValid(edgeNoSourceNodes).get should be(true)
   }
@@ -71,9 +71,9 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val threeSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(threeSourceNodes), Seq(), Map.empty)
+    val edgeThreeSourceNodes = emptyEdge.copy(source = Seq(threeSourceNodes))
 
     rule.isValid(edgeThreeSourceNodes).get should be(false)
   }
@@ -89,7 +89,7 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentReference.name)
     rule.isValid(edge) should be(None)
   }
 

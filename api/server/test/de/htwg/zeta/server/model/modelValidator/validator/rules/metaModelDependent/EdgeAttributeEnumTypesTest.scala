@@ -1,38 +1,29 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
-  val mReference = MReference(
-    "reference",
-    "",
-    sourceDeletionDeletesTarget = false,
-    targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
-    Seq[MAttribute](),
-    Seq.empty
-  )
+  val mReference: MReference = MReference.empty("reference", Seq.empty, Seq.empty)
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgeAttributeEnumTypes("reference", "attributeType", "enumName")
+
 
   "the rule" should "be true for valid edges" in {
     val mEnum = MEnum(name = "enumName", valueNames = Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("enumName", mEnum.name)))
-    val edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+    val edge = emptyEdge
 
     rule.isValid(edge).get should be(true)
   }
@@ -56,7 +47,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("differentEnumName", differentEnum.name)))
-    val edge = Edge.empty("", mReference.name, Seq(), Seq())
+    val edge = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attribute)
 
     rule.isValid(edge).get should be(false)
   }

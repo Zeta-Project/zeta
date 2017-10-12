@@ -55,23 +55,12 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
 
   it should "be None for non-matching edges" in {
 
-    val nonMatchingReference = MReference(
-      "nonMatchingReference",
-      "",
-      sourceDeletionDeletesTarget = false,
-      targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
-      Seq[MAttribute](),
-      Seq.empty
-    )
-
     val attributes: Map[String, Seq[AttributeValue]] = Map(
       "stringAttribute" -> Seq(StringValue("test")),
       "boolAttribute" -> Seq(BoolValue(true))
     )
 
-    val edge = emptyEdge.copy(attributeValues = attributes)
+    val edge = emptyEdge.copy(referenceName = "nonMatchingReference", attributeValues = attributes)
 
     rule.isValid(edge) should be(None)
   }

@@ -1,16 +1,14 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,12 +16,13 @@ import org.scalatest.Matchers
 class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
   val rule = new NodeAttributeEnumTypes("nodeType", "attributeType", "enumName")
 
   "isValid" should "be true for valid nodes" in {
     val mEnum = MEnum("enumName", Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("enumName", mEnum.name)))
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
+    val node = emptyNode.copy(attributeValues = attribute)
 
     rule.isValid(node).get should be(true)
   }
@@ -31,14 +30,14 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be false for invalid nodes" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("differentEnumName", differentEnum.name)))
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attribute)
+    val node = emptyNode.copy(attributeValues = attribute)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "be None for non-matching nodes" in {
     val differentClass = MClass("differentClass", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node(UUID.randomUUID(), differentClass.name, Seq(), Seq(), Map.empty)
+    val node = emptyNode.copy(className = differentClass.name)
 
     rule.isValid(node) should be(None)
   }

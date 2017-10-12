@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -17,31 +15,31 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputEdges("nodeType", Seq("input1", "input2"))
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
     val input1 = MReference("input1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = EdgeLink(referenceName = input1.name, edgeNames = Seq(UUID.randomUUID()))
-    val node1 = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdges1), Map.empty)
+    val toEdges1 = EdgeLink(referenceName = input1.name, edgeNames = Seq(""))
+    val node1 = emptyNode.copy(inputs = Seq(toEdges1))
     rule.isValid(node1).get should be (true)
 
     val input2 = MReference("input2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = EdgeLink(referenceName = input1.name, edgeNames = Seq(UUID.randomUUID(), UUID.randomUUID()))
-    val node2 = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdges2), Map.empty)
+    val toEdges2 = EdgeLink(referenceName = input1.name, edgeNames = Seq("", ""))
+    val node2 = emptyNode.copy(inputs = Seq(toEdges2))
     rule.isValid(node2).get should be (true)
   }
 
   it should "return false on nodes of type nodeType with invalid input edges" in {
 
     val input = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = EdgeLink(referenceName = input.name, edgeNames = Seq(UUID.randomUUID()))
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdges), Map.empty)
+    val toEdges = EdgeLink(referenceName = input.name, edgeNames = Seq(""))
+    val node = emptyNode.copy(inputs = Seq(toEdges))
     rule.isValid(node).get should be (false)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node(UUID.randomUUID(), differentClass.name, Seq(), Seq(), Map.empty)
+    val node = emptyNode.copy(className = "differentNodeType")
     rule.isValid(node) should be (None)
   }
 

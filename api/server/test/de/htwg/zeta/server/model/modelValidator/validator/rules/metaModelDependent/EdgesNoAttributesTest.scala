@@ -23,22 +23,23 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgesNoAttributes("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no attributes" in {
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on edges of type edgeType with attributes" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att")))
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
+    val edge = emptyEdge.copy(attributeValues = attribute)
     rule.isValid(edge).get should be(false)
   }
 
   it should "return true on edges of type edgeType with empty attribute values" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
+    val edge = emptyEdge.copy(attributeValues = attribute)
     rule.isValid(edge).get should be(true)
   }
 
@@ -53,7 +54,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentReference.name)
     rule.isValid(edge) should be(None)
   }
 
@@ -68,10 +69,10 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
     val result = EdgesNoAttributes.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: EdgesNoAttributes =>
-        rule.edgeType should be ("reference")
+        rule.edgeType should be("reference")
       case _ => fail
     }
   }

@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -16,16 +14,17 @@ import org.scalatest.Matchers
 class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
   val rule = new NodeOutputsLowerBound("nodeType", "outputType", 2)
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType having 2 or more output edges of type outputType" in {
 
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val twoOutputEdges = EdgeLink(outputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
-    val nodeTwoOutputEdges = Node(UUID.randomUUID(), mClass.name, Seq(twoOutputEdges), Seq(), Map.empty)
+    val twoOutputEdges = EdgeLink(outputType.name, Seq("", ""))
+    val nodeTwoOutputEdges = emptyNode.copy(outputs = Seq(twoOutputEdges))
     rule.isValid(nodeTwoOutputEdges).get should be(true)
 
-    val threeOutputEdges = EdgeLink(outputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
-    val nodeThreeOutputEdges = Node(UUID.randomUUID(), mClass.name, Seq(threeOutputEdges), Seq(), Map.empty)
+    val threeOutputEdges = EdgeLink(outputType.name, Seq("", "", ""))
+    val nodeThreeOutputEdges = emptyNode.copy(outputs = Seq(threeOutputEdges))
     rule.isValid(nodeThreeOutputEdges).get should be(true)
   }
 
@@ -33,17 +32,16 @@ class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
 
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val noOutputEdges = EdgeLink(outputType.name, Seq())
-    val nodeNoOutputEdges = Node(UUID.randomUUID(), mClass.name, Seq(noOutputEdges), Seq(), Map.empty)
+    val nodeNoOutputEdges = emptyNode.copy(outputs = Seq(noOutputEdges))
     rule.isValid(nodeNoOutputEdges).get should be(false)
 
-    val oneOutputEdge = EdgeLink(outputType.name, Seq(UUID.randomUUID()))
-    val nodeOneOutputEdge = Node(UUID.randomUUID(), mClass.name, Seq(oneOutputEdge), Seq(), Map.empty)
+    val oneOutputEdge = EdgeLink(outputType.name, Seq(""))
+    val nodeOneOutputEdge = emptyNode.copy(outputs = Seq(oneOutputEdge))
     rule.isValid(nodeOneOutputEdge).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
+  val node = emptyNode.copy(className = "differentNodeType")
     rule.isValid(node) should be(None)
   }
 

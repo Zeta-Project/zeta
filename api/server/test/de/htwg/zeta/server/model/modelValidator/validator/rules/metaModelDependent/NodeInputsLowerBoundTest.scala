@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -17,16 +15,17 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
 
   val rule = new NodeInputsLowerBound("nodeType", "inputType", 2)
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType having 2 or more input edges of type inputType" in {
 
     val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val twoInputEdges = EdgeLink(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID()))
-    val nodeTwoInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(twoInputEdges), Map.empty)
+    val twoInputEdges = EdgeLink(inputType.name, Seq("", ""))
+    val nodeTwoInputEdge = emptyNode.copy(inputs = Seq(twoInputEdges))
     rule.isValid(nodeTwoInputEdge).get should be(true)
 
-    val threeInputEdges = EdgeLink(inputType.name, Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
-    val nodeThreeInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(threeInputEdges), Map.empty)
+    val threeInputEdges = EdgeLink(inputType.name, Seq("", "", ""))
+    val nodeThreeInputEdge = emptyNode.copy(inputs = Seq(threeInputEdges))
     rule.isValid(nodeThreeInputEdge).get should be(true)
   }
 
@@ -34,17 +33,16 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
 
     val inputType = MReference("inputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val noInputEdges = EdgeLink(inputType.name, Seq())
-    val nodeNoInputEdges = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(noInputEdges), Map.empty)
+    val nodeNoInputEdges = emptyNode.copy(inputs = Seq(noInputEdges))
     rule.isValid(nodeNoInputEdges).get should be(false)
 
-    val oneInputEdge = EdgeLink(inputType.name, Seq(UUID.randomUUID()))
-    val nodeOneInputEdge = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(oneInputEdge), Map.empty)
+    val oneInputEdge = EdgeLink(inputType.name, Seq(""))
+    val nodeOneInputEdge = emptyNode.copy(inputs = Seq(oneInputEdge))
     rule.isValid(nodeOneInputEdge).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
+    val node = emptyNode.copy(className = "differentNodeType")
     rule.isValid(node) should be(None)
   }
 
@@ -61,12 +59,12 @@ class NodeInputsLowerBoundTest extends FlatSpec with Matchers {
     val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
     val result = NodeInputsLowerBound.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: NodeInputsLowerBound =>
-        rule.nodeType should be ("class")
-        rule.inputType should be ("reference")
-        rule.lowerBound should be (5)
+        rule.nodeType should be("class")
+        rule.inputType should be("reference")
+        rule.lowerBound should be(5)
       case _ => fail
     }
 

@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -24,6 +22,7 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgeTargetsLowerBound("edgeType", "targetType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or more target nodes of type targetType" in {
@@ -38,15 +37,15 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(twoTargetNodes), Map.empty)
+    val edgeTwoTargetNodes = emptyEdge.copy(target = Seq(twoTargetNodes))
 
     rule.isValid(edgeTwoTargetNodes).get should be(true)
 
-    val threeTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(threeTargetNodes), Map.empty)
+    val edgeThreeTargetNodes = emptyEdge.copy(target = Seq(threeTargetNodes))
 
     rule.isValid(edgeThreeTargetNodes).get should be(true)
   }
@@ -63,29 +62,19 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val oneTargetNode = NodeLink(className = targetType.name, nodeNames = Seq(UUID.randomUUID()))
+    val oneTargetNode = NodeLink(className = targetType.name, nodeNames = Seq(""))
 
-    val edgeOneTargetNode = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(oneTargetNode), Map.empty)
+    val edgeOneTargetNode = emptyEdge.copy(target = Seq(oneTargetNode))
 
     rule.isValid(edgeOneTargetNode).get should be(false)
 
-    val edgeNoTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
+    val edgeNoTargetNodes = emptyEdge
 
     rule.isValid(edgeNoTargetNodes).get should be(false)
   }
 
   it should "return None on non-matching edges" in {
-    val differentMRef = MReference(
-      "invalidReference",
-      description = "",
-      sourceDeletionDeletesTarget = false,
-      targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
-      Seq[MAttribute](),
-      Seq.empty
-    )
-    val edge = Edge(UUID.randomUUID(), differentMRef.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = "invalidReference")
     rule.isValid(edge) should be(None)
   }
 

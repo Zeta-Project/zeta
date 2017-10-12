@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -16,29 +14,28 @@ class NodesNoInputsTest extends FlatSpec with Matchers {
 
   val rule = new NodesNoInputs("nodeType")
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with no inputs" in {
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), Map.empty)
-    rule.isValid(node).get should be(true)
+    rule.isValid(emptyNode).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with inputs" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdge = EdgeLink(input.name, Seq(UUID.randomUUID()))
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdge), Map.empty)
+    val toEdge = EdgeLink(input.name, Seq(""))
+    val node = emptyNode.copy(inputs = Seq(toEdge))
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty input list" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = EdgeLink(input.name, Seq())
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(toEdge), Map.empty)
+    val node = emptyNode.copy(inputs = Seq(toEdge))
     rule.isValid(node).get should be(true)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
+    val node = emptyNode.copy(className = "differentNodeType")
     rule.isValid(node) should be(None)
   }
 

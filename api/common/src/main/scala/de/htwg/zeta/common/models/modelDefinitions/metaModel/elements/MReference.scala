@@ -33,6 +33,18 @@ case class MReference(
 
 object MReference {
 
+  def empty(name: String, source: Seq[MClassLinkDef], target: Seq[MClassLinkDef]): MReference =
+    MReference(
+      name = name,
+      description = "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      source = source,
+      target = target,
+      attributes = Seq.empty,
+      methods = Seq.empty
+    )
+
   trait ReferenceMap {
 
     val references: Seq[MReference]

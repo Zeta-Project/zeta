@@ -24,6 +24,7 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgeTargetsUpperBound("edgeType", "targetType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or less target nodes of type targetType" in {
@@ -38,21 +39,21 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(twoTargetNodes), Map.empty)
+    val edgeTwoTargetNodes = emptyEdge.copy(target = Seq(twoTargetNodes))
 
     rule.isValid(edgeTwoTargetNodes).get should be(true)
 
 
-    val oneTargetNode = NodeLink(className = targetType.name, nodeNames = Seq(UUID.randomUUID()))
+    val oneTargetNode = NodeLink(className = targetType.name, nodeNames = Seq(""))
 
-    val edgeOneTargetNode = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(oneTargetNode), Map.empty)
+    val edgeOneTargetNode = emptyEdge.copy(target = Seq(oneTargetNode))
 
     rule.isValid(edgeOneTargetNode).get should be(true)
 
 
-    val edgeNoTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
+    val edgeNoTargetNodes = emptyEdge
 
     rule.isValid(edgeNoTargetNodes).get should be(true)
   }
@@ -69,9 +70,9 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val threeTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeTargetNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(threeTargetNodes), Map.empty)
+    val edgeThreeTargetNodes = emptyEdge.copy(target = Seq(threeTargetNodes))
 
     rule.isValid(edgeThreeTargetNodes).get should be(false)
   }
@@ -87,7 +88,7 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentReference.name)
     rule.isValid(edge) should be(None)
   }
 

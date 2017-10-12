@@ -1,16 +1,14 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,6 +16,7 @@ import org.scalatest.Matchers
 class NodeAttributesTest extends FlatSpec with Matchers {
 
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
   val rule = new NodeAttributes("nodeType", Seq("att1", "att2"))
 
   "isValid" should "return true for valid nodes" in {
@@ -25,7 +24,7 @@ class NodeAttributesTest extends FlatSpec with Matchers {
       "att1" -> Seq(StringValue("")),
       "att2" -> Seq(BoolValue(false))
     )
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attributes)
+    val node = emptyNode.copy(attributeValues = attributes)
 
     rule.isValid(node).get should be(true)
   }
@@ -36,15 +35,13 @@ class NodeAttributesTest extends FlatSpec with Matchers {
       "att2" -> Seq(BoolValue(false)),
       "att3" -> Seq(IntValue(0))
     )
-    val node = Node(UUID.randomUUID(), mClass.name, Seq(), Seq(), attributes)
+    val node = emptyNode.copy(attributeValues = attributes)
 
     rule.isValid(node).get should be(false)
   }
 
   it should "return None on non-matching nodes" in {
-    val differentMClass = MClass("differentNodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val node = Node(UUID.randomUUID(), differentMClass.name, Seq(), Seq(), Map.empty)
-
+    val node = emptyNode.copy(className = "differentNodeType")
     rule.isValid(node) should be(None)
   }
 
