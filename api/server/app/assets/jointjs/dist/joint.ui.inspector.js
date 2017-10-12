@@ -1453,7 +1453,28 @@ joint.ui.Inspector = Backbone.View.extend({
                     // those items that disappeared from DOM.
                     // Note that we cannot use `this.setProperty(path, [])` as that would not
                     // reset nested lists because of the `_.merge()` operation used.
+
+                    // Next 6 lines are added because of the todo.
+                    var tmpId = {}
+                    if(cell.attributes.labels != undefined) {
+                        cell.attributes.labels.forEach(function(label, index) {
+                            if(label.id != undefined) {
+                                tmpId[index] = label.id
+                            }
+                        })
+                    }
+
+                    // this line causes the todo
                     joint.util.setByPath(cell.attributes, path, [], '/');
+
+                    // Next 7 lines are added because of the todo.
+                    var max = _.max(Object.keys(tmpId))
+                    if(max != undefined) {
+                      for(var i = 0; i <= max; i++) {
+                        cell.attributes.labels[i] = {};
+                        if(tmpId[i] != undefined) {cell.attributes.labels[i]["id"] = tmpId[i]}
+                      }
+                    }
                     break;
 
                 case 'object':

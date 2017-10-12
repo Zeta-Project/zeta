@@ -1189,7 +1189,7 @@ V = Vectorizer = (function() {
             // IE would otherwise collapse all spaces into one.
             content = sanitizeText(content);
             opt = opt || {};
-            var lines = content.split('\n');
+            var lines = content.split(','); //.split('\n');
             var i = 0;
             var tspan;
 
