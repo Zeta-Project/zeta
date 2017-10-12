@@ -35,6 +35,9 @@ case class Node(
 
 object Node {
 
+  def empty(name: String, className: String, outputs: Seq[EdgeLink], inputs: Seq[EdgeLink]): Node =
+    Node(name, className, outputs, inputs, Seq.empty, Map.empty, Seq.empty)
+
   trait NodeMap {
 
     val nodes: Seq[Node]

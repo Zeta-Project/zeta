@@ -25,6 +25,7 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgeSourcesUpperBound("edgeType", "sourceType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or less source nodes of type sourceType" in {
@@ -39,14 +40,14 @@ class EdgesSourcesUpperBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(twoSourceNodes), Seq(), Map.empty)
+    val edgeTwoSourceNodes = emptyEdge.copy(source = Seq(twoSourceNodes))
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
 
-    val oneSourceNode = NodeLink(className = sourceType.name, nodeNames = Seq(UUID.randomUUID()))
+    val oneSourceNode = NodeLink(className = sourceType.name, nodeNames = Seq(""))
 
     val edgeOneSourceNode = Edge(UUID.randomUUID(), mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
 

@@ -22,7 +22,8 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty, Seq.empty,
+    Seq.empty,
+    Seq.empty,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -31,7 +32,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   "the rule" should "be true for valid edges" in {
     val mEnum = MEnum(name = "enumName", valueNames = Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("enumName", mEnum.name)))
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
+    val edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
 
     rule.isValid(edge).get should be(true)
   }
@@ -47,7 +48,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentMReference.name, Seq(), Seq(), Map.empty)
+    val edge = Edge.empty("", differentMReference.name, Seq(), Seq())
 
     rule.isValid(edge) should be(None)
   }
@@ -55,7 +56,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("differentEnumName", differentEnum.name)))
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
+    val edge = Edge.empty("", mReference.name, Seq(), Seq())
 
     rule.isValid(edge).get should be(false)
   }
@@ -71,7 +72,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = Edge.empty("", differentReference.name, Seq(), Seq())
     rule.isValid(edge) should be(None)
   }
 

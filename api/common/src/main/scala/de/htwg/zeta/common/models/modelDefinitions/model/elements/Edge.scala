@@ -36,6 +36,9 @@ case class Edge(
 
 object Edge {
 
+  def empty(name: String, referenceName: String, source: Seq[NodeLink], target: Seq[NodeLink]): Edge =
+    Edge(name, referenceName, source, target, Seq.empty, Map.empty, Seq.empty)
+
   trait EdgeMap {
 
     val edges: Seq[Edge]

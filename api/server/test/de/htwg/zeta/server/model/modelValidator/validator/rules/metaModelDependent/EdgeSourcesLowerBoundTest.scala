@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -25,6 +23,7 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgeSourcesLowerBound("edgeType", "sourceType", 2)
 
   "isValid" should "return true on edges of type edgeType having 2 or more source nodes of type sourceType" in {
@@ -39,15 +38,15 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val twoSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val twoSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(twoSourceNodes), Seq(), Map.empty)
+    val edgeTwoSourceNodes = emptyEdge.copy(source = Seq(twoSourceNodes))
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
-    val threeSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID()))
+    val threeSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(threeSourceNodes), Seq(), Map.empty)
+    val edgeThreeSourceNodes = emptyEdge.copy(source = Seq(threeSourceNodes))
 
     rule.isValid(edgeThreeSourceNodes).get should be(true)
   }
@@ -64,13 +63,13 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val oneSourceNode = NodeLink(className = sourceType.name, nodeNames = Seq(UUID.randomUUID()))
+    val oneSourceNode = NodeLink(className = sourceType.name, nodeNames = Seq(""))
 
-    val edgeOneSourceNode = Edge(UUID.randomUUID(), mReference.name, Seq(oneSourceNode), Seq(), Map.empty)
+    val edgeOneSourceNode = emptyEdge.copy(source = Seq(oneSourceNode))
 
     rule.isValid(edgeOneSourceNode).get should be(false)
 
-    val edgeNoSourceNodes = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
+    val edgeNoSourceNodes = emptyEdge
 
     rule.isValid(edgeNoSourceNodes).get should be(false)
   }
@@ -86,7 +85,7 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentMRef.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentMRef.name)
     rule.isValid(edge) should be(None)
   }
 

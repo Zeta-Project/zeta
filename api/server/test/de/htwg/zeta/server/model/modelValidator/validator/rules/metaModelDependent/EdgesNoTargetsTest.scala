@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -24,10 +22,11 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
   val rule = new EdgesNoTargets("edgeType")
 
   "check" should "return true on edges of type edgeType with no targets" in {
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge
     rule.isValid(edge).get should be(true)
   }
 
@@ -42,8 +41,8 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       attributes = Seq(),
       methods = Seq.empty
     )
-    val toNode = NodeLink(className = target.name, nodeNames = Seq(UUID.randomUUID()))
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNode), Map.empty)
+    val toNode = NodeLink(className = target.name, nodeNames = Seq(""))
+    val edge = emptyEdge.copy(target = Seq(toNode))
 
     rule.isValid(edge).get should be(false)
   }
@@ -60,7 +59,7 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
     val toNode = NodeLink(className = target.name, nodeNames = Seq())
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(toNode), Map.empty)
+    val edge = emptyEdge.copy(target = Seq(toNode))
 
     rule.isValid(edge).get should be(true)
   }
@@ -76,7 +75,7 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentReference.name)
     rule.isValid(edge) should be(None)
   }
 

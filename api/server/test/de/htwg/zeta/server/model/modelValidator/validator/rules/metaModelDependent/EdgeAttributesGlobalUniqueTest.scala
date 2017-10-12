@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
@@ -30,10 +28,10 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   "check" should "return success validation results on correct attributes" in {
 
     val attributeOne: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value")))
-    val edgeOne = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeOne)
+    val edgeOne = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeOne)
 
     val attributeTwo: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("differentValue")))
-    val edgeTwo = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeTwo)
+    val edgeTwo = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeTwo)
 
     val results = rule.check(Seq(edgeOne, edgeTwo))
 
@@ -41,7 +39,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     results.forall(_.valid) should be(true)
 
     val attributeThree: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("anotherValue"), StringValue("yetAnotherValue")))
-    val edgeThree = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeThree)
+    val edgeThree = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeThree)
 
     val secondResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree))
 
@@ -52,10 +50,10 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   it should "return failure validation results on invalid attributes" in {
     val attributeOne: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
-    val edgeOne = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeOne)
+    val edgeOne = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeOne)
 
     val attributeTwo: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
-    val edgeTwo = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeTwo)
+    val edgeTwo = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeTwo)
 
     val results = rule.check(Seq(edgeOne, edgeTwo))
 
@@ -64,7 +62,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     results.last.valid should be(false)
 
     val attributeThree: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue"), StringValue("anotherValue")))
-    val edgeThree = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeThree)
+    val edgeThree = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeThree)
 
     val secondResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree))
 
@@ -72,7 +70,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     secondResults.forall(!_.valid) should be(true)
 
     val attributeFour: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("differentValue")))
-    val edgeFour = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attributeFour)
+    val edgeFour = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeFour)
 
     val thirdResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree, edgeFour))
 

@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -25,6 +23,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+
   val rule = new EdgeSourceNodes("edgeType", Seq("source1", "source2"))
 
   "isValid" should "return true on edges of type edgeType with valid source nodes" in {
@@ -40,9 +41,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes1 = NodeLink(className = source1.name, nodeNames = Seq(UUID.randomUUID()))
+    val toNodes1 = NodeLink(className = source1.name, nodeNames = Seq(""))
 
-    val edge1 = Edge(UUID.randomUUID(), mReference.name, Seq(toNodes1), Seq(), Map.empty)
+    val edge1 = emptyEdge.copy(target = Seq(toNodes1))
 
     rule.isValid(edge1).get should be(true)
 
@@ -57,9 +58,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes2 = NodeLink(className = source1.name, nodeNames = Seq(UUID.randomUUID(), UUID.randomUUID()))
+    val toNodes2 = NodeLink(className = source1.name, nodeNames = Seq("", ""))
 
-    val edge2 = Edge(UUID.randomUUID(), mReference.name, Seq(toNodes2), Seq(), Map.empty)
+    val edge2 = emptyEdge.copy(source = Seq(toNodes2))
 
     rule.isValid(edge2).get should be(true)
 
@@ -77,9 +78,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val invalidToNodes = NodeLink(className = invalidSource.name, nodeNames = Seq(UUID.randomUUID()))
+    val invalidToNodes = NodeLink(className = invalidSource.name, nodeNames = Seq(""))
 
-    val edge1 = Edge(UUID.randomUUID(), mReference.name, Seq(invalidToNodes), Seq(), Map.empty)
+    val edge1 = emptyEdge.copy(source = Seq(invalidToNodes))
 
     rule.isValid(edge1).get should be(false)
   }
@@ -95,7 +96,8 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentMReference.name, Seq(), Seq(), Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentMReference.name)
+
     rule.isValid(edge) should be(None)
   }
 

@@ -31,14 +31,14 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
 
   "the rule" should "be true for valid edges" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value")))
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
+    val edge = Edge.empty("", mReference.name, Seq(), Seq())
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "be false for invalid edges" in {
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(IntValue(42)))
-    val edge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), attribute)
+    val edge = Edge.empty("", mReference.name, Seq(), Seq())
 
     rule.isValid(edge).get should be(false)
   }
@@ -55,7 +55,7 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
       Seq.empty
     )
     val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value")))
-    val edge = Edge(UUID.randomUUID(), differentMReference.name, Seq(), Seq(), attribute)
+    val edge = Edge.empty("", differentMReference.name, Seq(), Seq())
 
     rule.isValid(edge) should be(None)
   }

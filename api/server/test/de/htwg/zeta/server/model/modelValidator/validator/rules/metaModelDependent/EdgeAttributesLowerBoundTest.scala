@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
@@ -29,23 +27,23 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on edges with 2 or more attributes of type attributeType" in {
     val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2")))
-    val twoAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), twoAttributes)
+    val twoAttributesEdge = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = twoAttributes)
 
     rule.isValid(twoAttributesEdge).get should be(true)
 
     val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2"), StringValue("att3")))
-    val threeAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), threeAttributes)
+    val threeAttributesEdge = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = threeAttributes)
 
     rule.isValid(threeAttributesEdge).get should be(true)
   }
 
   it should "return false on edges with less than 2 attributes of type attributeType" in {
     val noAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq.empty)
-    val noAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), noAttributes)
+    val noAttributesEdge = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = noAttributes)
     rule.isValid(noAttributesEdge).get should be(false)
 
     val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att")))
-    val oneAttributeEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), oneAttribute)
+    val oneAttributeEdge = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = oneAttribute)
 
     rule.isValid(oneAttributeEdge).get should be(false)
   }
@@ -61,7 +59,7 @@ class EdgeAttributesLowerBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq(), Seq(), Map.empty)
+    val edge = Edge.empty("", differentReference.name, Seq(), Seq())
 
     rule.isValid(edge) should be(None)
   }

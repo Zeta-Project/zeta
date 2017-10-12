@@ -1,14 +1,12 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -25,22 +23,25 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
+
+  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+
   val rule = new EdgeAttributesUpperBound("edgeType", "attributeType", 2)
 
   "check" should "return true on edges with 2 or less attributes of type attributeType" in {
 
     val noAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq.empty)
-    val noAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), noAttributes)
+    val noAttributesEdge = emptyEdge.copy(attributeValues = noAttributes)
 
     rule.isValid(noAttributesEdge).get should be(true)
 
     val oneAttribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att")))
-    val oneAttributeEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), oneAttribute)
+    val oneAttributeEdge = emptyEdge.copy(attributeValues = oneAttribute)
 
     rule.isValid(oneAttributeEdge).get should be(true)
 
     val twoAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2")))
-    val twoAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), twoAttributes)
+    val twoAttributesEdge = emptyEdge.copy(attributeValues = twoAttributes)
 
     rule.isValid(twoAttributesEdge).get should be(true)
 
@@ -48,12 +49,12 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
 
   it should "return false on edges with more than 2 attributes of type attributeType" in {
     val threeAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2"), StringValue("att3")))
-    val threeAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), threeAttributes)
+    val threeAttributesEdge = emptyEdge.copy(attributeValues = threeAttributes)
 
     rule.isValid(threeAttributesEdge).get should be(false)
 
     val fourAttributes: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("att1"), StringValue("att2"), StringValue("att3"), StringValue("att4")))
-    val fourAttributesEdge = Edge(UUID.randomUUID(), mReference.name, Seq(), Seq(), fourAttributes)
+    val fourAttributesEdge = emptyEdge.copy(attributeValues = fourAttributes)
 
     rule.isValid(fourAttributesEdge).get should be(false)
   }
@@ -69,7 +70,7 @@ class EdgeAttributesUpperBoundTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge(UUID.randomUUID(), differentReference.name, Seq.empty, Seq.empty, Map.empty)
+    val edge = emptyEdge.copy(referenceName = differentReference.name)
 
     rule.isValid(edge) should be(None)
   }
