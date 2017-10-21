@@ -8,12 +8,12 @@ import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.EdgeMap
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node.NodeMap
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -91,14 +91,12 @@ object Model {
 
   implicit val playJsonWrites: Writes[Model] = Json.writes[Model]
 
-  val playJsonReadsEmpty: Reads[Model] = new Reads[Model] {
-    override def reads(json: JsValue): JsResult[Model] = {
-      for {
-        name <- (json \ sName).validate[String]
-        metaModelId <- (json \ sMetaModelId).validate[UUID]
-      } yield {
-        Model.empty(name, metaModelId)
-      }
+  val playJsonReadsEmpty: Reads[Model] = Reads { json =>
+    for {
+      name <- (json \ sName).validate[String]
+      metaModelId <- (json \ sMetaModelId).validate[UUID]
+    } yield {
+      Model.empty(name, metaModelId)
     }
   }
 
