@@ -223,19 +223,22 @@ object MongoHandler {
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
-  private implicit object ParametersHandler extends BSONWriter[SortedMap[String, AttributeType], BSONArray]
-    with BSONReader[ BSONArray, SortedMap[String, AttributeType]] {
+  private implicit object ParametersHandler extends BSONDocumentWriter[SortedMap[String, AttributeType]]
+    with BSONDocumentReader[SortedMap[String, AttributeType]] {
 
-    override def write(parameters: SortedMap[String, AttributeType]): BSONArray = {
-      null // TODO implement
+    override def read(doc: BSONDocument): SortedMap[String, AttributeType] = {
+      SortedMap(doc.elements.map { tuple =>
+        tuple.name -> AttributeTypeHandler.read(tuple.value.seeAsTry[BSONDocument].get)
+      }: _*)
     }
 
-    override def read(array: BSONArray): SortedMap[String, AttributeType] = {
-      null // TODO implement
+    override def write(parameters: SortedMap[String, AttributeType]): BSONDocument = {
+      BSONDocument(parameters.map { tuple =>
+        tuple._1 -> AttributeTypeHandler.write(tuple._2)
+      })
     }
 
   }
-
 
   private implicit val methodHandler: BSONDocumentHandler[Method] = Macros.handler[Method]
 
