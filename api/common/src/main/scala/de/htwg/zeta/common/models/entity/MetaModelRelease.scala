@@ -4,7 +4,8 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-
+import play.api.libs.json.Format
+import play.api.libs.json.Json
 
 case class MetaModelRelease(
     id: UUID,
@@ -13,3 +14,9 @@ case class MetaModelRelease(
     dsl: Dsl,
     version: String
 ) extends Entity
+
+object MetaModelRelease{
+
+  implicit val playJsonFormats: Format[MetaModelRelease] = Json.format[MetaModelRelease]
+
+}

@@ -52,7 +52,7 @@ object AttributeType {
 
   /** The MEnum implementation
    *
-   * @param name   the name of the MENum instance
+   * @param name       the name of the MENum instance
    * @param valueNames the names of the values
    */
   case class MEnum(name: String, valueNames: Seq[String]) extends MObject with AttributeType {
@@ -84,23 +84,21 @@ object AttributeType {
 
   }
 
-  def playJsonReads(enums: Seq[MEnum]): Reads[AttributeType] = {
-    new Reads[AttributeType] {
-      override def reads(json: JsValue): JsResult[AttributeType] = {
-        json.validate[String].map {
-          case StringType.asString => StringType
-          case BoolType.asString => BoolType
-          case "Bool" => BoolType // TODO frontend should always send "Boolean" instead of "Bool"
-          case IntType.asString => IntType
-          case DoubleType.asString => DoubleType
-          case UnitType.asString => UnitType
-          case enumName: String => enums.find(_.name == enumName).get
-        }
+  def playJsonReads(enums: Seq[MEnum]): Reads[AttributeType] = new Reads[AttributeType] {
+    override def reads(json: JsValue): JsResult[AttributeType] = {
+      json.validate[String].map {
+        case StringType.asString => StringType
+        case BoolType.asString => BoolType
+        case "Bool" => BoolType // TODO frontend should always send "Boolean" instead of "Bool"
+        case IntType.asString => IntType
+        case DoubleType.asString => DoubleType
+        case UnitType.asString => UnitType
+        case enumName: String => enums.find(_.name == enumName).get
       }
     }
   }
 
-  implicit val playJsonWrites = new Writes[AttributeType] {
+  implicit val playJsonWrites: Writes[AttributeType] = new Writes[AttributeType] {
     override def writes(typ: AttributeType): JsValue = {
       typ match {
         case StringType => JsString(StringType.asString)

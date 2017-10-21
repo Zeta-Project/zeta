@@ -104,7 +104,7 @@ class ScalaRoutes @Inject()(
   def getMetamodelsDefinition(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
 
   def putMetamodelsDefinition(metaModelId: UUID): Action[JsValue] =
-    AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateMetaModelDefinition(metaModelId) _)
+    AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
 
   def getMetamodelsDefinitionMclassesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
 
@@ -141,7 +141,7 @@ class ScalaRoutes @Inject()(
     AuthenticatedPut(MetaModelRestApi.updateReferenceMethodCode(metaModelId, referenceName, methodName) _)
 
   def putMetaModelsMainMethod(metaModelId: UUID, methodName: String): Action[AnyContent] =
-    AuthenticatedPut(MetaModelRestApi.updateMainMethodCode(metaModelId, methodName) _)
+    AuthenticatedPut(MetaModelRestApi.updateCommonMethodCode(metaModelId, methodName) _)
 
   /* ### Model REST API
    * MRA => ModelRestApi
