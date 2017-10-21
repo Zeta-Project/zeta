@@ -24,7 +24,9 @@ var modelExporter = (function modelExporter () {
             metaModelId: window._global_graph_type,
             nodes: nodes,
             edges: edges,
-            attributes: {}, // TODO
+            attributes: [], // TODO
+            attributeValues: {},
+            methods: [],
             uiState: uiState
         });
 
@@ -53,11 +55,13 @@ var modelExporter = (function modelExporter () {
         var elements = [];
         _graph.getElements().forEach(function(ele) {
             var element = {
-                id: ele.id,
+                name: ele.id,
                 className: ele.attributes.mClass,
                 outputs: {},
                 inputs: {},
-                attributes: {}
+                attributes: [],
+                attributeValues: {},
+                methods: []
             };
 
             var attrs = ele.attributes.attrs;
@@ -103,11 +107,13 @@ var modelExporter = (function modelExporter () {
         var elements = [];
         _graph.getLinks().forEach(function(link) {
             var element = {
-                id: link.id,
+                name: link.id,
                 referenceName: link.attributes.mReference,
                 source: {},
                 target: {},
-                attributes: {}
+                attributes: [],
+                attributeValues: {},
+                methods: []
             };
             // In the Metamodel a connection can have multiple sources/targets
             // but in joint.js this is not possible
