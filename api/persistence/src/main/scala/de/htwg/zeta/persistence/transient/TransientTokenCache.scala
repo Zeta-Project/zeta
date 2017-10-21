@@ -21,14 +21,14 @@ class TransientTokenCache extends TokenCache with Logging {
 
   private val tokens: TrieMap[UUID, Token] = TrieMap.empty
 
-  private val cleaningInterval = Duration(10, TimeUnit.MINUTES)
+  private val cleaningInterval = Duration(10, TimeUnit.MINUTES) // scalastyle:ignore magic.number
 
   private val lifeTime: Long = Duration(1, TimeUnit.HOURS).toMillis
 
   /** Schedule the CleanUp job. */
   ActorSystem("TransientTokenCache").scheduler.schedule(cleaningInterval, cleaningInterval) {
     info("Cleaning expired tokens")
-    val expired = System.currentTimeMillis - lifeTime // scalastyle:ignore
+    val expired = System.currentTimeMillis - lifeTime
     tokens --= tokens.filter(n => n._2.lastUse > expired).keys
   }
 

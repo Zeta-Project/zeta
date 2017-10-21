@@ -52,7 +52,7 @@ object PersistenceMongoDb extends Logging {
     val configServer = getString(settingServer, defaultServer)
     val configPort = getInt(settingPort, defaultPort)
     val configDb = getString(settingDb, defaultDb)
-    info(s"Mongo connection: $configServer:$configPort")
+    info(s"Mongo connection: $configServer:$configPort") // scalastyle:ignore multiple.string.literals
     new MongoRepository(s"$configServer:$configPort", if (db.length == 0) configDb else db)
   }
 
