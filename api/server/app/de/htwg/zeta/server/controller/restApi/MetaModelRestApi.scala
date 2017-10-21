@@ -15,13 +15,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MClassUiFormat
-import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MetaModelEntityUiFormat
-import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MetaModelUiFormat
-import de.htwg.zeta.server.controller.restApi.metaModelUiFormat.MReferenceUiFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -39,7 +34,7 @@ import play.api.mvc.Result
  */
 class MetaModelRestApi @Inject()() extends Controller with Logging {
 
-  /** Lists all metamodels for the requesting user, provides HATEOAS links.
+  /** Lists all MetaModels for the requesting user, provides HATEOAS links.
    *
    * @param request The request
    * @return The result
@@ -104,7 +99,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     )
   }
 
-  /** Deletes whole metamodel incl. dsl definitions
+  /** Deletes whole MetaModel incl. dsl definitions
    *
    * @param id      MetaModel-Id
    * @param request request
@@ -118,56 +113,48 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     }
   }
 
-  /** returns whole metamodels incl. dsl definitions and HATEOAS links */
+  /** returns whole MetaModels incl. dsl definitions and HATEOAS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity =>
-      Ok(MetaModelEntityUiFormat.writes(metaModelEntity))
+      Ok(Json.toJson(metaModelEntity))
     )
   }
 
   /** returns pure MetaModel without dsl definitions */
   def getMetaModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
-      Ok(MetaModelUiFormat.writes(m.metaModel))
+    protectedRead(id, request, metaModelEntity => {
+      Ok(Json.toJson(metaModelEntity.metaModel))
     })
-  }
-
-  /** updates pure MetaModel without dsl definitions */
-  // FIXME Duplicate Function
-  def updateMetaModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    update(id)(request)
   }
 
   /** returns all MClasses of a specific MetaModel as Json Array */
   def getMClasses(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
-      val classes = m.metaModel.classMap.values.toList
-      Ok(JsArray(classes.map(MClassUiFormat.writes)))
+    protectedRead(id, request, metaModelEntity => {
+      Ok(Json.toJson(metaModelEntity.metaModel.classMap.values))
     })
   }
 
   /** returns all MReferences of a specific MetaModel as Json Array */
   def getMReferences(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
-      val references = m.metaModel.referenceMap.values.toList
-      Ok(JsArray(references.map(MReferenceUiFormat.writes)))
+    protectedRead(id, request, metaModelEntity => {
+      Ok(Json.toJson(metaModelEntity.metaModel.referenceMap.values))
     })
   }
 
   /** returns specific MClass of a specific MetaModel as Json Object */
   def getMClass(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
-      m.metaModel.classMap.get(name).map((clazz: MClass) =>
-        Ok(MClassUiFormat.writes(clazz))
+    protectedRead(id, request, metaModelEntity => {
+      metaModelEntity.metaModel.classMap.get(name).map(clazz =>
+        Ok(Json.toJson(clazz))
       ).getOrElse(NotFound)
     })
   }
 
   /** returns specific MReference of a specific MetaModel as Json Object */
   def getMReference(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
-      m.metaModel.referenceMap.get(name).map((reference: MReference) =>
-        Ok(MReferenceUiFormat.writes(reference))
+    protectedRead(id, request, metaModelEntity => {
+      metaModelEntity.metaModel.referenceMap.get(name).map((reference: MReference) =>
+        Ok(Json.toJson(reference))
       ).getOrElse(NotFound)
     })
   }
@@ -211,7 +198,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
       },
       shape => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
-          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
+          Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -228,7 +215,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
       },
       style => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
-          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
+          Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -245,7 +232,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
       },
       diagram => {
         restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
-          Ok(MetaModelUiFormat.writes(metaModelEntity.metaModel))
+          Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -255,9 +242,8 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
 
   /** updates method code */
   def updateClassMethodCode(metaModelId: UUID, className: String, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    println("updateClassMethodCode")
     request.body.asText.fold(
-      Future.successful(BadRequest("MethodError"))
+      Future.successful(BadRequest("ClassMethodError"))
     ) { code =>
       restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.classes).using { classes =>
         val clazz = classes.find(_.name == className).get
@@ -275,7 +261,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
   /** updates method code */
   def updateReferenceMethodCode(metaModelId: UUID, referenceName: String, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     request.body.asText.fold(
-      Future.successful(BadRequest("MethodError"))
+      Future.successful(BadRequest("ReferenceMethodError"))
     ) { code =>
       restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.references).using { references =>
         val reference = references.find(_.name == referenceName).get
@@ -291,9 +277,9 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
   }
 
   /** updates method code */
-  def updateMainMethodCode(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def updateCommonMethodCode(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     request.body.asText.fold(
-      Future.successful(BadRequest("MethodError"))
+      Future.successful(BadRequest("CommonMethodError"))
     ) { code =>
       restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.methods).using { methods =>
         val method = methods.find(_.name == methodName).get

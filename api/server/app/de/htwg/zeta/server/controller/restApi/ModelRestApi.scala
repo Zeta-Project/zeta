@@ -10,10 +10,6 @@ import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.EdgeFormat
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelEntityFormat
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.ModelFormat
-import de.htwg.zeta.server.controller.restApi.modelUiFormat.NodeFormat
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -38,8 +34,8 @@ class ModelRestApi() extends Controller with Logging {
     val repo = restrictedAccessRepository(request.identity.id).modelEntity
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read))
-    }.map((list: List[ModelEntity]) =>
-      Ok(JsArray(list.map(ModelEntityFormat.writes)))
+    }.map(list =>
+      Ok(Json.toJson(list))
     ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -58,7 +54,7 @@ class ModelRestApi() extends Controller with Logging {
           model = model
         )
       ).map { modelEntity =>
-        Ok(ModelEntityFormat.writes(modelEntity))
+        Ok(Json.toJson(modelEntity))
       }).recover {
       case e: Exception => Results.BadRequest(e.getMessage)
     }
@@ -91,24 +87,6 @@ class ModelRestApi() extends Controller with Logging {
     )
   }
 
-  /*
- ModelUiFormat.futureReads(request.identity.id, request.body).flatMap(jsRes => {
-   jsRes.fold(
-     faulty => {
-       faulty.foreach(error(_))
-       Future.successful(BadRequest(JsError.toJson(faulty)))
-     },
-     model => {
-       restrictedAccessRepository(request.identity.id).modelEntity.update(id, _.copy(model = model)).map {
-         updated =>
-           Ok(ModelEntityFormat.writes(updated))
-       }.recover {
-         case e: Exception => Results.BadRequest(e.getMessage)
-       }
-     }
-   )
- }) */
-
   /** updates model definition only */
   // FIXME duplicate method
   def updateModel(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
@@ -118,20 +96,20 @@ class ModelRestApi() extends Controller with Logging {
   /** returns whole model structure incl. HATEOS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, modelEntity =>
-      Ok(ModelEntityFormat.writes(modelEntity))
+      Ok(Json.toJson(modelEntity))
     )
   }
 
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => Ok(ModelFormat.writes(m.model)))
+    protectedRead(id, request, (m: ModelEntity) => Ok(Json.toJson(m.model)))
   }
 
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val nodes = m.model.nodeMap.values
-      Ok(JsArray(nodes.map(NodeFormat.writes).toList))
+      Ok(Json.toJson(nodes))
     })
   }
 
@@ -139,7 +117,7 @@ class ModelRestApi() extends Controller with Logging {
   def getNode(modelId: UUID, nodeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
       m.model.nodeMap.get(nodeName) match {
-        case Some(node: Node) => Ok(NodeFormat.writes(node))
+        case Some(node: Node) => Ok(Json.toJson(node))
         case None => NotFound
       }
     })
@@ -149,7 +127,7 @@ class ModelRestApi() extends Controller with Logging {
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
       val edges = m.model.edgeMap.values
-      Ok(JsArray(edges.map(EdgeFormat.writes).toList))
+      Ok(Json.toJson(edges))
     })
   }
 
@@ -157,7 +135,7 @@ class ModelRestApi() extends Controller with Logging {
   def getEdge(modelId: UUID, edgeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
       m.model.edgeMap.get(edgeName) match {
-        case Some(edge) => Ok(EdgeFormat.writes(edge))
+        case Some(edge) => Ok(Json.toJson(edge))
         case None => NotFound
       }
     })
@@ -226,7 +204,7 @@ class ModelRestApi() extends Controller with Logging {
       modelEntity <- repo.modelEntity.read(modelId)
       metaModelEntity <- repo.metaModelEntity.read(modelEntity.model.metaModelId)
     } yield {
-      val files = experimental.Generator.generate(metaModelEntity.metaModel, modelEntity).toList
+      val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.metaModel, modelEntity).toList
       Ok(views.html.codeViewer.ScalaCodeViewer(files))
     }
   }
