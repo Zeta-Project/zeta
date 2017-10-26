@@ -5,8 +5,6 @@ import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import play.api.libs.json.Json
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
@@ -32,20 +30,28 @@ object Method {
 
   private val sName = "name"
 
+  def playJsonReads(enums: Seq[MEnum]): Reads[Method] = Reads { json =>
+    for {
+      name <- (json \ sName).validate[String]
+      parameters <- (json \ "parameters").validate(playJsonReadsParameterMap(enums))
+      description <- (json \ "description").validate[String]
+      returnType <- (json \ "returnType").validate(AttributeType.playJsonReads(enums))
+      code <- (json \ "code").validate[String]
+    } yield {
+      Method(name, parameters, description, returnType, code)
+    }
+  }
 
-  def playJsonReads(enums: Seq[MEnum]): Reads[Method] = new Reads[Method] {
+  private def playJsonReadsParameterMap(enums: Seq[MEnum]): Reads[SortedMap[String, AttributeType]] = Reads { json =>
+    json.validate(Reads.list(playJsonReadsParameter(enums))).map(SortedMap(_: _*))
+  }
 
-    // TODO implement sortedMap serializer for parameters
-    override def reads(json: JsValue): JsResult[Method] = {
-      for {
-        name <- (json \ sName).validate[String]
-        parameters <- (json \ "parameters").validate(Reads.map(AttributeType.playJsonReads(enums))) // TODO this is not sorted
-        description <- (json \ "description").validate[String]
-        returnType <- (json \ "returnType").validate(AttributeType.playJsonReads(enums))
-        code <- (json \ "code").validate[String]
-      } yield {
-        Method(name, SortedMap(/* TODO */ parameters.toArray: _*), description, returnType, code)
-      }
+  private def playJsonReadsParameter(enums: Seq[MEnum]): Reads[(String, AttributeType)] = Reads { json =>
+    for {
+      name <- (json \ sName).validate[String]
+      typ <- (json \ "typ").validate(AttributeType.playJsonReads(enums))
+    } yield {
+      (name, typ)
     }
   }
 

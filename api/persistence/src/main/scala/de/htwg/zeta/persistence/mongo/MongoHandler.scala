@@ -41,9 +41,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -54,8 +54,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import reactivemongo.bson.BSONArray
 import reactivemongo.bson.BSONBoolean
@@ -223,19 +223,22 @@ object MongoHandler {
 
   private implicit val mAttributeHandler: BSONDocumentHandler[MAttribute] = Macros.handler[MAttribute]
 
-  private implicit object ParametersHandler extends BSONWriter[SortedMap[String, AttributeType], BSONArray]
-    with BSONReader[ BSONArray, SortedMap[String, AttributeType]] {
+  private implicit object ParametersHandler extends BSONDocumentWriter[SortedMap[String, AttributeType]]
+    with BSONDocumentReader[SortedMap[String, AttributeType]] {
 
-    override def write(parameters: SortedMap[String, AttributeType]): BSONArray = {
-      null // TODO implement
+    override def read(doc: BSONDocument): SortedMap[String, AttributeType] = {
+      SortedMap(doc.elements.map { tuple =>
+        tuple.name -> AttributeTypeHandler.read(tuple.value.seeAsTry[BSONDocument].get)
+      }: _*)
     }
 
-    override def read(array: BSONArray): SortedMap[String, AttributeType] = {
-      null // TODO implement
+    override def write(parameters: SortedMap[String, AttributeType]): BSONDocument = {
+      BSONDocument(parameters.map { tuple =>
+        tuple._1 -> AttributeTypeHandler.write(tuple._2)
+      })
     }
 
   }
-
 
   private implicit val methodHandler: BSONDocumentHandler[Method] = Macros.handler[Method]
 

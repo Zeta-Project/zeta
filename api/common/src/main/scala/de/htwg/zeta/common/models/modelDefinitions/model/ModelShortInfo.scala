@@ -4,8 +4,8 @@ import java.util.UUID
 
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json.Json
-import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 import play.api.libs.json.__
 
 
@@ -26,5 +26,5 @@ object ModelShortInfo {
       (__ \ "model" \ "name").read[String]
     ) (ModelShortInfo.apply _)
 
-  implicit val writes: OWrites[ModelShortInfo] = Json.writes[ModelShortInfo]
+  implicit val writes: Writes[ModelShortInfo] = Json.writes[ModelShortInfo]
 }

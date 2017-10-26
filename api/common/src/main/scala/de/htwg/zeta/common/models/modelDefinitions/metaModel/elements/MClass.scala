@@ -8,8 +8,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import play.api.libs.json.Json
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
@@ -157,33 +155,30 @@ object MClass {
 
   }
 
-  def playJsonReads(enums: Seq[MEnum]): Reads[MClass] = {
-    new Reads[MClass] {
-      override def reads(json: JsValue): JsResult[MClass] = {
-        for {
-          name <- (json \ "name").validate[String]
-          description <- (json \ "description").validate[String]
-          abstractness <- (json \ "abstractness").validate[Boolean]
-          superTypeNames <- (json \ "superTypeNames").validate(Reads.list[String])
-          inputs <- (json \ "inputs").validate(Reads.list[MReferenceLinkDef])
-          outputs <- (json \ "outputs").validate(Reads.list[MReferenceLinkDef])
-          attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
-          methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
-        } yield {
-          MClass(
-            name = name,
-            description = description,
-            abstractness = abstractness,
-            superTypeNames = superTypeNames,
-            inputs = inputs,
-            outputs = outputs,
-            attributes = attributes,
-            methods = methods
-          )
-        }
-      }
+  def playJsonReads(enums: Seq[MEnum]): Reads[MClass] = Reads { json =>
+    for {
+      name <- (json \ "name").validate[String]
+      description <- (json \ "description").validate[String]
+      abstractness <- (json \ "abstractness").validate[Boolean]
+      superTypeNames <- (json \ "superTypeNames").validate(Reads.list[String])
+      inputs <- (json \ "inputs").validate(Reads.list[MReferenceLinkDef])
+      outputs <- (json \ "outputs").validate(Reads.list[MReferenceLinkDef])
+      attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
+      methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
+    } yield {
+      MClass(
+        name = name,
+        description = description,
+        abstractness = abstractness,
+        superTypeNames = superTypeNames,
+        inputs = inputs,
+        outputs = outputs,
+        attributes = attributes,
+        methods = methods
+      )
     }
   }
+
 
   implicit val playJsonWrites: Writes[MClass] = Json.writes[MClass]
 
