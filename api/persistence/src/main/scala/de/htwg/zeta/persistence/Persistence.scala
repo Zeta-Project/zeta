@@ -52,8 +52,9 @@ object PersistenceMongoDb extends Logging {
     val configServer = getString(settingServer, defaultServer)
     val configPort = getInt(settingPort, defaultPort)
     val configDb = getString(settingDb, defaultDb)
+    val usernameAndPassword = getUsernameAndPassword()
     info(s"Mongo connection: $configServer:$configPort")
-    new MongoRepository(s"$configServer:$configPort", if (db.length == 0) configDb else db)
+    new MongoRepository(s"$usernameAndPassword$configServer:$configPort/$configDb", if (db.length == 0) configDb else db)
   }
 
   private def getString(path: String, default: String): String = {
@@ -62,5 +63,11 @@ object PersistenceMongoDb extends Logging {
 
   private def getInt(path: String, default: String): String = {
     if (config.hasPath(path)) config.getInt(path).toString else default
+  }
+
+  private def getUsernameAndPassword(): String = {
+    val username = getString("zeta.mongodb.username", "")
+    val password = getString("zeta.mongodb.password", "")
+    if (username.isEmpty || password.isEmpty) "" else s"$username:$password@"
   }
 }
