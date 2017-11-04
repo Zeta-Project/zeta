@@ -1,22 +1,18 @@
 @import de.htwg.zeta.common.models.entity.User
-@(title: String, user: Option[User])(content: Html)
+@(title: String, user: Option[User], styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf8"/>
-        <link rel="icon" type="image/png" href="@routes.ScalaRoutes.getAssets("webpage/images/favicon.png")">
+        <link rel="icon" type="image/png" href="@routes.ScalaRoutes.getStaticFiles("images/favicon.png")">
 
-        <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/bootstrap/css/bootstrap.min.css")">
-        <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("webpage/stylesheets/main.css")">
-
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/webcomponentsjs/webcomponents.min.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/jquery/jquery.min.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootstrap/js/bootstrap.min.js")"></script>
+        @styles
         <title>@title</title>
     </head>
     <body>
         @views.html.webpage.WebpageNavBar(user)
         <div class="container">@content</div>
+        @scripts
     </body>
 </html>
