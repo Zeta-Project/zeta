@@ -17,7 +17,7 @@ services:
     volumes:
       - ./mongodb:/data/db
     ports:
-      - localhost:27017:27017
+      - 27017:27017
 
   api:
     image: 1science/sbt:0.13-oracle-jdk-8
@@ -26,14 +26,15 @@ services:
       - ./sbt/server:/root
     environment:
       - APPLICATION_SECRET=superSecret
+      - ZETA_MONGODB_SERVER=mongodb
     stdin_open: true
     ports:
-      - localhost:9000:9000
+      - 9000:9000
     links:
       - mongodb
       - webapp
       - generatorControl
-    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production -Dzeta.mongodb.server=mongodb", "run"]
+    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production", "run"]
 
   webapp:
     image: node:6-alpine

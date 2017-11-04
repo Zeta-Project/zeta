@@ -261,7 +261,9 @@ private class WorkProcessor(
     List(
       s"ZETA_MONGODB_SERVER=${config.getString("zeta.mongodb.server")}",
       s"ZETA_MONGODB_PORT=${config.getInt("zeta.mongodb.port")}",
-      s"ZETA_MONGODB_DB=${config.getString("zeta.mongodb.db")}"
+      s"ZETA_MONGODB_DB=${config.getString("zeta.mongodb.db")}",
+      s"ZETA_MONGODB_USERNAME=${config.getString("zeta.mongodb.username")}",
+      s"ZETA_MONGODB_PASSWORD=${config.getString("zeta.mongodb.password")}"
     )
   }
 
