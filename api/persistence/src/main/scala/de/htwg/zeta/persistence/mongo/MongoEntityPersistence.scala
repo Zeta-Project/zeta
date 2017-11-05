@@ -118,7 +118,7 @@ private object MongoEntityPersistence {
   object UuidDocumentReader extends BSONDocumentReader[UUID] {
 
     override def read(doc: BSONDocument): UUID = {
-      doc.getAs[UUID](sId).get
+      UUID.fromString(doc.getAs[String](sId).get)
     }
 
   }
