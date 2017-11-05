@@ -8,9 +8,9 @@ import scala.util.Success
 
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.UuidDocumentReader
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.idProjection
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence.sId
-import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
@@ -28,6 +28,8 @@ class MongoEntityPersistence[E <: Entity](
 
   private val collection: Future[BSONCollection] = {
     database.map(_.collection[BSONCollection](entityTypeName))
+  }.andThen { case Success(col) =>
+    col.create()
   }.andThen { case Success(col) =>
     col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
   }
@@ -77,10 +79,11 @@ class MongoEntityPersistence[E <: Entity](
    * @return Future containing all id's of the entity type
    */
   override def readAllIds(): Future[Set[UUID]] = {
+    implicit val reader: BSONDocumentReader[UUID] = UuidDocumentReader
     collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, idProjection).cursor[IdOnlyEntity]().
-        collect(-1, Cursor.FailOnError[Set[IdOnlyEntity]]())
-    }.map(_.map(_.id))
+      collection.find(BSONDocument.empty, idProjection).cursor[UUID]().
+        collect(-1, Cursor.FailOnError[Set[UUID]]())
+    }
   }
 
   /** Update a entity.
@@ -111,5 +114,13 @@ private object MongoEntityPersistence {
   private val sId = "id"
 
   private val idProjection = BSONDocument("_id" -> 0, sId -> 1)
+
+  object UuidDocumentReader extends BSONDocumentReader[UUID] {
+
+    override def read(doc: BSONDocument): UUID = {
+      doc.getAs[UUID](sId).get
+    }
+
+  }
 
 }

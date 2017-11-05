@@ -7,16 +7,14 @@ import scala.util.Success
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoPersistence
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
-import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapper
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWrapperHandler
-import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoHandler
-import de.htwg.zeta.persistence.mongo.MongoHandler.PasswordInfoWrapper
-import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoWrapperHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoReader
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWriter
+import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoReader
+import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoWriter
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.collectionName
-import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.keyProjection
-import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.sAuthInfo
+import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.loginInfoProjection
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.sLoginInfo
+import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.sPasswordInfo
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
@@ -30,6 +28,8 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
   private val collection: Future[BSONCollection] = {
     database.map(_.collection[BSONCollection](collectionName))
   }.andThen { case Success(col) =>
+    col.create()
+  }.andThen { case Success(col) =>
     col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
   }
 
@@ -40,8 +40,8 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
    */
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     collection.flatMap { collection =>
-      collection.find(BSONDocument(sLoginInfo -> loginInfo)).requireOne[PasswordInfoWrapper]
-    }.map(wrapper => Some(wrapper.authInfo)).recover{case _ => None}
+      collection.find(BSONDocument(sLoginInfo -> loginInfo)).one[PasswordInfo]
+    }
   }
 
   /** Adds new auth info for the given login info.
@@ -52,7 +52,7 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
    */
   override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     collection.flatMap { collection =>
-      collection.insert(BSONDocument(sLoginInfo -> loginInfo, sAuthInfo -> authInfo)).flatMap(_ =>
+      collection.insert(BSONDocument(sLoginInfo -> loginInfo, sPasswordInfo -> authInfo)).flatMap(_ =>
         Future.successful(authInfo))
     }
   }
@@ -65,7 +65,7 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
    */
   override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     collection.flatMap { collection =>
-      collection.update(BSONDocument(sLoginInfo -> loginInfo), BSONDocument(sLoginInfo -> loginInfo, sAuthInfo -> authInfo)).flatMap(result =>
+      collection.update(BSONDocument(sLoginInfo -> loginInfo), BSONDocument(sLoginInfo -> loginInfo, sPasswordInfo -> authInfo)).flatMap(result =>
         if (result.nModified == 1) {
           Future.successful(authInfo)
         } else {
@@ -96,7 +96,7 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
         if (result.n == 1) {
           Future.successful(())
         } else {
-          Future.failed(new IllegalStateException("couldn't delete the file"))
+          Future.failed(new IllegalStateException("couldn't delete the LoginInfo"))
         }
       )
     }
@@ -108,20 +108,20 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
    */
   override def readAllKeys(): Future[Set[LoginInfo]] = {
     collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfoWrapper]().
-        collect(-1, Cursor.FailOnError[Set[LoginInfoWrapper]]())
-    }.map(_.map(_.loginInfo))
+      collection.find(BSONDocument.empty, loginInfoProjection).cursor[LoginInfo]().
+        collect(-1, Cursor.FailOnError[Set[LoginInfo]]())
+    }
   }
+
 }
+
 
 private object MongoPasswordInfoPersistence {
 
   private val collectionName = "PasswordInfo"
-
   private val sLoginInfo = "loginInfo"
+  private val sPasswordInfo = "passwordInfo"
 
-  private val sAuthInfo = "authInfo"
-
-  private val keyProjection = BSONDocument("_id" -> 0, sLoginInfo -> 1)
+  private val loginInfoProjection = BSONDocument("_id" -> 0, sLoginInfo -> 1)
 
 }

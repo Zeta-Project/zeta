@@ -8,11 +8,9 @@ import scala.util.Success
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
-import de.htwg.zeta.persistence.mongo.MongoHandler.UserIdOnlyEntity
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoHandler
-import de.htwg.zeta.persistence.mongo.MongoHandler.userIdOnlyEntityHandler
-import de.htwg.zeta.persistence.mongo.MongoHandler.LoginInfoWrapper
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWrapperHandler
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoReader
+import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWriter
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.UserIdReader
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sLoginInfo
@@ -23,12 +21,15 @@ import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.BSONDocumentReader
 
 
 class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPersistence {
 
   private val collection: Future[BSONCollection] = {
     database.map(_.collection[BSONCollection](collectionName))
+  }.andThen { case Success(col) =>
+    col.create()
   }.andThen { case Success(col) =>
     col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
   }
@@ -53,8 +54,9 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    * @return The id of the User.
    */
   override def read(loginInfo: LoginInfo): Future[UUID] = {
+    implicit val reader: BSONDocumentReader[UUID] = UserIdReader
     collection.flatMap { collection =>
-      collection.find(BSONDocument(sLoginInfo -> loginInfo)).requireOne[UserIdOnlyEntity].map(_.userId)
+      collection.find(BSONDocument(sLoginInfo -> loginInfo)).requireOne[UUID]
     }
   }
 
@@ -101,9 +103,9 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
    */
   override def readAllKeys(): Future[Set[LoginInfo]] = {
     collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfoWrapper]().
-        collect(-1, Cursor.FailOnError[Set[LoginInfoWrapper]]())
-    }.map(_.map(_.loginInfo))
+      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfo]().
+        collect(-1, Cursor.FailOnError[Set[LoginInfo]]())
+    }
   }
 
 }
@@ -117,5 +119,13 @@ private object MongoLoginInfoPersistence {
   private val sUserId = "userId"
 
   private val keyProjection = BSONDocument("_id" -> 0, sLoginInfo -> 1)
+
+  private implicit object UserIdReader extends BSONDocumentReader[UUID] {
+
+    override def read(doc: BSONDocument): UUID = {
+      UUID.fromString(doc.getAs[String](sUserId).get)
+    }
+
+  }
 
 }

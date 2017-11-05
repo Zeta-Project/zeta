@@ -13,7 +13,6 @@ import de.htwg.zeta.persistence.mongo.MongoFilePersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sId
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sName
 import de.htwg.zeta.persistence.mongo.MongoHandler.FileKey
-import de.htwg.zeta.persistence.mongo.MongoHandler.IdOnlyEntity
 import de.htwg.zeta.persistence.mongo.MongoHandler.fileHandler
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
@@ -27,18 +26,9 @@ class MongoFilePersistence(database: Future[DefaultDB]) extends FilePersistence 
   private val collection: Future[BSONCollection] = {
     database.map(_.collection[BSONCollection](collectionName))
   }.andThen { case Success(col) =>
+    col.create()
+  }.andThen { case Success(col) =>
     col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending, sName -> IndexType.Ascending), unique = true))
-  }
-
-  /** Get the id's of all entity.
-   *
-   * @return Future containing all id's of the entity type
-   */
-  def readAllIdsOld(): Future[Set[UUID]] = {
-    collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, keyProjection).cursor[IdOnlyEntity]().
-        collect(-1, Cursor.FailOnError[Set[IdOnlyEntity]]())
-    }.map(_.map(_.id))
   }
 
   /** Create a new file.
