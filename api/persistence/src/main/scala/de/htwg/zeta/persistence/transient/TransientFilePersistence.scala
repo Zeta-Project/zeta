@@ -1,6 +1,7 @@
 package de.htwg.zeta.persistence.transient
 
 import java.util.UUID
+import javax.inject.Singleton
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
@@ -11,6 +12,7 @@ import de.htwg.zeta.persistence.general.FilePersistence
 /**
  * Transient Implementation of FilePersistence.
  */
+@Singleton
 class TransientFilePersistence extends FilePersistence {
 
   private case class Key(id: UUID, name: String)

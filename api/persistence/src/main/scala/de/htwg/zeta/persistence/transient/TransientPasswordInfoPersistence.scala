@@ -1,5 +1,7 @@
 package de.htwg.zeta.persistence.transient
 
+import javax.inject.Singleton
+
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
@@ -10,6 +12,7 @@ import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 /**
  * Transient implementation of the PasswordInfoPersistence.
  */
+@Singleton
 class TransientPasswordInfoPersistence extends PasswordInfoPersistence {
 
   private val cache: TrieMap[LoginInfo, PasswordInfo] = TrieMap.empty

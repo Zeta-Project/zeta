@@ -1,6 +1,7 @@
 package de.htwg.zeta.persistence.transient
 
 import java.util.UUID
+import javax.inject.Singleton
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
@@ -11,6 +12,7 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
 /**
  * Transient Implementation of LoginInfoPersistence.
  */
+@Singleton
 class TransientLoginInfoPersistence extends LoginInfoPersistence {
 
   private val cache: TrieMap[LoginInfo, UUID] = TrieMap.empty

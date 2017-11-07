@@ -1,6 +1,7 @@
 package de.htwg.zeta.persistence.transient
 
 import java.util.UUID
+import javax.inject.Singleton
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -13,6 +14,7 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  *
  * @tparam E type of the entity
  */
+@Singleton
 class TransientEntityPersistence[E <: Entity] extends EntityPersistence[E] { // scalastyle:ignore
 
   private val cache: TrieMap[UUID, E] = TrieMap.empty
