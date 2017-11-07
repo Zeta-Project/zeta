@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.module
+package de.htwg.zeta.persistence
 
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -15,12 +15,17 @@ import com.google.inject.Provides
 import com.google.inject.name.Names
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
 import de.htwg.zeta.persistence.actorCache.ActorCacheEntityPersistence
+import de.htwg.zeta.persistence.actorCache.ActorCacheFilePersistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.FilePersistence
 import de.htwg.zeta.persistence.mongo.MongoEntityPersistence
 import de.htwg.zeta.persistence.mongo.MongoHandler
+import de.htwg.zeta.persistence.mongo.MongoFilePersistence
 import de.htwg.zeta.persistence.transient.TransientTokenCache
 import grizzled.slf4j.Logging
 import net.codingwell.scalaguice.ScalaModule
@@ -39,7 +44,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   def configure(): Unit = {
     bind[TokenCache].to[TransientTokenCache]
 
-    bind[AccessRestrictedEntityPersistence[User]]
+    bind[AccessRestrictedEntityPersistence[MetaModelEntity]]
 
     bind[ActorSystem].annotatedWith(Names.named("actorCache-system")).toInstance(ActorSystem("actorCache"))
     bind[Int].annotatedWith(Names.named("actorCache-numberActorsPerType")).toInstance(10)
@@ -100,5 +105,51 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
     timeout
   )
 
+  @Provides @Singleton
+  def provideMetaModelEntityPersistence(
+      connection: Future[DefaultDB],
+      @Named("actorCache-system") system: ActorSystem,
+      @Named("actorCache-numberActorsPerType") numberActorsPerType: Int,
+      @Named("actorCache-cacheDuration") cacheDuration: FiniteDuration,
+      @Named("actorCache-timeout") timeout: Timeout
+  ): EntityPersistence[MetaModelEntity] = new ActorCacheEntityPersistence[MetaModelEntity](
+    new MongoEntityPersistence[MetaModelEntity](connection, MongoHandler.metaModelEntityHandler),
+    system,
+    numberActorsPerType,
+    cacheDuration,
+    timeout
+  )
+
+  @Provides @Singleton
+  def provideModelEntityPersistence(
+      connection: Future[DefaultDB],
+      @Named("actorCache-system") system: ActorSystem,
+      @Named("actorCache-numberActorsPerType") numberActorsPerType: Int,
+      @Named("actorCache-cacheDuration") cacheDuration: FiniteDuration,
+      @Named("actorCache-timeout") timeout: Timeout
+  ): EntityPersistence[ModelEntity] = new ActorCacheEntityPersistence[ModelEntity](
+    new MongoEntityPersistence[ModelEntity](connection, MongoHandler.modelEntityHandler),
+    system,
+    numberActorsPerType,
+    cacheDuration,
+    timeout
+  )
+
+  @Provides @Singleton
+  def provideFilePersistence(
+      connection: Future[DefaultDB],
+      @Named("actorCache-system") system: ActorSystem,
+      @Named("actorCache-numberActorsPerType") numberActorsPerType: Int,
+      @Named("actorCache-cacheDuration") cacheDuration: FiniteDuration,
+      @Named("actorCache-timeout") timeout: Timeout
+  ): FilePersistence = new ActorCacheFilePersistence (
+    new MongoFilePersistence(connection),
+    system,
+    numberActorsPerType,
+    cacheDuration,
+    timeout
+  )
 
 }
+
+

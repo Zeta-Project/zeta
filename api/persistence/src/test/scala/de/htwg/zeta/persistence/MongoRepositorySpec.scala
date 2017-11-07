@@ -1,7 +1,6 @@
 package de.htwg.zeta.persistence
 
 import de.htwg.zeta.persistence.behavior.RepositoryBehavior
-import de.htwg.zeta.persistence.mongo.MongoRepository
 
 /**
  * MongoRepositorySpec.

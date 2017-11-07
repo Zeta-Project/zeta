@@ -9,7 +9,6 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.persistence.Persistence
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -18,13 +17,18 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.reflect.ClassTag
 import scala.reflect.runtime
 import scala.tools.reflect.ToolBox
+
+import com.google.inject.Guice
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.FilePersistence
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session: ScallopOption[String] = opt[String]()
@@ -65,7 +69,12 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val mat = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  val repository = Persistence.fullAccessRepository
+val x = implicitly[EntityPersistence[MetaModelEntity]]
+
+  private val injector = Guice.createInjector(new PersistenceModule)
+  val modelEntityPersistence = injector.getInstance(classOf[EntityPersistence[ModelEntity]])
+  val filePersistence = injector.getInstance(classOf[FilePersistence])
+
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 
@@ -150,7 +159,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val start: Future[Transformer] = generator.prepare(filter.instanceIds.toList)
     val futures = filter.instanceIds.foldLeft(start) {
       case (future, modelId) => future.flatMap { generator =>
-        repository.modelEntity.read(modelId).flatMap { entity =>
+        repository.read(modelId).flatMap { entity =>
           generator.transform(entity)
         }
       }
