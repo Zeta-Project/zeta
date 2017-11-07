@@ -28,8 +28,8 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
  */
 @Singleton
 class ActorCacheLoginInfoPersistence @Inject()(
-    system: ActorSystem,
     underlying: LoginInfoPersistence,
+    system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout

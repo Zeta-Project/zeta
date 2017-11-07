@@ -28,8 +28,8 @@ import de.htwg.zeta.persistence.general.FilePersistence
  */
 @Singleton
 class ActorCacheFilePersistence @Inject()(
-    system: ActorSystem,
     underlying: FilePersistence,
+    system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout

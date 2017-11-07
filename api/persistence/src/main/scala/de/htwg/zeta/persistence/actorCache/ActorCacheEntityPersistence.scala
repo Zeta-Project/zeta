@@ -28,8 +28,8 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  */
 @Singleton
 class ActorCacheEntityPersistence[E <: Entity] @Inject()(
-    system: ActorSystem,
     underlying: EntityPersistence[E],
+    system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout

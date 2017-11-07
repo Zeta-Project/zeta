@@ -1,7 +1,5 @@
 package de.htwg.zeta.persistence.behavior
 
-import scala.concurrent.Future
-
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.common.models.entity.EventDrivenTask
@@ -30,33 +28,46 @@ import de.htwg.zeta.persistence.fixtures.ModelEntityFixtures
 import de.htwg.zeta.persistence.fixtures.SettingsFixtures
 import de.htwg.zeta.persistence.fixtures.TimedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.UserFixtures
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 
 
 /** PersistenceBehavior. */
 trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceBehavior
   with LoginInfoPersistenceBehavior with PasswordInfoPersistenceBehavior {
 
-  def repositoryBehavior(repository: Repository, restricted: Boolean): Unit = { // scalastyle:ignore
+  def persistenceBehavior(
+      accessAuthorisationPersistence: EntityPersistence[AccessAuthorisation],
+      bondedTaskPersistence: EntityPersistence[BondedTask],
+      eventDrivenTaskPersistence: EntityPersistence[EventDrivenTask],
+      filterPersistence: EntityPersistence[Filter],
+      filterImagePersistence: EntityPersistence[FilterImage],
+      generatorPersistence: EntityPersistence[Generator],
+      generatorImagePersistence: EntityPersistence[GeneratorImage],
+      logPersistence: EntityPersistence[Log],
+      metaModelEntityPersistence: EntityPersistence[MetaModelEntity],
+      metaModelReleasePersistence: EntityPersistence[MetaModelRelease],
+      modelEntityPersistence: EntityPersistence[ModelEntity],
+      settingsPersistence: EntityPersistence[Settings],
+      timedTaskPersistence: EntityPersistence[TimedTask],
+      userPersistence: EntityPersistence[User],
+      filePersistence: FilePersistence,
+      loginInfoPersistence: LoginInfoPersistence,
+      passwordInfoPersistence: PasswordInfoPersistence
+  ): Unit = { // scalastyle:ignore
 
-    if (restricted) {
-      it should "throw an UnsupportedOperationException when accessing AccessAuthorisation" in {
-        recoverToSucceededIf[UnsupportedOperationException] {
-          Future(repository.accessAuthorisation)
-        }
-      }
-    } else {
-      "AccessAuthorisation" should behave like entityPersistenceBehavior[AccessAuthorisation](
-        repository.accessAuthorisation,
-        AccessAuthorisationFixtures.entity1,
-        AccessAuthorisationFixtures.entity2,
-        AccessAuthorisationFixtures.entity2Updated,
-        AccessAuthorisationFixtures.entity3
-      )
-    }
+    "AccessAuthorisation" should behave like entityPersistenceBehavior[AccessAuthorisation](
+      accessAuthorisationPersistence,
+      AccessAuthorisationFixtures.entity1,
+      AccessAuthorisationFixtures.entity2,
+      AccessAuthorisationFixtures.entity2Updated,
+      AccessAuthorisationFixtures.entity3
+    )
 
     "BondedTask" should behave like entityPersistenceBehavior[BondedTask](
-      repository.bondedTask,
+      bondedTaskPersistence,
       BondedTaskFixtures.entity1,
       BondedTaskFixtures.entity2,
       BondedTaskFixtures.entity2Updated,
@@ -64,7 +75,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "EventDrivenTask" should behave like entityPersistenceBehavior[EventDrivenTask](
-      repository.eventDrivenTask,
+      eventDrivenTaskPersistence,
       EventDrivenTaskFixtures.entity1,
       EventDrivenTaskFixtures.entity2,
       EventDrivenTaskFixtures.entity2Updated,
@@ -72,7 +83,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "Filter" should behave like entityPersistenceBehavior[Filter](
-      repository.filter,
+      filterPersistence,
       FilterTestFixtures.entity1,
       FilterTestFixtures.entity2,
       FilterTestFixtures.entity2Updated,
@@ -80,7 +91,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "FilterImage" should behave like entityPersistenceBehavior[FilterImage](
-      repository.filterImage,
+      filterImagePersistence,
       FilterImageTestFixtures.entity1,
       FilterImageTestFixtures.entity2,
       FilterImageTestFixtures.entity2Updated,
@@ -88,7 +99,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "Generator" should behave like entityPersistenceBehavior[Generator](
-      repository.generator,
+      generatorPersistence,
       GeneratorFixtures.entity1,
       GeneratorFixtures.entity2,
       GeneratorFixtures.entity2Updated,
@@ -96,7 +107,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "GeneratorImage" should behave like entityPersistenceBehavior[GeneratorImage](
-      repository.generatorImage,
+      generatorImagePersistence,
       GeneratorImageFixtures.entity1,
       GeneratorImageFixtures.entity2,
       GeneratorImageFixtures.entity2Updated,
@@ -104,7 +115,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "Log" should behave like entityPersistenceBehavior[Log](
-      repository.log,
+      logPersistence,
       LogFixtures.entity1,
       LogFixtures.entity2,
       LogFixtures.entity2Updated,
@@ -112,7 +123,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "MetaModelEntity" should behave like entityPersistenceBehavior[MetaModelEntity](
-      repository.metaModelEntity,
+      metaModelEntityPersistence,
       MetaModelEntityFixtures.entity1,
       MetaModelEntityFixtures.entity2,
       MetaModelEntityFixtures.entity2Updated,
@@ -120,7 +131,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "MetaModelRelease" should behave like entityPersistenceBehavior[MetaModelRelease](
-      repository.metaModelRelease,
+      metaModelReleasePersistence,
       MetaModelReleaseFixtures.entity1,
       MetaModelReleaseFixtures.entity2,
       MetaModelReleaseFixtures.entity2Updated,
@@ -128,7 +139,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "ModelEntity" should behave like entityPersistenceBehavior[ModelEntity](
-      repository.modelEntity,
+      modelEntityPersistence,
       ModelEntityFixtures.entity1,
       ModelEntityFixtures.entity2,
       ModelEntityFixtures.entity2Updated,
@@ -136,7 +147,7 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "Settings" should behave like entityPersistenceBehavior[Settings](
-      repository.settings,
+      settingsPersistence,
       SettingsFixtures.entity1,
       SettingsFixtures.entity2,
       SettingsFixtures.entity2Updated,
@@ -144,50 +155,27 @@ trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceB
     )
 
     "TimedTask" should behave like entityPersistenceBehavior[TimedTask](
-      repository.timedTask,
+      timedTaskPersistence,
       TimedTaskFixtures.entity1,
       TimedTaskFixtures.entity2,
       TimedTaskFixtures.entity2Updated,
       TimedTaskFixtures.entity3
     )
 
-    if (restricted) {
-      it should "throw an UnsupportedOperationException when accessing User" in {
-        recoverToSucceededIf[UnsupportedOperationException] {
-          Future(repository.user)
-        }
-      }
-    } else {
-      "User" should behave like entityPersistenceBehavior[User](
-        repository.user,
-        UserFixtures.entity1,
-        UserFixtures.entity2,
-        UserFixtures.entity2Updated,
-        UserFixtures.entity3
-      )
-    }
+    "User" should behave like entityPersistenceBehavior[User](
+      userPersistence,
+      UserFixtures.entity1,
+      UserFixtures.entity2,
+      UserFixtures.entity2Updated,
+      UserFixtures.entity3
+    )
 
-    "File" should behave like filePersistenceBehavior(repository.file)
+    "File" should behave like filePersistenceBehavior(filePersistence)
 
-    if (restricted) {
-      it should "throw an UnsupportedOperationException when accessing LoginInfo" in {
-        recoverToSucceededIf[UnsupportedOperationException] {
-          Future(repository.loginInfo)
-        }
-      }
-    } else {
-      "LoginInfo" should behave like loginInfoPersistenceBehavior(repository.loginInfo)
-    }
+    "LoginInfo" should behave like loginInfoPersistenceBehavior(loginInfoPersistence)
 
-    if (restricted) {
-      it should "throw an UnsupportedOperationException when accessing PasswordInfo" in {
-        recoverToSucceededIf[UnsupportedOperationException] {
-          Future(repository.passwordInfo)
-        }
-      }
-    } else {
-      "PasswordInfo" should behave like passwordInfoPersistenceBehavior(repository.passwordInfo)
-    }
+    "PasswordInfo" should behave like passwordInfoPersistenceBehavior(passwordInfoPersistence)
+
   }
 
 }

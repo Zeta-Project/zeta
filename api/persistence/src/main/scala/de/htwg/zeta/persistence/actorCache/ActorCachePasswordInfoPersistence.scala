@@ -29,8 +29,8 @@ import de.htwg.zeta.persistence.general.PasswordInfoPersistence
  */
 @Singleton
 class ActorCachePasswordInfoPersistence @Inject()(
-    system: ActorSystem,
     underlying: PasswordInfoPersistence,
+    system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout
