@@ -1,10 +1,11 @@
 package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Success
 
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityPersistence
@@ -18,20 +19,20 @@ import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentReader
-import reactivemongo.bson.BSONDocumentWriter
+import reactivemongo.bson.BSONDocumentHandler
 
-class MongoEntityPersistence[E <: Entity](
+@Singleton
+class MongoEntityPersistence[E <: Entity] @Inject()(
     database: Future[DefaultDB],
-    implicit val entityHandler: BSONDocumentWriter[E] with BSONDocumentReader[E])(
-    implicit manifest: Manifest[E])
-  extends EntityPersistence[E] {
+    implicit val entityHandler: BSONDocumentHandler[E]
+)(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
 
-  private val collection: Future[BSONCollection] = {
-    database.map(_.collection[BSONCollection](entityTypeName))
-  }.andThen { case Success(col) =>
-    col.create()
-  }.andThen { case Success(col) =>
-    col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
+  private val collection: Future[BSONCollection] = for {
+    col <- database.map(_.collection[BSONCollection](entityTypeName))
+    _ <- col.create().recover { case _ => }
+    _ <- col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
+  } yield {
+    col
   }
 
   /** Create a new entity.

@@ -1,10 +1,11 @@
 package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
+import javax.inject.Inject
+import javax.inject.Singleton
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
@@ -23,15 +24,15 @@ import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentReader
 
+@Singleton
+class MongoLoginInfoPersistence @Inject()(database: Future[DefaultDB]) extends LoginInfoPersistence {
 
-class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPersistence {
-
-  private val collection: Future[BSONCollection] = {
-    database.map(_.collection[BSONCollection](collectionName))
-  }.andThen { case Success(col) =>
-    col.create()
-  }.andThen { case Success(col) =>
-    col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
+  private val collection: Future[BSONCollection] = for {
+    col <- database.map(_.collection[BSONCollection](collectionName))
+    _ <- col.create().recover { case _ => }
+    _ <- col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
+  } yield {
+    col
   }
 
   /** Create a LoginInfo.
@@ -43,7 +44,8 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
   override def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = {
     collection.flatMap { collection =>
       collection.insert(BSONDocument(sLoginInfo -> loginInfo, sUserId -> id.toString)).flatMap(_ =>
-        Future.successful())
+        Future.successful(())
+      )
     }
   }
 
@@ -71,7 +73,7 @@ class MongoLoginInfoPersistence(database: Future[DefaultDB]) extends LoginInfoPe
       collection.flatMap { collection =>
         collection.update(BSONDocument(sLoginInfo -> old), BSONDocument(sLoginInfo -> updated, sUserId -> userId.toString)).flatMap(result =>
           if (result.nModified == 1) {
-            Future.successful()
+            Future.successful(())
           } else {
             Future.failed(new IllegalStateException("couldn't update the LoginInfo"))
           }

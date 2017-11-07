@@ -1,10 +1,11 @@
 package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
+import javax.inject.Singleton
+import javax.inject.Inject
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FilePersistence
@@ -21,14 +22,15 @@ import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 
-class MongoFilePersistence(database: Future[DefaultDB]) extends FilePersistence {
+@Singleton
+class MongoFilePersistence @Inject()(database: Future[DefaultDB]) extends FilePersistence {
 
-  private val collection: Future[BSONCollection] = {
-    database.map(_.collection[BSONCollection](collectionName))
-  }.andThen { case Success(col) =>
-    col.create()
-  }.andThen { case Success(col) =>
-    col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending, sName -> IndexType.Ascending), unique = true))
+  private val collection: Future[BSONCollection] = for {
+    col <- database.map(_.collection[BSONCollection](collectionName))
+    _ <- col.create().recover { case _ => }
+    _ <- col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending, sName -> IndexType.Ascending), unique = true))
+  } yield {
+    col
   }
 
   /** Create a new file.

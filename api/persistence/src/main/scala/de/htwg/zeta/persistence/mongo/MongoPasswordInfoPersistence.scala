@@ -1,8 +1,10 @@
 package de.htwg.zeta.persistence.mongo
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import javax.inject.Singleton
+import javax.inject.Inject
+
 import scala.concurrent.Future
-import scala.util.Success
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
@@ -22,15 +24,15 @@ import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 
+@Singleton
+class MongoPasswordInfoPersistence @Inject()(database: Future[DefaultDB]) extends PasswordInfoPersistence {
 
-class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends PasswordInfoPersistence {
-
-  private val collection: Future[BSONCollection] = {
-    database.map(_.collection[BSONCollection](collectionName))
-  }.andThen { case Success(col) =>
-    col.create()
-  }.andThen { case Success(col) =>
-    col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
+  private val collection: Future[BSONCollection] = for {
+    col <- database.map(_.collection[BSONCollection](collectionName))
+    _ <- col.create().recover { case _ => }
+    _ <- col.indexesManager.ensure(Index(Seq(sLoginInfo -> IndexType.Ascending), unique = true))
+  } yield {
+    col
   }
 
   /** Finds the auth info which is linked to the specified login info.
@@ -82,7 +84,7 @@ class MongoPasswordInfoPersistence(database: Future[DefaultDB]) extends Password
    * @return The saved auth info.
    */
   override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
-    add(loginInfo, authInfo).recoverWith{case _ => update(loginInfo, authInfo)}
+    add(loginInfo, authInfo).recoverWith { case _ => update(loginInfo, authInfo) }
   }
 
   /** Removes the auth info for the given login info.
