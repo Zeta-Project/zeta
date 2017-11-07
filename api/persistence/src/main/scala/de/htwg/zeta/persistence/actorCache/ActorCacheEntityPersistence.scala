@@ -1,6 +1,8 @@
 package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
+import javax.inject.Singleton
+import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -24,14 +26,14 @@ import de.htwg.zeta.persistence.general.EntityPersistence
 /**
  * Actor Cache Implementation of EntityPersistence.
  */
-class ActorCacheEntityPersistence[E <: Entity](
+@Singleton
+class ActorCacheEntityPersistence[E <: Entity] @Inject()(
     system: ActorSystem,
     underlying: EntityPersistence[E],
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
-    implicit val timeout: Timeout)(
-    implicit manifest: Manifest[E]
-) extends EntityPersistence[E] {
+    implicit val timeout: Timeout
+)(implicit manifest: Manifest[E]) extends EntityPersistence[E] {
 
   private def hashMapping: ConsistentHashMapping = {
     case Create(entity) => entity.id.hashCode

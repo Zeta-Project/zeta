@@ -1,7 +1,10 @@
 package de.htwg.zeta.persistence.actorCache
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import javax.inject.Singleton
+import javax.inject.Inject
+
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Failure
 import scala.util.Success
@@ -24,7 +27,8 @@ import de.htwg.zeta.persistence.general.PasswordInfoPersistence
 /**
  * Actor Cache Implementation of PasswordInfoPersistence.
  */
-class ActorCachePasswordInfoPersistence(
+@Singleton
+class ActorCachePasswordInfoPersistence @Inject()(
     system: ActorSystem,
     underlying: PasswordInfoPersistence,
     numberActorsPerEntityType: Int,

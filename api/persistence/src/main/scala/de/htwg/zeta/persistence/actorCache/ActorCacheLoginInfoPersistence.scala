@@ -1,6 +1,8 @@
 package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
+import javax.inject.Singleton
+import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -24,7 +26,8 @@ import de.htwg.zeta.persistence.general.LoginInfoPersistence
 /**
  * Actor Cache Implementation of LoginInfoPersistence.
  */
-class ActorCacheLoginInfoPersistence(
+@Singleton
+class ActorCacheLoginInfoPersistence @Inject()(
     system: ActorSystem,
     underlying: LoginInfoPersistence,
     numberActorsPerEntityType: Int,

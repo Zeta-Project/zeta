@@ -1,6 +1,7 @@
 package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
+import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -14,6 +15,7 @@ import akka.pattern.ask
 import akka.routing.ConsistentHashingPool
 import akka.routing.ConsistentHashingRouter.ConsistentHashMapping
 import akka.util.Timeout
+import com.google.inject.Inject
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Delete
@@ -24,7 +26,8 @@ import de.htwg.zeta.persistence.general.FilePersistence
 /**
  * Actor Cache Implementation of FilePersistence.
  */
-class ActorCacheFilePersistence(
+@Singleton
+class ActorCacheFilePersistence @Inject()(
     system: ActorSystem,
     underlying: FilePersistence,
     numberActorsPerEntityType: Int,
