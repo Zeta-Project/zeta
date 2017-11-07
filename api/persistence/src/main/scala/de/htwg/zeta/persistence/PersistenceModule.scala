@@ -150,6 +150,8 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
     timeout
   )
 
+  // TODO generator filter
+
 }
 
 

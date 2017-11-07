@@ -226,7 +226,7 @@ lazy val generatorControl = projectT("generatorControl", file("generatorControl"
       "org.scalatest"             %% "scalatest"                % "2.2.4"         % "test",
       "com.typesafe.akka"         %% "akka-remote"              % akkaVersion,
       "com.typesafe.akka"         %% "akka-stream"              % akkaVersion,
-      "com.typesafe.akka"         %% "akka-http-core"           % akkaVersion,
+      "com.typesafe.akka"         %% "akka-http-core"           % "10.0.6",
       "com.typesafe.akka"         %% "akka-http-testkit"        % "10.0.6",
       "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
       "com.spotify"               % "docker-client"             % "6.1.1",
@@ -248,6 +248,7 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "com.mohiva" %% "play-silhouette" % "4.0.0",
+      "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
       "org.reactivemongo" %% "reactivemongo" % "0.12.3",
       "net.codingwell" %% "scala-guice" % "4.0.1"
     )
