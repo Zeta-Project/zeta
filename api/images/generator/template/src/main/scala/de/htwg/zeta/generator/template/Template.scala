@@ -3,20 +3,6 @@ package de.htwg.zeta.generator.template
 import java.io.FileNotFoundException
 import java.util.UUID
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
-import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.ModelEntity
-import org.rogach.scallop.ScallopConf
-import org.rogach.scallop.ScallopOption
-import org.slf4j.LoggerFactory
-import play.api.libs.json.JsError
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.ws.ahc.AhcWSClient
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
@@ -24,11 +10,26 @@ import scala.reflect.ClassTag
 import scala.reflect.runtime
 import scala.tools.reflect.ToolBox
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import com.google.inject.Guice
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.FilePersistence
+import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.ScallopOption
+import org.slf4j.LoggerFactory
+import play.api.libs.json.JsError
+import play.api.libs.json.Json
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.Reads
+import play.api.libs.ws.ahc.AhcWSClient
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session: ScallopOption[String] = opt[String]()
@@ -74,6 +75,8 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   val filePersistence = injector.getInstance(classOf[FilePersistence])
   val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
   val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
+  val metaModelEntityPersistence = injector.getInstance(classOf[EntityPersistence[MetaModelEntity]])
+  val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 

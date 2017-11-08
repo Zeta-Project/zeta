@@ -10,7 +10,6 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.persistence.general.TokenCache
@@ -29,12 +28,11 @@ import play.api.mvc.Result
  * @param mailerClient The mailer client.
  */
 class ActivateAccountController @Inject()(
-    mailerClient: MailerClient)
-  extends Controller {
-
-  private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
+    mailerClient: MailerClient,
+    tokenCache: TokenCache,
+    userRepo: EntityPersistence[User],
+    loginInfoRepo: LoginInfoPersistence
+) extends Controller {
 
   /** Sends an account activation email to the user with the given email.
    *
@@ -48,8 +46,8 @@ class ActivateAccountController @Inject()(
     val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
     val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("activation.email.sent", decodedEmail))
 
-    val userId = loginInfoPersistence.read(loginInfo)
-    val user = userId.flatMap(userId => userPersistence.read(userId))
+    val userId = loginInfoRepo.read(loginInfo)
+    val user = userId.flatMap(userId => userRepo.read(userId))
 
     user.map { user =>
       if (!user.activated) {
@@ -80,7 +78,7 @@ class ActivateAccountController @Inject()(
    */
   def activate(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     tokenCache.read(token).flatMap(userId =>
-      userPersistence.update(userId, _.copy(activated = true)).map(_ =>
+      userRepo.update(userId, _.copy(activated = true)).map(_ =>
         Redirect(routes.ScalaRoutes.getSignIn()).flashing("success" -> messages("account.activated"))
       )
     ).recover {

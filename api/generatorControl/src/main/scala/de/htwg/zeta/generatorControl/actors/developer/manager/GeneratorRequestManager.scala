@@ -7,30 +7,39 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
+import com.google.inject.Injector
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.RunGeneratorFromGenerator
 import de.htwg.zeta.common.models.frontend.StartGeneratorError
 import de.htwg.zeta.common.models.worker.RunGeneratorFromGeneratorJob
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.general.EntityPersistence
 
 object GeneratorRequestManager {
-  def props(workQueue: ActorRef, repository: Repository): Props = Props(new GeneratorRequestManager(workQueue, repository))
+  def props(workQueue: ActorRef, injector: Injector): Props = Props(new GeneratorRequestManager(workQueue, injector))
 }
 
-class GeneratorRequestManager(workQueue: ActorRef, repository: Repository) extends Actor with ActorLogging {
+class GeneratorRequestManager(workQueue: ActorRef, injector: Injector) extends Actor with ActorLogging {
+
+  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+
   // find the generator and filter and send a job to the worker
   def runGenerator(run: RunGeneratorFromGenerator): Future[Unit] = {
     val reply = sender
 
     val result = for {
-      generator <- repository.generator.read(run.generatorId)
-      image <- repository.generatorImage.read(generator.imageId)
-    } yield RunGeneratorFromGeneratorJob(
-      parentId = run.parent,
-      key = run.key,
-      generatorId = run.generatorId,
-      image = image.dockerImage,
-      options = run.options
-    )
+      generator <- generatorPersistence.read(run.generatorId)
+      image <- generatorImagePersistence.read(generator.imageId)
+    } yield {
+      RunGeneratorFromGeneratorJob(
+        parentId = run.parent,
+        key = run.key,
+        generatorId = run.generatorId,
+        image = image.dockerImage,
+        options = run.options
+      )
+    }
 
     result.map { job =>
       workQueue ! job

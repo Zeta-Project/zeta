@@ -5,8 +5,6 @@ import akka.actor.ActorSystem
 import akka.cluster.client.ClusterClient
 import de.htwg.zeta.common.cluster.RemoteClient
 
-/**
- */
 class RemoteService(system: ActorSystem, serviceName: String, client: RemoteClient) {
   private val servicePath = s"/user/$serviceName"
 
@@ -17,5 +15,5 @@ class RemoteService(system: ActorSystem, serviceName: String, client: RemoteClie
 }
 
 object RemoteService {
-  def apply(system: ActorSystem, serviceName: String, settings: RemoteClient) = new RemoteService(system, serviceName, settings)
+  def apply(system: ActorSystem, serviceName: String, settings: RemoteClient): RemoteService = new RemoteService(system, serviceName, settings)
 }

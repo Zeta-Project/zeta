@@ -11,22 +11,32 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Repository
+import com.google.inject.Injector
 import de.htwg.zeta.common.models.document.Change
 import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.document.Created
 import de.htwg.zeta.common.models.document.Deleted
 import de.htwg.zeta.common.models.document.Updated
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.worker.RunTimedTask
+import de.htwg.zeta.persistence.general.EntityPersistence
 
 private case class ExecuteTask(task: TimedTask)
 
 object TimedTasksManager {
-  def props(worker: ActorRef, repository: Repository) = Props(new TimedTasksManager(worker, repository))
+  def props(worker: ActorRef, injector: Injector): Props = Props(new TimedTasksManager(worker, injector))
 }
 
-class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
+class TimedTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
+
+  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
+  private val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+  private val timedTaskPersistence = injector.getInstance(classOf[EntityPersistence[TimedTask]])
+
   private var schedules: Map[UUID, Cancellable] = Map()
 
   def create(task: TimedTask) = {
@@ -54,10 +64,10 @@ class TimedTasksManager(worker: ActorRef, repository: Repository) extends Actor 
 
   def executeTask(task: TimedTask) = {
     val result = for {
-      task <- repository.timedTask.read(task.id)
-      filter <- repository.filter.read(task.filterId)
-      generator <- repository.generator.read(task.generatorId)
-      image <- repository.generatorImage.read(generator.imageId)
+      task <- timedTaskPersistence.read(task.id)
+      filter <- filterPersistence.read(task.filterId)
+      generator <- generatorPersistence.read(task.generatorId)
+      image <- generatorImagePersistence.read(generator.imageId)
     } yield RunTimedTask(task.id, generator.id, filter.id, image.dockerImage)
 
     result.map {

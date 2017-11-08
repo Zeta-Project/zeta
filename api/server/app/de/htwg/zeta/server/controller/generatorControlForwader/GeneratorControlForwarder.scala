@@ -12,8 +12,6 @@ import akka.actor.ReceiveTimeout
 import de.htwg.zeta.generatorControl.actors.frontendManager.FrontendManager
 import grizzled.slf4j.Logging
 
-/**
- */
 class GeneratorControlForwarder(remoteClient: RemoteService, out: ActorRef, factory: GeneratorControlRegisterFactory) extends Actor with Logging {
 
   private val ident: UUID = UUID.randomUUID()

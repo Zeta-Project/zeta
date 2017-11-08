@@ -8,17 +8,26 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
+import com.google.inject.Injector
 import de.htwg.zeta.common.models.entity.EventDrivenTask
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.ModelChanged
 import de.htwg.zeta.common.models.frontend.SavedModel
 import de.htwg.zeta.common.models.worker.RunEventDrivenTask
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.general.EntityPersistence
 
 object EventDrivenTasksManager {
-  def props(worker: ActorRef, repository: Repository) = Props(new EventDrivenTasksManager(worker, repository))
+  def props(worker: ActorRef, injector: Injector): Props = Props(new EventDrivenTasksManager(worker, injector))
 }
 
-class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
+class EventDrivenTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
+
+  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
+  private val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+  private val eventDrivenTaskPersistence = injector.getInstance(classOf[EntityPersistence[EventDrivenTask]])
 
   def isListening(task: EventDrivenTask, changed: ModelChanged): Boolean = {
     changed match {
@@ -30,10 +39,10 @@ class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends 
     val p = Promise[Option[RunEventDrivenTask]]
 
     val op = for {
-      filter <- repository.filter.read(task.filterId)
+      filter <- filterPersistence.read(task.filterId)
       if filter.instanceIds.contains(saved.modelId)
-      generator <- repository.generator.read(task.generatorId)
-      image <- repository.generatorImage.read(generator.imageId)
+      generator <- generatorPersistence.read(task.generatorId)
+      image <- generatorImagePersistence.read(generator.imageId)
     } yield {
       Some(RunEventDrivenTask(task.id, generator.id, filter.id, saved.modelId, image.dockerImage))
     }
@@ -48,8 +57,8 @@ class EventDrivenTasksManager(worker: ActorRef, repository: Repository) extends 
   }
 
   def onModelChange(changed: SavedModel): Unit = {
-    val allTaskIds = repository.eventDrivenTask.readAllIds()
-    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(repository.eventDrivenTask.read)) }
+    val allTaskIds = eventDrivenTaskPersistence.readAllIds()
+    val allTasks = allTaskIds.flatMap { ids => Future.sequence(ids.map(eventDrivenTaskPersistence.read)) }
     val listeningTasks = allTasks.map(_.filter(isListening(_, changed)))
     val filteredTasks = listeningTasks.flatMap(x => Future.sequence(x.map(i => check(i, changed))).map(_.flatten))
     filteredTasks.foreach(task => worker ! task)

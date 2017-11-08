@@ -1,15 +1,17 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
+import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -27,11 +29,14 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 /**
  * REST-ful API for model definitions
  */
-class ModelRestApi() extends Controller with Logging {
+class ModelRestApi @Inject()(
+    modelEntityRepo: AccessRestrictedEntityPersistence[ModelEntity],
+    metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity]
+) extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id).modelEntity
+    val repo = modelEntityRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read))
     }.map(list =>
@@ -48,7 +53,7 @@ class ModelRestApi() extends Controller with Logging {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      model => restrictedAccessRepository(request.identity.id).modelEntity.create(
+      model => modelEntityRepo.restrictedTo(request.identity.id).create(
         ModelEntity(
           id = UUID.randomUUID(),
           model = model
@@ -63,20 +68,19 @@ class ModelRestApi() extends Controller with Logging {
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id)
     (request.body \ "metaModelId").validate[UUID].fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      metaModelId => repo.metaModelEntity.read(metaModelId).flatMap { metaModelEntity =>
+      metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { metaModelEntity =>
         request.body.validate(Model.playJsonReads(metaModelEntity)).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))
           },
           model => {
-            repo.modelEntity.update(id, _.copy(model = model)).map { updated =>
+            modelEntityRepo.restrictedTo(request.identity.id).update(id, _.copy(model = model)).map { updated =>
               Ok(Json.toJson(updated))
             }.recover {
               case e: Exception => Results.BadRequest(e.getMessage)
@@ -143,7 +147,7 @@ class ModelRestApi() extends Controller with Logging {
 
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntity.delete(id).map(_ => Ok("")).recover {
+    modelEntityRepo.restrictedTo(request.identity.id).delete(id).map(_ => Ok("")).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
@@ -164,7 +168,7 @@ class ModelRestApi() extends Controller with Logging {
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedReadFuture(id, request, (modelEntity: ModelEntity) => {
 
-      restrictedAccessRepository(request.identity.id).metaModelEntity.read(modelEntity.model.metaModelId).map(metaModelEntity => {
+      metaModelEntityRepo.restrictedTo(request.identity.id).read(modelEntity.model.metaModelId).map(metaModelEntity => {
         metaModelEntity.validator match {
           case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
             case Some(validator) =>
@@ -184,7 +188,7 @@ class ModelRestApi() extends Controller with Logging {
 
   /** A helper method for less verbose reads from the database */
   private def protectedReadFuture[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Future[Result]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).modelEntity.read(id).flatMap(model => {
+    modelEntityRepo.restrictedTo(request.identity.id).read(id).flatMap(model => {
       trans(model)
     }).recover {
       case e: Exception =>
@@ -199,10 +203,9 @@ class ModelRestApi() extends Controller with Logging {
   }
 
   def getScalaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id)
     for {
-      modelEntity <- repo.modelEntity.read(modelId)
-      metaModelEntity <- repo.metaModelEntity.read(modelEntity.model.metaModelId)
+      modelEntity <- modelEntityRepo.restrictedTo(request.identity.id).read(modelId)
+      metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(modelEntity.model.metaModelId)
     } yield {
       val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.metaModel, modelEntity).toList
       Ok(views.html.codeViewer.ScalaCodeViewer(files))

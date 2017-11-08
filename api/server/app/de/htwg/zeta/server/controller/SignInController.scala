@@ -14,7 +14,6 @@ import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.LoginInfoPersistence
 import de.htwg.zeta.server.forms.SignInForm
@@ -42,11 +41,10 @@ class SignInController @Inject()(
     silhouette: Silhouette[ZetaEnv],
     credentialsProvider: CredentialsProvider,
     configuration: Configuration,
-    clock: Clock)
-  extends Controller {
-
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
+    clock: Clock,
+    loginInfoRepo: LoginInfoPersistence,
+    userRepo: EntityPersistence[User]
+) extends Controller {
 
   /** Views the `Sign In` page.
    *
@@ -69,8 +67,8 @@ class SignInController @Inject()(
       form => Future.successful(BadRequest(views.html.silhouette.signIn(form, request, messages))),
       data => {
         credentialsProvider.authenticate(Credentials(data.email, data.password)).flatMap { loginInfo =>
-          loginInfoPersistence.read(loginInfo).flatMap { userId =>
-            userPersistence.read(userId).flatMap { user =>
+          loginInfoRepo.read(loginInfo).flatMap { userId =>
+            userRepo.read(userId).flatMap { user =>
               if (!user.activated) {
                 Future.successful(Ok(views.html.silhouette.activateAccount(data.email, request, messages)))
               } else {

@@ -15,7 +15,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiag
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
 import de.htwg.zeta.server.generator.generators.style.StyleGenerator
@@ -31,10 +32,14 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 
-class ModelEditorGeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
+class ModelEditorGeneratorController @Inject()(
+    silhouette: Silhouette[ZetaEnv],
+    metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity],
+    filePersistence: AccessRestrictedFilePersistence
+) extends Controller {
 
   def generate(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Persistence.restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelId)
+    metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId)
       .flatMap(createGenerators(_, request.identity.id).map {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)
@@ -74,7 +79,7 @@ class ModelEditorGeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) 
 
   private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
   Future[Unreliable[List[File]]] = {
-    val repo = Persistence.restrictedAccessRepository(userId).file
+    val repo = filePersistence.restrictedTo(userId)
 
     val allGen: Unreliable[(List[File], List[File])] = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id).flatMap(gen => {
       createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {

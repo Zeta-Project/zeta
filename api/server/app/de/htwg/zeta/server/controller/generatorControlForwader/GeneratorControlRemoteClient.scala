@@ -9,8 +9,6 @@ import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
 
-/**
- */
 @Singleton
 class GeneratorControlRemoteClient @Inject()(system: ActorSystem, settings: RemoteClient) {
   val developerFrontendService: RemoteService = RemoteService(system, DeveloperFrontend.serviceName, settings)

@@ -1,12 +1,13 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.TimedTask
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.server.controller.restApi.format.TimedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
@@ -16,11 +17,11 @@ import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for filter definitions
+ * REST-ful API for filter definitions
  */
-class TimedTaskRestApi() extends RestApiController[TimedTask] {
-
-  private val repo = Persistence.fullAccessRepository.timedTask
+class TimedTaskRestApi @Inject()(
+    timedTaskRepo: EntityPersistence[TimedTask]
+) extends RestApiController[TimedTask] {
 
   /** Lists all filter.
    *
@@ -36,8 +37,8 @@ class TimedTaskRestApi() extends RestApiController[TimedTask] {
   }
 
   private def getEntities: Future[List[TimedTask]] = {
-    repo.readAllIds().flatMap(ids => {
-      val list = ids.toList.map(repo.read)
+    timedTaskRepo.readAllIds().flatMap(ids => {
+      val list = ids.toList.map(timedTaskRepo.read)
       Future.sequence(list)
     })
   }
@@ -64,7 +65,7 @@ class TimedTaskRestApi() extends RestApiController[TimedTask] {
   }
 
   private def flagAsDeleted(id: UUID): Future[TimedTask] = {
-    repo.update(id, e => e.copy(deleted = true))
+    timedTaskRepo.update(id, e => e.copy(deleted = true))
   }
 
   /**
@@ -73,6 +74,6 @@ class TimedTaskRestApi() extends RestApiController[TimedTask] {
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    parseJson(request.body, TimedTaskFormat, (entity) => repo.create(entity).map(_ => Ok("")))
+    parseJson(request.body, TimedTaskFormat, (entity) => timedTaskRepo.create(entity).map(_ => Ok("")))
   }
 }

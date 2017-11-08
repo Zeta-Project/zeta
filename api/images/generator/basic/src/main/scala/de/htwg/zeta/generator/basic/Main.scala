@@ -2,6 +2,9 @@ package de.htwg.zeta.generator.basic
 
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
@@ -13,9 +16,6 @@ import de.htwg.zeta.generator.template.Settings
 import de.htwg.zeta.generator.template.Success
 import de.htwg.zeta.generator.template.Template
 import de.htwg.zeta.generator.template.Transformer
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 /**
  * Main class of basic generator
@@ -31,7 +31,7 @@ object Main extends Template[CreateOptions, String] {
    */
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
-      image <- repository.generatorImage.read(imageId)
+      image <- generatorImagePersistence.read(imageId)
       file <- createFile()
       _ <- createGenerator(options, image, file)
     } yield {
@@ -46,7 +46,7 @@ object Main extends Template[CreateOptions, String] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   private def createFile(): Future[File] = {
@@ -74,7 +74,7 @@ object Main extends Template[CreateOptions, String] {
         |
       """.stripMargin
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   private def compiledGenerator(file: File): Future[Transformer] = {

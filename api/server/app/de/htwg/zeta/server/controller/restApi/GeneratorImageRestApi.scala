@@ -1,11 +1,12 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.server.controller.restApi.format.GeneratorImageFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -14,13 +15,14 @@ import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for generator image definitions
+ * REST-ful API for generator image definitions
  */
-class GeneratorImageRestApi() extends Controller with Logging {
+class GeneratorImageRestApi @Inject()(
+    generatorImageRepo: EntityPersistence[GeneratorImage]
+) extends Controller with Logging {
 
   /** Lists all generator images.
    *
@@ -28,8 +30,7 @@ class GeneratorImageRestApi() extends Controller with Logging {
    * @return The result
    */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = Persistence.fullAccessRepository.generatorImage
-    repo.readAllIds().flatMap(getIds(repo)).map(getJsonArray).recover {
+    generatorImageRepo.readAllIds().flatMap(getIds(generatorImageRepo)).map(getJsonArray).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }

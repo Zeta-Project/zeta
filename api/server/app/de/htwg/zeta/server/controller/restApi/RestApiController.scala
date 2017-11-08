@@ -16,7 +16,7 @@ import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * Base class with utilitis
+ * Base class with utilities
  */
 class RestApiController[T: TypeTag] extends Controller with Logging {
 

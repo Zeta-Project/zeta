@@ -3,12 +3,13 @@ package de.htwg.zeta.server.model.codeEditor
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
+
 import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.shared.CodeEditorMessage
 import de.htwg.zeta.shared.CodeEditorMessage.DocAdded
 import de.htwg.zeta.shared.CodeEditorMessage.DocDeleted
@@ -19,20 +20,26 @@ import upickle.default
 
 
 object CodeDocWsActor {
-  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String): Props = {
-    Props(new CodeDocWsActor(out, docManager, metaModelId, dslType))
+  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String, metaModelEntityRepo: EntityPersistence[MetaModelEntity]): Props = {
+    Props(new CodeDocWsActor(out, docManager, metaModelId, dslType, metaModelEntityRepo))
   }
 }
 
 /**
  * This Actor is responsible of the communication with the users browser
  */
-class CodeDocWsActor(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String) extends Actor with ActorLogging {
+class CodeDocWsActor(
+    out: ActorRef,
+    docManager: ActorRef,
+    metaModelId: UUID,
+    dslType: String,
+    metaModelEntityRepo: EntityPersistence[MetaModelEntity]
+) extends Actor with ActorLogging {
 
   docManager ! CodeDocManagingActor.SubscribeTo(dslType)
 
   /** Tell the client about the existing document */
-  Persistence.fullAccessRepository.metaModelEntity.read(metaModelId).map { metaModelEntity: MetaModelEntity =>
+  metaModelEntityRepo.read(metaModelId).map { metaModelEntity: MetaModelEntity =>
 
     out ! default.write[CodeEditorMessage](
       DocLoaded(

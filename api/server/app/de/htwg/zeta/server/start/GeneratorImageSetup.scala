@@ -11,22 +11,20 @@ import de.htwg.zeta.common.models.entity.GeneratorMetaModelReleaseProperty
 import de.htwg.zeta.common.models.entity.GeneratorNameProperty
 import de.htwg.zeta.common.models.entity.GeneratorOptionProperties
 import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.Repository
 import grizzled.slf4j.Logging
 
 
 /**
  * Setup GeneratorImage on database, when no entries exists
  */
-class GeneratorImageSetup(repository: Repository) extends Logging {
+class GeneratorImageSetup(generatorImageRepo: EntityPersistence[GeneratorImage]) extends Logging {
 
-  repository.generatorImage.readAllIds().onComplete {
-    case Success(value) => {
+  generatorImageRepo.readAllIds().onComplete {
+    case Success(value) =>
       if (value.isEmpty) {
         info("Database has no entries for GeneratorImages - adding entries")
-        addEntries(repository.generatorImage)
+        addEntries(generatorImageRepo)
       }
-    }
   }
 
   private def addEntries(persistence: EntityPersistence[GeneratorImage]) = {
@@ -101,5 +99,5 @@ class GeneratorImageSetup(repository: Repository) extends Logging {
 }
 
 object GeneratorImageSetup {
-  def apply(repository: Repository): GeneratorImageSetup = new GeneratorImageSetup(repository)
+  def apply(generatorImageRepo: EntityPersistence[GeneratorImage]): GeneratorImageSetup = new GeneratorImageSetup(generatorImageRepo)
 }

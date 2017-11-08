@@ -134,8 +134,8 @@ object Main extends Template[CreateOptions, String] {
    */
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
-      image <- repository.generatorImage.read(imageId)
-      metaModel <- repository.metaModelEntity.read(UUID.fromString(options.metaModelRelease))
+      image <- generatorImagePersistence.read(imageId)
+      metaModel <- metaModelEntityPersistence.read(UUID.fromString(options.metaModelRelease))
       file <- createFile(metaModel)
       _ <- createGenerator(options, image, file)
     } yield Success()
@@ -146,7 +146,7 @@ object Main extends Template[CreateOptions, String] {
     val mReferenceList = metaModel.metaModel.referenceMap.values
     val content = createFileContent(mClassList, mReferenceList)
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   private def createGenerator(options: CreateOptions, image: GeneratorImage, file: File): Future[Generator] = {
@@ -156,7 +156,7 @@ object Main extends Template[CreateOptions, String] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   /**

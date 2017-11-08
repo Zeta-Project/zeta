@@ -1,12 +1,13 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.server.controller.restApi.format.GeneratorFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -17,11 +18,11 @@ import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for generator definitions
+ * REST-ful API for generator definitions
  */
-class GeneratorRestApi() extends Controller with Logging {
-
-  private val repo = Persistence.fullAccessRepository.generator
+class GeneratorRestApi @Inject()(
+    generatorRepo: EntityPersistence[Generator]
+) extends Controller with Logging {
 
   /**
    * Lists all generator.
@@ -37,8 +38,8 @@ class GeneratorRestApi() extends Controller with Logging {
   }
 
   private def getEntities: Future[List[Generator]] = {
-    repo.readAllIds().flatMap(ids => {
-      val entities = ids.toList.map(repo.read)
+    generatorRepo.readAllIds().flatMap(ids => {
+      val entities = ids.toList.map(generatorRepo.read)
       Future.sequence(entities)
     })
   }
@@ -57,7 +58,7 @@ class GeneratorRestApi() extends Controller with Logging {
    * @return The result
    */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    repo.read(id).map(getResultJsonValue).recover {
+    generatorRepo.read(id).map(getResultJsonValue).recover {
       case e: Exception =>
         error("Exception while trying to read a single `Generator` from DB", e)
         BadRequest(e.getMessage)
@@ -84,6 +85,7 @@ class GeneratorRestApi() extends Controller with Logging {
   }
 
   private def flagAsDeleted(id: UUID): Future[Generator] = {
-    repo.update(id, entity => entity.copy(deleted = true))
+    generatorRepo.update(id, entity => entity.copy(deleted = true))
   }
+
 }

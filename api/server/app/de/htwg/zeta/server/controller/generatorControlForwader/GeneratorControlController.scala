@@ -3,8 +3,8 @@ package de.htwg.zeta.server.controller.generatorControlForwader
 import java.util.UUID
 import javax.inject.Inject
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
@@ -12,6 +12,7 @@ import akka.actor.Props
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.frontend.DeveloperRequest
 import de.htwg.zeta.common.models.frontend.DeveloperResponse
 import de.htwg.zeta.common.models.frontend.GeneratorRequest
@@ -21,7 +22,7 @@ import de.htwg.zeta.common.models.frontend.UserResponse
 import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
-import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.mvc.AnyContent
@@ -41,8 +42,9 @@ class GeneratorControlController @Inject()(
     system: ActorSystem,
     mat: Materializer,
     backendRemoteClient: GeneratorControlRemoteClient,
-    silhouette: Silhouette[ZetaEnv])
-  extends Controller with Logging {
+    silhouette: Silhouette[ZetaEnv],
+    modelEntityRepo: AccessRestrictedEntityPersistence[ModelEntity]
+) extends Controller with Logging {
 
   private val developerMsg: MessageFlowTransformer[DeveloperRequest, DeveloperResponse] =
     MessageFlowTransformer.jsonMessageFlowTransformer[DeveloperRequest, DeveloperResponse]
@@ -71,8 +73,7 @@ class GeneratorControlController @Inject()(
    * @return (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse])
    */
   def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-
-    val futureProps = restrictedAccessRepository(request.identity.id).modelEntity.read(modelId).map(_ => {
+    val futureProps = modelEntityRepo.restrictedTo(request.identity.id).read(modelId).map(_ => {
       val register = GeneratorControlRegisterFactory((ident, ref) => UserFrontend.CreateUserFrontend(ident, ref, request.identity.id, modelId))
       (out: ActorRef) => GeneratorControlForwarder.props(backendRemoteClient.userFrontendService, out, register)
     })

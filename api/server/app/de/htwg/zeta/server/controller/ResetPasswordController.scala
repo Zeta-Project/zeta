@@ -12,7 +12,6 @@ import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.Persistence
 import de.htwg.zeta.persistence.general.EntityPersistence
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.controller.ResetPasswordController.error
@@ -33,11 +32,10 @@ import play.api.mvc.Result
  */
 class ResetPasswordController @Inject()(
     authInfoRepository: AuthInfoRepository,
-    passwordHasherRegistry: PasswordHasherRegistry)
-  extends Controller {
-
-  private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
+    passwordHasherRegistry: PasswordHasherRegistry,
+    tokenCache: TokenCache,
+    userRepo: EntityPersistence[User]
+) extends Controller {
 
   /** Views the `Reset Password` page.
    *
@@ -67,7 +65,7 @@ class ResetPasswordController @Inject()(
       ResetPasswordForm.form.bindFromRequest()(request).fold(
         form => Future(BadRequest(views.html.silhouette.resetPassword(form, token, request, messages))),
         password => {
-          userPersistence.read(userId).flatMap(user => {
+          userRepo.read(userId).flatMap(user => {
             val loginInfo = LoginInfo(CredentialsProvider.ID, user.email)
             val passwordInfo = passwordHasherRegistry.current.hash(password)
             authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
