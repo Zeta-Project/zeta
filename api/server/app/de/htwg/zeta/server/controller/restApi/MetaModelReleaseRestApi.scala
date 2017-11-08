@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.Json
@@ -20,7 +20,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for filter definitions
  */
 class MetaModelReleaseRestApi @Inject()(
-    metaModelReleaseRepo: EntityPersistence[MetaModelRelease]
+    metaModelReleaseRepo: EntityRepository[MetaModelRelease]
 ) extends Controller with Logging {
 
   /** Lists all filter.
@@ -34,7 +34,7 @@ class MetaModelReleaseRestApi @Inject()(
     }
   }
 
-  private def getIds(repo: EntityPersistence[MetaModelRelease])(ids: Set[UUID]) = {
+  private def getIds(repo: EntityRepository[MetaModelRelease])(ids: Set[UUID]) = {
     val list = ids.toList.map(repo.read)
     Future.sequence(list)
   }

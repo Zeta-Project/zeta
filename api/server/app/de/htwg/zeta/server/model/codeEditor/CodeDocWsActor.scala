@@ -9,7 +9,7 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.shared.CodeEditorMessage
 import de.htwg.zeta.shared.CodeEditorMessage.DocAdded
 import de.htwg.zeta.shared.CodeEditorMessage.DocDeleted
@@ -20,7 +20,7 @@ import upickle.default
 
 
 object CodeDocWsActor {
-  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String, metaModelEntityRepo: EntityPersistence[MetaModelEntity]): Props = {
+  def props(out: ActorRef, docManager: ActorRef, metaModelId: UUID, dslType: String, metaModelEntityRepo: EntityRepository[MetaModelEntity]): Props = {
     Props(new CodeDocWsActor(out, docManager, metaModelId, dslType, metaModelEntityRepo))
   }
 }
@@ -33,7 +33,7 @@ class CodeDocWsActor(
     docManager: ActorRef,
     metaModelId: UUID,
     dslType: String,
-    metaModelEntityRepo: EntityPersistence[MetaModelEntity]
+    metaModelEntityRepo: EntityRepository[MetaModelEntity]
 ) extends Actor with ActorLogging {
 
   docManager ! CodeDocManagingActor.SubscribeTo(dslType)

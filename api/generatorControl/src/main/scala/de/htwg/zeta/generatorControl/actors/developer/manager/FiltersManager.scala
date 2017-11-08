@@ -15,7 +15,7 @@ import de.htwg.zeta.common.models.document.Updated
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.worker.RerunFilterJob
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 
 object FiltersManager {
@@ -24,7 +24,7 @@ object FiltersManager {
 
 class FiltersManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val filterRepo = injector.getInstance(classOf[EntityPersistence[Filter]])
+  private val filterRepo = injector.getInstance(classOf[EntityRepository[Filter]])
 
   private def rerunFilter: Future[Unit] = {
     filterRepo.readAllIds().map(ids =>

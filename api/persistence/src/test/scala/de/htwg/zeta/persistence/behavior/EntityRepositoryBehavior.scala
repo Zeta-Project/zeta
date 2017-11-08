@@ -5,15 +5,15 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.Entity
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 
 
 /** PersistenceBehavior. */
-trait EntityPersistenceBehavior extends AsyncFlatSpec with Matchers {
+trait EntityRepositoryBehavior extends AsyncFlatSpec with Matchers {
 
-  def entityPersistenceBehavior[T <: Entity](persistence: EntityPersistence[T], entity1: T, entity2: T, doc2Updated: T, entity3: T): Unit = { // scalastyle:ignore
+  def entityPersistenceBehavior[T <: Entity](persistence: EntityRepository[T], entity1: T, entity2: T, doc2Updated: T, entity3: T): Unit = { // scalastyle:ignore
     entity1.id shouldNot be(entity2.id)
     entity1.id shouldNot be(entity3.id)
     entity2.id shouldNot be(entity3.id)

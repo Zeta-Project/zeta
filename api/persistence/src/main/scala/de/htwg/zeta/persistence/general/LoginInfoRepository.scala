@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.api.LoginInfo
 /**
  * Persistence to save the LoginInfo and the User-Id it belongs to.
  */
-trait LoginInfoPersistence {
+trait LoginInfoRepository {
 
   /** Create a LoginInfo.
    *

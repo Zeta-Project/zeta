@@ -20,7 +20,7 @@ import de.htwg.zeta.persistence.actorCache.FileCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Update
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.unitFuture
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 import grizzled.slf4j.Logging
 
 private[actorCache] object FileCacheActor {
@@ -37,11 +37,11 @@ private[actorCache] object FileCacheActor {
 
   private val unitFuture: Future[Unit] = Future.successful(())
 
-  def props(underlying: FilePersistence, cacheDuration: FiniteDuration): Props = Props(new FileCacheActor(underlying, cacheDuration))
+  def props(underlying: FileRepository, cacheDuration: FiniteDuration): Props = Props(new FileCacheActor(underlying, cacheDuration))
 
 }
 
-private[actorCache] class FileCacheActor(underlying: FilePersistence, cacheDuration: FiniteDuration) extends Actor with Logging {
+private[actorCache] class FileCacheActor(underlying: FileRepository, cacheDuration: FiniteDuration) extends Actor with Logging {
 
   private val cache: mutable.Map[(UUID, String), Future[File]] = mutable.Map.empty
 

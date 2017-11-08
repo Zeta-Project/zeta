@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import de.htwg.zeta.common.models.entity.File
 
 /** Modification of the EntityPersistence. The key is a compound key and consists of the id and the name of the file. */
-trait FilePersistence {
+trait FileRepository {
 
   /** Create a new file.
    *

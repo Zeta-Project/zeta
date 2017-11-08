@@ -13,9 +13,8 @@ import com.typesafe.config.impl.ConfigImpl
 import de.htwg.zeta.common.cluster.ClusterAddressSettings
 import de.htwg.zeta.common.cluster.ClusterManager
 import de.htwg.zeta.common.cluster.HostIP
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import grizzled.slf4j.Logging
 import play.api.ApplicationLoader
 import play.api.Configuration
@@ -66,7 +65,8 @@ class CustomApplicationLoader extends GuiceApplicationLoader() with Logging {
       GuiceableModule.fromPlayBinding(bind[ClusterAddressSettings].to(settings).in[Singleton])
     val modules: List[GuiceableModule] = clusterAddressBinding :: overrides(context).toList
 
-    val generatorImageRepo = Guice.createInjector(new PersistenceModule).getInstance(classOf[EntityPersistence[GeneratorImage]])
+    val injector = Guice.createInjector(new PersistenceModule)
+    val generatorImageRepo = injector.getInstance(classOf[GeneratorImageRepository])
     GeneratorImageSetup(generatorImageRepo)
 
     initialBuilder

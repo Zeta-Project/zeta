@@ -7,13 +7,13 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 
 /**
  * Transient Implementation of LoginInfoPersistence.
  */
 @Singleton
-class TransientLoginInfoPersistence extends LoginInfoPersistence {
+class TransientLoginInfoRepository extends LoginInfoRepository {
 
   private val cache: TrieMap[LoginInfo, UUID] = TrieMap.empty
 

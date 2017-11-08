@@ -13,8 +13,8 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
@@ -42,8 +42,8 @@ class SignUpController @Inject()(
     passwordHasherRegistry: PasswordHasherRegistry,
     mailerClient: MailerClient,
     tokenCache: TokenCache,
-    userRepo: EntityPersistence[User],
-    loginInfoRepo: LoginInfoPersistence
+    userRepo: EntityRepository[User],
+    loginInfoRepo: LoginInfoRepository
 ) extends Controller {
 
   /** Views the `Sign Up` page.

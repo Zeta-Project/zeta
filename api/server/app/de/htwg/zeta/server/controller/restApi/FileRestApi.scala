@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.server.controller.restApi.format.FileFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -25,7 +25,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for File definitions
  */
 class FileRestApi @Inject()(
-    fileRepo: FilePersistence
+    fileRepo: FileRepository
 ) extends Controller with Logging {
 
   /**

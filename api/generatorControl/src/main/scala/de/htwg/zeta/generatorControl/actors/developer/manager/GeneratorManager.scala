@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.CreateGenerator
 import de.htwg.zeta.common.models.frontend.GeneratorImageNotFoundFailure
 import de.htwg.zeta.common.models.worker.CreateGeneratorJob
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 object GeneratorManager {
   protected val messageReceive = "GeneratorManager - Received CreateGenerator 'imageId: {}'"
@@ -24,7 +24,7 @@ object GeneratorManager {
 
 class GeneratorManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorImageRepo = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+  private val generatorImageRepo = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
 
   def createGenerator(create: CreateGenerator): Future[Unit] = {
     val reply = sender

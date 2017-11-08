@@ -3,7 +3,7 @@ package de.htwg.zeta.persistence.behavior
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 
@@ -11,9 +11,9 @@ import scala.concurrent.Future
 
 
 /** PersistenceBehavior. */
-trait LoginInfoPersistenceBehavior extends AsyncFlatSpec with Matchers {
+trait LoginInfoRepositoryBehavior extends AsyncFlatSpec with Matchers {
 
-  def loginInfoPersistenceBehavior(persistence: LoginInfoPersistence): Unit = { // scalastyle:ignore
+  def loginInfoPersistenceBehavior(persistence: LoginInfoRepository): Unit = { // scalastyle:ignore
     val loginInfo1 = LoginInfo(providerID = "provider1", providerKey = "key1")
     val loginInfo2 = LoginInfo(providerID = "provider2", providerKey = "key2")
     val loginInfo3 = LoginInfo(providerID = "provider3", providerKey = "key3")

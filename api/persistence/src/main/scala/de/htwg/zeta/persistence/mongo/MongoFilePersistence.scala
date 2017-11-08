@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.collectionName
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sId
@@ -23,7 +23,7 @@ import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 
 @Singleton
-class MongoFilePersistence @Inject()(database: Future[DefaultDB]) extends FilePersistence {
+class MongoFilePersistence @Inject()(database: Future[DefaultDB]) extends FileRepository {
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](collectionName))

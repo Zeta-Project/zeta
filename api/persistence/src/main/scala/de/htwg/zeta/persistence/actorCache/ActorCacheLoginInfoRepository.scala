@@ -21,19 +21,19 @@ import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Update
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 
 /**
  * Actor Cache Implementation of LoginInfoPersistence.
  */
 @Singleton
-class ActorCacheLoginInfoPersistence @Inject()(
-    underlying: LoginInfoPersistence,
+class ActorCacheLoginInfoRepository @Inject()(
+    underlying: LoginInfoRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout
-) extends LoginInfoPersistence {
+) extends LoginInfoRepository {
 
   private def hashMapping: ConsistentHashMapping = {
     case Create(loginInfo, _) => loginInfo.hashCode

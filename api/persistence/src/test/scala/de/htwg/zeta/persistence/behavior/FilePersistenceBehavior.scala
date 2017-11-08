@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
 
@@ -18,7 +18,7 @@ trait FilePersistenceBehavior extends AsyncFlatSpec with Matchers {
   private val file2Updated: File = file2.copy(content = "content2Updated")
   private val file3 = File(UUID.randomUUID, "file3", "content3")
 
-  def filePersistenceBehavior(persistence: FilePersistence): Unit = { // scalastyle:ignore
+  def filePersistenceBehavior(persistence: FileRepository): Unit = { // scalastyle:ignore
     
     it should "remove all already existing files" in {
       for {

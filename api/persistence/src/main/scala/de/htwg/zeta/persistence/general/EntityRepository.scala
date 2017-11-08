@@ -5,13 +5,28 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import de.htwg.zeta.common.models.entity.AccessAuthorisation
+import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.common.models.entity.Entity
+import de.htwg.zeta.common.models.entity.EventDrivenTask
+import de.htwg.zeta.common.models.entity.Filter
+import de.htwg.zeta.common.models.entity.FilterImage
+import de.htwg.zeta.common.models.entity.Generator
+import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.Log
+import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.entity.Settings
+import de.htwg.zeta.common.models.entity.TimedTask
+import de.htwg.zeta.common.models.entity.User
+
 
 /** Interface for the Persistence layer.
  *
  * @tparam E type of the entity
  */
-trait EntityPersistence[E <: Entity] { // scalastyle:ignore
+trait EntityRepository[E <: Entity] { // scalastyle:ignore
 
   /** The name of the entity-type.
    *
@@ -94,3 +109,31 @@ trait EntityPersistence[E <: Entity] { // scalastyle:ignore
   }
 
 }
+
+trait AccessAuthorisationRepository extends EntityRepository[AccessAuthorisation]
+
+trait BondedTaskRepository extends EntityRepository[BondedTask]
+
+trait EventDrivenTaskRepository extends EntityRepository[EventDrivenTask]
+
+trait FilterRepository extends EntityRepository[Filter]
+
+trait FilterImageRepository extends EntityRepository[FilterImage]
+
+trait GeneratorRepository extends EntityRepository[Generator]
+
+trait GeneratorImageRepository extends EntityRepository[GeneratorImage]
+
+trait LogRepository extends EntityRepository[Log]
+
+trait MetaModelEntityRepository extends EntityRepository[MetaModelEntity]
+
+trait MetaModelReleaseRepository extends EntityRepository[MetaModelRelease]
+
+trait ModelEntityRepository extends EntityRepository[ModelEntity]
+
+trait TimedTaskRepository extends EntityRepository[TimedTask]
+
+trait SettingsRepository extends EntityRepository[Settings]
+
+trait UserRepository extends EntityRepository[User]

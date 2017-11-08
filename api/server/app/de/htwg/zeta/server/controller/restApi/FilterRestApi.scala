@@ -8,8 +8,8 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.server.controller.restApi.format.FilterFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -30,8 +30,8 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for filter definitions
  */
 class FilterRestApi @Inject()(
-    filterRepo: EntityPersistence[Filter],
-    fileRepo: FilePersistence
+    filterRepo: EntityRepository[Filter],
+    fileRepo: FileRepository
 ) extends Controller with Logging {
 
   /** Lists all filter.

@@ -7,13 +7,13 @@ import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 
 /**
  * Transient Implementation of FilePersistence.
  */
 @Singleton
-class TransientFilePersistence extends FilePersistence {
+class TransientFilePersistence extends FileRepository {
 
   private case class Key(id: UUID, name: String)
 

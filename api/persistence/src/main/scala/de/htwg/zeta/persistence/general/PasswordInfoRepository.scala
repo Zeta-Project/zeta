@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
 /**
  * Persistence for the PasswordInfo.
  */
-trait PasswordInfoPersistence extends DelegableAuthInfoDAO[PasswordInfo] {
+trait PasswordInfoRepository extends DelegableAuthInfoDAO[PasswordInfo] {
 
   /** Adds new auth info for the given login info.
    *

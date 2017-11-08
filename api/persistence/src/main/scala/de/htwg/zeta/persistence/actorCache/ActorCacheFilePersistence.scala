@@ -21,19 +21,19 @@ import de.htwg.zeta.persistence.actorCache.FileCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.FileCacheActor.Update
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 
 /**
  * Actor Cache Implementation of FilePersistence.
  */
 @Singleton
 class ActorCacheFilePersistence @Inject()(
-    underlying: FilePersistence,
+    underlying: FileRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout
-) extends FilePersistence {
+) extends FileRepository {
 
   private def hashMapping: ConsistentHashMapping = {
     case Create(file) => file.key.hashCode

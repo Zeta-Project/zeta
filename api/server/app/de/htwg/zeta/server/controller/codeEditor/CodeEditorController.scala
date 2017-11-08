@@ -11,7 +11,7 @@ import akka.actor.Props
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.server.model.codeEditor.CodeDocManagerContainer
 import de.htwg.zeta.server.model.codeEditor.CodeDocWsActor
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -23,7 +23,7 @@ import play.api.mvc.Result
 class CodeEditorController @Inject()(
     codeDocManager: CodeDocManagerContainer,
     metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity],
-    fullAccessMetaModelEntityRepo: EntityPersistence[MetaModelEntity]
+    fullAccessMetaModelEntityRepo: EntityRepository[MetaModelEntity]
 ) extends Controller {
 
   def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {

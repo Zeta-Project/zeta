@@ -11,7 +11,11 @@ import scala.reflect.runtime.universe.TypeTag
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.Entity
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.LogRepository
+import de.htwg.zeta.persistence.general.MetaModelEntityRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 
 /** Persistence-Layer to restrict the access to the entity-persistence.
  *
@@ -21,18 +25,13 @@ import de.htwg.zeta.persistence.general.EntityPersistence
  * @param manifest implicit manifest of the entity type
  */
 @Singleton
-class AccessRestrictedEntityPersistence[E <: Entity : TypeTag] @Inject()(
-    accessAuthorisation: EntityPersistence[AccessAuthorisation],
-    underlying: EntityPersistence[E]
+class AccessRestrictedEntityPersistence[E <: Entity: TypeTag] @Inject()(
+    accessAuthorisation: AccessAuthorisationRepository,
+    underlying: EntityRepository[E]
 )(implicit manifest: Manifest[E]) {
 
-  def restrictedTo(ownerId: UUID): EntityPersistence[E] = new EntityPersistence[E] {
+  def restrictedTo(ownerId: UUID): EntityRepository[E] = new EntityRepository[E] {
 
-    /** Create a new entity.
-     *
-     * @param entity the entity to save
-     * @return Future, which can fail
-     */
     override def create(entity: E): Future[E] = {
       underlying.create(entity).flatMap(entity =>
         accessAuthorisation.createOrUpdate(
@@ -45,30 +44,14 @@ class AccessRestrictedEntityPersistence[E <: Entity : TypeTag] @Inject()(
       )
     }
 
-    /** Get a single entity.
-     *
-     * @param id The id of the entity
-     * @return Future which resolve with the entity and can fail
-     */
     override def read(id: UUID): Future[E] = {
       restricted(id, underlying.read(id))
     }
 
-    /** Update a entity.
-     *
-     * @param id           The id of the entity
-     * @param updateEntity Function, to build the updated entity from the existing
-     * @return Future containing the updated entity
-     */
     override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
       restricted(id, underlying.update(id, updateEntity))
     }
 
-    /** Delete a entity.
-     *
-     * @param id The id of the entity to delete
-     * @return Future, which can fail
-     */
     override def delete(id: UUID): Future[Unit] = {
       restricted(id, underlying.delete(id).flatMap(_ =>
         accessAuthorisation.update(ownerId, _.revokeEntityAccess(entityTypeName, id)).flatMap(_ =>
@@ -77,10 +60,6 @@ class AccessRestrictedEntityPersistence[E <: Entity : TypeTag] @Inject()(
       ))
     }
 
-    /** Get the id's of all entity.
-     *
-     * @return Future containing all id's of the entity type, can fail
-     */
     override def readAllIds(): Future[Set[UUID]] = {
       accessAuthorisation.readOrCreate(ownerId, AccessAuthorisation(ownerId, Map.empty, Map.empty)).map(_.listEntityAccess(entityTypeName))
     }
@@ -98,3 +77,21 @@ class AccessRestrictedEntityPersistence[E <: Entity : TypeTag] @Inject()(
   }
 
 }
+
+@Singleton
+class AccessRestrictedMetaModelEntityRepository @Inject()(
+    accessAuthorisation: AccessAuthorisationRepository,
+    underlying: MetaModelEntityRepository
+) extends AccessRestrictedEntityPersistence(accessAuthorisation, underlying)
+
+@Singleton
+class AccessRestrictedModelEntityRepository @Inject()(
+    accessAuthorisation: AccessAuthorisationRepository,
+    underlying: ModelEntityRepository
+) extends AccessRestrictedEntityPersistence(accessAuthorisation, underlying)
+
+@Singleton
+class AccessRestrictedLogRepository @Inject()(
+    accessAuthorisation: AccessAuthorisationRepository,
+    underlying: LogRepository
+) extends AccessRestrictedEntityPersistence(accessAuthorisation, underlying)

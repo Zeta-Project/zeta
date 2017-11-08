@@ -9,8 +9,8 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.FileRepository
 
 /** Persistence-Layer to restrict the access to the file-persistence.
  *
@@ -19,11 +19,11 @@ import de.htwg.zeta.persistence.general.FilePersistence
  */
 @Singleton
 class AccessRestrictedFilePersistence @Inject()(
-    accessAuthorisation: EntityPersistence[AccessAuthorisation],
-    underlying: FilePersistence
+    accessAuthorisation: EntityRepository[AccessAuthorisation],
+    underlying: FileRepository
 ) {
 
-  def restrictedTo(ownerId: UUID): FilePersistence = new FilePersistence {
+  def restrictedTo(ownerId: UUID): FileRepository = new FileRepository {
 
     /** Create a new file.
      *

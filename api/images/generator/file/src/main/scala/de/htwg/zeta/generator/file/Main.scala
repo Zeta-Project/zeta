@@ -19,7 +19,7 @@ import de.htwg.zeta.generator.template.Success
 import de.htwg.zeta.generator.template.Template
 import de.htwg.zeta.generator.template.Transformer
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.FileRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -27,7 +27,7 @@ class MyTransformer() extends Transformer {
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val filePersistence = injector.getInstance(classOf[FilePersistence])
+  private val filePersistence = injector.getInstance(classOf[FileRepository])
 
   def transform(entity: ModelEntity): Future[Transformer] = {
     logger.info("Start example")

@@ -8,14 +8,14 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoReader
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWriter
-import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.UserIdReader
-import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.collectionName
-import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.keyProjection
-import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sLoginInfo
-import de.htwg.zeta.persistence.mongo.MongoLoginInfoPersistence.sUserId
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.UserIdReader
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.collectionName
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.keyProjection
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.sLoginInfo
+import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.sUserId
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
@@ -25,7 +25,7 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentReader
 
 @Singleton
-class MongoLoginInfoPersistence @Inject()(database: Future[DefaultDB]) extends LoginInfoPersistence {
+class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends LoginInfoRepository {
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](collectionName))
@@ -112,7 +112,7 @@ class MongoLoginInfoPersistence @Inject()(database: Future[DefaultDB]) extends L
 
 }
 
-private object MongoLoginInfoPersistence {
+private object MongoLoginInfoRepository {
 
   private val collectionName = "LoginInfo"
 

@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.server.controller.restApi.format.BondedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
@@ -20,7 +20,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for bondedTask definitions
  */
 class BondedTaskRestApi @Inject()(
-    bondedTaskRepo: EntityPersistence[BondedTask]
+    bondedTaskRepo: EntityRepository[BondedTask]
 ) extends RestApiController[BondedTask] {
 
   /** Lists all BondedTask.

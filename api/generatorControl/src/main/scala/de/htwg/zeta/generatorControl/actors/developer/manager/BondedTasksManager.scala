@@ -19,7 +19,7 @@ import de.htwg.zeta.common.models.frontend.Entry
 import de.htwg.zeta.common.models.frontend.ExecuteBondedTask
 import de.htwg.zeta.common.models.frontend.ModelUser
 import de.htwg.zeta.common.models.worker.RunBondedTask
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 case class GetBondedTaskList(user: ModelUser)
 
@@ -29,10 +29,10 @@ object BondedTasksManager {
 
 class BondedTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
-  private val bondedTaskPersistence = injector.getInstance(classOf[EntityPersistence[BondedTask]])
+  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
+  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
+  private val bondedTaskPersistence = injector.getInstance(classOf[EntityRepository[BondedTask]])
 
   // 1. check if the bonded task exist
   // 2. get the filter attached to the bonded task

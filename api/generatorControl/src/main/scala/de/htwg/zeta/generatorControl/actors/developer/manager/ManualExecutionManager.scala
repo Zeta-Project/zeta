@@ -17,7 +17,7 @@ import de.htwg.zeta.common.models.frontend.RunFilter
 import de.htwg.zeta.common.models.frontend.RunGenerator
 import de.htwg.zeta.common.models.worker.RunFilterManually
 import de.htwg.zeta.common.models.worker.RunGeneratorManually
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 object ManualExecutionManager {
   def props(worker: ActorRef, injector: Injector): Props = Props(new ManualExecutionManager(worker, injector))
@@ -25,9 +25,9 @@ object ManualExecutionManager {
 
 class ManualExecutionManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
+  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
 
   // find the generator and filter and send a job to the worker
   def runGenerator(run: RunGenerator) = {

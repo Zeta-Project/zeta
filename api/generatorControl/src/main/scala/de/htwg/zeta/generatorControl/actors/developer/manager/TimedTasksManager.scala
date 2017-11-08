@@ -22,7 +22,7 @@ import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.worker.RunTimedTask
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 private case class ExecuteTask(task: TimedTask)
 
@@ -32,10 +32,10 @@ object TimedTasksManager {
 
 class TimedTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
-  private val timedTaskPersistence = injector.getInstance(classOf[EntityPersistence[TimedTask]])
+  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
+  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
+  private val timedTaskPersistence = injector.getInstance(classOf[EntityRepository[TimedTask]])
 
   private var schedules: Map[UUID, Cancellable] = Map()
 

@@ -10,8 +10,8 @@ import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -30,8 +30,8 @@ import play.api.mvc.Result
 class ActivateAccountController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
-    userRepo: EntityPersistence[User],
-    loginInfoRepo: LoginInfoPersistence
+    userRepo: EntityRepository[User],
+    loginInfoRepo: LoginInfoRepository
 ) extends Controller {
 
   /** Sends an account activation email to the user with the given email.

@@ -36,7 +36,7 @@ import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWo
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import org.joda.time.DateTime
 import play.api.libs.ws.ahc.AhcWSClient
 
@@ -116,7 +116,7 @@ private class WorkProcessor(
 
   private val injector = Guice.createInjector(new PersistenceModule)
   private val logPersistence = injector.getInstance(classOf[AccessRestrictedEntityPersistence[Log]]).restrictedTo(work.owner)
-  private val metaModelReleasePersistence = injector.getInstance(classOf[EntityPersistence[MetaModelRelease]])
+  private val metaModelReleasePersistence = injector.getInstance(classOf[EntityRepository[MetaModelRelease]])
 
   private var jobStream = JobLog(job = work.id)
   private var jobPersist = JobLog(job = work.id)

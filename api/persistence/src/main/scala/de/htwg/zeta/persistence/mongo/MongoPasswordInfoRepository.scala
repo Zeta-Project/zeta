@@ -8,15 +8,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
-import de.htwg.zeta.persistence.general.PasswordInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoReader
 import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWriter
 import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoReader
 import de.htwg.zeta.persistence.mongo.MongoHandler.passwordInfoWriter
-import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.collectionName
-import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.loginInfoProjection
-import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.sLoginInfo
-import de.htwg.zeta.persistence.mongo.MongoPasswordInfoPersistence.sPasswordInfo
+import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.collectionName
+import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.loginInfoProjection
+import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.sLoginInfo
+import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.sPasswordInfo
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
@@ -25,7 +25,7 @@ import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 
 @Singleton
-class MongoPasswordInfoPersistence @Inject()(database: Future[DefaultDB]) extends PasswordInfoPersistence {
+class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends PasswordInfoRepository {
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](collectionName))
@@ -118,7 +118,7 @@ class MongoPasswordInfoPersistence @Inject()(database: Future[DefaultDB]) extend
 }
 
 
-private object MongoPasswordInfoPersistence {
+private object MongoPasswordInfoRepository {
 
   private val collectionName = "PasswordInfo"
   private val sLoginInfo = "loginInfo"

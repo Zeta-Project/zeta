@@ -22,19 +22,19 @@ import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Find
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Remove
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Save
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Update
-import de.htwg.zeta.persistence.general.PasswordInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
 
 /**
  * Actor Cache Implementation of PasswordInfoPersistence.
  */
 @Singleton
-class ActorCachePasswordInfoPersistence @Inject()(
-    underlying: PasswordInfoPersistence,
+class ActorCachePasswordInfoRepository @Inject()(
+    underlying: PasswordInfoRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     implicit val timeout: Timeout
-) extends PasswordInfoPersistence {
+) extends PasswordInfoRepository {
 
 
   private def hashMapping: ConsistentHashMapping = {

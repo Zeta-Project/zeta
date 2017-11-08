@@ -8,7 +8,7 @@ import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.MetaModelRelease
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -38,8 +38,8 @@ object Main extends App {
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val metaModelEntityPersistence = injector.getInstance(classOf[EntityPersistence[MetaModelEntity]])
-  private val metaModelReleasePersistence = injector.getInstance(classOf[EntityPersistence[MetaModelRelease]])
+  private val metaModelEntityPersistence = injector.getInstance(classOf[EntityRepository[MetaModelEntity]])
+  private val metaModelReleasePersistence = injector.getInstance(classOf[EntityRepository[MetaModelRelease]])
 
   cmd.id.foreach({ id =>
     logger.info("Create Model Release for " + id)

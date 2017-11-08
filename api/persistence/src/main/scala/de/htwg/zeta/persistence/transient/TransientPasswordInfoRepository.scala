@@ -7,13 +7,13 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
-import de.htwg.zeta.persistence.general.PasswordInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
 
 /**
  * Transient implementation of the PasswordInfoPersistence.
  */
 @Singleton
-class TransientPasswordInfoPersistence extends PasswordInfoPersistence {
+class TransientPasswordInfoRepository extends PasswordInfoRepository {
 
   private val cache: TrieMap[LoginInfo, PasswordInfo] = TrieMap.empty
 

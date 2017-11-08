@@ -13,7 +13,7 @@ import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.RunGeneratorFromGenerator
 import de.htwg.zeta.common.models.frontend.StartGeneratorError
 import de.htwg.zeta.common.models.worker.RunGeneratorFromGeneratorJob
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 object GeneratorRequestManager {
   def props(workQueue: ActorRef, injector: Injector): Props = Props(new GeneratorRequestManager(workQueue, injector))
@@ -21,8 +21,8 @@ object GeneratorRequestManager {
 
 class GeneratorRequestManager(workQueue: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
 
   // find the generator and filter and send a job to the worker
   def runGenerator(run: RunGeneratorFromGenerator): Future[Unit] = {

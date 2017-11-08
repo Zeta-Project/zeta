@@ -28,34 +28,34 @@ import de.htwg.zeta.persistence.fixtures.ModelEntityFixtures
 import de.htwg.zeta.persistence.fixtures.SettingsFixtures
 import de.htwg.zeta.persistence.fixtures.TimedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.UserFixtures
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.FilePersistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
-import de.htwg.zeta.persistence.general.PasswordInfoPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.LoginInfoRepository
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
 
 
 /** PersistenceBehavior. */
-trait RepositoryBehavior extends EntityPersistenceBehavior with FilePersistenceBehavior
-  with LoginInfoPersistenceBehavior with PasswordInfoPersistenceBehavior {
+trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBehavior
+  with LoginInfoRepositoryBehavior with PasswordInfoRepositoryBehavior {
 
   def persistenceBehavior(
-      accessAuthorisationPersistence: EntityPersistence[AccessAuthorisation],
-      bondedTaskPersistence: EntityPersistence[BondedTask],
-      eventDrivenTaskPersistence: EntityPersistence[EventDrivenTask],
-      filterPersistence: EntityPersistence[Filter],
-      filterImagePersistence: EntityPersistence[FilterImage],
-      generatorPersistence: EntityPersistence[Generator],
-      generatorImagePersistence: EntityPersistence[GeneratorImage],
-      logPersistence: EntityPersistence[Log],
-      metaModelEntityPersistence: EntityPersistence[MetaModelEntity],
-      metaModelReleasePersistence: EntityPersistence[MetaModelRelease],
-      modelEntityPersistence: EntityPersistence[ModelEntity],
-      settingsPersistence: EntityPersistence[Settings],
-      timedTaskPersistence: EntityPersistence[TimedTask],
-      userPersistence: EntityPersistence[User],
-      filePersistence: FilePersistence,
-      loginInfoPersistence: LoginInfoPersistence,
-      passwordInfoPersistence: PasswordInfoPersistence
+      accessAuthorisationPersistence: EntityRepository[AccessAuthorisation],
+      bondedTaskPersistence: EntityRepository[BondedTask],
+      eventDrivenTaskPersistence: EntityRepository[EventDrivenTask],
+      filterPersistence: EntityRepository[Filter],
+      filterImagePersistence: EntityRepository[FilterImage],
+      generatorPersistence: EntityRepository[Generator],
+      generatorImagePersistence: EntityRepository[GeneratorImage],
+      logPersistence: EntityRepository[Log],
+      metaModelEntityPersistence: EntityRepository[MetaModelEntity],
+      metaModelReleasePersistence: EntityRepository[MetaModelRelease],
+      modelEntityPersistence: EntityRepository[ModelEntity],
+      settingsPersistence: EntityRepository[Settings],
+      timedTaskPersistence: EntityRepository[TimedTask],
+      userPersistence: EntityRepository[User],
+      filePersistence: FileRepository,
+      loginInfoPersistence: LoginInfoRepository,
+      passwordInfoPersistence: PasswordInfoRepository
   ): Unit = { // scalastyle:ignore
 
     "AccessAuthorisation" should behave like entityPersistenceBehavior[AccessAuthorisation](

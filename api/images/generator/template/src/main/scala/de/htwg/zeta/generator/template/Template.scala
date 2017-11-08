@@ -20,8 +20,8 @@ import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.FilePersistence
+import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.FileRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -71,12 +71,12 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  val modelEntityPersistence = injector.getInstance(classOf[EntityPersistence[ModelEntity]])
-  val filePersistence = injector.getInstance(classOf[FilePersistence])
-  val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
-  val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
-  val metaModelEntityPersistence = injector.getInstance(classOf[EntityPersistence[MetaModelEntity]])
-  val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
+  val modelEntityPersistence = injector.getInstance(classOf[EntityRepository[ModelEntity]])
+  val filePersistence = injector.getInstance(classOf[FileRepository])
+  val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
+  val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
+  val metaModelEntityPersistence = injector.getInstance(classOf[EntityRepository[MetaModelEntity]])
+  val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 

@@ -16,7 +16,7 @@ import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.ModelChanged
 import de.htwg.zeta.common.models.frontend.SavedModel
 import de.htwg.zeta.common.models.worker.RunEventDrivenTask
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 object EventDrivenTasksManager {
   def props(worker: ActorRef, injector: Injector): Props = Props(new EventDrivenTasksManager(worker, injector))
@@ -24,10 +24,10 @@ object EventDrivenTasksManager {
 
 class EventDrivenTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityPersistence[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityPersistence[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityPersistence[GeneratorImage]])
-  private val eventDrivenTaskPersistence = injector.getInstance(classOf[EntityPersistence[EventDrivenTask]])
+  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
+  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
+  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
+  private val eventDrivenTaskPersistence = injector.getInstance(classOf[EntityRepository[EventDrivenTask]])
 
   def isListening(task: EventDrivenTask, changed: ModelChanged): Boolean = {
     changed match {
