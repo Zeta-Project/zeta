@@ -26,7 +26,7 @@ import de.htwg.zeta.common.models.entity.User
  *
  * @tparam E type of the entity
  */
-trait EntityRepository[E <: Entity] { // scalastyle:ignore
+private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
 
   /** The name of the entity-type.
    *

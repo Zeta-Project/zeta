@@ -12,7 +12,6 @@ import akka.actor.Props
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.frontend.DeveloperRequest
 import de.htwg.zeta.common.models.frontend.DeveloperResponse
 import de.htwg.zeta.common.models.frontend.GeneratorRequest
@@ -22,7 +21,7 @@ import de.htwg.zeta.common.models.frontend.UserResponse
 import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.mvc.AnyContent
@@ -43,7 +42,7 @@ class GeneratorControlController @Inject()(
     mat: Materializer,
     backendRemoteClient: GeneratorControlRemoteClient,
     silhouette: Silhouette[ZetaEnv],
-    modelEntityRepo: AccessRestrictedEntityPersistence[ModelEntity]
+    modelEntityRepo: AccessRestrictedModelEntityRepository
 ) extends Controller with Logging {
 
   private val developerMsg: MessageFlowTransformer[DeveloperRequest, DeveloperResponse] =

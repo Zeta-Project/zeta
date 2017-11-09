@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.server.controller.restApi.format.GeneratorFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -21,7 +21,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for generator definitions
  */
 class GeneratorRestApi @Inject()(
-    generatorRepo: EntityRepository[Generator]
+    generatorRepo: GeneratorRepository
 ) extends Controller with Logging {
 
   /**

@@ -10,16 +10,16 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import com.google.inject.Injector
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.BondedTaskList
 import de.htwg.zeta.common.models.frontend.BondedTaskNotExecutable
 import de.htwg.zeta.common.models.frontend.Entry
 import de.htwg.zeta.common.models.frontend.ExecuteBondedTask
 import de.htwg.zeta.common.models.frontend.ModelUser
 import de.htwg.zeta.common.models.worker.RunBondedTask
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.BondedTaskRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 
 case class GetBondedTaskList(user: ModelUser)
 
@@ -29,10 +29,10 @@ object BondedTasksManager {
 
 class BondedTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
-  private val bondedTaskPersistence = injector.getInstance(classOf[EntityRepository[BondedTask]])
+  private val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  private val filterPersistence = injector.getInstance(classOf[FilterRepository])
+  private val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
+  private val bondedTaskPersistence = injector.getInstance(classOf[BondedTaskRepository])
 
   // 1. check if the bonded task exist
   // 2. get the filter attached to the bonded task

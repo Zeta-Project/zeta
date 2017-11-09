@@ -24,12 +24,12 @@ import de.htwg.zeta.persistence.general.ModelEntityRepository
  * @tparam E type of the entity
  * @param manifest implicit manifest of the entity type
  */
-sealed abstract class AccessRestrictedEntityPersistence[E <: Entity: TypeTag](
+private[persistence] sealed abstract class AccessRestrictedEntityPersistence[E <: Entity: TypeTag](
     accessAuthorisation: AccessAuthorisationRepository,
     underlying: EntityRepository[E]
 )(implicit manifest: Manifest[E]) {
 
-  def restrictedTo(ownerId: UUID): EntityRepository[E] = new EntityRepository[E] {
+  final def restrictedTo(ownerId: UUID): EntityRepository[E] = new EntityRepository[E] {
 
     override def create(entity: E): Future[E] = {
       underlying.create(entity).flatMap(entity =>

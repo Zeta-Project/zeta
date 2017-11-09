@@ -10,8 +10,6 @@ import akka.actor.ActorSystem
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.typesafe.config.ConfigFactory
-import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.Log
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
@@ -34,7 +32,7 @@ import de.htwg.zeta.persistence.actorCache.ActorCacheSettingsRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheTimedTaskRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheUserRepository
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterImageRepository
@@ -42,6 +40,7 @@ import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
+import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.MetaModelEntityRepository
 import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
 import de.htwg.zeta.persistence.general.ModelEntityRepository
@@ -140,7 +139,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   }
 
   @Provides @Singleton
-  def provideBondedTaskRepo(connection: Future[DefaultDB]): EntityRepository[BondedTask] = {
+  def provideBondedTaskRepo(connection: Future[DefaultDB]): BondedTaskRepository = {
     new ActorCacheBondedTaskRepository(
       new MongoBondedTaskRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
@@ -188,7 +187,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   }
 
   @Provides @Singleton
-  def provideLogRepo(connection: Future[DefaultDB]): EntityRepository[Log] = {
+  def provideLogRepo(connection: Future[DefaultDB]): LogRepository = {
     new ActorCacheLogRepository(
       new MongoLogRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout

@@ -7,17 +7,15 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import com.google.inject.Injector
-import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.ExecuteFilterError
 import de.htwg.zeta.common.models.frontend.ExecuteGeneratorError
 import de.htwg.zeta.common.models.frontend.RunFilter
 import de.htwg.zeta.common.models.frontend.RunGenerator
 import de.htwg.zeta.common.models.worker.RunFilterManually
 import de.htwg.zeta.common.models.worker.RunGeneratorManually
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 
 object ManualExecutionManager {
   def props(worker: ActorRef, injector: Injector): Props = Props(new ManualExecutionManager(worker, injector))
@@ -25,9 +23,9 @@ object ManualExecutionManager {
 
 class ManualExecutionManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
+  private val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  private val filterPersistence = injector.getInstance(classOf[FilterRepository])
+  private val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
 
   // find the generator and filter and send a job to the worker
   def runGenerator(run: RunGenerator) = {

@@ -11,9 +11,8 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
-import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.controller.ResetPasswordController.error
 import de.htwg.zeta.server.controller.ResetPasswordController.invalidResetLink
 import de.htwg.zeta.server.forms.ResetPasswordForm
@@ -34,7 +33,7 @@ class ResetPasswordController @Inject()(
     authInfoRepository: AuthInfoRepository,
     passwordHasherRegistry: PasswordHasherRegistry,
     tokenCache: TokenCache,
-    userRepo: EntityRepository[User]
+    userRepo: UserRepository
 ) extends Controller {
 
   /** Views the `Reset Password` page.

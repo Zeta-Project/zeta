@@ -13,9 +13,9 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -42,7 +42,7 @@ class SignUpController @Inject()(
     passwordHasherRegistry: PasswordHasherRegistry,
     mailerClient: MailerClient,
     tokenCache: TokenCache,
-    userRepo: EntityRepository[User],
+    userRepo: UserRepository,
     loginInfoRepo: LoginInfoRepository
 ) extends Controller {
 

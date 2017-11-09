@@ -17,12 +17,12 @@ import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.document.Created
 import de.htwg.zeta.common.models.document.Deleted
 import de.htwg.zeta.common.models.document.Updated
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.worker.RunTimedTask
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.TimedTaskRepository
 
 private case class ExecuteTask(task: TimedTask)
 
@@ -32,10 +32,10 @@ object TimedTasksManager {
 
 class TimedTasksManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
-  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
-  private val timedTaskPersistence = injector.getInstance(classOf[EntityRepository[TimedTask]])
+  private val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  private val filterPersistence = injector.getInstance(classOf[FilterRepository])
+  private val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
+  private val timedTaskPersistence = injector.getInstance(classOf[TimedTaskRepository])
 
   private var schedules: Map[UUID, Cancellable] = Map()
 

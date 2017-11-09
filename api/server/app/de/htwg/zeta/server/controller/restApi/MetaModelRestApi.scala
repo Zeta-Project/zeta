@@ -16,15 +16,15 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -33,7 +33,7 @@ import play.api.mvc.Result
  * REST-ful API for MetaModel definitions
  */
 class MetaModelRestApi @Inject()(
-    metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity]
+    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository
 ) extends Controller with Logging {
 
   /** Lists all MetaModels for the requesting user, provides HATEOAS links.

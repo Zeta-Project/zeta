@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.server.controller.restApi.format.GeneratorImageFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -21,7 +21,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for generator image definitions
  */
 class GeneratorImageRestApi @Inject()(
-    generatorImageRepo: EntityRepository[GeneratorImage]
+    generatorImageRepo: GeneratorImageRepository
 ) extends Controller with Logging {
 
   /** Lists all generator images.
@@ -30,13 +30,13 @@ class GeneratorImageRestApi @Inject()(
    * @return The result
    */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    generatorImageRepo.readAllIds().flatMap(getIds(generatorImageRepo)).map(getJsonArray).recover {
+    generatorImageRepo.readAllIds().flatMap(getIds).map(getJsonArray).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
 
-  private def getIds(repo: EntityRepository[GeneratorImage])(ids: Set[UUID]) = {
-    val list = ids.toList.map(repo.read)
+  private def getIds(ids: Set[UUID]) = {
+    val list = ids.toList.map(generatorImageRepo.read)
     Future.sequence(list)
   }
 

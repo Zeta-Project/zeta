@@ -7,10 +7,9 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
-import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.ForgotPasswordForm
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -30,7 +29,7 @@ class ForgotPasswordController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
     loginInfoRepo: LoginInfoRepository,
-    userRepo: EntityRepository[User]
+    userRepo: UserRepository
 ) extends Controller {
 
   /** Views the `Forgot Password` page.

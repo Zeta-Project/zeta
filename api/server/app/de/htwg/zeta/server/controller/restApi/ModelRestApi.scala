@@ -4,34 +4,34 @@ import java.util.UUID
 import javax.inject.Inject
 
 import scala.concurrent.Future
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * REST-ful API for model definitions
  */
 class ModelRestApi @Inject()(
-    modelEntityRepo: AccessRestrictedEntityPersistence[ModelEntity],
-    metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity]
+    modelEntityRepo: AccessRestrictedModelEntityRepository,
+    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository
 ) extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */

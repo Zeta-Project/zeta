@@ -11,6 +11,7 @@ import akka.actor.Props
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.server.model.metaModel.MetaModelWsActor
 import de.htwg.zeta.server.model.metaModel.MetaModelWsMediatorContainer
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -22,7 +23,7 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
 
 
 class MetaModelController @Inject()(
-    metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity],
+    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
     mediator: MetaModelWsMediatorContainer
 ) extends Controller {
 

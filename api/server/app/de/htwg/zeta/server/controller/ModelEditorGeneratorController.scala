@@ -11,12 +11,12 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
 import de.htwg.zeta.server.generator.generators.style.StyleGenerator
@@ -34,7 +34,7 @@ import play.api.mvc.Result
 
 class ModelEditorGeneratorController @Inject()(
     silhouette: Silhouette[ZetaEnv],
-    metaModelEntityRepo: AccessRestrictedEntityPersistence[MetaModelEntity],
+    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
     filePersistence: AccessRestrictedFilePersistence
 ) extends Controller {
 

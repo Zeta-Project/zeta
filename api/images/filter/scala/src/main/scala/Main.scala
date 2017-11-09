@@ -14,8 +14,9 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 import filter.BaseFilter
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
@@ -42,9 +43,9 @@ object Main extends App {
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val modelEntityPersistence = injector.getInstance(classOf[EntityRepository[ModelEntity]])
+  private val modelEntityPersistence = injector.getInstance(classOf[ModelEntityRepository])
   private val filePersistence = injector.getInstance(classOf[FileRepository])
-  private val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
+  private val filterPersistence = injector.getInstance(classOf[FilterRepository])
 
   cmd.filter.foreach({ id =>
     logger.info("Run filter: " + id)

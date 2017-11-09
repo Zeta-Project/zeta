@@ -40,9 +40,9 @@ import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -92,8 +92,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideUserIdentityService(
-      loginInfoPersistence: LoginInfoRepository,
-      userPersistence: EntityRepository[User]
+    loginInfoPersistence: LoginInfoRepository,
+    userPersistence: UserRepository
   ): IdentityService[User] = {
     new IdentityService[User] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {

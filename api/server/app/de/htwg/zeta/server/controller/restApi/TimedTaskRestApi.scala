@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.TimedTask
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.server.controller.restApi.format.TimedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
@@ -20,7 +20,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for filter definitions
  */
 class TimedTaskRestApi @Inject()(
-    timedTaskRepo: EntityRepository[TimedTask]
+    timedTaskRepo: TimedTaskRepository
 ) extends RestApiController[TimedTask] {
 
   /** Lists all filter.

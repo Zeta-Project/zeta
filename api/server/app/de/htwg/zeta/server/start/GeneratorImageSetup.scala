@@ -10,7 +10,6 @@ import de.htwg.zeta.common.models.entity.GeneratorImageOptions
 import de.htwg.zeta.common.models.entity.GeneratorMetaModelReleaseProperty
 import de.htwg.zeta.common.models.entity.GeneratorNameProperty
 import de.htwg.zeta.common.models.entity.GeneratorOptionProperties
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import grizzled.slf4j.Logging
 
@@ -28,7 +27,7 @@ class GeneratorImageSetup(generatorImageRepo: GeneratorImageRepository) extends 
       }
   }
 
-  private def addEntries(persistence: EntityRepository[GeneratorImage]) = {
+  private def addEntries(persistence: GeneratorImageRepository) = {
     persistence.create(createBasicImage())
     persistence.create(createSpecificImage())
     persistence.create(createRemoteImage())

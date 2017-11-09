@@ -29,14 +29,13 @@ import com.spotify.docker.client.messages.HostConfig
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelRelease
 import de.htwg.zeta.common.models.frontend.JobLog
 import de.htwg.zeta.common.models.frontend.JobLogMessage
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWork
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedEntityPersistence
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
+import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
 import org.joda.time.DateTime
 import play.api.libs.ws.ahc.AhcWSClient
 
@@ -115,8 +114,8 @@ private class WorkProcessor(
   log.info(DockerWorkExecutor.messageReceivedJob, work.id)
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val logPersistence = injector.getInstance(classOf[AccessRestrictedEntityPersistence[Log]]).restrictedTo(work.owner)
-  private val metaModelReleasePersistence = injector.getInstance(classOf[EntityRepository[MetaModelRelease]])
+  private val logPersistence = injector.getInstance(classOf[AccessRestrictedLogRepository]).restrictedTo(work.owner)
+  private val metaModelReleasePersistence = injector.getInstance(classOf[MetaModelReleaseRepository])
 
   private var jobStream = JobLog(job = work.id)
   private var jobPersist = JobLog(job = work.id)

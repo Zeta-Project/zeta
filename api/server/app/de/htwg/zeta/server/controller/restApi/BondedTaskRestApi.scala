@@ -4,23 +4,23 @@ import java.util.UUID
 import javax.inject.Inject
 
 import scala.concurrent.Future
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.server.controller.restApi.format.BondedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * REST-ful API for bondedTask definitions
  */
 class BondedTaskRestApi @Inject()(
-    bondedTaskRepo: EntityRepository[BondedTask]
+    bondedTaskRepo: BondedTaskRepository
 ) extends RestApiController[BondedTask] {
 
   /** Lists all BondedTask.

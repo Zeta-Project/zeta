@@ -16,18 +16,20 @@ import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.MetaModelEntityRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsSuccess
+import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
 
@@ -71,12 +73,12 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  val modelEntityPersistence = injector.getInstance(classOf[EntityRepository[ModelEntity]])
+  val modelEntityPersistence = injector.getInstance(classOf[ModelEntityRepository])
   val filePersistence = injector.getInstance(classOf[FileRepository])
-  val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
-  val filterPersistence = injector.getInstance(classOf[EntityRepository[Filter]])
-  val metaModelEntityPersistence = injector.getInstance(classOf[EntityRepository[MetaModelEntity]])
-  val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
+  val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  val filterPersistence = injector.getInstance(classOf[FilterRepository])
+  val metaModelEntityPersistence = injector.getInstance(classOf[MetaModelEntityRepository])
+  val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 

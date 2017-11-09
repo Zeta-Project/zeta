@@ -8,12 +8,11 @@ import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
 import com.google.inject.Injector
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.frontend.RunGeneratorFromGenerator
 import de.htwg.zeta.common.models.frontend.StartGeneratorError
 import de.htwg.zeta.common.models.worker.RunGeneratorFromGeneratorJob
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 
 object GeneratorRequestManager {
   def props(workQueue: ActorRef, injector: Injector): Props = Props(new GeneratorRequestManager(workQueue, injector))
@@ -21,8 +20,8 @@ object GeneratorRequestManager {
 
 class GeneratorRequestManager(workQueue: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorPersistence = injector.getInstance(classOf[EntityRepository[Generator]])
-  private val generatorImagePersistence = injector.getInstance(classOf[EntityRepository[GeneratorImage]])
+  private val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  private val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
 
   // find the generator and filter and send a job to the worker
   def runGenerator(run: RunGeneratorFromGenerator): Future[Unit] = {

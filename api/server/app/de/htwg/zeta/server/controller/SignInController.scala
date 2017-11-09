@@ -13,9 +13,8 @@ import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
-import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus.finiteDurationReader
@@ -43,7 +42,7 @@ class SignInController @Inject()(
     configuration: Configuration,
     clock: Clock,
     loginInfoRepo: LoginInfoRepository,
-    userRepo: EntityRepository[User]
+    userRepo: UserRepository
 ) extends Controller {
 
   /** Views the `Sign In` page.

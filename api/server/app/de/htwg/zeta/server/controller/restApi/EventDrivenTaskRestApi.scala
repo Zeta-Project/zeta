@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.EventDrivenTask
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.server.controller.restApi.format.EventDrivenTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
@@ -20,7 +20,7 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
  * REST-ful API for filter definitions
  */
 class EventDrivenTaskRestApi @Inject()(
-    eventDrivenTaskRepo: EntityRepository[EventDrivenTask]
+    eventDrivenTaskRepo: EventDrivenTaskRepository
 ) extends RestApiController[EventDrivenTask] {
 
   /** Lists all filter.
