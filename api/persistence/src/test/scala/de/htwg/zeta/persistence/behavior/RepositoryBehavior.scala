@@ -28,35 +28,48 @@ import de.htwg.zeta.persistence.fixtures.ModelEntityFixtures
 import de.htwg.zeta.persistence.fixtures.SettingsFixtures
 import de.htwg.zeta.persistence.fixtures.TimedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.UserFixtures
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
+import de.htwg.zeta.persistence.general.BondedTaskRepository
+import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterImageRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
+import de.htwg.zeta.persistence.general.LogRepository
+import de.htwg.zeta.persistence.general.MetaModelEntityRepository
+import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
+import de.htwg.zeta.persistence.general.SettingsRepository
+import de.htwg.zeta.persistence.general.TimedTaskRepository
+import de.htwg.zeta.persistence.general.UserRepository
 
 
 /** PersistenceBehavior. */
 trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBehavior
   with LoginInfoRepositoryBehavior with PasswordInfoRepositoryBehavior {
 
-  def persistenceBehavior(
-      accessAuthorisationPersistence: EntityRepository[AccessAuthorisation],
-      bondedTaskPersistence: EntityRepository[BondedTask],
-      eventDrivenTaskPersistence: EntityRepository[EventDrivenTask],
-      filterPersistence: EntityRepository[Filter],
-      filterImagePersistence: EntityRepository[FilterImage],
-      generatorPersistence: EntityRepository[Generator],
-      generatorImagePersistence: EntityRepository[GeneratorImage],
-      logPersistence: EntityRepository[Log],
-      metaModelEntityPersistence: EntityRepository[MetaModelEntity],
-      metaModelReleasePersistence: EntityRepository[MetaModelRelease],
-      modelEntityPersistence: EntityRepository[ModelEntity],
-      settingsPersistence: EntityRepository[Settings],
-      timedTaskPersistence: EntityRepository[TimedTask],
-      userPersistence: EntityRepository[User],
+  def repositoryBehavior( // scalastyle:ignore
+      accessAuthorisationPersistence: AccessAuthorisationRepository, // scalastyle:ignore
+      bondedTaskPersistence: BondedTaskRepository,
+      eventDrivenTaskPersistence: EventDrivenTaskRepository,
+      filterPersistence: FilterRepository,
+      filterImagePersistence: FilterImageRepository,
+      generatorPersistence: GeneratorRepository,
+      generatorImagePersistence: GeneratorImageRepository,
+      logPersistence: LogRepository,
+      metaModelEntityPersistence: MetaModelEntityRepository,
+      metaModelReleasePersistence: MetaModelReleaseRepository,
+      modelEntityPersistence: ModelEntityRepository,
+      settingsPersistence: SettingsRepository,
+      timedTaskPersistence: TimedTaskRepository,
+      userPersistence: UserRepository,
       filePersistence: FileRepository,
       loginInfoPersistence: LoginInfoRepository,
       passwordInfoPersistence: PasswordInfoRepository
-  ): Unit = { // scalastyle:ignore
+  ): Unit = {
 
     "AccessAuthorisation" should behave like entityPersistenceBehavior[AccessAuthorisation](
       accessAuthorisationPersistence,

@@ -17,7 +17,7 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepo
 import de.htwg.zeta.persistence.actorCache.ActorCacheAccessAuthorisationRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheBondedTaskRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheEventDrivenTaskRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheFilePersistence
+import de.htwg.zeta.persistence.actorCache.ActorCacheFileRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheFilterImageRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheFilterRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorImageRepository
@@ -52,7 +52,7 @@ import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.persistence.mongo.MongoAccessAuthorisationRepository
 import de.htwg.zeta.persistence.mongo.MongoBondedTaskRepository
 import de.htwg.zeta.persistence.mongo.MongoEventDrivenTaskRepository
-import de.htwg.zeta.persistence.mongo.MongoFilePersistence
+import de.htwg.zeta.persistence.mongo.MongoFileRepository
 import de.htwg.zeta.persistence.mongo.MongoFilterImageRepository
 import de.htwg.zeta.persistence.mongo.MongoFilterRepository
 import de.htwg.zeta.persistence.mongo.MongoGeneratorImageRepository
@@ -244,8 +244,8 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
 
   @Provides @Singleton
   def provideFileRepo(connection: Future[DefaultDB]): FileRepository = {
-    new ActorCacheFilePersistence(
-      new MongoFilePersistence(connection),
+    new ActorCacheFileRepository(
+      new MongoFileRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }

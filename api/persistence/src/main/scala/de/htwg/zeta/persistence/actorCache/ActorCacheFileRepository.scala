@@ -27,7 +27,7 @@ import de.htwg.zeta.persistence.general.FileRepository
  * Actor Cache Implementation of FilePersistence.
  */
 @Singleton
-class ActorCacheFilePersistence @Inject()(
+class ActorCacheFileRepository @Inject()(
     underlying: FileRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,

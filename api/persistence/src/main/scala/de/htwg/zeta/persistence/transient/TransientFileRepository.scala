@@ -13,7 +13,7 @@ import de.htwg.zeta.persistence.general.FileRepository
  * Transient Implementation of FilePersistence.
  */
 @Singleton
-class TransientFilePersistence extends FileRepository {
+class TransientFileRepository extends FileRepository {
 
   private case class Key(id: UUID, name: String)
 

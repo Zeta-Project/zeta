@@ -9,10 +9,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FileRepository
-import de.htwg.zeta.persistence.mongo.MongoFilePersistence.collectionName
-import de.htwg.zeta.persistence.mongo.MongoFilePersistence.keyProjection
-import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sId
-import de.htwg.zeta.persistence.mongo.MongoFilePersistence.sName
+import de.htwg.zeta.persistence.mongo.MongoFileRepository.collectionName
+import de.htwg.zeta.persistence.mongo.MongoFileRepository.keyProjection
+import de.htwg.zeta.persistence.mongo.MongoFileRepository.sId
+import de.htwg.zeta.persistence.mongo.MongoFileRepository.sName
 import de.htwg.zeta.persistence.mongo.MongoHandler.FileKey
 import de.htwg.zeta.persistence.mongo.MongoHandler.fileHandler
 import reactivemongo.api.Cursor
@@ -23,7 +23,7 @@ import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 
 @Singleton
-class MongoFilePersistence @Inject()(database: Future[DefaultDB]) extends FileRepository {
+class MongoFileRepository @Inject()(database: Future[DefaultDB]) extends FileRepository {
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](collectionName))
@@ -104,7 +104,7 @@ class MongoFilePersistence @Inject()(database: Future[DefaultDB]) extends FileRe
 
 }
 
-private object MongoFilePersistence {
+private object MongoFileRepository {
 
   private val collectionName = "File"
 
