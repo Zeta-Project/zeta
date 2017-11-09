@@ -35,8 +35,7 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
 
-@Singleton
-class MongoEntityRepository[E <: Entity] @Inject()(
+sealed abstract class MongoEntityRepository[E <: Entity] (
     database: Future[DefaultDB],
     implicit val entityHandler: BSONDocumentHandler[E]
 )(implicit manifest: Manifest[E]) extends EntityRepository[E] {

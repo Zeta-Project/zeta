@@ -24,8 +24,7 @@ import de.htwg.zeta.persistence.general.ModelEntityRepository
  * @tparam E type of the entity
  * @param manifest implicit manifest of the entity type
  */
-@Singleton
-class AccessRestrictedEntityPersistence[E <: Entity: TypeTag] @Inject()(
+sealed abstract class AccessRestrictedEntityPersistence[E <: Entity: TypeTag](
     accessAuthorisation: AccessAuthorisationRepository,
     underlying: EntityRepository[E]
 )(implicit manifest: Manifest[E]) {

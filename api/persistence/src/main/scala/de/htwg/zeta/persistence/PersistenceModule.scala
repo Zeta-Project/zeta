@@ -10,36 +10,63 @@ import akka.actor.ActorSystem
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.typesafe.config.ConfigFactory
-import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.common.models.entity.EventDrivenTask
-import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.entity.TimedTask
-import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheEntityRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheAccessAuthorisationRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheBondedTaskRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheEventDrivenTaskRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheFilePersistence
+import de.htwg.zeta.persistence.actorCache.ActorCacheFilterImageRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheFilterRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorImageRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheLoginInfoRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheLogRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheMetaModelEntityRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheMetaModelReleaseRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheModelEntityRepository
 import de.htwg.zeta.persistence.actorCache.ActorCachePasswordInfoRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheSettingsRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheTimedTaskRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheUserRepository
+import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterImageRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
+import de.htwg.zeta.persistence.general.MetaModelEntityRepository
+import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
+import de.htwg.zeta.persistence.general.SettingsRepository
+import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.TokenCache
-import de.htwg.zeta.persistence.mongo.MongoEntityRepository
+import de.htwg.zeta.persistence.general.UserRepository
+import de.htwg.zeta.persistence.mongo.MongoAccessAuthorisationRepository
+import de.htwg.zeta.persistence.mongo.MongoBondedTaskRepository
+import de.htwg.zeta.persistence.mongo.MongoEventDrivenTaskRepository
 import de.htwg.zeta.persistence.mongo.MongoFilePersistence
-import de.htwg.zeta.persistence.mongo.MongoHandler
+import de.htwg.zeta.persistence.mongo.MongoFilterImageRepository
+import de.htwg.zeta.persistence.mongo.MongoFilterRepository
+import de.htwg.zeta.persistence.mongo.MongoGeneratorImageRepository
+import de.htwg.zeta.persistence.mongo.MongoGeneratorRepository
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository
+import de.htwg.zeta.persistence.mongo.MongoLogRepository
+import de.htwg.zeta.persistence.mongo.MongoMetaModelEntityRepository
+import de.htwg.zeta.persistence.mongo.MongoMetaModelReleaseRepository
+import de.htwg.zeta.persistence.mongo.MongoModelEntityRepository
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository
+import de.htwg.zeta.persistence.mongo.MongoSettingsRepository
+import de.htwg.zeta.persistence.mongo.MongoTimedTaskRepository
+import de.htwg.zeta.persistence.mongo.MongoUserRepository
 import de.htwg.zeta.persistence.transient.TransientTokenCache
 import grizzled.slf4j.Logging
 import net.codingwell.scalaguice.ScalaModule
@@ -105,25 +132,113 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   private val timeout = Duration(10, TimeUnit.SECONDS) // scalastyle:ignore magic.number
 
   @Provides @Singleton
-  def provideUserEntityRepo(connection: Future[DefaultDB]): EntityRepository[User] = {
-    new ActorCacheEntityRepository[User](
-      new MongoEntityRepository[User](connection, MongoHandler.userHandler),
+  def provideAccessAuthorisationRepo(connection: Future[DefaultDB]): AccessAuthorisationRepository = {
+    new ActorCacheAccessAuthorisationRepository(
+      new MongoAccessAuthorisationRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }
 
   @Provides @Singleton
-  def provideMetaModelEntityRepo(connection: Future[DefaultDB]): EntityRepository[MetaModelEntity] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.metaModelEntityHandler),
+  def provideBondedTaskRepo(connection: Future[DefaultDB]): EntityRepository[BondedTask] = {
+    new ActorCacheBondedTaskRepository(
+      new MongoBondedTaskRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }
 
   @Provides @Singleton
-  def provideModelEntityRepo(connection: Future[DefaultDB]): EntityRepository[ModelEntity] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.modelEntityHandler),
+  def provideEventDrivenTaskRepo(connection: Future[DefaultDB]): EventDrivenTaskRepository = {
+    new ActorCacheEventDrivenTaskRepository(
+      new MongoEventDrivenTaskRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideFilterRepo(connection: Future[DefaultDB]): FilterRepository = {
+    new ActorCacheFilterRepository(
+      new MongoFilterRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideFilterImageRepo(connection: Future[DefaultDB]): FilterImageRepository = {
+    new ActorCacheFilterImageRepository(
+      new MongoFilterImageRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideGeneratorRepo(connection: Future[DefaultDB]): GeneratorRepository = {
+    new ActorCacheGeneratorRepository(
+      new MongoGeneratorRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideGeneratorImageRepo(connection: Future[DefaultDB]): GeneratorImageRepository = {
+    new ActorCacheGeneratorImageRepository(
+      new MongoGeneratorImageRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideLogRepo(connection: Future[DefaultDB]): EntityRepository[Log] = {
+    new ActorCacheLogRepository(
+      new MongoLogRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideMetaModelEntityRepo(connection: Future[DefaultDB]): MetaModelEntityRepository = {
+    new ActorCacheMetaModelEntityRepository(
+      new MongoMetaModelEntityRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideMetaModelReleaseRepo(connection: Future[DefaultDB]): MetaModelReleaseRepository = {
+    new ActorCacheMetaModelReleaseRepository(
+      new MongoMetaModelReleaseRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideModelEntityRepo(connection: Future[DefaultDB]): ModelEntityRepository = {
+    new ActorCacheModelEntityRepository(
+      new MongoModelEntityRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideSettingsRepo(connection: Future[DefaultDB]): SettingsRepository = {
+    new ActorCacheSettingsRepository(
+      new MongoSettingsRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideTimedTaskRepo(connection: Future[DefaultDB]): TimedTaskRepository = {
+    new ActorCacheTimedTaskRepository(
+      new MongoTimedTaskRepository(connection),
+      system, numberActorsPerType, cacheDuration, timeout
+    )
+  }
+
+  @Provides @Singleton
+  def provideUserEntityRepo(connection: Future[DefaultDB]): UserRepository = {
+    new ActorCacheUserRepository(
+      new MongoUserRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }
@@ -132,38 +247,6 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   def provideFileRepo(connection: Future[DefaultDB]): FileRepository = {
     new ActorCacheFilePersistence(
       new MongoFilePersistence(connection),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideGeneratorRepo(connection: Future[DefaultDB]): EntityRepository[Generator] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.generatorHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideFilterRepo(connection: Future[DefaultDB]): EntityRepository[Filter] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.filterHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideGeneratorImageRepo(connection: Future[DefaultDB]): EntityRepository[GeneratorImage] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.generatorImageHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideMetaModelReleaseRepo(connection: Future[DefaultDB]): EntityRepository[MetaModelRelease] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.metaModelReleaseHandler),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }
@@ -180,46 +263,6 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   def providePasswordInfoRepo(connection: Future[DefaultDB]): PasswordInfoRepository = {
     new ActorCachePasswordInfoRepository(
       new MongoPasswordInfoRepository(connection),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideAccessAuthorisationRepo(connection: Future[DefaultDB]): EntityRepository[AccessAuthorisation] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.accessAuthorisationHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideLogRepo(connection: Future[DefaultDB]): EntityRepository[Log] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.logHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideBondedTaskRepo(connection: Future[DefaultDB]): EntityRepository[BondedTask] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.bondedTaskHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideEventDrivenTaskRepo(connection: Future[DefaultDB]): EntityRepository[EventDrivenTask] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.eventDrivenTaskHandler),
-      system, numberActorsPerType, cacheDuration, timeout
-    )
-  }
-
-  @Provides @Singleton
-  def provideTimedTaskRepo(connection: Future[DefaultDB]): EntityRepository[TimedTask] = {
-    new ActorCacheEntityRepository(
-      new MongoEntityRepository(connection, MongoHandler.timedTaskHandler),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }

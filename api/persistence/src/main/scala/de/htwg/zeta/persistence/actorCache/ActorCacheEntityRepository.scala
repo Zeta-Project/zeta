@@ -41,8 +41,7 @@ import de.htwg.zeta.persistence.general.UserRepository
 /**
  * Actor Cache Implementation of EntityPersistence.
  */
-@Singleton
-class ActorCacheEntityRepository[E <: Entity] @Inject()(
+sealed abstract class ActorCacheEntityRepository[E <: Entity](
     underlying: EntityRepository[E],
     system: ActorSystem,
     numberActorsPerEntityType: Int,
@@ -67,11 +66,6 @@ class ActorCacheEntityRepository[E <: Entity] @Inject()(
     entityTypeName
   )
 
-  /** Create a new entity.
-   *
-   * @param entity the entity to save
-   * @return Future, with the created entity
-   */
   override def create(entity: E): Future[E] = {
     (router ? Create(entity)).flatMap {
       case Success(entity: E) => Future.successful(entity)
@@ -79,11 +73,6 @@ class ActorCacheEntityRepository[E <: Entity] @Inject()(
     }
   }
 
-  /** Get a single entity.
-   *
-   * @param id The id of the entity
-   * @return Future containing the read entity
-   */
   override def read(id: UUID): Future[E] = {
     (router ? Read(id)).flatMap {
       case Success(entity: E) => Future.successful(entity)
@@ -91,12 +80,6 @@ class ActorCacheEntityRepository[E <: Entity] @Inject()(
     }
   }
 
-  /** Update a entity.
-   *
-   * @param id           The id of the entity
-   * @param updateEntity Function, to build the updated entity from the existing
-   * @return Future containing the updated entity
-   */
   override def update(id: UUID, updateEntity: E => E): Future[E] = {
     (router ? Update(id, updateEntity)).flatMap {
       case Success(entity: E) => Future.successful(entity)
@@ -104,11 +87,6 @@ class ActorCacheEntityRepository[E <: Entity] @Inject()(
     }
   }
 
-  /** Delete a entity.
-   *
-   * @param id The id of the entity to delete
-   * @return Future
-   */
   override def delete(id: UUID): Future[Unit] = {
     (router ? Delete(id)).flatMap {
       case Success(()) => Future.successful(())
@@ -116,10 +94,6 @@ class ActorCacheEntityRepository[E <: Entity] @Inject()(
     }
   }
 
-  /** Get the id's of all entity.
-   *
-   * @return Future containing all id's of the entity type
-   */
   override def readAllIds(): Future[Set[UUID]] = {
     underlying.readAllIds()
   }
@@ -157,7 +131,7 @@ class ActorCacheEventDrivenTaskRepository @Inject()(
   with EventDrivenTaskRepository
 
 @Singleton
-class ActorCacheFilterTaskRepository @Inject()(
+class ActorCacheFilterRepository @Inject()(
     underlying: FilterRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,

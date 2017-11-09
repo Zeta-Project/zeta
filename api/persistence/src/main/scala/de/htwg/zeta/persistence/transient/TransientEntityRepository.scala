@@ -38,20 +38,14 @@ import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.UserRepository
 
-/** Cache implementation of [[EntityRepository]].
+/** Cache implementation of [[de.htwg.zeta.persistence.general.EntityRepository]].
  *
  * @tparam E type of the entity
  */
-@Singleton
-class TransientEntityRepository[E <: Entity] extends EntityRepository[E] { // scalastyle:ignore
+sealed abstract class TransientEntityRepository[E <: Entity] extends EntityRepository[E] {
 
   private val cache: TrieMap[UUID, E] = TrieMap.empty
 
-  /** Create a new entity.
-   *
-   * @param entity the entity to save
-   * @return Future, with the created entity
-   */
   override def create(entity: E): Future[E] = {
     if (cache.putIfAbsent(entity.id, entity).isEmpty) {
       Future.successful(entity)
@@ -60,11 +54,6 @@ class TransientEntityRepository[E <: Entity] extends EntityRepository[E] { // sc
     }
   }
 
-  /** Get a single entity.
-   *
-   * @param id The id of the entity
-   * @return Future which resolve with the entity and can fail
-   */
   override def read(id: UUID): Future[E] = {
     cache.get(id).fold[Future[E]] {
       Future.failed(new IllegalArgumentException("can't read the entity, a entity with the id doesn't exist"))
@@ -73,12 +62,6 @@ class TransientEntityRepository[E <: Entity] extends EntityRepository[E] { // sc
     }
   }
 
-  /** Update a entity.
-   *
-   * @param id           The id of the entity
-   * @param updateEntity Function, to build the updated entity from the existing
-   * @return Future containing the updated entity
-   */
   override def update(id: UUID, updateEntity: (E) => E): Future[E] = {
     read(id).flatMap { entity =>
       val updated = updateEntity(entity)
@@ -89,11 +72,6 @@ class TransientEntityRepository[E <: Entity] extends EntityRepository[E] { // sc
     }
   }
 
-  /** Delete a entity.
-   *
-   * @param id The id of the entity to delete
-   * @return Future, which can fail
-   */
   override def delete(id: UUID): Future[Unit] = {
     if (cache.remove(id).isDefined) {
       Future.successful(Unit)
@@ -102,10 +80,6 @@ class TransientEntityRepository[E <: Entity] extends EntityRepository[E] { // sc
     }
   }
 
-  /** Get the id's of all entities.
-   *
-   * @return Future containing all id's of the entity type, can fail
-   */
   override def readAllIds(): Future[Set[UUID]] = {
     Future.successful(cache.keys.toSet)
   }
