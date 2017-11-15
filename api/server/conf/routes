@@ -139,4 +139,5 @@ GET           /model_specific/:id/*file                                         
 
 GET           /app                                                                                controllers.ScalaRoutes.getWebApp(page = "")
 GET           /app/*path                                                                          controllers.ScalaRoutes.getWebApp(path)
+GET           /static/*path                                                                       controllers.ScalaRoutes.getStaticFiles(path)
 

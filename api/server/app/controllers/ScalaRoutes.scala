@@ -224,6 +224,8 @@ class ScalaRoutes @Inject()(
 
   def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(WebAppController.get(path) _)
 
+  def getStaticFiles(path: String): Action[AnyContent] = WebAppController.static(path)
+
   def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getScalaCodeViewer(modelId) _)
 
   def getMethodClassCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(CodeEditorController.methodClassCodeEditor(metaModelId, methodName, className) _)
