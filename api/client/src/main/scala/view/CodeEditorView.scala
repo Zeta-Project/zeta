@@ -36,14 +36,13 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
 
   private val editor: Editor = ace.ace.edit(s"$aceId")
   editor.setTheme("ace/theme/xcode")
-  editor.getSession().setMode("scala")
+  editor.getSession().setMode("ace/mode/scala")
   editor.$blockScrolling = Any.fromDouble(Double.PositiveInfinity)
 
   private val _true: Any = Any.fromBoolean(true)
 
   editor.setOptions(js.Dynamic.literal(
     ("enableBasicAutocompletion", _true),
-    ("enableSnippets", _true),
     ("enableLiveAutocompletion", _true)
   ))
 
