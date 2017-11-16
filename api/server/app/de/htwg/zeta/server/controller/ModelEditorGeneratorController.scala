@@ -11,10 +11,10 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
@@ -54,7 +54,7 @@ class ModelEditorGeneratorController @Inject()(
     parseMetaModel(metaModel, hierarchyContainer) match {
       case Success(dia) =>
         createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer, userId)
-      case f @ Failure(_) => Future.successful(f)
+      case f@Failure(_) => Future.successful(f)
     }
   }
 
@@ -80,19 +80,14 @@ class ModelEditorGeneratorController @Inject()(
   private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
   Future[Unreliable[List[File]]] = {
     val repo = filePersistence.restrictedTo(userId)
-
-    val allGen: Unreliable[(List[File], List[File])] = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id).flatMap(gen => {
-      createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {
-        (gen, vrGen)
-      })
-    })
+    val allGen = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id)
 
     allGen match {
-      case Success((gen: List[File], vrGen: List[File])) =>
-        Future.sequence((gen ++ vrGen).map(repo.createOrUpdate)).map(_ =>
-          Success(gen ::: vrGen)
+      case Success(gen: List[File]) =>
+        Future.sequence(gen.map(repo.createOrUpdate)).map(_ =>
+          Success(gen)
         )
-      case f @ Failure(_) => Future.successful(f)
+      case f@Failure(_) => Future.successful(f)
     }
   }
 
@@ -106,17 +101,6 @@ class ModelEditorGeneratorController @Inject()(
 
     generate(generators)
   }
-
-  private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
-    val generators: List[() => Unreliable[List[File]]] = List(
-      // Generate files for the VR - Editor
-      // FIXME: VR generators are not working. If you want to enable them again, check the commit that introduced this message
-      // Revision number: d60fbde380816a3a593a1bfdb4cdf72561977384
-    )
-
-    generate(generators)
-  }
-
 
   @tailrec
   private def generate(generators: List[() => Unreliable[List[File]]], carry: List[File] = Nil): Unreliable[List[File]] = {

@@ -31,11 +31,4 @@ class ModelController @Inject()(
     }
   }
 
-  def vrModelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    modelEntityRepo.restrictedTo(request.identity.id).read(modelId).map { model =>
-      Ok(views.html.VrEditor(model.model.metaModelId))
-    }.recover {
-      case e: Exception => BadRequest(e.getMessage)
-    }
-  }
 }
