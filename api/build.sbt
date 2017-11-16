@@ -45,7 +45,9 @@ def baseSettings = {
 def baseProject(name: String, d: sbt.File) = Project(name, d).settings(baseSettings)
 
 lazy val parser = baseProject("parser", file("parser")).settings(
-  libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6"
+  libraryDependencies  ++= Seq(
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6",
+    "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test")
 ).dependsOn(server)
 
 lazy val server = baseProject("server", file("server")).settings(
