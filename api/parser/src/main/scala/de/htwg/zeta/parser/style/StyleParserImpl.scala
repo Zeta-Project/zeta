@@ -4,13 +4,13 @@ class StyleParserImpl extends StyleParser {
 
   private val leftBraces  = literal("{")
   private val rightBraces = literal("}")
-  private val eq = "="
+  private val eq = literal("=")
 
-  override def style(): Parser[StyleMarcel] = {
+  override def style: Parser[StyleParseModel] = {
     // parentstyle wird string-liste (kann optional sein)
-    name ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { asdf =>
-      val name ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = asdf
-      StyleMarcel(
+    name ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
+      val name ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
+      StyleParseModel(
         name,
         description,
         List(), /* parentStyles, */
@@ -19,7 +19,7 @@ class StyleParserImpl extends StyleParser {
     }
   }
 
-  private def attributes(): Parser[List[StyleAttribute]] = {
+  private def attributes: Parser[List[StyleAttribute]] = {
     rep(lineColor | lineStyle | lineWidth).flatMap { attributes =>
       Parser { in =>
         findDuplicates(attributes) match {
@@ -30,7 +30,7 @@ class StyleParserImpl extends StyleParser {
     }
   }
 
-  // todo: 2. check for duplicate attribute keys (not allowed)
+  // todo: 2. check for duplicate attribute keys (not allowed). Update Failure Msg
   def findDuplicates(attributes: List[StyleAttribute]): List[String] = List()
 
   /*
