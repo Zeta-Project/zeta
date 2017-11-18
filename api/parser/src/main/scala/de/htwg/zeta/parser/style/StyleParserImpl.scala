@@ -44,7 +44,6 @@ class StyleParserImpl extends StyleParser {
   private def lineStyle = literal("line-style") ~ eq ~> argument ^^ (arg => LineStyle(arg))
   private def lineWidth = literal("line-width") ~ eq ~> argument_int ^^ (arg => LineWidth(arg))
 
-  // todo: 0. rename
   // todo: 1. define all valid attribute keys (see above)
   // todo: 3. parse parent styles
   // todo: 4. tests ...
