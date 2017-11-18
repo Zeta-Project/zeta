@@ -1,11 +1,15 @@
 package de.htwg.zeta.parser.style
 
-case class StyleParseModel(
+
+sealed trait StyleAttribute
+case class LineColor(color: String) extends StyleAttribute
+case class LineStyle(style: String) extends StyleAttribute
+case class LineWidth(width: Int) extends StyleAttribute
+
+
+case class StyleMarcel(
     name: String,
-    description: Option[String] = None,
-    lineColor: String,
-    lineStyle: String,
-    lineWidth: Int,
-    gradientOrientation: String,
-    backgroundColor: String,
-    fontSize: Int)
+    description: String,
+    parentStyles: List[String],
+    attributes: List[StyleAttribute]
+    )
