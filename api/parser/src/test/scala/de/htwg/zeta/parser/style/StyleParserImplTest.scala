@@ -65,5 +65,42 @@ class StyleParserImplTest extends FlatSpec {
     val styleParser = parserToTest.parseStyle(styleToTestSuccesWithoutDescription)
     assert(styleParser.successful)
   }
+
+  "A StyleParser" should "find duplicate attributes" in {
+    val attributes = List(
+      LineColor("blue"),
+      LineWidth(12),
+      LineStyle("solid"),
+      LineColor("red"),
+      LineStyle("dash")
+    )
+    val duplicates = parserToTest.findDuplicates(attributes)
+    assert(duplicates.size == 2)
+    assert(duplicates.contains("line-color"))
+    assert(duplicates.contains("line-style"))
+  }
+
+  "A StyleParser" should "list duplicate occurrences only once" in {
+    val attributes = List(
+      LineWidth(12),
+      LineWidth(14),
+      LineWidth(12),
+      LineWidth(16)
+    )
+    val duplicates = parserToTest.findDuplicates(attributes)
+    assert(duplicates.size == 1)
+    assert(duplicates.head.equals("line-width"))
+  }
+
+  "A StyleParser" should "find no duplicates" in {
+    val attributes = List(
+      LineColor("blue"),
+      LineWidth(12),
+      LineStyle("solid")
+    )
+    val duplicates = parserToTest.findDuplicates(attributes)
+    assert(duplicates.isEmpty)
+  }
+
 }
 

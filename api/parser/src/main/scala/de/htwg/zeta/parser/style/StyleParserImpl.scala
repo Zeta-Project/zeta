@@ -1,5 +1,6 @@
 package de.htwg.zeta.parser.style
 
+
 class StyleParserImpl extends StyleParser {
 
   private val leftBraces  = literal("{")
@@ -24,14 +25,23 @@ class StyleParserImpl extends StyleParser {
       Parser { in =>
         findDuplicates(attributes) match {
           case Nil => Success(attributes, in)
-          case duplicateFields => Failure(duplicateFields.toString, in)
+          case duplicateAttributes => failureDuplicateAttributes(duplicateAttributes, in)
         }
       }
     }
   }
 
-  // todo: 2. check for duplicate attribute keys (not allowed). Update Failure Msg
-  def findDuplicates(attributes: List[StyleAttribute]): List[String] = List()
+  def findDuplicates(attributeList: List[StyleAttribute]): List[String] = {
+    val duplicates = attributeList.groupBy(_.attributeName).collect {
+      case (attributeName, attributes) if attributes.size > 1 => attributeName
+    }
+    duplicates.toList.distinct.sorted
+  }
+
+  private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure("""
+      |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
+      |'${duplicates.mkString(", ")}'
+      """.stripMargin, in)
 
   /*
   val validStyleAttributes = List("description", "transparency", "background-color", "line-color", "line-style", "line-width",
@@ -51,6 +61,8 @@ class StyleParserImpl extends StyleParser {
   private def gradientOrientation = literal("gradient-orientation") ~ eq ~> argument
   private def backgroundColor = literal("background-color") ~ eq ~> argument
   private def fontSize = literal("font-size") ~ eq ~> argument_int
+
+
 
 }
 
