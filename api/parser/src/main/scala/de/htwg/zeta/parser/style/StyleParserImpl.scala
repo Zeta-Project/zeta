@@ -6,15 +6,15 @@ class StyleParserImpl extends StyleParser {
   private val leftBraces  = literal("{")
   private val rightBraces = literal("}")
   private val eq = literal("=")
+  private val comma = literal(",")
 
   override def style: Parser[StyleParseModel] = {
-    // parentstyle wird string-liste (kann optional sein)
-    name ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
-      val name ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
+    name ~ opt(parentStyles) ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
+      val name ~ parentStyles ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
       StyleParseModel(
         name,
         description,
-        List(), /* parentStyles, */
+        parentStyles.getOrElse(List()),
         attributes
       )
     }
@@ -54,8 +54,9 @@ class StyleParserImpl extends StyleParser {
   private def lineStyle = literal("line-style") ~ eq ~> argument ^^ (arg => LineStyle(arg))
   private def lineWidth = literal("line-width") ~ eq ~> argument_int ^^ (arg => LineWidth(arg))
 
+  private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
+
   // todo: 1. define all valid attribute keys (see above)
-  // todo: 3. parse parent styles
   // todo: 4. tests ...
   // todo: 5. function: InternalStyleModel -> StyleModel
   private def gradientOrientation = literal("gradient-orientation") ~ eq ~> argument

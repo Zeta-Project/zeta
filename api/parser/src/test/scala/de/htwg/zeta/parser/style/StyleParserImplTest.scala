@@ -33,12 +33,38 @@ class StyleParserImplTest extends FlatSpec {
      |}
     """.stripMargin
 
+  val styleWithoutParentStyle =
+    """
+      |style MyStyle {
+      | description = "Style without parent styles"
+      |}
+    """.stripMargin
+
+  val styleWithSingleParentStyle =
+    """
+      |style MyStyle extends ParentStyle {
+      |  description = "Style which extends a single parent style"
+      |}
+    """.stripMargin
+
+  val styleWithMultipleParentStyles =
+    """
+      |style MyStyle extends ParentStyle1, ParentStyle2, ParentStyle3 {
+      |  description = "Style which extends multiple parent styles"
+      |}
+    """.stripMargin
+
+  val styleWithInvalidParentStyle =
+    """
+      |style MyStyle extends {
+      |  description = "This style uses the 'extends' keyword but does not specify a parent style"
+      |}
+    """.stripMargin
 
   val styleToTestSuccesWithoutDescription: String = "style Y {\n  line-color = black\n  line-style = dash\n  line-width = 1\n  gradient-orientation = vertical\n  background-color = white\n  font-size = 20\n}"
   val styleToTestFailNoBraces: String = "style Y \n  description = \"Style for a connection between an interface and its implementing class\"\n  line-color = black\n  line-style = dash\n  line-width = 1\n  gradient-orientation = vertical\n  background-color = white\n  font-size = 20\n"
 
   val parserToTest: StyleParserImpl = new StyleParserImpl
-
 
   "A StyleParser" should "succeed" in {
     val styleParser = parserToTest.parseStyle(styleToTestSucces)
@@ -66,6 +92,7 @@ class StyleParserImplTest extends FlatSpec {
     assert(styleParser.successful)
   }
 
+
   "A StyleParser" should "find duplicate attributes" in {
     val attributes = List(
       LineColor("blue"),
@@ -80,6 +107,7 @@ class StyleParserImplTest extends FlatSpec {
     assert(duplicates.contains("line-style"))
   }
 
+
   "A StyleParser" should "list duplicate occurrences only once" in {
     val attributes = List(
       LineWidth(12),
@@ -92,6 +120,7 @@ class StyleParserImplTest extends FlatSpec {
     assert(duplicates.head.equals("line-width"))
   }
 
+
   "A StyleParser" should "find no duplicates" in {
     val attributes = List(
       LineColor("blue"),
@@ -100,6 +129,40 @@ class StyleParserImplTest extends FlatSpec {
     )
     val duplicates = parserToTest.findDuplicates(attributes)
     assert(duplicates.isEmpty)
+  }
+
+
+  "A StyleParser" should "succeed if a style has no parent style" in {
+    val parseResult = parserToTest.parseStyle(styleWithoutParentStyle)
+    assert(parseResult.successful)
+    val styleParseModel = parseResult.get
+    assert(styleParseModel.parentStyles.isEmpty)
+  }
+
+
+  "A StyleParser" should "succeed if a style has a single parent style" in {
+    val parseResult = parserToTest.parseStyle(styleWithSingleParentStyle)
+    assert(parseResult.successful)
+    val styleParseModel = parseResult.get
+    assert(styleParseModel.parentStyles.size == 1)
+    assert(styleParseModel.parentStyles.head.equals("ParentStyle"))
+  }
+
+
+  "A StyleParser" should "succeed if a style has multiple parent styles" in {
+    val parseResult = parserToTest.parseStyle(styleWithMultipleParentStyles)
+    assert(parseResult.successful)
+    val styleParseModel = parseResult.get
+    assert(styleParseModel.parentStyles.size == 3)
+    assert(styleParseModel.parentStyles.head.equals("ParentStyle1"))
+    assert(styleParseModel.parentStyles(1).equals("ParentStyle2"))
+    assert(styleParseModel.parentStyles(2).equals("ParentStyle3"))
+  }
+
+
+  "A StyleParser" should "fail if a style specifies an invalid style extension" in {
+    val parseResult = parserToTest.parseStyle(styleWithInvalidParentStyle)
+    assert(!parseResult.successful)
   }
 
 }
