@@ -55,11 +55,11 @@ class StyleParserImpl extends StyleParser {
   private def fontColor = literal("font-color") ~ eq ~> argument ^^ (arg => FontColor(arg))
   private def fontName = literal("font-name") ~ eq ~> argument ^^ (arg => FontName(arg))
   private def fontSize = literal("font-size") ~ eq ~> argument_int ^^ (arg => FontSize(arg))
-  private def fontBold = literal("font-bold") ~ eq ~> argument ^^ (arg => FontBold(arg))
-  private def fontItalic = literal("font-italic") ~ eq ~> argument ^^ (arg => FontItalic(arg))
+  private def fontBold = literal("font-bold") ~ eq ~> argument ^^ (arg => FontBold(matchBoolean(arg)))
+  private def fontItalic = literal("font-italic") ~ eq ~> argument ^^ (arg => FontItalic(matchBoolean(arg)))
   private def gradientOrientation = literal("gradient-orientation") ~ eq ~> argument ^^ (arg => GradientOrientation(arg))
   private def gradientAreaColor = literal("gradient-area-color") ~ eq ~> argument ^^ (arg => GradientAreaColor(arg))
-  private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argument ^^ (arg => GradientAreaOffset(arg))
+  private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argument_double ^^ (arg => GradientAreaOffset(arg))
   // private def allowed = literal("allowed") ~ eq ~> argument ^^ (arg => Allowed(arg))
   // private def unAllowed = literal("unallowed") ~ eq ~> argument ^^ (arg => UnAllowed(arg))
   // private def selected = literal("selected") ~ eq ~> argument ^^ (arg => Selected(arg))
@@ -71,6 +71,7 @@ class StyleParserImpl extends StyleParser {
   // todo: 1. define all valid attribute keys (see above)
   // todo: 4. tests ...
   // todo: 5. function: InternalStyleModel -> StyleModel
+  // todo: 6. impl. for RGB colors with #
 
 
 }

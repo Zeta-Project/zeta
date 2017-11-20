@@ -12,11 +12,11 @@ case class BackgroundColor(color: String)           extends StyleAttribute { val
 case class FontColor(color: String)                 extends StyleAttribute { val attributeName = "font-color" }
 case class FontName(name: String)                   extends StyleAttribute { val attributeName = "font-name" }
 case class FontSize(size: Int)                      extends StyleAttribute { val attributeName = "font-size" }
-case class FontBold(bold: String)                   extends StyleAttribute { val attributeName = "font-bold" }
-case class FontItalic(italic: String)               extends StyleAttribute { val attributeName = "font-italic" }
+case class FontBold(bold: Boolean)                   extends StyleAttribute { val attributeName = "font-bold" }
+case class FontItalic(italic: Boolean)               extends StyleAttribute { val attributeName = "font-italic" }
 case class GradientOrientation(orientation: String) extends StyleAttribute { val attributeName = "gradient-orientation" }
 case class GradientAreaColor(color: String)         extends StyleAttribute { val attributeName = "gradient-area-color" }
-case class GradientAreaOffset(offset: String)       extends StyleAttribute { val attributeName = "gradient-area-offset" }
+case class GradientAreaOffset(offset: Double)       extends StyleAttribute { val attributeName = "gradient-area-offset" }
 // case class Allowed(allowed: Boolean)                extends StyleAttribute { val attributeName = "allowed" }
 // case class UnAllowed(unAllowed: Boolean)            extends StyleAttribute { val attributeName = "unallowed" }
 // case class Selected(selected: Boolean)              extends StyleAttribute { val attributeName = "selected" }
