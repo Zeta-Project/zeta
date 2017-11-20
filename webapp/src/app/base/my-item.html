@@ -1,0 +1,98 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="./my-icons.html">
+<link rel="import" href="../database/database-document.html">
+
+<dom-module id="my-item">
+  <template>
+    <style>
+
+      .item {
+        @apply(--layout-horizontal);
+        cursor: pointer;
+        padding: 16px 22px;
+        border-bottom: 1px solid #DDD;
+      }
+      .item:focus,
+      .item.selected:focus {
+        outline: 0;
+        background-color: #ddd;
+      }
+      .item.selected .star {
+        color: var(--paper-blue-600);
+      }
+      .avatar {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        background-color: #ddd;
+      }
+      .pad {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+        padding: 0 16px;
+      }
+      .primary {
+        font-size: 16px;
+      }
+      .secondary {
+        font-size: 14px;
+      }
+      .dim {
+        color: gray;
+      }
+      .star {
+        width: 24px;
+        height: 24px;
+      }
+      a {
+        text-decoration:none;
+        color: inherit;
+      }
+    </style>
+
+    <database-document id="db" type="[[type]]" rest-delete="[[restDelete]]"></database-document>
+    <div>
+      <div class="item">
+        <div class="pad">
+                <a href$="[[link]]">
+          <div class="primary">
+            [[primary]]
+          </div>
+          <div class="secondary dim">
+            <template is="dom-repeat" items="{{secondary}}" as="second">
+              [[second]]<br/>
+            </template>
+          </div>
+                </a>
+        </div>
+        <paper-icon-button id="button" on-tap="delete" icon="myicons:remove"></paper-icon-button>
+      </div>
+      <div class="border"></div>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-item',
+
+      delete() {
+        this.$.db.deleteDocument();
+      },
+
+      properties: {
+        item: Object,
+        primary: String,
+        secondary: Array,
+        link: String,
+        type: String,
+        restDelete: String
+      }
+    });
+  </script>
+
+</dom-module>

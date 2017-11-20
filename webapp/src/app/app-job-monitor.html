@@ -1,0 +1,116 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="./base/my-status.html">
+<link rel="import" href="./job/job-manager.html">
+
+<dom-module id="app-job-monitor">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      iron-list {
+        @apply(--layout-flex);
+      }
+      .content {
+        @apply(--layout-vertical);
+        height: 100%;
+      }
+      .unselectable {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+      .item {
+        @apply(--layout-horizontal);
+        cursor: pointer;
+        padding: 16px 22px;
+        border-bottom: 1px solid #DDD;
+      }
+      .item:focus,
+      .item.selected:focus {
+        outline: 0;
+        background-color: #ddd;
+      }
+      .item.selected .star {
+        color: var(--paper-blue-600);
+      }
+      .avatar {
+        height: 40px;
+        width: 40px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        background-color: #ddd;
+      }
+      .pad {
+        @apply(--layout-flex);
+        @apply(--layout-vertical);
+        padding: 0 16px;
+      }
+      .primary {
+        font-size: 16px;
+      }
+      .secondary {
+        font-size: 14px;
+      }
+      .dim {
+        color: gray;
+      }
+      .star {
+        width: 24px;
+        height: 24px;
+      }
+      a {
+        text-decoration:none;
+        color: inherit;
+      }
+    </style>
+
+  <job-manager id="backend"></job-manager>
+
+  <iron-list items="[[jobs]]" as="item">
+    <template>
+      <div class="item">
+        <div class="pad">
+          <div class="primary">
+            [[item.job.type]]
+          </div>
+          <div class="secondary dim">
+            [[item.state]]
+          </div>
+        </div>
+        <!--<my-status status="[[item.state]]"></my-status>-->
+        <paper-button on-tap="itemTapped">Cancel</paper-button>
+
+        <div class="border"></div>
+      </div>
+    </template>
+  </iron-list>
+  </template>
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'app-job-monitor',
+
+        properties: {
+          jobs: {
+            type: Array,
+            notify: true,
+            value: []
+          }
+        },
+        itemTapped: function(oEvent){
+          this.$.backend.cancelWorkByUser(oEvent.model.get('item').id);
+          }
+      });
+    })();
+  </script>
+</dom-module>

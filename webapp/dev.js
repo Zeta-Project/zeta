@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const polyserve = require('polyserve/lib/start_server');
 const webpack = require('webpack');
@@ -10,8 +11,9 @@ const server = new Server(compiler, {
   disableHostCheck: true,
 });
 
-app.use('/app', polyserve.getApp({}));
-//app.use('/static', express.static('dist'));
+app.use('/app', polyserve.getApp({
+  'entrypoint': path.join(__dirname, "src", "app.html")
+}));
 app.use('/static', server.app);
 
 app.listen(8080, function () {
