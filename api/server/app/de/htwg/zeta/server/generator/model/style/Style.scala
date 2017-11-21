@@ -18,7 +18,7 @@ import de.htwg.zeta.server.generator.parser.CommonParserMethods
 import de.htwg.zeta.server.generator.parser.IDtoStyle
 import grizzled.slf4j.Logging
 
-case class Style private(
+case class Style(
     name: String = "noName",
     description: Option[String] = None,
     transparency: Option[Double] = None,

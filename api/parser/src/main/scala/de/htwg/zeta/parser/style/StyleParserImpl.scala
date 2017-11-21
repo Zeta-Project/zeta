@@ -1,6 +1,11 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.model.style.Style
+import de.htwg.zeta.parser.style.StyleParserImpl.findAttribute
+import de.htwg.zeta.server.generator.model.style
+import de.htwg.zeta.server.generator.model.style.{DOT, Style}
+import de.htwg.zeta.server.generator.model.style.color.{Color, ColorOrGradient, ColorWithTransparency}
+import de.htwg.zeta.server.generator.model.style.gradient.{GradientAlignment, HORIZONTAL}
+import de.htwg.zeta.server.generator.parser.Cache
 
 
 class StyleParserImpl extends StyleParser {
@@ -70,11 +75,45 @@ class StyleParserImpl extends StyleParser {
 
   private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
 
-  // todo: 1. define all valid attribute keys (see above)
-  // todo: 4. tests ...
   // todo: 5. function: InternalStyleModel -> StyleModel
-  // todo: 6. impl. for RGB colors with #
+}
 
+object StyleParserImpl {
+
+  def convert(styleParseModel: StyleParseModel): Style = {
+    new Style(styleParseModel.name,
+      Option(styleParseModel.description),
+      Option(findAttribute[Transparency](styleParseModel.attributes).transparency),
+      Option(new ColorOrGradient {
+        override def getRGBValue: String = findAttribute[BackgroundColor](styleParseModel.attributes).color.toString
+      }),
+      Option(new ColorWithTransparency {
+        override def getRGBValue: String = findAttribute[LineColor](styleParseModel.attributes).color.toString
+      }),
+      Option(DOT), //findAttribute[LineStyle](styleParseModel.attributes)
+      Option(findAttribute[LineWidth](styleParseModel.attributes).width),
+      Option(new Color {
+        override def getRGBValue: String = findAttribute[FontColor](styleParseModel.attributes).color.toString
+      }),
+      Option(findAttribute[FontName](styleParseModel.attributes).name),
+      Option(findAttribute[FontSize](styleParseModel.attributes).size),
+      Option(findAttribute[FontBold](styleParseModel.attributes).bold),
+      Option(findAttribute[FontItalic](styleParseModel.attributes).italic),
+      Option(HORIZONTAL), //findAttribute[GradientOrientation](styleParseModel.attributes).orientation)
+      None,
+      None,
+      None,
+      None,
+      List()
+    )
+  }
+
+  private def findAttribute[A](list: List[Any]): A = {
+    list.filter {
+      case a: A => true
+      case _ => false
+    }.asInstanceOf[A]
+  }
 
 }
 
