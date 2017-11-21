@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.generator.parser
 
+import javafx.scene.paint.Color
+
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
@@ -14,6 +16,13 @@ trait CommonParserMethods extends JavaTokenParsers {
   def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
   def argument: Parser[String] =
     "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString }
+
+  def argument_boolean: Parser[Boolean] = argument_boolean_true | argument_boolean_false ^^ (bool => bool)
+  private def argument_boolean_true: Parser[Boolean] = "(false|no|n)".r ^^ (bool => false)
+  private def argument_boolean_false: Parser[Boolean] = "(true|yes|y)".r ^^ (bool => true)
+
+  def argument_color: Parser[Color] = "(.+)".r ^^ (color => Color.valueOf(color))
+
   def argument_string: Parser[String] =
     "\".*\"".r ^^ { _.toString }
   def argument_classic: Parser[String] = """\s*\=\s*""".r ~> argument ^^ { _.toString }
