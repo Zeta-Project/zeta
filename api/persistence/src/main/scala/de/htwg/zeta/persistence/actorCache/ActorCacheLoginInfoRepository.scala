@@ -1,8 +1,8 @@
 package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
-import javax.inject.Singleton
 import javax.inject.Inject
+import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

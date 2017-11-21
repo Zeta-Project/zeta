@@ -1,10 +1,10 @@
 package de.htwg.zeta.persistence.mongo
 
-import javax.inject.Singleton
 import javax.inject.Inject
+import javax.inject.Singleton
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo

@@ -1,10 +1,10 @@
 package de.htwg.zeta.persistence.actorCache
 
-import javax.inject.Singleton
 import javax.inject.Inject
+import javax.inject.Singleton
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Failure
 import scala.util.Success

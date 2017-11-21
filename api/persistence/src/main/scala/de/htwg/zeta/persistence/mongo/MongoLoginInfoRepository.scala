@@ -4,8 +4,8 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository

@@ -69,7 +69,7 @@ import reactivemongo.bson.BSONInteger
 import reactivemongo.bson.BSONString
 import reactivemongo.bson.Macros
 
-@SuppressWarnings(Array("org.wartremover.warts.OptionPartial", "org.wartremover.warts.Var", "org.wartremover.warts.TryPartial"))
+@SuppressWarnings(Array("org.wartremover.warts.OptionPartial", "org.wartremover.warts.Var", "org.wartremover.warts.TryPartial", "org.wartremover.warts.Throw"))
 object MongoHandler {
 
   implicit object UuidHandler extends BSONHandler[BSONString, UUID] {
@@ -274,8 +274,12 @@ object MongoHandler {
     override def read(doc: BSONDocument): LoginInfo = {
       val subDoc = doc.getAs[BSONDocument]("loginInfo").getOrElse(doc)
       LoginInfo(
-        providerID = subDoc.getAs[String]("providerID").get,
-        providerKey = subDoc.getAs[String]("providerKey").get
+        providerID = subDoc.getAs[String]("providerID").getOrElse(
+          throw new IllegalArgumentException("Reading LoginInfo from MongoDB failed, missing field providerID")
+        ),
+        providerKey = subDoc.getAs[String]("providerKey").getOrElse(
+          throw new IllegalArgumentException("Reading LoginInfo from MongoDB failed, missing field providerKey")
+        )
       )
     }
   }
@@ -284,10 +288,20 @@ object MongoHandler {
 
   implicit val passwordInfoReader: BSONDocumentReader[PasswordInfo] = new BSONDocumentReader[PasswordInfo] {
     override def read(doc: BSONDocument): PasswordInfo = {
-      val subDoc = doc.getAs[BSONDocument]("passwordInfo").get
+
+      val subDoc = doc.getAs[BSONDocument]("passwordInfo").getOrElse(
+        doc.getAs[BSONDocument]("authInfo").getOrElse( // fallback for old implementation
+          throw new IllegalArgumentException("Reading PasswordInfo from MongoDB failed, missing field passwordInfo")
+        )
+      )
+
       PasswordInfo(
-        hasher = subDoc.getAs[String]("hasher").get,
-        password = subDoc.getAs[String]("password").get,
+        hasher = subDoc.getAs[String]("hasher").getOrElse(
+          throw new IllegalArgumentException("Reading PasswordInfo from MongoDB failed, missing field hasher")
+        ),
+        password = subDoc.getAs[String]("password").getOrElse(
+          throw new IllegalArgumentException("Reading PasswordInfo from MongoDB failed, missing field password")
+        ),
         salt = subDoc.getAs[String]("salt")
       )
     }

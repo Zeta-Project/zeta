@@ -1,11 +1,11 @@
 package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
-import javax.inject.Singleton
 import javax.inject.Inject
+import javax.inject.Singleton
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FileRepository
