@@ -7,9 +7,10 @@
 }
 @scripts = {
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.js")"></script>
-    @playscalajs.html.selectScript("client", "/assets")
+@playscalajs.html.selectScript("client", "/assets")
     <script type="text/javascript">
-        client.Main().main("@id.toString", "@dslType");
+            const metaModelId = "@id.toString";
+            const dslType = "@dslType";
     </script>
 }
 @views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts) {

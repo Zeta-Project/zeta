@@ -11,5 +11,6 @@ import 'brace/mode/scala';
 import './code-editor/ace-grammar';
 import 'bootbox';
 import './code-editor/jquery-ui';
+import './code-editor/code-editor-main';
 
 global.jQuery = jQuery;

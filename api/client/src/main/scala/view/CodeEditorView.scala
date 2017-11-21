@@ -37,13 +37,11 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
   private val editor: Editor = ace.ace.edit(s"$aceId")
   editor.setTheme("ace/theme/xcode")
   editor.getSession().setMode("ace/mode/scala")
-  editor.$blockScrolling = Any.fromDouble(Double.PositiveInfinity)
-
-  private val _true: Any = Any.fromBoolean(true)
+  editor.$blockScrolling = Double.PositiveInfinity
 
   editor.setOptions(js.Dynamic.literal(
-    ("enableBasicAutocompletion", _true),
-    ("enableLiveAutocompletion", _true)
+    ("enableBasicAutocompletion", true),
+    ("enableLiveAutocompletion", true)
   ))
 
   private def stringAttrX = new GenericAttr[String]()
@@ -108,34 +106,12 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
   def displayDoc(doc: Client): js.Dynamic = {
     selectedId = UUID.fromString(doc.id)
     session = ace.ace.createEditSession(
-      Any.fromString(doc.str),
+      doc.str,
       ModeController.getAllModesForModel(metaModelId)(doc.docType)
     )
-    session.on("change", Any.fromFunction1((delta: js.Any) => {
-      if (broadcast) {
-        controller.operationFromLocal(
-          ScalotAceAdaptor
-            .aceDeltatoScalotOp(
-              delta
-                .asInstanceOf[js.Dynamic]
-                .selectDynamic("data")
-                .asInstanceOf[Delta],
-              editor.getSession().getDocument()
-            ),
-          selectedId
-        )
-      }
-    }))
+
     editor.setSession(session)
   }
 
-
-  def updateView(op: Operation): Unit = {
-    val was = broadcast
-    broadcast = false
-    val doc = editor.getSession().getDocument()
-    doc.applyDeltas(genTraversableOnce2jsArray(ScalotAceAdaptor.scalotOpToAceDelta(op, doc)))
-    broadcast = was
-  }
 
 }

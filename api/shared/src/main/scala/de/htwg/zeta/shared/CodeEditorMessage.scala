@@ -6,6 +6,8 @@ import scalot.Operation
 
 sealed trait CodeEditorMessage
 
+// TODO remove, not needed anymore
+@deprecated
 object CodeEditorMessage {
 
   case class TextOperation(op: Operation, docId: UUID) extends CodeEditorMessage
