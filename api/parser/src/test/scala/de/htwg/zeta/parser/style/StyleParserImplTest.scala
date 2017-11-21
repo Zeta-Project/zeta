@@ -119,6 +119,15 @@ class StyleParserImplTest extends FlatSpec {
       |  font-size = 20
       |"""
 
+  val styleWithDuplicateAttributes: String =
+    """
+      |style MyStyle{
+      |  description = "This style uses the 'extends' keyword but does not specify a parent style"
+      |  background-color = #ffffff
+      |  background-color = #000000
+      |  }
+    """.stripMargin
+
   val styleWithGradientColors: String =
     """
       |style MyStyle{
@@ -188,7 +197,7 @@ class StyleParserImplTest extends FlatSpec {
 
   }
 
-  "A StyleParser" should "find duplicate attributes" in {
+  "A StyleParser" should "find duplicate attributes and fail" in {
     val attributes = List(
       LineColor(Color.BLUE),
       LineWidth(12),
@@ -261,6 +270,11 @@ class StyleParserImplTest extends FlatSpec {
 
   "A StyleParser" should "fail without Braces" in {
     val styleParser = parserToTest.parseStyle(styleWithoutBraces)
+    assert(!styleParser.successful)
+  }
+
+  "A StyleParser" should "fail with duplicate Attributes" in {
+    val styleParser = parserToTest.parseStyle(styleWithDuplicateAttributes)
     assert(!styleParser.successful)
   }
 
