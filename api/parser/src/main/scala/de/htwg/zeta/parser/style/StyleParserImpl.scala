@@ -80,6 +80,10 @@ class StyleParserImpl extends StyleParser {
 
 object StyleParserImpl {
 
+  private case class ColorOrGradientImpl(getRGBValue: String) extends ColorOrGradient
+  private case class ColorWithTransparencyImpl(getRGBValue: String) extends ColorWithTransparency
+  private case class ColorImpl(getRGBValue: String) extends Color
+
   def convert(styleParseModel: StyleParseModel): Style = {
     new Style(styleParseModel.name,
       Option(styleParseModel.description),
