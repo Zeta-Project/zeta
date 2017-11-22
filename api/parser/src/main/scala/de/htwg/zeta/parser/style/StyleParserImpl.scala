@@ -6,7 +6,7 @@ import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
 import de.htwg.zeta.server.generator.model.style.color.{Color => OldColor}
 import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
 import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
-import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
+import de.htwg.zeta.server.generator.model.style.gradient.{GradientAlignment, HORIZONTAL}
 import javafx.scene.paint.Color
 
 
@@ -92,8 +92,6 @@ class StyleParserImpl extends StyleParser {
   // private def highlighting = literal("highlighting") ~ eq ~> argument ^^ (arg => Highlighting(arg))
 
   private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
-
-  // todo: 5. function: InternalStyleModel -> StyleModel
 }
 
 object StyleParserImpl {
@@ -115,7 +113,7 @@ object StyleParserImpl {
 
   def convert(styleParseModel: StyleParseModel): Style = {
 
-    private class CollectAttributeWrapper[T](val t: Option[T]) {
+    class CollectAttributeWrapper[T](val t: Option[T]) {
       def apply[R](func: T => R): Option[R] = t.map(func)
     }
 
@@ -130,35 +128,22 @@ object StyleParserImpl {
       name = styleParseModel.name,
       description = Some(styleParseModel.description),
       transparency = collectAttribute[Transparency](_.transparency),
-      background_color = Option(new ColorOrGradient {
-        override def getRGBValue: String = findAttribute[BackgroundColor](styleParseModel.attributes).color.toString
-      }),
-      line_color = Option(new ColorWithTransparency {
-        override def getRGBValue: String = findAttribute[LineColor](styleParseModel.attributes).color.toString
-      }),
-      line_style = Some(DOT: OldLineStyle), //findAttribute[LineStyle](styleParseModel.attributes)
-      line_width = Option(findAttribute[LineWidth](styleParseModel.attributes).width),
-      font_color = Option(new Color {
-        override def getRGBValue: String = findAttribute[FontColor](styleParseModel.attributes).color.toString
-      }),
-      font_name = Option(findAttribute[FontName](styleParseModel.attributes).name),
-      font_size = Option(findAttribute[FontSize](styleParseModel.attributes).size),
-      font_bold = Option(findAttribute[FontBold](styleParseModel.attributes).bold),
-      font_italic = Option(findAttribute[FontItalic](styleParseModel.attributes).italic),
-      gradient_orientation = Option(HORIZONTAL), //findAttribute[GradientOrientation](styleParseModel.attributes).orientation)
+      background_color = collectAttribute[BackgroundColor](bg => ColorOrGradientImpl(bg.color)),
+      line_color = collectAttribute[LineColor](lc => ColorWithTransparencyImpl(lc.color)),
+      line_style = collectAttribute[LineStyle](_.style).flatMap(OldLineStyle.getIfValid),
+      line_width = collectAttribute[LineWidth](_.width),
+      font_color = collectAttribute[FontColor](fc => ColorImpl(fc.color)),
+      font_name = collectAttribute[FontName](_.name),
+      font_size = collectAttribute[FontSize](_.size),
+      font_bold = collectAttribute[FontBold](_.bold),
+      font_italic = collectAttribute[FontItalic](_.italic),
+      gradient_orientation = collectAttribute[GradientOrientation](_.orientation).flatMap(GradientAlignment.ifValid),
       selected_highlighting = None,
       multiselected_highlighting = None,
       allowed_highlighting = None,
       unallowed_highlighting = None,
       parents = List()
     )
-  }
-
-  private def findAttribute[A](list: List[Any]): A = {
-    list.filter {
-      case a: A => true
-      case _ => false
-    }.asInstanceOf[A]
   }
 
 }
