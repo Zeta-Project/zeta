@@ -208,9 +208,6 @@ class ScalaRoutes @Inject()(
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
     AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
 
-  def getCodeEditorSocket(metaModelId: UUID, dslType: String): WebSocket = AuthenticatedSocket(CodeEditorController.codeSocket(metaModelId, dslType) _)
-
-
   // # Map static resources from the /public folder to the /assets URL path
   def getAssets(file: String): Action[AnyContent] = Assets.at(path = "/public", file)
 

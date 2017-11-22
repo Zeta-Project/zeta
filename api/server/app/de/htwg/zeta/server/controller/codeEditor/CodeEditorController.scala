@@ -6,13 +6,9 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import akka.actor.ActorRef
-import akka.actor.Props
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.server.model.codeEditor.CodeDocManagerContainer
-import de.htwg.zeta.server.model.codeEditor.CodeDocWsActor
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -20,17 +16,12 @@ import play.api.mvc.Result
 
 
 class CodeEditorController @Inject()(
-    codeDocManager: CodeDocManagerContainer,
     metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
     fullAccessMetaModelEntityRepo: MetaModelEntityRepository
 ) extends Controller {
 
   def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
     Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity), metaModelId, dslType))
-  }
-
-  def codeSocket(metaModelId: UUID, dslType: String)(securedRequest: SecuredRequest[ZetaEnv, AnyContent], out: ActorRef): Props = {
-    CodeDocWsActor.props(out, codeDocManager.manager, metaModelId, dslType, fullAccessMetaModelEntityRepo)
   }
 
   def methodClassCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
