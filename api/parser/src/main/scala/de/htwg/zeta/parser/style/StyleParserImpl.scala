@@ -1,11 +1,13 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.parser.style.StyleParserImpl.findAttribute
-import de.htwg.zeta.server.generator.model.style
-import de.htwg.zeta.server.generator.model.style.{DOT, Style}
-import de.htwg.zeta.server.generator.model.style.color.{Color, ColorOrGradient, ColorWithTransparency}
-import de.htwg.zeta.server.generator.model.style.gradient.{GradientAlignment, HORIZONTAL}
-import de.htwg.zeta.server.generator.parser.Cache
+import de.htwg.zeta.server.generator.model.style.DOT
+import de.htwg.zeta.server.generator.model.style.Style
+import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
+import de.htwg.zeta.server.generator.model.style.color.Color
+import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
+import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
+import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
+import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 
 
 class StyleParserImpl extends StyleParser {
@@ -47,26 +49,42 @@ class StyleParserImpl extends StyleParser {
     duplicates.toList.sorted
   }
 
-  private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure("""
-      |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
-      |'${duplicates.mkString(", ")}'
-      """.stripMargin, in)
+  private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure(
+    """
+     |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
+     |'${duplicates.mkString(", ")}'
+    """.stripMargin, in)
 
   private def name = literal("style") ~> ident
+
   private def description = literal("description") ~ eq ~> argument_string
+
   private def lineColor = literal("line-color") ~ eq ~> argument_color ^^ (arg => LineColor(arg))
+
   private def lineStyle = literal("line-style") ~ eq ~> argument ^^ (arg => LineStyle(arg))
+
   private def lineWidth = literal("line-width") ~ eq ~> argument_int ^^ (arg => LineWidth(arg))
+
   private def transparency = literal("transparency") ~ eq ~> argument_double ^^ (arg => Transparency(arg))
+
   private def backgroundColor = literal("background-color") ~ eq ~> argument_color ^^ (arg => BackgroundColor(arg))
+
   private def fontColor = literal("font-color") ~ eq ~> argument_color ^^ (arg => FontColor(arg))
+
   private def fontName = literal("font-name") ~ eq ~> argument ^^ (arg => FontName(arg))
+
   private def fontSize = literal("font-size") ~ eq ~> argument_int ^^ (arg => FontSize(arg))
+
   private def fontBold = literal("font-bold") ~ eq ~> argument_boolean ^^ (arg => FontBold(arg))
+
   private def fontItalic = literal("font-italic") ~ eq ~> argument_boolean ^^ (arg => FontItalic(arg))
+
   private def gradientOrientation = literal("gradient-orientation") ~ eq ~> argument ^^ (arg => GradientOrientation(arg))
+
   private def gradientAreaColor = literal("gradient-area-color") ~ eq ~> argument_color ^^ (arg => GradientAreaColor(arg))
+
   private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argument_double ^^ (arg => GradientAreaOffset(arg))
+
   // private def allowed = literal("allowed") ~ eq ~> argument_color ^^ (arg => Allowed(arg))
   // private def unAllowed = literal("unallowed") ~ eq ~> argument_color ^^ (arg => UnAllowed(arg))
   // private def selected = literal("selected") ~ eq ~> argument_color ^^ (arg => Selected(arg))
@@ -85,30 +103,37 @@ object StyleParserImpl {
   private case class ColorImpl(getRGBValue: String) extends Color
 
   def convert(styleParseModel: StyleParseModel): Style = {
-    new Style(styleParseModel.name,
-      Option(styleParseModel.description),
-      Option(findAttribute[Transparency](styleParseModel.attributes).transparency),
-      Option(new ColorOrGradient {
+
+    def collectAttribute[T, R](func: T => R): Option[R] = {
+      styleParseModel.attributes.collectFirst {
+        case t: T => func(t)
+      }
+    }
+    new Style(
+      name = styleParseModel.name,
+      description = Some(styleParseModel.description),
+      transparency = Option(findAttribute[Transparency](styleParseModel.attributes).transparency),
+      background_color = Option(new ColorOrGradient {
         override def getRGBValue: String = findAttribute[BackgroundColor](styleParseModel.attributes).color.toString
       }),
-      Option(new ColorWithTransparency {
+      line_color = Option(new ColorWithTransparency {
         override def getRGBValue: String = findAttribute[LineColor](styleParseModel.attributes).color.toString
       }),
-      Option(DOT), //findAttribute[LineStyle](styleParseModel.attributes)
-      Option(findAttribute[LineWidth](styleParseModel.attributes).width),
-      Option(new Color {
+      line_style = Some(DOT: OldLineStyle), //findAttribute[LineStyle](styleParseModel.attributes)
+      line_width = Option(findAttribute[LineWidth](styleParseModel.attributes).width),
+      font_color = Option(new Color {
         override def getRGBValue: String = findAttribute[FontColor](styleParseModel.attributes).color.toString
       }),
-      Option(findAttribute[FontName](styleParseModel.attributes).name),
-      Option(findAttribute[FontSize](styleParseModel.attributes).size),
-      Option(findAttribute[FontBold](styleParseModel.attributes).bold),
-      Option(findAttribute[FontItalic](styleParseModel.attributes).italic),
-      Option(HORIZONTAL), //findAttribute[GradientOrientation](styleParseModel.attributes).orientation)
-      None,
-      None,
-      None,
-      None,
-      List()
+      font_name = Option(findAttribute[FontName](styleParseModel.attributes).name),
+      font_size = Option(findAttribute[FontSize](styleParseModel.attributes).size),
+      font_bold = Option(findAttribute[FontBold](styleParseModel.attributes).bold),
+      font_italic = Option(findAttribute[FontItalic](styleParseModel.attributes).italic),
+      gradient_orientation = Option(HORIZONTAL), //findAttribute[GradientOrientation](styleParseModel.attributes).orientation)
+      selected_highlighting = None,
+      multiselected_highlighting = None,
+      allowed_highlighting = None,
+      unallowed_highlighting = None,
+      parents = List()
     )
   }
 
