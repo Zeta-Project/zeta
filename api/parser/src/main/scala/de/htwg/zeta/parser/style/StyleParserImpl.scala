@@ -7,7 +7,6 @@ import de.htwg.zeta.server.generator.model.style.color.Color
 import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
 import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
 import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
-import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 
 
 class StyleParserImpl extends StyleParser {
@@ -104,15 +103,21 @@ object StyleParserImpl {
 
   def convert(styleParseModel: StyleParseModel): Style = {
 
-    def collectAttribute[T, R](func: T => R): Option[R] = {
-      styleParseModel.attributes.collectFirst {
-        case t: T => func(t)
-      }
+    private class CollectAttributeWrapper[T](val t: Option[T]) {
+      def apply[R](func: T => R): Option[R] = t.map(func)
     }
+
+    def collectAttribute[T]: CollectAttributeWrapper[T] = {
+      new CollectAttributeWrapper(
+        styleParseModel.attributes.collectFirst {
+          case t: T => t
+        })
+    }
+
     new Style(
       name = styleParseModel.name,
       description = Some(styleParseModel.description),
-      transparency = Option(findAttribute[Transparency](styleParseModel.attributes).transparency),
+      transparency = collectAttribute[Transparency](_.transparency),
       background_color = Option(new ColorOrGradient {
         override def getRGBValue: String = findAttribute[BackgroundColor](styleParseModel.attributes).color.toString
       }),
