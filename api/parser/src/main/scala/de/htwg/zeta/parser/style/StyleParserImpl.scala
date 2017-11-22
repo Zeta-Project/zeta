@@ -3,10 +3,11 @@ package de.htwg.zeta.parser.style
 import de.htwg.zeta.server.generator.model.style.DOT
 import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
-import de.htwg.zeta.server.generator.model.style.color.Color
+import de.htwg.zeta.server.generator.model.style.color.{Color => OldColor}
 import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
 import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
 import de.htwg.zeta.server.generator.model.style.gradient.HORIZONTAL
+import javafx.scene.paint.Color
 
 
 class StyleParserImpl extends StyleParser {
@@ -97,9 +98,20 @@ class StyleParserImpl extends StyleParser {
 
 object StyleParserImpl {
 
-  private case class ColorOrGradientImpl(getRGBValue: String) extends ColorOrGradient
-  private case class ColorWithTransparencyImpl(getRGBValue: String) extends ColorWithTransparency
-  private case class ColorImpl(getRGBValue: String) extends Color
+  private trait ColorToRBGColor {
+    val color: Color
+
+    val getRGBValue: String = {
+      val r = color.getRed * 255.0.round.toInt
+      val g = color.getGreen * 255.0.round.toInt
+      val b = color.getBlue * 255.0.round.toInt
+
+      s"$r$g$b"
+    }
+  }
+  private case class ColorOrGradientImpl(color: Color) extends ColorOrGradient with ColorToRBGColor
+  private case class ColorWithTransparencyImpl(color: Color) extends ColorWithTransparency with ColorToRBGColor
+  private case class ColorImpl(color: Color) extends OldColor with ColorToRBGColor
 
   def convert(styleParseModel: StyleParseModel): Style = {
 
