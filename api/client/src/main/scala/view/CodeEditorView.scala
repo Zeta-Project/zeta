@@ -3,13 +3,8 @@ package view
 import java.util.UUID
 
 import scala.scalajs.js
-import scala.scalajs.js.Any
-import scala.scalajs.runtime.genTraversableOnce2jsArray
-import scala.util.Random
 
 import controller.CodeEditorController
-import controller.ModeController
-import facade.Delta
 import facade.Editor
 import facade.IEditSession
 import facade.ace
@@ -21,8 +16,7 @@ import scalatags.JsDom
 import scalatags.JsDom.GenericAttr
 import scalatags.JsDom.all
 import scalatags.JsDom.all.bindJsAnyLike
-import scalot.Client
-import scalot.Operation
+
 
 class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslType: String, autoSave: Boolean) {
 
@@ -102,16 +96,5 @@ class CodeEditorView(controller: CodeEditorController, metaModelId: UUID, dslTyp
 
   var broadcast: Boolean = true
   var session: IEditSession = null
-
-  def displayDoc(doc: Client): js.Dynamic = {
-    selectedId = UUID.fromString(doc.id)
-    session = ace.ace.createEditSession(
-      doc.str,
-      ModeController.getAllModesForModel(metaModelId)(doc.docType)
-    )
-
-    editor.setSession(session)
-  }
-
 
 }
