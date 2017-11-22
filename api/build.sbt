@@ -46,8 +46,9 @@ def baseProject(name: String, d: sbt.File) = Project(name, d).settings(baseSetti
 
 lazy val parser = baseProject("parser", file("parser")).settings(
   libraryDependencies  ++= Seq(
-    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6",
-    "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test")
+    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6"
+  )
 ).dependsOn(server)
 
 lazy val server = baseProject("server", file("server")).settings(
@@ -109,7 +110,7 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.webjars" % "jquery" % "2.1.4",
     "org.webjars" % "jquery-ui" % "1.11.4",
     "org.webjars" % "jquery-ui-themes" % "1.11.4",
-    "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
     "org.webjars" % "typicons" % "2.0.7",
     "org.webjars.bower" % "bootbox.js" % "4.4.0",
 
@@ -229,7 +230,7 @@ lazy val generatorControl = projectT("generatorControl", file("generatorControl"
       "org.iq80.leveldb"          % "leveldb"                   % "0.7",
       "org.fusesource.leveldbjni" % "leveldbjni-all"            % "1.8",
       "com.typesafe.akka"         %% "akka-testkit"             % akkaVersion     % "test",
-      "org.scalatest"             %% "scalatest"                % "2.2.4"         % "test",
+      "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "com.typesafe.akka"         %% "akka-remote"              % akkaVersion,
       "com.typesafe.akka"         %% "akka-stream"              % akkaVersion,
       "com.typesafe.akka"         %% "akka-http-core"           % akkaVersion,

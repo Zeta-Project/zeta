@@ -2,8 +2,9 @@ package de.htwg.zeta.parser.style
 
 import de.htwg.zeta.server.generator.model.style.Style
 import org.scalatest.FlatSpec
+import org.scalatest.Matchers
 
-class StyleParserConverterTest extends FlatSpec {
+class StyleParserConverterTest extends FlatSpec with Matchers {
 
   val parserToTest: StyleParserImpl = new StyleParserImpl
 
@@ -30,7 +31,7 @@ class StyleParserConverterTest extends FlatSpec {
   "A converter" should "build a style" in {
 
     val styleParser = parserToTest.parseStyle(styleToTestSuccess)
-    assert(styleParser.successful)
+    styleParser.successful shouldBe true
     val style: StyleParseModel = styleParser.get
     val deprecatedStyle: Style = StyleParserImpl.convert(style)
 
