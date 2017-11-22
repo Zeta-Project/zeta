@@ -21,6 +21,7 @@ trait CommonParserMethods extends JavaTokenParsers {
   private def argument_boolean_true: Parser[Boolean] = "(false|no|n)".r ^^ (bool => false)
   private def argument_boolean_false: Parser[Boolean] = "(true|yes|y)".r ^^ (bool => true)
 
+  // todo: support #rrggbb, #rrggbbaa as well as named colors & wrap exceptions!
   def argument_color: Parser[Color] = "(.+)".r ^^ (color => Color.valueOf(color))
 
   def argument_string: Parser[String] =
