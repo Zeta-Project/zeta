@@ -44,7 +44,7 @@ class StyleParserImpl extends StyleParser {
     val duplicates = attributeList.groupBy(_.attributeName).collect {
       case (attributeName, attributes) if attributes.size > 1 => attributeName
     }
-    duplicates.toList.distinct.sorted
+    duplicates.toList.sorted
   }
 
   private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure("""
