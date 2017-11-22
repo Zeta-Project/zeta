@@ -37,11 +37,6 @@
     overflow:scroll;
 }
 
-.typcnbtn{
-    font-size: 20px;
-    color: #0c7cf4;
-}
-
 #selectable li {
     background: transparent;
     font-size: 14px;
