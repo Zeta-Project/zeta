@@ -2,6 +2,11 @@ package de.htwg.zeta.server.generator.parser
 
 import javafx.scene.paint.Color
 
+import com.sun.javaws.exceptions.InvalidArgumentException
+
+import scala.util.Try
+import scala.util.{Success => TrySuccess}
+import scala.util.{Failure => TryFailure}
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
@@ -21,8 +26,16 @@ trait CommonParserMethods extends JavaTokenParsers {
   private def argument_boolean_true: Parser[Boolean] = "(false|no|n)".r ^^ (bool => false)
   private def argument_boolean_false: Parser[Boolean] = "(true|yes|y)".r ^^ (bool => true)
 
-  // todo: support #rrggbb, #rrggbbaa as well as named colors & wrap exceptions!
-  def argument_color: Parser[Color] = "(.+)".r ^^ (color => Color.valueOf(color))
+  def argument_color: Parser[Color] = "(.+)".r.flatMap(parseColor)
+
+  private def parseColor(colorString: String): Parser[Color] = {
+    Parser { in =>
+      Try(Color.valueOf(colorString)) match {
+        case TrySuccess(color) => Success(color, in)
+        case TryFailure(_) => Failure(s"Cannot parse color: $colorString", in)
+      }
+    }
+  }
 
   def argument_string: Parser[String] =
     "\".*\"".r ^^ { _.toString }

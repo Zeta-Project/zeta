@@ -2,9 +2,9 @@ package de.htwg.zeta.parser.style
 
 import javafx.scene.paint.Color
 
-import org.scalatest.FlatSpec
+import org.scalatest.{FlatSpec, Matchers}
 
-class StyleParserImplTest extends FlatSpec {
+class StyleParserImplTest extends FlatSpec with Matchers {
 
   val parserToTest: StyleParserImpl = new StyleParserImpl
 
@@ -137,10 +137,19 @@ class StyleParserImplTest extends FlatSpec {
       |  }
     """.stripMargin
 
+  val styleWithInvalidColor: String =
+    """
+      |style StyleWithInvalidColor {
+      |  description = "Gherkins are green but not a valid color"
+      |  background-color = Gherkins
+      |}
+    """.stripMargin
+
   "A StyleParser" should "succeed" in {
     val styleParser = parserToTest.parseStyle(styleToTestSuccess)
     assert(styleParser.successful)
     val style: StyleParseModel = styleParser.get
+
     assert(style.name == "Y")
     assert(style.description == "\"Style for a connection between an interface and its implementing class\"")
 
@@ -281,5 +290,10 @@ class StyleParserImplTest extends FlatSpec {
   "A StyleParser" should "succeed if colors defined as gradients" in {
     val styleParser = parserToTest.parseStyle(styleWithGradientColors)
     assert(styleParser.successful)
+  }
+
+  "A StyleParser" should "fail if an invalid color is specified" in {
+    val styleParser = parserToTest.parseStyle(styleWithInvalidColor)
+    styleParser.successful shouldBe false
   }
 }
