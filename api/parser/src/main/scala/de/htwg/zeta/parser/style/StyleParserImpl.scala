@@ -1,12 +1,11 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.model.style.DOT
 import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
 import de.htwg.zeta.server.generator.model.style.color.{Color => OldColor}
 import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
 import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
-import de.htwg.zeta.server.generator.model.style.gradient.{GradientAlignment, HORIZONTAL}
+import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 import javafx.scene.paint.Color
 
 
@@ -84,12 +83,6 @@ class StyleParserImpl extends StyleParser {
   private def gradientAreaColor = literal("gradient-area-color") ~ eq ~> argument_color ^^ (arg => GradientAreaColor(arg))
 
   private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argument_double ^^ (arg => GradientAreaOffset(arg))
-
-  // private def allowed = literal("allowed") ~ eq ~> argument_color ^^ (arg => Allowed(arg))
-  // private def unAllowed = literal("unallowed") ~ eq ~> argument_color ^^ (arg => UnAllowed(arg))
-  // private def selected = literal("selected") ~ eq ~> argument_color ^^ (arg => Selected(arg))
-  // private def multiSelected = literal("multiselected") ~ eq ~> argument_color ^^ (arg => MultiSelected(arg))
-  // private def highlighting = literal("highlighting") ~ eq ~> argument ^^ (arg => Highlighting(arg))
 
   private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
 }

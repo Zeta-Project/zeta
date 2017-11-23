@@ -8,7 +8,6 @@ class StyleParserImplTest extends FlatSpec with Matchers {
 
   val parserToTest: StyleParserImpl = new StyleParserImpl
 
-  // todo: tempTest: missing implementations for some attributes
   val styleToTestSuccess =
     """
       |style Y {
@@ -28,30 +27,6 @@ class StyleParserImplTest extends FlatSpec with Matchers {
       |  gradient-area-offset = 2.0
       |}
     """.stripMargin
-
-  //  val styleToTestSuccess =
-  //    """
-  //      |style Y {
-  //      |  description = "Style for a connection between an interface and its implementing class"
-  //      |  transparency = 1.0
-  //      |  background-color = white
-  //      |  line-color = black
-  //      |  line-style = dash
-  //      |  line-width = 1
-  //      |  font-color = black
-  //      |  font-name = Helvetica
-  //      |  font-size = 20
-  //      |  font-bold = true
-  //      |  font-italic = true
-  //      |  gradient-orientation = vertical
-  //      |  gradient-area-color = black
-  //      |  gradient-area-offset = 2.0
-  //      |  selected = yellow
-  //      |  multiselected = orange
-  //      |  allowed = green
-  //      |  unallowed = red
-  //      |}
-  //    """.stripMargin
 
   val styleToTestSuccess2 =
     """
@@ -191,19 +166,6 @@ class StyleParserImplTest extends FlatSpec with Matchers {
 
     assert(style.attributes(12).attributeName == "gradient-area-offset")
     assert(style.attributes(12).asInstanceOf[GradientAreaOffset].offset == 2.0)
-
-    //    assert(style.attributes(13).attributeName == "selected")
-    //    assert(style.attributes(13).asInstanceOf[Selected].selected == "yellow")
-    //
-    //    assert(style.attributes(14).attributeName == "multiselected")
-    //    assert(style.attributes(14).asInstanceOf[MultiSelected].multiSelected == "orange")
-    //
-    //    assert(style.attributes(15).attributeName == "allowed")
-    //    assert(style.attributes(15).asInstanceOf[Allowed].allowed == "green")
-    //
-    //    assert(style.attributes(16).attributeName == "unallowed")
-    //    assert(style.attributes(16).asInstanceOf[UnAllowed].unAllowed == "red")
-
   }
 
   "A StyleParser" should "find duplicate attributes and fail" in {

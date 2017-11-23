@@ -18,12 +18,7 @@ case class FontBold(bold: Boolean)                  extends StyleAttribute { val
 case class FontItalic(italic: Boolean)              extends StyleAttribute { val attributeName = "font-italic" }
 case class GradientOrientation(orientation: String) extends StyleAttribute { val attributeName = "gradient-orientation" }
 case class GradientAreaColor(color: Color)          extends StyleAttribute { val attributeName = "gradient-area-color" }
-case class GradientAreaOffset(offset: Double)        extends StyleAttribute { val attributeName = "gradient-area-offset" }
-// case class Allowed(allowed: Color)                 extends StyleAttribute { val attributeName = "allowed" }
-// case class UnAllowed(unAllowed: Color)             extends StyleAttribute { val attributeName = "unallowed" }
-// case class Selected(selected: Color)               extends StyleAttribute { val attributeName = "selected" }
-// case class MultiSelected(multiSelected: Color)     extends StyleAttribute { val attributeName = "multiselected" }
-// case class Highlighting(highlighting: String)      extends StyleAttribute { val attributeName = "highlighting" }
+case class GradientAreaOffset(offset: Double)       extends StyleAttribute { val attributeName = "gradient-area-offset" }
 
 case class StyleParseModel(
     name: String,
