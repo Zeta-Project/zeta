@@ -8,8 +8,6 @@ lazy val akkaVersion = "2.4.18"
 
 lazy val scalaV = "2.11.7"
 
-lazy val clients = Seq(client)
-
 lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
 def baseSettings = {
@@ -51,7 +49,6 @@ lazy val server = baseProject("server", file("server")).settings(
   packageName in Docker := "api",
   daemonUser in Docker := "root",
 
-  scalaJSProjects := clients,
   pipelineStages := Seq(scalaJSProd, gzip),
 
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "Routes.scala",
@@ -107,24 +104,7 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.scala-lang" % "scala-compiler" % "2.11.8",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   )
-).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
-
-lazy val client = baseProject("client", file("client")).settings(
-  fork := false,
-  persistLauncher := true,
-  persistLauncher in Test := false,
-  sourceMapsDirectories += sharedJs.base / "..",
-
-  resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.1",
-    "com.lihaoyi" %%% "scalatags" % "0.5.2",
-    "com.lihaoyi" %%% "scalarx" % "0.2.8",
-    "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-    "com.lihaoyi" %%% "upickle" % "0.3.4"
-  )
-).enablePlugins(ScalaJSPlugin, ScalaJSPlay).dependsOn(sharedJs)
+).enablePlugins(PlayScala).dependsOn(sharedJvm).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
 
 lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(
   scalaVersion := scalaV,
@@ -151,8 +131,6 @@ lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).set
 ).jsConfigure(_ enablePlugins ScalaJSPlay).jsSettings(sourceMapsBase := baseDirectory.value / "..")
 
 lazy val sharedJvm = shared.jvm
-lazy val sharedJs = shared.js
-
 
 lazy val common = baseProject("common", file("common")).settings(
   Seq(
