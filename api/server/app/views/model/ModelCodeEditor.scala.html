@@ -1,21 +1,16 @@
 @import de.htwg.zeta.common.models.entity.User
 @(user: Option[User])
 
-@views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
+@styles = {
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.css")">
+}
+
+@scripts = {
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.js")"></script>
     @playscalajs.html.scripts("client", "/assets")
+}
 
-    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ext-language_tools.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootstrap/js/bootstrap.min.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace-grammar/ace_grammar.min.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootbox.js/bootbox.js")"></script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/jquery-ui/jquery-ui.min.js")"></script>
-
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("codeEditor/codeEditor.css")">
-    <link rel='stylesheet' type="text/css" href="@routes.ScalaRoutes.getAssets("lib/typicons/typicons.css")"/>
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/jquery-ui/jquery-ui.min.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/jquery-ui-themes/flick/jquery-ui.min.css")">
-
+@views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts) {
     <div class="row">
         <div class="col-md-offset-2 col-md-5" id="editor">
         </div>

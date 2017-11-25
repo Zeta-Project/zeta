@@ -10,8 +10,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import play.api.libs.json.Json
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
@@ -52,28 +50,25 @@ object Edge {
 
   }
 
-  def playJsonReads(metaModel: MetaModel): Reads[Edge] = {
-    new Reads[Edge] {
-      override def reads(json: JsValue): JsResult[Edge] = {
-        for {
-          name <- (json \ "name").validate[String]
-          reference <- (json \ "referenceName").validate[String].map(metaModel.referenceMap)
-          source <- (json \ "source").validate(Reads.map[List[String]])
-          target <- (json \ "target").validate(Reads.map[List[String]])
-          attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(metaModel.enums)))
-          attributeValues <- (json \ "attributeValues").validate(AttributeValue.playJsonReads(metaModel, reference.attributes, attributes))
-          methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(metaModel.enums)))} yield {
-          Edge(
-            name = name,
-            referenceName = reference.name,
-            source = source.map(n => NodeLink(n._1, n._2)).toList,
-            target = target.map(n => NodeLink(n._1, n._2)).toList,
-            attributes = attributes,
-            attributeValues = attributeValues,
-            methods = methods
-          )
-        }
-      }
+  def playJsonReads(metaModel: MetaModel): Reads[Edge] = Reads { json =>
+    for {
+      name <- (json \ "name").validate[String]
+      reference <- (json \ "referenceName").validate[String].map(metaModel.referenceMap)
+      source <- (json \ "source").validate(Reads.map[List[String]])
+      target <- (json \ "target").validate(Reads.map[List[String]])
+      attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(metaModel.enums)))
+      attributeValues <- (json \ "attributeValues").validate(AttributeValue.playJsonReads(metaModel, reference.attributes, attributes))
+      methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(metaModel.enums)))
+    } yield {
+      Edge(
+        name = name,
+        referenceName = reference.name,
+        source = source.map(n => NodeLink(n._1, n._2)).toList,
+        target = target.map(n => NodeLink(n._1, n._2)).toList,
+        attributes = attributes,
+        attributeValues = attributeValues,
+        methods = methods
+      )
     }
   }
 

@@ -76,30 +76,26 @@ object AttributeValue {
 
   }
 
-  def playJsonReads(metaModel: MetaModel, metaAttributes: Seq[MAttribute]): Reads[Map[String, Seq[AttributeValue]]] = {
-    new Reads[Map[String, Seq[AttributeValue]]] {
-      override def reads(json: JsValue): JsResult[Map[String, Seq[AttributeValue]]] = {
-        Try {
-          metaAttributes.map { metaAttribute =>
-            val rawAttribute = (json \ metaAttribute.name).validate[List[String]].getOrElse(List.empty)
-            val attribute = if (rawAttribute.nonEmpty) {
-              metaAttribute.typ match {
-                case StringType => rawAttribute.map(StringValue)
-                case BoolType => rawAttribute.map(v => BoolValue(v.toBoolean))
-                case IntType => rawAttribute.map(v => IntValue(v.toInt))
-                case DoubleType => rawAttribute.map(v => DoubleValue(v.toDouble))
-                case enum: MEnum => rawAttribute.map(enum.valueMap)
-              }
-            } else {
-              List(metaAttribute.default)
-            }
-            (metaAttribute.name, attribute)
-          }.toMap
-        } match {
-          case Success(s) => JsSuccess(s)
-          case Failure(e) => JsError(e.getMessage)
+  def playJsonReads(metaModel: MetaModel, metaAttributes: Seq[MAttribute]): Reads[Map[String, Seq[AttributeValue]]] = Reads { json =>
+    Try {
+      metaAttributes.map { metaAttribute =>
+        val rawAttribute = (json \ metaAttribute.name).validate[List[String]].getOrElse(List.empty)
+        val attribute = if (rawAttribute.nonEmpty) {
+          metaAttribute.typ match {
+            case StringType => rawAttribute.map(StringValue)
+            case BoolType => rawAttribute.map(v => BoolValue(v.toBoolean))
+            case IntType => rawAttribute.map(v => IntValue(v.toInt))
+            case DoubleType => rawAttribute.map(v => DoubleValue(v.toDouble))
+            case enum: MEnum => rawAttribute.map(enum.valueMap)
+          }
+        } else {
+          List(metaAttribute.default)
         }
-      }
+        (metaAttribute.name, attribute)
+      }.toMap
+    } match {
+      case Success(s) => JsSuccess(s)
+      case Failure(e) => JsError(e.getMessage)
     }
   }
 

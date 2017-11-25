@@ -5,15 +5,20 @@
 
 @(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
 
-@views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
-    @if(metaModel.isDefined) {
-        <script>
-                window.metaModelId = "@metaModel.get.id";
-        </script>
-    }
-    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/modelValidatorUtil.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/diagramOverview.js")"></script>
+@styles = {
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.css")">
+}
 
+@scripts = {
+    @if(metaModel.isDefined) {
+    <script>
+            window.metaModelId = "@metaModel.get.id";
+    </script>
+    }
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.js")"></script>
+}
+
+@views.html.webpage.WebpageGeneralLayout("New Diagram", user, styles, scripts) {
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">

@@ -4,8 +4,6 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.Json
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
@@ -19,14 +17,12 @@ case class NodeLink(className: String, nodeNames: Seq[String]) extends Link
 
 object NodeLink {
 
-  def playJsonReads(metaModel: MetaModel): Reads[NodeLink] = new Reads[NodeLink] {
-    override def reads(json: JsValue): JsResult[NodeLink] = {
-      for {
-        clazz <- (json \ "className").validate[String].map(metaModel.classMap)
-        nodeNames <- (json \ "nodeNames").validate[List[String]]
-      } yield {
-        NodeLink(clazz.name, nodeNames)
-      }
+  def playJsonReads(metaModel: MetaModel): Reads[NodeLink] = Reads { json =>
+    for {
+      clazz <- (json \ "className").validate[String].map(metaModel.classMap)
+      nodeNames <- (json \ "nodeNames").validate[List[String]]
+    } yield {
+      NodeLink(clazz.name, nodeNames)
     }
   }
 

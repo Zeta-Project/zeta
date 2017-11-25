@@ -20,3 +20,4 @@ tmp
 /model_specific/
 /mongodb/
 /sbt/
+docker-compose\.override\.yml

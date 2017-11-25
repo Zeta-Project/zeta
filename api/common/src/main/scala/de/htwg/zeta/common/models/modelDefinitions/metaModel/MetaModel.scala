@@ -4,20 +4,18 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.EnumMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.ClassMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.EnumMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.ClassMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference.ReferenceMap
 import play.api.libs.json.Json
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
@@ -63,37 +61,33 @@ object MetaModel {
     )
   }
 
-  implicit val playJsonReads: Reads[MetaModel] = new Reads[MetaModel] {
-    override def reads(json: JsValue): JsResult[MetaModel] = {
-      for {
-        name <- (json \ sName).validate[String]
-        enums <- (json \ "enums").validate(Reads.list[MEnum])
-        classes <- (json \ "classes").validate(Reads.list(MClass.playJsonReads(enums)))
-        references <- (json \ "references").validate(Reads.list(MReference.playJsonReads(enums)))
-        attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
-        methods <-  (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
-        uiState <- (json \ "uiState").validate[String]
-      } yield {
-        MetaModel(
-          name = name,
-          classes = classes,
-          references = references,
-          enums = enums,
-          attributes = attributes,
-          methods = methods,
-          uiState = uiState
-        )
-      }
+  implicit val playJsonReads: Reads[MetaModel] = Reads{json =>
+    for {
+      name <- (json \ sName).validate[String]
+      enums <- (json \ "enums").validate(Reads.list[MEnum])
+      classes <- (json \ "classes").validate(Reads.list(MClass.playJsonReads(enums)))
+      references <- (json \ "references").validate(Reads.list(MReference.playJsonReads(enums)))
+      attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
+      methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
+      uiState <- (json \ "uiState").validate[String]
+    } yield {
+      MetaModel(
+        name = name,
+        classes = classes,
+        references = references,
+        enums = enums,
+        attributes = attributes,
+        methods = methods,
+        uiState = uiState
+      )
     }
   }
 
 
   implicit val playJsonWrites: Writes[MetaModel] = Json.writes[MetaModel]
 
-  val playJsonReadsEmpty: Reads[MetaModel] = new Reads[MetaModel] {
-    override def reads(json: JsValue): JsResult[MetaModel] = {
-      (json \ sName).validate[String].map(empty)
-    }
+  val playJsonReadsEmpty: Reads[MetaModel] = Reads { json =>
+    (json \ sName).validate[String].map(empty)
   }
 
 

@@ -37,9 +37,13 @@ object PersistenceMongoDb extends Logging {
   private val settingServer = "zeta.mongodb.server"
   private val settingPort = "zeta.mongodb.port"
   private val settingDb = "zeta.mongodb.db"
+  private val settingsUsername = "zeta.mongodb.username"
+  private val settingsPassword = "zeta.mongodb.password"
   private val defaultServer = "localhost"
   private val defaultPort = "27017"
   private val defaultDb = "zeta"
+  private val defaultUsername = ""
+  private val defaultPassword = ""
   private val config = ConfigFactory.load()
 
   /**
@@ -52,8 +56,9 @@ object PersistenceMongoDb extends Logging {
     val configServer = getString(settingServer, defaultServer)
     val configPort = getInt(settingPort, defaultPort)
     val configDb = getString(settingDb, defaultDb)
-    info(s"Mongo connection: $configServer:$configPort") // scalastyle:ignore multiple.string.literals
-    new MongoRepository(s"$configServer:$configPort", if (db.length == 0) configDb else db)
+    val usernameAndPassword = getUsernameAndPassword()
+    info(s"Mongo connection: $usernameAndPassword$configServer:$configPort") // scalastyle:ignore multiple.string.literals
+    new MongoRepository(s"$usernameAndPassword$configServer:$configPort/$configDb", if (db.length == 0) configDb else db)
   }
 
   private def getString(path: String, default: String): String = {
@@ -62,5 +67,11 @@ object PersistenceMongoDb extends Logging {
 
   private def getInt(path: String, default: String): String = {
     if (config.hasPath(path)) config.getInt(path).toString else default
+  }
+
+  private def getUsernameAndPassword(): String = {
+    val username = getString(settingsUsername, defaultUsername)
+    val password = getString(settingsPassword, defaultPassword)
+    if (username.isEmpty || password.isEmpty) "" else s"$username:$password@"
   }
 }

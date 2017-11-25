@@ -41,9 +41,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -54,8 +54,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import reactivemongo.bson.BSONArray
 import reactivemongo.bson.BSONBoolean
