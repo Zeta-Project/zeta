@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
+package de.htwg.zeta.common.format.metaModel
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 

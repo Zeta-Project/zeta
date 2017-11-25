@@ -1,32 +1,32 @@
-package de.htwg.zeta.server.controller.restApi.modelUiFormat
+package de.htwg.zeta.common.format.model
 
 import scala.annotation.tailrec
-import scala.collection.mutable
 import scala.collection.immutable.List
 import scala.collection.immutable.Seq
+import scala.collection.mutable
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import play.api.libs.json.JsNumber
-import play.api.libs.json.JsResult
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import play.api.libs.json.JsArray
 import play.api.libs.json.JsBoolean
-import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsError
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
+import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
-import play.api.libs.json.JsError
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsObject
 import play.api.libs.json.Writes
 
 

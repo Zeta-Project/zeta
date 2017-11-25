@@ -1,8 +1,9 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
+package de.htwg.zeta.common.format.metaModel
 
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 import scala.collection.mutable
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -13,10 +14,10 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.Format
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.Reads
 
 

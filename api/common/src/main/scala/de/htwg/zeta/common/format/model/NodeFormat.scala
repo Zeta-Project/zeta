@@ -1,22 +1,20 @@
-package de.htwg.zeta.server.controller.restApi.modelUiFormat
+package de.htwg.zeta.common.format.model
 
-import java.util.UUID
-
-import scala.collection.immutable.Seq
 import scala.collection.immutable.List
+import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsResult
 import play.api.libs.json.Format
 import play.api.libs.json.JsError
-import play.api.libs.json.Writes
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.libs.json.Writes
 
 
 class NodeFormat private(metaModel: MetaModel) extends Format[Node] {

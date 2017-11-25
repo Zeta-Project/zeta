@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.modelUiFormat
+package de.htwg.zeta.common.format.model
 
 import java.util.UUID
 

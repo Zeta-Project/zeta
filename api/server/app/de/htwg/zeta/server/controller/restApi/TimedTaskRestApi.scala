@@ -8,13 +8,14 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.persistence.general.TimedTaskRepository
-import de.htwg.zeta.server.controller.restApi.format.TimedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
+
+import de.htwg.zeta.common.format.TimedTaskFormat
 
 /**
  * REST-ful API for filter definitions

@@ -1,28 +1,25 @@
-package de.htwg.zeta.server.controller.restApi.modelUiFormat
+package de.htwg.zeta.common.format.model
 
 import java.util.UUID
 
-import scala.collection.mutable
 import scala.collection.immutable.List
 import scala.collection.immutable.Seq
+import scala.collection.mutable
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.Repository
-import play.api.libs.json.JsValue
-import play.api.libs.json.Reads
-import play.api.libs.json.Json
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.Writes
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsError
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import play.api.libs.json.JsArray
+import play.api.libs.json.JsError
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 
 class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] with Writes[Model] {

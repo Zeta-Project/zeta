@@ -1,14 +1,12 @@
-package de.htwg.zeta.server.controller.restApi.format
+package de.htwg.zeta.common.format
 
 import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.File
 import play.api.libs.json.Format
-import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
+import play.api.libs.json.Json
 
 
 /**

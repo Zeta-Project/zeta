@@ -1,11 +1,11 @@
-package de.htwg.zeta.server.controller.restApi.format
+package de.htwg.zeta.common.format
 
 import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.Generator
 import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.Writes
 
 /**

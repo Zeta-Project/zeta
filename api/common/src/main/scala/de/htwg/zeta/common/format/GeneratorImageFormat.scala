@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.controller.restApi.format
+package de.htwg.zeta.common.format
 
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.GeneratorImageOptions
@@ -6,8 +6,8 @@ import de.htwg.zeta.common.models.entity.GeneratorMetaModelReleaseProperty
 import de.htwg.zeta.common.models.entity.GeneratorNameProperty
 import de.htwg.zeta.common.models.entity.GeneratorOptionProperties
 import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.Writes
 
 /**

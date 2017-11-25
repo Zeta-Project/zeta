@@ -117,7 +117,8 @@ lazy val common = baseProject("common", file("common")).settings(
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
       "org.scalaz" %% "scalaz-core" % "7.2.8",
       "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "com.typesafe.play" %% "play-json" % "2.5.4"
     )
   )
 )

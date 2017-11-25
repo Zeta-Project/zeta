@@ -1,9 +1,9 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
+package de.htwg.zeta.common.format.metaModel
 
 import de.htwg.zeta.common.models.entity.MetaModelRelease
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.Writes
 
 /**

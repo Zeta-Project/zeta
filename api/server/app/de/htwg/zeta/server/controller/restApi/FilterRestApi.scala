@@ -10,7 +10,6 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterRepository
-import de.htwg.zeta.server.controller.restApi.format.FilterFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.data.validation.ValidationError
@@ -25,6 +24,8 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
+
+import de.htwg.zeta.common.format.FilterFormat
 
 /**
  * REST-ful API for filter definitions

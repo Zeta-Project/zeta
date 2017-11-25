@@ -1,10 +1,10 @@
-package de.htwg.zeta.server.controller.restApi.metaModelUiFormat
+package de.htwg.zeta.common.format.metaModel
 
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.Format
-import play.api.libs.json.JsValue
 import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 
 /**
