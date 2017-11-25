@@ -6,7 +6,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 
-private[metaModelUiFormat] trait MLinkDefFormat[MB <: MBounds] extends MBoundsFormat[MB] { // scalastyle:ignore
+trait MLinkDefFormat[MB <: MBounds] extends MBoundsFormat[MB] { // scalastyle:ignore
   override final def readsUnchecked(jsv: JsValue): JsResult[MB] = {
     for {
       refName <- jsv.\("type").validate[String]

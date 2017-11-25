@@ -1,5 +1,7 @@
 package de.htwg.zeta.common.format.metaModel
 
+import scala.collection.immutable.Seq
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
@@ -16,6 +18,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsError
 import play.api.libs.json.JsNumber
+import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
@@ -24,90 +27,80 @@ import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-private[metaModelUiFormat] class MAttributeFormat(val enumMap: Map[String, MEnum]) extends MBoundsFormat[MAttribute] {
-  private val singletonString = JsSuccess(StringType)
-  private val singletonBool = JsSuccess(BoolType)
-  private val singletonInt = JsSuccess(IntType)
-  private val singletonDouble = JsSuccess(DoubleType)
+class MAttributeFormat(val enumMap: Map[String, MEnum]) extends MBoundsFormat[MAttribute] {
+  private val sName = "name"
+  private val sGlobalUnique = "globalUnique"
+  private val sLocalUnique = "localUnique"
+  private val sTyp = "typ"
+  private val sDefault = "default"
+  private val sConstant = "constant"
+  private val sSingleAssignment = "singleAssignment"
+  private val sExpression = "expression"
+  private val sOrdered = "ordered"
+  private val sTransient = "transient"
+  private val sUpperBound = "upperBound"
+  private val sLowerBound = "lowerBound"
 
-
-  private val typeDefaultError = JsError("type definition and default value don't match")
-
-  // used to validate JsLookup. JsValue has flatMap. JsLookup hasn't
-  private object ToJsResult extends Reads[JsValue] {
-    override def reads(json: JsValue): JsResult[JsValue] = JsSuccess(json)
-  }
-
-  private def detectType(name: String): JsResult[AttributeType] = name match {
-    case "String" => singletonString
-    case "Bool" => singletonBool
-    case "Int" => singletonInt
-    case "Double" => singletonDouble
-    case _ => enumMap.get(name) match {
-      case Some(enum) => JsSuccess(enum)
-      case None => JsError(s"Enum with name $name should be part of the MetaModel")
-    }
-  }
-
-  private object CheckValidInt {
-    def unapply(jsn: JsNumber): Option[Int] = try {
-      Some(jsn.value.toIntExact)
-    } catch {
-      case _: java.lang.ArithmeticException => None
-    }
-  }
-
-  private def validateTypeDefault(typ: AttributeType, default: JsValue): JsResult[AttributeValue] = (typ, default) match {
-    case (StringType, JsString(s)) => JsSuccess(AttributeValue.StringValue(s))
-    case (BoolType, JsBoolean(b)) => JsSuccess(AttributeValue.BoolValue(b))
-    case (DoubleType, JsNumber(n)) => JsSuccess(AttributeValue.DoubleValue(n.doubleValue))
-    case (IntType, CheckValidInt(i)) => JsSuccess(AttributeValue.IntValue(i))
-    case (MEnum(enumName, values), JsString(name)) if values.contains(name) => JsSuccess(AttributeValue.EnumValue(name, enumName))
-    case _ => typeDefaultError
-  }
-
-  override def readsUnchecked(json: JsValue): JsResult[MAttribute] = {
+  def playJsonReads(enums: Seq[MEnum]): Reads[MAttribute] = Reads { json =>
     for {
-      name <- json.\("name").validate[String]
-      globalUnique <- json.\("globalUnique").validate[Boolean]
-      localUnique <- json.\("localUnique").validate[Boolean]
-      typ <- json.\("type").validate[String].flatMap(detectType)
-      default <- json.\("default").validate(ToJsResult).flatMap(validateTypeDefault(typ, _))
-      constant <- json.\("constant").validate[Boolean]
-      singleAssignment <- json.\("singleAssignment").validate[Boolean]
-      expression <- json.\("expression").validate[String]
-      ordered <- json.\("ordered").validate[Boolean]
-      transient <- json.\("transient").validate[Boolean]
-      upperBound <- json.\("upperBound").validate[Int](Reads.min(-1))
-      lowerBound <- json.\("lowerBound").validate[Int](Reads.min(0))
+      name <- (json \ sName).validate[String]
+      globalUnique <- (json \ sGlobalUnique).validate[Boolean]
+      localUnique <- (json \ sLocalUnique).validate[Boolean]
+      typ <- (json \ sTyp).validate(AttributeType.playJsonReads(enums))
+      default <- typ match {
+        case StringType => (json \ sDefault).validate[String].map(StringValue)
+        case BoolType => (json \ sDefault).validate[String].map(v => BoolValue(v.toBoolean))
+        case IntType => (json \ sDefault).validate[String].map(v => IntValue(v.toInt))
+        case DoubleType => (json \ sDefault).validate[String].map(v => DoubleValue(v.toDouble))
+        case enum: MEnum => (json \ sDefault).validate[String].map(enum.valueMap(_))
+      }
+      constant <- (json \ sConstant).validate[Boolean]
+      singleAssignment <- (json \ sSingleAssignment).validate[Boolean]
+      expression <- (json \ sExpression).validate[String]
+      ordered <- (json \ sOrdered).validate[Boolean]
+      transient <- (json \ sTransient).validate[Boolean]
+      upperBound <- (json \ sUpperBound).validate[Int]
+      lowerBound <- (json \ sLowerBound).validate[Int]
     } yield {
-      MAttribute(name, globalUnique, localUnique, typ, default, constant, singleAssignment, expression, ordered, transient, upperBound, lowerBound)
+      MAttribute(
+        name = name,
+        globalUnique = globalUnique,
+        localUnique = localUnique,
+        typ = typ,
+        default = default,
+        constant = constant,
+        singleAssignment = singleAssignment,
+        expression = expression,
+        ordered = ordered,
+        transient = transient,
+        upperBound = upperBound,
+        lowerBound = lowerBound
+      )
     }
   }
 
-
-  override def writes(ma: MAttribute): JsValue = MAttributeFormat.writes(ma)
-}
-
-private[metaModelUiFormat] object MAttributeFormat extends Writes[MAttribute] {
-
-  private def writesAttributeType(a: AttributeType): JsValue = {
-    val out = a match {
-      case MEnum(name, _) => name
-      case _ => a.asString
-    }
-    JsString(out)
+  implicit val playJsonWrites: Writes[MAttribute] = Writes { attribute =>
+    JsObject(Map(
+      sName -> JsString(attribute.name),
+      sGlobalUnique -> JsBoolean(attribute.globalUnique),
+      sLocalUnique -> JsBoolean(attribute.localUnique),
+      sTyp -> AttributeType.playJsonWrites.writes(attribute.typ),
+      sDefault -> (attribute.default match {
+        case StringValue(s) => JsString(s)
+        case BoolValue(b) => JsBoolean(b)
+        case DoubleValue(d) => JsNumber(d)
+        case IntValue(i) => JsNumber(i)
+        case EnumValue(_, value) => JsString(value)
+      }),
+      sConstant -> JsBoolean(attribute.constant),
+      sSingleAssignment -> JsBoolean(attribute.singleAssignment),
+      sExpression -> JsString(attribute.expression),
+      sOrdered -> JsBoolean(attribute.ordered),
+      sTransient -> JsBoolean(attribute.transient),
+      sUpperBound -> JsNumber(attribute.upperBound),
+      sLowerBound -> JsNumber(attribute.lowerBound)
+    ))
   }
-
-  private def writesAttributeValue(av: AttributeValue): JsValue = av match {
-    case StringValue(v) => JsString(v)
-    case BoolValue(v) => JsBoolean(v)
-    case IntValue(v) => JsNumber(v)
-    case DoubleValue(v) => JsNumber(v)
-    case EnumValue(name, _) => JsString(name)
-  }
-
-
   override def writes(ma: MAttribute): JsValue = {
     Json.obj(
       "name" -> ma.name,

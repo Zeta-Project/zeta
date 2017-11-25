@@ -3,11 +3,6 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
-import play.api.libs.json.Format
-import play.api.libs.json.Json
-import play.api.libs.json.JsString
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 
 sealed trait AttributeType {
@@ -78,29 +73,6 @@ object AttributeType {
       }
     }
 
-    implicit val playJsonFormat: Format[MEnum] = Json.format[MEnum]
-
-  }
-
-  def playJsonReads(enums: Seq[MEnum]): Reads[AttributeType] = Reads { json =>
-    json.validate[String].map {
-      case StringType.asString => StringType
-      case BoolType.asString => BoolType
-      case "Bool" => BoolType // TODO frontend should always send "Boolean" instead of "Bool"
-      case IntType.asString => IntType
-      case DoubleType.asString => DoubleType
-      case UnitType.asString => UnitType
-      case enumName: String => enums.find(_.name == enumName).get
-    }
-  }
-
-  implicit val playJsonWrites: Writes[AttributeType] = Writes {
-    case StringType => JsString(StringType.asString)
-    case BoolType => JsString(BoolType.asString)
-    case IntType => JsString(IntType.asString)
-    case DoubleType => JsString(DoubleType.asString)
-    case UnitType => JsString(UnitType.asString)
-    case enum: MEnum => MEnum.playJsonFormat.writes(enum)
   }
 
   def parse(s: String): AttributeType = {

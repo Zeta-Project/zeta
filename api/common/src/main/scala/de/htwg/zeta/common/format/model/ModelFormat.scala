@@ -7,6 +7,7 @@ import scala.collection.immutable.Seq
 import scala.collection.mutable
 import scala.concurrent.Future
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
@@ -22,11 +23,9 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] with Writes[Model] {
+class ModelFormat private(metaModel: MetaModel) extends Reads[Future[JsResult[Model]]] with Writes[Model] {
 
   private val modelElementsNotUnique = JsError("elements must have unique names")
-
-  private val repo: Repository = Persistence.restrictedAccessRepository(userID)
 
   private def check(unchecked: JsResult[Model]): JsResult[Model] = {
     unchecked.flatMap(model => {
@@ -83,7 +82,8 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
   }
 
   override def reads(json: JsValue): JsResult[Future[JsResult[Model]]] = {
-    for {
+    null // TODO
+    /*for {
       name <- (json \ "name").validate[String]
       metaModelId <- (json \ "metaModelId").validate[UUID]
     } yield {
@@ -103,7 +103,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
           }
         check(unchecked)
       })
-    }
+    }*/
   }
 
   override def writes(o: Model): JsValue = ModelFormat.writes(o)
@@ -111,7 +111,7 @@ class ModelFormat private(userID: UUID) extends Reads[Future[JsResult[Model]]] w
 
 object ModelFormat extends Writes[Model] {
 
-  def apply(userID: UUID): ModelFormat = new ModelFormat(userID)
+  def apply(userID: UUID): ModelFormat = null // TODO new ModelFormat(userID)
 
   override def writes(o: Model): JsValue = {
     val elements = JsArray(o.nodes.map(NodeFormat.writes) ++ o.edges.map(EdgeFormat.writes))

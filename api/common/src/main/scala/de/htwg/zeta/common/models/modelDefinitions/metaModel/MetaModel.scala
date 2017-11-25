@@ -2,6 +2,7 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.EnumMap
@@ -47,8 +48,6 @@ case class MetaModel(
 
 object MetaModel {
 
-  private val sName = "name"
-
   def empty(name: String): MetaModel = {
     MetaModel(
       name = name,
@@ -60,36 +59,6 @@ object MetaModel {
       uiState = ""
     )
   }
-
-  implicit val playJsonReads: Reads[MetaModel] = Reads{json =>
-    for {
-      name <- (json \ sName).validate[String]
-      enums <- (json \ "enums").validate(Reads.list[MEnum])
-      classes <- (json \ "classes").validate(Reads.list(MClass.playJsonReads(enums)))
-      references <- (json \ "references").validate(Reads.list(MReference.playJsonReads(enums)))
-      attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
-      methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
-      uiState <- (json \ "uiState").validate[String]
-    } yield {
-      MetaModel(
-        name = name,
-        classes = classes,
-        references = references,
-        enums = enums,
-        attributes = attributes,
-        methods = methods,
-        uiState = uiState
-      )
-    }
-  }
-
-
-  implicit val playJsonWrites: Writes[MetaModel] = Json.writes[MetaModel]
-
-  val playJsonReadsEmpty: Reads[MetaModel] = Reads { json =>
-    (json \ sName).validate[String].map(empty)
-  }
-
 
   case class MetaModelTraverseWrapper(value: MetaModel) {
 

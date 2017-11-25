@@ -7,7 +7,7 @@ import play.api.libs.json.JsError
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 
-private[metaModelUiFormat] trait MBoundsFormat[MB <: MBounds] extends Format[MB] { // scalastyle:ignore
+trait MBoundsFormat[MB <: MBounds] extends Format[MB] { // scalastyle:ignore
   private val boundsError = JsError(ValidationError("invalid lower and/or upper bound"))
 
   private def boundsCheck(bounds: MBounds): Boolean = {

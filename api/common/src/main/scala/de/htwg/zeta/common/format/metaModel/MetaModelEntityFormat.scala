@@ -9,7 +9,7 @@ import play.api.libs.json.Json
 
 /**
  */
-object MetaModelEntityUiFormat extends Format[MetaModelEntity] {
+object MetaModelEntityFormat extends Format[MetaModelEntity] {
   private val format = {
     implicit val metaModelFormat: Format[MetaModel] = MetaModelFormat
     Json.format[MetaModelEntity]
