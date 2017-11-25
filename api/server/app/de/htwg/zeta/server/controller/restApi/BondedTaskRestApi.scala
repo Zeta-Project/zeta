@@ -1,26 +1,27 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
 import scala.concurrent.Future
+import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.BondedTask
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.server.controller.restApi.format.BondedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
- * RESTful API for bondedTask definitions
+ * REST-ful API for bondedTask definitions
  */
-class BondedTaskRestApi() extends RestApiController[BondedTask] {
-
-  private val repo = Persistence.fullAccessRepository.bondedTask
+class BondedTaskRestApi @Inject()(
+    bondedTaskRepo: BondedTaskRepository
+) extends RestApiController[BondedTask] {
 
   /** Lists all BondedTask.
    *
@@ -36,8 +37,8 @@ class BondedTaskRestApi() extends RestApiController[BondedTask] {
   }
 
   private def getEntities: Future[List[BondedTask]] = {
-    repo.readAllIds().flatMap(ids => {
-      val entities = ids.toList.map(repo.read)
+    bondedTaskRepo.readAllIds().flatMap(ids => {
+      val entities = ids.toList.map(bondedTaskRepo.read)
       Future.sequence(entities)
     })
   }
@@ -51,7 +52,8 @@ class BondedTaskRestApi() extends RestApiController[BondedTask] {
 
   /**
    * Flag BondedTask as deleted
-   * @param id Identifier of BondedTask
+   *
+   * @param id      Identifier of BondedTask
    * @param request The request
    * @return The result
    */
@@ -64,15 +66,16 @@ class BondedTaskRestApi() extends RestApiController[BondedTask] {
   }
 
   private def flagAsDeleted(id: UUID): Future[BondedTask] = {
-    repo.update(id, e => e.copy(deleted = true))
+    bondedTaskRepo.update(id, e => e.copy(deleted = true))
   }
 
   /**
    * Add new BondedTask into DB
+   *
    * @param request The request
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    parseJson(request.body, BondedTaskFormat, (bondedTask) => repo.create(bondedTask).map(_ => Ok("")))
+    parseJson(request.body, BondedTaskFormat, (bondedTask) => bondedTaskRepo.create(bondedTask).map(_ => Ok("")))
   }
 }

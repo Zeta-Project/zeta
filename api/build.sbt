@@ -1,21 +1,13 @@
-import sbt.Project.projectToRef
-
 name := "zeta-api"
-
 version := "1.0.0"
 
 lazy val akkaVersion = "2.4.18"
-
-lazy val scalaV = "2.11.7"
-
-lazy val clients = Seq(client)
-
 lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
 def baseSettings = {
   Revolver.settings ++ Seq(
     fork := true,
-    scalaVersion := scalaV,
+    scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(
       // logging
       "org.clapper" %% "grizzled-slf4j" % "1.2.0"
@@ -51,9 +43,6 @@ lazy val server = baseProject("server", file("server")).settings(
   packageName in Docker := "api",
   daemonUser in Docker := "root",
 
-  scalaJSProjects := clients,
-  pipelineStages := Seq(scalaJSProd, gzip),
-
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "Routes.scala",
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "RoutesPrefix.scala",
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "controllers" / "ReverseRoutes.scala",
@@ -84,14 +73,10 @@ lazy val server = baseProject("server", file("server")).settings(
     "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",
     specs2 % Test,
     cache,
-    filters,
     ws,
 
-    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    "com.github.jahoefne" %% "scalot" % "0.4.4-SNAPSHOT",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
-    "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "com.typesafe.akka" %% "akka-contrib" % akkaVersion,
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-kernel" % akkaVersion,
@@ -109,55 +94,7 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.scala-lang" % "scala-compiler" % "2.11.8",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   )
-).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
-
-lazy val client = baseProject("client", file("client")).settings(
-  fork := false,
-  persistLauncher := true,
-  persistLauncher in Test := false,
-  sourceMapsDirectories += sharedJs.base / "..",
-
-  resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  libraryDependencies ++= Seq(
-    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
-    "org.scala-js" %%% "scalajs-dom" % "0.8.1",
-    "com.lihaoyi" %%% "scalatags" % "0.5.2",
-    "com.lihaoyi" %%% "scalarx" % "0.2.8",
-    "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-    "com.lihaoyi" %%% "upickle" % "0.3.4"
-  )
-).enablePlugins(ScalaJSPlugin, ScalaJSPlay).dependsOn(sharedJs)
-
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(
-  scalaVersion := scalaV,
-  scalacOptions ++= Seq(
-    "-deprecation", // Emit warning and location for usages of deprecated APIs.
-    "-feature", // Emit warning and location for usages of features that should be imported explicitly.
-    "-unchecked", // Enable additional warnings where generated code depends on assumptions.
-    // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
-    "-Xlint", // Enable recommended additional warnings.
-    "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
-    "-Ywarn-dead-code", // Warn when dead code is identified.
-    "-Ywarn-inaccessible", // Warn about inaccessible types in method signatures.
-    "-Ywarn-nullary-override", // Warn when non-nullary overrides nullary, e.g. def foo() over def foo.
-    "-Ywarn-numeric-widen" // Warn when numerics are widened.
-  ),
-
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  libraryDependencies ++= Seq(
-    "com.github.jahoefne" % "scalot_2.11" % "1.0" // "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT"
-  ),
-
-  scalastyleFailOnError := true,
-  compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-  compile in Compile := ((compile in Compile) dependsOn compileScalastyle).value,
-  wartremoverWarnings ++= Warts.unsafe
-).jsConfigure(_ enablePlugins ScalaJSPlay).jsSettings(sourceMapsBase := baseDirectory.value / "..")
-
-lazy val sharedJvm = shared.jvm
-lazy val sharedJs = shared.js
+).enablePlugins(PlayScala).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
 
 
 lazy val common = baseProject("common", file("common")).settings(
@@ -180,15 +117,10 @@ lazy val common = baseProject("common", file("common")).settings(
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
       "org.scalaz" %% "scalaz-core" % "7.2.8",
       "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
-      "com.github.jahoefne" % "scalot_2.11" % "1.0"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
     )
   )
 )
-
-// loads the jvm project at sbt startup
-onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
-
 
 def projectT(name: String, d: sbt.File) = {
   baseProject(name, d).settings(
@@ -218,7 +150,7 @@ lazy val generatorControl = projectT("generatorControl", file("generatorControl"
       "org.scalatest"             %% "scalatest"                % "2.2.4"         % "test",
       "com.typesafe.akka"         %% "akka-remote"              % akkaVersion,
       "com.typesafe.akka"         %% "akka-stream"              % akkaVersion,
-      "com.typesafe.akka"         %% "akka-http-core"           % akkaVersion,
+      "com.typesafe.akka"         %% "akka-http-core"           % "10.0.6",
       "com.typesafe.akka"         %% "akka-http-testkit"        % "10.0.6",
       "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
       "com.spotify"               % "docker-client"             % "6.1.1",
@@ -237,16 +169,12 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
     // packageName in Docker  := "persistence",
     // daemonUser in Docker   := "root",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-http" % "10.0.6",
-      "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.6",
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "com.mohiva" %% "play-silhouette" % "4.0.0",
-      "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
       "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
-      "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
-      "com.softwaremill.quicklens" %% "quicklens" % "1.4.8",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "net.codingwell" %% "scala-guice" % "4.0.1"
     )
   )
 ).dependsOn(common)

@@ -2,8 +2,9 @@ package de.htwg.zeta.server.controller
 
 import javax.inject.Inject
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import grizzled.slf4j.Logging
@@ -18,10 +19,11 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import play.api.mvc.Result
 
-/**
- * @author Philipp Daniels
- */
-class WebAppController @Inject()(ws: WSClient, config: play.api.Configuration) extends Controller with Logging {
+
+class WebAppController @Inject()(
+    ws: WSClient,
+    config: play.api.Configuration
+) extends Controller with Logging {
 
   private val defaultHost = "localhost"
   private val defaultPort = 8080

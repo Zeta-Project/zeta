@@ -6,6 +6,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
@@ -17,13 +18,16 @@ import de.htwg.zeta.generator.template.Settings
 import de.htwg.zeta.generator.template.Success
 import de.htwg.zeta.generator.template.Template
 import de.htwg.zeta.generator.template.Transformer
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.Persistence.fullAccessRepository
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.general.FileRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class MyTransformer() extends Transformer {
   private val logger: Logger = LoggerFactory.getLogger(getClass)
+
+  private val injector = Guice.createInjector(new PersistenceModule)
+  private val filePersistence = injector.getInstance(classOf[FileRepository])
 
   def transform(entity: ModelEntity): Future[Transformer] = {
     logger.info("Start example")
@@ -36,7 +40,7 @@ class MyTransformer() extends Transformer {
         |Number of edges : ${entity.model.edgeMap.size}
       """.stripMargin
 
-    fullAccessRepository.file.create(File(entity.id, filename, content)).map { _ =>
+   filePersistence.create(File(entity.id, filename, content)).map { _ =>
       logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModelId}')")
       p.success(this)
     }.recover {
@@ -57,9 +61,8 @@ class MyTransformer() extends Transformer {
  */
 object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
-    val repository = Persistence.fullAccessRepository
     for {
-      image <- repository.generatorImage.read(imageId)
+      image <- generatorImagePersistence.read(imageId)
       file <- createFileContent()
       _ <- createGenerator(options, image, file)
     } yield {
@@ -74,13 +77,13 @@ object Main extends Template[CreateOptions, String] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   private def createFileContent(): Future[File] = {
     val content = "This is a demo to save the results of a generator. No further configuration is required."
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   /**

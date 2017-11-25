@@ -3,13 +3,27 @@ package de.htwg.zeta.generator.template
 import java.io.FileNotFoundException
 import java.util.UUID
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+import scala.concurrent.Promise
+import scala.reflect.ClassTag
+import scala.reflect.runtime
+import scala.tools.reflect.ToolBox
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.MetaModelEntityRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -18,13 +32,6 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 import play.api.libs.json.Reads
 import play.api.libs.ws.ahc.AhcWSClient
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-import scala.concurrent.Promise
-import scala.reflect.ClassTag
-import scala.reflect.runtime
-import scala.tools.reflect.ToolBox
 
 class Commands(arguments: Seq[String]) extends ScallopConf(arguments) {
   val session: ScallopOption[String] = opt[String]()
@@ -65,7 +72,13 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val mat = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  val repository = Persistence.fullAccessRepository
+  private val injector = Guice.createInjector(new PersistenceModule)
+  val modelEntityPersistence = injector.getInstance(classOf[ModelEntityRepository])
+  val filePersistence = injector.getInstance(classOf[FileRepository])
+  val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  val filterPersistence = injector.getInstance(classOf[FilterRepository])
+  val metaModelEntityPersistence = injector.getInstance(classOf[MetaModelEntityRepository])
+  val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
 
@@ -150,7 +163,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     val start: Future[Transformer] = generator.prepare(filter.instanceIds.toList)
     val futures = filter.instanceIds.foldLeft(start) {
       case (future, modelId) => future.flatMap { generator =>
-        repository.modelEntity.read(modelId).flatMap { entity =>
+        modelEntityPersistence.read(modelId).flatMap { entity =>
           generator.transform(entity)
         }
       }
@@ -211,8 +224,8 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    */
   private def runGeneratorWithFilter(generatorId: UUID, filterId: UUID): Future[Result] = {
     for {
-      generator <- repository.generator.read(generatorId)
-      filter <- repository.filter.read(filterId)
+      generator <- generatorPersistence.read(generatorId)
+      filter <- filterPersistence.read(filterId)
       _ <- checkFilter(filter)
       file <- getFile(Settings.generatorFile, generator)
       fn <- getTransformer(file, filter)
@@ -226,7 +239,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     generator.files.find { case (_, name) => name == fileName } match {
       case Some((id, name)) =>
         logger.info("Request file `{}` {} for generator {}", name, id.toString, generator.id.toString)
-        repository.file.read(id, name)
+        filePersistence.read(id, name)
       case None =>
         logger.error("Could not find '{}' in Generator {}", fileName, generator.id.toString: Any)
         throw new FileNotFoundException(s"Could not find '$fileName' in Generator ${generator.id}")
@@ -242,8 +255,8 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    */
   private def runGeneratorForSingleModel(generatorId: UUID, modelId: UUID): Future[Result] = {
     for {
-      generator <- repository.generator.read(generatorId)
-      model <- repository.modelEntity.read(modelId)
+      generator <- generatorPersistence.read(generatorId)
+      model <- modelEntityPersistence.read(modelId)
       file <- getFile(Settings.generatorFile, generator)
       fn <- getTransformer(file, model)
       end <- executeTransformation(fn, model)

@@ -7,24 +7,23 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.common.models.entity.GeneratorImage
+import com.google.inject.Injector
 import de.htwg.zeta.common.models.frontend.CreateGenerator
 import de.htwg.zeta.common.models.frontend.GeneratorImageNotFoundFailure
 import de.htwg.zeta.common.models.worker.CreateGeneratorJob
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
 
 object GeneratorManager {
   protected val messageReceive = "GeneratorManager - Received CreateGenerator 'imageId: {}'"
   protected val messageImageFound = "GeneratorManager - GeneratorImage found in database '{}'"
   protected val messageImageNotFound = "GeneratorManager - GeneratorImageNotFoundFailure: {}"
 
-  def props(worker: ActorRef, repository: Repository): Props = Props(new GeneratorManager(worker, repository))
+  def props(worker: ActorRef, injector: Injector): Props = Props(new GeneratorManager(worker, injector))
 }
 
-class GeneratorManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
+class GeneratorManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
 
-  private val generatorImageRepo: EntityPersistence[GeneratorImage] = repository.generatorImage
+  private val generatorImageRepo = injector.getInstance(classOf[GeneratorImageRepository])
 
   def createGenerator(create: CreateGenerator): Future[Unit] = {
     val reply = sender

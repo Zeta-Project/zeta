@@ -16,15 +16,15 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -32,7 +32,9 @@ import play.api.mvc.Result
 /**
  * REST-ful API for MetaModel definitions
  */
-class MetaModelRestApi @Inject()() extends Controller with Logging {
+class MetaModelRestApi @Inject()(
+    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository
+) extends Controller with Logging {
 
   /** Lists all MetaModels for the requesting user, provides HATEOAS links.
    *
@@ -40,7 +42,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
    * @return The result
    */
   def showForUser(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = restrictedAccessRepository(request.identity.id).metaModelEntity
+    val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
         MetaModelShortInfo(id = mm.id, name = mm.metaModel.name)
@@ -62,7 +64,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       metaModel => {
-        restrictedAccessRepository(request.identity.id).metaModelEntity.create(
+        metaModelEntityRepo.restrictedTo(request.identity.id).create(
           MetaModelEntity(
             id = UUID.randomUUID(),
             metaModel = metaModel
@@ -89,7 +91,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       metaModel => {
-        val repo = restrictedAccessRepository(request.identity.id).metaModelEntity
+        val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
         repo.update(id, _.copy(metaModel = metaModel)).map { _ =>
           Ok(Json.toJson(metaModel))
         }.recover {
@@ -106,7 +108,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
    * @return result
    */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).metaModelEntity.delete(id).map { _ =>
+    metaModelEntityRepo.restrictedTo(request.identity.id).delete(id).map { _ =>
       Ok("")
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -182,7 +184,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
 
   /** A helper method for less verbose reads from the database */
   private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: MetaModelEntity => Result): Future[Result] = {
-    restrictedAccessRepository(request.identity.id).metaModelEntity.read(id).map { mm =>
+    metaModelEntityRepo.restrictedTo(request.identity.id).read(id).map { mm =>
       trans(mm)
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -197,7 +199,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       shape => {
-        restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
+        metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
           Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
@@ -214,7 +216,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       style => {
-        restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
+        metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
           Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
@@ -231,7 +233,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       diagram => {
-        restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
+        metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
           Ok(Json.toJson(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
@@ -245,7 +247,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     request.body.asText.fold(
       Future.successful(BadRequest("ClassMethodError"))
     ) { code =>
-      restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.classes).using { classes =>
+      metaModelEntityRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.metaModel.classes).using { classes =>
         val clazz = classes.find(_.name == className).get
         val method = clazz.methods.find(_.name == methodName).get
         val updatedMethods = method.copy(code = code) +: clazz.methods.filter(_ != method)
@@ -263,7 +265,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     request.body.asText.fold(
       Future.successful(BadRequest("ReferenceMethodError"))
     ) { code =>
-      restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.references).using { references =>
+      metaModelEntityRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.metaModel.references).using { references =>
         val reference = references.find(_.name == referenceName).get
         val method = reference.methods.find(_.name == methodName).get
         val updatedMethods = method.copy(code = code) +: reference.methods.filter(_ != method)
@@ -281,7 +283,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
     request.body.asText.fold(
       Future.successful(BadRequest("CommonMethodError"))
     ) { code =>
-      restrictedAccessRepository(request.identity.id).metaModelEntity.update(metaModelId, _.modify(_.metaModel.methods).using { methods =>
+      metaModelEntityRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.metaModel.methods).using { methods =>
         val method = methods.find(_.name == methodName).get
         method.copy(code = code) +: methods.filter(_ != method)
       }).map { metaModelEntity =>
@@ -316,7 +318,7 @@ class MetaModelRestApi @Inject()() extends Controller with Logging {
         new ValidatorGenerator(metaModelEntity).generateValidator() match {
           case ValidatorGeneratorResult(false, msg) => if (get) Conflict(msg) else Conflict
           case ValidatorGeneratorResult(_, validator) =>
-            restrictedAccessRepository(request.identity.id).metaModelEntity.update(id, _.copy(validator = Some(validator)))
+            metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.copy(validator = Some(validator)))
             if (get) Created(validator) else Created
         }
 

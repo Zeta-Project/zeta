@@ -1,13 +1,13 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.Json
@@ -19,7 +19,9 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 /**
  * REST-ful API for filter definitions
  */
-class MetaModelReleaseRestApi() extends Controller with Logging {
+class MetaModelReleaseRestApi @Inject()(
+    metaModelReleaseRepo: MetaModelReleaseRepository
+) extends Controller with Logging {
 
   /** Lists all filter.
    *
@@ -27,18 +29,18 @@ class MetaModelReleaseRestApi() extends Controller with Logging {
    * @return The result
    */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = Persistence.fullAccessRepository.metaModelRelease
-    repo.readAllIds().flatMap(getIds(repo)).map(getJsonArray).recover {
+    metaModelReleaseRepo.readAllIds().flatMap(getIds).map(getJsonArray).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
 
-  private def getIds(repo: EntityPersistence[MetaModelRelease])(ids: Set[UUID]) = {
-    val list = ids.toList.map(repo.read)
+  private def getIds(ids: Set[UUID]) = {
+    val list = ids.toList.map(metaModelReleaseRepo.read)
     Future.sequence(list)
   }
 
   private def getJsonArray(list: List[MetaModelRelease]) = {
     Ok(Json.toJson(list))
   }
+
 }

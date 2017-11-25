@@ -1,0 +1,167 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/juicy-ace-editor/juicy-ace-editor.html">
+
+<link rel="import" href="./database/database-document.html">
+
+<dom-module id="app-editor">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      juicy-ace-editor {
+        height: 100%;
+        width: 100%;
+      }
+      iron-icon {
+        float: right;
+      }
+      .flex-horizontal {
+        @apply(--layout-horizontal);
+      }
+      .flexchild {
+        @apply(--layout-flex);
+      }
+      .tools {
+        margin-top: 1em;
+        margin-right: 2em;
+        @apply(--layout-horizontal);
+      }
+      .container {
+        margin-bottom: 1em;
+      }
+      .success {
+        color: #77cb77;
+      }
+    </style>
+
+    <app-route
+        route="[[route]]"
+        pattern="/:type/:project/:mode"
+        data="{{routeData}}"
+        tail="{{attachment}}"></app-route>
+
+    <database-document id="db" auto doc="{{doc}}"
+      rest-single="[[restSingle]]"
+      rest-update="/rest/v1/files/[[docId]]/[[docName]]"></database-document>
+
+    <template is="dom-if" if="{{doc}}">
+      <juicy-ace-editor id="editor"
+        tabsize="2"
+        theme="ace/theme/tomorrow"
+        mode$="{{filetype}}"
+        on-change="_fileChanged"
+        readonly$="{{readonly}}">[[doc.content]]</juicy-ace-editor>
+    </template>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'app-editor',
+
+      properties: {
+        route: Object,
+        routeData: Object,
+        attachment: Object,
+        contentType: String,
+        readonly: {
+          type: Boolean,
+          notify: true
+        },
+        mode: {
+          type: String,
+          notify: true
+        },
+        filetype: {
+          type: String,
+          notify: true
+        },
+        docId: {
+          type: String,
+          computed: '_computeDocId(attachment.path)'
+        },
+        docName: {
+          type: String,
+          computed: '_computeDocName(attachment.path)'
+        },
+        doc: Object,
+        restSingle: {
+          type: String,
+          computed: '_restSingle(docName)'
+        }
+      },
+
+      observers: [
+        '_dbRequest(docId, docName)'
+      ],
+
+      _computeDocId(id) {
+        switch(this.routeData.mode) {
+          case 'file':
+            return id.split('/').slice(1, 2).toString();
+          default:
+            console.warn('Unknown mode:', this.routeData.mode);
+        }
+      },
+      _computeDocName(id) {
+        switch(this.routeData.mode) {
+          case 'file':
+            return this._resolveFilename(id);
+          default:
+            console.warn('Unknown mode:', this.routeData.mode);
+        }
+      },
+
+      _restSingle(id) {
+        return '/rest/v1/files/' + this.docId + '/' + this.docName;
+      },
+
+      _resolveFilename(id) {
+        // remove file id
+        var fileName = id.split('/').slice(2).join('/');
+        // compute the filetype
+        var filetype = fileName.substr(fileName.lastIndexOf('.') + 1);
+        this._setFiletype(filetype);
+        return fileName;
+      },
+
+      _dbRequest(docId, docName) {
+        // Trigger auto db request
+        this.$.db.byId = docId + docName;
+      },
+
+      _modeChanged(mode) {
+        this.readonly = (mode === 'file') ? false : true;
+      },
+
+      _setFiletype(type) {
+        if (['html', 'text', 'scala', 'dockerfile'].indexOf(type) !== -1) {
+          this.filetype = 'ace/mode/' + type;
+          this.contentType = 'file/' + type
+        }
+      },
+
+      _fileChanged(e) {
+        if (this.doc && this.docName && this.contentType) {
+          this._throttleFileUpdate(() => {
+            var content = e.target.editor.getValue();
+            this.$.db.updateDocument(Object.assign({}, this.doc, {content}));
+          }, 500);
+        }
+      },
+
+      _throttleFileUpdate(callback, timeout) {
+        if (this._fileUpdate) {
+          clearTimeout(this._fileUpdate);
+        }
+        this._fileUpdate = setTimeout(() => {
+          callback();
+          this._fileUpdate = null;
+        }, timeout);
+      }
+    });
+  </script>
+</dom-module>

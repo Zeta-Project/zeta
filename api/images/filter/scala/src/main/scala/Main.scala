@@ -9,10 +9,14 @@ import scala.tools.reflect.ToolBox
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.ModelEntityRepository
 import filter.BaseFilter
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
@@ -38,12 +42,15 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  private val repository = Persistence.fullAccessRepository
+  private val injector = Guice.createInjector(new PersistenceModule)
+  private val modelEntityPersistence = injector.getInstance(classOf[ModelEntityRepository])
+  private val filePersistence = injector.getInstance(classOf[FileRepository])
+  private val filterPersistence = injector.getInstance(classOf[FilterRepository])
 
   cmd.filter.foreach({ id =>
     logger.info("Run filter: " + id)
     val result = for {
-      filter <- repository.filter.read(UUID.fromString(id))
+      filter <- filterPersistence.read(UUID.fromString(id))
       file <- getFile("filter.scala", filter)
       fn <- compileFilter(file)
       instances <- checkInstances(fn)
@@ -66,7 +73,7 @@ object Main extends App {
 
   private def getFile(fileName: String, filter: Filter): Future[File] = {
     filter.files.find { case (_, name) => name == fileName } match {
-      case Some((id, name)) => repository.file.read(id, name)
+      case Some((id, name)) => filePersistence.read(id, name)
       case None =>
         logger.error("Could not find '{}' in Generator {}", fileName, filter.id.toString: Any)
         throw new FileNotFoundException(s"Could not find '$fileName' in Generator ${filter.id}")
@@ -100,8 +107,8 @@ object Main extends App {
 
   private def checkInstances(filter: BaseFilter): Future[List[UUID]] = {
     logger.info("Check all models")
-    val allFilterIds = repository.modelEntity.readAllIds()
-    val allFilters = allFilterIds.flatMap(ids => Future.sequence(ids.map(repository.modelEntity.read)) )
+    val allFilterIds = modelEntityPersistence.readAllIds()
+    val allFilters = allFilterIds.flatMap(ids => Future.sequence(ids.map(modelEntityPersistence.read)) )
     allFilters.flatMap(filters => Future.sequence(filters.map(checkInstance(filter, _)))).map(x => x.map(_._1).toList)
 
   }
@@ -123,7 +130,7 @@ object Main extends App {
     } else {
       val newFilter = filter.copy(instanceIds = instances)
       logger.info("Filter need to be saved")
-      repository.filter.update(filter.id, _ => newFilter)
+      filterPersistence.update(filter.id, _ => newFilter)
     }
   }
 

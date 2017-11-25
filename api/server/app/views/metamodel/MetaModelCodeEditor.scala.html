@@ -7,12 +7,23 @@
 }
 @scripts = {
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.js")"></script>
-    @playscalajs.html.selectScript("client", "/assets")
-    <script type="text/javascript">
-        client.Main().main("@id.toString", "@dslType");
-    </script>
 }
 @views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts) {
-    <div id="editor">
+    <div class="container code-editor" data-meta-model-id="@id.toString" data-dsl-type="@dslType">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title editor-title">
+                    <strong>@dslType</strong>
+                    <span class="pull-right">
+                        <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
+                        <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
+                        <span class="js-save btn btn-primary glyphicon glyphicon-floppy-disk" title="Save Document"></span>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body editor-body" style="background-color: gray;">
+                <div class="editor"></div>
+            </div>
+        </div>
     </div>
 }

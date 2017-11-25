@@ -36,7 +36,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
 
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
-      image <- repository.generatorImage.read(imageId)
+      image <- generatorImagePersistence.read(imageId)
       file <- createFile()
       _ <- createGenerator(options, image, file)
     } yield {
@@ -51,13 +51,13 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   private def createFile(): Future[File] = {
     val content = "This is a demo of the remote capabilities which doesn't require a template to configure."
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   private def compiledGenerator(file: File) = {
@@ -95,7 +95,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     Thread.sleep(10000)
     val p = Promise[Result]
 
-    repository.modelEntity.read(options.modelId).map { entity =>
+    modelEntityPersistence.read(options.modelId).map { entity =>
       entity.model.nodeMap.values.foreach { node: Node =>
         if (node.className == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))

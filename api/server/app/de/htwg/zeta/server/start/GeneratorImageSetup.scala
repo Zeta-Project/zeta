@@ -10,26 +10,24 @@ import de.htwg.zeta.common.models.entity.GeneratorImageOptions
 import de.htwg.zeta.common.models.entity.GeneratorMetaModelReleaseProperty
 import de.htwg.zeta.common.models.entity.GeneratorNameProperty
 import de.htwg.zeta.common.models.entity.GeneratorOptionProperties
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import grizzled.slf4j.Logging
 
 
 /**
  * Setup GeneratorImage on database, when no entries exists
  */
-class GeneratorImageSetup(repository: Repository) extends Logging {
+class GeneratorImageSetup(generatorImageRepo: GeneratorImageRepository) extends Logging {
 
-  repository.generatorImage.readAllIds().onComplete {
-    case Success(value) => {
+  generatorImageRepo.readAllIds().onComplete {
+    case Success(value) =>
       if (value.isEmpty) {
         info("Database has no entries for GeneratorImages - adding entries")
-        addEntries(repository.generatorImage)
+        addEntries(generatorImageRepo)
       }
-    }
   }
 
-  private def addEntries(persistence: EntityPersistence[GeneratorImage]) = {
+  private def addEntries(persistence: GeneratorImageRepository) = {
     persistence.create(createBasicImage())
     persistence.create(createSpecificImage())
     persistence.create(createRemoteImage())
@@ -101,5 +99,5 @@ class GeneratorImageSetup(repository: Repository) extends Logging {
 }
 
 object GeneratorImageSetup {
-  def apply(repository: Repository): GeneratorImageSetup = new GeneratorImageSetup(repository)
+  def apply(generatorImageRepo: GeneratorImageRepository): GeneratorImageSetup = new GeneratorImageSetup(generatorImageRepo)
 }

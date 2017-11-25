@@ -8,8 +8,8 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
 import akka.cluster.pubsub.DistributedPubSubMediator.SubscribeAck
-import de.htwg.zeta.server.model.codeEditor.MediatorMessage
-import de.htwg.zeta.server.model.codeEditor.CodeDocManagingActor.SubscribeTo
+import de.htwg.zeta.server.model.MediatorUtils.MediatorMessage
+import de.htwg.zeta.server.model.MediatorUtils.SubscribeTo
 import de.htwg.zeta.server.model.metaModel.MetaModelWsMediatorActor.Publish
 import play.api.Logger
 import play.api.libs.json.JsValue

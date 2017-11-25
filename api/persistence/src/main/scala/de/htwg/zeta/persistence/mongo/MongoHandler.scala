@@ -64,16 +64,15 @@ import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
 import reactivemongo.bson.BSONDocumentWriter
 import reactivemongo.bson.BSONDouble
+import reactivemongo.bson.BSONHandler
 import reactivemongo.bson.BSONInteger
-import reactivemongo.bson.BSONReader
 import reactivemongo.bson.BSONString
-import reactivemongo.bson.BSONWriter
 import reactivemongo.bson.Macros
 
-
+@SuppressWarnings(Array("org.wartremover.warts.OptionPartial", "org.wartremover.warts.Var", "org.wartremover.warts.TryPartial", "org.wartremover.warts.Throw"))
 object MongoHandler {
 
-  implicit object IdHandler extends BSONReader[BSONString, UUID] with BSONWriter[UUID, BSONString] {
+  implicit object UuidHandler extends BSONHandler[BSONString, UUID] {
 
     def read(doc: BSONString): UUID = {
       UUID.fromString(doc.value)
@@ -85,34 +84,18 @@ object MongoHandler {
 
   }
 
-  case class IdOnlyEntity(id: UUID)
-
-  implicit val idOnlyEntityHandler: BSONDocumentHandler[IdOnlyEntity] = Macros.handler[IdOnlyEntity]
-
   case class FileKey(id: UUID, name: String)
 
   implicit val fileKeyHandler: BSONDocumentHandler[FileKey] = Macros.handler[FileKey]
 
-  case class UserIdOnlyEntity(userId: UUID)
-
-  implicit val userIdOnlyEntityHandler: BSONDocumentHandler[UserIdOnlyEntity] = Macros.handler[UserIdOnlyEntity]
-
-  case class LoginInfoWrapper(loginInfo: LoginInfo)
-
-  implicit val loginInfoWrapperHandler: BSONDocumentHandler[LoginInfoWrapper] = Macros.handler[LoginInfoWrapper]
-
-  case class PasswordInfoWrapper(authInfo: PasswordInfo)
-
-  implicit val passwordInfoWrapperHandler: BSONDocumentHandler[PasswordInfoWrapper] = Macros.handler[PasswordInfoWrapper]
-
   private val uuidSetHandler = new {
 
     def read(doc: BSONArray): Set[UUID] = {
-      doc.values.map { case s: BSONString => IdHandler.read(s) }.toSet
+      doc.values.map { case s: BSONString => UuidHandler.read(s) }.toSet
     }
 
     def write(set: Set[UUID]): BSONArray = {
-      BSONArray(set.map(IdHandler.write).toList)
+      BSONArray(set.map(UuidHandler.write).toList)
     }
 
   }
@@ -284,8 +267,44 @@ object MongoHandler {
 
   implicit val fileHandler: BSONDocumentHandler[File] = Macros.handler[File]
 
-  implicit val loginInfoHandler: BSONDocumentHandler[LoginInfo] = Macros.handler[LoginInfo]
 
-  implicit val passwordInfoHandler: BSONDocumentHandler[PasswordInfo] = Macros.handler[PasswordInfo]
+  implicit val loginInfoWriter: BSONDocumentWriter[LoginInfo] = Macros.writer[LoginInfo]
+
+  implicit val loginInfoReader: BSONDocumentReader[LoginInfo] = new BSONDocumentReader[LoginInfo] {
+    override def read(doc: BSONDocument): LoginInfo = {
+      val subDoc = doc.getAs[BSONDocument]("loginInfo").getOrElse(doc)
+      LoginInfo(
+        providerID = subDoc.getAs[String]("providerID").getOrElse(
+          throw new IllegalArgumentException("Reading LoginInfo from MongoDB failed, missing field providerID")
+        ),
+        providerKey = subDoc.getAs[String]("providerKey").getOrElse(
+          throw new IllegalArgumentException("Reading LoginInfo from MongoDB failed, missing field providerKey")
+        )
+      )
+    }
+  }
+
+  implicit val passwordInfoWriter: BSONDocumentWriter[PasswordInfo] = Macros.writer[PasswordInfo]
+
+  implicit val passwordInfoReader: BSONDocumentReader[PasswordInfo] = new BSONDocumentReader[PasswordInfo] {
+    override def read(doc: BSONDocument): PasswordInfo = {
+
+      val subDoc = doc.getAs[BSONDocument]("passwordInfo").getOrElse(
+        doc.getAs[BSONDocument]("authInfo").getOrElse( // fallback for old implementation
+          throw new IllegalArgumentException("Reading PasswordInfo from MongoDB failed, missing field passwordInfo")
+        )
+      )
+
+      PasswordInfo(
+        hasher = subDoc.getAs[String]("hasher").getOrElse(
+          throw new IllegalArgumentException("Reading PasswordInfo from MongoDB failed, missing field hasher")
+        ),
+        password = subDoc.getAs[String]("password").getOrElse(
+          throw new IllegalArgumentException("Reading PasswordInfo from MongoDB failed, missing field password")
+        ),
+        salt = subDoc.getAs[String]("salt")
+      )
+    }
+  }
 
 }

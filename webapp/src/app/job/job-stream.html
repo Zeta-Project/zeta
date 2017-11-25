@@ -1,0 +1,69 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/web-socket/web-socket.html">
+<link rel="import" href="../../../bower_components/iron-signals/iron-signals.html">
+
+<link rel="import" href="./job-output.html">
+
+<dom-module id="job-stream">
+  <template>
+    <style>
+      .yellow-button {
+        text-transform: none;
+        color: #eeff41;
+      }
+    </style>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{data}}"
+        tail="{{subroute}}"></app-route>
+
+    <app-route
+        route="{{subroute}}"
+        pattern="/:type"
+        data="{{editor}}">
+    </app-route>
+
+    <job-output log="[[log]]" opened="{{opened}}"></job-output>
+
+    <iron-signals id="signal" on-iron-signal-job-log="_received" on-iron-signal-job-info-list="_jobInfoList"></iron-signals>
+  </template>
+  <script>
+    Polymer({
+      is: 'job-stream',
+
+      properties: {
+        opened: {
+          notify: true
+        },
+        jobs: {
+          type: Array,
+          value: []
+        },
+        log: {
+          type: Array,
+          value: [],
+          notify: true
+        },
+        page: String,
+        route: {
+          type: Object,
+          notify: true
+        }
+      },
+
+      _jobInfoList(e) {
+        this.jobs = e.detail.jobs;
+      },
+
+      _received(e) {
+        this.opened = true;
+        for (var i = 0; i < e.detail.messages.length; i++) {
+          if (e.detail.messages[i].message === '\n') continue;
+          this.push('log', e.detail.messages[i]);
+        }
+      }
+    });
+  </script>
+</dom-module>

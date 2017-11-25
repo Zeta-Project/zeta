@@ -3,9 +3,9 @@ package de.htwg.zeta.generatorControl.actors.worker
 import java.nio.charset.Charset
 import java.util.UUID
 
-import scala.collection.mutable
 import scala.collection.JavaConversions.asScalaIterator
 import scala.collection.JavaConversions.seqAsJavaList
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -17,6 +17,7 @@ import akka.actor.ActorRef
 import akka.actor.Props
 import akka.event.LoggingAdapter
 import akka.stream.ActorMaterializer
+import com.google.inject.Guice
 import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.DockerClient
 import com.spotify.docker.client.DockerClient.AttachParameter
@@ -32,8 +33,9 @@ import de.htwg.zeta.common.models.frontend.JobLog
 import de.htwg.zeta.common.models.frontend.JobLogMessage
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.CancelWork
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.Work
-import de.htwg.zeta.persistence.Persistence.restrictedAccessRepository
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
+import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
 import org.joda.time.DateTime
 import play.api.libs.ws.ahc.AhcWSClient
 
@@ -110,7 +112,11 @@ private class WorkProcessor(
   ) {
 
   log.info(DockerWorkExecutor.messageReceivedJob, work.id)
-  private val documents: Repository = restrictedAccessRepository(work.owner)
+
+  private val injector = Guice.createInjector(new PersistenceModule)
+  private val logPersistence = injector.getInstance(classOf[AccessRestrictedLogRepository]).restrictedTo(work.owner)
+  private val metaModelReleasePersistence = injector.getInstance(classOf[MetaModelReleaseRepository])
+
   private var jobStream = JobLog(job = work.id)
   private var jobPersist = JobLog(job = work.id)
 
@@ -295,7 +301,7 @@ private class WorkProcessor(
 
     val logs = Log(UUID.randomUUID, task.toString, "Log" + task, status, now)
 
-    documents.log.create(logs).map {
+    logPersistence.create(logs).map {
       _ => p.success(status)
     }.recover {
       case e: Exception =>
