@@ -4,6 +4,8 @@ import $ from 'jquery';
 import _ from 'lodash';
 import './rappid';
 
+import linkTypeSelector from './meta-model/ext/linkTypeSelector';
+
 import './jointjs/wireframe.css';
 import './css/layout.css';
 import './css/paper.css';
