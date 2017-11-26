@@ -7,9 +7,9 @@ import grizzled.slf4j.Logging
  */
 trait StyleParser extends CommonParserMethods with Logging {
 
-  def parseStyle(input: String): ParseResult[StyleParseModel] = parse(style, trimRight(input))
+  def parseStyles(input: String): ParseResult[List[StyleParseModel]] = parse(styles, trimRight(input))
 
   private def trimRight(s: String): String = s.replaceAll("\\/\\/.+", "").split("\n").map(s => s.trim + "\n").mkString
 
-  protected def style: Parser[StyleParseModel]
+  protected def styles: Parser[List[StyleParseModel]]
 }

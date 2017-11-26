@@ -8,6 +8,9 @@ import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
 import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 import javafx.scene.paint.Color
 
+import scala.annotation.tailrec
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 
@@ -18,7 +21,79 @@ class StyleParserImpl extends StyleParser {
   private val eq = literal("=")
   private val comma = literal(",")
 
-  override def style: Parser[StyleParseModel] = {
+  override def styles: Parser[List[StyleParseModel]] = {
+    rep1(style).flatMap { styles =>
+      Parser { in =>
+        checkStyleRuleViolations(styles) match {
+          case Nil => Success(styles, in)
+          case styleRuleViolations => failureStyleRuleViolations(styleRuleViolations, in)
+        }
+      }
+    }
+  }
+
+  private def checkStyleRuleViolations(styles: List[StyleParseModel]): List[String] = {
+    val checks = List[List[StyleParseModel] => List[String]](
+      findStyleDuplicates,
+      findUndefinedParents,
+      findGraphCycles
+    )
+    checks.flatMap(_.apply(styles))
+  }
+
+  private def findStyleDuplicates(styles: List[StyleParseModel]): List[String] = {
+    val styleNames = styles.map(_.name)
+    val duplicates = styleNames.diff(styleNames.distinct)
+    duplicates.map(styleName => s"Style '$styleName' is defined multiple times (which is forbidden)")
+  }
+
+  private def findUndefinedParents(styles: List[StyleParseModel]): List[String] = {
+    val definedStyles = styles.map(_.name)
+    styles.flatMap(style => {
+      style.parentStyles.filter(parentStyle => !definedStyles.contains(parentStyle))
+        .map(undefinedStyle => s"Style '${style.name}' extends unknown style '$undefinedStyle'")
+    })
+  }
+
+  private def findGraphCycles(styles: List[StyleParseModel]): List[String] = {
+    styles.flatMap(style => {
+      val cycles = findGraphCycles(Some(style), List(), Set(), Set())(styles)
+      if (cycles.isEmpty) {
+        None
+      } else {
+        Some("Found cycles in inheritance graph"+ cycles.mkString(","))
+      }
+    })
+  }
+
+  @tailrec
+  private def findGraphCycles(maybeStyle: Option[StyleParseModel], nextStyles: List[StyleParseModel],
+                              visited: Set[String], cycles: Set[String])(allStyles: List[StyleParseModel]): Set[String] = {
+    if (maybeStyle.isEmpty) {
+      cycles
+    } else {
+      val style = maybeStyle.get
+      if (visited.contains(style.name)) {
+        findGraphCycles(nextStyles.headOption, nextStyles.drop(1), visited, cycles + style.name)(allStyles)
+      } else {
+        val parentStyles = getParentStyles(style, allStyles)
+        findGraphCycles(parentStyles.headOption, parentStyles.drop(1) ::: nextStyles, visited + style.name, cycles)(allStyles)
+      }
+    }
+  }
+
+  private def getParentStyles(style: StyleParseModel, allStyles: List[StyleParseModel]): List[StyleParseModel] = {
+    style.parentStyles.map { parentStyleName =>
+      allStyles.find(_.name == parentStyleName)
+    }.collect {
+      case Some(parent) => parent
+    }
+  }
+
+  private def failureStyleRuleViolations(inheritanceRuleViolations: List[String], in: Input) = Failure(
+      s"The specified styles violate the inheritance rules: '${inheritanceRuleViolations.mkString(", ")}'", in)
+
+  private def style: Parser[StyleParseModel] = {
     name ~ opt(parentStyles) ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
       val name ~ parentStyles ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
       StyleParseModel(
@@ -35,7 +110,7 @@ class StyleParserImpl extends StyleParser {
       | fontBold | fontItalic | gradientOrientation | gradientAreaColor | gradientAreaOffset)
       .flatMap { attributes =>
         Parser { in =>
-          findDuplicates(attributes) match {
+          findAttributeDuplicates(attributes) match {
             case Nil => Success(attributes, in)
             case duplicateAttributes => failureDuplicateAttributes(duplicateAttributes, in)
           }
@@ -43,7 +118,7 @@ class StyleParserImpl extends StyleParser {
       }
   }
 
-  def findDuplicates(attributeList: List[StyleAttribute]): List[String] = {
+  def findAttributeDuplicates(attributeList: List[StyleAttribute]): List[String] = {
     val duplicates = attributeList.groupBy(_.attributeName).collect {
       case (attributeName, attributes) if attributes.size > 1 => attributeName
     }
@@ -51,9 +126,9 @@ class StyleParserImpl extends StyleParser {
   }
 
   private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure(
-    """
-     |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
-     |'${duplicates.mkString(", ")}'
+    s"""
+      |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
+      |'${duplicates.mkString(", ")}'
     """.stripMargin, in)
 
   private def name = literal("style") ~> ident
@@ -102,8 +177,11 @@ object StyleParserImpl {
       s"$r$g$b"
     }
   }
+
   private case class ColorOrGradientImpl(color: Color) extends ColorOrGradient with ColorToRBGColor
+
   private case class ColorWithTransparencyImpl(color: Color) extends ColorWithTransparency with ColorToRBGColor
+
   private case class ColorImpl(color: Color) extends OldColor with ColorToRBGColor
 
   def convert(styleParseModel: StyleParseModel): Style = {
@@ -114,8 +192,8 @@ object StyleParserImpl {
 
     def collectAttribute[T: ClassTag]: CollectAttributeWrapper[T] = {
       val attribute = styleParseModel.attributes.collectFirst {
-          case t: T => t
-        }
+        case t: T => t
+      }
       new CollectAttributeWrapper(attribute)
     }
 

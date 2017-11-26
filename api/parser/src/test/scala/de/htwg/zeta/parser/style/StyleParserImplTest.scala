@@ -4,6 +4,7 @@ import javafx.scene.paint.Color
 
 import org.scalatest.{FlatSpec, Matchers}
 
+
 class StyleParserImplTest extends FlatSpec with Matchers {
 
   val parserToTest: StyleParserImpl = new StyleParserImpl
@@ -52,15 +53,26 @@ class StyleParserImplTest extends FlatSpec with Matchers {
 
   val styleWithSingleParentStyle =
     """
-      |style MyStyle extends ParentStyle {
+      |style ParentStyle { description = "Parent style" }
+      |style ChildStyle extends ParentStyle {
       |  description = "Style which extends a single parent style"
       |}
     """.stripMargin
 
   val styleWithMultipleParentStyles =
     """
+      |style ParentStyle1 { description = "Parent Style1" }
+      |style ParentStyle2 { description = "Parent Style2" }
+      |style ParentStyle3 { description = "Parent Style3" }
       |style MyStyle extends ParentStyle1, ParentStyle2, ParentStyle3 {
       |  description = "Style which extends multiple parent styles"
+      |}
+    """.stripMargin
+
+  val styleWithUndefinedParentStyle =
+    """
+      |style MyStyle extends NoSuchParentStyleDefined {
+      |  description = "Style with extends an undefined parent style"
       |}
     """.stripMargin
 
@@ -68,6 +80,13 @@ class StyleParserImplTest extends FlatSpec with Matchers {
     """
       |style MyStyle extends {
       |  description = "This style uses the 'extends' keyword but does not specify a parent style"
+      |}
+    """.stripMargin
+
+  val styleWhichExtendsItself =
+    """
+      |style MyStyle extends MyStyle {
+      |  description = "This style extends itself which is forbidden"
       |}
     """.stripMargin
 
@@ -120,10 +139,46 @@ class StyleParserImplTest extends FlatSpec with Matchers {
       |}
     """.stripMargin
 
+  val trivialCycle: String =
+    """
+      | style A extends B { description = "" }
+      | style B extends A { description = "" }
+    """.stripMargin
+
+  val triangleCycle: String =
+    """
+      | style A extends B { description = "" }
+      | style B extends C { description = "" }
+      | style C extends A { description = "" }
+    """.stripMargin
+
+  val acyclicGraph: String =
+    """
+      | style Parent { description = "" }
+      | style A extends Parent { description = "" }
+      | style B extends Parent { description = "" }
+    """.stripMargin
+
+  val diamondGraph: String =
+    """
+      | style A { description = "" }
+      | style B1 extends A { description = "" }
+      | style B2 extends A { description = "" }
+      | style C extends B1, B2 { description = "" }
+    """.stripMargin
+
+  val diamondGraphWithCycles: String =
+    """
+      | style A  extends C { description = "" }
+      | style B1 extends A { description = "" }
+      | style B2 extends A { description = "" }
+      | style C extends B1, B2 { description = "" }
+    """.stripMargin
+
   "A StyleParser" should "succeed" in {
-    val styleParser = parserToTest.parseStyle(styleToTestSuccess)
+    val styleParser = parserToTest.parseStyles(styleToTestSuccess)
     assert(styleParser.successful)
-    val style: StyleParseModel = styleParser.get
+    val style: StyleParseModel = styleParser.get.head
 
     assert(style.name == "Y")
     assert(style.description == "\"Style for a connection between an interface and its implementing class\"")
@@ -176,7 +231,7 @@ class StyleParserImplTest extends FlatSpec with Matchers {
       LineColor(Color.RED),
       LineStyle("dash")
     )
-    val duplicates = parserToTest.findDuplicates(attributes)
+    val duplicates = parserToTest.findAttributeDuplicates(attributes)
     assert(duplicates.size == 2)
     assert(duplicates.contains("line-color"))
     assert(duplicates.contains("line-style"))
@@ -189,7 +244,7 @@ class StyleParserImplTest extends FlatSpec with Matchers {
       LineWidth(12),
       LineWidth(16)
     )
-    val duplicates = parserToTest.findDuplicates(attributes)
+    val duplicates = parserToTest.findAttributeDuplicates(attributes)
     assert(duplicates.size == 1)
     assert(duplicates.head.equals("line-width"))
   }
@@ -200,62 +255,104 @@ class StyleParserImplTest extends FlatSpec with Matchers {
       LineWidth(12),
       LineStyle("solid")
     )
-    val duplicates = parserToTest.findDuplicates(attributes)
+    val duplicates = parserToTest.findAttributeDuplicates(attributes)
     assert(duplicates.isEmpty)
   }
 
   "A StyleParser" should "succeed if a style has no parent style" in {
-    val parseResult = parserToTest.parseStyle(styleWithoutParentStyle)
+    val parseResult = parserToTest.parseStyles(styleWithoutParentStyle)
     assert(parseResult.successful)
-    val styleParseModel = parseResult.get
+    val styleParseModel = parseResult.get.head
     assert(styleParseModel.parentStyles.isEmpty)
   }
 
   "A StyleParser" should "succeed if a style has a single parent style" in {
-    val parseResult = parserToTest.parseStyle(styleWithSingleParentStyle)
+    val parseResult = parserToTest.parseStyles(styleWithSingleParentStyle)
     assert(parseResult.successful)
-    val styleParseModel = parseResult.get
-    assert(styleParseModel.parentStyles.size == 1)
-    assert(styleParseModel.parentStyles.head.equals("ParentStyle"))
+
+    val parentStyle = parseResult.get.head
+    parentStyle.parentStyles shouldBe empty
+
+    val childStyle = parseResult.get(1)
+    childStyle.parentStyles.length shouldBe 1
+    childStyle.parentStyles.head shouldBe "ParentStyle"
   }
 
   "A StyleParser" should "succeed if a style has multiple parent styles" in {
-    val parseResult = parserToTest.parseStyle(styleWithMultipleParentStyles)
-    assert(parseResult.successful)
-    val styleParseModel = parseResult.get
-    assert(styleParseModel.parentStyles.size == 3)
-    assert(styleParseModel.parentStyles.head.equals("ParentStyle1"))
-    assert(styleParseModel.parentStyles(1).equals("ParentStyle2"))
-    assert(styleParseModel.parentStyles(2).equals("ParentStyle3"))
+    val parseResult = parserToTest.parseStyles(styleWithMultipleParentStyles)
+    parseResult.successful shouldBe true
+    val parentStyle1 = parseResult.get.head
+    val parentStyle2 = parseResult.get(1)
+    val parentStyle3 = parseResult.get(2)
+    val childStyle = parseResult.get(3)
+    childStyle.parentStyles.size shouldBe 3
+    childStyle.parentStyles.head shouldBe "ParentStyle1"
+    childStyle.parentStyles(1) shouldBe "ParentStyle2"
+    childStyle.parentStyles(2) shouldBe "ParentStyle3"
+  }
+
+  "A StyleParser" should "fail if a parent style is undefined" in {
+    val parseResult = parserToTest.parseStyles(styleWithUndefinedParentStyle)
+    parseResult.successful shouldBe false
+  }
+
+  "A StyleParser" should "fail if a style extends itself" in {
+    val parseResult = parserToTest.parseStyles(styleWhichExtendsItself)
+    parseResult.successful shouldBe false
   }
 
   "A StyleParser" should "fail if a style specifies an invalid style extension" in {
-    val parseResult = parserToTest.parseStyle(styleWithInvalidParentStyle)
-    assert(!parseResult.successful)
+    val parseResult = parserToTest.parseStyles(styleWithInvalidParentStyle)
+    parseResult.successful shouldBe false
+  }
+
+  "A StyleParser" should "find cycles in a trivial cycle graph" in {
+    val parseResult = parserToTest.parseStyles(trivialCycle)
+    parseResult.successful shouldBe false
+  }
+
+  "A StyleParser" should "find cycles in a triangle cycle graph" in {
+    val parseResult = parserToTest.parseStyles(triangleCycle)
+    parseResult.successful shouldBe false
+  }
+
+  "A StyleParser" should "find no cycles in an acyclic graph" in {
+    val parseResult = parserToTest.parseStyles(acyclicGraph)
+    parseResult.successful shouldBe true
+  }
+
+  "A StyleParser" should "find no cycles in a diamond graph" in {
+    val parseResult = parserToTest.parseStyles(diamondGraph)
+    parseResult.successful shouldBe true
+  }
+
+  "A StyleParser" should "find cycles in a diamond graph with cycles" in {
+    val parseResult = parserToTest.parseStyles(diamondGraphWithCycles)
+    parseResult.successful shouldBe false
   }
 
   "A StyleParser" should "fail without a description" in {
-    val styleParser = parserToTest.parseStyle(styleWithoutDescription)
+    val styleParser = parserToTest.parseStyles(styleWithoutDescription)
     assert(!styleParser.successful)
   }
 
   "A StyleParser" should "fail without Braces" in {
-    val styleParser = parserToTest.parseStyle(styleWithoutBraces)
+    val styleParser = parserToTest.parseStyles(styleWithoutBraces)
     assert(!styleParser.successful)
   }
 
   "A StyleParser" should "fail with duplicate Attributes" in {
-    val styleParser = parserToTest.parseStyle(styleWithDuplicateAttributes)
+    val styleParser = parserToTest.parseStyles(styleWithDuplicateAttributes)
     assert(!styleParser.successful)
   }
 
   "A StyleParser" should "succeed if colors defined as gradients" in {
-    val styleParser = parserToTest.parseStyle(styleWithGradientColors)
+    val styleParser = parserToTest.parseStyles(styleWithGradientColors)
     assert(styleParser.successful)
   }
 
   "A StyleParser" should "fail if an invalid color is specified" in {
-    val styleParser = parserToTest.parseStyle(styleWithInvalidColor)
+    val styleParser = parserToTest.parseStyles(styleWithInvalidColor)
     styleParser.successful shouldBe false
   }
 }

@@ -32,9 +32,9 @@ class StyleParserConverterTest extends FlatSpec with Matchers {
 
   "A converter" should "build a style" in {
 
-    val styleParser = parserToTest.parseStyle(styleToTestSuccess)
+    val styleParser = parserToTest.parseStyles(styleToTestSuccess)
     styleParser.successful shouldBe true
-    val style: StyleParseModel = styleParser.get
+    val style: StyleParseModel = styleParser.get.head
     val deprecatedStyle: Style = StyleParserImpl.convert(style)
 
     deprecatedStyle.description shouldBe Some("\"Style for a connection between an interface and its implementing class\"")
