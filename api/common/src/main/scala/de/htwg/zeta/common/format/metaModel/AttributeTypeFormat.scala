@@ -38,12 +38,6 @@ object AttributeTypeFormat extends Writes[AttributeType] {
   private val sBoolean = "boolean"
   private val sUnit = "unit"
 
-
-  val writeMEnum: Writes[MEnum] = Json.format[MEnum]
-
-  val readMEnum: Reads[MEnum] = Json.format[MEnum]
-
-
   override def writes(typ: AttributeType): JsValue = {
     typ match {
       case StringType => JsString(StringType.asString)

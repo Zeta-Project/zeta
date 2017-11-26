@@ -11,9 +11,7 @@ import de.htwg.zeta.common.format.metaModel.MClassFormat.sName
 import de.htwg.zeta.common.format.metaModel.MClassFormat.sOutputs
 import de.htwg.zeta.common.format.metaModel.MClassFormat.sSuperTypeNames
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
@@ -41,8 +39,8 @@ object MClassFormat extends OWrites[MClass] {
     sSuperTypeNames -> clazz.superTypeNames,
     sInputs -> JsArray(clazz.inputs.map(MReferenceLinkDefFormat.writes)),
     sOutputs -> JsArray(clazz.outputs.map(MReferenceLinkDefFormat.writes)),
-    sAttributes -> null, // TODO
-    sMethods -> null // TODO
+    sAttributes -> JsArray(clazz.attributes.map(MAttributeFormat.writes)),
+    sMethods -> JsArray(clazz.methods.map(MethodFormat.writes))
   )
 
 }
@@ -57,8 +55,8 @@ case class MClassFormat(enums: Seq[MEnum]) extends Reads[MClass] {
       superTypeNames <- (json \ sSuperTypeNames).validate(Reads.list[String])
       inputs <- (json \ sInputs).validate(Reads.list[MReferenceLinkDef])
       outputs <- (json \ sOutputs).validate(Reads.list[MReferenceLinkDef])
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttribute.playJsonReads(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(Method.playJsonReads(enums)))
+      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat(enums)))
+      methods <- (json \ sMethods).validate(Reads.list(MethodFormat(enums)))
     } yield {
       MClass(
         name = name,

@@ -18,10 +18,10 @@ object MetaModelFormat {
     for {
       name <- (json \ sName).validate[String]
       enums <- (json \ "enums").validate(Reads.list(MEnumFormat))
-      classes <- (json \ "classes").validate(Reads.list(MClass.playJsonReads(enums)))
-      references <- (json \ "references").validate(Reads.list(MReference.playJsonReads(enums)))
-      attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
-      methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
+      classes <- (json \ "classes").validate(Reads.list(MClassFormat(enums)))
+      references <- (json \ "references").validate(Reads.list(MReferenceFormat(enums)))
+      attributes <- (json \ "attributes").validate(Reads.list(MAttributeFormat(enums)))
+      methods <- (json \ "methods").validate(Reads.list(MethodFormat(enums)))
       uiState <- (json \ "uiState").validate[String]
     } yield {
       MetaModel(
