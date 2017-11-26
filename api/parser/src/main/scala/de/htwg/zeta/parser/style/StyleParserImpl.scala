@@ -8,6 +8,8 @@ import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
 import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 import javafx.scene.paint.Color
 
+import scala.reflect.ClassTag
+
 
 class StyleParserImpl extends StyleParser {
 
@@ -107,30 +109,30 @@ object StyleParserImpl {
   def convert(styleParseModel: StyleParseModel): Style = {
 
     class CollectAttributeWrapper[T](val t: Option[T]) {
-      def apply[R](func: T => R): Option[R] = t.map(func)
+      def map[R](func: T => R): Option[R] = t.map(func)
     }
 
-    def collectAttribute[T]: CollectAttributeWrapper[T] = {
-      new CollectAttributeWrapper(
-        styleParseModel.attributes.collectFirst {
+    def collectAttribute[T: ClassTag]: CollectAttributeWrapper[T] = {
+      val attribute = styleParseModel.attributes.collectFirst {
           case t: T => t
-        })
+        }
+      new CollectAttributeWrapper(attribute)
     }
 
     new Style(
       name = styleParseModel.name,
       description = Some(styleParseModel.description),
-      transparency = collectAttribute[Transparency](_.transparency),
-      background_color = collectAttribute[BackgroundColor](bg => ColorOrGradientImpl(bg.color)),
-      line_color = collectAttribute[LineColor](lc => ColorWithTransparencyImpl(lc.color)),
-      line_style = collectAttribute[LineStyle](_.style).flatMap(OldLineStyle.getIfValid),
-      line_width = collectAttribute[LineWidth](_.width),
-      font_color = collectAttribute[FontColor](fc => ColorImpl(fc.color)),
-      font_name = collectAttribute[FontName](_.name),
-      font_size = collectAttribute[FontSize](_.size),
-      font_bold = collectAttribute[FontBold](_.bold),
-      font_italic = collectAttribute[FontItalic](_.italic),
-      gradient_orientation = collectAttribute[GradientOrientation](_.orientation).flatMap(GradientAlignment.ifValid),
+      transparency = collectAttribute[Transparency].map(_.transparency),
+      background_color = collectAttribute[BackgroundColor].map(bg => ColorOrGradientImpl(bg.color)),
+      line_color = collectAttribute[LineColor].map(lc => ColorWithTransparencyImpl(lc.color)),
+      line_style = collectAttribute[LineStyle].map(_.style).flatMap(OldLineStyle.getIfValid),
+      line_width = collectAttribute[LineWidth].map(_.width),
+      font_color = collectAttribute[FontColor].map(fc => ColorImpl(fc.color)),
+      font_name = collectAttribute[FontName].map(_.name),
+      font_size = collectAttribute[FontSize].map(_.size),
+      font_bold = collectAttribute[FontBold].map(_.bold),
+      font_italic = collectAttribute[FontItalic].map(_.italic),
+      gradient_orientation = collectAttribute[GradientOrientation].map(_.orientation).flatMap(GradientAlignment.ifValid),
       selected_highlighting = None,
       multiselected_highlighting = None,
       allowed_highlighting = None,
