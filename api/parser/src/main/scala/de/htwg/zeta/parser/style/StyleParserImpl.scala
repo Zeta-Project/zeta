@@ -1,16 +1,12 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.model.style.Style
-import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
-import de.htwg.zeta.server.generator.model.style.color.{Color => OldColor}
-import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
-import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
-import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 import javafx.scene.paint.Color
 
+import de.htwg.zeta.server.generator.model.style.color.{ColorOrGradient, ColorWithTransparency, Color => OldColor}
+import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
+import de.htwg.zeta.server.generator.model.style.{Style, LineStyle => OldLineStyle}
+
 import scala.annotation.tailrec
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 import scala.reflect.ClassTag
 
 
