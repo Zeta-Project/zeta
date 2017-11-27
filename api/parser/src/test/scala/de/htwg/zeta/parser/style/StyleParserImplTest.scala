@@ -145,6 +145,19 @@ class StyleParserImplTest extends FlatSpec with Matchers {
       | style B extends A { description = "" }
     """.stripMargin
 
+  val selfCycleIn2ndParent: String =
+    """
+     | style A { description = "" }
+     | style B extends A, B { description = "" }
+    """.stripMargin
+
+  val trivialCycleIn2ndParent: String =
+    """
+     | style A { description = "" }
+     | style B extends A, C { description = "" }
+     | style C extends A, B { description = "" }
+    """.stripMargin
+
   val triangleCycle: String =
     """
       | style A extends B { description = "" }
@@ -308,6 +321,16 @@ class StyleParserImplTest extends FlatSpec with Matchers {
 
   "A StyleParser" should "find cycles in a trivial cycle graph" in {
     val parseResult = parserToTest.parseStyles(trivialCycle)
+    parseResult.successful shouldBe false
+  }
+
+  "A StyleParser" should "find self cycle in a style that has a leading legal parent" in {
+    val parseResult = parserToTest.parseStyles(selfCycleIn2ndParent)
+    parseResult.successful shouldBe false
+  }
+
+  "A StyleParser" should "find cycles in a trivial cycle graph when there is a leading legal parent" in {
+    val parseResult = parserToTest.parseStyles(trivialCycleIn2ndParent)
     parseResult.successful shouldBe false
   }
 
