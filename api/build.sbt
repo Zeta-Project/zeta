@@ -1,6 +1,9 @@
 name := "zeta-api"
 version := "1.0.0"
 
+// Move into project server on startup
+onLoad in Global := (onLoad in Global).value.andThen(state => Command.process("project server", state))
+
 lazy val akkaVersion = "2.4.18"
 lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
