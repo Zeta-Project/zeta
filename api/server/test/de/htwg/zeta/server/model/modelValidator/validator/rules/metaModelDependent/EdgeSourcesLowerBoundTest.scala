@@ -40,13 +40,13 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
 
     val twoSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoSourceNodes = emptyEdge.copy(source = Seq(twoSourceNodes))
+    val edgeTwoSourceNodes = emptyEdge.copy(sourceNodeName = Seq(twoSourceNodes))
 
     rule.isValid(edgeTwoSourceNodes).get should be(true)
 
     val threeSourceNodes = NodeLink(className = sourceType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeSourceNodes = emptyEdge.copy(source = Seq(threeSourceNodes))
+    val edgeThreeSourceNodes = emptyEdge.copy(sourceNodeName = Seq(threeSourceNodes))
 
     rule.isValid(edgeThreeSourceNodes).get should be(true)
   }
@@ -65,7 +65,7 @@ class EdgeSourcesLowerBoundTest extends FlatSpec with Matchers {
 
     val oneSourceNode = NodeLink(className = sourceType.name, nodeNames = Seq(""))
 
-    val edgeOneSourceNode = emptyEdge.copy(source = Seq(oneSourceNode))
+    val edgeOneSourceNode = emptyEdge.copy(sourceNodeName = Seq(oneSourceNode))
 
     rule.isValid(edgeOneSourceNode).get should be(false)
 

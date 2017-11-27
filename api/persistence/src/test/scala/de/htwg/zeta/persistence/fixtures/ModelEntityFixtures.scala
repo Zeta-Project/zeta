@@ -33,19 +33,19 @@ object ModelEntityFixtures {
 
   val toEdges1 = EdgeLink(
     referenceName = MetaModelEntityFixtures.reference1.name,
-    edgeNames = Seq(edgeId1)
+    edgeName = Seq(edgeId1)
   )
 
   val toEdges2 = EdgeLink(
     referenceName = MetaModelEntityFixtures.reference2.name,
-    edgeNames = Seq(edgeId2)
+    edgeName = Seq(edgeId2)
   )
 
   val node1 = Node(
     name = "node1",
     className = MetaModelEntityFixtures.class1.name,
-    outputs = Seq(toEdges1, toEdges2),
-    inputs = Seq.empty,
+    outputEdgeNames = Seq(toEdges1, toEdges2),
+    inputEdgeNames = Seq.empty,
     attributes = Seq.empty,
     attributeValues = Map("attribute1" -> Seq(IntValue(1))),
     methods = Seq.empty
@@ -54,8 +54,8 @@ object ModelEntityFixtures {
   val node2 = Node(
     name = "node2",
     className = MetaModelEntityFixtures.class2.name,
-    outputs = Seq.empty,
-    inputs = Seq(toEdges1, toEdges2),
+    outputEdgeNames = Seq.empty,
+    inputEdgeNames = Seq(toEdges1, toEdges2),
     attributes = Seq.empty,
     attributeValues = Map("attribute2" -> Seq(DoubleValue(2), DoubleValue(3))),
     methods = Seq.empty
@@ -64,8 +64,8 @@ object ModelEntityFixtures {
   val edge1 = Edge(
     name = "edge1",
     referenceName = MetaModelEntityFixtures.reference1.name,
-    source = Seq(toNodes1, toNodes2),
-    target = Seq.empty,
+    sourceNodeName = Seq(toNodes1, toNodes2),
+    targetNodeName = Seq.empty,
     attributes = Seq.empty,
     attributeValues = Map("attribute3" -> Seq(IntValue(-1))),
     methods = Seq.empty
@@ -74,8 +74,8 @@ object ModelEntityFixtures {
   val edge2 = Edge(
     name = "edge2",
     referenceName = MetaModelEntityFixtures.reference2.name,
-    source = Seq.empty,
-    target = Seq(toNodes1, toNodes2),
+    sourceNodeName = Seq.empty,
+    targetNodeName = Seq(toNodes1, toNodes2),
     attributes = Seq.empty,
     attributeValues = Map.empty,
     methods = Seq.empty

@@ -16,7 +16,7 @@ class EdgeSourcesLowerBound(val edgeType: String, val sourceType: String, val lo
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.source.find(_.className == sourceType) match {
+  def rule(edge: Edge): Boolean = edge.sourceNodeName.find(_.className == sourceType) match {
     case Some(source) => source.nodeNames.size >= lowerBound
     case None => lowerBound == 0
   }

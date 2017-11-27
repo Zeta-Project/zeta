@@ -27,11 +27,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import play.api.libs.json.Format
 import play.api.libs.json.JsArray
-import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsError
-import play.api.libs.json.JsNumber
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
@@ -66,6 +63,14 @@ object AttributeValueFormat extends OWrites[AttributeValue] {
     }
   }
 
+  def map: Writes[Map[String, AttributeValue]] = Writes { attributeValues =>
+    JsArray(attributeValues.map(attributeValue => Json.obj()))
+
+    JsObject(attributeValues.map { case (name, value) =>
+      (name, AttributeValueFormat.writes(value))
+    })
+  }
+
 }
 
 case class AttributeValueFormat(enums: Seq[MEnum]) extends Reads[AttributeValue] {
@@ -94,6 +99,20 @@ case class AttributeValueFormat(enums: Seq[MEnum]) extends Reads[AttributeValue]
       }
     }
   }
+
+  def map(enums: Seq[MEnum]): Reads[Map[String, AttributeValueFormat]] = Reads { json =>
+    val a = json match {
+      case obj: JsObject =>
+
+        val q = obj.value.map { x =>
+        AttributeValueFormat(enums).reads(x._2).map(c => (x._1, c))
+        }
+        q.flatMap(x =>)
+    }
+
+    null
+  }
+
 
 }
 

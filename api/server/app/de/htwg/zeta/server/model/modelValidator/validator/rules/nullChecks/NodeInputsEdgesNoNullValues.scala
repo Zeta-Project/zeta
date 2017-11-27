@@ -11,5 +11,5 @@ class NodeInputsEdgesNoNullValues extends ModelRule {
   override val description: String = "The input edges list inside a node contains Null values."
   override val possibleFix: String = "Remove the Null values."
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.inputs).flatMap(_.edgeNames).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.flatMap(_.inputEdgeNames).flatMap(_.edgeName).contains(null) // scalastyle:ignore null
 }

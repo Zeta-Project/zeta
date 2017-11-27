@@ -194,10 +194,10 @@ object ScalaCodeGenerator {
     val typ = reference.name.capitalize
 
     edges.map { edge =>
-      val sourceNode = model.nodes.find(_.name == edge.source.head.nodeNames.head).get
-      val targetNode = model.nodes.find(_.name == edge.target.head.nodeNames.head).get
-      val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.source.head.className).indexOf(sourceNode)
-      val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.target.head.className).indexOf(targetNode)
+      val sourceNode = model.nodes.find(_.name == edge.sourceNodeName.head.nodeNames.head).get
+      val targetNode = model.nodes.find(_.name == edge.targetNodeName.head.nodeNames.head).get
+      val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.sourceNodeName.head.className).indexOf(sourceNode)
+      val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.targetNodeName.head.className).indexOf(targetNode)
       val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributeValues)}"
       s"""  private val $instance${edges.indexOf(edge)} = $typ("${edge.name}", $source, $target, $attributes, this)""".stripMargin
     }.mkString("\n") + "\n\n" +

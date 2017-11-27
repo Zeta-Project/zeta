@@ -17,7 +17,7 @@ class NodeInputEdges(val nodeType: String, val inputTypes: Seq[String]) extends 
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputs.map(_.referenceName).foldLeft(true) { (acc, inputName) =>
+  def rule(node: Node): Boolean = node.inputEdgeNames.map(_.referenceName).foldLeft(true) { (acc, inputName) =>
     if (inputTypes.contains(inputName)) acc else false
   }
 

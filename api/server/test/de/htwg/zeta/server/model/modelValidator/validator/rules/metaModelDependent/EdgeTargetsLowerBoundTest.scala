@@ -39,13 +39,13 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
 
     val twoTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoTargetNodes = emptyEdge.copy(target = Seq(twoTargetNodes))
+    val edgeTwoTargetNodes = emptyEdge.copy(targetNodeName = Seq(twoTargetNodes))
 
     rule.isValid(edgeTwoTargetNodes).get should be(true)
 
     val threeTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeTargetNodes = emptyEdge.copy(target = Seq(threeTargetNodes))
+    val edgeThreeTargetNodes = emptyEdge.copy(targetNodeName = Seq(threeTargetNodes))
 
     rule.isValid(edgeThreeTargetNodes).get should be(true)
   }
@@ -64,7 +64,7 @@ class EdgeTargetsLowerBoundTest extends FlatSpec with Matchers {
 
     val oneTargetNode = NodeLink(className = targetType.name, nodeNames = Seq(""))
 
-    val edgeOneTargetNode = emptyEdge.copy(target = Seq(oneTargetNode))
+    val edgeOneTargetNode = emptyEdge.copy(targetNodeName = Seq(oneTargetNode))
 
     rule.isValid(edgeOneTargetNode).get should be(false)
 

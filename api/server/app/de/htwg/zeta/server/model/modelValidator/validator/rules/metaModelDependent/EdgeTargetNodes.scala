@@ -17,7 +17,7 @@ class EdgeTargetNodes(val edgeType: String, val targetTypes: Seq[String]) extend
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.target.map(_.className).foldLeft(true) { (acc, targetName) =>
+  def rule(edge: Edge): Boolean = edge.targetNodeName.map(_.className).foldLeft(true) { (acc, targetName) =>
     if (targetTypes.contains(targetName)) acc else false
   }
 

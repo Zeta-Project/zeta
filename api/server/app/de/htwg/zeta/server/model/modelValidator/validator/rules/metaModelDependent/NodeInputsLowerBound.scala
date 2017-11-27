@@ -17,8 +17,8 @@ class NodeInputsLowerBound(val nodeType: String, val inputType: String, val lowe
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputs.find(_.referenceName == inputType) match {
-    case Some(input) => input.edgeNames.size >= lowerBound
+  def rule(node: Node): Boolean = node.inputEdgeNames.find(_.referenceName == inputType) match {
+    case Some(input) => input.edgeName.size >= lowerBound
     case None => lowerBound == 0
   }
 

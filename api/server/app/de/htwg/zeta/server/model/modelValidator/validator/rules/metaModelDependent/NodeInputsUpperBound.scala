@@ -17,8 +17,8 @@ class NodeInputsUpperBound(val nodeType: String, val inputType: String, val uppe
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = if (upperBound == -1) true else node.inputs.find(_.referenceName == inputType) match {
-    case Some(input) => input.edgeNames.size <= upperBound
+  def rule(node: Node): Boolean = if (upperBound == -1) true else node.inputEdgeNames.find(_.referenceName == inputType) match {
+    case Some(input) => input.edgeName.size <= upperBound
     case None => true
   }
 

@@ -11,5 +11,5 @@ class EdgeSourcesNoNullValues extends ModelRule {
   override val description: String = "The sources list inside an edge contains Null values."
   override val possibleFix: String = "Remove the Null values."
 
-  override def check(model: Model): Boolean = !model.edges.flatMap(_.source).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.edges.flatMap(_.sourceNodeName).contains(null) // scalastyle:ignore null
 }

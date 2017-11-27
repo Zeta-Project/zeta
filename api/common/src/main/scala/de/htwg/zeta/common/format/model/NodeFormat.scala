@@ -1,77 +1,70 @@
 package de.htwg.zeta.common.format.model
 
-import scala.collection.immutable.List
-import scala.collection.immutable.Seq
-
+import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
+import de.htwg.zeta.common.format.metaModel.MAttributeFormat
+import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import play.api.libs.json.Format
 import play.api.libs.json.JsError
+import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json
+import play.api.libs.json.OWrites
+import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-class NodeFormat private(metaModel: MetaModel) extends Format[Node] {
-  private val unknownMClassError = JsError("Unknown mClass")
-  private val invalidToEdgesError = JsError("edge reference has invalid type")
+object NodeFormat extends OWrites[Node] {
 
-  private def extractEdges(typeHas: String => Boolean)(m: Map[String, Seq[String]]): JsResult[List[EdgeLink]] = {
-    m.toList.reverse.foldLeft[JsResult[List[EdgeLink]]](JsSuccess(Nil))((res, kv) => {
-      res match {
-        case JsSuccess(list, _) =>
-          val (k, v) = kv
-          metaModel.referenceMap.get(k) match {
-            case Some(t: MReference) if typeHas(t.name) => JsSuccess(EdgeLink(t.name, v) :: list)
-            case None => invalidToEdgesError
-          }
-        case e: JsError => e
-      }
-    })
-  }
+  private val sName = "name"
+  private val sClassName = "className"
+  private val sOutputEdgeNames = "outputEdgeNames"
+  private val sInputEdgeNames = "inputEdgeNames"
+  private val sAttributes = "attributes"
+  private val sAttributeValues = "attributeValues"
+  private val sMethods = "methods"
 
-  override def reads(json: JsValue): JsResult[Node] = {
-    for {
-      id <- (json \ "id").validate[String]
-      clazz <- (json \ "mClass").validate[String].flatMap(className => metaModel.classMap.get(className) match {
-        case Some(mClass) => JsSuccess(mClass)
-        case None => unknownMClassError
-      })
-      traverse = MClass.MClassTraverseWrapper(clazz, MetaModel.MetaModelTraverseWrapper(metaModel))
-      output <- (json \ "outputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasOutput))
-      input <- (json \ "inputs").validate[Map[String, Seq[String]]].flatMap(extractEdges(traverse.typeHasInput))
-      attr <- (json \ "attributes").validate(AttributeFormat(clazz.attributes, id.toString))
-
-    } yield {
-      Node(id, clazz.name, output, input, Seq.empty, attr, Seq.empty)
-    }
-  }
-
-  override def writes(o: Node): JsValue = NodeFormat.writes(o)
+  override def writes(node: Node): JsObject = Json.obj(
+    sName -> node.name,
+    sClassName -> node.className,
+    sOutputEdgeNames -> node.outputEdgeNames,
+    sInputEdgeNames -> node.inputEdgeNames,
+    sAttributes -> Writes.seq(MAttributeFormat).writes(node.attributes),
+    sAttributeValues -> Writes.map(AttributeValueFormat).writes(node.attributeValues),
+    sMethods -> Writes.seq(MethodFormat).writes(node.methods)
+  )
 
 }
 
-object NodeFormat extends Writes[Node] {
+case class NodeFormat(metaModel: MetaModel) extends Reads[Node] {
 
-  def apply(metaModel: MetaModel): NodeFormat = new NodeFormat(metaModel)
-
-  private def writeEdges(seq: Seq[EdgeLink]): Map[String, Seq[String]] = {
-    seq.map(te => (te.referenceName, te.edgeNames)).toMap
-  }
-
-  override def writes(o: Node): JsValue = {
-    Json.obj(
-      "name" -> o.name,
-      "mClass" -> o.className,
-      "outputs" -> writeEdges(o.outputs),
-      "inputs" -> writeEdges(o.inputs),
-      "attributes" -> AttributeFormat.writes(o.attributeValues)
-    )
+  override def reads(json: JsValue): JsResult[Node] = {
+    for {
+      name <- (json \ NodeFormat.sName).validate[String]
+      className <- (json \ NodeFormat.sClassName).validate[String].flatMap { className =>
+        metaModel.classMap.get(className) match {
+          case Some(_) => JsSuccess(className)
+          case None => JsError(s"Unknown className $className")
+        }
+      }
+      outputs <- (json \ NodeFormat.sOutputEdgeNames).validate(Reads.list[String])
+      inputs <- (json \ NodeFormat.sInputEdgeNames).validate(Reads.list[String])
+      attributes <- (json \ NodeFormat.sAttributes).validate(Reads.list(MAttributeFormat(metaModel.enums)))
+      attributeValues <- (json \ NodeFormat.sAttributeValues).validate(Reads.map(AttributeValueFormat(metaModel.enums)))
+      methods <- (json \ NodeFormat.sMethods).validate(Reads.list(MethodFormat(metaModel.enums)))
+    } yield {
+      Node(
+        name = name,
+        className = className,
+        outputEdgeNames = outputs,
+        inputEdgeNames = inputs,
+        attributes = attributes,
+        attributeValues = attributeValues,
+        methods = methods
+      )
+    }
   }
 
 }

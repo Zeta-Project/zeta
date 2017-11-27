@@ -39,7 +39,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
 
     val toNodes1 = NodeLink(className = target1.name, nodeNames = Seq(""))
 
-    val edge1 = emptyEdge.copy(target = Seq(toNodes1))
+    val edge1 = emptyEdge.copy(targetNodeName = Seq(toNodes1))
 
     rule.isValid(edge1).get should be(true)
 
@@ -56,7 +56,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
 
     val toNodes2 = NodeLink(className = target1.name, nodeNames = Seq("", ""))
 
-    val edge2 = emptyEdge.copy(target = Seq(toNodes2))
+    val edge2 = emptyEdge.copy(targetNodeName = Seq(toNodes2))
 
     rule.isValid(edge2).get should be(true)
 
@@ -76,7 +76,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
 
     val invalidToNodes = NodeLink(className = invalidTarget.name, nodeNames = Seq(""))
 
-    val edge1 = emptyEdge.copy(target = Seq(invalidToNodes))
+    val edge1 = emptyEdge.copy(targetNodeName = Seq(invalidToNodes))
 
     rule.isValid(edge1).get should be(false)
   }

@@ -19,8 +19,8 @@ class NodeOutputsUpperBound(val nodeType: String, val outputType: String, val up
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = if (upperBound == -1) true else node.outputs.find(_.referenceName == outputType) match {
-    case Some(output) => output.edgeNames.size <= upperBound
+  def rule(node: Node): Boolean = if (upperBound == -1) true else node.outputEdgeNames.find(_.referenceName == outputType) match {
+    case Some(output) => output.edgeName.size <= upperBound
     case None => true
   }
 
