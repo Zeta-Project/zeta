@@ -7,13 +7,11 @@ import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sDefault
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sExpression
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sGlobalUnique
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sLocalUnique
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sLowerBound
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sName
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sOrdered
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sSingleAssignment
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sTransient
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sType
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sUpperBound
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import play.api.libs.json.JsObject
@@ -35,8 +33,6 @@ object MAttributeFormat extends OWrites[MAttribute] {
   private val sExpression = "expression"
   private val sOrdered = "ordered"
   private val sTransient = "transient"
-  private val sUpperBound = "upperBound"
-  private val sLowerBound = "lowerBound"
 
   override def writes(attribute: MAttribute): JsObject = Json.obj(
     sName -> attribute.name,
@@ -48,9 +44,7 @@ object MAttributeFormat extends OWrites[MAttribute] {
     sSingleAssignment -> attribute.singleAssignment,
     sExpression -> attribute.expression,
     sOrdered -> attribute.ordered,
-    sTransient -> attribute.transient,
-    sUpperBound -> attribute.upperBound,
-    sLowerBound -> attribute.lowerBound
+    sTransient -> attribute.transient
   )
 
 }
@@ -69,8 +63,6 @@ class MAttributeFormat(enums: Seq[MEnum]) extends Reads[MAttribute] {
       expression <- (json \ sExpression).validate[String]
       ordered <- (json \ sOrdered).validate[Boolean]
       transient <- (json \ sTransient).validate[Boolean]
-      upperBound <- (json \ sUpperBound).validate[Int]
-      lowerBound <- (json \ sLowerBound).validate[Int]
     } yield {
       MAttribute(
         name = name,
@@ -82,9 +74,7 @@ class MAttributeFormat(enums: Seq[MEnum]) extends Reads[MAttribute] {
         singleAssignment = singleAssignment,
         expression = expression,
         ordered = ordered,
-        transient = transient,
-        upperBound = upperBound,
-        lowerBound = lowerBound
+        transient = transient
       )
     }
   }

@@ -6,9 +6,9 @@ import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sAttributes
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sDescription
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sMethods
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sName
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sSource
+import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sSourceClassName
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sSourceDeletionDeletesTarget
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTarget
+import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTargetClassName
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTargetDeletionDeletesSource
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
@@ -26,8 +26,8 @@ object MReferenceFormat extends OWrites[MReference] {
   val sDescription = "description"
   val sSourceDeletionDeletesTarget = "sourceDeletionDeletesTarget"
   val sTargetDeletionDeletesSource = "targetDeletionDeletesSource"
-  val sSource = "source"
-  val sTarget = "target"
+  val sSourceClassName = "sourceClassName"
+  val sTargetClassName = "targetClassName"
   val sAttributes = "attributes"
   val sMethods = "methods"
 
@@ -36,8 +36,8 @@ object MReferenceFormat extends OWrites[MReference] {
     sDescription -> reference.description,
     sSourceDeletionDeletesTarget -> reference.sourceDeletionDeletesTarget,
     sTargetDeletionDeletesSource -> reference.targetDeletionDeletesSource,
-    sSource -> Writes.seq(MClassLinkDefFormat).writes(reference.source),
-    sTarget -> Writes.seq(MClassLinkDefFormat).writes(reference.target),
+    sSourceClassName -> reference.sourceClassName,
+    sTargetClassName -> reference.targetClassName,
     sAttributes -> Writes.seq(MAttributeFormat).writes(reference.attributes),
     sMethods -> Writes.seq(MethodFormat).writes(reference.methods)
   )
@@ -52,8 +52,8 @@ class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
       description <- (json \ sDescription).validate[String]
       sourceDeletionDeletesTarget <- (json \ sSourceDeletionDeletesTarget).validate[Boolean]
       targetDeletionDeletesSource <- (json \ sTargetDeletionDeletesSource).validate[Boolean]
-      source <- (json \ sSource).validate(Reads.list(MClassLinkDefFormat))
-      target <- (json \ sTarget).validate(Reads.list(MClassLinkDefFormat))
+      sourceClassName <- (json \ sSourceClassName).validate[String]
+      targetClassName <- (json \ sTargetClassName).validate[String]
       attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
       methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
     } yield {
@@ -62,8 +62,8 @@ class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
         description = description,
         sourceDeletionDeletesTarget = sourceDeletionDeletesTarget,
         targetDeletionDeletesSource = targetDeletionDeletesSource,
-        source = source,
-        target = target,
+        sourceClassName = sourceClassName,
+        targetClassName = targetClassName,
         attributes = attributes,
         methods = methods
       )

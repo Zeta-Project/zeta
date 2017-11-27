@@ -28,6 +28,6 @@ class EdgeSourcesUpperBound(val edgeType: String, val sourceType: String, val up
 object EdgeSourcesUpperBound extends GeneratorRule {
   override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
-      acc ++ currentReference.source.map(source => new EdgeSourcesUpperBound(currentReference.name, source.className, source.upperBound))
+      acc ++ currentReference.sourceClassName.map(source => new EdgeSourcesUpperBound(currentReference.name, source.className, source.upperBound))
     }
 }

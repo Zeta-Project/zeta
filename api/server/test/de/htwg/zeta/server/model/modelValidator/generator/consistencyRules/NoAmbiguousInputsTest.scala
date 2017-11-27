@@ -22,8 +22,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(input),
-    outputs = Seq(),
+    inputReferenceNames = Seq(input),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -47,8 +47,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(nonAmbiguousInput),
-    outputs = Seq(),
+    inputReferenceNames = Seq(nonAmbiguousInput),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -58,8 +58,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(ambiguousInput),
-    outputs = Seq(),
+    inputReferenceNames = Seq(ambiguousInput),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -69,8 +69,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(superClass.name, nonAmbiguousSuperClass.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -80,8 +80,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(superClass.name, ambiguousSuperClass.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )

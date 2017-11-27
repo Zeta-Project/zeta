@@ -14,8 +14,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -25,8 +25,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(nonCyclicClassOne.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -36,8 +36,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(nonCyclicClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -47,8 +47,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(nonCyclicClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -68,8 +68,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq("cyclicClassFour"),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -79,8 +79,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassOne.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -90,8 +90,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -101,8 +101,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassThree.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -112,8 +112,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassThree.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -123,8 +123,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )

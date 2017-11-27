@@ -28,6 +28,6 @@ class EdgeTargetsUpperBound(val edgeType: String, val targetType: String, val up
 object EdgeTargetsUpperBound extends GeneratorRule {
   override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
-      acc ++ currentReference.target.map(target => new EdgeTargetsUpperBound(currentReference.name, target.className, target.upperBound))
+      acc ++ currentReference.targetClassName.map(target => new EdgeTargetsUpperBound(currentReference.name, target.className, target.upperBound))
     }
 }

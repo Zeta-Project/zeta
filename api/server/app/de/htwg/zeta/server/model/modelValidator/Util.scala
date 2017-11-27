@@ -6,7 +6,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -130,8 +129,8 @@ object Util {
       subTypes = allClasses.filter(_.superTypeNames.contains(el.name)).map(_.name),
       attributes = el.attributes.map(mapAttribute),
       abstractness = el.abstractness,
-      inputs = el.inputs.map(mapLinkDef),
-      outputs = el.outputs.map(mapLinkDef)
+      inputs = el.inputReferenceNames.map(mapLinkDef),
+      outputs = el.outputReferenceNames.map(mapLinkDef)
     )
 
     def mapAttribute(att: MAttribute): Att = Att(

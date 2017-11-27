@@ -27,10 +27,10 @@ class EdgeSourceNodes(val edgeType: String, val sourceTypes: Seq[String]) extend
 object EdgeSourceNodes extends GeneratorRule {
   override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
-      if (currentReference.source.isEmpty) {
+      if (currentReference.sourceClassName.isEmpty) {
         acc
       } else {
-        acc :+ new EdgeSourceNodes(currentReference.name, currentReference.source.map(_.className).toSeq)
+        acc :+ new EdgeSourceNodes(currentReference.name, currentReference.sourceClassName.map(_.className).toSeq)
       }
     }
 }

@@ -48,7 +48,7 @@ object AttributeType {
    * @param name       the name of the MENum instance
    * @param valueNames the names of the values
    */
-  case class MEnum(name: String, valueNames: Seq[String]) extends MObject with AttributeType {
+  case class MEnum(name: String, valueNames: Seq[String]) extends AttributeType {
 
     override val asString: String = name
 

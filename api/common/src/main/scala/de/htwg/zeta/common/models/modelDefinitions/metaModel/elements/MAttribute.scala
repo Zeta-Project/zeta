@@ -15,8 +15,6 @@ import scala.collection.immutable.Seq
  * @param expression       a composed expression
  * @param ordered          ordered flag
  * @param transient        transient flag
- * @param upperBound       the upper bound
- * @param lowerBound       the lower bound
  */
 case class MAttribute(
     name: String,
@@ -28,10 +26,8 @@ case class MAttribute(
     singleAssignment: Boolean,
     expression: String,
     ordered: Boolean,
-    transient: Boolean,
-    upperBound: Int,
-    lowerBound: Int)
-  extends MObject with MBounds
+    transient: Boolean
+)
 
 object MAttribute {
 

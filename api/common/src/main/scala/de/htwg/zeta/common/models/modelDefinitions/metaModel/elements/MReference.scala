@@ -10,8 +10,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Met
  * @param name                        the name of the MReference instance
  * @param sourceDeletionDeletesTarget whether source deletion leads to removal of target
  * @param targetDeletionDeletesSource whether target deletion leads to removal of source
- * @param source                      the incoming MClass relationships
- * @param target                      the outgoing MClass relationships
+ * @param sourceClassName             the name of the incoming MClass relationship
+ * @param targetClassName             the name of the outgoing MClass relationship
  * @param attributes                  the attributes of the MReference
  */
 case class MReference(
@@ -19,22 +19,22 @@ case class MReference(
     description: String,
     sourceDeletionDeletesTarget: Boolean,
     targetDeletionDeletesSource: Boolean,
-    source: Seq[MClassLinkDef],
-    target: Seq[MClassLinkDef],
+    sourceClassName: String,
+    targetClassName: String,
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject with AttributeMap with MethodMap
+) extends AttributeMap with MethodMap
 
 object MReference {
 
-  def empty(name: String, source: Seq[MClassLinkDef], target: Seq[MClassLinkDef]): MReference =
+  def empty(name: String, source: String, target: String): MReference =
     MReference(
       name = name,
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = source,
-      target = target,
+      sourceClassName = source,
+      targetClassName = target,
       attributes = Seq.empty,
       methods = Seq.empty
     )

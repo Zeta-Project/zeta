@@ -8,7 +8,10 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
+import de.htwg.zeta.common.format.model.EdgeFormat
+import de.htwg.zeta.common.format.model.ModelEntityFormat
 import de.htwg.zeta.common.format.model.ModelFormat
+import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
@@ -20,7 +23,7 @@ import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json
+import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -40,7 +43,7 @@ class ModelRestApi @Inject()(
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read))
     }.map(list =>
-      Ok(Json.toJson(list))
+      Ok(Writes.list(ModelEntityFormat).writes(list))
     ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -59,7 +62,7 @@ class ModelRestApi @Inject()(
           model = model
         )
       ).map { modelEntity =>
-        Ok(Json.toJson(modelEntity))
+        Ok(ModelEntityFormat.writes(modelEntity))
       }).recover {
       case e: Exception => Results.BadRequest(e.getMessage)
     }
@@ -81,7 +84,7 @@ class ModelRestApi @Inject()(
           },
           model => {
             modelEntityRepo.restrictedTo(request.identity.id).update(id, _.copy(model = model)).map { updated =>
-              Ok(Json.toJson(updated))
+              Ok(ModelEntityFormat.writes(updated))
             }.recover {
               case e: Exception => Results.BadRequest(e.getMessage)
             }
@@ -100,20 +103,19 @@ class ModelRestApi @Inject()(
   /** returns whole model structure incl. HATEOS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, modelEntity =>
-      Ok(Json.toJson(modelEntity))
+      Ok(ModelEntityFormat.writes(modelEntity))
     )
   }
 
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => Ok(Json.toJson(m.model)))
+    protectedRead(id, request, (m: ModelEntity) => Ok(ModelFormat.writes(m.model)))
   }
 
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val nodes = m.model.nodeMap.values
-      Ok(Json.toJson(nodes))
+      Ok(Writes.seq(NodeFormat).writes(m.model.nodes))
     })
   }
 
@@ -121,7 +123,7 @@ class ModelRestApi @Inject()(
   def getNode(modelId: UUID, nodeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
       m.model.nodeMap.get(nodeName) match {
-        case Some(node: Node) => Ok(Json.toJson(node))
+        case Some(node: Node) => Ok(NodeFormat.writes(node))
         case None => NotFound
       }
     })
@@ -130,8 +132,7 @@ class ModelRestApi @Inject()(
   /** returns all edges of a model as json array */
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      val edges = m.model.edgeMap.values
-      Ok(Json.toJson(edges))
+      Ok(Writes.seq(EdgeFormat).writes(m.model.edges))
     })
   }
 
@@ -139,7 +140,7 @@ class ModelRestApi @Inject()(
   def getEdge(modelId: UUID, edgeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
       m.model.edgeMap.get(edgeName) match {
-        case Some(edge) => Ok(Json.toJson(edge))
+        case Some(edge) => Ok(EdgeFormat.writes(edge))
         case None => NotFound
       }
     })

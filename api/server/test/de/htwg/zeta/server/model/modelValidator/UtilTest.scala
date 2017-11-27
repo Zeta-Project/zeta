@@ -31,8 +31,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq.empty,
-    inputs = Seq.empty,
-    outputs = Seq.empty,
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq.empty,
     attributes = Seq[MAttribute](),
     methods = Seq.empty
   )
@@ -42,8 +42,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq.empty,
-    target = Seq.empty,
+    sourceClassName = Seq.empty,
+    targetClassName = Seq.empty,
     attributes = Seq[MAttribute](),
     methods = Seq.empty
   )
@@ -62,8 +62,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
+      sourceClassName = Seq.empty,
+      targetClassName = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -72,8 +72,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
+      sourceClassName = Seq.empty,
+      targetClassName = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -82,8 +82,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
+      inputReferenceNames = Seq.empty,
+      outputReferenceNames = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -92,8 +92,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
+      sourceClassName = Seq.empty,
+      targetClassName = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -102,8 +102,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       abstractness = true,
       superTypeNames = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
+      inputReferenceNames = Seq.empty,
+      outputReferenceNames = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     )
@@ -131,8 +131,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq(),
-    target = Seq(),
+    sourceClassName = Seq(),
+    targetClassName = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -144,8 +144,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = true,
     superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(superClassOneOutput),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(superClassOneOutput),
     attributes = Seq(abstractSuperClassOneAttribute),
     methods = Seq.empty
   )
@@ -154,8 +154,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = true,
     superTypeNames = Seq(),
-    inputs = Seq(superClassTwoInput),
-    outputs = Seq(),
+    inputReferenceNames = Seq(superClassTwoInput),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -164,8 +164,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -174,8 +174,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )

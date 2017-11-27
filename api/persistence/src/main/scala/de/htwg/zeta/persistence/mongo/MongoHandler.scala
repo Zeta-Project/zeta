@@ -48,10 +48,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -226,10 +224,6 @@ object MongoHandler {
   private implicit val mClassHandler: BSONDocumentHandler[MClass] = Macros.handler[MClass]
 
   private implicit val mReferenceHandler: BSONDocumentHandler[MReference] = Macros.handler[MReference]
-
-  private implicit val mReferenceLinkDefHandler: BSONDocumentHandler[MReferenceLinkDef] = Macros.handler[MReferenceLinkDef]
-
-  private implicit val mClassLinkDefHandler: BSONDocumentHandler[MClassLinkDef] = Macros.handler[MClassLinkDef]
 
   private implicit val metaModelHandler: BSONDocumentHandler[MetaModel] = Macros.handler[MetaModel]
 

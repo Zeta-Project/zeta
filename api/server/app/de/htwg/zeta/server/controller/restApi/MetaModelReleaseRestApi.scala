@@ -16,6 +16,9 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
+import de.htwg.zeta.common.format.metaModel.MetaModelReleaseFormat
+import play.api.libs.json.Writes
+
 /**
  * REST-ful API for filter definitions
  */
@@ -40,7 +43,7 @@ class MetaModelReleaseRestApi @Inject()(
   }
 
   private def getJsonArray(list: List[MetaModelRelease]) = {
-    Ok(Json.toJson(list))
+    Ok(Writes.list(MetaModelReleaseFormat).writes(list))
   }
 
 }

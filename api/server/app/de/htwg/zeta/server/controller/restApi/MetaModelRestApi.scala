@@ -9,10 +9,12 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
+import de.htwg.zeta.common.format.metaModel.MClassFormat
+import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelFormat
+import de.htwg.zeta.common.format.metaModel.MReferenceFormat
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
@@ -24,8 +26,8 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.Json
 import play.api.libs.json.JsValue
+import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -71,7 +73,7 @@ class MetaModelRestApi @Inject()(
             metaModel = metaModel
           )
         ).map { metaModelEntity =>
-          Created(Json.toJson(metaModelEntity))
+          Created(MetaModelEntityFormat.writes(metaModelEntity))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -86,7 +88,7 @@ class MetaModelRestApi @Inject()(
    * @return result
    */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate[MetaModel].fold(
+    request.body.validate(MetaModelFormat).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
@@ -94,7 +96,7 @@ class MetaModelRestApi @Inject()(
       metaModel => {
         val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
         repo.update(id, _.copy(metaModel = metaModel)).map { _ =>
-          Ok(Json.toJson(metaModel))
+          Ok(MetaModelFormat.writes(metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -119,28 +121,28 @@ class MetaModelRestApi @Inject()(
   /** returns whole MetaModels incl. dsl definitions and HATEOAS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity =>
-      Ok(Json.toJson(metaModelEntity))
+      Ok(MetaModelEntityFormat.writes(metaModelEntity))
     )
   }
 
   /** returns pure MetaModel without dsl definitions */
   def getMetaModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(Json.toJson(metaModelEntity.metaModel))
+      Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
     })
   }
 
   /** returns all MClasses of a specific MetaModel as Json Array */
   def getMClasses(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(Json.toJson(metaModelEntity.metaModel.classMap.values))
+      Ok(Writes.seq(MClassFormat).writes(metaModelEntity.metaModel.classes))
     })
   }
 
   /** returns all MReferences of a specific MetaModel as Json Array */
   def getMReferences(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(Json.toJson(metaModelEntity.metaModel.referenceMap.values))
+      Ok(Writes.seq(MReferenceFormat).writes(metaModelEntity.metaModel.references))
     })
   }
 
@@ -148,7 +150,7 @@ class MetaModelRestApi @Inject()(
   def getMClass(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
       metaModelEntity.metaModel.classMap.get(name).map(clazz =>
-        Ok(Json.toJson(clazz))
+        Ok(MClassFormat.writes(clazz))
       ).getOrElse(NotFound)
     })
   }
@@ -157,7 +159,7 @@ class MetaModelRestApi @Inject()(
   def getMReference(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
       metaModelEntity.metaModel.referenceMap.get(name).map((reference: MReference) =>
-        Ok(Json.toJson(reference))
+        Ok(MReferenceFormat.writes(reference))
       ).getOrElse(NotFound)
     })
   }
@@ -201,7 +203,7 @@ class MetaModelRestApi @Inject()(
       },
       shape => {
         metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
-          Ok(Json.toJson(metaModelEntity.metaModel))
+          Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -218,7 +220,7 @@ class MetaModelRestApi @Inject()(
       },
       style => {
         metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
-          Ok(Json.toJson(metaModelEntity.metaModel))
+          Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -235,7 +237,7 @@ class MetaModelRestApi @Inject()(
       },
       diagram => {
         metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
-          Ok(Json.toJson(metaModelEntity.metaModel))
+          Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -254,7 +256,7 @@ class MetaModelRestApi @Inject()(
         val updatedMethods = method.copy(code = code) +: clazz.methods.filter(_ != method)
         clazz.copy(methods = updatedMethods) +: classes.filter(_ != clazz)
       }).map { metaModelEntity =>
-        Ok(Json.toJson(metaModelEntity.metaModel))
+        Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
       }.recover {
         case e: Exception => BadRequest(e.getMessage)
       }
@@ -272,7 +274,7 @@ class MetaModelRestApi @Inject()(
         val updatedMethods = method.copy(code = code) +: reference.methods.filter(_ != method)
         reference.copy(methods = updatedMethods) +: references.filter(_ != reference)
       }).map { metaModelEntity =>
-        Ok(Json.toJson(metaModelEntity.metaModel))
+        Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
       }.recover {
         case e: Exception => BadRequest(e.getMessage)
       }
@@ -288,7 +290,7 @@ class MetaModelRestApi @Inject()(
         val method = methods.find(_.name == methodName).get
         method.copy(code = code) +: methods.filter(_ != method)
       }).map { metaModelEntity =>
-        Ok(Json.toJson(metaModelEntity.metaModel))
+        Ok(MetaModelFormat.writes(metaModelEntity.metaModel))
       }.recover {
         case e: Exception => BadRequest(e.getMessage)
       }

@@ -76,8 +76,8 @@ object ScalaCodeGenerator {
           |case class $name(id: String, attributes: $name.Attributes, ${metaModel.name.toCamelCase}: ${metaModel.name.capitalize}) {
           |
           |""".stripMargin +
-        metaModel.references.filter(_.target.head.className == name).map(reference => generateIncomingEdge(metaModel, reference.name)).mkString +
-        metaModel.references.filter(_.source.head.className == name).map(reference => generateOutgoingEdge(metaModel, reference.name)).mkString +
+        metaModel.references.filter(_.targetClassName.head.className == name).map(reference => generateIncomingEdge(metaModel, reference.name)).mkString +
+        metaModel.references.filter(_.sourceClassName.head.className == name).map(reference => generateOutgoingEdge(metaModel, reference.name)).mkString +
         methods +
         "}\n"
     File(fileId, s"$name.scala", content)
@@ -122,8 +122,8 @@ object ScalaCodeGenerator {
     val reference = metaModel.referenceMap(name)
 
     val typeName = name.capitalize
-    val source = reference.source.head.className.capitalize
-    val target = reference.target.head.className.capitalize
+    val source = reference.sourceClassName.head.className.capitalize
+    val target = reference.targetClassName.head.className.capitalize
     val mainInstance = metaModel.name.toCamelCase
     val mainType = metaModel.name.capitalize
 

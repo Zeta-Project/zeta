@@ -36,8 +36,8 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )
@@ -53,8 +53,8 @@ class EdgesNoTargetsTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )

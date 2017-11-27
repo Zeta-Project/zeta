@@ -10,23 +10,23 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Met
 
 /** The MClass implementation
  *
- * @param name           the name of the MClass instance
- * @param abstractness   defines if the MClass is abstract
- * @param superTypeNames the names of the supertypes of the MClass
- * @param inputs         the incoming MReferences
- * @param outputs        the outgoing MReferences
- * @param attributes     the attributes of the MClass
+ * @param name                 the name of the MClass instance
+ * @param abstractness         defines if the MClass is abstract
+ * @param superTypeNames       the names of the supertypes of the MClass
+ * @param inputReferenceNames  the names of the incoming MReferences
+ * @param outputReferenceNames the names of the outgoing MReferences
+ * @param attributes           the attributes of the MClass
  */
 case class MClass(
     name: String,
     description: String,
     abstractness: Boolean,
     superTypeNames: Seq[String],
-    inputs: Seq[MReferenceLinkDef],
-    outputs: Seq[MReferenceLinkDef],
+    inputReferenceNames: Seq[String],
+    outputReferenceNames: Seq[String],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject with AttributeMap with MethodMap
+) extends AttributeMap with MethodMap
 
 object MClass {
 
@@ -35,8 +35,8 @@ object MClass {
     description = "",
     abstractness = false,
     superTypeNames = Seq.empty,
-    inputs = Seq.empty,
-    outputs = Seq.empty,
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq.empty,
     attributes = Seq.empty,
     methods = Seq.empty
   )
@@ -91,7 +91,7 @@ object MClass {
      */
     def typeHasInput(inputName: String): Boolean = {
       typeHierarchy.exists(
-        cls => cls.value.inputs.exists(link => link.referenceName == inputName)
+        cls => cls.value.inputReferenceNames.contains(inputName)
       )
     }
 
@@ -103,7 +103,7 @@ object MClass {
      */
     def typeHasOutput(outputName: String): Boolean = {
       typeHierarchy.exists(
-        cls => cls.value.outputs.exists(link => link.referenceName == outputName)
+        cls => cls.value.outputReferenceNames.contains(outputName)
       )
     }
 

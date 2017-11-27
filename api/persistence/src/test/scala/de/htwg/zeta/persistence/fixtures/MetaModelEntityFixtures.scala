@@ -23,10 +23,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 
 
 object MetaModelEntityFixtures {
@@ -53,9 +51,7 @@ object MetaModelEntityFixtures {
     singleAssignment = true,
     expression = "stringExpression",
     ordered = false,
-    transient = true,
-    upperBound = 1,
-    lowerBound = 2
+    transient = true
   )
 
   val boolAttribute = MAttribute(
@@ -68,9 +64,7 @@ object MetaModelEntityFixtures {
     singleAssignment = true,
     expression = "boolExpression",
     ordered = true,
-    transient = false,
-    upperBound = 2,
-    lowerBound = 3
+    transient = false
   )
 
   val doubleAttribute = MAttribute(
@@ -83,9 +77,7 @@ object MetaModelEntityFixtures {
     singleAssignment = true,
     expression = "doubleExpression",
     ordered = true,
-    transient = false,
-    upperBound = 2,
-    lowerBound = 1
+    transient = false
   )
 
   val intAttribute = MAttribute(
@@ -98,9 +90,7 @@ object MetaModelEntityFixtures {
     singleAssignment = false,
     expression = "intExpression",
     ordered = true,
-    transient = false,
-    upperBound = 3,
-    lowerBound = 0
+    transient = false
   )
 
   val enum1 = MEnum("enum1", Seq("enumValue1", "enumValue2"))
@@ -116,9 +106,7 @@ object MetaModelEntityFixtures {
     singleAssignment = true,
     expression = "enumExpression",
     ordered = true,
-    transient = true,
-    upperBound = 1,
-    lowerBound = 3
+    transient = true
   )
 
   val referenceName1 = "referenceName1"
@@ -127,41 +115,13 @@ object MetaModelEntityFixtures {
   val className1 = "className1"
   val className2 = "className2"
 
-  val referenceLinkDef1 = MReferenceLinkDef(
-    referenceName = referenceName1,
-    upperBound = 0,
-    lowerBound = 1,
-    deleteIfLower = true
-  )
-
-  val referenceLinkDef2 = MReferenceLinkDef(
-    referenceName = referenceName2,
-    upperBound = 2,
-    lowerBound = 3,
-    deleteIfLower = false
-  )
-
-  val classLinkDef1 = MClassLinkDef(
-    className = className1,
-    upperBound = 0,
-    lowerBound = 1,
-    deleteIfLower = true
-  )
-
-  val classLinkDef2 = MClassLinkDef(
-    className = className2,
-    upperBound = -1,
-    lowerBound = 2,
-    deleteIfLower = false
-  )
-
   val class1 = MClass(
     name = "class1",
     description = "descriptionClass1",
     abstractness = true,
     superTypeNames = Seq(className1, className2),
-    inputs = Seq(referenceLinkDef1, referenceLinkDef2),
-    outputs = Seq.empty,
+    inputReferenceNames = Seq(referenceName1, referenceName2),
+    outputReferenceNames = Seq.empty,
     attributes = Seq(intAttribute, doubleAttribute, enumAttribute),
     methods = Seq(
       Method(
@@ -182,8 +142,8 @@ object MetaModelEntityFixtures {
     description = "descriptionClass2",
     abstractness = false,
     superTypeNames = Seq(className2),
-    inputs = Seq.empty,
-    outputs = Seq(referenceLinkDef1, referenceLinkDef2),
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq(referenceName1, referenceName2),
     attributes = Seq(stringAttribute, boolAttribute),
     methods = Seq.empty
   )
@@ -193,8 +153,8 @@ object MetaModelEntityFixtures {
     description = "descriptionReference1",
     sourceDeletionDeletesTarget = true,
     targetDeletionDeletesSource = true,
-    source = Seq(classLinkDef1, classLinkDef2),
-    target = Seq.empty,
+    sourceClassName = className1,
+    targetClassName = className2,
     attributes = Seq(enumAttribute, stringAttribute),
     methods = Seq(
       Method(
@@ -215,8 +175,8 @@ object MetaModelEntityFixtures {
     description = "descriptionReference2",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq.empty,
-    target = Seq(classLinkDef1, classLinkDef2),
+    sourceClassName = className2,
+    targetClassName = className1,
     attributes = Seq(intAttribute, doubleAttribute),
     methods = Seq.empty
   )

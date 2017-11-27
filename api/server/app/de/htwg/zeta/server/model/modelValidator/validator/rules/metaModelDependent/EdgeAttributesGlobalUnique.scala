@@ -2,9 +2,9 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -33,7 +33,7 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
 
 
     val edges = Util.getEdges(elements).filter(_.referenceName == edgeType)
-    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributeValues).filter(_._1 == attributeType).flatMap(_._2)
+    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributeValues).filter(_._1 == attributeType).map(_._2)
 
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
       case None => Seq()
@@ -49,7 +49,7 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
     def checkEdgeDuplicateValues(acc: Seq[ModelValidationResult], currentEdge: Edge): Seq[ModelValidationResult] = {
-      val attributeValues = currentEdge.attributeValues.flatMap(_._2).toSeq
+      val attributeValues = currentEdge.attributeValues.values.toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()

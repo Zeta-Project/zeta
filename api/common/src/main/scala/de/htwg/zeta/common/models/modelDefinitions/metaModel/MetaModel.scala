@@ -2,7 +2,6 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.EnumMap
@@ -13,12 +12,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.Cla
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MObject
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference.ReferenceMap
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 
 /**
@@ -39,7 +34,7 @@ case class MetaModel(
     attributes: Seq[MAttribute],
     methods: Seq[Method],
     uiState: String
-) extends MObject with ClassMap with ReferenceMap with EnumMap with AttributeMap with MethodMap {
+) extends ClassMap with ReferenceMap with EnumMap with AttributeMap with MethodMap {
 
   /** A wrapper for bidirectional traversing of the immutable MetaModel. */
   lazy val traverseWrapper = MetaModelTraverseWrapper(this)
