@@ -19,7 +19,7 @@ class NodeOutputEdges(val nodeType: String, val outputTypes: Seq[String]) extend
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.outputEdgeNames.map(_.referenceName).foldLeft(true) { (acc, outputName) =>
+  def rule(node: Node): Boolean = node.outputEdgeNames.foldLeft(true) { (acc, outputName) =>
     if (outputTypes.contains(outputName)) acc else false
   }
 
@@ -30,6 +30,6 @@ object NodeOutputEdges extends GeneratorRule {
   override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.inheritOutputs(Util.simplifyMetaModelGraph(metaModel))
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
-      if (currentClass.outputs.isEmpty) acc else acc :+ new NodeOutputEdges(currentClass.name, currentClass.outputs.map(_.name))
+      if (currentClass.outputs.isEmpty) acc else acc :+ new NodeOutputEdges(currentClass.name, currentClass.outputs)
     }
 }

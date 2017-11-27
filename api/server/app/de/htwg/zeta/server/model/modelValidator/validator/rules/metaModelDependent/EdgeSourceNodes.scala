@@ -17,7 +17,7 @@ class EdgeSourceNodes(val edgeType: String, val sourceTypes: Seq[String]) extend
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.sourceNodeName.map(_.className).foldLeft(true) { (acc, sourceName) =>
+  def rule(edge: Edge): Boolean = Seq(edge.sourceNodeName).foldLeft(true) { (acc, sourceName) =>
     if (sourceTypes.contains(sourceName)) acc else false
   }
 
@@ -30,7 +30,7 @@ object EdgeSourceNodes extends GeneratorRule {
       if (currentReference.sourceClassName.isEmpty) {
         acc
       } else {
-        acc :+ new EdgeSourceNodes(currentReference.name, currentReference.sourceClassName.map(_.className).toSeq)
+        acc :+ new EdgeSourceNodes(currentReference.name, Seq(currentReference.sourceClassName))
       }
     }
 }

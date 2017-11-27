@@ -11,5 +11,5 @@ class NodeOutputsTypeNotNull extends ModelRule {
   override val description: String = "The output type inside a node is Null."
   override val possibleFix: String = "Replace Null value by a valid target type."
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.outputEdgeNames).map(_.referenceName).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.map(_.outputEdgeNames).contains(null) // scalastyle:ignore null
 }

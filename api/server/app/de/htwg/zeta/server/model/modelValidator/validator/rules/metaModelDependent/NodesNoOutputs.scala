@@ -18,7 +18,7 @@ class NodesNoOutputs(val nodeType: String) extends SingleNodeRule with DslRule {
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.outputEdgeNames.flatten(_.edgeName).isEmpty
+  def rule(node: Node): Boolean = node.outputEdgeNames.isEmpty
 
   override val dslStatement: String = s"""Nodes ofType "$nodeType" haveNoOutputs ()"""
 }

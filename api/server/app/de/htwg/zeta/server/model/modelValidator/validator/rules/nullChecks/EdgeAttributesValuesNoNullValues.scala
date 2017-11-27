@@ -11,5 +11,5 @@ class EdgeAttributesValuesNoNullValues extends ModelRule {
   override val description: String = "The attribute value of an attribute inside an edge is Null."
   override val possibleFix: String = "Replace the Null value with a valid Attribute Value object."
 
-  override def check(model: Model): Boolean = !model.edges.flatMap(_.attributeValues.values).flatten.contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.edges.flatMap(_.attributeValues.values).contains(null) // scalastyle:ignore null
 }

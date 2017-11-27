@@ -17,7 +17,7 @@ class NodeInputEdges(val nodeType: String, val inputTypes: Seq[String]) extends 
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputEdgeNames.map(_.referenceName).foldLeft(true) { (acc, inputName) =>
+  def rule(node: Node): Boolean = node.inputEdgeNames.foldLeft(true) { (acc, inputName) =>
     if (inputTypes.contains(inputName)) acc else false
   }
 
@@ -28,6 +28,6 @@ object NodeInputEdges extends GeneratorRule {
   override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.inheritInputs(Util.simplifyMetaModelGraph(metaModel))
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
-      if (currentClass.inputs.isEmpty) acc else acc :+ new NodeInputEdges(currentClass.name, currentClass.inputs.map(_.name))
+      if (currentClass.inputs.isEmpty) acc else acc :+ new NodeInputEdges(currentClass.name, currentClass.inputs)
     }
 }

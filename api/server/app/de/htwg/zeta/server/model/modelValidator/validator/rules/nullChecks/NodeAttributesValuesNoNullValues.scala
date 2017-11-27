@@ -11,5 +11,5 @@ class NodeAttributesValuesNoNullValues extends ModelRule {
   override val description: String = "The attribute value of an attribute inside a node is Null."
   override val possibleFix: String = "Replace the Null value with a valid Attribute Value object."
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.attributeValues.values).flatten.contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.flatMap(_.attributeValues.values).contains(null) // scalastyle:ignore null
 }

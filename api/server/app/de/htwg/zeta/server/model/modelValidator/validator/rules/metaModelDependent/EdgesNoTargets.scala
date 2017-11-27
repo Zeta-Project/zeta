@@ -17,7 +17,7 @@ class EdgesNoTargets(val edgeType: String) extends SingleEdgeRule with DslRule {
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.targetNodeName.flatten(_.nodeNames).isEmpty
+  def rule(edge: Edge): Boolean = edge.targetNodeName.isEmpty
 
   override val dslStatement: String = s"""Edges ofType "$edgeType" haveNoTargets ()"""
 }

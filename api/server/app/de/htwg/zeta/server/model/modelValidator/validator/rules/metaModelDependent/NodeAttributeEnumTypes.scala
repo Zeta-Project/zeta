@@ -21,16 +21,14 @@ class NodeAttributeEnumTypes(val nodeType: String, val attributeType: String, va
 
   def rule(node: Node): Boolean = node.attributeValues.get(attributeType) match {
     case None => true
-    case Some(attribute) => attribute.headOption match {
-      case None => true
-      case Some(head) => head match {
-        case _: EnumValue => attribute.collect { case v: EnumValue => v }.forall(_.enumName == enumName)
-        case _ => true
-      }
+    case Some(attribute) => attribute match {
+      case enumValue: EnumValue => enumValue.enumName == enumName
+      case _ => true
     }
   }
 
-  override val dslStatement: String = s"""Attributes ofType "$attributeType" inNodes "$nodeType" areOfEnumType "$enumName""""
+  override val dslStatement: String =
+    s"""Attributes ofType "$attributeType" inNodes "$nodeType" areOfEnumType "$enumName""""
 }
 
 object NodeAttributeEnumTypes extends GeneratorRule {

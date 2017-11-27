@@ -36,8 +36,6 @@ object Util {
    *
    * @param name             The name.
    * @param `type`           The type.
-   * @param lowerBound       The lower bound.
-   * @param upperBound       The upper bound.
    * @param localUnique      Is it local unique?
    * @param globalUnique     Is it global unique?
    * @param constant         Is it constant?
@@ -50,8 +48,6 @@ object Util {
   case class Att(
       name: String,
       `type`: AttributeType,
-      lowerBound: Int,
-      upperBound: Int,
       localUnique: Boolean,
       globalUnique: Boolean,
       constant: Boolean,
@@ -79,18 +75,9 @@ object Util {
       subTypes: Seq[String],
       attributes: Seq[Att],
       abstractness: Boolean,
-      inputs: Seq[LinkDef],
-      outputs: Seq[LinkDef]
+      inputs: Seq[String],
+      outputs: Seq[String]
   )
-
-  /**
-   * Internal representation of MLinkDef.
-   *
-   * @param name       The name.
-   * @param lowerBound The lower bound.
-   * @param upperBound The upper bound.
-   */
-  case class LinkDef(name: String, lowerBound: Int, upperBound: Int)
 
   /**
    * Generates a graph from the meta model, which has all inheritable properties inherited downwards.
@@ -129,15 +116,13 @@ object Util {
       subTypes = allClasses.filter(_.superTypeNames.contains(el.name)).map(_.name),
       attributes = el.attributes.map(mapAttribute),
       abstractness = el.abstractness,
-      inputs = el.inputReferenceNames.map(mapLinkDef),
-      outputs = el.outputReferenceNames.map(mapLinkDef)
+      inputs = el.inputReferenceNames,
+      outputs = el.outputReferenceNames
     )
 
     def mapAttribute(att: MAttribute): Att = Att(
       name = att.name,
       `type` = att.typ,
-      lowerBound = att.lowerBound,
-      upperBound = att.upperBound,
       localUnique = att.localUnique,
       globalUnique = att.globalUnique,
       constant = att.constant,
@@ -146,12 +131,6 @@ object Util {
       transient = att.transient,
       expression = att.expression,
       default = att.default.toString
-    )
-
-    def mapLinkDef(linkDef: MReferenceLinkDef): LinkDef = LinkDef(
-      name = linkDef.referenceName,
-      lowerBound = linkDef.lowerBound,
-      upperBound = linkDef.upperBound
     )
 
     allClasses.map(mapElement)
@@ -193,8 +172,8 @@ object Util {
    */
   def inheritInputs(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
-    def inputInheritanceValid(inputs: Seq[LinkDef]): Boolean = {
-      inputs.groupBy(_.name).values.map { inputList =>
+    def inputInheritanceValid(inputs: Seq[String]): Boolean = {
+      inputs.map { inputList =>
         inputList.headOption match {
           case Some(head) => inputList.forall(_ == head)
           case None => true
@@ -204,7 +183,7 @@ object Util {
 
     val superTypes = element.superTypes.map(superType => intermediateGraph.find(_.name == superType).get)
     val superTypesInputs = superTypes.flatMap(_.inputs)
-    val inferredInputs = superTypesInputs.filterNot(input => element.inputs.map(_.name).contains(input.name))
+    val inferredInputs = superTypesInputs.filterNot(input => element.inputs.contains(input))
 
     if (!inputInheritanceValid(inferredInputs)) throw new IllegalStateException("ambiguous inputs")
 
@@ -220,8 +199,8 @@ object Util {
    */
   def inheritOutputs(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
-    def outputInheritanceValid(outputs: Seq[LinkDef]): Boolean = {
-      outputs.groupBy(_.name).values.map { outputList =>
+    def outputInheritanceValid(outputs: Seq[String]): Boolean = {
+      outputs.map { outputList =>
         outputList.headOption match {
           case Some(head) => outputList.forall(_ == head)
           case None => true
@@ -231,7 +210,7 @@ object Util {
 
     val superTypes = element.superTypes.map(superType => intermediateGraph.find(_.name == superType).get)
     val superTypesOutputs = superTypes.flatMap(_.outputs)
-    val inferredOutputs = superTypesOutputs.filterNot(output => element.outputs.map(_.name).contains(output.name))
+    val inferredOutputs = superTypesOutputs.filterNot(output => element.outputs.contains(output))
 
     if (!outputInheritanceValid(inferredOutputs)) throw new IllegalStateException("ambiguous outputs")
 

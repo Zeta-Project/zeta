@@ -8,7 +8,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
@@ -33,22 +32,23 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
   def rule(node: Node): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Boolean = values.collect { case v: StringValue => v }.forall(_.attributeType == attributeDataType)
-    def handleBooleans(values: Seq[AttributeValue]): Boolean = values.collect { case v: BoolValue => v }.forall(_.attributeType == attributeDataType)
-    def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: IntValue => v }.forall(_.attributeType == attributeDataType)
-    def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: DoubleValue => v }.forall(_.attributeType == attributeDataType)
+    def handleStrings(values: StringValue): Boolean = values.attributeType == attributeDataType
+
+    def handleBooleans(values: BoolValue): Boolean = values.attributeType == attributeDataType
+
+    def handleInts(values: IntValue): Boolean = values.attributeType == attributeDataType
+
+    def handleDoubles(values: DoubleValue): Boolean = values.attributeType == attributeDataType
 
     node.attributeValues.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute.headOption match {
-        case None => true
-        case Some(head) => head match {
-          case _: StringValue => handleStrings(attribute)
-          case _: BoolValue => handleBooleans(attribute)
-          case _: IntValue => handleInts(attribute)
-          case _: DoubleValue => handleDoubles(attribute)
-          case _ => true
-        }
+      case Some(attribute) => attribute match {
+        case value: StringValue => handleStrings(value)
+        case value: BoolValue => handleBooleans(value)
+        case value: IntValue => handleInts(value)
+        case value: DoubleValue => handleDoubles(value)
+        case _ => true
+
       }
     }
   }

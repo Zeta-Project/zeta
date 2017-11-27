@@ -11,5 +11,5 @@ class NodeInputsTypeNotNull extends ModelRule {
   override val description: String = "The input type inside a node is Null."
   override val possibleFix: String = "Replace Null value by a valid input type."
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.inputEdgeNames).map(_.referenceName).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.map(_.inputEdgeNames).contains(null) // scalastyle:ignore null
 }

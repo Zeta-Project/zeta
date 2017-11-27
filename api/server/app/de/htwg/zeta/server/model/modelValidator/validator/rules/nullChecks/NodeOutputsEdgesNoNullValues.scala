@@ -11,5 +11,5 @@ class NodeOutputsEdgesNoNullValues extends ModelRule {
   override val description: String = "The output edges list inside a node contains Null values."
   override val possibleFix: String = "Remove the Null values."
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.outputEdgeNames).flatMap(_.edgeName).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.nodes.map(_.outputEdgeNames).contains(null) // scalastyle:ignore null
 }

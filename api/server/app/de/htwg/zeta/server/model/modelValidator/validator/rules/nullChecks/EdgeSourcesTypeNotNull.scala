@@ -11,5 +11,5 @@ class EdgeSourcesTypeNotNull extends ModelRule {
   override val description: String = "The source type inside an edge is Null."
   override val possibleFix: String = "Replace Null value by a valid source type."
 
-  override def check(model: Model): Boolean = !model.edges.flatMap(_.sourceNodeName).map(_.className).contains(null) // scalastyle:ignore null
+  override def check(model: Model): Boolean = !model.edges.map(_.sourceNodeName).contains(null) // scalastyle:ignore null
 }

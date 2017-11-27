@@ -18,7 +18,7 @@ class NodesNoAttributes(val nodeType: String) extends SingleNodeRule with DslRul
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributeValues.values.flatten.isEmpty
+  def rule(node: Node): Boolean = node.attributeValues.values.isEmpty
 
   override val dslStatement: String = s"""Nodes ofType "$nodeType" haveNoAttributes ()"""
 }

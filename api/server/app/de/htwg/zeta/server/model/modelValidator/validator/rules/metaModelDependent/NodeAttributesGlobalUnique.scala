@@ -38,8 +38,8 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
 
     val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.className))
 
-    val attributes: Seq[(String, Seq[AttributeValue])] = nodes.flatMap(_.attributeValues).filter(_._1 == attributeType)
-    val attributeValues: Seq[AttributeValue] = attributes.flatMap(_._2)
+    val attributes: Seq[(String, AttributeValue)] = nodes.flatMap(_.attributeValues).filter(_._1 == attributeType)
+    val attributeValues: Seq[AttributeValue] = attributes.map(_._2)
 
     // convert all attribute values to string for comparison.
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
@@ -56,7 +56,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
     def checkNodeDuplicateValues(acc: Seq[ModelValidationResult], currentNode: Node): Seq[ModelValidationResult] = {
-      val attributeValues = currentNode.attributeValues.values.flatten.toSeq
+      val attributeValues = currentNode.attributeValues.values.toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()

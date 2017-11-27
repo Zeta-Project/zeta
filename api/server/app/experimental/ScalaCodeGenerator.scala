@@ -76,8 +76,8 @@ object ScalaCodeGenerator {
           |case class $name(id: String, attributes: $name.Attributes, ${metaModel.name.toCamelCase}: ${metaModel.name.capitalize}) {
           |
           |""".stripMargin +
-        metaModel.references.filter(_.targetClassName.head.className == name).map(reference => generateIncomingEdge(metaModel, reference.name)).mkString +
-        metaModel.references.filter(_.sourceClassName.head.className == name).map(reference => generateOutgoingEdge(metaModel, reference.name)).mkString +
+        metaModel.references.filter(_.targetClassName == name).map(reference => generateIncomingEdge(metaModel, reference.name)).mkString +
+        metaModel.references.filter(_.sourceClassName == name).map(reference => generateOutgoingEdge(metaModel, reference.name)).mkString +
         methods +
         "}\n"
     File(fileId, s"$name.scala", content)
@@ -122,8 +122,8 @@ object ScalaCodeGenerator {
     val reference = metaModel.referenceMap(name)
 
     val typeName = name.capitalize
-    val source = reference.sourceClassName.head.className.capitalize
-    val target = reference.targetClassName.head.className.capitalize
+    val source = reference.sourceClassName.capitalize
+    val target = reference.targetClassName.capitalize
     val mainInstance = metaModel.name.toCamelCase
     val mainType = metaModel.name.capitalize
 
@@ -194,10 +194,10 @@ object ScalaCodeGenerator {
     val typ = reference.name.capitalize
 
     edges.map { edge =>
-      val sourceNode = model.nodes.find(_.name == edge.sourceNodeName.head.nodeNames.head).get
-      val targetNode = model.nodes.find(_.name == edge.targetNodeName.head.nodeNames.head).get
-      val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.sourceNodeName.head.className).indexOf(sourceNode)
-      val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.targetNodeName.head.className).indexOf(targetNode)
+      val sourceNode = model.nodes.find(_.name == edge.sourceNodeName).get
+      val targetNode = model.nodes.find(_.name == edge.targetNodeName).get
+      val source = sourceNode.className.toCamelCase + model.nodes.filter(_.className == edge.sourceNodeName).indexOf(sourceNode)
+      val target = targetNode.className.toCamelCase + model.nodes.filter(_.className == edge.targetNodeName).indexOf(targetNode)
       val attributes = s"$typ.${generateAttributeInstance(reference.attributes, edge.attributeValues)}"
       s"""  private val $instance${edges.indexOf(edge)} = $typ("${edge.name}", $source, $target, $attributes, this)""".stripMargin
     }.mkString("\n") + "\n\n" +
@@ -209,8 +209,8 @@ object ScalaCodeGenerator {
 
   }
 
-  private def generateAttributeInstance(metaAttributes: Seq[MAttribute], attributes: Map[String, Seq[AttributeValue]]): String = {
-    s"Attributes(" + metaAttributes.map(a => generateAttributeValue(attributes(a.name).head)).mkString(", ") + ")"
+  private def generateAttributeInstance(metaAttributes: Seq[MAttribute], attributes: Map[String, AttributeValue]): String = {
+    s"Attributes(" + metaAttributes.map(a => generateAttributeValue(attributes(a.name))).mkString(", ") + ")"
   }
 
   private def generateAttributeValue(value: AttributeValue): String = {
