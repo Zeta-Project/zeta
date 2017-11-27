@@ -1,13 +1,13 @@
 package de.htwg.zeta.common.format.metaModel
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 
 object MetaModelFormat extends OFormat[MetaModel] {
@@ -22,11 +22,11 @@ object MetaModelFormat extends OFormat[MetaModel] {
 
   override def writes(metaModel: MetaModel): JsObject = Json.obj(
     sName -> metaModel.name,
-    sEnums -> JsArray(metaModel.enums.map(MEnumFormat.writes)),
-    sClasses -> JsArray(metaModel.classes.map(MClassFormat.writes)),
-    sReferences -> JsArray(metaModel.references.map(MReferenceFormat.writes)),
-    sAttributes -> JsArray(metaModel.attributes.map(MAttributeFormat.writes)),
-    sMethods -> JsArray(metaModel.methods.map(MethodFormat.writes)),
+    sEnums -> Writes.seq(MEnumFormat).writes(metaModel.enums),
+    sClasses -> Writes.seq(MClassFormat).writes(metaModel.classes),
+    sReferences -> Writes.seq(MReferenceFormat).writes(metaModel.references),
+    sAttributes -> Writes.seq(MAttributeFormat).writes(metaModel.attributes),
+    sMethods -> Writes.seq(MethodFormat).writes(metaModel.methods),
     sUiState -> metaModel.uiState
   )
 
@@ -34,10 +34,10 @@ object MetaModelFormat extends OFormat[MetaModel] {
     for {
       name <- (json \ sName).validate[String]
       enums <- (json \ sEnums).validate(Reads.list(MEnumFormat))
-      classes <- (json \ sClasses).validate(Reads.list(MClassFormat(enums)))
-      references <- (json \ sReferences).validate(Reads.list(MReferenceFormat(enums)))
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(MethodFormat(enums)))
+      classes <- (json \ sClasses).validate(Reads.list(new MClassFormat(enums)))
+      references <- (json \ sReferences).validate(Reads.list(new MReferenceFormat(enums)))
+      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
+      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
       uiState <- (json \ sUiState).validate[String]
     } yield {
       MetaModel(

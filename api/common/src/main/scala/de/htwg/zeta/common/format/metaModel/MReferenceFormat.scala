@@ -11,14 +11,14 @@ import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sSourceDeletionDele
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTarget
 import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTargetDeletionDeletesSource
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import play.api.libs.json.JsArray
+import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 object MReferenceFormat extends OWrites[MReference] {
 
@@ -31,20 +31,20 @@ object MReferenceFormat extends OWrites[MReference] {
   val sAttributes = "attributes"
   val sMethods = "methods"
 
-  override def writes(reference: MReference): JsValue = Json.obj(
+  override def writes(reference: MReference): JsObject = Json.obj(
     sName -> reference.name,
     sDescription -> reference.description,
     sSourceDeletionDeletesTarget -> reference.sourceDeletionDeletesTarget,
     sTargetDeletionDeletesSource -> reference.targetDeletionDeletesSource,
-    sSource -> JsArray(reference.source.map(MClassLinkDefFormat.writes)),
-    sTarget -> JsArray(reference.target.map(MClassLinkDefFormat.writes)),
-    sAttributes -> JsArray(reference.attributes.map(MAttributeFormat.writes)),
-    sMethods -> JsArray(reference.methods.map(MethodFormat.writes))
+    sSource -> Writes.seq(MClassLinkDefFormat).writes(reference.source),
+    sTarget -> Writes.seq(MClassLinkDefFormat).writes(reference.target),
+    sAttributes -> Writes.seq(MAttributeFormat).writes(reference.attributes),
+    sMethods -> Writes.seq(MethodFormat).writes(reference.methods)
   )
 
 }
 
-case class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
+class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
 
   override def reads(json: JsValue): JsResult[MReference] = {
     for {
@@ -52,10 +52,10 @@ case class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
       description <- (json \ sDescription).validate[String]
       sourceDeletionDeletesTarget <- (json \ sSourceDeletionDeletesTarget).validate[Boolean]
       targetDeletionDeletesSource <- (json \ sTargetDeletionDeletesSource).validate[Boolean]
-      source <- (json \ sSource).validate(Reads.list[MClassLinkDef])
-      target <- (json \ sTarget).validate(Reads.list[MClassLinkDef])
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(MethodFormat(enums)))
+      source <- (json \ sSource).validate(Reads.list(MClassLinkDefFormat))
+      target <- (json \ sTarget).validate(Reads.list(MClassLinkDefFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
+      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
     } yield {
       MReference(
         name = name,

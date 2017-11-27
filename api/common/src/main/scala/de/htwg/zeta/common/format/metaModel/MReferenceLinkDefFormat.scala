@@ -9,7 +9,7 @@ import play.api.libs.json.OFormat
 
 object MReferenceLinkDefFormat extends OFormat[MReferenceLinkDef]{
 
-  private val sReferenceName = "type" // TODO this should be changed to "referenceName" in Frontend
+  private val sReferenceName = "referenceName"
   private val sUpperBound = "upperBound"
   private val sLowerBound = "lowerBound"
   private val sDeleteIfLower = "deleteIfLower"

@@ -20,7 +20,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.FileFormat
+import de.htwg.zeta.common.format.entity.FileFormat
 
 /**
  * REST-ful API for File definitions

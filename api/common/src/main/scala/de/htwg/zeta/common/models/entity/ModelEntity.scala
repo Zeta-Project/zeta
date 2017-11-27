@@ -10,9 +10,3 @@ case class ModelEntity(
     id: UUID,
     model: Model
 ) extends Entity
-
-object ModelEntity {
-
-  implicit val playJsonWrites: Writes[ModelEntity] = Json.writes[ModelEntity]
-
-}

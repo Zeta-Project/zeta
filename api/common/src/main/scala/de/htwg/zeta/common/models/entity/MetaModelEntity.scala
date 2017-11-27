@@ -14,9 +14,3 @@ case class MetaModelEntity(
     dsl: Dsl = Dsl(),
     validator: Option[String] = None
 ) extends Entity
-
-object MetaModelEntity {
-
-  implicit val playJsonFormat: Format[MetaModelEntity] = Json.format[MetaModelEntity]
-
-}

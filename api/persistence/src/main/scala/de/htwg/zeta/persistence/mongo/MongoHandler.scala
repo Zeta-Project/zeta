@@ -54,9 +54,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import reactivemongo.bson.BSONArray
 import reactivemongo.bson.BSONBoolean
 import reactivemongo.bson.BSONDocument
@@ -254,10 +252,6 @@ object MongoHandler {
   implicit val nodeEntityHandler: BSONDocumentHandler[Node] = Macros.handler[Node]
 
   implicit val edgeEntityHandler: BSONDocumentHandler[Edge] = Macros.handler[Edge]
-
-  implicit val toNodesEntityHandler: BSONDocumentHandler[NodeLink] = Macros.handler[NodeLink]
-
-  implicit val toEdgesEntityHandler: BSONDocumentHandler[EdgeLink] = Macros.handler[EdgeLink]
 
   implicit val modelHandler: BSONDocumentHandler[Model] = Macros.handler[Model]
 

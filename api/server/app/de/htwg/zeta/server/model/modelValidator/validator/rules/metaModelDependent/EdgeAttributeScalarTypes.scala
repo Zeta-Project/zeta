@@ -41,7 +41,7 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
 
     edge.attributeValues.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute.headOption match {
+      case Some(attribute) => Option(attribute) match {
         case None => true
         case Some(head) => head match {
           case _: StringValue => handleStrings(attribute)

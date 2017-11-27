@@ -2,125 +2,84 @@ package de.htwg.zeta.common.format.model
 
 import java.util.UUID
 
-import scala.collection.immutable.List
-import scala.collection.immutable.Seq
-import scala.collection.mutable
-import scala.concurrent.Future
-
+import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
+import de.htwg.zeta.common.format.metaModel.MAttributeFormat
+import de.htwg.zeta.common.format.metaModel.MethodFormat
+import de.htwg.zeta.common.format.model.ModelFormat.sAttributes
+import de.htwg.zeta.common.format.model.ModelFormat.sAttributeValues
+import de.htwg.zeta.common.format.model.ModelFormat.sEdges
+import de.htwg.zeta.common.format.model.ModelFormat.sMethods
+import de.htwg.zeta.common.format.model.ModelFormat.sName
+import de.htwg.zeta.common.format.model.ModelFormat.sNodes
+import de.htwg.zeta.common.format.model.ModelFormat.sUiState
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsError
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsSuccess
-import play.api.libs.json.JsValue
+import play.api.libs.json.JsObject
 import play.api.libs.json.Json
+import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-class ModelFormat private(metaModel: MetaModel) extends Reads[Future[JsResult[Model]]] with Writes[Model] {
+object ModelFormat extends OWrites[Model] {
 
-  private val modelElementsNotUnique = JsError("elements must have unique names")
-
-  private def check(unchecked: JsResult[Model]): JsResult[Model] = {
-    unchecked.flatMap(model => {
-      val set: mutable.HashSet[String] = mutable.HashSet()
-      if (model.nodes.forall(n => set.add(n.name)) && model.edges.forall(e => set.add(e.name))) {
-        JsSuccess(model)
-      } else {
-        modelElementsNotUnique
-      }
-    }).flatMap(checkLinks)
-  }
+  private val sName = "name"
+  private val sMetaModelId = "metaModelId"
+  private val sNodes = "nodes"
+  private val sEdges = "edges"
+  private val sAttributes = "attributes"
+  private val sAttributeValues = "attributeValues"
+  private val sMethods = "methods"
+  private val sUiState = "uiState"
 
 
-  private def checkLinks(model: Model): JsResult[Model] = {
-    val edgesMap = model.edges.map(e => (e.name, e)).toMap
-    val nodesMap = model.nodes.map(n => (n.name, n)).toMap
+  override def writes(model: Model): JsObject = Json.obj(
+    sName -> model.name,
+    sMetaModelId -> model.metaModelId,
+    sNodes -> Writes.seq(NodeFormat).writes(model.nodes),
+    sEdges -> Writes.seq(EdgeFormat).writes(model.edges),
+    sAttributes -> Writes.seq(MAttributeFormat).writes(model.attributes),
+    sAttributeValues -> Writes.map(AttributeValueFormat).writes(model.attributeValues),
+    sMethods -> Writes.seq(MethodFormat).writes(model.methods),
+    sUiState -> model.uiState
+  )
 
-    def checkGenericLink[T](source: String, map: Map[String, _], sup: T => Seq[String])(t: T): List[String] = {
-      sup(t).toStream.flatMap(n => {
-        if (map.contains(n)) {
-          Nil
-        } else {
-          List(s"invalid link to node: '$source' -> '$n' ('$n' is missing or doesn't match expected type)")
-        }
-      }).headOption.toList
-    }
-
-    def checkNodes(n: Node): Option[String] = {
-      val checkToEdge = checkGenericLink[EdgeLink](n.name, edgesMap, _.edgeName) _
-      n.inputEdgeNames.toStream.flatMap(checkToEdge).headOption match {
-        case None => n.outputEdgeNames.toStream.flatMap(checkToEdge).headOption
-        case some @ Some(_) => some
-      }
-    }
-
-
-    def checkEdges(e: Edge): Option[String] = {
-      val checkToNode = checkGenericLink[NodeLink](e.name, nodesMap, _.nodeNames) _
-      e.sourceNodeName.toStream.flatMap(checkToNode).headOption match {
-        case None => e.targetNodeName.toStream.flatMap(checkToNode).headOption
-        case some @ Some(_) => some
-      }
-    }
-
-    val ret = model.nodes.toStream.flatMap(checkNodes(_).toList).headOption match {
-      case None => model.edges.toStream.flatMap(checkEdges(_).toList).headOption
-      case some @ Some(_) => some
-    }
-
-    ret match {
-      case Some(error) => JsError(error)
-      case None => JsSuccess(model)
-    }
-  }
-
-  override def reads(json: JsValue): JsResult[Future[JsResult[Model]]] = {
-    null // TODO
-    /*for {
-      name <- (json \ "name").validate[String]
-      metaModelId <- (json \ "metaModelId").validate[UUID]
+  val empty: Reads[Model] = Reads { json =>
+    for {
+      name <- (json \ sName).validate[String]
+      metaModelId <- (json \ sMetaModelId).validate[UUID]
     } yield {
-      repo.metaModelEntity.read(metaModelId).map(entity => {
-        val unchecked: JsResult[Model] =
-          for {
-            elements <- (json \ "elements").validate(Reads.list(ModelElementReads(entity.metaModel)))
-            attributes <- (json \ "attributes").validate(AttributeFormat(entity.metaModel.attributes, name)) // TODO
-            uiState <- (json \ "uiState").validate[String]
-          } yield {
-            val (nodes, edges) =
-              elements.reverse.foldLeft((List[Node](), List[Edge]()))((pair, either) => either match {
-                case Left(node) => (node :: pair._1, pair._2)
-                case Right(edge) => (pair._1, edge :: pair._2)
-              })
-            Model(name, metaModelId, nodes, edges, Seq.empty, Map.empty, Seq.empty, uiState)
-          }
-        check(unchecked)
-      })
-    }*/
+      Model.empty(name, metaModelId)
+    }
   }
 
-  override def writes(o: Model): JsValue = ModelFormat.writes(o)
 }
 
-object ModelFormat extends Writes[Model] {
+class ModelFormat(metaModelId: UUID, metaModel: MetaModel) extends Reads[Model] {
 
-  def apply(userID: UUID): ModelFormat = null // TODO new ModelFormat(userID)
-
-  override def writes(o: Model): JsValue = {
-    val elements = JsArray(o.nodes.map(NodeFormat.writes) ++ o.edges.map(EdgeFormat.writes))
-
-    Json.obj(
-      "name" -> o.name,
-      "metaModelId" -> o.metaModelId,
-      "elements" -> elements,
-      "uiState" -> o.uiState
-    )
+  override def reads(json: JsValue): JsResult[Model] = {
+    for {
+      name <- (json \ sName).validate[String]
+      nodes <- (json \ sNodes).validate(Reads.list(new NodeFormat(metaModel)))
+      edges <- (json \ sEdges).validate(Reads.list(new EdgeFormat(metaModel)))
+      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(metaModel.enums)))
+      attributeValues <- (json \ sAttributeValues).validate(Reads.map(new AttributeValueFormat(metaModel.enums)))
+      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(metaModel.enums)))
+      uiState <- (json \ sUiState).validate[String]
+    } yield {
+      Model(
+        name = name,
+        metaModelId = metaModelId,
+        nodes = nodes,
+        edges = edges,
+        attributes = attributes,
+        attributeValues = attributeValues,
+        methods = methods,
+        uiState = uiState
+      )
+    }
   }
+
 }

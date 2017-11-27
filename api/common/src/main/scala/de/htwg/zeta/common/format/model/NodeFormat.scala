@@ -38,7 +38,7 @@ object NodeFormat extends OWrites[Node] {
 
 }
 
-case class NodeFormat(metaModel: MetaModel) extends Reads[Node] {
+class NodeFormat(metaModel: MetaModel) extends Reads[Node] {
 
   override def reads(json: JsValue): JsResult[Node] = {
     for {
@@ -51,9 +51,9 @@ case class NodeFormat(metaModel: MetaModel) extends Reads[Node] {
       }
       outputs <- (json \ NodeFormat.sOutputEdgeNames).validate(Reads.list[String])
       inputs <- (json \ NodeFormat.sInputEdgeNames).validate(Reads.list[String])
-      attributes <- (json \ NodeFormat.sAttributes).validate(Reads.list(MAttributeFormat(metaModel.enums)))
-      attributeValues <- (json \ NodeFormat.sAttributeValues).validate(Reads.map(AttributeValueFormat(metaModel.enums)))
-      methods <- (json \ NodeFormat.sMethods).validate(Reads.list(MethodFormat(metaModel.enums)))
+      attributes <- (json \ NodeFormat.sAttributes).validate(Reads.list(new MAttributeFormat(metaModel.enums)))
+      attributeValues <- (json \ NodeFormat.sAttributeValues).validate(Reads.map(new AttributeValueFormat(metaModel.enums)))
+      methods <- (json \ NodeFormat.sMethods).validate(Reads.list(new MethodFormat(metaModel.enums)))
     } yield {
       Node(
         name = name,

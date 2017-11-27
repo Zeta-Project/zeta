@@ -16,7 +16,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.GeneratorFormat
+import de.htwg.zeta.common.format.entity.GeneratorFormat
 
 /**
  * REST-ful API for generator definitions

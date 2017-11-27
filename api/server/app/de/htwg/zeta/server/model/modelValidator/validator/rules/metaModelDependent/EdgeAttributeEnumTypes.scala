@@ -20,10 +20,10 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
 
   def rule(edge: Edge): Boolean = edge.attributeValues.get(attributeType) match {
     case None => true
-    case Some(attribute) => attribute.headOption match {
+    case Some(attribute) => attribute match {
       case None => true
       case Some(head) => head match {
-        case _: EnumValue => attribute.collect { case v: EnumValue => v }.forall(_.enumName == enumName)
+        case x: EnumValue => attribute.collect { case v: EnumValue => v }.forall(_.enumName == enumName)
         case _ => true
       }
     }

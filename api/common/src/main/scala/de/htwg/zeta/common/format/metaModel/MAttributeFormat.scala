@@ -55,15 +55,15 @@ object MAttributeFormat extends OWrites[MAttribute] {
 
 }
 
-case class MAttributeFormat(enums: Seq[MEnum]) extends Reads[MAttribute] {
+class MAttributeFormat(enums: Seq[MEnum]) extends Reads[MAttribute] {
 
   override def reads(json: JsValue): JsResult[MAttribute] = {
     for {
       name <- (json \ sName).validate[String]
       globalUnique <- (json \ sGlobalUnique).validate[Boolean]
       localUnique <- (json \ sLocalUnique).validate[Boolean]
-      typ <- (json \ sType).validate(AttributeTypeFormat(enums))
-      default <- (json \ sDefault).validate(AttributeValueFormat(enums))
+      typ <- (json \ sType).validate(new AttributeTypeFormat(enums))
+      default <- (json \ sDefault).validate(new AttributeValueFormat(enums))
       constant <- (json \ sConstant).validate[Boolean]
       singleAssignment <- (json \ sSingleAssignment).validate[Boolean]
       expression <- (json \ sExpression).validate[String]

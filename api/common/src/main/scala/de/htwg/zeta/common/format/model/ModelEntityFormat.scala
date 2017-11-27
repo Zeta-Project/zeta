@@ -2,48 +2,39 @@ package de.htwg.zeta.common.format.model
 
 import java.util.UUID
 
-import scala.collection.immutable.List
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
-
+import de.htwg.zeta.common.format.model.ModelEntityFormat.sId
+import de.htwg.zeta.common.format.model.ModelEntityFormat.sModel
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json
+import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 
+object ModelEntityFormat extends OWrites[ModelEntity] {
 
-class ModelEntityFormat(userID: UUID) extends Reads[Future[JsResult[ModelEntity]]] with Writes[ModelEntity] {
-  val modelFormat = ModelFormat(userID)
+  val sId = "id"
+  val sModel = "model"
 
-  override def reads(json: JsValue): JsResult[Future[JsResult[ModelEntity]]] = {
+  override def writes(entity: ModelEntity): JsObject = Json.obj(
+    sId -> entity.id,
+    sModel -> ModelFormat.writes(entity.model)
+  )
+
+}
+
+class ModelEntityFormat(metaModelId: UUID, metaModel: MetaModel) extends Reads[ModelEntity] {
+
+  override def reads(json: JsValue): JsResult[ModelEntity] = {
     for {
-      id <- (json \ "id").validate[UUID]
-      metaModelId <- (json \ "metaModelId").validate[UUID]
-      model: Future[JsResult[Model]] <- (json \ "model").validate(modelFormat)
+      id <- (json \ sId).validate[UUID]
+      model <- (json \ sModel).validate(new ModelFormat(metaModelId, metaModel))
     } yield {
-      model.map(_.map(model => {
-        ModelEntity(id, model)
-      }))
+      ModelEntity(id, model)
     }
   }
 
-  override def writes(o: ModelEntity): JsValue = ModelEntityFormat.writes(o)
-}
-
-object ModelEntityFormat extends Writes[ModelEntity] {
-
-  def apply(userID: UUID): ModelEntityFormat = new ModelEntityFormat(userID)
-
-  override def writes(o: ModelEntity): JsValue = {
-    JsObject(List(
-      "id" -> Json.toJson(o.id),
-      "metaModelId" -> Json.toJson(o.model.metaModelId),
-      "model" -> ModelFormat.writes(o.model)
-    ))
-  }
 }

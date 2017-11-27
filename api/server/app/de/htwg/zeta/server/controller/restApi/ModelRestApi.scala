@@ -8,8 +8,8 @@ import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
+import de.htwg.zeta.common.format.model.ModelFormat
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
@@ -48,7 +48,7 @@ class ModelRestApi @Inject()(
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(Model.playJsonReadsEmpty).fold(
+    request.body.validate(ModelFormat.empty).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
@@ -74,7 +74,7 @@ class ModelRestApi @Inject()(
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { metaModelEntity =>
-        request.body.validate(Model.playJsonReads(metaModelEntity)).fold(
+        request.body.validate(new ModelFormat(metaModelEntity.id, metaModelEntity.metaModel)).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))

@@ -1,44 +1,41 @@
-package de.htwg.zeta.common.format
+package de.htwg.zeta.common.format.entity
 
 import java.util.UUID
 
-import de.htwg.zeta.common.models.entity.TimedTask
+import de.htwg.zeta.common.models.entity.EventDrivenTask
 import play.api.libs.json.Format
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 
 /**
- * Parse JsValue to TimedTask and TimedTask to JsValue
+ * Parse JsValue to EventDrivenTask and EventDrivenTask to JsValue
  */
-object TimedTaskFormat extends Format[TimedTask] {
+object EventDrivenTaskFormat extends Format[EventDrivenTask] {
 
   val attributeName = "name"
   val attributeGenerator = "generatorId"
   val attributeFilter = "filterId"
-  val attributeInterval = "interval"
-  val attributeStart = "start"
+  val attributeEvent = "event"
 
-  override def writes(o: TimedTask): JsValue = {
+  override def writes(o: EventDrivenTask): JsValue = {
     Json.obj(
       "id" -> o.id.toString,
       attributeName -> o.name,
       attributeGenerator -> o.generatorId,
       attributeFilter -> o.filterId,
-      attributeInterval -> o.interval,
-      attributeStart -> o.start
+      attributeEvent -> o.event
     )
   }
 
-  override def reads(json: JsValue): JsResult[TimedTask] = {
+  override def reads(json: JsValue): JsResult[EventDrivenTask] = {
     for {
       name <- (json \ attributeName).validate[String]
       generator <- (json \ attributeGenerator).validate[UUID]
       filter <- (json \ attributeFilter).validate[UUID]
-      interval <- (json \ attributeInterval).validate[Int]
-      start <- (json \ attributeStart).validate[String]
+      event <- (json \ attributeEvent).validate[String]
     } yield {
-      TimedTask(UUID.randomUUID(), name, generator, filter, interval, start)
+      EventDrivenTask(UUID.randomUUID(), name, generator, filter, event)
     }
   }
 }

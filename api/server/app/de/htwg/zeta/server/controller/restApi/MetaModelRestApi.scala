@@ -9,6 +9,7 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
+import de.htwg.zeta.common.format.metaModel.MetaModelFormat
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -23,8 +24,8 @@ import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
-import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -58,7 +59,7 @@ class MetaModelRestApi @Inject()(
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(MetaModel.playJsonReadsEmpty).fold(
+    request.body.validate(MetaModelFormat.empty).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))

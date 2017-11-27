@@ -45,7 +45,7 @@ object EdgeFormat extends OWrites[Edge] {
 
 }
 
-case class EdgeFormat(metaModel: MetaModel) extends Reads[Edge] {
+class EdgeFormat(metaModel: MetaModel) extends Reads[Edge] {
 
   override def reads(json: JsValue): JsResult[Edge] = {
     for {
@@ -58,9 +58,9 @@ case class EdgeFormat(metaModel: MetaModel) extends Reads[Edge] {
       }
       source <- (json \ sSource).validate[String]
       target <- (json \ sTarget).validate[String]
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat(metaModel.enums)))
-      attributeValues <- (json \ sAttributeValues).validate(Reads.map(AttributeValueFormat(metaModel.enums)))
-      methods <- (json \ sMethods).validate(Reads.list(MethodFormat(metaModel.enums)))
+      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(metaModel.enums)))
+      attributeValues <- (json \ sAttributeValues).validate(Reads.map(new AttributeValueFormat(metaModel.enums)))
+      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(metaModel.enums)))
     } yield {
       Edge(
         name = name,

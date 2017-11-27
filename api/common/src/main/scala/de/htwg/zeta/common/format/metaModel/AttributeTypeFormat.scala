@@ -54,7 +54,7 @@ object AttributeTypeFormat extends Writes[AttributeType] {
 
 }
 
-case class AttributeTypeFormat(enums: Seq[MEnum]) extends Reads[AttributeType] {
+class AttributeTypeFormat(enums: Seq[MEnum]) extends Reads[AttributeType] {
 
   override def reads(json: JsValue): JsResult[AttributeType] = {
     json match {
@@ -68,7 +68,6 @@ case class AttributeTypeFormat(enums: Seq[MEnum]) extends Reads[AttributeType] {
     json.value match {
       case `sString` => JsSuccess(StringType)
       case `sBoolean` => JsSuccess(BoolType)
-      case "Bool" => JsSuccess(BoolType) // TODO frontend should always send "Boolean" instead of "Bool"
       case `sInt` => JsSuccess(IntType)
       case `sDouble` => JsSuccess(DoubleType)
       case `sUnit` => JsSuccess(UnitType)

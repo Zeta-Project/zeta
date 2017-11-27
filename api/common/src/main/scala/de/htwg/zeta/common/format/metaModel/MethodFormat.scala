@@ -47,14 +47,14 @@ object MethodFormat extends OWrites[Method] {
 
 }
 
-case class MethodFormat(enums: Seq[MEnum]) extends Reads[Method] {
+class MethodFormat(enums: Seq[MEnum]) extends Reads[Method] {
 
   override def reads(json: JsValue): JsResult[Method] = {
     for {
       name <- (json \ sName).validate[String]
       parameters <- (json \ sParameters).validate(readsParameters)
       description <- (json \ sDescription).validate[String]
-      returnType <- (json \ sReturnType).validate(AttributeTypeFormat(enums))
+      returnType <- (json \ sReturnType).validate(new AttributeTypeFormat(enums))
       code <- (json \ sCode).validate[String]
     } yield {
       Method(name, parameters, description, returnType, code)
@@ -68,7 +68,7 @@ case class MethodFormat(enums: Seq[MEnum]) extends Reads[Method] {
   private def readsParameter: Reads[(String, AttributeType)] = Reads { json =>
     for {
       name <- (json \ sName).validate[String]
-      typ <- (json \ sType).validate(AttributeTypeFormat(enums))
+      typ <- (json \ sType).validate(new AttributeTypeFormat(enums))
     } yield {
       (name, typ)
     }

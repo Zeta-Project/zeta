@@ -25,7 +25,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.FilterFormat
+import de.htwg.zeta.common.format.entity.FilterFormat
 
 /**
  * REST-ful API for filter definitions

@@ -15,7 +15,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.EventDrivenTaskFormat
+import de.htwg.zeta.common.format.entity.EventDrivenTaskFormat
 
 /**
  * REST-ful API for filter definitions

@@ -15,7 +15,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Result
 import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.TimedTaskFormat
+import de.htwg.zeta.common.format.entity.TimedTaskFormat
 
 /**
  * REST-ful API for filter definitions

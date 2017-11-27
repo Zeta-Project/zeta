@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.format
+package de.htwg.zeta.common.format.entity
 
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.GeneratorImageOptions

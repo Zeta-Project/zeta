@@ -10,7 +10,7 @@ import play.api.libs.json.OFormat
 
 object MClassLinkDefFormat extends OFormat[MClassLinkDef] {
 
-  private val sClassName = "type" // TODO this should be changed to "className" in Frontend
+  private val sClassName = "className"
   private val sUpperBound = "upperBound"
   private val sLowerBound = "lowerBound"
   private val sDeleteIfLower = "deleteIfLower"

@@ -4,6 +4,7 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.MetaModelRelease
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
+import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -18,7 +19,7 @@ object MetaModelReleaseFormat extends OFormat[MetaModelRelease] {
   private val sDsl = "dsl"
   private val sVersion = "version"
 
-  override def writes(release: MetaModelRelease): JsValue = Json.obj(
+  override def writes(release: MetaModelRelease): JsObject = Json.obj(
     sId -> release.id,
     sName -> release.name,
     sMetaModel -> MetaModelFormat.writes(release.metaModel),

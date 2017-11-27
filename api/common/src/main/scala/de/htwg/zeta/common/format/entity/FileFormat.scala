@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.format
+package de.htwg.zeta.common.format.entity
 
 import java.util.UUID
 

@@ -13,13 +13,13 @@ import de.htwg.zeta.common.format.metaModel.MClassFormat.sSuperTypeNames
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OWrites
 import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 object MClassFormat extends OWrites[MClass] {
 
@@ -37,15 +37,15 @@ object MClassFormat extends OWrites[MClass] {
     sDescription -> clazz.description,
     sAbstractness -> clazz.abstractness,
     sSuperTypeNames -> clazz.superTypeNames,
-    sInputs -> JsArray(clazz.inputs.map(MReferenceLinkDefFormat.writes)),
-    sOutputs -> JsArray(clazz.outputs.map(MReferenceLinkDefFormat.writes)),
-    sAttributes -> JsArray(clazz.attributes.map(MAttributeFormat.writes)),
-    sMethods -> JsArray(clazz.methods.map(MethodFormat.writes))
+    sInputs -> Writes.seq(MReferenceLinkDefFormat).writes(clazz.inputs),
+    sOutputs -> Writes.seq(MReferenceLinkDefFormat).writes(clazz.outputs),
+    sAttributes -> Writes.seq(MAttributeFormat).writes(clazz.attributes),
+    sMethods -> Writes.seq(MethodFormat).writes(clazz.methods)
   )
 
 }
 
-case class MClassFormat(enums: Seq[MEnum]) extends Reads[MClass] {
+class MClassFormat(enums: Seq[MEnum]) extends Reads[MClass] {
 
   override def reads(json: JsValue): JsResult[MClass] = {
     for {
@@ -53,10 +53,10 @@ case class MClassFormat(enums: Seq[MEnum]) extends Reads[MClass] {
       description <- (json \ sDescription).validate[String]
       abstractness <- (json \ sAbstractness).validate[Boolean]
       superTypeNames <- (json \ sSuperTypeNames).validate(Reads.list[String])
-      inputs <- (json \ sInputs).validate(Reads.list[MReferenceLinkDef])
-      outputs <- (json \ sOutputs).validate(Reads.list[MReferenceLinkDef])
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(MethodFormat(enums)))
+      inputs <- (json \ sInputs).validate(Reads.list(MReferenceLinkDefFormat))
+      outputs <- (json \ sOutputs).validate(Reads.list(MReferenceLinkDefFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
+      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
     } yield {
       MClass(
         name = name,

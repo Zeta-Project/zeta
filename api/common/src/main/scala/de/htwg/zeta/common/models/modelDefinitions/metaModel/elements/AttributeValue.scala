@@ -1,7 +1,5 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
-import scala.collection.immutable.Seq
-
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
@@ -14,7 +12,7 @@ object AttributeValue {
   /** A mixin that offers the attributes field */
   trait HasAttributeValues {
 
-    val attributeValues: Map[String, Seq[AttributeValue]]
+    val attributeValues: Map[String, AttributeValue]
 
   }
 
