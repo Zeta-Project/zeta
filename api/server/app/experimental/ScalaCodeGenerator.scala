@@ -45,7 +45,7 @@ object ScalaCodeGenerator {
   }
 
   private def generateEnum(enum: MEnum, fileId: UUID): File = {
-    val symbols = enum.values.map(symbol => s"  object ${symbol.name} extends ${enum.name}\n").mkString("\n")
+    val symbols = enum.values.map(symbol => s"  object ${symbol.valueName} extends ${enum.name}\n").mkString("\n")
     val content =
       s"""|sealed trait ${enum.name}
           |

@@ -55,7 +55,7 @@ object AttributeType {
     /** The symbols. */
     val values: Seq[EnumValue] = valueNames.map(value => EnumValue(name, value))
 
-    val valueMap: Map[String, EnumValue] = values.map(symbol => (symbol.name, symbol)).toMap
+    val valueMap: Map[String, EnumValue] = values.map(symbol => (symbol.valueName, symbol)).toMap
 
   }
 

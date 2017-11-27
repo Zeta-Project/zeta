@@ -34,9 +34,9 @@ object AttributeValue {
 
   /** An Enum Symbol
    *
-   * @param name     name of the symbol
    * @param enumName name of the the belonging MEnum
+   * @param valueName     name of the symbol
    */
-  case class EnumValue(enumName: String, name: String) extends AttributeValue
+  case class EnumValue(enumName: String, valueName: String) extends AttributeValue
 
 }

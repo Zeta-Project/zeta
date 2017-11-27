@@ -46,7 +46,7 @@ object AttributeValueFormat extends OWrites[AttributeValue] {
       case BoolValue(value) => Json.obj(sType -> sBoolean, sValue -> value)
       case IntValue(value) => Json.obj(sType -> sInt, sValue -> value)
       case DoubleValue(value) => Json.obj(sType -> sDouble, sValue -> value)
-      case EnumValue(valueName, enumName) => Json.obj(sType -> sEnum, sEnumName -> enumName, sValueName -> valueName)
+      case EnumValue(enumName, valueName) => Json.obj(sType -> sEnum, sEnumName -> enumName, sValueName -> valueName)
     }
   }
 
@@ -69,7 +69,7 @@ class AttributeValueFormat(enums: Seq[MEnum]) extends Reads[AttributeValue] {
       enums.find(_.name == enumName) match {
         case Some(enum) =>
           (json \ sValueName).validate[String].flatMap { valueName =>
-            enum.values.find(_.name == valueName) match {
+            enum.values.find(_.valueName == valueName) match {
               case Some(enumValue) => JsSuccess(enumValue)
               case None => JsError(s"Read value $valueName from MEnum $enumName, but it's not defined")
             }

@@ -40,11 +40,11 @@ object AttributeTypeFormat extends Writes[AttributeType] {
 
   override def writes(typ: AttributeType): JsValue = {
     typ match {
-      case StringType => JsString(StringType.asString)
-      case BoolType => JsString(BoolType.asString)
-      case IntType => JsString(IntType.asString)
-      case DoubleType => JsString(DoubleType.asString)
-      case UnitType => JsString(UnitType.asString)
+      case StringType => JsString(sString)
+      case BoolType => JsString(sBoolean)
+      case IntType => JsString(sInt)
+      case DoubleType => JsString(sDouble)
+      case UnitType => JsString(sUnit)
       case enum: MEnum => Json.obj(
         sType -> sEnum,
         sName -> enum.name
