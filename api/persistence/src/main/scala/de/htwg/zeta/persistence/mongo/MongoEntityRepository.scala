@@ -9,13 +9,16 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.common.format.entity.BondedTaskFormat
 import de.htwg.zeta.common.format.entity.EventDrivenTaskFormat
-import de.htwg.zeta.common.format.entity.GeneratorImageFormat
+import de.htwg.zeta.common.format.entity.FilterFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelReleaseFormat
 import de.htwg.zeta.common.format.model.ModelEntityFormat
 import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.common.models.entity.Entity
+import de.htwg.zeta.common.models.entity.FilterImage
+import de.htwg.zeta.common.models.entity.Log
+import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
@@ -33,35 +36,31 @@ import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.UuidDocumentReader
-import de.htwg.zeta.persistence.mongo.MongoEntityRepository.idProjection
-import de.htwg.zeta.persistence.mongo.MongoEntityRepository.sId
-import play.api.libs.json.Format
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.sMongoId
+import de.htwg.zeta.persistence.mongo.MongoPlayConversionHelper.readPlayJson
+import de.htwg.zeta.persistence.mongo.MongoPlayConversionHelper.writePlayJson
+import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
-import play.api.libs.json.OWrites
-import play.api.libs.json.Reads
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.indexes.Index
-import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
+import reactivemongo.play.json.JsObjectReader
+import reactivemongo.play.json.JsObjectWriter
+
 
 sealed abstract class MongoEntityRepository[E <: Entity](
     database: Future[DefaultDB],
-    implicit val entityHandler: BSONDocumentHandler[E],
-    val format: OFormat[E]
+    val entityHandler: BSONDocumentHandler[E],
+    implicit val format: OFormat[E]
 )(implicit manifest: Manifest[E]) extends EntityRepository[E] {
-
-  def this(database: Future[DefaultDB], entityHandler: BSONDocumentHandler[E], format: OFormat[E]) =
-    this(database, entityHandler, format, format)
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](entityTypeName))
     _ <- col.create().recover { case _ => }
-    _ <- col.indexesManager.ensure(Index(Seq(sId -> IndexType.Ascending), unique = true))
   } yield {
     col
   }
@@ -73,7 +72,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
    */
   override def create(entity: E): Future[E] = {
     collection.flatMap { collection =>
-      collection.insert(entity).map(_ => entity)
+      collection.insert(writePlayJson(entity)).map(_ => entity)
     }
   }
 
@@ -84,7 +83,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
    */
   override def read(id: UUID): Future[E] = {
     collection.flatMap { collection =>
-      collection.find(BSONDocument(sId -> id.toString)).requireOne[E]
+      collection.find(BSONDocument(sMongoId -> id.toString)).requireOne[JsObject].map(readPlayJson[E])
     }
   }
 
@@ -96,7 +95,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
    */
   override def delete(id: UUID): Future[Unit] = {
     collection.flatMap { collection =>
-      collection.remove(BSONDocument(sId -> id.toString)).flatMap(result =>
+      collection.remove(BSONDocument(sMongoId -> id.toString)).flatMap(result =>
         if (result.n == 1) {
           Future.successful(())
         } else {
@@ -113,7 +112,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
   override def readAllIds(): Future[Set[UUID]] = {
     implicit val reader: BSONDocumentReader[UUID] = UuidDocumentReader
     collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, idProjection).cursor[UUID]().
+      collection.find(BSONDocument.empty, BSONDocument.empty).cursor[UUID]().
         collect(-1, Cursor.FailOnError[Set[UUID]]())
     }
   }
@@ -128,7 +127,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
     read(id).flatMap { entity =>
       collection.flatMap { collection =>
         val updated = updateEntity(entity)
-        collection.update(BSONDocument(sId -> id.toString), updated).flatMap(result =>
+        collection.update(BSONDocument(sMongoId -> id.toString), writePlayJson(updated)).flatMap(result =>
           if (result.nModified == 1) {
             Future.successful(updated)
           } else {
@@ -143,14 +142,12 @@ sealed abstract class MongoEntityRepository[E <: Entity](
 
 private object MongoEntityRepository {
 
-  private val sId = "id"
-
-  private val idProjection = BSONDocument("_id" -> 0, sId -> 1)
+  private val sMongoId = "_id"
 
   object UuidDocumentReader extends BSONDocumentReader[UUID] {
 
     override def read(doc: BSONDocument): UUID = {
-      UUID.fromString(doc.getAs[String](sId).get)
+      UUID.fromString(doc.getAs[String](sMongoId).get)
     }
 
   }
@@ -160,7 +157,7 @@ private object MongoEntityRepository {
 @Singleton
 class MongoAccessAuthorisationRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.accessAuthorisationHandler)
+) extends MongoEntityRepository(database, MongoHandler.accessAuthorisationHandler, null) // TODO use own serializer
   with AccessAuthorisationRepository
 
 @Singleton
@@ -178,31 +175,31 @@ class MongoEventDrivenTaskRepository @Inject()(
 @Singleton
 class MongoFilterRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.filterHandler)
+) extends MongoEntityRepository(database, MongoHandler.filterHandler, FilterFormat)
   with FilterRepository
 
 @Singleton
 class MongoFilterImageRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.filterImageHandler)
+) extends MongoEntityRepository(database, MongoHandler.filterImageHandler, Json.format[FilterImage]) // TODO use own serializer
   with FilterImageRepository
 
 @Singleton
 class MongoGeneratorRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.generatorHandler)
+) extends MongoEntityRepository(database, MongoHandler.generatorHandler, null) // TODO use own serializer
   with GeneratorRepository
 
 @Singleton
 class MongoGeneratorImageRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.generatorImageHandler, GeneratorImageFormat)
+) extends MongoEntityRepository(database, MongoHandler.generatorImageHandler, null)
   with GeneratorImageRepository
 
 @Singleton
 class MongoLogRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.logHandler)
+) extends MongoEntityRepository(database, MongoHandler.logHandler, Json.format[Log]) // TODO use own serializer
   with LogRepository
 
 @Singleton
@@ -226,7 +223,7 @@ class MongoModelEntityRepository @Inject()(
 @Singleton
 class MongoSettingsRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.settingsHandler)
+) extends MongoEntityRepository(database, MongoHandler.settingsHandler, Json.format[Settings]) // TODO use own serializer
   with SettingsRepository
 
 @Singleton

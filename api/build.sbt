@@ -178,6 +178,7 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
       "com.mohiva" %% "play-silhouette" % "4.0.0",
       "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
       "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "org.reactivemongo" %% "reactivemongo-play-json" % "0.12.3",
       "net.codingwell" %% "scala-guice" % "4.0.1"
     )
   )

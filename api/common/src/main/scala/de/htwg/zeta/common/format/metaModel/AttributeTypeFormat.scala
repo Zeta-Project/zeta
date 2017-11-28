@@ -5,7 +5,6 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeT
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.EnumType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import play.api.libs.json.Format
@@ -36,9 +35,9 @@ object AttributeTypeFormat extends Format[AttributeType] {
       case IntType => JsString(sInt)
       case DoubleType => JsString(sDouble)
       case UnitType => JsString(sUnit)
-      case enum: MEnum => Json.obj(
+      case EnumType(name) => Json.obj(
         sType -> sEnum,
-        sName -> enum.name
+        sName -> name
       )
     }
   }

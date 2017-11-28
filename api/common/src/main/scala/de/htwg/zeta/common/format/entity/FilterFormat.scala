@@ -9,6 +9,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
@@ -20,7 +21,7 @@ class FilterFormat extends Reads[Filter] with Writes[Filter] {
 /**
  * Parse JsValue to Filter and Filter to JsValue
  */
-object FilterFormat extends Format[Filter] with Logging {
+object FilterFormat extends OFormat[Filter] with Logging {
   val attributeId = "id"
   val attributeName = "name"
   val attributeDescription = "description"
@@ -29,7 +30,7 @@ object FilterFormat extends Format[Filter] with Logging {
 
   def apply(): FilterFormat = new FilterFormat()
 
-  override def writes(o: Filter): JsValue = {
+  override def writes(o: Filter): JsObject = {
     Json.obj(
       attributeId -> o.id.toString,
       attributeName -> o.name,

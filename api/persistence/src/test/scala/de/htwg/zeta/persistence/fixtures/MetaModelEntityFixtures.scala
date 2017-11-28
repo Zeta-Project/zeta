@@ -5,7 +5,6 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 
-import de.htwg.zeta.common.format.metaModel.MetaModelFormat
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
@@ -101,7 +100,7 @@ object MetaModelEntityFixtures {
     name = "enumAttribute",
     globalUnique = false,
     localUnique = true,
-    typ = enum1,
+    typ = enum1.typ,
     default = enum1.values.head,
     constant = false,
     singleAssignment = true,

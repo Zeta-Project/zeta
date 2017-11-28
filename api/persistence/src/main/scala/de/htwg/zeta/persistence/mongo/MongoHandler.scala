@@ -2,7 +2,6 @@ package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
 
-import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 
 import com.mohiva.play.silhouette.api.LoginInfo
@@ -36,6 +35,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.EnumType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
@@ -140,7 +140,6 @@ object MongoHandler {
 
   private val sType = "type"
   private val sValue = "value"
-  private val sValues = "values"
   private val sString = "string"
   private val sBool = "bool"
   private val sInt = "int"
@@ -159,7 +158,7 @@ object MongoHandler {
         case IntType => BSONDocument(sType -> sInt)
         case DoubleType => BSONDocument(sType -> sDouble)
         case UnitType => BSONDocument(sType -> sUnit)
-        case MEnum(name, values) => BSONDocument(sType -> sEnum, sName -> name, sValues -> values)
+        case EnumType(name) => BSONDocument(sType -> sEnum, sName -> name)
       }
     }
 
@@ -170,7 +169,7 @@ object MongoHandler {
         case `sInt` => IntType
         case `sDouble` => DoubleType
         case `sUnit` => UnitType
-        case `sEnum` => MEnum(doc.getAs[String](sName).get, doc.getAs[Seq[String]](sValues).get)
+        case `sEnum` => EnumType(doc.getAs[String](sName).get)
       }
     }
 

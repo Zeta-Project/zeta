@@ -56,6 +56,8 @@ object AttributeType {
    */
   case class MEnum(name: String, valueNames: Seq[String]) {
 
+    val typ = EnumType(name)
+
     /** The symbols. */
     val values: Seq[EnumValue] = valueNames.map(value => EnumValue(name, value))
 
