@@ -5,25 +5,17 @@ import java.util.UUID
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.format.model.ModelFormat.sAttributes
-import de.htwg.zeta.common.format.model.ModelFormat.sAttributeValues
-import de.htwg.zeta.common.format.model.ModelFormat.sEdges
-import de.htwg.zeta.common.format.model.ModelFormat.sMethods
-import de.htwg.zeta.common.format.model.ModelFormat.sName
-import de.htwg.zeta.common.format.model.ModelFormat.sNodes
-import de.htwg.zeta.common.format.model.ModelFormat.sUiState
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.model.Model
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.OWrites
+import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-object ModelFormat extends OWrites[Model] {
+object ModelFormat extends OFormat[Model] {
 
   private val sName = "name"
   private val sMetaModelId = "metaModelId"
@@ -33,7 +25,6 @@ object ModelFormat extends OWrites[Model] {
   private val sAttributeValues = "attributeValues"
   private val sMethods = "methods"
   private val sUiState = "uiState"
-
 
   override def writes(model: Model): JsObject = Json.obj(
     sName -> model.name,
@@ -55,13 +46,10 @@ object ModelFormat extends OWrites[Model] {
     }
   }
 
-}
-
-class ModelFormat(metaModelId: UUID) extends Reads[Model] {
-
   override def reads(json: JsValue): JsResult[Model] = {
     for {
       name <- (json \ sName).validate[String]
+      metaModelId <- (json \ sMetaModelId).validate[UUID]
       nodes <- (json \ sNodes).validate(Reads.list(NodeFormat))
       edges <- (json \ sEdges).validate(Reads.list(EdgeFormat))
       attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))

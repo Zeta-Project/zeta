@@ -7,7 +7,16 @@ import javax.inject.Singleton
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import de.htwg.zeta.common.format.entity.BondedTaskFormat
+import de.htwg.zeta.common.format.entity.EventDrivenTaskFormat
+import de.htwg.zeta.common.format.entity.GeneratorImageFormat
+import de.htwg.zeta.common.format.entity.TimedTaskFormat
+import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
+import de.htwg.zeta.common.format.metaModel.MetaModelReleaseFormat
+import de.htwg.zeta.common.format.model.ModelEntityFormat
+import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.common.models.entity.Entity
+import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.persistence.general.EntityRepository
@@ -26,6 +35,11 @@ import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.UuidDocumentReader
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.idProjection
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.sId
+import play.api.libs.json.Format
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
+import play.api.libs.json.OWrites
+import play.api.libs.json.Reads
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
@@ -35,10 +49,14 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentHandler
 import reactivemongo.bson.BSONDocumentReader
 
-sealed abstract class MongoEntityRepository[E <: Entity] (
+sealed abstract class MongoEntityRepository[E <: Entity](
     database: Future[DefaultDB],
-    implicit val entityHandler: BSONDocumentHandler[E]
+    implicit val entityHandler: BSONDocumentHandler[E],
+    val format: OFormat[E]
 )(implicit manifest: Manifest[E]) extends EntityRepository[E] {
+
+  def this(database: Future[DefaultDB], entityHandler: BSONDocumentHandler[E], format: OFormat[E]) =
+    this(database, entityHandler, format, format)
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](entityTypeName))
@@ -148,13 +166,13 @@ class MongoAccessAuthorisationRepository @Inject()(
 @Singleton
 class MongoBondedTaskRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.bondedTaskHandler)
+) extends MongoEntityRepository[BondedTask](database, MongoHandler.bondedTaskHandler, BondedTaskFormat)
   with BondedTaskRepository
 
 @Singleton
 class MongoEventDrivenTaskRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.eventDrivenTaskHandler)
+) extends MongoEntityRepository(database, MongoHandler.eventDrivenTaskHandler, EventDrivenTaskFormat)
   with EventDrivenTaskRepository
 
 @Singleton
@@ -178,7 +196,7 @@ class MongoGeneratorRepository @Inject()(
 @Singleton
 class MongoGeneratorImageRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.generatorImageHandler)
+) extends MongoEntityRepository(database, MongoHandler.generatorImageHandler, GeneratorImageFormat)
   with GeneratorImageRepository
 
 @Singleton
@@ -190,19 +208,19 @@ class MongoLogRepository @Inject()(
 @Singleton
 class MongoMetaModelEntityRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.metaModelEntityHandler)
+) extends MongoEntityRepository(database, MongoHandler.metaModelEntityHandler, MetaModelEntityFormat)
   with MetaModelEntityRepository
 
 @Singleton
 class MongoMetaModelReleaseRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.metaModelReleaseHandler)
+) extends MongoEntityRepository(database, MongoHandler.metaModelReleaseHandler, MetaModelReleaseFormat)
   with MetaModelReleaseRepository
 
 @Singleton
 class MongoModelEntityRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.modelEntityHandler)
+) extends MongoEntityRepository(database, MongoHandler.modelEntityHandler, ModelEntityFormat)
   with ModelEntityRepository
 
 @Singleton
@@ -214,11 +232,11 @@ class MongoSettingsRepository @Inject()(
 @Singleton
 class MongoTimedTaskRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.timedTaskHandler)
+) extends MongoEntityRepository(database, MongoHandler.timedTaskHandler, TimedTaskFormat)
   with TimedTaskRepository
 
 @Singleton
 class MongoUserRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, MongoHandler.userHandler)
+) extends MongoEntityRepository(database, MongoHandler.userHandler, Json.format[User])
   with UserRepository
