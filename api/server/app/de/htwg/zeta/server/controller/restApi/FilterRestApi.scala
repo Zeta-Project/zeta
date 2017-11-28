@@ -115,7 +115,7 @@ class FilterRestApi @Inject()(
   }
 
   private def parseJson(json: JsValue): Future[JsResult[Filter]] = {
-    json.validate(FilterFormat()) match {
+    json.validate(FilterFormat) match {
       case s: JsSuccess[Filter] => Future.successful(s)
       case e: JsError => Future.successful(e)
     }
