@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import joint from 'jointjs';
 
 /**
  * linkTypeSelector provides functions for creating and managing the context menu to choose a link type from.
@@ -64,14 +65,14 @@ export default (function linkTypeSelector () {
                 menu += name;
                 menu += '</li>';
             });
-            V(_paper.findViewByModel(_focusedElement).el).addClass('linking-allowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).addClass('linking-allowed');
 
 
         } else {
             menu += '<li class="list-group-item">';
             menu += 'These elements are not linkable!';
             menu += '</li>';
-            V(_paper.findViewByModel(_focusedElement).el).addClass('linking-unallowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).addClass('linking-unallowed');
             canSetLink(false);
         }
 
@@ -105,8 +106,8 @@ export default (function linkTypeSelector () {
         });
 
         $('body').mouseup(function () {
-            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
-            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
             destroyMenu();
         });
 
@@ -180,8 +181,8 @@ export default (function linkTypeSelector () {
             return;
         }
         if(_focusedElement) {
-            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
-            V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
         }
         _focusedElement = null;
         destroyMenu();
@@ -259,17 +260,17 @@ export default (function linkTypeSelector () {
 
         if(maxInputs != -1 && ingoingTargetCount > maxInputs) {
             targetMaxReached = true;
-            V(_paper.findViewByModel(targetId).el).addClass('invalid-edges');
+            joint.V(_paper.findViewByModel(targetId).el).addClass('invalid-edges');
         }
         if(minInputs != 0 && minInputs <= ingoingTargetCount && !targetMaxReached) {
-            V(_paper.findViewByModel(targetId).el).removeClass('invalid-edges');
+            joint.V(_paper.findViewByModel(targetId).el).removeClass('invalid-edges');
         }
         if(maxOutputs != -1 && outgoingSourceCount > maxOutputs) {
             sourceMaxReached = true;
-            V(_paper.findViewByModel(sourceId).el).addClass('invalid-edges');
+            joint.V(_paper.findViewByModel(sourceId).el).addClass('invalid-edges');
         }
         if(minOutputs != 0 && minOutputs <= outgoingSourceCount && !sourceMaxReached) {
-            V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
+            joint.V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
         }
         var clone = link.clone();
         clone.attributes.attrs = getConnectionStyle(edgeData.style);
@@ -317,7 +318,7 @@ export default (function linkTypeSelector () {
         }
 
         if(inputs.length != 0 || outputs.length != 0) {
-            V(_paper.findViewByModel(cell).el).addClass('invalid-edges');
+            joint.V(_paper.findViewByModel(cell).el).addClass('invalid-edges');
         }
     };
 
@@ -344,19 +345,19 @@ export default (function linkTypeSelector () {
 
         if(minInputs > ingoingTargetCount) {
             minInUnderstepped = true;
-            V(_paper.findViewByModel(link.attributes.target.id).el).addClass('invalid-edges');
+            joint.V(_paper.findViewByModel(link.attributes.target.id).el).addClass('invalid-edges');
         }
 
         if(maxInputs != -1 && maxInputs >= ingoingTargetCount && !minInUnderstepped) {
-            V(_paper.findViewByModel(link.attributes.target.id).el).removeClass('invalid-edges');
+            joint.V(_paper.findViewByModel(link.attributes.target.id).el).removeClass('invalid-edges');
         }
 
         if(minOutputs > outgoingSourceCount) {
             minOutUnderstepped = true;
-            V(_paper.findViewByModel(link.attributes.source.id).el).addClass('invalid-edges');
+            joint.V(_paper.findViewByModel(link.attributes.source.id).el).addClass('invalid-edges');
         }
         if(maxOutputs != -1 && maxOutputs >= outgoingSourceCount && !minOutUnderstepped) {
-            V(_paper.findViewByModel(link.attributes.source.id).el).removeClass('invalid-edges');
+            joint.V(_paper.findViewByModel(link.attributes.source.id).el).removeClass('invalid-edges');
         }
 
     };
