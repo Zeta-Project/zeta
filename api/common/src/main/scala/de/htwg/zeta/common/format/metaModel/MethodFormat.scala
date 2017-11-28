@@ -1,27 +1,19 @@
 package de.htwg.zeta.common.format.metaModel
 
-import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 
-import de.htwg.zeta.common.format.metaModel.MethodFormat.sCode
-import de.htwg.zeta.common.format.metaModel.MethodFormat.sDescription
-import de.htwg.zeta.common.format.metaModel.MethodFormat.sName
-import de.htwg.zeta.common.format.metaModel.MethodFormat.sParameters
-import de.htwg.zeta.common.format.metaModel.MethodFormat.sReturnType
-import de.htwg.zeta.common.format.metaModel.MethodFormat.sType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.OWrites
+import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 
 
-object MethodFormat extends OWrites[Method] {
+object MethodFormat extends OFormat[Method] {
 
   private val sName = "name"
   private val sParameters = "parameters"
@@ -45,16 +37,12 @@ object MethodFormat extends OWrites[Method] {
     )}.toList
   )
 
-}
-
-class MethodFormat(enums: Seq[MEnum]) extends Reads[Method] {
-
   override def reads(json: JsValue): JsResult[Method] = {
     for {
       name <- (json \ sName).validate[String]
       parameters <- (json \ sParameters).validate(readsParameters)
       description <- (json \ sDescription).validate[String]
-      returnType <- (json \ sReturnType).validate(new AttributeTypeFormat(enums))
+      returnType <- (json \ sReturnType).validate(AttributeTypeFormat)
       code <- (json \ sCode).validate[String]
     } yield {
       Method(name, parameters, description, returnType, code)
@@ -68,7 +56,7 @@ class MethodFormat(enums: Seq[MEnum]) extends Reads[Method] {
   private def readsParameter: Reads[(String, AttributeType)] = Reads { json =>
     for {
       name <- (json \ sName).validate[String]
-      typ <- (json \ sType).validate(new AttributeTypeFormat(enums))
+      typ <- (json \ sType).validate(AttributeTypeFormat)
     } yield {
       (name, typ)
     }

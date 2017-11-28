@@ -1,26 +1,15 @@
 package de.htwg.zeta.common.format.metaModel
 
-import scala.collection.immutable.Seq
-
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sAttributes
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sDescription
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sMethods
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sName
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sSourceClassName
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sSourceDeletionDeletesTarget
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTargetClassName
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat.sTargetDeletionDeletesSource
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.OWrites
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-object MReferenceFormat extends OWrites[MReference] {
+object MReferenceFormat extends OFormat[MReference] {
 
   val sName = "name"
   val sDescription = "description"
@@ -42,10 +31,6 @@ object MReferenceFormat extends OWrites[MReference] {
     sMethods -> Writes.seq(MethodFormat).writes(reference.methods)
   )
 
-}
-
-class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
-
   override def reads(json: JsValue): JsResult[MReference] = {
     for {
       name <- (json \ sName).validate[String]
@@ -54,8 +39,8 @@ class MReferenceFormat(enums: Seq[MEnum]) extends Reads[MReference] {
       targetDeletionDeletesSource <- (json \ sTargetDeletionDeletesSource).validate[Boolean]
       sourceClassName <- (json \ sSourceClassName).validate[String]
       targetClassName <- (json \ sTargetClassName).validate[String]
-      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
+      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
     } yield {
       MReference(
         name = name,

@@ -1,21 +1,14 @@
 package de.htwg.zeta.common.format.metaModel
 
-import scala.collection.immutable.Seq
-
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sBoolean
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sDouble
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sEnum
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sInt
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sName
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sString
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat.sUnit
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.EnumType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
+import play.api.libs.json.Format
 import play.api.libs.json.JsError
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
@@ -23,11 +16,9 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 
-object AttributeTypeFormat extends Writes[AttributeType] {
+object AttributeTypeFormat extends Format[AttributeType] {
 
   private val sType = "type"
   private val sEnum = "enum"
@@ -52,10 +43,6 @@ object AttributeTypeFormat extends Writes[AttributeType] {
     }
   }
 
-}
-
-class AttributeTypeFormat(enums: Seq[MEnum]) extends Reads[AttributeType] {
-
   override def reads(json: JsValue): JsResult[AttributeType] = {
     json match {
       case s: JsString => readsJsString(s)
@@ -77,17 +64,8 @@ class AttributeTypeFormat(enums: Seq[MEnum]) extends Reads[AttributeType] {
 
   private def readsJsObject(json: JsObject): JsResult[AttributeType] = {
     (json \ AttributeTypeFormat.sType).validate[String].flatMap {
-      case `sEnum` => readsMEnum(json)
+      case `sEnum` => (json \sName).validate[String].map(EnumType)
       case _ => JsError(s"Reading AttributeType ${json.value} from JsObject failed")
-    }
-  }
-
-  private def readsMEnum(json: JsObject): JsResult[AttributeType] = {
-    (json \ sName).validate[String].flatMap { name =>
-      enums.find(_.name == name) match {
-        case Some(enum) => JsSuccess(enum)
-        case None => JsError(s"Read MEnum $name, but it's not defined")
-      }
     }
   }
 

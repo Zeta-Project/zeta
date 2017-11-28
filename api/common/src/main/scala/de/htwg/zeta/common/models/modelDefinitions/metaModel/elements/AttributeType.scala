@@ -43,14 +43,18 @@ object AttributeType {
 
   }
 
+  case class EnumType(name: String) extends AttributeType {
+
+    override val asString: String = name
+
+  }
+
   /** The MEnum implementation
    *
    * @param name       the name of the MENum instance
    * @param valueNames the names of the values
    */
-  case class MEnum(name: String, valueNames: Seq[String]) extends AttributeType {
-
-    override val asString: String = name
+  case class MEnum(name: String, valueNames: Seq[String]) {
 
     /** The symbols. */
     val values: Seq[EnumValue] = valueNames.map(value => EnumValue(name, value))

@@ -3,27 +3,17 @@ package de.htwg.zeta.common.format.model
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.MAttributeFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.format.model.EdgeFormat.sAttributes
-import de.htwg.zeta.common.format.model.EdgeFormat.sAttributeValues
-import de.htwg.zeta.common.format.model.EdgeFormat.sMethods
-import de.htwg.zeta.common.format.model.EdgeFormat.sName
-import de.htwg.zeta.common.format.model.EdgeFormat.sReferenceName
-import de.htwg.zeta.common.format.model.EdgeFormat.sSource
-import de.htwg.zeta.common.format.model.EdgeFormat.sTarget
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import play.api.libs.json.JsError
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
-import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
-import play.api.libs.json.OWrites
+import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-object EdgeFormat extends OWrites[Edge] {
+object EdgeFormat extends OFormat[Edge] {
 
   private val sName = "name"
   private val sReferenceName = "referenceName"
@@ -43,24 +33,15 @@ object EdgeFormat extends OWrites[Edge] {
     sMethods -> Writes.seq(MethodFormat).writes(edge.methods)
   )
 
-}
-
-class EdgeFormat(metaModel: MetaModel) extends Reads[Edge] {
-
   override def reads(json: JsValue): JsResult[Edge] = {
     for {
       name <- (json \ sName).validate[String]
-      referenceName <- (json \ sReferenceName).validate[String].flatMap { referenceName =>
-        metaModel.referenceMap.get(referenceName) match {
-          case Some(_) => JsSuccess(referenceName)
-          case None => JsError(s"Unknown referenceName $referenceName")
-        }
-      }
+      referenceName <- (json \ sReferenceName).validate[String]
       source <- (json \ sSource).validate[String]
       target <- (json \ sTarget).validate[String]
-      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(metaModel.enums)))
-      attributeValues <- (json \ sAttributeValues).validate(Reads.map(new AttributeValueFormat(metaModel.enums)))
-      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(metaModel.enums)))
+      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      attributeValues <- (json \ sAttributeValues).validate(Reads.map(AttributeValueFormat))
+      methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
     } yield {
       Edge(
         name = name,

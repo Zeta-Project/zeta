@@ -57,16 +57,16 @@ object ModelFormat extends OWrites[Model] {
 
 }
 
-class ModelFormat(metaModelId: UUID, metaModel: MetaModel) extends Reads[Model] {
+class ModelFormat(metaModelId: UUID) extends Reads[Model] {
 
   override def reads(json: JsValue): JsResult[Model] = {
     for {
       name <- (json \ sName).validate[String]
-      nodes <- (json \ sNodes).validate(Reads.list(new NodeFormat(metaModel)))
-      edges <- (json \ sEdges).validate(Reads.list(new EdgeFormat(metaModel)))
-      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(metaModel.enums)))
-      attributeValues <- (json \ sAttributeValues).validate(Reads.map(new AttributeValueFormat(metaModel.enums)))
-      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(metaModel.enums)))
+      nodes <- (json \ sNodes).validate(Reads.list(NodeFormat))
+      edges <- (json \ sEdges).validate(Reads.list(EdgeFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      attributeValues <- (json \ sAttributeValues).validate(Reads.map(AttributeValueFormat))
+      methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
       uiState <- (json \ sUiState).validate[String]
     } yield {
       Model(

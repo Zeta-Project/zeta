@@ -5,7 +5,6 @@ import java.util.UUID
 import de.htwg.zeta.common.format.model.ModelEntityFormat.sId
 import de.htwg.zeta.common.format.model.ModelEntityFormat.sModel
 import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -26,12 +25,12 @@ object ModelEntityFormat extends OWrites[ModelEntity] {
 
 }
 
-class ModelEntityFormat(metaModelId: UUID, metaModel: MetaModel) extends Reads[ModelEntity] {
+class ModelEntityFormat(metaModelId: UUID) extends Reads[ModelEntity] {
 
   override def reads(json: JsValue): JsResult[ModelEntity] = {
     for {
       id <- (json \ sId).validate[UUID]
-      model <- (json \ sModel).validate(new ModelFormat(metaModelId, metaModel))
+      model <- (json \ sModel).validate(new ModelFormat(metaModelId))
     } yield {
       ModelEntity(id, model)
     }

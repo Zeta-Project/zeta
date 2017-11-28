@@ -31,7 +31,7 @@ object MetaModelEntityFormat extends OFormat[MetaModelEntity] {
       id <- (json \ sId).validate[UUID]
       metaModel <- (json \ sMetaModel).validate(MetaModelFormat)
       dsl <- (json \ sDsl).validate(Dsl.dslFormat)
-      validator <- (json \ sValidator).validate(Reads.optionNoError[String])
+      validator <- (json \ sValidator).validateOpt[String]
     } yield {
       MetaModelEntity(id, metaModel, dsl, validator)
     }

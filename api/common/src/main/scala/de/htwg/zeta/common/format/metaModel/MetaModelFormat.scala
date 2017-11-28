@@ -34,10 +34,10 @@ object MetaModelFormat extends OFormat[MetaModel] {
     for {
       name <- (json \ sName).validate[String]
       enums <- (json \ sEnums).validate(Reads.list(MEnumFormat))
-      classes <- (json \ sClasses).validate(Reads.list(new MClassFormat(enums)))
-      references <- (json \ sReferences).validate(Reads.list(new MReferenceFormat(enums)))
-      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
+      classes <- (json \ sClasses).validate(Reads.list(MClassFormat))
+      references <- (json \ sReferences).validate(Reads.list(MReferenceFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
       uiState <- (json \ sUiState).validate[String]
     } yield {
       MetaModel(

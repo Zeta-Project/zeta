@@ -1,27 +1,13 @@
 package de.htwg.zeta.common.format.metaModel
 
-import scala.collection.immutable.Seq
-
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sConstant
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sDefault
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sExpression
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sGlobalUnique
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sLocalUnique
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sName
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sOrdered
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sSingleAssignment
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sTransient
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat.sType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.OWrites
-import play.api.libs.json.Reads
+import play.api.libs.json.OFormat
 
-object MAttributeFormat extends OWrites[MAttribute] {
+object MAttributeFormat extends OFormat[MAttribute] {
 
   private val sName = "name"
   private val sGlobalUnique = "globalUnique"
@@ -47,17 +33,13 @@ object MAttributeFormat extends OWrites[MAttribute] {
     sTransient -> attribute.transient
   )
 
-}
-
-class MAttributeFormat(enums: Seq[MEnum]) extends Reads[MAttribute] {
-
   override def reads(json: JsValue): JsResult[MAttribute] = {
     for {
       name <- (json \ sName).validate[String]
       globalUnique <- (json \ sGlobalUnique).validate[Boolean]
       localUnique <- (json \ sLocalUnique).validate[Boolean]
-      typ <- (json \ sType).validate(new AttributeTypeFormat(enums))
-      default <- (json \ sDefault).validate(new AttributeValueFormat(enums))
+      typ <- (json \ sType).validate(AttributeTypeFormat)
+      default <- (json \ sDefault).validate(AttributeValueFormat)
       constant <- (json \ sConstant).validate[Boolean]
       singleAssignment <- (json \ sSingleAssignment).validate[Boolean]
       expression <- (json \ sExpression).validate[String]

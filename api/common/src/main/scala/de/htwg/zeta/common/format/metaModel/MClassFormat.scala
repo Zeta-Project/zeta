@@ -1,26 +1,15 @@
 package de.htwg.zeta.common.format.metaModel
 
-import scala.collection.immutable.Seq
-
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sAbstractness
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sAttributes
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sDescription
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sInputReferenceNames
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sMethods
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sName
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sOutputReferenceNames
-import de.htwg.zeta.common.format.metaModel.MClassFormat.sSuperTypeNames
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
-import play.api.libs.json.OWrites
+import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-object MClassFormat extends OWrites[MClass] {
+object MClassFormat extends OFormat[MClass] {
 
   val sName = "name"
   val sDescription = "description"
@@ -42,10 +31,6 @@ object MClassFormat extends OWrites[MClass] {
     sMethods -> Writes.seq(MethodFormat).writes(clazz.methods)
   )
 
-}
-
-class MClassFormat(enums: Seq[MEnum]) extends Reads[MClass] {
-
   override def reads(json: JsValue): JsResult[MClass] = {
     for {
       name <- (json \ sName).validate[String]
@@ -54,8 +39,8 @@ class MClassFormat(enums: Seq[MEnum]) extends Reads[MClass] {
       superTypeNames <- (json \ sSuperTypeNames).validate(Reads.list[String])
       inputReferenceNames <- (json \ sInputReferenceNames).validate(Reads.list[String])
       outputReferenceNames <- (json \ sOutputReferenceNames).validate(Reads.list[String])
-      attributes <- (json \ sAttributes).validate(Reads.list(new MAttributeFormat(enums)))
-      methods <- (json \ sMethods).validate(Reads.list(new MethodFormat(enums)))
+      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
     } yield {
       MClass(
         name = name,
