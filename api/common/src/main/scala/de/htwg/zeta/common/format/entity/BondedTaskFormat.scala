@@ -12,35 +12,36 @@ import play.api.libs.json.OFormat
 /**
  * Parse JsValue to BondedTask and BondedTask to JsValue
  */
-object BondedTaskFormat extends OFormat[BondedTask] {
+class BondedTaskFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sGeneratorId: String = "generatorId",
+    sFilterId: String = "filterId",
+    sMenu: String = "menu",
+    sItem: String = "item",
+    sDeleted: String = "deleted"
+) extends OFormat[BondedTask] {
 
-  val attributeId = "id"
-  val attributeName = "name"
-  val attributeGenerator = "generatorId"
-  val attributeFilter = "filterId"
-  val attributeMenu = "menu"
-  val attributeItem = "item"
-
-  override def writes(o: BondedTask): JsObject = Json.obj(
-    attributeId -> o.id.toString,
-    attributeName -> o.name,
-    attributeGenerator -> o.generatorId,
-    attributeFilter -> o.filterId,
-    attributeMenu -> o.menu,
-    attributeItem -> o.item
+  override def writes(task: BondedTask): JsObject = Json.obj(
+    sId -> task.id.toString,
+    sName -> task.name,
+    sGeneratorId -> task.generatorId,
+    sFilterId -> task.filterId,
+    sMenu -> task.menu,
+    sItem -> task.item,
+    sDeleted -> task.deleted
   )
 
-  override def reads(json: JsValue): JsResult[BondedTask] = {
-    for {
-      id <- (json \ attributeId).validateOpt[UUID]
-      name <- (json \ attributeName).validate[String]
-      generator <- (json \ attributeGenerator).validate[UUID]
-      filter <- (json \ attributeFilter).validate[UUID]
-      menu <- (json \ attributeMenu).validate[String]
-      item <- (json \ attributeItem).validate[String]
-    } yield {
-      BondedTask(id.getOrElse(UUID.randomUUID()), name, generator, filter, menu, item)
-    }
+  override def reads(json: JsValue): JsResult[BondedTask] = for {
+    id <- (json \ sId).validateOpt[UUID]
+    name <- (json \ sName).validate[String]
+    generator <- (json \ sGeneratorId).validate[UUID]
+    filter <- (json \ sFilterId).validate[UUID]
+    menu <- (json \ sMenu).validate[String]
+    item <- (json \ sItem).validate[String]
+    deleted <- (json \ sDeleted).validateOpt[Boolean]
+  } yield {
+    BondedTask(id.getOrElse(UUID.randomUUID()), name, generator, filter, menu, item, deleted.getOrElse(false))
   }
 
 }

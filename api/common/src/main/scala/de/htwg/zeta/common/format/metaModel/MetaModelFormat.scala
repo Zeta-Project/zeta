@@ -10,46 +10,49 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-object MetaModelFormat extends OFormat[MetaModel] {
-
-  private val sName = "name"
-  private val sEnums = "enums"
-  private val sClasses = "classes"
-  private val sReferences = "references"
-  private val sAttributes = "attributes"
-  private val sMethods = "methods"
-  private val sUiState = "uiState"
+class MetaModelFormat(
+    enumFormat: EnumFormat,
+    classFormat: ClassFormat,
+    referenceFormat: ReferenceFormat,
+    attributeFormat: AttributeFormat,
+    methodFormat: MethodFormat,
+    sName: String = "name",
+    sEnums: String = "enums",
+    sClasses: String = "classes",
+    sReferences: String = "references",
+    sAttributes: String = "attributes",
+    sMethods: String = "methods",
+    sUiState: String = "uiState"
+) extends OFormat[MetaModel] {
 
   override def writes(metaModel: MetaModel): JsObject = Json.obj(
     sName -> metaModel.name,
-    sEnums -> Writes.seq(MEnumFormat).writes(metaModel.enums),
-    sClasses -> Writes.seq(ClassFormat).writes(metaModel.classes),
-    sReferences -> Writes.seq(ReferenceFormat).writes(metaModel.references),
-    sAttributes -> Writes.seq(AttributeFormat).writes(metaModel.attributes),
-    sMethods -> Writes.seq(MethodFormat).writes(metaModel.methods),
+    sEnums -> Writes.seq(enumFormat).writes(metaModel.enums),
+    sClasses -> Writes.seq(classFormat).writes(metaModel.classes),
+    sReferences -> Writes.seq(referenceFormat).writes(metaModel.references),
+    sAttributes -> Writes.seq(attributeFormat).writes(metaModel.attributes),
+    sMethods -> Writes.seq(methodFormat).writes(metaModel.methods),
     sUiState -> metaModel.uiState
   )
 
-  override def reads(json: JsValue): JsResult[MetaModel] = {
-    for {
-      name <- (json \ sName).validate[String]
-      enums <- (json \ sEnums).validate(Reads.list(MEnumFormat))
-      classes <- (json \ sClasses).validate(Reads.list(ClassFormat))
-      references <- (json \ sReferences).validate(Reads.list(ReferenceFormat))
-      attributes <- (json \ sAttributes).validate(Reads.list(AttributeFormat))
-      methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
-      uiState <- (json \ sUiState).validate[String]
-    } yield {
-      MetaModel(
-        name = name,
-        classes = classes,
-        references = references,
-        enums = enums,
-        attributes = attributes,
-        methods = methods,
-        uiState = uiState
-      )
-    }
+  override def reads(json: JsValue): JsResult[MetaModel] = for {
+    name <- (json \ sName).validate[String]
+    enums <- (json \ sEnums).validate(Reads.list(enumFormat))
+    classes <- (json \ sClasses).validate(Reads.list(classFormat))
+    references <- (json \ sReferences).validate(Reads.list(referenceFormat))
+    attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
+    methods <- (json \ sMethods).validate(Reads.list(methodFormat))
+    uiState <- (json \ sUiState).validate[String]
+  } yield {
+    MetaModel(
+      name = name,
+      classes = classes,
+      references = references,
+      enums = enums,
+      attributes = attributes,
+      methods = methods,
+      uiState = uiState
+    )
   }
 
   val empty: Reads[MetaModel] = Reads { json =>

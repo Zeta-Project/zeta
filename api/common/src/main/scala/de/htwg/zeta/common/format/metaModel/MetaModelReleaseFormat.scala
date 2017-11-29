@@ -3,7 +3,6 @@ package de.htwg.zeta.common.format.metaModel
 import java.util.UUID
 
 import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -11,19 +10,21 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
 
-object MetaModelReleaseFormat extends OFormat[MetaModelRelease] {
-
-  private val sId = "id"
-  private val sName = "name"
-  private val sMetaModel = "metaModel"
-  private val sDsl = "dsl"
-  private val sVersion = "version"
+class MetaModelReleaseFormat(
+    metaModelFormat: MetaModelFormat,
+    dslFormat: DslFormat,
+    sId: String = "id",
+    sName: String = "name",
+    sMetaModel: String = "metaModel",
+    sDsl: String = "dsl",
+    sVersion: String = "version"
+) extends OFormat[MetaModelRelease] {
 
   override def writes(release: MetaModelRelease): JsObject = Json.obj(
     sId -> release.id,
     sName -> release.name,
-    sMetaModel -> MetaModelFormat.writes(release.metaModel),
-    sDsl -> Dsl.dslFormat.writes(release.dsl),
+    sMetaModel -> metaModelFormat.writes(release.metaModel),
+    sDsl -> dslFormat.writes(release.dsl),
     sVersion -> release.version
   )
 
@@ -31,8 +32,8 @@ object MetaModelReleaseFormat extends OFormat[MetaModelRelease] {
     for {
       id <- (json \ sId).validate[UUID]
       name <- (json \ sName).validate[String]
-      metaModel <- (json \ sMetaModel).validate(MetaModelFormat)
-      dsl <- (json \ sDsl).validate[Dsl]
+      metaModel <- (json \ sMetaModel).validate(metaModelFormat)
+      dsl <- (json \ sDsl).validate(dslFormat)
       version <- (json \ sVersion).validate[String]
     } yield {
       MetaModelRelease(id, name, metaModel, dsl, version)

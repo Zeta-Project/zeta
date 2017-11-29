@@ -13,40 +13,40 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 
 
-object MethodFormat extends OFormat[Method] {
-
-  private val sName = "name"
-  private val sParameters = "parameters"
-  private val sType = "type"
-  private val sDescription = "description"
-  private val sReturnType = "returnType"
-  private val sCode = "code"
+class MethodFormat(
+    attributeTypeFormat: AttributeTypeFormat,
+    sName: String = "name",
+    sParameters: String = "parameters",
+    sType: String = "type",
+    sDescription: String = "description",
+    sReturnType: String = "returnType",
+    sCode: String = "code"
+) extends OFormat[Method] {
 
   override def writes(method: Method): JsObject = Json.obj(
     sName -> method.name,
     sParameters -> writesParameters(method.parameters),
     sDescription -> method.description,
-    sReturnType -> AttributeTypeFormat.writes(method.returnType),
+    sReturnType -> attributeTypeFormat.writes(method.returnType),
     sCode -> method.code
   )
 
   private def writesParameters(parameters: SortedMap[String, AttributeType]): JsArray = JsArray(
     parameters.map { case (name, typ) => Json.obj(
       sName -> name,
-      sType -> AttributeTypeFormat.writes(typ)
-    )}.toList
+      sType -> attributeTypeFormat.writes(typ)
+    )
+    }.toList
   )
 
-  override def reads(json: JsValue): JsResult[Method] = {
-    for {
-      name <- (json \ sName).validate[String]
-      parameters <- (json \ sParameters).validate(readsParameters)
-      description <- (json \ sDescription).validate[String]
-      returnType <- (json \ sReturnType).validate(AttributeTypeFormat)
-      code <- (json \ sCode).validate[String]
-    } yield {
-      Method(name, parameters, description, returnType, code)
-    }
+  override def reads(json: JsValue): JsResult[Method] = for {
+    name <- (json \ sName).validate[String]
+    parameters <- (json \ sParameters).validate(readsParameters)
+    description <- (json \ sDescription).validate[String]
+    returnType <- (json \ sReturnType).validate(attributeTypeFormat)
+    code <- (json \ sCode).validate[String]
+  } yield {
+    Method(name, parameters, description, returnType, code)
   }
 
   private def readsParameters: Reads[SortedMap[String, AttributeType]] = Reads { json =>
@@ -56,7 +56,7 @@ object MethodFormat extends OFormat[Method] {
   private def readsParameter: Reads[(String, AttributeType)] = Reads { json =>
     for {
       name <- (json \ sName).validate[String]
-      typ <- (json \ sType).validate(AttributeTypeFormat)
+      typ <- (json \ sType).validate(attributeTypeFormat)
     } yield {
       (name, typ)
     }

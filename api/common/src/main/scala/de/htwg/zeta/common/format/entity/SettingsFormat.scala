@@ -11,11 +11,16 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
-object SettingsFormat extends OFormat[Settings] {
-
-  val sId = "id"
-  val sOwner = "owner"
-  val sJobSettings = "jobSettings"
+class SettingsFormat(
+    sId: String = "id",
+    sOwner: String = "owner",
+    sJobSettings: String = "jobSettings",
+    sMaxRunning: String = "maxRunning",
+    sMaxPending: String = "maxPending",
+    sDocker: String = "docker",
+    sCpuShares: String = "cpuShares",
+    sCpuQuota: String = "cpuQuota"
+) extends OFormat[Settings] {
 
   override def writes(settings: Settings): JsObject = Json.obj(
     sId -> settings.id,
@@ -32,10 +37,6 @@ object SettingsFormat extends OFormat[Settings] {
   }
 
   private object JobSettingsFormat extends OFormat[JobSettings] {
-
-    val sMaxRunning = "maxRunning"
-    val sMaxPending = "maxPending"
-    val sDocker = "docker"
 
     override def writes(settings: JobSettings): JsObject = Json.obj(
       sMaxRunning -> settings.maxRunning,
@@ -54,9 +55,6 @@ object SettingsFormat extends OFormat[Settings] {
   }
 
   private object DockerSettingsFormat extends OFormat[DockerSettings] {
-
-    private val sCpuShares = "cpuShares"
-    private val sCpuQuota = "cpuQuota"
 
     override def writes(settings: DockerSettings): JsObject = Json.obj(
       sCpuShares -> settings.cpuShares,

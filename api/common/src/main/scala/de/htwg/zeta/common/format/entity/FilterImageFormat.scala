@@ -9,11 +9,11 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
-object FilterImageFormat extends OFormat[FilterImage] {
-
-  private val sId = "id"
-  private val sName = "name"
-  private val sDockerImage = "dockerImage"
+class FilterImageFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sDockerImage: String = "dockerImage"
+) extends OFormat[FilterImage] {
 
   override def writes(image: FilterImage): JsObject = Json.obj(
     sId -> image.id,

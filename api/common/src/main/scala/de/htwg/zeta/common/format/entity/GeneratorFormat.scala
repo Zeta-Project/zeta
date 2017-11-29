@@ -12,13 +12,13 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 
-object GeneratorFormat extends OFormat[Generator] {
-
-  val sId = "id"
-  val sName = "name"
-  val sImageId = "imageId"
-  val sFiles = "files"
-  val sDeleted = "deleted"
+class GeneratorFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sImageId: String = "imageId",
+    sFiles: String = "files",
+    sDeleted: String = "deleted"
+) extends OFormat[Generator] {
 
   override def writes(o: Generator): JsObject = Json.obj(
     sId -> o.id,

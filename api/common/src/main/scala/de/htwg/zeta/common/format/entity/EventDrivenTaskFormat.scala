@@ -12,32 +12,33 @@ import play.api.libs.json.OFormat
 /**
  * Parse JsValue to EventDrivenTask and EventDrivenTask to JsValue
  */
-object EventDrivenTaskFormat extends OFormat[EventDrivenTask] {
+class EventDrivenTaskFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sGeneratorId: String = "generatorId",
+    sFilterId: String = "filterId",
+    sEvent: String = "event",
+    sDeleted: String = "deleted"
+) extends OFormat[EventDrivenTask] {
 
-  val attributeId = "id"
-  val attributeName = "name"
-  val attributeGenerator = "generatorId"
-  val attributeFilter = "filterId"
-  val attributeEvent = "event"
-
-  override def writes(o: EventDrivenTask): JsObject = Json.obj(
-    attributeId -> o.id.toString,
-    attributeName -> o.name,
-    attributeGenerator -> o.generatorId,
-    attributeFilter -> o.filterId,
-    attributeEvent -> o.event
+  override def writes(task: EventDrivenTask): JsObject = Json.obj(
+    sId -> task.id.toString,
+    sName -> task.name,
+    sGeneratorId -> task.generatorId,
+    sFilterId -> task.filterId,
+    sEvent -> task.event,
+    sDeleted -> task.deleted
   )
 
-  override def reads(json: JsValue): JsResult[EventDrivenTask] = {
-    for {
-      id <- (json \ attributeId).validateOpt[UUID]
-      name <- (json \ attributeName).validate[String]
-      generator <- (json \ attributeGenerator).validate[UUID]
-      filter <- (json \ attributeFilter).validate[UUID]
-      event <- (json \ attributeEvent).validate[String]
-    } yield {
-      EventDrivenTask(id.getOrElse(UUID.randomUUID()), name, generator, filter, event)
-    }
+  override def reads(json: JsValue): JsResult[EventDrivenTask] = for {
+    id <- (json \ sId).validateOpt[UUID]
+    name <- (json \ sName).validate[String]
+    generator <- (json \ sGeneratorId).validate[UUID]
+    filter <- (json \ sFilterId).validate[UUID]
+    event <- (json \ sEvent).validate[String]
+    deleted <- (json \ sDeleted).validateOpt[Boolean]
+  } yield {
+    EventDrivenTask(id.getOrElse(UUID.randomUUID()), name, generator, filter, event, deleted.getOrElse(false))
   }
 
 }

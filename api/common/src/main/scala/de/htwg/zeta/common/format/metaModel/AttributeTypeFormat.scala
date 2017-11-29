@@ -17,16 +17,16 @@ import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 
 
-object AttributeTypeFormat extends Format[AttributeType] {
-
-  private val sType = "type"
-  private val sEnum = "enum"
-  private val sName = "name"
-  private val sString = "string"
-  private val sDouble = "double"
-  private val sInt = "int"
-  private val sBoolean = "boolean"
-  private val sUnit = "unit"
+class AttributeTypeFormat(
+    sType: String = "type",
+    sEnum: String = "enum",
+    sName: String = "name",
+    sString: String = "string",
+    sDouble: String = "double",
+    sInt: String = "int",
+    sBoolean: String = "boolean",
+    sUnit: String = "unit"
+) extends Format[AttributeType] {
 
   override def writes(typ: AttributeType): JsValue = {
     typ match {
@@ -62,8 +62,8 @@ object AttributeTypeFormat extends Format[AttributeType] {
   }
 
   private def readsJsObject(json: JsObject): JsResult[AttributeType] = {
-    (json \ AttributeTypeFormat.sType).validate[String].flatMap {
-      case `sEnum` => (json \sName).validate[String].map(EnumType)
+    (json \ sType).validate[String].flatMap {
+      case `sEnum` => (json \ sName).validate[String].map(EnumType)
       case _ => JsError(s"Reading AttributeType ${json.value} from JsObject failed")
     }
   }

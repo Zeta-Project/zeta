@@ -9,13 +9,13 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
-object UserFormat extends OFormat[User] {
-
-  val sId = "id"
-  val sFirstName = "firstName"
-  val sLastName = "lastName"
-  val sEmail = "email"
-  val sActivated = "activated"
+class UserFormat(
+    sId: String = "id",
+    sFirstName: String = "firstName",
+    sLastName: String = "lastName",
+    sEmail: String = "email",
+    sActivated: String = "activated"
+) extends OFormat[User] {
 
   override def writes(user: User): JsObject = Json.obj(
     sId -> user.id,

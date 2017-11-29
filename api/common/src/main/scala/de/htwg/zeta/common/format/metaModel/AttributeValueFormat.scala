@@ -13,17 +13,17 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
 
-object AttributeValueFormat extends OFormat[AttributeValue] {
-
-  private val sType = "type"
-  private val sString = "string"
-  private val sValue = "value"
-  private val sBoolean = "boolean"
-  private val sInt = "int"
-  private val sDouble = "double"
-  private val sEnum = "enum"
-  private val sEnumName = "enumName"
-  private val sValueName = "valueName"
+class AttributeValueFormat(
+    sType: String = "type",
+    sString: String = "string",
+    sValue: String = "value",
+    sBoolean: String = "boolean",
+    sInt: String = "int",
+    sDouble: String = "double",
+    sEnum: String = "enum",
+    sEnumName: String = "enumName",
+    sValueName: String = "valueName"
+) extends OFormat[AttributeValue] {
 
   override def writes(attributeValue: AttributeValue): JsObject = {
     attributeValue match {
@@ -45,13 +45,11 @@ object AttributeValueFormat extends OFormat[AttributeValue] {
     }
   }
 
-  private def readsEnumValue(json: JsValue): JsResult[EnumValue] = {
-    for {
-      enumName <- (json \ sEnumName).validate[String]
-      enumValue <- (json \ sValueName).validate[String]
-    } yield {
-      EnumValue(enumName, enumValue)
-    }
+  private def readsEnumValue(json: JsValue): JsResult[EnumValue] = for {
+    enumName <- (json \ sEnumName).validate[String]
+    enumValue <- (json \ sValueName).validate[String]
+  } yield {
+    EnumValue(enumName, enumValue)
   }
 
 }

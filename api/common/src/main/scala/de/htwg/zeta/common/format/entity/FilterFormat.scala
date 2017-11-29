@@ -15,34 +15,42 @@ import play.api.libs.json.Writes
 /**
  * Parse JsValue to Filter and Filter to JsValue
  */
-object FilterFormat extends OFormat[Filter] with Logging {
+class FilterFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sDescription: String = "description",
+    sInstanceIds: String = "instanceIds",
+    sFiles: String = "files",
+    sDeleted: String = "deleted"
+) extends OFormat[Filter] with Logging {
 
-  val attributeId = "id"
-  val attributeName = "name"
-  val attributeDescription = "description"
-  val attributeInstances = "instanceIds"
-  val attributeFiles = "files"
-
-  override def writes(o: Filter): JsObject = {
+  override def writes(filer: Filter): JsObject = {
     Json.obj(
-      attributeId -> o.id.toString,
-      attributeName -> o.name,
-      attributeDescription -> o.description,
-      attributeInstances -> o.instanceIds,
-      attributeFiles -> Writes.map[String].writes(o.files.map(e => (e._1.toString, e._2)))
+      sId -> filer.id.toString,
+      sName -> filer.name,
+      sDescription -> filer.description,
+      sInstanceIds -> filer.instanceIds,
+      sFiles -> Writes.map[String].writes(filer.files.map(e => (e._1.toString, e._2))),
+      sDeleted -> filer.deleted
     )
   }
 
-  override def reads(json: JsValue): JsResult[Filter] = {
-    for {
-      id <- (json \ attributeId).validateOpt[UUID]
-      name <- (json \ FilterFormat.attributeName).validate[String]
-      description <- (json \ FilterFormat.attributeDescription).validate[String]
-      instances <- (json \ FilterFormat.attributeInstances).validate[Seq[UUID]]
-      files <- (json \ FilterFormat.attributeFiles).validate(Reads.map[String])
-    } yield {
-      Filter(id.getOrElse(UUID.randomUUID()), name, description, instances, files.map(e => (UUID.fromString(e._1), e._2)))
-    }
+  override def reads(json: JsValue): JsResult[Filter] = for {
+    id <- (json \ sId).validateOpt[UUID]
+    name <- (json \ sName).validate[String]
+    description <- (json \ sDescription).validate[String]
+    instanceIds <- (json \ sInstanceIds).validate[Seq[UUID]]
+    files <- (json \ sFiles).validate(Reads.map[String])
+    deleted <- (json \ sDeleted).validateOpt[Boolean]
+  } yield {
+    Filter(
+      id = id.getOrElse(UUID.randomUUID()),
+      name = name,
+      description = description,
+      instanceIds = instanceIds,
+      files = files.map(e => (UUID.fromString(e._1), e._2)),
+      deleted = deleted.getOrElse(false)
+    )
   }
 
 }

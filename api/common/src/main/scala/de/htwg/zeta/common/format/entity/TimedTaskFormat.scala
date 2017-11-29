@@ -12,35 +12,34 @@ import play.api.libs.json.OFormat
 /**
  * Parse JsValue to TimedTask and TimedTask to JsValue
  */
-object TimedTaskFormat extends OFormat[TimedTask] {
-
-  val attributeId = "id"
-  val attributeName = "name"
-  val attributeGenerator = "generatorId"
-  val attributeFilter = "filterId"
-  val attributeInterval = "interval"
-  val attributeStart = "start"
+class TimedTaskFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sGeneratorId: String = "generatorId",
+    sFilterId: String = "filterId",
+    sInterval: String = "interval",
+    sStart: String = "start",
+    sDeleted: String = "deleted"
+) extends OFormat[TimedTask] {
 
   override def writes(o: TimedTask): JsObject = Json.obj(
-    attributeId -> o.id.toString,
-    attributeName -> o.name,
-    attributeGenerator -> o.generatorId,
-    attributeFilter -> o.filterId,
-    attributeInterval -> o.interval,
-    attributeStart -> o.start
+    sId -> o.id.toString,
+    sName -> o.name,
+    sGeneratorId -> o.generatorId,
+    sFilterId -> o.filterId,
+    sInterval -> o.interval,
+    sStart -> o.start
   )
 
-  override def reads(json: JsValue): JsResult[TimedTask] = {
-    for {
-      id <- (json \ attributeId).validateOpt[UUID]
-      name <- (json \ attributeName).validate[String]
-      generator <- (json \ attributeGenerator).validate[UUID]
-      filter <- (json \ attributeFilter).validate[UUID]
-      interval <- (json \ attributeInterval).validate[Int]
-      start <- (json \ attributeStart).validate[String]
-    } yield {
-      TimedTask(id.getOrElse(UUID.randomUUID()), name, generator, filter, interval, start)
-    }
+  override def reads(json: JsValue): JsResult[TimedTask] = for {
+    id <- (json \ sId).validateOpt[UUID]
+    name <- (json \ sName).validate[String]
+    generator <- (json \ sGeneratorId).validate[UUID]
+    filter <- (json \ sFilterId).validate[UUID]
+    interval <- (json \ sInterval).validate[Int]
+    start <- (json \ sStart).validate[String]
+  } yield {
+    TimedTask(id.getOrElse(UUID.randomUUID()), name, generator, filter, interval, start)
   }
 
 }

@@ -10,23 +10,22 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
 
-object ModelEntityFormat extends OFormat[ModelEntity] {
-
-  val sId = "id"
-  val sModel = "model"
+class ModelEntityFormat(
+    modelFormat: ModelFormat,
+    sId: String = "id",
+    sModel: String = "model"
+) extends OFormat[ModelEntity] {
 
   override def writes(entity: ModelEntity): JsObject = Json.obj(
     sId -> entity.id,
-    sModel -> ModelFormat.writes(entity.model)
+    sModel -> modelFormat.writes(entity.model)
   )
 
-  override def reads(json: JsValue): JsResult[ModelEntity] = {
-    for {
-      id <- (json \ sId).validate[UUID]
-      model <- (json \ sModel).validate(ModelFormat)
-    } yield {
-      ModelEntity(id, model)
-    }
+  override def reads(json: JsValue): JsResult[ModelEntity] = for {
+    id <- (json \ sId).validate[UUID]
+    model <- (json \ sModel).validate(modelFormat)
+  } yield {
+    ModelEntity(id, model)
   }
 
 }

@@ -15,15 +15,20 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Writes
 
 
-object GeneratorImageFormat extends OFormat[GeneratorImage] {
-
-  private val sId = "id"
-  private val sName = "name"
-  private val sDescription = "description"
-  private val sDockerImage = "dockerImage"
-  private val sOptions = "options"
-  private val sTitle = "title"
-  private val sType = "type"
+class GeneratorImageFormat(
+    sId: String = "id",
+    sName: String = "name",
+    sDescription: String = "description",
+    sDockerImage: String = "dockerImage",
+    sOptions: String = "options",
+    sTitle: String = "title",
+    sType: String = "type",
+    sSchema: String = "schema",
+    sProperties: String = "properties",
+    sMetaModelRelease: String = "metaModelRelease",
+    sRequired: String = "required",
+    sRef: String = "ref"
+) extends OFormat[GeneratorImage] {
 
   override def writes(image: GeneratorImage): JsObject = Json.obj(
     sId -> image.id.toString,
@@ -45,9 +50,6 @@ object GeneratorImageFormat extends OFormat[GeneratorImage] {
 
   object GeneratorImageOptionsFormat extends OFormat[GeneratorImageOptions] {
 
-    private val sSchema = "schema"
-    private val sProperties = "properties"
-
     override def writes(options: GeneratorImageOptions): JsObject = Json.obj(
       sSchema -> options.schema,
       sTitle -> options.title,
@@ -67,7 +69,6 @@ object GeneratorImageFormat extends OFormat[GeneratorImage] {
   }
 
   object GeneratorOptionPropertiesFormat extends OFormat[GeneratorOptionProperties] {
-    private val sMetaModelRelease = "metaModelRelease"
 
     override def writes(properties: GeneratorOptionProperties): JsObject = Json.obj(
       sName -> Writes.optionWithNull(GeneratorNamePropertyFormat).writes(properties.name),
@@ -83,8 +84,6 @@ object GeneratorImageFormat extends OFormat[GeneratorImage] {
   }
 
   object GeneratorNamePropertyFormat extends OFormat[GeneratorNameProperty] {
-
-    private val sRequired = "required"
 
     override def writes(property: GeneratorNameProperty): JsObject = Json.obj(
       sTitle -> property.title,
@@ -103,8 +102,6 @@ object GeneratorImageFormat extends OFormat[GeneratorImage] {
   }
 
   private object GeneratorMetaModelReleasePropertyFormat extends OFormat[GeneratorMetaModelReleaseProperty] {
-
-    private val sRef = "ref"
 
     override def writes(property: GeneratorMetaModelReleaseProperty): JsObject = Json.obj(
       sRef -> property.ref

@@ -11,11 +11,11 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-object AccessAuthorisationFormat extends OFormat[AccessAuthorisation] {
-
-  val sId = "id"
-  val sAuthorizedEntityAccess = "authorizedEntityAccess"
-  val sAuthorizedFileAccess = "authorizedFileAccess"
+class AccessAuthorisationFormat(
+    sId: String = "id",
+    sAuthorizedEntityAccess: String = "authorizedEntityAccess",
+    sAuthorizedFileAccess: String = "authorizedFileAccess"
+) extends OFormat[AccessAuthorisation] {
 
   override def writes(authorisation: AccessAuthorisation): JsObject = Json.obj(
     sId -> authorisation.id,
