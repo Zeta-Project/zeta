@@ -52,42 +52,31 @@ class StyleParserImpl extends StyleParser {
   }
 
   private def findGraphCycles(styles: List[StyleParseModel]): List[String] = {
-    styles.flatMap(style => {
-      val cycles = findGraphCycles(Some(style), List(), Set(), Set())(styles)
-      if (cycles.isEmpty) {
-        None
-      } else {
-        Some("Found cycles in inheritance graph"+ cycles.mkString(","))
-      }
-    })
+    for {
+      style <- styles if containsGraphCycles(style, styles)
+    } yield style.name
   }
 
-  @tailrec
-  private def findGraphCycles(maybeStyle: Option[StyleParseModel], nextStyles: List[StyleParseModel],
-                              visited: Set[String], cycles: Set[String])(allStyles: List[StyleParseModel]): Set[String] = {
-    if (maybeStyle.isEmpty) {
-      cycles
-    } else {
-      val style = maybeStyle.get
-      if (visited.contains(style.name)) {
-        findGraphCycles(nextStyles.headOption, nextStyles.drop(1), visited, cycles + style.name)(allStyles)
-      } else {
-        val parentStyles = getParentStyles(style, allStyles)
-        findGraphCycles(parentStyles.headOption, parentStyles.drop(1) ::: nextStyles, visited + style.name, cycles)(allStyles)
-      }
-    }
-  }
+  private def containsGraphCycles(style: StyleParseModel, allStyles: List[StyleParseModel]): Boolean = {
+    val visited = collection.mutable.Set[String]()
 
-  private def getParentStyles(style: StyleParseModel, allStyles: List[StyleParseModel]): List[StyleParseModel] = {
-    style.parentStyles.map { parentStyleName =>
-      allStyles.find(_.name == parentStyleName)
-    }.collect {
-      case Some(parent) => parent
+    @tailrec
+    def check(parentNames: List[String]): Boolean = parentNames match {
+      case Nil => false
+      case _ if parentNames.contains(style.name) => true
+      case _ =>
+        val unvisited = parentNames.filterNot(visited.contains)
+        visited ++= unvisited
+        val parentStyles = unvisited.flatMap(parentName => allStyles.find(_.name == parentName))
+        val grandparents = parentStyles.flatMap(_.parentStyles)
+        check(grandparents)
     }
+
+    check(style.parentStyles)
   }
 
   private def failureStyleRuleViolations(inheritanceRuleViolations: List[String], in: Input) = Failure(
-      s"The specified styles violate the inheritance rules: '${inheritanceRuleViolations.mkString(", ")}'", in)
+    s"The specified styles violate the inheritance rules: '${inheritanceRuleViolations.mkString(", ")}'", in)
 
   private def style: Parser[StyleParseModel] = {
     name ~ opt(parentStyles) ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
@@ -123,8 +112,8 @@ class StyleParserImpl extends StyleParser {
 
   private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure(
     s"""
-      |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
-      |'${duplicates.mkString(", ")}'
+       |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
+       |'${duplicates.mkString(", ")}'
     """.stripMargin, in)
 
   private def name = literal("style") ~> ident
