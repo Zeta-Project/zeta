@@ -54,7 +54,7 @@ class StyleParserImpl extends StyleParser {
   private def findGraphCycles(styles: List[StyleParseModel]): List[String] = {
     for {
       style <- styles if containsGraphCycles(style, styles)
-    } yield style.name
+    } yield s"Found cyclic inheritance in style ${style.name}"
   }
 
   private def containsGraphCycles(style: StyleParseModel, allStyles: List[StyleParseModel]): Boolean = {
