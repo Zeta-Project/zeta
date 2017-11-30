@@ -12,7 +12,7 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
-
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class AttributeValueFormat(
     sType: String = "type",
     sString: String = "string",

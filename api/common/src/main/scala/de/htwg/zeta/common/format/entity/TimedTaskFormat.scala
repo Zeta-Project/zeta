@@ -12,6 +12,7 @@ import play.api.libs.json.OFormat
 /**
  * Parse JsValue to TimedTask and TimedTask to JsValue
  */
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class TimedTaskFormat(
     sId: String = "id",
     sName: String = "name",

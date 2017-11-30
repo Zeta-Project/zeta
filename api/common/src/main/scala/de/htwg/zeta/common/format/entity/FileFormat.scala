@@ -12,6 +12,7 @@ import play.api.libs.json.JsValue
 /**
  * Parse JsValue to File and File to JsValue
  */
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class FileFormat(
     sId: String = "id",
     sName: String = "name",

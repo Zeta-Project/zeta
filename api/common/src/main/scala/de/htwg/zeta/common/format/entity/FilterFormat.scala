@@ -15,6 +15,7 @@ import play.api.libs.json.Writes
 /**
  * Parse JsValue to Filter and Filter to JsValue
  */
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class FilterFormat(
     sId: String = "id",
     sName: String = "name",

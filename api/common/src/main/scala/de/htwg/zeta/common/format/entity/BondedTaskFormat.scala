@@ -12,6 +12,7 @@ import play.api.libs.json.OFormat
 /**
  * Parse JsValue to BondedTask and BondedTask to JsValue
  */
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class BondedTaskFormat(
     sId: String = "id",
     sName: String = "name",

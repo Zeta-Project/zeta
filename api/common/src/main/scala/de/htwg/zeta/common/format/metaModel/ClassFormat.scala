@@ -9,6 +9,7 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class ClassFormat(
     attributeFormat: AttributeFormat,
     methodFormat: MethodFormat,

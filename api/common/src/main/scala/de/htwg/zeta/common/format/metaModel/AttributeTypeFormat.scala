@@ -16,7 +16,7 @@ import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 
-
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class AttributeTypeFormat(
     sType: String = "type",
     sEnum: String = "enum",

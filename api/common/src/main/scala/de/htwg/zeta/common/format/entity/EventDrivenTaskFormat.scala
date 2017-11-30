@@ -12,6 +12,7 @@ import play.api.libs.json.OFormat
 /**
  * Parse JsValue to EventDrivenTask and EventDrivenTask to JsValue
  */
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class EventDrivenTaskFormat(
     sId: String = "id",
     sName: String = "name",

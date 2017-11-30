@@ -14,7 +14,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 import play.api.libs.json.Writes
 
-
+@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class GeneratorImageFormat(
     sId: String = "id",
     sName: String = "name",
