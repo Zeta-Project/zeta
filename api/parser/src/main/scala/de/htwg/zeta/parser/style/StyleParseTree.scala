@@ -20,7 +20,7 @@ case class GradientOrientation(orientation: String) extends StyleAttribute { val
 case class GradientAreaColor(color: Color)          extends StyleAttribute { val attributeName = "gradient-area-color" }
 case class GradientAreaOffset(offset: Double)       extends StyleAttribute { val attributeName = "gradient-area-offset" }
 
-case class StyleParseModel(
+case class StyleParseTree(
     name: String,
     description: String,
     parentStyles: List[String],

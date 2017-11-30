@@ -1,7 +1,6 @@
 package de.htwg.zeta.parser.style
 
 import de.htwg.zeta.server.generator.model.style.{DASH, Style}
-import de.htwg.zeta.server.generator.model.style.color.{BLACK, WHITE}
 import de.htwg.zeta.server.generator.model.style.gradient.VERTICAL
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -34,7 +33,7 @@ class StyleParserConverterTest extends FlatSpec with Matchers {
 
     val styleParser = parserToTest.parseStyles(styleToTestSuccess)
     styleParser.successful shouldBe true
-    val style: StyleParseModel = styleParser.get.head
+    val style: StyleParseTree = styleParser.get.head
     val deprecatedStyle: Style = StyleParserImpl.convert(style)
 
     deprecatedStyle.description shouldBe Some("\"Style for a connection between an interface and its implementing class\"")

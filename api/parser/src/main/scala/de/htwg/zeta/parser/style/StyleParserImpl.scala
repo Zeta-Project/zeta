@@ -17,7 +17,7 @@ class StyleParserImpl extends StyleParser {
   private val eq = literal("=")
   private val comma = literal(",")
 
-  override def styles: Parser[List[StyleParseModel]] = {
+  override def styles: Parser[List[StyleParseTree]] = {
     rep1(style).flatMap { styles =>
       Parser { in =>
         checkStyleRuleViolations(styles) match {
@@ -28,8 +28,8 @@ class StyleParserImpl extends StyleParser {
     }
   }
 
-  private def checkStyleRuleViolations(styles: List[StyleParseModel]): List[String] = {
-    val checks = List[List[StyleParseModel] => List[String]](
+  private def checkStyleRuleViolations(styles: List[StyleParseTree]): List[String] = {
+    val checks = List[List[StyleParseTree] => List[String]](
       findStyleDuplicates,
       findUndefinedParents,
       findGraphCycles
@@ -37,13 +37,13 @@ class StyleParserImpl extends StyleParser {
     checks.flatMap(_.apply(styles))
   }
 
-  private def findStyleDuplicates(styles: List[StyleParseModel]): List[String] = {
+  private def findStyleDuplicates(styles: List[StyleParseTree]): List[String] = {
     val styleNames = styles.map(_.name)
     val duplicates = styleNames.diff(styleNames.distinct)
     duplicates.map(styleName => s"Style '$styleName' is defined multiple times (which is forbidden)")
   }
 
-  private def findUndefinedParents(styles: List[StyleParseModel]): List[String] = {
+  private def findUndefinedParents(styles: List[StyleParseTree]): List[String] = {
     val definedStyles = styles.map(_.name)
     styles.flatMap(style => {
       style.parentStyles.filter(parentStyle => !definedStyles.contains(parentStyle))
@@ -51,13 +51,13 @@ class StyleParserImpl extends StyleParser {
     })
   }
 
-  private def findGraphCycles(styles: List[StyleParseModel]): List[String] = {
+  private def findGraphCycles(styles: List[StyleParseTree]): List[String] = {
     for {
       style <- styles if containsGraphCycles(style, styles)
     } yield s"Found cyclic inheritance in style ${style.name}"
   }
 
-  private def containsGraphCycles(style: StyleParseModel, allStyles: List[StyleParseModel]): Boolean = {
+  private def containsGraphCycles(style: StyleParseTree, allStyles: List[StyleParseTree]): Boolean = {
     val visited = collection.mutable.Set[String]()
 
     @tailrec
@@ -78,10 +78,10 @@ class StyleParserImpl extends StyleParser {
   private def failureStyleRuleViolations(inheritanceRuleViolations: List[String], in: Input) = Failure(
     s"The specified styles violate the inheritance rules: '${inheritanceRuleViolations.mkString(", ")}'", in)
 
-  private def style: Parser[StyleParseModel] = {
+  private def style: Parser[StyleParseTree] = {
     name ~ opt(parentStyles) ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
       val name ~ parentStyles ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
-      StyleParseModel(
+      StyleParseTree(
         name,
         description,
         parentStyles.getOrElse(List()),
@@ -169,22 +169,22 @@ object StyleParserImpl {
 
   private case class ColorImpl(color: Color) extends OldColor with ColorToRBGColor
 
-  def convert(styleParseModel: StyleParseModel): Style = {
+  def convert(styleParseTree: StyleParseTree): Style = {
 
     class CollectAttributeWrapper[T](val t: Option[T]) {
       def map[R](func: T => R): Option[R] = t.map(func)
     }
 
     def collectAttribute[T: ClassTag]: CollectAttributeWrapper[T] = {
-      val attribute = styleParseModel.attributes.collectFirst {
+      val attribute = styleParseTree.attributes.collectFirst {
         case t: T => t
       }
       new CollectAttributeWrapper(attribute)
     }
 
     new Style(
-      name = styleParseModel.name,
-      description = Some(styleParseModel.description),
+      name = styleParseTree.name,
+      description = Some(styleParseTree.description),
       transparency = collectAttribute[Transparency].map(_.transparency),
       background_color = collectAttribute[BackgroundColor].map(bg => ColorOrGradientImpl(bg.color)),
       line_color = collectAttribute[LineColor].map(lc => ColorWithTransparencyImpl(lc.color)),

@@ -194,7 +194,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
     val styleParser = parserToTest.parseStyles(styleToTestSuccess)
 
     inside(styleParser) {
-      case parserToTest.Success(List(style: StyleParseModel), _) =>
+      case parserToTest.Success(List(style: StyleParseTree), _) =>
         style.name shouldBe "Y"
         style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
 
@@ -253,8 +253,8 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
   "A StyleParser" should "succeed if a style has no parent style" in {
     val parseResult = parserToTest.parseStyles(styleWithoutParentStyle)
     inside(parseResult) {
-      case parserToTest.Success(List(styleParseModel: StyleParseModel), _) =>
-        styleParseModel.parentStyles shouldBe empty
+      case parserToTest.Success(List(styleParseTree: StyleParseTree), _) =>
+        styleParseTree.parentStyles shouldBe empty
     }
 
   }
@@ -262,7 +262,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
   "A StyleParser" should "succeed if a style has a single parent style" in {
     val parseResult = parserToTest.parseStyles(styleWithSingleParentStyle)
     inside(parseResult) {
-      case parserToTest.Success((List(parentStyle: StyleParseModel, childStyle: StyleParseModel)), _) =>
+      case parserToTest.Success((List(parentStyle: StyleParseTree, childStyle: StyleParseTree)), _) =>
         parentStyle.parentStyles shouldBe empty
         childStyle.parentStyles should contain("ParentStyle")
     }
@@ -271,10 +271,10 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
   "A StyleParser" should "succeed if a style has multiple parent styles" in {
     val parseResult = parserToTest.parseStyles(styleWithMultipleParentStyles)
     inside(parseResult) {
-      case parserToTest.Success((styles: List[StyleParseModel]), _) =>
+      case parserToTest.Success((styles: List[StyleParseTree]), _) =>
         styles should have size 4
         inside(styles.find(s => s.name == "MyStyle")) {
-          case Some(childStyle: StyleParseModel) =>
+          case Some(childStyle: StyleParseTree) =>
             childStyle.parentStyles should contain("ParentStyle1")
             childStyle.parentStyles should contain("ParentStyle2")
             childStyle.parentStyles should contain("ParentStyle3")
