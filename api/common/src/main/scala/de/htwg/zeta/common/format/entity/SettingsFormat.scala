@@ -63,8 +63,8 @@ class SettingsFormat(
     )
 
     override def reads(json: JsValue): JsResult[DockerSettings] = for {
-      cpuShares <- (json \ sCpuShares).validate[Int]
-      cpuQuota <- (json \ sCpuQuota).validate[Int]
+      cpuShares <- (json \ sCpuShares).validate[Long]
+      cpuQuota <- (json \ sCpuQuota).validate[Long]
     } yield {
       DockerSettings(cpuShares, cpuQuota)
     }

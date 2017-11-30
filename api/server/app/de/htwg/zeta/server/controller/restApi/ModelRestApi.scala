@@ -3,8 +3,8 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
@@ -34,7 +34,11 @@ import play.api.mvc.Results
  */
 class ModelRestApi @Inject()(
     modelEntityRepo: AccessRestrictedModelEntityRepository,
-    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository
+    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
+    modelEntityFormat: ModelEntityFormat,
+    modelFormat: ModelFormat,
+    nodeFormat: NodeFormat,
+    edgeFormat: EdgeFormat
 ) extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
@@ -43,7 +47,7 @@ class ModelRestApi @Inject()(
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read))
     }.map(list =>
-      Ok(Writes.list(ModelEntityFormat).writes(list))
+      Ok(Writes.list(modelEntityFormat).writes(list))
     ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -51,7 +55,7 @@ class ModelRestApi @Inject()(
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(ModelFormat.empty).fold(
+    request.body.validate(modelFormat.empty).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
@@ -62,7 +66,7 @@ class ModelRestApi @Inject()(
           model = model
         )
       ).map { modelEntity =>
-        Ok(ModelEntityFormat.writes(modelEntity))
+        Ok(modelEntityFormat.writes(modelEntity))
       }).recover {
       case e: Exception => Results.BadRequest(e.getMessage)
     }
@@ -76,15 +80,15 @@ class ModelRestApi @Inject()(
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { metaModelEntity =>
-        request.body.validate(new ModelFormat(metaModelEntity.id, metaModelEntity.metaModel)).fold(
+      metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { _ =>
+        request.body.validate(modelFormat).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))
           },
           model => {
             modelEntityRepo.restrictedTo(request.identity.id).update(id, _.copy(model = model)).map { updated =>
-              Ok(ModelEntityFormat.writes(updated))
+              Ok(modelEntityFormat.writes(updated))
             }.recover {
               case e: Exception => Results.BadRequest(e.getMessage)
             }
@@ -103,19 +107,19 @@ class ModelRestApi @Inject()(
   /** returns whole model structure incl. HATEOS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, modelEntity =>
-      Ok(ModelEntityFormat.writes(modelEntity))
+      Ok(modelEntityFormat.writes(modelEntity))
     )
   }
 
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => Ok(ModelFormat.writes(m.model)))
+    protectedRead(id, request, (m: ModelEntity) => Ok(modelFormat.writes(m.model)))
   }
 
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      Ok(Writes.seq(NodeFormat).writes(m.model.nodes))
+      Ok(Writes.seq(nodeFormat).writes(m.model.nodes))
     })
   }
 
@@ -123,7 +127,7 @@ class ModelRestApi @Inject()(
   def getNode(modelId: UUID, nodeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
       m.model.nodeMap.get(nodeName) match {
-        case Some(node: Node) => Ok(NodeFormat.writes(node))
+        case Some(node: Node) => Ok(nodeFormat.writes(node))
         case None => NotFound
       }
     })
@@ -132,7 +136,7 @@ class ModelRestApi @Inject()(
   /** returns all edges of a model as json array */
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (m: ModelEntity) => {
-      Ok(Writes.seq(EdgeFormat).writes(m.model.edges))
+      Ok(Writes.seq(edgeFormat).writes(m.model.edges))
     })
   }
 
@@ -140,7 +144,7 @@ class ModelRestApi @Inject()(
   def getEdge(modelId: UUID, edgeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: ModelEntity) => {
       m.model.edgeMap.get(edgeName) match {
-        case Some(edge) => Ok(EdgeFormat.writes(edge))
+        case Some(edge) => Ok(edgeFormat.writes(edge))
         case None => NotFound
       }
     })

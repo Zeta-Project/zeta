@@ -10,7 +10,7 @@ import play.api.libs.json.Json
 
 case class MetaModelEntity(
     id: UUID,
-    metaModel: MetaModel,
+    metaModel: MetaModel, // Concept
     dsl: Dsl = Dsl(),
     validator: Option[String] = None
 ) extends Entity

@@ -3,7 +3,6 @@ package de.htwg.zeta.server.module
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
-import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.name.Named
 import com.mohiva.play.silhouette.api.Environment
@@ -58,7 +57,7 @@ import play.api.libs.ws.WSClient
 /**
  * The Guice module which wires all Silhouette dependencies.
  */
-class SilhouetteModule extends AbstractModule with ScalaModule {
+class SilhouetteModule extends ScalaModule {
 
   /**
    * Configures the module.
@@ -173,7 +172,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideAuthInfoRepository(
-      passwordInfoPersistence: PasswordInfoRepository
+    passwordInfoPersistence: PasswordInfoRepository
   ): AuthInfoRepository = {
     new DelegableAuthInfoRepository(passwordInfoPersistence)
   }

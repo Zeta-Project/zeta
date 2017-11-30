@@ -3,9 +3,11 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.format.entity.GeneratorFormat
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -14,15 +16,14 @@ import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.entity.GeneratorFormat
 
 /**
  * REST-ful API for generator definitions
  */
 class GeneratorRestApi @Inject()(
-    generatorRepo: GeneratorRepository
+    generatorRepo: GeneratorRepository,
+    generatorFormat: GeneratorFormat
 ) extends Controller with Logging {
 
   /**
@@ -47,7 +48,7 @@ class GeneratorRestApi @Inject()(
 
   private def getResultJsonArray(list: List[Generator]): Result = {
     val entities = list.filter(e => !e.deleted)
-    val entries = entities.map(GeneratorFormat.writes)
+    val entries = entities.map(generatorFormat.writes)
     val json = JsArray(entries)
     Ok(json)
   }
@@ -67,7 +68,7 @@ class GeneratorRestApi @Inject()(
   }
 
   private def getResultJsonValue(entity: Generator) = {
-    val json = GeneratorFormat.writes(entity)
+    val json = generatorFormat.writes(entity)
     Ok(json)
   }
 

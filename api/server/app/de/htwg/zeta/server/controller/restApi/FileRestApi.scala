@@ -3,9 +3,11 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.format.entity.FileFormat
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -18,15 +20,14 @@ import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
-import de.htwg.zeta.common.format.entity.FileFormat
 
 /**
  * REST-ful API for File definitions
  */
 class FileRestApi @Inject()(
-    fileRepo: FileRepository
+    fileRepo: FileRepository,
+    fileFormat: FileFormat
 ) extends Controller with Logging {
 
   /**
@@ -37,7 +38,7 @@ class FileRestApi @Inject()(
    */
   def get(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     fileRepo.read(id, name).flatMap(entity => {
-      Future(Ok(FileFormat.writes(entity)))
+      Future(Ok(fileFormat.writes(entity)))
     }).recover {
       case e: Exception =>
         error("Exception while trying to read a single `File` from DB", e)
@@ -66,7 +67,7 @@ class FileRestApi @Inject()(
   }
 
   private def parseJson(json: JsValue) = {
-    json.validate(FileFormat) match {
+    json.validate(fileFormat) match {
       case s: JsSuccess[File] => Future.successful(s)
       case e: JsError => Future.successful(e)
     }
