@@ -124,7 +124,10 @@ export default (function() {
           name: thisAttribute.name,
           upperBound: thisAttribute.upperBound,
           lowerBound: thisAttribute.lowerBound,
-          "default": thisAttribute["default"],
+          default: {
+            type: thisAttribute.typ,
+            value: thisAttribute.default,
+          },
           typ: thisAttribute.typ,
           expression: thisAttribute.expression,
           localUnique: thisAttribute.localUnique,

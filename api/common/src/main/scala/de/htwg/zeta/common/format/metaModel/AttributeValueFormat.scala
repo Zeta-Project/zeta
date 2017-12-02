@@ -6,6 +6,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
+import play.api.libs.json.JsError
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -42,6 +43,7 @@ class AttributeValueFormat(
       case `sInt` => (json \ sValue).validate[Int].map(IntValue)
       case `sDouble` => (json \ sValue).validate[Double].map(DoubleValue)
       case `sEnum` => readsEnumValue(json)
+      case unknown: String => JsError(s"Unknown AttributeType in AttributeValue: $unknown")
     }
   }
 

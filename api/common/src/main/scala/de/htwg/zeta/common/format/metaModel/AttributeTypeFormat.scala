@@ -46,7 +46,7 @@ class AttributeTypeFormat(
     json match {
       case s: JsString => readsJsString(s)
       case o: JsObject => readsJsObject(o)
-      case _ => JsError(s"Reading AttributeType $json failed")
+      case _ => JsError(s"Unknown AttributeType from JsValue: $json") // scalastyle:ignore multiple.string.literals
     }
   }
 
@@ -57,14 +57,14 @@ class AttributeTypeFormat(
       case `sInt` => JsSuccess(IntType)
       case `sDouble` => JsSuccess(DoubleType)
       case `sUnit` => JsSuccess(UnitType)
-      case _ => JsError(s"Reading AttributeType ${json.value} from JsString failed")
+      case _ => JsError(s"Unknown AttributeType from JsString: ${json.value}")
     }
   }
 
   private def readsJsObject(json: JsObject): JsResult[AttributeType] = {
     (json \ sType).validate[String].flatMap {
       case `sEnum` => (json \ sName).validate[String].map(EnumType)
-      case _ => JsError(s"Reading AttributeType ${json.value} from JsObject failed")
+      case _ => JsError(s"Unknown AttributeType from JsObject: ${json.value}")
     }
   }
 

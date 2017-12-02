@@ -47,7 +47,7 @@ class CodeEditor {
       credentials: 'same-origin'
     })
     .then(response => response.json())
-    .then(metaModel => this.setAceEditorContent(metaModel.dsl[this.dslType].code))
+    .then(metaModel => this.setAceEditorContent(metaModel[this.dslType]))
     .catch(err => console.log(`Error loading MetaModel '${this.metaModelId}': ${err}`));
   }
 
@@ -57,14 +57,13 @@ class CodeEditor {
   }
 
   saveSourceCode(code) {
-    const body = JSON.stringify({code});
     fetch(`/rest/v1/meta-models/${this.metaModelId}/${this.dslType}`, {
       headers: {
         'Content-Type': 'application/json'
       },
       method: 'PUT',
       credentials: 'same-origin',
-      body
+      body: JSON.stringify(code)
     })
     .then(() => this.toggleSaveNotifications('.js-save-successful'))
     .catch(err => {
