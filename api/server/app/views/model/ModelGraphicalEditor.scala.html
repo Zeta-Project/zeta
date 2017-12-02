@@ -1,8 +1,8 @@
-@import de.htwg.zeta.common.models.entity.ModelEntity
+@import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 @import de.htwg.zeta.common.models.entity.User
 @import play.api.libs.json.Json
 
-@(modelEntity: ModelEntity, user: User)
+@(modelEntity: GraphicalDslInstance, user: User)
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-model-editor.bundle.css")">
@@ -17,24 +17,24 @@
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("graphical-model-editor.bundle.js")"></script>
 
     <!-- model specific files-->
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/inspector.js") "> </script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/style.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/shape.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/stencil.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/connectionstyle.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/linkhelper.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/validator.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.model.metaModelId}/elementAndInlineStyle.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/inspector.js") "> </script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/style.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/shape.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/stencil.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/connectionstyle.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/linkhelper.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/validator.js")"></script>
+    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/elementAndInlineStyle.js")"></script>
 
     <script type="text/javascript">
     window._global_uuid = "@(modelEntity.id.toString)";
-    window._global_graph_type = "@(modelEntity.model.metaModelId.toString)";
+    window._global_graph_type = "@(modelEntity.graphicalDslId.toString)";
     window._global_userID = "@(user.id.toString)";
     window._global_userName = "@(user.fullName)";
-    window._global_model_name = "@(modelEntity.model.name)";
-    @if(modelEntity.model.uiState.nonEmpty) {
+    window._global_model_name = "@(modelEntity.name)";
+    @if(modelEntity.uiState.nonEmpty) {
     window._global_loadOnStart = true;
-    window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(modelEntity.model.uiState))));
+    window._global_graph = JSON.parse(@Html(Json.stringify(Json.toJson(modelEntity.uiState))));
     }
     </script>
 }
@@ -96,10 +96,10 @@
             </button>
             <ul class="dropdown-menu" aria-labelledby="btnValidator">
                 <li><a href="#" id="validatorValidate" data-model-id="@(modelEntity.id)">Validate Model</a></li>
-                <li><a href="#" id="validatorShow" data-meta-model-id="@(modelEntity.model.metaModelId)">Show Validation Rules</a></li>
+                <li><a href="#" id="validatorShow" data-meta-model-id="@(modelEntity.graphicalDslId)">Show Validation Rules</a></li>
                 <li><a href="#" id="validatorUnhighlight">Unhighlight highlighted Cells</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(modelEntity.model.metaModelId)">Generate / Update Validator</a></li>
+                <li><a href="#" id="validatorGenerate" data-meta-model-id="@(modelEntity.graphicalDslId)">Generate / Update Validator</a></li>
             </ul>
         </div>
 

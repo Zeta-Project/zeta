@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
@@ -19,9 +19,9 @@ import org.scalatest.Matchers
 
 class NullChecksTests extends FlatSpec with Matchers {
 
-  def nodesToModel(nodes: Seq[Node]): Model = Model.empty("", UUID.randomUUID()).copy(nodes = nodes)
+  def nodesToModel(nodes: Seq[Node]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = nodes)
 
-  def edgesToModel(edges: Seq[Edge]): Model = Model.empty("", UUID.randomUUID()).copy(edges = edges)
+  def edgesToModel(edges: Seq[Edge]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = edges)
 
   val mReference: MReference = MReference.empty("edgeType", Seq.empty, Seq.empty)
   val mClass: MClass = MClass.empty("nodeType")
@@ -268,21 +268,21 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new ElementsNoNullValues
 
     val nonNullEdge = emptyEdge
-    val nonNullModel = Model.empty("", UUID.randomUUID()).copy(edges = Seq(nonNullEdge))
+    val nonNullModel = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullEdge = null
-    val nullModel = Model.empty("", UUID.randomUUID()).copy(edges = Seq(nullEdge))
+    val nullModel = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
 
   "ElementsNotNull" should "check for null in elements" in {
     val rule = new ElementsNotNull
 
-    val nonNullModel = Model.empty("", UUID.randomUUID())
+    val nonNullModel = GraphicalDslInstance.empty("", UUID.randomUUID())
     rule.check(nonNullModel) should be(true)
 
-    val nullModel = Model.empty("", UUID.randomUUID()).copy(nodes = null)
+    val nullModel = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = null)
     rule.check(nullModel) should be(false)
   }
 

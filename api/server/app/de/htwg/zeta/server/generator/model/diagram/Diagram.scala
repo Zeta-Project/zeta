@@ -1,12 +1,12 @@
 package de.htwg.zeta.server.generator.model.diagram
 
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.server.generator.model.diagram.action.ActionGroup
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.diagram.node.Node
 import de.htwg.zeta.server.generator.model.style.HasStyle
 import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.parser.Cache
-import de.htwg.zeta.common.models.entity.GraphicalDsl
 
 /**
  * Created by julian on 24.11.15.

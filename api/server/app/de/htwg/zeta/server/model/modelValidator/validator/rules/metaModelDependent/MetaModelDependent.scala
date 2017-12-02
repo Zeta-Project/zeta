@@ -19,7 +19,7 @@ object MetaModelDependent {
     EdgeTargetNodes,
     NodeInputEdges,
     NodeOutputEdges,
-    EdgeAttributesGlobalUnique,
+    EdgesAttributesGlobalUnique,
     NodeAttributesGlobalUnique,
     EdgesNoAttributes,
     NodesNoAttributes,

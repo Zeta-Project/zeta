@@ -10,14 +10,13 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.DslFormat
+import de.htwg.zeta.common.format.metaModel.ConceptFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -34,12 +33,11 @@ import play.api.mvc.Result
  * REST-ful API for MetaModel definitions
  */
 class MetaModelRestApi @Inject()(
-    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
-    metaModelFormat: MetaModelFormat,
-    metaModelEntityFormat: GraphicalDslFormat,
+    graphicalDslRepo: AccessRestrictedGraphicalDslRepository,
+    conceptFormat: ConceptFormat,
+    graphicalDslFormat: GraphicalDslFormat,
     classFormat: ClassFormat,
-    referenceFormat: ReferenceFormat,
-    dslFormat: DslFormat
+    referenceFormat: ReferenceFormat
 ) extends Controller with Logging {
 
   /** Lists all MetaModels for the requesting user, provides HATEOAS links.
@@ -48,10 +46,10 @@ class MetaModelRestApi @Inject()(
    * @return The result
    */
   def showForUser(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
+    val repo = graphicalDslRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
-        MetaModelShortInfo(id = mm.id, name = mm.metaModel.name)
+        MetaModelShortInfo(id = mm.id, name = mm.name)
       })
     }).map((set: Set[MetaModelShortInfo]) => Ok(JsArray(set.toList.map(MetaModelShortInfo.writes.writes)))).recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -64,19 +62,14 @@ class MetaModelRestApi @Inject()(
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(metaModelFormat.empty).fold(
+    request.body.validate(graphicalDslFormat.empty).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      metaModel => {
-        metaModelEntityRepo.restrictedTo(request.identity.id).create(
-          GraphicalDsl(
-            id = UUID.randomUUID(),
-            metaModel = metaModel
-          )
-        ).map { metaModelEntity =>
-          Created(metaModelEntityFormat.writes(metaModelEntity))
+      graphicalDsl => {
+        graphicalDslRepo.restrictedTo(request.identity.id).create(graphicalDsl).map { metaModelEntity =>
+          Created(graphicalDslFormat.writes(metaModelEntity))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -91,15 +84,15 @@ class MetaModelRestApi @Inject()(
    * @return result
    */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(metaModelFormat).fold(
+    request.body.validate(conceptFormat).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      metaModel => {
-        val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
-        repo.update(id, _.copy(metaModel = metaModel)).map { _ =>
-          Ok(metaModelFormat.writes(metaModel))
+      concept => {
+        val repo = graphicalDslRepo.restrictedTo(request.identity.id)
+        repo.update(id, _.copy(concept = concept)).map { _ =>
+          Ok(conceptFormat.writes(concept))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -114,7 +107,7 @@ class MetaModelRestApi @Inject()(
    * @return result
    */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    metaModelEntityRepo.restrictedTo(request.identity.id).delete(id).map { _ =>
+    graphicalDslRepo.restrictedTo(request.identity.id).delete(id).map { _ =>
       Ok("")
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -124,35 +117,35 @@ class MetaModelRestApi @Inject()(
   /** returns whole MetaModels incl. dsl definitions and HATEOAS links */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity =>
-      Ok(metaModelEntityFormat.writes(metaModelEntity))
+      Ok(graphicalDslFormat.writes(metaModelEntity))
     )
   }
 
   /** returns pure MetaModel without dsl definitions */
   def getMetaModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+      Ok(conceptFormat.writes(metaModelEntity.concept))
     })
   }
 
   /** returns all MClasses of a specific MetaModel as Json Array */
   def getMClasses(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(Writes.seq(classFormat).writes(metaModelEntity.metaModel.classes))
+      Ok(Writes.seq(classFormat).writes(metaModelEntity.concept.classes))
     })
   }
 
   /** returns all MReferences of a specific MetaModel as Json Array */
   def getMReferences(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, metaModelEntity => {
-      Ok(Writes.seq(referenceFormat).writes(metaModelEntity.metaModel.references))
+    protectedRead(id, request, graphicalDsl => {
+      Ok(Writes.seq(referenceFormat).writes(graphicalDsl.concept.references))
     })
   }
 
   /** returns specific MClass of a specific MetaModel as Json Object */
   def getMClass(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, metaModelEntity => {
-      metaModelEntity.metaModel.classMap.get(name).map(clazz =>
+    protectedRead(id, request, graphicalDsl => {
+      graphicalDsl.concept.classMap.get(name).map(clazz =>
         Ok(classFormat.writes(clazz))
       ).getOrElse(NotFound)
     })
@@ -161,7 +154,7 @@ class MetaModelRestApi @Inject()(
   /** returns specific MReference of a specific MetaModel as Json Object */
   def getMReference(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      metaModelEntity.metaModel.referenceMap.get(name).map((reference: MReference) =>
+      metaModelEntity.concept.referenceMap.get(name).map((reference: MReference) =>
         Ok(referenceFormat.writes(reference))
       ).getOrElse(NotFound)
     })
@@ -169,29 +162,23 @@ class MetaModelRestApi @Inject()(
 
   /** returns style definition */
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: GraphicalDsl) => {
-      m.dsl.style.map(m => Ok(dslFormat.style.writes(m))).getOrElse(NotFound)
-    })
+    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.style))
   }
 
   /** returns shape definition */
   def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: GraphicalDsl) => {
-      m.dsl.shape.map(m => Ok(dslFormat.shape.writes(m))).getOrElse(NotFound)
-    })
+    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.shape))
   }
 
   /** returns diagram definition */
   def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: GraphicalDsl) => {
-      m.dsl.diagram.map(m => Ok(dslFormat.diagram.writes(m))).getOrElse(NotFound)
-    })
+    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.diagram))
   }
 
   /** A helper method for less verbose reads from the database */
   private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDsl => Result): Future[Result] = {
-    metaModelEntityRepo.restrictedTo(request.identity.id).read(id).map { mm =>
-      trans(mm)
+    graphicalDslRepo.restrictedTo(request.identity.id).read(id).map { graphicalDsl =>
+      trans(graphicalDsl)
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -199,14 +186,14 @@ class MetaModelRestApi @Inject()(
 
   /** updates shape definition */
   def updateShape(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(dslFormat.shape).fold(
+    request.body.validate[String].fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       shape => {
-        metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.shape).setTo(Some(shape))).map { metaModelEntity =>
-          Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+        graphicalDslRepo.restrictedTo(request.identity.id).update(id, _.modify(_.shape).setTo(shape)).map { graphicalDsl =>
+          Ok(conceptFormat.writes(graphicalDsl.concept))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -216,14 +203,14 @@ class MetaModelRestApi @Inject()(
 
   /** updates style definition */
   def updateStyle(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(dslFormat.style).fold(
+    request.body.validate[String].fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       style => {
-        metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.style).setTo(Some(style))).map { metaModelEntity =>
-          Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+        graphicalDslRepo.restrictedTo(request.identity.id).update(id, _.modify(_.style).setTo(style)).map { graphicalDsl =>
+          Ok(conceptFormat.writes(graphicalDsl.concept))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -233,14 +220,14 @@ class MetaModelRestApi @Inject()(
 
   /** updates diagram definition */
   def updateDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(dslFormat.diagram).fold(
+    request.body.validate[String].fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       diagram => {
-        metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.modify(_.dsl.diagram).setTo(Some(diagram))).map { metaModelEntity =>
-          Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+        graphicalDslRepo.restrictedTo(request.identity.id).update(id, _.modify(_.diagram).setTo(diagram)).map { graphicalDsl =>
+          Ok(conceptFormat.writes(graphicalDsl.concept))
         }.recover {
           case e: Exception => BadRequest(e.getMessage)
         }
@@ -253,13 +240,13 @@ class MetaModelRestApi @Inject()(
     request.body.asText.fold(
       Future.successful(BadRequest("ClassMethodError"))
     ) { code =>
-      metaModelEntityRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.metaModel.classes).using { classes =>
+      graphicalDslRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.concept.classes).using { classes =>
         val clazz = classes.find(_.name == className).get
         val method = clazz.methods.find(_.name == methodName).get
         val updatedMethods = method.copy(code = code) +: clazz.methods.filter(_ != method)
         clazz.copy(methods = updatedMethods) +: classes.filter(_ != clazz)
-      }).map { metaModelEntity =>
-        Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+      }).map { graphicalDsl =>
+        Ok(conceptFormat.writes(graphicalDsl.concept))
       }.recover {
         case e: Exception => BadRequest(e.getMessage)
       }
@@ -271,13 +258,13 @@ class MetaModelRestApi @Inject()(
     request.body.asText.fold(
       Future.successful(BadRequest("ReferenceMethodError"))
     ) { code =>
-      metaModelEntityRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.metaModel.references).using { references =>
+      graphicalDslRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.concept.references).using { references =>
         val reference = references.find(_.name == referenceName).get
         val method = reference.methods.find(_.name == methodName).get
         val updatedMethods = method.copy(code = code) +: reference.methods.filter(_ != method)
         reference.copy(methods = updatedMethods) +: references.filter(_ != reference)
       }).map { metaModelEntity =>
-        Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+        Ok(conceptFormat.writes(metaModelEntity.concept))
       }.recover {
         case e: Exception => BadRequest(e.getMessage)
       }
@@ -289,11 +276,11 @@ class MetaModelRestApi @Inject()(
     request.body.asText.fold(
       Future.successful(BadRequest("CommonMethodError"))
     ) { code =>
-      metaModelEntityRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.metaModel.methods).using { methods =>
+      graphicalDslRepo.restrictedTo(request.identity.id).update(metaModelId, _.modify(_.concept.methods).using { methods =>
         val method = methods.find(_.name == methodName).get
         method.copy(code = code) +: methods.filter(_ != method)
       }).map { metaModelEntity =>
-        Ok(metaModelFormat.writes(metaModelEntity.metaModel))
+        Ok(conceptFormat.writes(metaModelEntity.concept))
       }.recover {
         case e: Exception => BadRequest(e.getMessage)
       }
@@ -324,7 +311,7 @@ class MetaModelRestApi @Inject()(
         new ValidatorGenerator(metaModelEntity).generateValidator() match {
           case ValidatorGeneratorResult(false, msg) => if (get) Conflict(msg) else Conflict
           case ValidatorGeneratorResult(_, validator) =>
-            metaModelEntityRepo.restrictedTo(request.identity.id).update(id, _.copy(validator = Some(validator)))
+            graphicalDslRepo.restrictedTo(request.identity.id).update(id, _.copy(validator = Some(validator)))
             if (get) Created(validator) else Created
         }
 

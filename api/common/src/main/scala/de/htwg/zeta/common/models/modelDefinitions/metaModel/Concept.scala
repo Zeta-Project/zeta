@@ -2,7 +2,7 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.EnumMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -17,17 +17,15 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 
 /**
- * Immutable container for MetaModel definitions
+ * Immutable container for Concept (formerly named MetaModel) definitions
  *
- * @param name       the name of the MetaModel
  * @param classes    the classes of the actual MetaModel data
  * @param references the object graph containing the actual MetaModel data
  * @param enums      the object graph containing the actual MetaModel data
  * @param methods    the object graph containing the actual MetaModel data
  * @param uiState    the ui-state of the browser client. Location is debatable
  */
-case class MetaModel(
-    name: String,
+case class Concept(
     classes: Seq[MClass],
     references: Seq[MReference],
     enums: Seq[MEnum],
@@ -41,11 +39,10 @@ case class MetaModel(
 
 }
 
-object MetaModel {
+object Concept {
 
-  def empty(name: String): MetaModel = {
-    MetaModel(
-      name = name,
+  val empty: Concept = {
+    Concept(
       classes = Seq.empty,
       references = Seq.empty,
       enums = Seq.empty,
@@ -55,7 +52,7 @@ object MetaModel {
     )
   }
 
-  case class MetaModelTraverseWrapper(value: MetaModel) {
+  case class MetaModelTraverseWrapper(value: Concept) {
 
     def classes: Map[String, MClassTraverseWrapper] = {
       value.classMap.map {

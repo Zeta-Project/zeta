@@ -9,13 +9,12 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.format.model.EdgeFormat
-import de.htwg.zeta.common.format.model.ModelEntityFormat
-import de.htwg.zeta.common.format.model.ModelFormat
+import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -33,10 +32,9 @@ import play.api.mvc.Results
  * REST-ful API for model definitions
  */
 class ModelRestApi @Inject()(
-    modelEntityRepo: AccessRestrictedModelEntityRepository,
-    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
-    modelEntityFormat: ModelEntityFormat,
-    modelFormat: ModelFormat,
+    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
+    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
+    graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat
 ) extends Controller with Logging {
@@ -47,7 +45,7 @@ class ModelRestApi @Inject()(
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read))
     }.map(list =>
-      Ok(Writes.list(modelEntityFormat).writes(list))
+      Ok(Writes.list(graphicalDslInstanceFormat).writes(list))
     ).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
@@ -55,18 +53,13 @@ class ModelRestApi @Inject()(
 
   /** inserts whole model structure */
   def insert()(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    request.body.validate(modelFormat.empty).fold(
+    request.body.validate(graphicalDslInstanceFormat.empty).fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      model => modelEntityRepo.restrictedTo(request.identity.id).create(
-        ModelEntity(
-          id = UUID.randomUUID(),
-          model = model
-        )
-      ).map { modelEntity =>
-        Ok(modelEntityFormat.writes(modelEntity))
+      model => modelEntityRepo.restrictedTo(request.identity.id).create(model).map { graphicalDslInstance =>
+        Ok(graphicalDslInstanceFormat.writes(graphicalDslInstance))
       }).recover {
       case e: Exception => Results.BadRequest(e.getMessage)
     }
@@ -81,14 +74,14 @@ class ModelRestApi @Inject()(
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { _ =>
-        request.body.validate(modelFormat).fold(
+        request.body.validate(graphicalDslInstanceFormat).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))
           },
-          model => {
-            modelEntityRepo.restrictedTo(request.identity.id).update(id, _.copy(model = model)).map { updated =>
-              Ok(modelEntityFormat.writes(updated))
+          graphicalDslInstance => {
+            modelEntityRepo.restrictedTo(request.identity.id).update(id, _ => graphicalDslInstance).map { updated =>
+              Ok(graphicalDslInstanceFormat.writes(updated))
             }.recover {
               case e: Exception => Results.BadRequest(e.getMessage)
             }
@@ -104,29 +97,30 @@ class ModelRestApi @Inject()(
     update(id)(request)
   }
 
-  /** returns whole model structure incl. HATEOS links */
+  /** returns whole model structure */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, modelEntity =>
-      Ok(modelEntityFormat.writes(modelEntity))
+      Ok(graphicalDslInstanceFormat.writes(modelEntity))
     )
   }
 
+  // FIXME duplicate method (same as get)
   /** returns model definition only */
   def getModelDefinition(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => Ok(modelFormat.writes(m.model)))
+    protectedRead(id, request, (m: GraphicalDslInstance) => Ok(graphicalDslInstanceFormat.writes(m)))
   }
 
   /** returns all nodes of a model as json array */
   def getNodes(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => {
-      Ok(Writes.seq(nodeFormat).writes(m.model.nodes))
+    protectedRead(id, request, (m: GraphicalDslInstance) => {
+      Ok(Writes.seq(nodeFormat).writes(m.nodes))
     })
   }
 
   /** returns specific node of a specific model as json object */
   def getNode(modelId: UUID, nodeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(modelId, request, (m: ModelEntity) => {
-      m.model.nodeMap.get(nodeName) match {
+    protectedRead(modelId, request, (m: GraphicalDslInstance) => {
+      m.nodeMap.get(nodeName) match {
         case Some(node: Node) => Ok(nodeFormat.writes(node))
         case None => NotFound
       }
@@ -135,15 +129,15 @@ class ModelRestApi @Inject()(
 
   /** returns all edges of a model as json array */
   def getEdges(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: ModelEntity) => {
-      Ok(Writes.seq(edgeFormat).writes(m.model.edges))
+    protectedRead(id, request, (m: GraphicalDslInstance) => {
+      Ok(Writes.seq(edgeFormat).writes(m.edges))
     })
   }
 
   /** returns specific edge of a specific model as json object */
   def getEdge(modelId: UUID, edgeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(modelId, request, (m: ModelEntity) => {
-      m.model.edgeMap.get(edgeName) match {
+    protectedRead(modelId, request, (m: GraphicalDslInstance) => {
+      m.edgeMap.get(edgeName) match {
         case Some(edge) => Ok(edgeFormat.writes(edge))
         case None => NotFound
       }
@@ -171,13 +165,13 @@ class ModelRestApi @Inject()(
    * @return Results of the validation.
    */
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedReadFuture(id, request, (modelEntity: ModelEntity) => {
+    protectedReadFuture(id, request, (modelEntity: GraphicalDslInstance) => {
 
-      metaModelEntityRepo.restrictedTo(request.identity.id).read(modelEntity.model.metaModelId).map(metaModelEntity => {
+      metaModelEntityRepo.restrictedTo(request.identity.id).read(modelEntity.graphicalDslId).map(metaModelEntity => {
         metaModelEntity.validator match {
           case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
             case Some(validator) =>
-              val results: Seq[ModelValidationResult] = validator.validate(modelEntity.model).filterNot(_.valid)
+              val results: Seq[ModelValidationResult] = validator.validate(modelEntity).filterNot(_.valid)
               Ok(JsArray(results.map(ModelValidationResult.modelValidationResultWrites.writes)))
             case None => InternalServerError("Error loading model validator.")
           }
@@ -192,7 +186,7 @@ class ModelRestApi @Inject()(
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedReadFuture[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Future[Result]): Future[Result] = {
+  private def protectedReadFuture[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDslInstance => Future[Result]): Future[Result] = {
     modelEntityRepo.restrictedTo(request.identity.id).read(id).flatMap(model => {
       trans(model)
     }).recover {
@@ -203,16 +197,16 @@ class ModelRestApi @Inject()(
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: ModelEntity => Result): Future[Result] = {
+  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDslInstance => Result): Future[Result] = {
     protectedReadFuture[A](id, request, me => Future(trans(me)))
   }
 
   def getScalaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      modelEntity <- modelEntityRepo.restrictedTo(request.identity.id).read(modelId)
-      metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(modelEntity.model.metaModelId)
+      graphicalDslInstance <- modelEntityRepo.restrictedTo(request.identity.id).read(modelId)
+      metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(graphicalDslInstance.graphicalDslId)
     } yield {
-      val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.metaModel, modelEntity).toList
+      val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.concept, graphicalDslInstance).toList
       Ok(views.html.codeViewer.ScalaCodeViewer(files))
     }
   }

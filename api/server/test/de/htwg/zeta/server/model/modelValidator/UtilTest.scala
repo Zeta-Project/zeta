@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
@@ -45,12 +45,15 @@ class UtilTest extends FlatSpec with Matchers {
     methods = Seq.empty
   )
 
-  val modelElements = Seq(
+  val modelNodes = Seq(
     Node.empty("node1", mClass.name, Seq.empty, Seq.empty),
     Node.empty("node2", mClass.name, Seq.empty, Seq.empty),
-    Edge.empty("edge1", mReference.name, Seq.empty, Seq.empty),
-    Node.empty("node3", mClass.name, Seq.empty, Seq.empty),
-    Edge.empty("edge2", mReference.name, Seq.empty, Seq.empty)
+    Node.empty("node3", mClass.name, Seq.empty, Seq.empty)
+  )
+
+  val modelEdges = Seq(
+    Edge.empty("edge1", mReference.name, "", ""),
+    Edge.empty("edge2", mReference.name, "", "")
   )
 
   val mObjects = Seq(
@@ -177,7 +180,7 @@ class UtilTest extends FlatSpec with Matchers {
     methods = Seq.empty
   )
 
-  val metaModel = MetaModel(
+  val metaModel = Concept(
     name = "metaModelTest",
     classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo),
     references = Seq(superClassOneToSuperClassTwo),
@@ -191,14 +194,14 @@ class UtilTest extends FlatSpec with Matchers {
 
 
   "getNodes" should "return all nodes" in {
-    val nodes = Util.getNodes(modelElements)
+    val nodes = modelNodes
     nodes.size should be(3)
     nodes.map(_.name) should be(Seq("node1", "node2", "node3"))
     nodes.forall(_.isInstanceOf[Node]) should be(true)
   }
 
   "getEdges" should "return all edges" in {
-    val edges = Util.getEdges(modelElements)
+    val edges = modelEdges
     edges.size should be(2)
     edges.map(_.name) should be(Seq("edge1", "edge2"))
     edges.forall(_.isInstanceOf[Edge]) should be(true)

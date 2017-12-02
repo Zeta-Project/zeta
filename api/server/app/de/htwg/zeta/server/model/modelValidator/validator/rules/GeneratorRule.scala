@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -15,5 +15,5 @@ trait GeneratorRule {
    * @param metaModel The meta model.
    * @return A sequence of rules extracted from the meta model to validate the model against.
    */
-  def generateFor(metaModel: MetaModel): Seq[DslRule]
+  def generateFor(metaModel: Concept): Seq[DslRule]
 }

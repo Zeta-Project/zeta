@@ -7,8 +7,7 @@ import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.ModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
@@ -21,7 +20,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 
 // scalastyle:off indentation multiple.string.literals
 object ScalaCodeGenerator {
@@ -30,15 +29,15 @@ object ScalaCodeGenerator {
     def toCamelCase: String = s.substring(0, 1).toLowerCase + s.substring(1)
   }
 
-  def generate(metaModel: MetaModel, modelEntity: ModelEntity): Seq[File] = {
+  def generate(metaModel: Concept, modelEntity: GraphicalDslInstance): Seq[File] = {
 
     val enums = metaModel.enums.map(enum => generateEnum(enum, modelEntity.id))
 
-    val classes = metaModel.classes.map(clazz => generateClass(metaModel, modelEntity.model, clazz.name, modelEntity.id))
+    val classes = metaModel.classes.map(clazz => generateClass(metaModel, modelEntity, clazz.name, modelEntity.id))
 
-    val references = metaModel.references.map(reference => generateReference(metaModel, modelEntity.model, reference.name, modelEntity.id))
+    val references = metaModel.references.map(reference => generateReference(metaModel, modelEntity, reference.name, modelEntity.id))
 
-    val main = generateMain(metaModel, modelEntity.model, modelEntity.id)
+    val main = generateMain(metaModel, modelEntity, modelEntity.id)
 
     enums ++ classes ++ references ++ List(main)
 
@@ -57,7 +56,7 @@ object ScalaCodeGenerator {
     File(fileId, s"${enum.name}.scala", content)
   }
 
-  private def generateClass(metaModel: MetaModel, model: Model, name: String, fileId: UUID): File = {
+  private def generateClass(metaModel: Concept, model: GraphicalDslInstance, name: String, fileId: UUID): File = {
     val clazz = metaModel.classMap(name)
 
     val methods = if (clazz.methods.nonEmpty) {
@@ -73,11 +72,11 @@ object ScalaCodeGenerator {
           |
           |}
           |
-          |case class $name(id: String, attributes: $name.Attributes, ${metaModel.name.toCamelCase}: ${metaModel.name.capitalize}) {
+          |case class $name(id: String, attributes: $name.Attributes, ${model.name.toCamelCase}: ${model.name.capitalize}) {
           |
           |""".stripMargin +
-        metaModel.references.filter(_.targetClassName == name).map(reference => generateIncomingEdge(metaModel, reference.name)).mkString +
-        metaModel.references.filter(_.sourceClassName == name).map(reference => generateOutgoingEdge(metaModel, reference.name)).mkString +
+        metaModel.references.filter(_.targetClassName == name).map(reference => generateIncomingEdge(model, metaModel, reference.name)).mkString +
+        metaModel.references.filter(_.sourceClassName == name).map(reference => generateOutgoingEdge(model, metaModel, reference.name)).mkString +
         methods +
         "}\n"
     File(fileId, s"$name.scala", content)
@@ -94,12 +93,12 @@ object ScalaCodeGenerator {
   }
 
 
-  private def generateIncomingEdge(metaModel: MetaModel, name: String): String = {
-    s"  lazy val incoming${name.capitalize}: List[${name.capitalize}] = ${metaModel.name.toCamelCase}.${name.toCamelCase}List.filter(_.target == this)\n\n"
+  private def generateIncomingEdge(model: GraphicalDslInstance, metaModel: Concept, name: String): String = {
+    s"  lazy val incoming${name.capitalize}: List[${name.capitalize}] = ${model.name.toCamelCase}.${name.toCamelCase}List.filter(_.target == this)\n\n"
   }
 
-  private def generateOutgoingEdge(metaModel: MetaModel, name: String): String = {
-    s"  lazy val outgoing${name.capitalize}: List[${name.capitalize}] = ${metaModel.name.toCamelCase}.${name.toCamelCase}List.filter(_.source == this)\n\n"
+  private def generateOutgoingEdge(model: GraphicalDslInstance, metaModel: Concept, name: String): String = {
+    s"  lazy val outgoing${name.capitalize}: List[${name.capitalize}] = ${model.name.toCamelCase}.${name.toCamelCase}List.filter(_.source == this)\n\n"
   }
 
 
@@ -118,14 +117,14 @@ object ScalaCodeGenerator {
     s"$name: ${typ.asString}"
   }
 
-  private def generateReference(metaModel: MetaModel, model: Model, name: String, fileId: UUID): File = {
+  private def generateReference(metaModel: Concept, model: GraphicalDslInstance, name: String, fileId: UUID): File = {
     val reference = metaModel.referenceMap(name)
 
     val typeName = name.capitalize
     val source = reference.sourceClassName.capitalize
     val target = reference.targetClassName.capitalize
-    val mainInstance = metaModel.name.toCamelCase
-    val mainType = metaModel.name.capitalize
+    val mainInstance = model.name.toCamelCase
+    val mainType = model.name.capitalize
 
     val head =
       s"""|object $typeName {
@@ -146,31 +145,31 @@ object ScalaCodeGenerator {
     File(fileId, s"$name.scala", content)
   }
 
-  private def generateMain(metaModel: MetaModel, model: Model, fileId: UUID): File = {
+  private def generateMain(metaModel: Concept, model: GraphicalDslInstance, fileId: UUID): File = {
 
     val content = {
-      s"""object ${metaModel.name.capitalize} {
+      s"""object ${model.name.capitalize} {
         |
         |${generateAttributes(metaModel.attributes)}
         |
         |}
         |
-        |class ${metaModel.name.capitalize} {
+        |class ${model.name.capitalize} {
         |
         |""".stripMargin +
         metaModel.classes.map(clazz => generateClassInstance(clazz, model)).mkString("\n\n") + "\n\n" +
         metaModel.references.map(reference => generateReferenceInstance(reference, model)).mkString("\n\n") + "\n\n" +
-        s"  val attributes = ${metaModel.name.capitalize}.${generateAttributeInstance(metaModel.attributes, model.attributeValues)}\n\n" +
+        s"  val attributes = ${model.name.capitalize}.${generateAttributeInstance(metaModel.attributes, model.attributeValues)}\n\n" +
         metaModel.methods.map(generateMethod).mkString +
         "\n}\n"
 
     }
 
-    File(fileId, s"${metaModel.name}.scala", content)
+    File(fileId, s"${model.name}.scala", content)
   }
 
 
-  private def generateClassInstance(clazz: MClass, model: Model): String = {
+  private def generateClassInstance(clazz: MClass, model: GraphicalDslInstance): String = {
     val nodes = model.nodes.filter(_.className == clazz.name)
 
     val instance = clazz.name.toCamelCase
@@ -187,7 +186,7 @@ object ScalaCodeGenerator {
       "\n  )\n\n" + generateMap(clazz.name)
   }
 
-  private def generateReferenceInstance(reference: MReference, model: Model): String = {
+  private def generateReferenceInstance(reference: MReference, model: GraphicalDslInstance): String = {
     val edges = model.edges.filter(_.referenceName == reference.name)
 
     val instance = reference.name.toCamelCase

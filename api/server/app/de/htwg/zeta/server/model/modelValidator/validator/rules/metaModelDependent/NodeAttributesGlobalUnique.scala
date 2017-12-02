@@ -2,26 +2,25 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.mutable.ListBuffer
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.Util.El
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.NodesRule
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
  */
-class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: String) extends ElementsRule with DslRule {
+class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: String) extends NodesRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String =
     s"Every value of attribute $attributeType in nodes of types ${Util.stringSeqToSeqString(nodeTypes)} must be globally unique."
@@ -34,9 +33,9 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
   def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: DoubleValue => v }.map(_.value.toString)
   def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumValue => v }.map(_.toString)
 
-  override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = {
+  override def check(elements: Seq[Node]): Seq[ModelValidationResult] = {
 
-    val nodes = Util.getNodes(elements).filter(node => nodeTypes.contains(node.className))
+    val nodes = elements.filter(node => nodeTypes.contains(node.className))
 
     val attributes: Seq[(String, AttributeValue)] = nodes.flatMap(_.attributeValues).filter(_._1 == attributeType)
     val attributeValues: Seq[AttributeValue] = attributes.map(_._2)
@@ -71,7 +70,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
         if (duplicateAttributeValues.contains(currentString)) false else acc
       }
 
-      acc :+ ModelValidationResult(rule = this, valid = valid, modelElement = Some(currentNode))
+      acc :+ ModelValidationResult(rule = this, valid = valid, modelElement = Some(Left(currentNode)))
     }
 
     // check which nodes contains one or more of the duplicated values.
@@ -84,7 +83,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
 
 object NodeAttributesGlobalUnique extends GeneratorRule {
 
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = {
+  override def generateFor(metaModel: Concept): Seq[DslRule] = {
 
     val graph = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
 

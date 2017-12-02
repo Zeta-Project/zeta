@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.generator
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
@@ -11,7 +11,7 @@ import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.NoAmb
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
-class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
+class ConceptConsistencyCheckerTest extends FlatSpec with Matchers {
 
   val superClassAttribute = MAttribute(
     name = "superClassAttribute",
@@ -113,7 +113,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     methods = Seq.empty
   )
 
-  val nonAmbiguousMetaModel = MetaModel(
+  val nonAmbiguousMetaModel = Concept(
     name = "nonAmbiguousMetaModel",
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
@@ -123,7 +123,7 @@ class MetaModelConsistencyCheckerTest extends FlatSpec with Matchers {
     uiState = ""
   )
 
-  val ambiguousMetaModel = MetaModel(
+  val ambiguousMetaModel = Concept(
     name = "ambiguousMetaModel",
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),

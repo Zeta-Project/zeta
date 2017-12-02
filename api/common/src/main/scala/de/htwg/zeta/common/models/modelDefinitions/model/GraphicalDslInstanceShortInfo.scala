@@ -16,15 +16,15 @@ import play.api.libs.json.__
  * @param metaModelId the name of the MetaModel
  * @param name        the name of the Model
  */
-case class ModelShortInfo(id: UUID, metaModelId: UUID, name: String)
+case class GraphicalDslInstanceShortInfo(id: UUID, metaModelId: UUID, name: String)
 
-object ModelShortInfo {
+object GraphicalDslInstanceShortInfo {
 
-  implicit val reads: Reads[ModelShortInfo] = (
+  implicit val reads: Reads[GraphicalDslInstanceShortInfo] = (
     (__ \ "id").read[UUID] and
       (__ \ "metaModelId").read[UUID] and
       (__ \ "model" \ "name").read[String]
-    ) (ModelShortInfo.apply _)
+    ) (GraphicalDslInstanceShortInfo.apply _)
 
-  implicit val writes: Writes[ModelShortInfo] = Json.writes[ModelShortInfo]
+  implicit val writes: Writes[GraphicalDslInstanceShortInfo] = Json.writes[GraphicalDslInstanceShortInfo]
 }

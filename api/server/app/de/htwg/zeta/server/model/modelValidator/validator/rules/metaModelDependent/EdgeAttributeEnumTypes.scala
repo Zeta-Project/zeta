@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -30,7 +30,7 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
 }
 
 object EdgeAttributeEnumTypes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
+  override def generateFor(metaModel: Concept): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
 
       acc ++ currentReference.attributes.flatMap(att => att.typ match {

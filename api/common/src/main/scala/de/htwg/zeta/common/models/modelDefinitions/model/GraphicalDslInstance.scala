@@ -4,6 +4,7 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
@@ -15,31 +16,34 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node.NodeMap
 
 
-/** Immutable container for model definitions
+/** A instance of a GraphicalDsl (formerly named Model)
  *
- * @param name        the name of the model
- * @param metaModelId the id for the corresponding MetaModel
- * @param nodes       the nodes of the actual model data
- * @param edges       the edges of the actual model data
- * @param uiState     the ui-state of the browser client. Location is debatable
+ * @param id             the own id
+ * @param name           the own name
+ * @param graphicalDslId the id for the corresponding GraphicalDsl
+ * @param nodes          the nodes
+ * @param edges          the edges
+ * @param uiState        the ui-state of the browser client. Location is debatable
  */
-case class Model(
+case class GraphicalDslInstance(
+    id: UUID,
     name: String,
-    metaModelId: UUID,
+    graphicalDslId: UUID,
     nodes: Seq[Node],
     edges: Seq[Edge],
     attributes: Seq[MAttribute],
     attributeValues: Map[String, AttributeValue],
     methods: Seq[Method],
     uiState: String
-) extends NodeMap with EdgeMap with AttributeMap with MethodMap
+) extends Entity with NodeMap with EdgeMap with AttributeMap with MethodMap
 
-object Model {
+object GraphicalDslInstance {
 
-  def empty(name: String, metaModelId: UUID): Model = {
-    Model(
-      name = name,
-      metaModelId = metaModelId,
+  def empty(name: String, graphicalDslId: UUID): GraphicalDslInstance = {
+    GraphicalDslInstance(
+      id = UUID.randomUUID(),
+      name,
+      graphicalDslId,
       nodes = Seq.empty,
       edges = Seq.empty,
       attributes = Seq.empty,

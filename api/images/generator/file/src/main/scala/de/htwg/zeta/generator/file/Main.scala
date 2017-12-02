@@ -41,7 +41,7 @@ class MyTransformer() extends Transformer {
       """.stripMargin
 
    filePersistence.create(File(entity.id, filename, content)).map { _ =>
-      logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModelId}')")
+      logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.graphicalDslId}')")
       p.success(this)
     }.recover {
       case e: Exception => p.failure(e)

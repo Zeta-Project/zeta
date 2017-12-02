@@ -3,7 +3,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 
 /**
@@ -23,7 +23,7 @@ class EdgesNoSources(val edgeType: String) extends SingleEdgeRule with DslRule {
 }
 
 object EdgesNoSources extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
+  override def generateFor(metaModel: Concept): Seq[DslRule] = metaModel.referenceMap.values
     .filter(_.sourceClassName.isEmpty)
     .map(ref => new EdgesNoSources(ref.name)).toSeq
 }

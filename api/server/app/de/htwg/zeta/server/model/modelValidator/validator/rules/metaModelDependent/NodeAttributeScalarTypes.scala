@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
@@ -59,7 +59,7 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
 object NodeAttributeScalarTypes extends GeneratorRule {
 
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
       acc ++ currentClass.attributes

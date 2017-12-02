@@ -12,8 +12,8 @@ import com.google.inject.Provides
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheAccessAuthorisationRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheBondedTaskRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheEventDrivenTaskRepository
@@ -22,11 +22,11 @@ import de.htwg.zeta.persistence.actorCache.ActorCacheFilterImageRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheFilterRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorImageRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGraphicalDslRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheLoginInfoRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheLogRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheMetaModelEntityRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheMetaModelReleaseRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheModelEntityRepository
 import de.htwg.zeta.persistence.actorCache.ActorCachePasswordInfoRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheSettingsRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheTimedTaskRepository
@@ -39,11 +39,11 @@ import de.htwg.zeta.persistence.general.FilterImageRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
@@ -57,11 +57,11 @@ import de.htwg.zeta.persistence.mongo.MongoFilterImageRepository
 import de.htwg.zeta.persistence.mongo.MongoFilterRepository
 import de.htwg.zeta.persistence.mongo.MongoGeneratorImageRepository
 import de.htwg.zeta.persistence.mongo.MongoGeneratorRepository
+import de.htwg.zeta.persistence.mongo.MongoGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.mongo.MongoGraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.mongo.MongoGraphicalDslRepository
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoLogRepository
-import de.htwg.zeta.persistence.mongo.MongoMetaModelEntityRepository
-import de.htwg.zeta.persistence.mongo.MongoMetaModelReleaseRepository
-import de.htwg.zeta.persistence.mongo.MongoModelEntityRepository
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoSettingsRepository
 import de.htwg.zeta.persistence.mongo.MongoTimedTaskRepository
@@ -84,8 +84,8 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   def configure(): Unit = {
     bind[TokenCache].to[TransientTokenCache]
     bind[AccessRestrictedFilePersistence]
-    bind[AccessRestrictedMetaModelEntityRepository]
-    bind[AccessRestrictedModelEntityRepository]
+    bind[AccessRestrictedGraphicalDslRepository]
+    bind[AccessRestrictedGraphicalDslInstanceRepository]
     bind[AccessRestrictedLogRepository]
   }
 
@@ -195,25 +195,25 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   }
 
   @Provides @Singleton
-  def provideMetaModelEntityRepo(connection: Future[DefaultDB]): MetaModelEntityRepository = {
-    new ActorCacheMetaModelEntityRepository(
-      new MongoMetaModelEntityRepository(connection),
+  def provideGraphicalDslRepo(connection: Future[DefaultDB]): GraphicalDslRepository = {
+    new ActorCacheGraphicalDslRepository(
+      new MongoGraphicalDslRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }
 
   @Provides @Singleton
-  def provideMetaModelReleaseRepo(connection: Future[DefaultDB]): MetaModelReleaseRepository = {
-    new ActorCacheMetaModelReleaseRepository(
-      new MongoMetaModelReleaseRepository(connection),
+  def provideGraphicalDslReleaseRepo(connection: Future[DefaultDB]): GraphicalDslReleaseRepository = {
+    new ActorCacheGraphicalDslReleaseRepository(
+      new MongoGraphicalDslReleaseRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }
 
   @Provides @Singleton
-  def provideModelEntityRepo(connection: Future[DefaultDB]): ModelEntityRepository = {
-    new ActorCacheModelEntityRepository(
-      new MongoModelEntityRepository(connection),
+  def provideGraphicalDslInstanceRepo(connection: Future[DefaultDB]): GraphicalDslInstanceRepository = {
+    new ActorCacheGraphicalDslInstanceRepository(
+      new MongoGraphicalDslInstanceRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout
     )
   }

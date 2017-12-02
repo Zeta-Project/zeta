@@ -6,11 +6,7 @@ import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.entity.GraphicalDsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Style
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
@@ -27,19 +23,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 
-object MetaModelEntityFixtures {
-
-  val dsl1 = Dsl(
-    diagram = Some(Diagram("diagramCode1")),
-    shape = Some(Shape("shapeCode1")),
-    style = None
-  )
-
-  val dsl2 = Dsl(
-    diagram = None,
-    shape = None,
-    style = Some(Style("styleCode1"))
-  )
+object GraphicalDslFixtures {
 
   val stringAttribute = MAttribute(
     name = "stringAttribute",
@@ -181,8 +165,7 @@ object MetaModelEntityFixtures {
     methods = Seq.empty
   )
 
-  val metaModel1 = MetaModel(
-    name = "metaModel1",
+  val concept1 = Concept(
     classes = Seq(class1, class2),
     references = Seq(reference1, reference2),
     enums = Seq(enum1, enum2),
@@ -191,8 +174,7 @@ object MetaModelEntityFixtures {
     methods = Seq.empty
   )
 
-  val metaModel2: MetaModel = MetaModel(
-    name = "metaModel2",
+  val concept2: Concept = Concept(
     classes = Seq(class1),
     references = Seq(reference1),
     enums = Seq(enum1),
@@ -203,25 +185,34 @@ object MetaModelEntityFixtures {
 
   val entity1 = GraphicalDsl(
     id = UUID.randomUUID,
-    metaModel = metaModel1,
-    dsl = dsl1,
+    name = "name1",
+    concept = concept1,
+    diagram = "diagram1",
+    shape = "shape1",
+    style = "style1",
     validator = Some("validator1")
   )
 
   val entity2 = GraphicalDsl(
     id = UUID.randomUUID,
-    metaModel = metaModel2,
-    dsl = dsl2,
+    name = "name2",
+    concept = concept2,
+    diagram = "diagram2",
+    shape = "shape2",
+    style = "style2",
     validator = Some("validator2")
   )
 
-  val entity2Updated: GraphicalDsl = entity2.copy(dsl = dsl1)
+  val entity2Updated: GraphicalDsl = entity2.copy(diagram = "diagramUpdated")
 
   val entity3 = GraphicalDsl(
     id = UUID.randomUUID,
-    metaModel = metaModel1,
-    dsl = dsl2,
-    validator = Some("validator3")
+    name = "name3",
+    concept = concept2,
+    diagram = "diagram3",
+    shape = "shape3",
+    style = "style3",
+    validator = None
   )
 
 }

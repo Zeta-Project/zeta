@@ -2,13 +2,10 @@ package de.htwg.zeta.server.model.modelValidator
 
 import scala.annotation.tailrec
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (Mar 2017 - Sep 2017).
@@ -16,16 +13,6 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
  * Utility methods for handling the model and meta model graph inside the model validator.
  */
 object Util {
-
-  /**
-   * Filters all nodes from the given model elements.
-   *
-   * @param elements The model elements.
-   * @return All nodes.
-   */
-  def getNodes(elements: Seq[ModelElement]): Seq[Node] = elements.collect { case n: Node => n }
-
-  def getEdges(elements: Seq[ModelElement]): Seq[Edge] = elements.collect { case e: Edge => e }
 
   def stringSeqToSeqString(seq: Seq[String]): String = seq.mkString("Seq(\"", "\", \"", "\")")
 
@@ -91,7 +78,7 @@ object Util {
    * @param metaModel The meta model.
    * @return The sequence of elements containing the inherited properties.
    */
-  def generateResolvedInheritanceGraph(metaModel: MetaModel): Seq[El] = {
+  def generateResolvedInheritanceGraph(metaModel: Concept): Seq[El] = {
     val simplifiedGraph = simplifyMetaModelGraph(metaModel)
     val inheritedAttributesGraph = inheritAttributes(simplifiedGraph)
     val inheritedInputsGraph = inheritInputs(inheritedAttributesGraph)
@@ -106,7 +93,7 @@ object Util {
    * @param metaModel The meta model.
    * @return The simplified translated graph.
    */
-  def simplifyMetaModelGraph(metaModel: MetaModel): Seq[El] = {
+  def simplifyMetaModelGraph(metaModel: Concept): Seq[El] = {
 
     val allClasses = metaModel.classMap.values.toSeq
 

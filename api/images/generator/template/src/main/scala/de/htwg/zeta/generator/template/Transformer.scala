@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 
 /**
  * Result of a generator
@@ -26,7 +26,7 @@ trait Transformer {
     Future.successful(this)
   }
 
-  def transform(entity: ModelEntity): Future[Transformer]
+  def transform(entity: GraphicalDslInstance): Future[Transformer]
 
   def exit(): Future[Result]
 

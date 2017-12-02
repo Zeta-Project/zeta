@@ -10,9 +10,9 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.GraphicalDsl
-import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.generator.template.Error
 import de.htwg.zeta.generator.template.Result
 import de.htwg.zeta.generator.template.Settings
@@ -42,7 +42,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
+  override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -142,8 +142,8 @@ object Main extends Template[CreateOptions, String] {
   }
 
   private def createFile(metaModel: GraphicalDsl): Future[File] = {
-    val mClassList = metaModel.metaModel.classMap.values
-    val mReferenceList = metaModel.metaModel.referenceMap.values
+    val mClassList = metaModel.concept.classMap.values
+    val mReferenceList = metaModel.concept.referenceMap.values
     val content = createFileContent(mClassList, mReferenceList)
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
     filePersistence.create(entity)

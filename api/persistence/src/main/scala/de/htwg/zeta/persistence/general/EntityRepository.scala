@@ -13,13 +13,13 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.Log
 import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.entity.Log
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 
 
 /** Interface for the Persistence layer.
@@ -126,11 +126,11 @@ trait GeneratorImageRepository extends EntityRepository[GeneratorImage]
 
 trait LogRepository extends EntityRepository[Log]
 
-trait MetaModelEntityRepository extends EntityRepository[GraphicalDsl]
+trait GraphicalDslRepository extends EntityRepository[GraphicalDsl]
 
-trait MetaModelReleaseRepository extends EntityRepository[GraphicalDslRelease]
+trait GraphicalDslReleaseRepository extends EntityRepository[GraphicalDslRelease]
 
-trait ModelEntityRepository extends EntityRepository[ModelEntity]
+trait GraphicalDslInstanceRepository extends EntityRepository[GraphicalDslInstance]
 
 trait TimedTaskRepository extends EntityRepository[TimedTask]
 

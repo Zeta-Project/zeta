@@ -2,15 +2,29 @@ package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import play.api.libs.json.Format
-import play.api.libs.json.Json
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 
-
+/** Graphical-DSL (formerly named MetaModelEntity). */
 case class GraphicalDsl(
     id: UUID,
-    metaModel: MetaModel, // Concept
-    dsl: Dsl = Dsl(),
+    name: String,
+    concept: Concept,
+    diagram: String,
+    shape: String,
+    style: String,
     validator: Option[String] = None
 ) extends Entity
+
+object GraphicalDsl {
+
+  def empty(name: String): GraphicalDsl = GraphicalDsl(
+    id = UUID.randomUUID(),
+    name = name,
+    concept = Concept.empty,
+    diagram = "",
+    shape = "",
+    style = "",
+    validator = None
+  )
+
+}

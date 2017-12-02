@@ -14,16 +14,14 @@ import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.DslFormat
+import de.htwg.zeta.common.format.metaModel.ConceptFormat
 import de.htwg.zeta.common.format.metaModel.EnumFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
-import de.htwg.zeta.common.format.model.ModelEntityFormat
-import de.htwg.zeta.common.format.model.ModelFormat
+import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import net.codingwell.scalaguice.ScalaModule
 
@@ -33,7 +31,6 @@ class JsonFormatModule extends ScalaModule {
     bind[EventDrivenTaskFormat].toInstance(new EventDrivenTaskFormat)
     bind[BondedTaskFormat].toInstance(new BondedTaskFormat)
     bind[FileFormat].toInstance(new FileFormat)
-    bind[DslFormat].toInstance(new DslFormat)
     bind[FilterFormat].toInstance(new FilterFormat)
     bind[GeneratorImageFormat].toInstance(new GeneratorImageFormat(sSchema = s"$$schema", sRef = s"$$ref"))
     bind[GeneratorFormat].toInstance(new GeneratorFormat)
@@ -66,31 +63,22 @@ class JsonFormatModule extends ScalaModule {
     referenceFormat: ReferenceFormat,
     attributeFormat: AttributeFormat,
     methodFormat: MethodFormat
-  ): MetaModelFormat = {
-    new MetaModelFormat(enumFormat, classFormat, referenceFormat, attributeFormat, methodFormat)
+  ): ConceptFormat = {
+    new ConceptFormat(enumFormat, classFormat, referenceFormat, attributeFormat, methodFormat)
   }
 
   @Provides @Singleton
   def provideMetaModelEntityFormat(
-    metaModelFormat: MetaModelFormat,
-    dslFormat: DslFormat
+    metaModelFormat: ConceptFormat
   ): GraphicalDslFormat = {
-    new GraphicalDslFormat(metaModelFormat, dslFormat)
+    new GraphicalDslFormat(metaModelFormat)
   }
 
   @Provides @Singleton
   def provideMetaModelReleaseFormat(
-    metaModelFormat: MetaModelFormat,
-    dslFormat: DslFormat
+    metaModelFormat: ConceptFormat
   ): GraphicalDslReleaseFormat = {
-    new GraphicalDslReleaseFormat(metaModelFormat, dslFormat)
-  }
-
-  @Provides @Singleton
-  def provideModelEntityFormat(
-    modelFormat: ModelFormat
-  ): ModelEntityFormat = {
-    new ModelEntityFormat(modelFormat)
+    new GraphicalDslReleaseFormat(metaModelFormat)
   }
 
   @Provides @Singleton
@@ -100,8 +88,8 @@ class JsonFormatModule extends ScalaModule {
     attributeFormat: AttributeFormat,
     attributeValueFormat: AttributeValueFormat,
     methodFormat: MethodFormat
-  ): ModelFormat = {
-    new ModelFormat(nodeFormat, edgeFormat, attributeFormat, attributeValueFormat, methodFormat)
+  ): GraphicalDslInstanceFormat = {
+    new GraphicalDslInstanceFormat(nodeFormat, edgeFormat, attributeFormat, attributeValueFormat, methodFormat)
   }
 
   @Provides @Singleton

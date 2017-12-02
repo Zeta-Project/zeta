@@ -9,7 +9,7 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.Writes
@@ -22,7 +22,7 @@ import play.api.mvc.Result
  * REST-ful API for filter definitions
  */
 class MetaModelReleaseRestApi @Inject()(
-    metaModelReleaseRepo: MetaModelReleaseRepository,
+    metaModelReleaseRepo: GraphicalDslReleaseRepository,
     metaModelReleaseFormat: GraphicalDslReleaseFormat
 ) extends Controller with Logging {
 

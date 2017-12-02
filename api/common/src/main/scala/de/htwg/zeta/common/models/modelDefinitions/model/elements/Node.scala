@@ -13,8 +13,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.Met
  *
  * @param name            the name of this node
  * @param className       the name of the MClass instance that represents the node's type
- * @param outputEdgeNames         the names of the outgoing edges
- * @param inputEdgeNames          the names of the incoming edges
+ * @param outputEdgeNames the names of the outgoing edges
+ * @param inputEdgeNames  the names of the incoming edges
  * @param attributeValues a map with attribute names and the assigned values
  */
 case class Node(
@@ -25,7 +25,7 @@ case class Node(
     attributes: Seq[MAttribute],
     attributeValues: Map[String, AttributeValue],
     methods: Seq[Method]
-) extends ModelElement with AttributeMap with HasAttributeValues with MethodMap
+) extends AttributeMap with HasAttributeValues with MethodMap
 
 object Node {
 
@@ -41,7 +41,7 @@ object Node {
       Map.empty[String, Node]
     ) { nodes =>
       nodes.filter(Option(_).isDefined).map(node => (node.name, node)).toMap
-    }
+      }
 
   }
 

@@ -22,16 +22,14 @@ import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.DslFormat
+import de.htwg.zeta.common.format.metaModel.ConceptFormat
 import de.htwg.zeta.common.format.metaModel.EnumFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
-import de.htwg.zeta.common.format.model.ModelEntityFormat
-import de.htwg.zeta.common.format.model.ModelFormat
+import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
@@ -42,17 +40,20 @@ import de.htwg.zeta.persistence.general.FilterImageRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.UuidDocumentReader
-import de.htwg.zeta.persistence.mongo.MongoEntityRepository.dslFormat
-import de.htwg.zeta.persistence.mongo.MongoEntityRepository.metaModelFormat
-import de.htwg.zeta.persistence.mongo.MongoEntityRepository.modelFormat
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.attributeFormat
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.attributeValueFormat
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.conceptFormat
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.edgeFormat
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.methodFormat
+import de.htwg.zeta.persistence.mongo.MongoEntityRepository.nodeFormat
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.sMongoId
 import de.htwg.zeta.persistence.mongo.MongoPlayConversionHelper.readPlayJson
 import de.htwg.zeta.persistence.mongo.MongoPlayConversionHelper.writePlayJson
@@ -174,13 +175,10 @@ private[mongo] object MongoEntityRepository {
 
   val classFormat = new ClassFormat(attributeFormat, methodFormat)
   val referenceFormat = new ReferenceFormat(attributeFormat, methodFormat)
-  val metaModelFormat = new MetaModelFormat(enumFormat, classFormat, referenceFormat, attributeFormat, methodFormat)
-  val dslFormat = new DslFormat
+  val conceptFormat = new ConceptFormat(enumFormat, classFormat, referenceFormat, attributeFormat, methodFormat)
 
   val nodeFormat = new NodeFormat(attributeFormat, attributeValueFormat, methodFormat)
   val edgeFormat = new EdgeFormat(attributeFormat, attributeValueFormat, methodFormat)
-  val modelFormat = new ModelFormat(nodeFormat, edgeFormat, attributeFormat, attributeValueFormat, methodFormat)
-
 }
 
 @Singleton
@@ -232,22 +230,23 @@ class MongoLogRepository @Inject()(
   with LogRepository
 
 @Singleton
-class MongoMetaModelEntityRepository @Inject()(
+class MongoGraphicalDslRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, new GraphicalDslFormat(metaModelFormat, dslFormat, sId = sMongoId))
-  with MetaModelEntityRepository
+) extends MongoEntityRepository(database, new GraphicalDslFormat(conceptFormat, sId = sMongoId))
+  with GraphicalDslRepository
 
 @Singleton
-class MongoMetaModelReleaseRepository @Inject()(
+class MongoGraphicalDslReleaseRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, new GraphicalDslReleaseFormat(metaModelFormat, dslFormat, sId = sMongoId))
-  with MetaModelReleaseRepository
+) extends MongoEntityRepository(database, new GraphicalDslReleaseFormat(conceptFormat, sId = sMongoId))
+  with GraphicalDslReleaseRepository
 
 @Singleton
-class MongoModelEntityRepository @Inject()(
+class MongoGraphicalDslInstanceRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, new ModelEntityFormat(modelFormat, sId = sMongoId))
-  with ModelEntityRepository
+) extends MongoEntityRepository(database, new GraphicalDslInstanceFormat(
+  nodeFormat, edgeFormat, attributeFormat, attributeValueFormat, methodFormat, sId = sMongoId
+)) with GraphicalDslInstanceRepository
 
 @Singleton
 class MongoSettingsRepository @Inject()(

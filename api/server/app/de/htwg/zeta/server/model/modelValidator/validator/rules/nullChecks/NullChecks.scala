@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks
 
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
 
 /**
@@ -27,7 +27,7 @@ object NullChecks {
    * @param model The model.
    * @return The result.
    */
-  def check(model: Model): NullChecksResult = {
+  def check(model: GraphicalDslInstance): NullChecksResult = {
     rules.foldLeft(NullChecksResult(valid = true, rule = None)) { (acc, rule) =>
       if (acc.valid) {
         if (rule.check(model)) {

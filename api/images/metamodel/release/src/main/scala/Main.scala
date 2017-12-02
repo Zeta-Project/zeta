@@ -7,8 +7,8 @@ import akka.stream.ActorMaterializer
 import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -38,8 +38,8 @@ object Main extends App {
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val metaModelEntityPersistence = injector.getInstance(classOf[MetaModelEntityRepository])
-  private val metaModelReleasePersistence = injector.getInstance(classOf[MetaModelReleaseRepository])
+  private val metaModelEntityPersistence = injector.getInstance(classOf[GraphicalDslRepository])
+  private val metaModelReleasePersistence = injector.getInstance(classOf[GraphicalDslReleaseRepository])
 
   cmd.id.foreach({ id =>
     logger.info("Create Model Release for " + id)
@@ -49,9 +49,11 @@ object Main extends App {
       release <- metaModelReleasePersistence.createOrUpdate(
         GraphicalDslRelease(
           id = UUID.randomUUID(),
-          name = s"${from.metaModel.name}",
-          metaModel = from.metaModel,
-          dsl = from.dsl,
+          name = s"${from.name}",
+          concept = from.concept,
+          diagram = from.diagram,
+          shape = from.shape,
+          style = from.style,
           version = "1"
         )
       )

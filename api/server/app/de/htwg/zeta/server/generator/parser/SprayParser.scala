@@ -44,9 +44,9 @@ object SprayParser
 class SprayParser(cache: Cache = Cache(), val metaModelE: GraphicalDsl) extends CommonParserMethods with Logging {
   type diaConnection = de.htwg.zeta.server.generator.model.diagram.edge.Connection
 
-  private val metaMapMClass: Map[String, MClass] = metaModelE.metaModel.classMap
+  private val metaMapMClass: Map[String, MClass] = metaModelE.concept.classMap
 
-  private val metaMapMReference: Map[String, MReference] = metaModelE.metaModel.referenceMap
+  private val metaMapMReference: Map[String, MReference] = metaModelE.concept.referenceMap
   require(metaMapMClass.nonEmpty)
 
   /* Style-specific---------------------------------------------------------------------------- */
@@ -488,7 +488,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: GraphicalDsl) extends 
           case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.flatMap(s => IDtoStyle(s)(cache)), cache)
         }
 
-        if (metaModelE.metaModel.name == metaModelName) {
+        if (metaModelE.name == metaModelName) {
           Some(Diagram(name, actionGroups, nodes, edges, OptionToStyle(style)(cache), metaModelE, cache))
         } else {
           None

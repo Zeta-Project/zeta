@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
@@ -8,22 +8,20 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
-import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.ElementsRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.EdgesRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
  */
-class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String) extends ElementsRule with DslRule {
+class EdgesAttributesGlobalUnique(val edgeType: String, val attributeType: String) extends EdgesRule with DslRule {
   override val name: String = getClass.getSimpleName
   override val description: String = s"Every value of attribute $attributeType in edges of type $edgeType must be globally unique."
   override val possibleFix: String = s"Remove duplicated values of attribute $attributeType in edges of type $edgeType."
 
-  override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = {
+  override def check(elements: Seq[Edge]): Seq[ModelValidationResult] = {
 
     def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: StringValue => v }.map(_.value)
     def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: BoolValue => v }.map(_.value.toString)
@@ -32,7 +30,7 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
     def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumValue => v }.map(_.toString)
 
 
-    val edges = Util.getEdges(elements).filter(_.referenceName == edgeType)
+    val edges = elements.filter(_.referenceName == edgeType)
     val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributeValues).filter(_._1 == attributeType).map(_._2)
 
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
@@ -64,7 +62,7 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
         if (duplicateAttributeValues.contains(currentString)) false else acc
       }
 
-      acc :+ ModelValidationResult(rule = this, valid = valid, modelElement = Some(currentEdge))
+      acc :+ ModelValidationResult(rule = this, valid = valid, modelElement = Some(Right(currentEdge)))
     }
 
     // check which edges contains one or more of the duplicated values.
@@ -75,9 +73,9 @@ class EdgeAttributesGlobalUnique(val edgeType: String, val attributeType: String
   override val dslStatement: String = s"""Attributes ofType "$attributeType" inEdges "$edgeType" areGlobalUnique ()"""
 }
 
-object EdgeAttributesGlobalUnique extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
+object EdgesAttributesGlobalUnique extends GeneratorRule {
+  override def generateFor(metaModel: Concept): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
-      acc ++ currentReference.attributes.filter(_.globalUnique).map(attr => new EdgeAttributesGlobalUnique(currentReference.name, attr.name))
+      acc ++ currentReference.attributes.filter(_.globalUnique).map(attr => new EdgesAttributesGlobalUnique(currentReference.name, attr.name))
     }
 }

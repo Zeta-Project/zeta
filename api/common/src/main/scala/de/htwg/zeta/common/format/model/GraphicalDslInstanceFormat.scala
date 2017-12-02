@@ -5,7 +5,7 @@ import java.util.UUID
 import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -15,45 +15,48 @@ import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
 @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
-class ModelFormat(
+class GraphicalDslInstanceFormat(
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
     attributeFormat: AttributeFormat,
     attributeValueFormat: AttributeValueFormat,
     methodFormat: MethodFormat,
+    sId: String = "id",
     sName: String = "name",
-    sMetaModelId: String = "metaModelId",
+    sGraphicalDslId: String = "grapicalDslId",
     sNodes: String = "nodes",
     sEdges: String = "edges",
     sAttributes: String = "attributes",
     sAttributeValues: String = "attributeValues",
     sMethods: String = "methods",
     sUiState: String = "uiState"
-) extends OFormat[Model] {
+) extends OFormat[GraphicalDslInstance] {
 
-  override def writes(model: Model): JsObject = Json.obj(
-    sName -> model.name,
-    sMetaModelId -> model.metaModelId,
-    sNodes -> Writes.seq(nodeFormat).writes(model.nodes),
-    sEdges -> Writes.seq(edgeFormat).writes(model.edges),
-    sAttributes -> Writes.seq(attributeFormat).writes(model.attributes),
-    sAttributeValues -> Writes.map(attributeValueFormat).writes(model.attributeValues),
-    sMethods -> Writes.seq(methodFormat).writes(model.methods),
-    sUiState -> model.uiState
+  override def writes(instance: GraphicalDslInstance): JsObject = Json.obj(
+    sId -> instance.id,
+    sName -> instance.name,
+    sGraphicalDslId -> instance.graphicalDslId,
+    sNodes -> Writes.seq(nodeFormat).writes(instance.nodes),
+    sEdges -> Writes.seq(edgeFormat).writes(instance.edges),
+    sAttributes -> Writes.seq(attributeFormat).writes(instance.attributes),
+    sAttributeValues -> Writes.map(attributeValueFormat).writes(instance.attributeValues),
+    sMethods -> Writes.seq(methodFormat).writes(instance.methods),
+    sUiState -> instance.uiState
   )
 
-  val empty: Reads[Model] = Reads { json =>
+  val empty: Reads[GraphicalDslInstance] = Reads { json =>
     for {
       name <- (json \ sName).validate[String]
-      metaModelId <- (json \ sMetaModelId).validate[UUID]
+      metaModelId <- (json \ sGraphicalDslId).validate[UUID]
     } yield {
-      Model.empty(name, metaModelId)
+      GraphicalDslInstance.empty(name, metaModelId)
     }
   }
 
-  override def reads(json: JsValue): JsResult[Model] = for {
+  override def reads(json: JsValue): JsResult[GraphicalDslInstance] = for {
+    id <- (json \ sId).validate[UUID]
     name <- (json \ sName).validate[String]
-    metaModelId <- (json \ sMetaModelId).validate[UUID]
+    graphicalDslId <- (json \ sGraphicalDslId).validate[UUID]
     nodes <- (json \ sNodes).validate(Reads.list(nodeFormat))
     edges <- (json \ sEdges).validate(Reads.list(edgeFormat))
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
@@ -61,9 +64,10 @@ class ModelFormat(
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
     uiState <- (json \ sUiState).validate[String]
   } yield {
-    Model(
+    GraphicalDslInstance(
+      id = id,
       name = name,
-      metaModelId = metaModelId,
+      graphicalDslId = graphicalDslId,
       nodes = nodes,
       edges = edges,
       attributes = attributes,

@@ -7,8 +7,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -16,8 +16,8 @@ import play.api.mvc.Result
 
 
 class CodeEditorController @Inject()(
-    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
-    fullAccessMetaModelEntityRepo: MetaModelEntityRepository
+    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
+    fullAccessMetaModelEntityRepo: GraphicalDslRepository
 ) extends Controller {
 
   def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
@@ -26,21 +26,21 @@ class CodeEditorController @Inject()(
 
   def methodClassCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
-      val code = metaModelEntity.metaModel.classMap(className).methodMap(methodName).code
+      val code = metaModelEntity.concept.classMap(className).methodMap(methodName).code
       Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity, metaModelId, methodName, "class", code, className))
     }
   }
 
   def methodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
-      val code = metaModelEntity.metaModel.referenceMap(referenceName).methodMap(methodName).code
+      val code = metaModelEntity.concept.referenceMap(referenceName).methodMap(methodName).code
       Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity, metaModelId, methodName, "reference", code, referenceName))
     }
   }
 
   def methodMainCodeEditor(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
-      val code = metaModelEntity.metaModel.methodMap(methodName).code
+      val code = metaModelEntity.concept.methodMap(methodName).code
       Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity, metaModelId, methodName, "common", code, ""))
     }
   }
