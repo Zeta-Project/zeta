@@ -4,8 +4,6 @@ import de.htwg.zeta.server.generator.parser.CommonParserMethods
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
-/**
- */
 class UniteParsersTest extends FreeSpec with Matchers {
 
   "Multiple Parsers extending 'UniteParsers'" - {

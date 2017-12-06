@@ -2,9 +2,6 @@ package de.htwg.zeta.parser
 
 import scala.util.parsing.combinator.Parsers
 
-/**
- */
-
 trait UniteParsers extends Parsers {
 
   override type Elem = Char
