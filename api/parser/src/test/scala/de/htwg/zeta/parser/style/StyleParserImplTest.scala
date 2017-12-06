@@ -214,51 +214,6 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
     }
   }
 
-  "A StyleParser" should "find duplicate attributes and fail" in {
-    val attributes = List(
-      LineColor(Color.BLUE),
-      LineWidth(12),
-      LineStyle("solid"),
-      LineColor(Color.RED),
-      LineStyle("dash")
-    )
-    val duplicates = parserToTest.findAttributeDuplicates(attributes)
-    duplicates.size shouldBe 2
-    duplicates should contain("line-color")
-    duplicates should contain("line-style")
-  }
-
-  "A StyleParser" should "list duplicate occurrences only once" in {
-    val attributes = List(
-      LineWidth(12),
-      LineWidth(14),
-      LineWidth(12),
-      LineWidth(16)
-    )
-    val duplicates = parserToTest.findAttributeDuplicates(attributes)
-    duplicates.size shouldBe 1
-    duplicates should contain("line-width")
-  }
-
-  "A StyleParser" should "find no duplicates" in {
-    val attributes = List(
-      LineColor(Color.BLUE),
-      LineWidth(12),
-      LineStyle("solid")
-    )
-    val duplicates = parserToTest.findAttributeDuplicates(attributes)
-    duplicates shouldBe Nil
-  }
-
-  "A StyleParser" should "succeed if a style has no parent style" in {
-    val parseResult = parserToTest.parseStyles(styleWithoutParentStyle)
-    inside(parseResult) {
-      case parserToTest.Success(List(styleParseTree: StyleParseTree), _) =>
-        styleParseTree.parentStyles shouldBe empty
-    }
-
-  }
-
   "A StyleParser" should "succeed if a style has a single parent style" in {
     val parseResult = parserToTest.parseStyles(styleWithSingleParentStyle)
     inside(parseResult) {
@@ -282,56 +237,6 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
     }
   }
 
-  "A StyleParser" should "fail if a parent style is undefined" in {
-    val parseResult = parserToTest.parseStyles(styleWithUndefinedParentStyle)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "fail if a style extends itself" in {
-    val parseResult = parserToTest.parseStyles(styleWhichExtendsItself)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "fail if a style specifies an invalid style extension" in {
-    val parseResult = parserToTest.parseStyles(styleWithInvalidParentStyle)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "find cycles in a trivial cycle graph" in {
-    val parseResult = parserToTest.parseStyles(trivialCycle)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "find self cycle in a style that has a leading legal parent" in {
-    val parseResult = parserToTest.parseStyles(selfCycleIn2ndParent)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "find cycles in a trivial cycle graph when there is a leading legal parent" in {
-    val parseResult = parserToTest.parseStyles(trivialCycleIn2ndParent)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "find cycles in a triangle cycle graph" in {
-    val parseResult = parserToTest.parseStyles(triangleCycle)
-    parseResult.successful shouldBe false
-  }
-
-  "A StyleParser" should "find no cycles in an acyclic graph" in {
-    val parseResult = parserToTest.parseStyles(acyclicGraph)
-    parseResult.successful shouldBe true
-  }
-
-  "A StyleParser" should "find no cycles in a diamond graph" in {
-    val parseResult = parserToTest.parseStyles(diamondGraph)
-    parseResult.successful shouldBe true
-  }
-
-  "A StyleParser" should "find cycles in a diamond graph with cycles" in {
-    val parseResult = parserToTest.parseStyles(diamondGraphWithCycles)
-    parseResult.successful shouldBe false
-  }
-
   "A StyleParser" should "fail without a description" in {
     val styleParser = parserToTest.parseStyles(styleWithoutDescription)
     styleParser.successful shouldBe false
@@ -339,11 +244,6 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
 
   "A StyleParser" should "fail without Braces" in {
     val styleParser = parserToTest.parseStyles(styleWithoutBraces)
-    styleParser.successful shouldBe false
-  }
-
-  "A StyleParser" should "fail with duplicate Attributes" in {
-    val styleParser = parserToTest.parseStyles(styleWithDuplicateAttributes)
     styleParser.successful shouldBe false
   }
 
