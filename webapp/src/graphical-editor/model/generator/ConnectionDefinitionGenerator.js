@@ -7,107 +7,33 @@ class ConnectionDefinitionGenerator {
     }
 
     generate(connections) {
+        let result = {}
         connections.foreach(function(connection) {
-
+            testFunction(connection)
+            result.push(createConnection(connection))
         })
-        let result = Object.assign
-
-        return Object.assign(
-            this.generateConnectionStyle(connection,
-            this.createBackgroundAttribute(style),
-            this.createLineAttributes(style)
-        );
+        return result;
     }
 
-    getConnectionStyle
+    getConnectionStyle(styleName) {
+        
+    }
+
+    getPlacings(styleName) {
+
+    }
+
+    getLabels(styleName) {
+
+    }
 
     testFunction(connection) {
         console.log(connection)
     }
 
-    generateConnectionStyle(connection) {
-
+    createConnection(connection) {
+        return connection;
     }
-    generateInlineStyle(connection) {
-
-    }
-
-    generateConnectionsCases(connections) {
-
-    }
-
-    handlePlacings(connection) {
-
-    }
-
-    generateStyle(geometricModel) {
-
-    }
-
-    generateCachedPlacings() {
-
-    }
-
-    generateCachedLabels() {
-
-    }
-
-    generateLabel() {
-
-    }
-
-    generatePlacing() {
-
-    }
-
-    generateRightPlacingShape(geometricModel, distance) {
-
-    }
-
-    generatePlacingShape(shape, distance) {
-        // Different Shape
-    }
-
-    generateMarker(placing) {
-
-    }
-
-    generateMirroredMarker(placing) {
-
-    }
-
-    generaMirroredPolyLine(shape) {
-
-    }
-
-    generateMirroredPolygon(shape) {
-
-    }
-
-    generateRightSvgPathData(geometricModel) {
-
-    }
-
-    generateSvgPathData(shape) {
-        //different Shapes
-    }
-
-    generateStyleCorrections() {
-
-    }
-
-    generateMarkerSourceCorrection() {
-
-    }
-
-    cachePlacing(connection, placing) {
-
-    }
-
-    writeToCache(connection, placing, cache) {
-
-    }
-
 
 
 }
