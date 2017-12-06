@@ -19,18 +19,10 @@ class UniteParsersTest extends FreeSpec with Matchers {
 
     object DiagramParser extends CommonParserMethods with UniteParsers {
 
-      def parseNodeExplicit = unite(NodeParser.parseNode)
-      def parseEdgeExplicit = unite(EdgeParser.parseEdge)
+      private def node = include(NodeParser.parseNode)
+      private def edge = include(EdgeParser.parseEdge)
 
-      def parseNodeImplicit: Parser[NodeParser.~[String, String]] = NodeParser.parseNode
-      def parseEdgeImplicit: EdgeParser.Parser[EdgeParser.~[String, String]] = EdgeParser.parseEdge
-
-
-      def parseDiagramExplicit = "diagram" ~ "{"~ rep(parseNodeExplicit | parseEdgeExplicit) ~"}"
-
-      def parseDiagramImplicit = "diagram" ~ "{"~ rep(parseNodeImplicit | parseEdgeImplicit) ~"}"
-
-      def parseDiagramIdentify = "diagram" ~ "{"~ rep(NodeParser.parseNode.$identify | EdgeParser.parseEdge.$identify) ~"}"
+      def parseDiagram = "diagram" ~ "{"~ rep(node | edge) ~"}"
     }
 
     "will parse a simple example and unite the parsers" -{
@@ -42,18 +34,9 @@ class UniteParsersTest extends FreeSpec with Matchers {
            |  node {}
            |}""".stripMargin
 
-      "explicitely by calling the unite method" in {
-        DiagramParser.parse(DiagramParser.parseDiagramExplicit, dia).successful shouldBe true
+      "by calling the unite method" in {
+        DiagramParser.parse(DiagramParser.parseDiagram, dia).successful shouldBe true
       }
-
-      "implicitly within typed method calls" in {
-        DiagramParser.parse(DiagramParser.parseDiagramImplicit, dia).successful shouldBe true
-      }
-
-      "implicitly by calling an $identify method" in {
-        DiagramParser.parse(DiagramParser.parseDiagramIdentify, dia).successful shouldBe true
-      }
-
     }
   }
 

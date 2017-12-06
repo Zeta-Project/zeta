@@ -9,9 +9,9 @@ trait UniteParsers extends Parsers {
 
   override type Elem = Char
 
-  def unite[T, UP <: UniteParsers](other: UP#Parser[T]) = new UniteParser[T, UP](other)
+  def include[T, UP <: UniteParsers](other: UP#Parser[T]) = new UniteParser[T, UP](other)
 
-  protected implicit class UniteParser[T, UP <: UniteParsers] private[UniteParsers](other: UP#Parser[T]) extends Parser[T] {
+  protected class UniteParser[T, UP <: UniteParsers] private[UniteParsers](other: UP#Parser[T]) extends Parser[T] {
     override def apply(in: Input): ParseResult[T] = {
       val result: UP#ParseResult[T] = other(in)
       result match {
@@ -20,8 +20,5 @@ trait UniteParsers extends Parsers {
         case s: UP#Success[T] => Success(s.get, s.next)
       }
     }
-
-    def $identify: Parser[T] = this
   }
-
 }
