@@ -1,14 +1,7 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.model.style.Style
-import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
 import de.htwg.zeta.server.generator.model.style.color.{Color => OldColor}
-import de.htwg.zeta.server.generator.model.style.color.ColorOrGradient
-import de.htwg.zeta.server.generator.model.style.color.ColorWithTransparency
-import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
-import javafx.scene.paint.Color
-
-import scala.reflect.ClassTag
+import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
 
 
 class StyleParserImpl extends StyleParser {
@@ -18,10 +11,12 @@ class StyleParserImpl extends StyleParser {
   private val eq = literal("=")
   private val comma = literal(",")
 
-  override def style: Parser[StyleParseModel] = {
+  override def styles: Parser[List[StyleParseTree]] = rep1(style)
+
+  private def style: Parser[StyleParseTree] = {
     name ~ opt(parentStyles) ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
       val name ~ parentStyles ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
-      StyleParseModel(
+      StyleParseTree(
         name,
         description,
         parentStyles.getOrElse(List()),
@@ -33,28 +28,7 @@ class StyleParserImpl extends StyleParser {
   private def attributes: Parser[List[StyleAttribute]] = {
     rep(lineColor | lineStyle | lineWidth | transparency | backgroundColor | fontColor | fontName | fontSize
       | fontBold | fontItalic | gradientOrientation | gradientAreaColor | gradientAreaOffset)
-      .flatMap { attributes =>
-        Parser { in =>
-          findDuplicates(attributes) match {
-            case Nil => Success(attributes, in)
-            case duplicateAttributes => failureDuplicateAttributes(duplicateAttributes, in)
-          }
-        }
-      }
   }
-
-  def findDuplicates(attributeList: List[StyleAttribute]): List[String] = {
-    val duplicates = attributeList.groupBy(_.attributeName).collect {
-      case (attributeName, attributes) if attributes.size > 1 => attributeName
-    }
-    duplicates.toList.sorted
-  }
-
-  private def failureDuplicateAttributes(duplicates: List[String], in: Input) = Failure(
-    """
-     |The specified style contains multiple occurrences of the following attributes (which is not allowed):"
-     |'${duplicates.mkString(", ")}'
-    """.stripMargin, in)
 
   private def name = literal("style") ~> ident
 
@@ -88,58 +62,3 @@ class StyleParserImpl extends StyleParser {
 
   private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
 }
-
-object StyleParserImpl {
-
-  private trait ColorToRBGColor {
-    val color: Color
-
-    val getRGBValue: String = {
-      val r = color.getRed * 255.0.round.toInt
-      val g = color.getGreen * 255.0.round.toInt
-      val b = color.getBlue * 255.0.round.toInt
-
-      s"$r$g$b"
-    }
-  }
-  private case class ColorOrGradientImpl(color: Color) extends ColorOrGradient with ColorToRBGColor
-  private case class ColorWithTransparencyImpl(color: Color) extends ColorWithTransparency with ColorToRBGColor
-  private case class ColorImpl(color: Color) extends OldColor with ColorToRBGColor
-
-  def convert(styleParseModel: StyleParseModel): Style = {
-
-    class CollectAttributeWrapper[T](val t: Option[T]) {
-      def map[R](func: T => R): Option[R] = t.map(func)
-    }
-
-    def collectAttribute[T: ClassTag]: CollectAttributeWrapper[T] = {
-      val attribute = styleParseModel.attributes.collectFirst {
-          case t: T => t
-        }
-      new CollectAttributeWrapper(attribute)
-    }
-
-    new Style(
-      name = styleParseModel.name,
-      description = Some(styleParseModel.description),
-      transparency = collectAttribute[Transparency].map(_.transparency),
-      background_color = collectAttribute[BackgroundColor].map(bg => ColorOrGradientImpl(bg.color)),
-      line_color = collectAttribute[LineColor].map(lc => ColorWithTransparencyImpl(lc.color)),
-      line_style = collectAttribute[LineStyle].map(_.style).flatMap(OldLineStyle.getIfValid),
-      line_width = collectAttribute[LineWidth].map(_.width),
-      font_color = collectAttribute[FontColor].map(fc => ColorImpl(fc.color)),
-      font_name = collectAttribute[FontName].map(_.name),
-      font_size = collectAttribute[FontSize].map(_.size),
-      font_bold = collectAttribute[FontBold].map(_.bold),
-      font_italic = collectAttribute[FontItalic].map(_.italic),
-      gradient_orientation = collectAttribute[GradientOrientation].map(_.orientation).flatMap(GradientAlignment.ifValid),
-      selected_highlighting = None,
-      multiselected_highlighting = None,
-      allowed_highlighting = None,
-      unallowed_highlighting = None,
-      parents = List()
-    )
-  }
-
-}
-

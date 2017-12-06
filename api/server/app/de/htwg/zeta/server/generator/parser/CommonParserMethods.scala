@@ -2,8 +2,6 @@ package de.htwg.zeta.server.generator.parser
 
 import javafx.scene.paint.Color
 
-import com.sun.javaws.exceptions.InvalidArgumentException
-
 import scala.util.Try
 import scala.util.{Success => TrySuccess}
 import scala.util.{Failure => TryFailure}
