@@ -1,6 +1,18 @@
-<code_scheme name="zeta_codeStyle">
+<!-- This is the IntelliJ code style for zeta-->
+<code_scheme name="codeStyle">
+  <option name="OTHER_INDENT_OPTIONS">
+    <value>
+      <option name="INDENT_SIZE" value="2" />
+      <option name="CONTINUATION_INDENT_SIZE" value="8" />
+      <option name="TAB_SIZE" value="2" />
+      <option name="USE_TAB_CHARACTER" value="false" />
+      <option name="SMART_TABS" value="false" />
+      <option name="LABEL_INDENT_SIZE" value="0" />
+      <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+      <option name="USE_RELATIVE_INDENTS" value="false" />
+    </value>
+  </option>
   <option name="RIGHT_MARGIN" value="160" />
-  <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
   <ScalaCodeStyleSettings>
     <option name="classCountToUseImportOnDemand" value="1000" />
     <option name="collectImports" value="false" />
@@ -18,12 +30,20 @@
     <option name="TRY_BRACE_FORCE" value="3" />
     <option name="USE_ALTERNATE_CONTINUATION_INDENT_FOR_PARAMS" value="true" />
     <option name="USE_SCALADOC2_FORMATTING" value="false" />
+    <option name="SPACES_AROUND_AT_IN_PATTERNS" value="true" />
     <option name="KEEP_MULTI_LINE_QUOTES" value="false" />
     <option name="MULTI_LINE_STRING_MARGIN_INDENT" value="1" />
-    <option name="PRIVATE_PROPERTY_TYPE_ANNOTATION" value="2" />
-    <option name="PRIVATE_METHOD_TYPE_ANNOTATION" value="2" />
   </ScalaCodeStyleSettings>
+  <codeStyleSettings language="HTML">
+    <option name="WRAP_ON_TYPING" value="0" />
+    <indentOptions>
+      <option name="INDENT_SIZE" value="2" />
+      <option name="CONTINUATION_INDENT_SIZE" value="4" />
+      <option name="TAB_SIZE" value="2" />
+    </indentOptions>
+  </codeStyleSettings>
   <codeStyleSettings language="Scala">
+    <option name="BLANK_LINES_AROUND_CLASS" value="0" />
     <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
     <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="true" />
     <option name="IF_BRACE_FORCE" value="1" />
