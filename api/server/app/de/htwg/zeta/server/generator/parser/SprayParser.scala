@@ -495,7 +495,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: GraphicalDsl) extends 
         }
       case c: Any =>
         info(c.toString())
-        Some(Diagram("test", Map(), List(), List(), None, null, cache))
+        Some(Diagram("test", Map(), List(), List(), None, null, cache)) // scalastyle:ignore null
     }
   }
 

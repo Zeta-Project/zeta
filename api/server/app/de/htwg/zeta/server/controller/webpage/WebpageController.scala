@@ -61,7 +61,7 @@ class WebpageController @Inject()(
   }
 
   def diagramsOverview(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    if (id == null) {
+    if (id == null) { // scalastyle:ignore null
       diagramsOverviewShortInfo(request)
     } else {
       val result: Future[Result] = for {

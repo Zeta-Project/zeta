@@ -30,7 +30,7 @@ class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLo
 
   private def getParents(cl: ClassLoader): List[ClassLoader] = {
     cl.getParent match {
-      case null => List(cl)
+      case null => List(cl) // scalastyle:ignore null
       case parent: ClassLoader => cl :: getParents(parent)
     }
   }
@@ -177,7 +177,7 @@ class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLo
     groupOpt match {
       case Some(group) => val threadArr: Array[Thread] = Array.ofDim(group.activeCount() + 10)
         group.enumerate(threadArr, /* recurse = */ true)
-        val threadList = threadArr.toList.filterNot(_ == null)
+        val threadList = threadArr.toList.filterNot(_ == null) // scalastyle:ignore null
         info("calling interrupt")
         threadList.foreach(_.interrupt())
       case None =>
@@ -192,7 +192,7 @@ class DevelopmentStarter(mode: CustomApplicationLoader.DeploymentMode, contextLo
     val arr: Array[ThreadGroup] = Array.ofDim(100)
     current.enumerate(arr, /* recurse = */ false)
 
-    val list = arr.toStream.filterNot(_ == null)
+    val list = arr.toStream.filterNot(_ == null) // scalastyle:ignore null
 
     list.find(_.getName == clusterGroup)
   }
