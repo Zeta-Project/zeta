@@ -135,7 +135,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: GraphicalDsl) extends 
   private def shapeAttribute: Parser[(String, String)] = shapeVariable ~ arguments ^^ { case v ~ a => (v, a) }
 
   private def descriptionAttribute: Parser[(String, String)] = {
-    "description" ~> "(style\\s*([a-zA-ZüäöÜÄÖ][-_]?)+)?".r ~ argument_wrapped ^^ { case desStyl ~ args => (desStyl, args) }
+    "description" ~> "(style\\s*([a-zA-ZüäöÜÄÖ][-_]?)+)?".r ~ argument_wrapped ^^ { case desStyl ~ args => (desStyl, args) } // scalastyle:ignore non.ascii.character.disallowed
   }
 
   private def anchorAttribute: Parser[String] = {
