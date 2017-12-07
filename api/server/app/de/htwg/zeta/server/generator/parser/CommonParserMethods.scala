@@ -9,18 +9,18 @@ import scala.util.parsing.combinator.JavaTokenParsers
 trait CommonParserMethods extends JavaTokenParsers {
   // basic stuff
   def attribute: Parser[(String, String)] = variable ~ argument <~ ",?".r ^^ { case v ~ a => (v.toString, a.toString) }
-  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString }
+  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
   def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
   def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
   def argument: Parser[String] =
-    "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString }
+    "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
   def argument_string: Parser[String] =
     "\".*\"".r ^^ { _.toString }
   def argument_classic: Parser[String] = """\s*\=\s*""".r ~> argument ^^ { _.toString }
   def argument_advanced_explicit: Parser[String] =
-    """(?s)\((\w+([-_]\w+)*\s*=\s*([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?[\s\n]*)+\)""".r ^^ { _.toString }
+    """(?s)\((\w+([-_]\w+)*\s*=\s*([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?[\s\n]*)+\)""".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
   def argument_advanced_implicit: Parser[String] =
-    """(?s)\((([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?\s*)+\)""".r ^^ { _.toString }
+    """(?s)\((([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?\s*)+\)""".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
   def argument_wrapped: Parser[String] = "\\{[^\\{\\}]*\\}".r ^^ { _.toString }
   def arguments: Parser[String] =
     argument_classic | argument_advanced_explicit | argument_advanced_implicit | argument_wrapped
