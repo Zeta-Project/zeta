@@ -10,7 +10,7 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
@@ -49,7 +49,7 @@ class ModelEditorGeneratorController @Inject()(
       }
   }
 
-  private def createGenerators(metaModel: MetaModelEntity, userId: UUID): Future[Unreliable[List[File]]] = {
+  private def createGenerators(metaModel: GraphicalDsl, userId: UUID): Future[Unreliable[List[File]]] = {
     val hierarchyContainer = Cache()
     parseMetaModel(metaModel, hierarchyContainer) match {
       case Success(dia) =>
@@ -58,7 +58,7 @@ class ModelEditorGeneratorController @Inject()(
     }
   }
 
-  private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Unreliable[Diagram] = {
+  private def parseMetaModel(metaModel: GraphicalDsl, hierarchyContainer: Cache): Unreliable[Diagram] = {
     val parser = new SprayParser(hierarchyContainer, metaModel)
 
     def tryParse[E, R](get: Dsl => Option[E], parse: E => List[R], name: String): Unreliable[List[R]] = {
@@ -77,7 +77,7 @@ class ModelEditorGeneratorController @Inject()(
       }
   }
 
-  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
+  private def createAndSaveGeneratorFiles(metaModel: GraphicalDsl, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
   Future[Unreliable[List[File]]] = {
     val repo = filePersistence.restrictedTo(userId)
     val allGen = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id)

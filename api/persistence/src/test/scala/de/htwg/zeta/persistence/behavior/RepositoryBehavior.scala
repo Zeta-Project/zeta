@@ -8,8 +8,8 @@ import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
@@ -135,7 +135,7 @@ trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBe
       LogFixtures.entity3
     )
 
-    "MetaModelEntity" should behave like entityPersistenceBehavior[MetaModelEntity](
+    "MetaModelEntity" should behave like entityPersistenceBehavior[GraphicalDsl](
       metaModelEntityPersistence,
       MetaModelEntityFixtures.entity1,
       MetaModelEntityFixtures.entity2,
@@ -143,7 +143,7 @@ trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBe
       MetaModelEntityFixtures.entity3
     )
 
-    "MetaModelRelease" should behave like entityPersistenceBehavior[MetaModelRelease](
+    "MetaModelRelease" should behave like entityPersistenceBehavior[GraphicalDslRelease](
       metaModelReleasePersistence,
       MetaModelReleaseFixtures.entity1,
       MetaModelReleaseFixtures.entity2,

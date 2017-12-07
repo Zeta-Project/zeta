@@ -16,9 +16,9 @@ import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.DslFormat
 import de.htwg.zeta.common.format.metaModel.EnumFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
+import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelReleaseFormat
+import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
@@ -74,16 +74,16 @@ class JsonFormatModule extends ScalaModule {
   def provideMetaModelEntityFormat(
     metaModelFormat: MetaModelFormat,
     dslFormat: DslFormat
-  ): MetaModelEntityFormat = {
-    new MetaModelEntityFormat(metaModelFormat, dslFormat)
+  ): GraphicalDslFormat = {
+    new GraphicalDslFormat(metaModelFormat, dslFormat)
   }
 
   @Provides @Singleton
   def provideMetaModelReleaseFormat(
     metaModelFormat: MetaModelFormat,
     dslFormat: DslFormat
-  ): MetaModelReleaseFormat = {
-    new MetaModelReleaseFormat(metaModelFormat, dslFormat)
+  ): GraphicalDslReleaseFormat = {
+    new GraphicalDslReleaseFormat(metaModelFormat, dslFormat)
   }
 
   @Provides @Singleton

@@ -5,7 +5,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import com.google.inject.Guice
-import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.MetaModelEntityRepository
 import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
@@ -47,7 +47,7 @@ object Main extends App {
     val result = for {
       from <- metaModelEntityPersistence.read(UUID.fromString(id))
       release <- metaModelReleasePersistence.createOrUpdate(
-        MetaModelRelease(
+        GraphicalDslRelease(
           id = UUID.randomUUID(),
           name = s"${from.metaModel.name}",
           metaModel = from.metaModel,

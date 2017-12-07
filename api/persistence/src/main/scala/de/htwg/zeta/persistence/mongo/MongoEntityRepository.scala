@@ -24,9 +24,9 @@ import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.DslFormat
 import de.htwg.zeta.common.format.metaModel.EnumFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
+import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelReleaseFormat
+import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
@@ -234,13 +234,13 @@ class MongoLogRepository @Inject()(
 @Singleton
 class MongoMetaModelEntityRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, new MetaModelEntityFormat(metaModelFormat, dslFormat, sId = sMongoId))
+) extends MongoEntityRepository(database, new GraphicalDslFormat(metaModelFormat, dslFormat, sId = sMongoId))
   with MetaModelEntityRepository
 
 @Singleton
 class MongoMetaModelReleaseRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, new MetaModelReleaseFormat(metaModelFormat, dslFormat, sId = sMongoId))
+) extends MongoEntityRepository(database, new GraphicalDslReleaseFormat(metaModelFormat, dslFormat, sId = sMongoId))
   with MetaModelReleaseRepository
 
 @Singleton

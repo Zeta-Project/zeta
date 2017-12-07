@@ -7,8 +7,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.common.format.metaModel.MetaModelReleaseFormat
-import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
@@ -23,7 +23,7 @@ import play.api.mvc.Result
  */
 class MetaModelReleaseRestApi @Inject()(
     metaModelReleaseRepo: MetaModelReleaseRepository,
-    metaModelReleaseFormat: MetaModelReleaseFormat
+    metaModelReleaseFormat: GraphicalDslReleaseFormat
 ) extends Controller with Logging {
 
   /** Lists all filter.
@@ -42,7 +42,7 @@ class MetaModelReleaseRestApi @Inject()(
     Future.sequence(list)
   }
 
-  private def getJsonArray(list: List[MetaModelRelease]) = {
+  private def getJsonArray(list: List[GraphicalDslRelease]) = {
     Ok(Writes.list(metaModelReleaseFormat).writes(list))
   }
 

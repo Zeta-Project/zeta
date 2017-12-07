@@ -7,10 +7,10 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
-
-case class MetaModelEntity(
+case class GraphicalDslRelease(
     id: UUID,
-    metaModel: MetaModel, // Concept
-    dsl: Dsl = Dsl(),
-    validator: Option[String] = None
+    name: String,
+    metaModel: MetaModel,
+    dsl: Dsl,
+    version: String
 ) extends Entity

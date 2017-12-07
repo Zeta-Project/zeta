@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
-import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
@@ -12,7 +12,7 @@ import scala.tools.reflect.ToolBox
 
 case class ValidatorGeneratorResult(success: Boolean, result: String)
 
-class ValidatorGenerator(metaModelEntity: MetaModelEntity) {
+class ValidatorGenerator(metaModelEntity: GraphicalDsl) {
 
   def generateValidator(): ValidatorGeneratorResult = {
     val consistencyChecker = new MetaModelConsistencyChecker(metaModelEntity.metaModel)

@@ -16,8 +16,8 @@ import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
@@ -129,12 +129,12 @@ class TransientLogRepository
 
 @Singleton
 class TransientMetaModelEntityRepository
-  extends TransientEntityRepository[MetaModelEntity]
+  extends TransientEntityRepository[GraphicalDsl]
     with MetaModelEntityRepository
 
 @Singleton
 class TransientMetaModelReleaseRepository
-  extends TransientEntityRepository[MetaModelRelease]
+  extends TransientEntityRepository[GraphicalDslRelease]
     with MetaModelReleaseRepository
 
 @Singleton

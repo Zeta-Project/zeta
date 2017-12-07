@@ -5,7 +5,7 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 import scala.collection.immutable.SortedMap
 
-import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
@@ -201,23 +201,23 @@ object MetaModelEntityFixtures {
     methods = Seq.empty
   )
 
-  val entity1 = MetaModelEntity(
+  val entity1 = GraphicalDsl(
     id = UUID.randomUUID,
     metaModel = metaModel1,
     dsl = dsl1,
     validator = Some("validator1")
   )
 
-  val entity2 = MetaModelEntity(
+  val entity2 = GraphicalDsl(
     id = UUID.randomUUID,
     metaModel = metaModel2,
     dsl = dsl2,
     validator = Some("validator2")
   )
 
-  val entity2Updated: MetaModelEntity = entity2.copy(dsl = dsl1)
+  val entity2Updated: GraphicalDsl = entity2.copy(dsl = dsl1)
 
-  val entity3 = MetaModelEntity(
+  val entity3 = GraphicalDsl(
     id = UUID.randomUUID,
     metaModel = metaModel1,
     dsl = dsl2,

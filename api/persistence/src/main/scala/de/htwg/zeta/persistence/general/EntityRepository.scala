@@ -14,8 +14,8 @@ import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.MetaModelRelease
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
@@ -126,9 +126,9 @@ trait GeneratorImageRepository extends EntityRepository[GeneratorImage]
 
 trait LogRepository extends EntityRepository[Log]
 
-trait MetaModelEntityRepository extends EntityRepository[MetaModelEntity]
+trait MetaModelEntityRepository extends EntityRepository[GraphicalDsl]
 
-trait MetaModelReleaseRepository extends EntityRepository[MetaModelRelease]
+trait MetaModelReleaseRepository extends EntityRepository[GraphicalDslRelease]
 
 trait ModelEntityRepository extends EntityRepository[ModelEntity]
 

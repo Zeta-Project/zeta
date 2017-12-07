@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
@@ -141,7 +141,7 @@ object Main extends Template[CreateOptions, String] {
     } yield Success()
   }
 
-  private def createFile(metaModel: MetaModelEntity): Future[File] = {
+  private def createFile(metaModel: GraphicalDsl): Future[File] = {
     val mClassList = metaModel.metaModel.classMap.values
     val mReferenceList = metaModel.metaModel.referenceMap.values
     val content = createFileContent(mClassList, mReferenceList)

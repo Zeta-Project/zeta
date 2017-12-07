@@ -1,9 +1,9 @@
-@import de.htwg.zeta.common.models.entity.MetaModelEntity
+@import de.htwg.zeta.common.models.entity.GraphicalDsl
 @import de.htwg.zeta.common.models.entity.User
 @import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 @import de.htwg.zeta.common.models.modelDefinitions.model.ModelShortInfo
 
-@(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
+@(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[GraphicalDsl], modelInstances: Seq[ModelShortInfo])
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.css")">

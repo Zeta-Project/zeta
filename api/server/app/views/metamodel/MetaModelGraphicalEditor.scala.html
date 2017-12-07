@@ -1,10 +1,10 @@
 @import java.util.UUID
 
-@import de.htwg.zeta.common.models.entity.MetaModelEntity
+@import de.htwg.zeta.common.models.entity.GraphicalDsl
 @import de.htwg.zeta.common.models.entity.User
 @import play.api.libs.json.Json
 
-@(user: Option[User], id: UUID, metaModel: MetaModelEntity)
+@(user: Option[User], id: UUID, metaModel: GraphicalDsl)
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.css")">

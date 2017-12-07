@@ -11,10 +11,10 @@ import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.DslFormat
-import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
+import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
-import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
@@ -36,7 +36,7 @@ import play.api.mvc.Result
 class MetaModelRestApi @Inject()(
     metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
     metaModelFormat: MetaModelFormat,
-    metaModelEntityFormat: MetaModelEntityFormat,
+    metaModelEntityFormat: GraphicalDslFormat,
     classFormat: ClassFormat,
     referenceFormat: ReferenceFormat,
     dslFormat: DslFormat
@@ -71,7 +71,7 @@ class MetaModelRestApi @Inject()(
       },
       metaModel => {
         metaModelEntityRepo.restrictedTo(request.identity.id).create(
-          MetaModelEntity(
+          GraphicalDsl(
             id = UUID.randomUUID(),
             metaModel = metaModel
           )
@@ -169,27 +169,27 @@ class MetaModelRestApi @Inject()(
 
   /** returns style definition */
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
+    protectedRead(id, request, (m: GraphicalDsl) => {
       m.dsl.style.map(m => Ok(dslFormat.style.writes(m))).getOrElse(NotFound)
     })
   }
 
   /** returns shape definition */
   def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
+    protectedRead(id, request, (m: GraphicalDsl) => {
       m.dsl.shape.map(m => Ok(dslFormat.shape.writes(m))).getOrElse(NotFound)
     })
   }
 
   /** returns diagram definition */
   def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (m: MetaModelEntity) => {
+    protectedRead(id, request, (m: GraphicalDsl) => {
       m.dsl.diagram.map(m => Ok(dslFormat.diagram.writes(m))).getOrElse(NotFound)
     })
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: MetaModelEntity => Result): Future[Result] = {
+  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDsl => Result): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(id).map { mm =>
       trans(mm)
     }.recover {
@@ -315,7 +315,7 @@ class MetaModelRestApi @Inject()(
    * @return The validator.
    */
   def getValidator(id: UUID, generateOpt: Option[Boolean], get: Boolean)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (metaModelEntity: MetaModelEntity) => {
+    protectedRead(id, request, (metaModelEntity: GraphicalDsl) => {
 
       val generate = generateOpt.getOrElse(false)
 
