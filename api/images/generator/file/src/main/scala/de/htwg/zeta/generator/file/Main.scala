@@ -11,7 +11,7 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.generator.template.Error
 import de.htwg.zeta.generator.template.Result
 import de.htwg.zeta.generator.template.Settings
@@ -29,19 +29,19 @@ class MyTransformer() extends Transformer {
   private val injector = Guice.createInjector(new PersistenceModule)
   private val filePersistence = injector.getInstance(classOf[FileRepository])
 
-  def transform(entity: ModelEntity): Future[Transformer] = {
+  def transform(entity: GraphicalDslInstance): Future[Transformer] = {
     logger.info("Start example")
     val p = Promise[Transformer]
 
     val filename = "example.txt"
     val content =
       s"""
-        |Number of nodes : ${entity.model.nodeMap.size}
-        |Number of edges : ${entity.model.edgeMap.size}
+        |Number of nodes : ${entity.nodeMap.size}
+        |Number of edges : ${entity.edgeMap.size}
       """.stripMargin
 
    filePersistence.create(File(entity.id, filename, content)).map { _ =>
-      logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.graphicalDslId}')")
+      logger.info(s"Successfully saved results to '$filename' for model '${entity.name}' (MetaModel '${entity.graphicalDslId}')")
       p.success(this)
     }.recover {
       case e: Exception => p.failure(e)
@@ -101,7 +101,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] =
+  override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] =
     Future.successful(new MyTransformer())
 
   /**
