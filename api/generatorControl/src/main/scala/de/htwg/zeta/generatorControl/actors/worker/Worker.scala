@@ -43,12 +43,12 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
 
   private val workExecutor = context.watch(executor)
 
-  private var currentWork: Work = null
+  private var currentWork: Work = null // scalastyle:ignore null
 
   override def supervisorStrategy = OneForOneStrategy() {
     case _: ActorInitializationException => Stop
     case _: DeathPactException => Stop
-    case _: Exception if currentWork != null =>
+    case _: Exception if currentWork != null => // scalastyle:ignore null
       sendToMaster(MasterWorkerProtocol.WorkFailed(workerId, currentWork.id))
       context.become(idle)
       Restart
@@ -104,7 +104,7 @@ class Worker(executor: ActorRef, registerInterval: FiniteDuration, workTimeout: 
       sendToMaster(MasterWorkerProtocol.WorkerRequestsWork(workerId))
       context.setReceiveTimeout(Duration.Undefined)
       context.become(idle)
-      currentWork = null
+      currentWork = null // scalastyle:ignore null
     case ReceiveTimeout =>
       log.info("No ack from master. Retry now.")
       sendToMaster(MasterWorkerProtocol.WorkIsDone(workerId, currentWork.id, result))

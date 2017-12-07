@@ -697,7 +697,7 @@ object GeneratorShapeDefinition {
 
   protected def getParent(shape: Shape): Shape = {
     if (shape.extendedShape.isEmpty) {
-      null
+      null // scalastyle:ignore null
     } else {
       shape.extendedShape.last
     }
