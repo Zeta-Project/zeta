@@ -9,7 +9,7 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-object MReferenceFormat extends OFormat[MReference] {
+object ReferenceFormat extends OFormat[MReference] {
 
   val sName = "name"
   val sDescription = "description"
@@ -27,7 +27,7 @@ object MReferenceFormat extends OFormat[MReference] {
     sTargetDeletionDeletesSource -> reference.targetDeletionDeletesSource,
     sSourceClassName -> reference.sourceClassName,
     sTargetClassName -> reference.targetClassName,
-    sAttributes -> Writes.seq(MAttributeFormat).writes(reference.attributes),
+    sAttributes -> Writes.seq(AttributeFormat).writes(reference.attributes),
     sMethods -> Writes.seq(MethodFormat).writes(reference.methods)
   )
 
@@ -39,7 +39,7 @@ object MReferenceFormat extends OFormat[MReference] {
       targetDeletionDeletesSource <- (json \ sTargetDeletionDeletesSource).validate[Boolean]
       sourceClassName <- (json \ sSourceClassName).validate[String]
       targetClassName <- (json \ sTargetClassName).validate[String]
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(AttributeFormat))
       methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
     } yield {
       MReference(

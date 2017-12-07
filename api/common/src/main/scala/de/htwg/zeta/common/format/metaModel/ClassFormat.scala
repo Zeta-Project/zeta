@@ -9,7 +9,7 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-object MClassFormat extends OFormat[MClass] {
+object ClassFormat extends OFormat[MClass] {
 
   val sName = "name"
   val sDescription = "description"
@@ -21,13 +21,13 @@ object MClassFormat extends OFormat[MClass] {
   val sMethods = "methods"
 
   override def writes(clazz: MClass): JsObject = Json.obj(
-    MClassFormat.sName -> clazz.name,
+    ClassFormat.sName -> clazz.name,
     sDescription -> clazz.description,
     sAbstractness -> clazz.abstractness,
     sSuperTypeNames -> clazz.superTypeNames,
     sInputReferenceNames -> Writes.seq[String].writes(clazz.inputReferenceNames),
     sOutputReferenceNames -> Writes.seq[String].writes(clazz.outputReferenceNames),
-    sAttributes -> Writes.seq(MAttributeFormat).writes(clazz.attributes),
+    sAttributes -> Writes.seq(AttributeFormat).writes(clazz.attributes),
     sMethods -> Writes.seq(MethodFormat).writes(clazz.methods)
   )
 
@@ -39,7 +39,7 @@ object MClassFormat extends OFormat[MClass] {
       superTypeNames <- (json \ sSuperTypeNames).validate(Reads.list[String])
       inputReferenceNames <- (json \ sInputReferenceNames).validate(Reads.list[String])
       outputReferenceNames <- (json \ sOutputReferenceNames).validate(Reads.list[String])
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(AttributeFormat))
       methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
     } yield {
       MClass(

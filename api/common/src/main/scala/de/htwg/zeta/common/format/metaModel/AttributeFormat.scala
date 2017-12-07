@@ -7,7 +7,7 @@ import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
-object MAttributeFormat extends OFormat[MAttribute] {
+object AttributeFormat extends OFormat[MAttribute] {
 
   private val sName = "name"
   private val sGlobalUnique = "globalUnique"

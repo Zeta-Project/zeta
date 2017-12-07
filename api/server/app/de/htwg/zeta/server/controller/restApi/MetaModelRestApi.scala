@@ -9,10 +9,10 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
-import de.htwg.zeta.common.format.metaModel.MClassFormat
+import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelEntityFormat
 import de.htwg.zeta.common.format.metaModel.MetaModelFormat
-import de.htwg.zeta.common.format.metaModel.MReferenceFormat
+import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.models.entity.MetaModelEntity
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Diagram
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
@@ -135,14 +135,14 @@ class MetaModelRestApi @Inject()(
   /** returns all MClasses of a specific MetaModel as Json Array */
   def getMClasses(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(Writes.seq(MClassFormat).writes(metaModelEntity.metaModel.classes))
+      Ok(Writes.seq(ClassFormat).writes(metaModelEntity.metaModel.classes))
     })
   }
 
   /** returns all MReferences of a specific MetaModel as Json Array */
   def getMReferences(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
-      Ok(Writes.seq(MReferenceFormat).writes(metaModelEntity.metaModel.references))
+      Ok(Writes.seq(ReferenceFormat).writes(metaModelEntity.metaModel.references))
     })
   }
 
@@ -150,7 +150,7 @@ class MetaModelRestApi @Inject()(
   def getMClass(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
       metaModelEntity.metaModel.classMap.get(name).map(clazz =>
-        Ok(MClassFormat.writes(clazz))
+        Ok(ClassFormat.writes(clazz))
       ).getOrElse(NotFound)
     })
   }
@@ -159,7 +159,7 @@ class MetaModelRestApi @Inject()(
   def getMReference(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, metaModelEntity => {
       metaModelEntity.metaModel.referenceMap.get(name).map((reference: MReference) =>
-        Ok(MReferenceFormat.writes(reference))
+        Ok(ReferenceFormat.writes(reference))
       ).getOrElse(NotFound)
     })
   }

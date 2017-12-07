@@ -23,9 +23,9 @@ object MetaModelFormat extends OFormat[MetaModel] {
   override def writes(metaModel: MetaModel): JsObject = Json.obj(
     sName -> metaModel.name,
     sEnums -> Writes.seq(MEnumFormat).writes(metaModel.enums),
-    sClasses -> Writes.seq(MClassFormat).writes(metaModel.classes),
-    sReferences -> Writes.seq(MReferenceFormat).writes(metaModel.references),
-    sAttributes -> Writes.seq(MAttributeFormat).writes(metaModel.attributes),
+    sClasses -> Writes.seq(ClassFormat).writes(metaModel.classes),
+    sReferences -> Writes.seq(ReferenceFormat).writes(metaModel.references),
+    sAttributes -> Writes.seq(AttributeFormat).writes(metaModel.attributes),
     sMethods -> Writes.seq(MethodFormat).writes(metaModel.methods),
     sUiState -> metaModel.uiState
   )
@@ -34,9 +34,9 @@ object MetaModelFormat extends OFormat[MetaModel] {
     for {
       name <- (json \ sName).validate[String]
       enums <- (json \ sEnums).validate(Reads.list(MEnumFormat))
-      classes <- (json \ sClasses).validate(Reads.list(MClassFormat))
-      references <- (json \ sReferences).validate(Reads.list(MReferenceFormat))
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      classes <- (json \ sClasses).validate(Reads.list(ClassFormat))
+      references <- (json \ sReferences).validate(Reads.list(ReferenceFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(AttributeFormat))
       methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
       uiState <- (json \ sUiState).validate[String]
     } yield {

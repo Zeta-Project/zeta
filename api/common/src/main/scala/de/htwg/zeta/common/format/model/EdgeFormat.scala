@@ -1,7 +1,7 @@
 package de.htwg.zeta.common.format.model
 
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat
+import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import play.api.libs.json.JsObject
@@ -28,7 +28,7 @@ object EdgeFormat extends OFormat[Edge] {
     sReferenceName -> edge.referenceName,
     sSource -> edge.sourceNodeName,
     sTarget -> edge.targetNodeName,
-    sAttributes -> Writes.seq(MAttributeFormat).writes(edge.attributes),
+    sAttributes -> Writes.seq(AttributeFormat).writes(edge.attributes),
     sAttributeValues -> Writes.map(AttributeValueFormat).writes(edge.attributeValues),
     sMethods -> Writes.seq(MethodFormat).writes(edge.methods)
   )
@@ -39,7 +39,7 @@ object EdgeFormat extends OFormat[Edge] {
       referenceName <- (json \ sReferenceName).validate[String]
       source <- (json \ sSource).validate[String]
       target <- (json \ sTarget).validate[String]
-      attributes <- (json \ sAttributes).validate(Reads.list(MAttributeFormat))
+      attributes <- (json \ sAttributes).validate(Reads.list(AttributeFormat))
       attributeValues <- (json \ sAttributeValues).validate(Reads.map(AttributeValueFormat))
       methods <- (json \ sMethods).validate(Reads.list(MethodFormat))
     } yield {

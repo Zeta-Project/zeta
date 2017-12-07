@@ -2,7 +2,7 @@ package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.format.metaModel.MAttributeFormat
+import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.HasAttributeValues
