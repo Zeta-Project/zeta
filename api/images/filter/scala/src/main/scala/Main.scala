@@ -12,11 +12,11 @@ import akka.stream.ActorMaterializer
 import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import filter.BaseFilter
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
@@ -43,7 +43,7 @@ object Main extends App {
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val modelEntityPersistence = injector.getInstance(classOf[ModelEntityRepository])
+  private val modelEntityPersistence = injector.getInstance(classOf[GraphicalDslInstanceRepository])
   private val filePersistence = injector.getInstance(classOf[FileRepository])
   private val filterPersistence = injector.getInstance(classOf[FilterRepository])
 
@@ -113,12 +113,12 @@ object Main extends App {
 
   }
 
-  private def checkInstance(fn: BaseFilter, entity: ModelEntity) = {
+  private def checkInstance(fn: BaseFilter, entity: GraphicalDslInstance) = {
     val checked = fn.filter(entity)
     if (checked) {
-      logger.info(s"Check successful: metaModel ${entity.model.metaModelId}, model ${entity.id}")
+      logger.info(s"Check successful: metaModel ${entity.graphicalDslId}, model ${entity.id}")
     } else {
-      logger.info(s"Check failed: metaModel ${entity.model.metaModelId}, model ${entity.id}")
+      logger.info(s"Check failed: metaModel ${entity.graphicalDslId}, model ${entity.id}")
     }
     Future.successful(entity.id, checked)
   }

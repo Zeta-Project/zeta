@@ -23,14 +23,14 @@ class NodesNoInputsTest extends FlatSpec with Matchers {
   it should "return false on nodes of type nodeType with inputs" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = EdgeLink(input.name, Seq(""))
-    val node = emptyNode.copy(inputs = Seq(toEdge))
+    val node = emptyNode.copy(inputEdgeNames = Seq(toEdge))
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty input list" in {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = EdgeLink(input.name, Seq())
-    val node = emptyNode.copy(inputs = Seq(toEdge))
+    val node = emptyNode.copy(inputEdgeNames = Seq(toEdge))
     rule.isValid(node).get should be(true)
   }
 

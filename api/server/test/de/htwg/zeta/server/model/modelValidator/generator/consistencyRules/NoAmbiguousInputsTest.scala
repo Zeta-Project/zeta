@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import org.scalatest.FlatSpec
@@ -22,8 +22,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(input),
-    outputs = Seq(),
+    inputReferenceNames = Seq(input),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -47,8 +47,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(nonAmbiguousInput),
-    outputs = Seq(),
+    inputReferenceNames = Seq(nonAmbiguousInput),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -58,8 +58,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(ambiguousInput),
-    outputs = Seq(),
+    inputReferenceNames = Seq(ambiguousInput),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -69,8 +69,8 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(superClass.name, nonAmbiguousSuperClass.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -80,13 +80,13 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(superClass.name, ambiguousSuperClass.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
 
-  val nonAmbiguousMetaModel = MetaModel(
+  val nonAmbiguousMetaModel = Concept(
     name = "nonAmbiguousMetaModel",
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
@@ -96,7 +96,7 @@ class NoAmbiguousInputsTest extends FlatSpec with Matchers {
     uiState = ""
   )
 
-  val ambiguousMetaModel = MetaModel(
+  val ambiguousMetaModel = Concept(
     name = "ambiguousMetaMOdel",
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),

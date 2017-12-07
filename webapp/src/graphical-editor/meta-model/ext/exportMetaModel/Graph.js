@@ -147,28 +147,44 @@ export default (function() {
         mAttributes.push({});
         for (key in attributes) {
           value = attributes[key];
-          if (key === 'type') {
-            key = 'typ';
-          }
+
           if (key === 'default') {
-            switch (attributes.type) {
+            switch (attributes.typ) {
               case 'Bool':
-                mAttributes[mAttributes.length - 1][key] = value === 'true';
+                mAttributes[mAttributes.length - 1][key] = {
+                  type: "Bool",
+                  value: (value === 'true')
+                };
                 break;
               case 'Int':
                 if (!this.isNumeric(value)) {
                   value = 0;
                 }
-                mAttributes[mAttributes.length - 1][key] = parseInt(value);
+                mAttributes[mAttributes.length - 1][key] = {
+                  type: "Int",
+                  value: parseInt(value)
+                };
                 break;
               case 'Double':
                 if (!this.isNumeric(value)) {
                   value = 0.0;
                 }
-                mAttributes[mAttributes.length - 1][key] = parseFloat(value);
+                mAttributes[mAttributes.length - 1][key] = {
+                  type: "Double",
+                  value: parseFloat(value)
+                };
                 break;
+              case 'String':
+                mAttributes[mAttributes.length - 1][key] = {
+                  type: "String",
+                  value
+                };
+                break;  
               default:
-                mAttributes[mAttributes.length - 1][key] = value;
+                mAttributes[mAttributes.length - 1][key] = {
+                  type: attributes.typ,
+                  value
+                };
             }
           } else {
             mAttributes[mAttributes.length - 1][key] = value;

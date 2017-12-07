@@ -14,7 +14,7 @@ class DslTest extends FlatSpec with Matchers{
     Attributes ofType "" inEdges "" haveUpperBound 0 shouldBe a [EdgeAttributesUpperBound]
     Attributes ofType "" inEdges "" haveLowerBound 0 shouldBe a [EdgeAttributesLowerBound]
     Attributes ofType "" inEdges "" areLocalUnique () shouldBe a [EdgeAttributesLocalUnique]
-    Attributes ofType "" inEdges "" areGlobalUnique () shouldBe a [EdgeAttributesGlobalUnique]
+    Attributes ofType "" inEdges "" areGlobalUnique () shouldBe a [EdgesAttributesGlobalUnique]
     Attributes ofType "" inEdges "" areOfScalarType "String" shouldBe a [EdgeAttributeScalarTypes]
     Attributes ofType "" inEdges "" areOfEnumType "" shouldBe a [EdgeAttributeEnumTypes]
 

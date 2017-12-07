@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
@@ -19,9 +19,9 @@ import org.scalatest.Matchers
 
 class NullChecksTests extends FlatSpec with Matchers {
 
-  def nodesToModel(nodes: Seq[Node]): Model = Model.empty("", UUID.randomUUID()).copy(nodes = nodes)
+  def nodesToModel(nodes: Seq[Node]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = nodes)
 
-  def edgesToModel(edges: Seq[Edge]): Model = Model.empty("", UUID.randomUUID()).copy(edges = edges)
+  def edgesToModel(edges: Seq[Edge]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = edges)
 
   val mReference: MReference = MReference.empty("edgeType", Seq.empty, Seq.empty)
   val mClass: MClass = MClass.empty("nodeType")
@@ -104,12 +104,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeSourcesNodesNoNullValues
 
     val nonNullSources = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(source = nonNullSources)
+    val nonNullEdge = emptyEdge.copy(sourceNodeName = nonNullSources)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullSources = Seq(NodeLink(mClass.name, Seq("", null)))
-    val nullEdge = emptyEdge.copy(source = nullSources)
+    val nullEdge = emptyEdge.copy(sourceNodeName = nullSources)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -118,12 +118,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeSourcesNodesNotNull
 
     val nonNullSources = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(source = nonNullSources)
+    val nonNullEdge = emptyEdge.copy(sourceNodeName = nonNullSources)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullSources = Seq(NodeLink(mClass.name, null))
-    val nullEdge = emptyEdge.copy(source = nullSources)
+    val nullEdge = emptyEdge.copy(sourceNodeName = nullSources)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -132,12 +132,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeSourcesNoNullValues
 
     val nonNullSources = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(source = nonNullSources)
+    val nonNullEdge = emptyEdge.copy(sourceNodeName = nonNullSources)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullSources: Seq[NodeLink] = Seq(null)
-    val nullEdge = emptyEdge.copy(source = nullSources)
+    val nullEdge = emptyEdge.copy(sourceNodeName = nullSources)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -146,12 +146,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeSourcesNotNull
 
     val nonNullSources = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(source = nonNullSources)
+    val nonNullEdge = emptyEdge.copy(sourceNodeName = nonNullSources)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullSources = null
-    val nullEdge = emptyEdge.copy(source = nullSources)
+    val nullEdge = emptyEdge.copy(sourceNodeName = nullSources)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -160,12 +160,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeSourcesTypeNotNull
 
     val nonNullSources = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(source = nonNullSources)
+    val nonNullEdge = emptyEdge.copy(sourceNodeName = nonNullSources)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullSources = Seq(NodeLink(null, Seq("", "")))
-    val nullEdge = emptyEdge.copy(source = nullSources)
+    val nullEdge = emptyEdge.copy(sourceNodeName = nullSources)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -174,12 +174,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeTargetsNodesNoNullValues
 
     val nonNullTargets = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(target = nonNullTargets)
+    val nonNullEdge = emptyEdge.copy(targetNodeName = nonNullTargets)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullTargets = Seq(NodeLink(mClass.name, Seq("", null)))
-    val nullEdge = emptyEdge.copy(target = nullTargets)
+    val nullEdge = emptyEdge.copy(targetNodeName = nullTargets)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -188,12 +188,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeTargetsNodesNotNull
 
     val nonNullTargets = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(target = nonNullTargets)
+    val nonNullEdge = emptyEdge.copy(targetNodeName = nonNullTargets)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullTargets = Seq(NodeLink(mClass.name, null))
-    val nullEdge = emptyEdge.copy(target = nullTargets)
+    val nullEdge = emptyEdge.copy(targetNodeName = nullTargets)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -202,12 +202,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeTargetsNoNullValues
 
     val nonNullTargets = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(target = nonNullTargets)
+    val nonNullEdge = emptyEdge.copy(targetNodeName = nonNullTargets)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullTargets: Seq[NodeLink] = Seq(null)
-    val nullEdge = emptyEdge.copy(target = nullTargets)
+    val nullEdge = emptyEdge.copy(targetNodeName = nullTargets)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -216,12 +216,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeTargetsNotNull
 
     val nonNullTargets = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(target = nonNullTargets)
+    val nonNullEdge = emptyEdge.copy(targetNodeName = nonNullTargets)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullTargets = null
-    val nullEdge = emptyEdge.copy(target = nullTargets)
+    val nullEdge = emptyEdge.copy(targetNodeName = nullTargets)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -230,12 +230,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new EdgeTargetsTypeNotNull
 
     val nonNullTargets = Seq(NodeLink(mClass.name, Seq("", "")))
-    val nonNullEdge = emptyEdge.copy(target = nonNullTargets)
+    val nonNullEdge = emptyEdge.copy(targetNodeName = nonNullTargets)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullTargets = Seq(NodeLink(null, Seq("", "")))
-    val nullEdge = emptyEdge.copy(target = nullTargets)
+    val nullEdge = emptyEdge.copy(targetNodeName = nullTargets)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
@@ -268,21 +268,21 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new ElementsNoNullValues
 
     val nonNullEdge = emptyEdge
-    val nonNullModel = Model.empty("", UUID.randomUUID()).copy(edges = Seq(nonNullEdge))
+    val nonNullModel = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
     val nullEdge = null
-    val nullModel = Model.empty("", UUID.randomUUID()).copy(edges = Seq(nullEdge))
+    val nullModel = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = Seq(nullEdge))
     rule.check(nullModel) should be(false)
   }
 
   "ElementsNotNull" should "check for null in elements" in {
     val rule = new ElementsNotNull
 
-    val nonNullModel = Model.empty("", UUID.randomUUID())
+    val nonNullModel = GraphicalDslInstance.empty("", UUID.randomUUID())
     rule.check(nonNullModel) should be(true)
 
-    val nullModel = Model.empty("", UUID.randomUUID()).copy(nodes = null)
+    val nullModel = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = null)
     rule.check(nullModel) should be(false)
   }
 
@@ -362,12 +362,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeInputsEdgesNoNullValues
 
     val nonNullInputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(inputs = nonNullInputs)
+    val nonNullNode = emptyNode.copy(inputEdgeNames = nonNullInputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullInputs = Seq(EdgeLink(mReference.name, Seq("", null)))
-    val nullNode = emptyNode.copy(inputs = nullInputs)
+    val nullNode = emptyNode.copy(inputEdgeNames = nullInputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -376,12 +376,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeInputsEdgesNotNull
 
     val nonNullInputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(inputs = nonNullInputs)
+    val nonNullNode = emptyNode.copy(inputEdgeNames = nonNullInputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullInputs = Seq(EdgeLink(mReference.name, null))
-    val nullNode = emptyNode.copy(inputs = nullInputs)
+    val nullNode = emptyNode.copy(inputEdgeNames = nullInputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -390,12 +390,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeInputsNoNullValues
 
     val nonNullInputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(inputs = nonNullInputs)
+    val nonNullNode = emptyNode.copy(inputEdgeNames = nonNullInputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullInputs: Seq[EdgeLink] = Seq(null)
-    val nullNode = emptyNode.copy(inputs = nullInputs)
+    val nullNode = emptyNode.copy(inputEdgeNames = nullInputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -404,12 +404,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeInputsNotNull
 
     val nonNullInputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(inputs = nonNullInputs)
+    val nonNullNode = emptyNode.copy(inputEdgeNames = nonNullInputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullInputs = null
-    val nullNode = emptyNode.copy(inputs = nullInputs)
+    val nullNode = emptyNode.copy(inputEdgeNames = nullInputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -418,12 +418,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeInputsTypeNotNull
 
     val nonNullInputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(inputs = nonNullInputs)
+    val nonNullNode = emptyNode.copy(inputEdgeNames = nonNullInputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullInputs = Seq(EdgeLink(null, Seq("", "")))
-    val nullNode = emptyNode.copy(inputs = nullInputs)
+    val nullNode = emptyNode.copy(inputEdgeNames = nullInputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -432,12 +432,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeOutputsEdgesNoNullValues
 
     val nonNullOutputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(outputs = nonNullOutputs)
+    val nonNullNode = emptyNode.copy(outputEdgeNames = nonNullOutputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullOutputs = Seq(EdgeLink(mReference.name, Seq("", null)))
-    val nullNode = emptyNode.copy(outputs = nullOutputs)
+    val nullNode = emptyNode.copy(outputEdgeNames = nullOutputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -446,12 +446,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeOutputsEdgesNotNull
 
     val nonNullOutputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(outputs = nonNullOutputs)
+    val nonNullNode = emptyNode.copy(outputEdgeNames = nonNullOutputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullOutputs = Seq(EdgeLink(mReference.name, null))
-    val nullNode = emptyNode.copy(outputs = nullOutputs)
+    val nullNode = emptyNode.copy(outputEdgeNames = nullOutputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -460,12 +460,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeOutputsNoNullValues
 
     val nonNullOutputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(outputs = nonNullOutputs)
+    val nonNullNode = emptyNode.copy(outputEdgeNames = nonNullOutputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullOutputs: Seq[EdgeLink] = Seq(null)
-    val nullNode = emptyNode.copy(outputs = nullOutputs)
+    val nullNode = emptyNode.copy(outputEdgeNames = nullOutputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -474,12 +474,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeOutputsNotNull
 
     val nonNullOutputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(outputs = nonNullOutputs)
+    val nonNullNode = emptyNode.copy(outputEdgeNames = nonNullOutputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullOutputs = null
-    val nullNode = emptyNode.copy(outputs = nullOutputs)
+    val nullNode = emptyNode.copy(outputEdgeNames = nullOutputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }
@@ -488,12 +488,12 @@ class NullChecksTests extends FlatSpec with Matchers {
     val rule = new NodeOutputsTypeNotNull
 
     val nonNullOutputs = Seq(EdgeLink(mReference.name, Seq("", "")))
-    val nonNullNode = emptyNode.copy(outputs = nonNullOutputs)
+    val nonNullNode = emptyNode.copy(outputEdgeNames = nonNullOutputs)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
     val nullOutputs = Seq(EdgeLink(null, Seq("", "")))
-    val nullNode = emptyNode.copy(outputs = nullOutputs)
+    val nullNode = emptyNode.copy(outputEdgeNames = nullOutputs)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
   }

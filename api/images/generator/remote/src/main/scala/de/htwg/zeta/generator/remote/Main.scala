@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
@@ -80,7 +80,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    * @param file The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
+  override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -96,7 +96,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     val p = Promise[Result]
 
     modelEntityPersistence.read(options.modelId).map { entity =>
-      entity.model.nodeMap.values.foreach { node: Node =>
+      entity.nodeMap.values.foreach { node: Node =>
         if (node.className == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))
         }
@@ -132,7 +132,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       }
     }
 
-    def transform(entity: ModelEntity): Future[Transformer] = {
+    def transform(entity: GraphicalDslInstance): Future[Transformer] = {
       val p = Promise[Transformer]
 
       val r1 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("BasicActor", entity.id))

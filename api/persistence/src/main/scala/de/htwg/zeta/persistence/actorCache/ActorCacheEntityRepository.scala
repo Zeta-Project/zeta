@@ -30,9 +30,9 @@ import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.UserRepository
@@ -181,36 +181,36 @@ class ActorCacheLogRepository @Inject()(
   with LogRepository
 
 @Singleton
-class ActorCacheMetaModelEntityRepository @Inject()(
-    underlying: MetaModelEntityRepository,
+class ActorCacheGraphicalDslRepository @Inject()(
+    underlying: GraphicalDslRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     timeout: Timeout
 ) extends ActorCacheEntityRepository(underlying, system, numberActorsPerEntityType, cacheDuration, timeout)
-  with MetaModelEntityRepository
+  with GraphicalDslRepository
 
 
 @Singleton
-class ActorCacheMetaModelReleaseRepository @Inject()(
-    underlying: MetaModelReleaseRepository,
+class ActorCacheGraphicalDslReleaseRepository @Inject()(
+    underlying: GraphicalDslReleaseRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     timeout: Timeout
 ) extends ActorCacheEntityRepository(underlying, system, numberActorsPerEntityType, cacheDuration, timeout)
-  with MetaModelReleaseRepository
+  with GraphicalDslReleaseRepository
 
 
 @Singleton
-class ActorCacheModelEntityRepository @Inject()(
-    underlying: ModelEntityRepository,
+class ActorCacheGraphicalDslInstanceRepository @Inject()(
+    underlying: GraphicalDslInstanceRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     timeout: Timeout
 ) extends ActorCacheEntityRepository(underlying, system, numberActorsPerEntityType, cacheDuration, timeout)
-  with ModelEntityRepository
+  with GraphicalDslInstanceRepository
 
 @Singleton
 class ActorCacheSettingsRepository @Inject()(

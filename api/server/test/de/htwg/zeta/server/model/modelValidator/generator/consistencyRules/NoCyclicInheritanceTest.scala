@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -14,8 +14,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -25,8 +25,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(nonCyclicClassOne.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -36,8 +36,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(nonCyclicClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -47,13 +47,13 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(nonCyclicClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
 
-  val nonCyclicMetaModel = MetaModel(
+  val nonCyclicMetaModel = Concept(
     name = "metaModelTest",
     classes = Seq(nonCyclicClassOne, nonCyclicClassTwo, nonCyclicClassThree, nonCyclicClassFour),
     references = Seq(),
@@ -68,8 +68,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq("cyclicClassFour"),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -79,8 +79,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassOne.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -90,8 +90,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -101,8 +101,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassThree.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -112,8 +112,8 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(cyclicClassThree.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -123,13 +123,13 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
 
-  val cyclicMetaModel = MetaModel(
+  val cyclicMetaModel = Concept(
     name = "metaModelTest",
     classes = Seq(cyclicClassOne, cyclicClassTwo, cyclicClassThree, cyclicClassFour, cyclicClassFive, cyclicClassSix),
     references = Seq(),

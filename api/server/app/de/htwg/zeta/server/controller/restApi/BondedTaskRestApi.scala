@@ -3,16 +3,16 @@ package de.htwg.zeta.server.controller.restApi
 import java.util.UUID
 import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.format.entity.BondedTaskFormat
 import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.persistence.general.BondedTaskRepository
-import de.htwg.zeta.server.controller.restApi.format.BondedTaskFormat
 import de.htwg.zeta.server.util.auth.ZetaEnv
-import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
+import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
 import play.api.mvc.Result
 
@@ -20,7 +20,8 @@ import play.api.mvc.Result
  * REST-ful API for bondedTask definitions
  */
 class BondedTaskRestApi @Inject()(
-    bondedTaskRepo: BondedTaskRepository
+    bondedTaskRepo: BondedTaskRepository,
+    bondedTaskFormat: BondedTaskFormat
 ) extends RestApiController[BondedTask] {
 
   /** Lists all BondedTask.
@@ -45,9 +46,7 @@ class BondedTaskRestApi @Inject()(
 
   private def getResultJsonArray(list: List[BondedTask]) = {
     val entities = list.filter(e => !e.deleted)
-    val entries = entities.map(BondedTaskFormat.writes)
-    val json = JsArray(entries)
-    Ok(json)
+    Ok(Writes.list(bondedTaskFormat).writes(entities))
   }
 
   /**
@@ -76,6 +75,6 @@ class BondedTaskRestApi @Inject()(
    * @return The result
    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    parseJson(request.body, BondedTaskFormat, (bondedTask) => bondedTaskRepo.create(bondedTask).map(_ => Ok("")))
+    parseJson(request.body, bondedTaskFormat, (bondedTask) => bondedTaskRepo.create(bondedTask).map(_ => Ok("")))
   }
 }

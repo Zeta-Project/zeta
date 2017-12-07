@@ -5,7 +5,6 @@ import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.diagram.node.Node
@@ -47,14 +46,14 @@ object ValidatorGenerator {
   def generateInOutMatrix(diagram: Diagram) = {
     var inputMatrix = new ListBuffer[String]
     var outputMatrix = new ListBuffer[String]
-    diagram.metamodel.metaModel.classMap.foreach { e =>
+    diagram.metamodel.concept.classMap.foreach { e =>
       e._2 match {
         case mc: MClass =>
-          if (mc.inputs.nonEmpty) {
-            inputMatrix += generateInOutMatrixForMClass(mc.inputs, mc.name)
+          if (mc.inputReferenceNames.nonEmpty) {
+            inputMatrix += generateInOutMatrixForMClass(mc.inputReferenceNames, mc.name)
           }
-          if (mc.outputs.nonEmpty) {
-            outputMatrix += generateInOutMatrixForMClass(mc.outputs, mc.name)
+          if (mc.outputReferenceNames.nonEmpty) {
+            outputMatrix += generateInOutMatrixForMClass(mc.outputReferenceNames, mc.name)
           }
         case _ =>
       }
@@ -70,13 +69,13 @@ object ValidatorGenerator {
     """
   }
 
-  def generateInOutMatrixForMClass(inputs: Seq[MReferenceLinkDef], mcName: String): String = {
+  def generateInOutMatrixForMClass(inputs: Seq[String], mcName: String): String = {
     s"""
     $mcName: {
       ${
-        (for {input <- inputs} yield s"""${input.referenceName}: {
-          upperBound: ${input.upperBound},
-          lowerBound: ${input.lowerBound}}"""
+        (for {input <- inputs} yield s"""$input: {
+          upperBound: ${1},
+          lowerBound: ${1}}"""
         ).mkString(",")
       }
     }

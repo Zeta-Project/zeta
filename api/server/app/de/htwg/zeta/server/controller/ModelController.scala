@@ -10,7 +10,7 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -20,7 +20,7 @@ class ModelController @Inject()(
     implicit mat: Materializer,
     system: ActorSystem,
     silhouette: Silhouette[ZetaEnv],
-    modelEntityRepo: AccessRestrictedModelEntityRepository
+    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository
 ) extends Controller {
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {

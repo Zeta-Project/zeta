@@ -16,14 +16,14 @@ import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -73,11 +73,11 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  val modelEntityPersistence = injector.getInstance(classOf[ModelEntityRepository])
+  val modelEntityPersistence = injector.getInstance(classOf[GraphicalDslInstanceRepository])
   val filePersistence = injector.getInstance(classOf[FileRepository])
   val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
   val filterPersistence = injector.getInstance(classOf[FilterRepository])
-  val metaModelEntityPersistence = injector.getInstance(classOf[MetaModelEntityRepository])
+  val metaModelEntityPersistence = injector.getInstance(classOf[GraphicalDslRepository])
   val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)
@@ -146,7 +146,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
     }
   }
 
-  private def executeTransformation(transformer: Transformer, entity: ModelEntity) = {
+  private def executeTransformation(transformer: Transformer, entity: GraphicalDslInstance) = {
     for {
       prepared <- transformer.prepare(entity.id)
       transformed <- prepared.transform(entity)
@@ -289,7 +289,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
    * @param model     the modelEntity
    * @return A Generator
    */
-  protected def getTransformer(file: File, model: ModelEntity): Future[Transformer]
+  protected def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer]
 
   /**
    * Create assets for the model transformer

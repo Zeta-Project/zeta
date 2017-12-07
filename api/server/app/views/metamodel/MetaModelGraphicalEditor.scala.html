@@ -1,10 +1,11 @@
 @import java.util.UUID
 
-@import de.htwg.zeta.common.models.entity.MetaModelEntity
+@import de.htwg.zeta.common.models.entity.GraphicalDsl
 @import de.htwg.zeta.common.models.entity.User
 @import play.api.libs.json.Json
 
-@(user: Option[User], id: UUID, metaModel: MetaModelEntity)
+
+@(user: Option[User], id: UUID, metaModel: GraphicalDsl)
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.css")">
@@ -13,10 +14,10 @@
     <script type="text/javascript">
         window.loadedMetaModel = {};
         window.loadedMetaModel.uuid = "@id";
-        window.loadedMetaModel.name = "@metaModel.metaModel.name";
-    @if(metaModel.metaModel.uiState.nonEmpty) {
+        window.loadedMetaModel.name = "@metaModel.name";
+    @if(metaModel.concept.uiState.nonEmpty) {
         window.loadedMetaModel.loadOnStart = true;
-        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.uiState))));
+        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.concept.uiState))));
     }
         // Hotfix for issue in the latest Chrome version, see https://github.com/clientIO/joint/issues/203
         SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {

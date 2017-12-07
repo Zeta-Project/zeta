@@ -19,22 +19,22 @@ class NodeOutputsUpperBoundTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType having 2 or less output edges of type outputType" in {
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val twoOutputEdges = EdgeLink(outputType.name, Seq("", ""))
-    val nodeTwoOutputEdges = emptyNode.copy(outputs = Seq(twoOutputEdges))
+    val nodeTwoOutputEdges = emptyNode.copy(outputEdgeNames = Seq(twoOutputEdges))
     rule.isValid(nodeTwoOutputEdges).get should be(true)
 
     val oneOutputEdge = EdgeLink(outputType.name, Seq(""))
-    val nodeOneOutputEdge = emptyNode.copy(outputs = Seq(oneOutputEdge))
+    val nodeOneOutputEdge = emptyNode.copy(outputEdgeNames = Seq(oneOutputEdge))
     rule.isValid(nodeOneOutputEdge).get should be(true)
 
     val noOutputEdges = EdgeLink(outputType.name, Seq())
-    val nodeNoOutputEdges = emptyNode.copy(outputs = Seq(noOutputEdges))
+    val nodeNoOutputEdges = emptyNode.copy(outputEdgeNames = Seq(noOutputEdges))
     rule.isValid(nodeNoOutputEdges).get should be(true)
   }
 
   it should "return false on nodes of type nodeType having more than 2 output edges of type outputType" in {
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val threeOutputEdges = EdgeLink(outputType.name, Seq("", "", ""))
-    val nodeThreeOutputEdges = emptyNode.copy(outputs = Seq(threeOutputEdges))
+    val nodeThreeOutputEdges = emptyNode.copy(outputEdgeNames = Seq(threeOutputEdges))
     rule.isValid(nodeThreeOutputEdges).get should be(false)
   }
 

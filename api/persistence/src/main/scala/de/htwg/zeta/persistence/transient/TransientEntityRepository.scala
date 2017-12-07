@@ -15,13 +15,13 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.persistence.general.EntityRepository
@@ -30,10 +30,10 @@ import de.htwg.zeta.persistence.general.FilterImageRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.UserRepository
@@ -128,19 +128,19 @@ class TransientLogRepository
     with LogRepository
 
 @Singleton
-class TransientMetaModelEntityRepository
-  extends TransientEntityRepository[MetaModelEntity]
-    with MetaModelEntityRepository
+class TransientGraphicalDslRepository
+  extends TransientEntityRepository[GraphicalDsl]
+    with GraphicalDslRepository
 
 @Singleton
-class TransientMetaModelReleaseRepository
-  extends TransientEntityRepository[MetaModelRelease]
-    with MetaModelReleaseRepository
+class TransientGraphicalDslReleaseRepository
+  extends TransientEntityRepository[GraphicalDslRelease]
+    with GraphicalDslReleaseRepository
 
 @Singleton
-class TransientModelEntityRepository
-  extends TransientEntityRepository[ModelEntity]
-    with ModelEntityRepository
+class TransientGraphicalDslInstanceRepository
+  extends TransientEntityRepository[GraphicalDslInstance]
+    with GraphicalDslInstanceRepository
 
 @Singleton
 class TransientSettingsRepository

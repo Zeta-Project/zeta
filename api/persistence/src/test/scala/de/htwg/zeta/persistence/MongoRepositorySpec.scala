@@ -13,9 +13,9 @@ import de.htwg.zeta.persistence.mongo.MongoGeneratorImageRepository
 import de.htwg.zeta.persistence.mongo.MongoGeneratorRepository
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoLogRepository
-import de.htwg.zeta.persistence.mongo.MongoMetaModelEntityRepository
-import de.htwg.zeta.persistence.mongo.MongoMetaModelReleaseRepository
-import de.htwg.zeta.persistence.mongo.MongoModelEntityRepository
+import de.htwg.zeta.persistence.mongo.MongoGraphicalDslRepository
+import de.htwg.zeta.persistence.mongo.MongoGraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.mongo.MongoGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoSettingsRepository
 import de.htwg.zeta.persistence.mongo.MongoTimedTaskRepository
@@ -38,9 +38,9 @@ class MongoRepositorySpec extends RepositoryBehavior {
     new MongoGeneratorRepository(connection),
     new MongoGeneratorImageRepository(connection),
     new MongoLogRepository(connection),
-    new MongoMetaModelEntityRepository(connection),
-    new MongoMetaModelReleaseRepository(connection),
-    new MongoModelEntityRepository(connection),
+    new MongoGraphicalDslRepository(connection),
+    new MongoGraphicalDslReleaseRepository(connection),
+    new MongoGraphicalDslInstanceRepository(connection),
     new MongoSettingsRepository(connection),
     new MongoTimedTaskRepository(connection),
     new MongoUserRepository(connection),

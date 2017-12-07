@@ -120,7 +120,8 @@ lazy val common = baseProject("common", file("common")).settings(
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
       "org.scalaz" %% "scalaz-core" % "7.2.8",
       "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "com.typesafe.play" %% "play-json" % "2.5.4"
     )
   )
 )
@@ -177,6 +178,7 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
       "com.mohiva" %% "play-silhouette" % "4.0.0",
       "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
       "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "org.reactivemongo" %% "reactivemongo-play-json" % "0.12.3",
       "net.codingwell" %% "scala-guice" % "4.0.1"
     )
   )

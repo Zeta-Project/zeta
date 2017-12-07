@@ -2,14 +2,10 @@ package de.htwg.zeta.server.model.modelValidator
 
 import scala.annotation.tailrec
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (Mar 2017 - Sep 2017).
@@ -17,16 +13,6 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
  * Utility methods for handling the model and meta model graph inside the model validator.
  */
 object Util {
-
-  /**
-   * Filters all nodes from the given model elements.
-   *
-   * @param elements The model elements.
-   * @return All nodes.
-   */
-  def getNodes(elements: Seq[ModelElement]): Seq[Node] = elements.collect { case n: Node => n }
-
-  def getEdges(elements: Seq[ModelElement]): Seq[Edge] = elements.collect { case e: Edge => e }
 
   def stringSeqToSeqString(seq: Seq[String]): String = seq.mkString("Seq(\"", "\", \"", "\")")
 
@@ -37,8 +23,6 @@ object Util {
    *
    * @param name             The name.
    * @param `type`           The type.
-   * @param lowerBound       The lower bound.
-   * @param upperBound       The upper bound.
    * @param localUnique      Is it local unique?
    * @param globalUnique     Is it global unique?
    * @param constant         Is it constant?
@@ -51,8 +35,6 @@ object Util {
   case class Att(
       name: String,
       `type`: AttributeType,
-      lowerBound: Int,
-      upperBound: Int,
       localUnique: Boolean,
       globalUnique: Boolean,
       constant: Boolean,
@@ -80,18 +62,9 @@ object Util {
       subTypes: Seq[String],
       attributes: Seq[Att],
       abstractness: Boolean,
-      inputs: Seq[LinkDef],
-      outputs: Seq[LinkDef]
+      inputs: Seq[String],
+      outputs: Seq[String]
   )
-
-  /**
-   * Internal representation of MLinkDef.
-   *
-   * @param name       The name.
-   * @param lowerBound The lower bound.
-   * @param upperBound The upper bound.
-   */
-  case class LinkDef(name: String, lowerBound: Int, upperBound: Int)
 
   /**
    * Generates a graph from the meta model, which has all inheritable properties inherited downwards.
@@ -105,7 +78,7 @@ object Util {
    * @param metaModel The meta model.
    * @return The sequence of elements containing the inherited properties.
    */
-  def generateResolvedInheritanceGraph(metaModel: MetaModel): Seq[El] = {
+  def generateResolvedInheritanceGraph(metaModel: Concept): Seq[El] = {
     val simplifiedGraph = simplifyMetaModelGraph(metaModel)
     val inheritedAttributesGraph = inheritAttributes(simplifiedGraph)
     val inheritedInputsGraph = inheritInputs(inheritedAttributesGraph)
@@ -120,7 +93,7 @@ object Util {
    * @param metaModel The meta model.
    * @return The simplified translated graph.
    */
-  def simplifyMetaModelGraph(metaModel: MetaModel): Seq[El] = {
+  def simplifyMetaModelGraph(metaModel: Concept): Seq[El] = {
 
     val allClasses = metaModel.classMap.values.toSeq
 
@@ -130,15 +103,13 @@ object Util {
       subTypes = allClasses.filter(_.superTypeNames.contains(el.name)).map(_.name),
       attributes = el.attributes.map(mapAttribute),
       abstractness = el.abstractness,
-      inputs = el.inputs.map(mapLinkDef),
-      outputs = el.outputs.map(mapLinkDef)
+      inputs = el.inputReferenceNames,
+      outputs = el.outputReferenceNames
     )
 
     def mapAttribute(att: MAttribute): Att = Att(
       name = att.name,
       `type` = att.typ,
-      lowerBound = att.lowerBound,
-      upperBound = att.upperBound,
       localUnique = att.localUnique,
       globalUnique = att.globalUnique,
       constant = att.constant,
@@ -147,12 +118,6 @@ object Util {
       transient = att.transient,
       expression = att.expression,
       default = att.default.toString
-    )
-
-    def mapLinkDef(linkDef: MReferenceLinkDef): LinkDef = LinkDef(
-      name = linkDef.referenceName,
-      lowerBound = linkDef.lowerBound,
-      upperBound = linkDef.upperBound
     )
 
     allClasses.map(mapElement)
@@ -194,8 +159,8 @@ object Util {
    */
   def inheritInputs(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
-    def inputInheritanceValid(inputs: Seq[LinkDef]): Boolean = {
-      inputs.groupBy(_.name).values.map { inputList =>
+    def inputInheritanceValid(inputs: Seq[String]): Boolean = {
+      inputs.map { inputList =>
         inputList.headOption match {
           case Some(head) => inputList.forall(_ == head)
           case None => true
@@ -205,7 +170,7 @@ object Util {
 
     val superTypes = element.superTypes.map(superType => intermediateGraph.find(_.name == superType).get)
     val superTypesInputs = superTypes.flatMap(_.inputs)
-    val inferredInputs = superTypesInputs.filterNot(input => element.inputs.map(_.name).contains(input.name))
+    val inferredInputs = superTypesInputs.filterNot(input => element.inputs.contains(input))
 
     if (!inputInheritanceValid(inferredInputs)) throw new IllegalStateException("ambiguous inputs")
 
@@ -221,8 +186,8 @@ object Util {
    */
   def inheritOutputs(graph: Seq[El]): Seq[El] = mapGraphElementsTopDown(graph) { (element, intermediateGraph) =>
 
-    def outputInheritanceValid(outputs: Seq[LinkDef]): Boolean = {
-      outputs.groupBy(_.name).values.map { outputList =>
+    def outputInheritanceValid(outputs: Seq[String]): Boolean = {
+      outputs.map { outputList =>
         outputList.headOption match {
           case Some(head) => outputList.forall(_ == head)
           case None => true
@@ -232,7 +197,7 @@ object Util {
 
     val superTypes = element.superTypes.map(superType => intermediateGraph.find(_.name == superType).get)
     val superTypesOutputs = superTypes.flatMap(_.outputs)
-    val inferredOutputs = superTypesOutputs.filterNot(output => element.outputs.map(_.name).contains(output.name))
+    val inferredOutputs = superTypesOutputs.filterNot(output => element.outputs.contains(output))
 
     if (!outputInheritanceValid(inferredOutputs)) throw new IllegalStateException("ambiguous outputs")
 

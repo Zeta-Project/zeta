@@ -23,7 +23,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
-  val rule = new EdgeAttributesGlobalUnique("edgeType", "attributeType")
+  val rule = new EdgesAttributesGlobalUnique("edgeType", "attributeType")
 
   "check" should "return success validation results on correct attributes" in {
 
@@ -126,11 +126,11 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
       Seq.empty
     )
     val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
-    val result = EdgeAttributesGlobalUnique.generateFor(metaModel)
+    val result = EdgesAttributesGlobalUnique.generateFor(metaModel)
 
     result.size should be(1)
     result.head match {
-      case rule: EdgeAttributesGlobalUnique =>
+      case rule: EdgesAttributesGlobalUnique =>
         rule.edgeType should be("reference")
         rule.attributeType should be("attributeName")
       case _ => fail

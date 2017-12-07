@@ -1,7 +1,7 @@
 package filter
 
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 
 trait BaseFilter {
-  def filter(entity: ModelEntity): Boolean
+  def filter(entity: GraphicalDslInstance): Boolean
 }

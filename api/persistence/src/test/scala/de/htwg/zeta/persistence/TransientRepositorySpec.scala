@@ -11,9 +11,9 @@ import de.htwg.zeta.persistence.transient.TransientGeneratorImageRepository
 import de.htwg.zeta.persistence.transient.TransientGeneratorRepository
 import de.htwg.zeta.persistence.transient.TransientLoginInfoRepository
 import de.htwg.zeta.persistence.transient.TransientLogRepository
-import de.htwg.zeta.persistence.transient.TransientMetaModelEntityRepository
-import de.htwg.zeta.persistence.transient.TransientMetaModelReleaseRepository
-import de.htwg.zeta.persistence.transient.TransientModelEntityRepository
+import de.htwg.zeta.persistence.transient.TransientGraphicalDslRepository
+import de.htwg.zeta.persistence.transient.TransientGraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.transient.TransientGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.transient.TransientPasswordInfoRepository
 import de.htwg.zeta.persistence.transient.TransientSettingsRepository
 import de.htwg.zeta.persistence.transient.TransientTimedTaskRepository
@@ -33,9 +33,9 @@ class TransientRepositorySpec extends RepositoryBehavior {
     new TransientGeneratorRepository,
     new TransientGeneratorImageRepository,
     new TransientLogRepository,
-    new TransientMetaModelEntityRepository,
-    new TransientMetaModelReleaseRepository,
-    new TransientModelEntityRepository,
+    new TransientGraphicalDslRepository,
+    new TransientGraphicalDslReleaseRepository,
+    new TransientGraphicalDslInstanceRepository,
     new TransientSettingsRepository,
     new TransientTimedTaskRepository,
     new TransientUserRepository,

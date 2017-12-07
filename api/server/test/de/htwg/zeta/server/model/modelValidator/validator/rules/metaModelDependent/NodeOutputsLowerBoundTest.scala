@@ -20,11 +20,11 @@ class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
 
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val twoOutputEdges = EdgeLink(outputType.name, Seq("", ""))
-    val nodeTwoOutputEdges = emptyNode.copy(outputs = Seq(twoOutputEdges))
+    val nodeTwoOutputEdges = emptyNode.copy(outputEdgeNames = Seq(twoOutputEdges))
     rule.isValid(nodeTwoOutputEdges).get should be(true)
 
     val threeOutputEdges = EdgeLink(outputType.name, Seq("", "", ""))
-    val nodeThreeOutputEdges = emptyNode.copy(outputs = Seq(threeOutputEdges))
+    val nodeThreeOutputEdges = emptyNode.copy(outputEdgeNames = Seq(threeOutputEdges))
     rule.isValid(nodeThreeOutputEdges).get should be(true)
   }
 
@@ -32,11 +32,11 @@ class NodeOutputsLowerBoundTest extends FlatSpec with Matchers {
 
     val outputType = MReference("outputType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val noOutputEdges = EdgeLink(outputType.name, Seq())
-    val nodeNoOutputEdges = emptyNode.copy(outputs = Seq(noOutputEdges))
+    val nodeNoOutputEdges = emptyNode.copy(outputEdgeNames = Seq(noOutputEdges))
     rule.isValid(nodeNoOutputEdges).get should be(false)
 
     val oneOutputEdge = EdgeLink(outputType.name, Seq(""))
-    val nodeOneOutputEdge = emptyNode.copy(outputs = Seq(oneOutputEdge))
+    val nodeOneOutputEdge = emptyNode.copy(outputEdgeNames = Seq(oneOutputEdge))
     rule.isValid(nodeOneOutputEdge).get should be(false)
   }
 

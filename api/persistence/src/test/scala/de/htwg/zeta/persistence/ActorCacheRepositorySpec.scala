@@ -16,9 +16,9 @@ import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorImageRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheGeneratorRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheLoginInfoRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheLogRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheMetaModelEntityRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheMetaModelReleaseRepository
-import de.htwg.zeta.persistence.actorCache.ActorCacheModelEntityRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGraphicalDslRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.actorCache.ActorCacheGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.actorCache.ActorCachePasswordInfoRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheSettingsRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheTimedTaskRepository
@@ -34,9 +34,9 @@ import de.htwg.zeta.persistence.transient.TransientGeneratorImageRepository
 import de.htwg.zeta.persistence.transient.TransientGeneratorRepository
 import de.htwg.zeta.persistence.transient.TransientLoginInfoRepository
 import de.htwg.zeta.persistence.transient.TransientLogRepository
-import de.htwg.zeta.persistence.transient.TransientMetaModelEntityRepository
-import de.htwg.zeta.persistence.transient.TransientMetaModelReleaseRepository
-import de.htwg.zeta.persistence.transient.TransientModelEntityRepository
+import de.htwg.zeta.persistence.transient.TransientGraphicalDslRepository
+import de.htwg.zeta.persistence.transient.TransientGraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.transient.TransientGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.transient.TransientPasswordInfoRepository
 import de.htwg.zeta.persistence.transient.TransientSettingsRepository
 import de.htwg.zeta.persistence.transient.TransientTimedTaskRepository
@@ -60,9 +60,9 @@ class ActorCacheRepositorySpec extends RepositoryBehavior {
     new ActorCacheGeneratorRepository(new TransientGeneratorRepository, system, 3, cacheDuration, timeout),
     new ActorCacheGeneratorImageRepository(new TransientGeneratorImageRepository, system, 3, cacheDuration, timeout),
     new ActorCacheLogRepository(new TransientLogRepository, system, 3, cacheDuration, timeout),
-    new ActorCacheMetaModelEntityRepository(new TransientMetaModelEntityRepository, system, 3, cacheDuration, timeout),
-    new ActorCacheMetaModelReleaseRepository(new TransientMetaModelReleaseRepository, system, 3, cacheDuration, timeout),
-    new ActorCacheModelEntityRepository(new TransientModelEntityRepository, system, 3, cacheDuration, timeout),
+    new ActorCacheGraphicalDslRepository(new TransientGraphicalDslRepository, system, 3, cacheDuration, timeout),
+    new ActorCacheGraphicalDslReleaseRepository(new TransientGraphicalDslReleaseRepository, system, 3, cacheDuration, timeout),
+    new ActorCacheGraphicalDslInstanceRepository(new TransientGraphicalDslInstanceRepository, system, 3, cacheDuration, timeout),
     new ActorCacheSettingsRepository(new TransientSettingsRepository, system, 3, cacheDuration, timeout),
     new ActorCacheTimedTaskRepository(new TransientTimedTaskRepository, system, 3, cacheDuration, timeout),
     new ActorCacheUserRepository(new TransientUserRepository, system, 3, cacheDuration, timeout),
