@@ -10,13 +10,9 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
 import de.htwg.zeta.server.generator.generators.style.StyleGenerator
@@ -34,7 +30,7 @@ import play.api.mvc.Result
 
 class ModelEditorGeneratorController @Inject()(
     silhouette: Silhouette[ZetaEnv],
-    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
+    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
     filePersistence: AccessRestrictedFilePersistence
 ) extends Controller {
 
@@ -49,7 +45,7 @@ class ModelEditorGeneratorController @Inject()(
       }
   }
 
-  private def createGenerators(metaModel: MetaModelEntity, userId: UUID): Future[Unreliable[List[File]]] = {
+  private def createGenerators(metaModel: GraphicalDsl, userId: UUID): Future[Unreliable[List[File]]] = {
     val hierarchyContainer = Cache()
     parseMetaModel(metaModel, hierarchyContainer) match {
       case Success(dia) =>
@@ -58,26 +54,23 @@ class ModelEditorGeneratorController @Inject()(
     }
   }
 
-  private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Unreliable[Diagram] = {
-    val parser = new SprayParser(hierarchyContainer, metaModel)
+  private def parseMetaModel(graphicalDsl: GraphicalDsl, hierarchyContainer: Cache): Unreliable[Diagram] = {
+    val parser = new SprayParser(hierarchyContainer, graphicalDsl)
 
-    def tryParse[E, R](get: Dsl => Option[E], parse: E => List[R], name: String): Unreliable[List[R]] = {
-      get(metaModel.dsl) match {
-        case None => Failure(s"$name not available")
-        case Some(e) => Unreliable(() => parse(e), s"$name failed parsing")
-      }
+    def tryParse[R](code: String, parse: String => List[R], name: String): Unreliable[List[R]] = {
+      Unreliable(() => parse(code), s"$name failed parsing")
     }
 
-    tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style")
-      .flatMap(_ => tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape"))
-      .flatMap(_ => tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), ModelEditorGeneratorController.diagramName))
+    tryParse[Style](graphicalDsl.style, s => parser.parseStyle(s), "Style")
+      .flatMap(_ => tryParse[AnyRef](graphicalDsl.shape, s => parser.parseShape(s), "Shape"))
+      .flatMap(_ => tryParse[Option[Diagram]](graphicalDsl.diagram, s => parser.parseDiagram(s), ModelEditorGeneratorController.diagramName))
       .flatMap {
         case Some(dia) :: _ => Success(dia)
         case _ => Failure(s"No ${ModelEditorGeneratorController.diagramName} available")
       }
   }
 
-  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
+  private def createAndSaveGeneratorFiles(metaModel: GraphicalDsl, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
   Future[Unreliable[List[File]]] = {
     val repo = filePersistence.restrictedTo(userId)
     val allGen = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id)

@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
@@ -14,11 +14,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import de.htwg.zeta.server.model.modelValidator.Util.Att
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -31,8 +28,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq.empty,
-    inputs = Seq.empty,
-    outputs = Seq.empty,
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq.empty,
     attributes = Seq[MAttribute](),
     methods = Seq.empty
   )
@@ -42,18 +39,21 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq.empty,
-    target = Seq.empty,
+    sourceClassName = Seq.empty,
+    targetClassName = Seq.empty,
     attributes = Seq[MAttribute](),
     methods = Seq.empty
   )
 
-  val modelElements = Seq(
+  val modelNodes = Seq(
     Node.empty("node1", mClass.name, Seq.empty, Seq.empty),
     Node.empty("node2", mClass.name, Seq.empty, Seq.empty),
-    Edge.empty("edge1", mReference.name, Seq.empty, Seq.empty),
-    Node.empty("node3", mClass.name, Seq.empty, Seq.empty),
-    Edge.empty("edge2", mReference.name, Seq.empty, Seq.empty)
+    Node.empty("node3", mClass.name, Seq.empty, Seq.empty)
+  )
+
+  val modelEdges = Seq(
+    Edge.empty("edge1", mReference.name, "", ""),
+    Edge.empty("edge2", mReference.name, "", "")
   )
 
   val mObjects = Seq(
@@ -62,8 +62,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
+      sourceClassName = Seq.empty,
+      targetClassName = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -72,8 +72,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
+      sourceClassName = Seq.empty,
+      targetClassName = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -82,8 +82,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
+      inputReferenceNames = Seq.empty,
+      outputReferenceNames = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -92,8 +92,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      source = Seq.empty,
-      target = Seq.empty,
+      sourceClassName = Seq.empty,
+      targetClassName = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     ),
@@ -102,8 +102,8 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       abstractness = true,
       superTypeNames = Seq.empty,
-      inputs = Seq.empty,
-      outputs = Seq.empty,
+      inputReferenceNames = Seq.empty,
+      outputReferenceNames = Seq.empty,
       attributes = Seq[MAttribute](),
       methods = Seq.empty
     )
@@ -131,8 +131,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    source = Seq(),
-    target = Seq(),
+    sourceClassName = Seq(),
+    targetClassName = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -144,8 +144,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = true,
     superTypeNames = Seq(),
-    inputs = Seq(),
-    outputs = Seq(superClassOneOutput),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(superClassOneOutput),
     attributes = Seq(abstractSuperClassOneAttribute),
     methods = Seq.empty
   )
@@ -154,8 +154,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = true,
     superTypeNames = Seq(),
-    inputs = Seq(superClassTwoInput),
-    outputs = Seq(),
+    inputReferenceNames = Seq(superClassTwoInput),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -164,8 +164,8 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
@@ -174,13 +174,13 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputs = Seq(),
-    outputs = Seq(),
+    inputReferenceNames = Seq(),
+    outputReferenceNames = Seq(),
     attributes = Seq(),
     methods = Seq.empty
   )
 
-  val metaModel = MetaModel(
+  val metaModel = Concept(
     name = "metaModelTest",
     classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo),
     references = Seq(superClassOneToSuperClassTwo),
@@ -194,14 +194,14 @@ class UtilTest extends FlatSpec with Matchers {
 
 
   "getNodes" should "return all nodes" in {
-    val nodes = Util.getNodes(modelElements)
+    val nodes = modelNodes
     nodes.size should be(3)
     nodes.map(_.name) should be(Seq("node1", "node2", "node3"))
     nodes.forall(_.isInstanceOf[Node]) should be(true)
   }
 
   "getEdges" should "return all edges" in {
-    val edges = Util.getEdges(modelElements)
+    val edges = modelEdges
     edges.size should be(2)
     edges.map(_.name) should be(Seq("edge1", "edge2"))
     edges.forall(_.isInstanceOf[Edge]) should be(true)

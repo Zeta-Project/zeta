@@ -7,13 +7,13 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.common.models.entity.Log
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.common.models.entity.ModelEntity
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.persistence.fixtures.AccessAuthorisationFixtures
 import de.htwg.zeta.persistence.fixtures.BondedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.EventDrivenTaskFixtures
@@ -21,10 +21,10 @@ import de.htwg.zeta.persistence.fixtures.FilterImageTestFixtures
 import de.htwg.zeta.persistence.fixtures.FilterTestFixtures
 import de.htwg.zeta.persistence.fixtures.GeneratorFixtures
 import de.htwg.zeta.persistence.fixtures.GeneratorImageFixtures
+import de.htwg.zeta.persistence.fixtures.GraphicalDslFixtures
+import de.htwg.zeta.persistence.fixtures.GraphicalDslInstanceFixtures
 import de.htwg.zeta.persistence.fixtures.LogFixtures
-import de.htwg.zeta.persistence.fixtures.MetaModelEntityFixtures
 import de.htwg.zeta.persistence.fixtures.MetaModelReleaseFixtures
-import de.htwg.zeta.persistence.fixtures.ModelEntityFixtures
 import de.htwg.zeta.persistence.fixtures.SettingsFixtures
 import de.htwg.zeta.persistence.fixtures.TimedTaskFixtures
 import de.htwg.zeta.persistence.fixtures.UserFixtures
@@ -36,11 +36,11 @@ import de.htwg.zeta.persistence.general.FilterImageRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.MetaModelEntityRepository
-import de.htwg.zeta.persistence.general.MetaModelReleaseRepository
-import de.htwg.zeta.persistence.general.ModelEntityRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
@@ -60,9 +60,9 @@ trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBe
       generatorPersistence: GeneratorRepository,
       generatorImagePersistence: GeneratorImageRepository,
       logPersistence: LogRepository,
-      metaModelEntityPersistence: MetaModelEntityRepository,
-      metaModelReleasePersistence: MetaModelReleaseRepository,
-      modelEntityPersistence: ModelEntityRepository,
+      metaModelEntityPersistence: GraphicalDslRepository,
+      metaModelReleasePersistence: GraphicalDslReleaseRepository,
+      modelEntityPersistence: GraphicalDslInstanceRepository,
       settingsPersistence: SettingsRepository,
       timedTaskPersistence: TimedTaskRepository,
       userPersistence: UserRepository,
@@ -135,15 +135,15 @@ trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBe
       LogFixtures.entity3
     )
 
-    "MetaModelEntity" should behave like entityPersistenceBehavior[MetaModelEntity](
+    "GraphicalDsl" should behave like entityPersistenceBehavior[GraphicalDsl](
       metaModelEntityPersistence,
-      MetaModelEntityFixtures.entity1,
-      MetaModelEntityFixtures.entity2,
-      MetaModelEntityFixtures.entity2Updated,
-      MetaModelEntityFixtures.entity3
+      GraphicalDslFixtures.entity1,
+      GraphicalDslFixtures.entity2,
+      GraphicalDslFixtures.entity2Updated,
+      GraphicalDslFixtures.entity3
     )
 
-    "MetaModelRelease" should behave like entityPersistenceBehavior[MetaModelRelease](
+    "MetaModelRelease" should behave like entityPersistenceBehavior[GraphicalDslRelease](
       metaModelReleasePersistence,
       MetaModelReleaseFixtures.entity1,
       MetaModelReleaseFixtures.entity2,
@@ -151,12 +151,12 @@ trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBe
       MetaModelReleaseFixtures.entity3
     )
 
-    "ModelEntity" should behave like entityPersistenceBehavior[ModelEntity](
+    "GraphicalDslInstance" should behave like entityPersistenceBehavior[GraphicalDslInstance](
       modelEntityPersistence,
-      ModelEntityFixtures.entity1,
-      ModelEntityFixtures.entity2,
-      ModelEntityFixtures.entity2Updated,
-      ModelEntityFixtures.entity3
+      GraphicalDslInstanceFixtures.entity1,
+      GraphicalDslInstanceFixtures.entity2,
+      GraphicalDslInstanceFixtures.entity2Updated,
+      GraphicalDslInstanceFixtures.entity3
     )
 
     "Settings" should behave like entityPersistenceBehavior[Settings](

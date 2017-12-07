@@ -1,12 +1,12 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -20,12 +20,9 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
 
   def rule(edge: Edge): Boolean = edge.attributeValues.get(attributeType) match {
     case None => true
-    case Some(attribute) => attribute.headOption match {
-      case None => true
-      case Some(head) => head match {
-        case _: EnumValue => attribute.collect { case v: EnumValue => v }.forall(_.enumName == enumName)
-        case _ => true
-      }
+    case Some(attribute) => attribute match {
+      case enumValue: EnumValue => enumValue.enumName == enumName
+      case _ => true
     }
   }
 
@@ -33,7 +30,7 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
 }
 
 object EdgeAttributeEnumTypes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
+  override def generateFor(metaModel: Concept): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
 
       acc ++ currentReference.attributes.flatMap(att => att.typ match {

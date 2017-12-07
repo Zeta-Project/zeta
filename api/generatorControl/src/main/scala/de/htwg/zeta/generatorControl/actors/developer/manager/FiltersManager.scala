@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.document.Created
 import de.htwg.zeta.common.models.document.Deleted
 import de.htwg.zeta.common.models.document.Updated
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.worker.RerunFilterJob
 import de.htwg.zeta.persistence.general.FilterRepository
 
@@ -38,9 +38,9 @@ class FiltersManager(worker: ActorRef, injector: Injector) extends Actor with Ac
   }
 
   def receive: Receive = {
-    case Changed(model: ModelEntity, Created) => rerunFilter
-    case Changed(model: ModelEntity, Updated) => // filter don't need to be rerun on model update
-    case Changed(model: ModelEntity, Deleted) => rerunFilter
+    case Changed(_: GraphicalDslInstance, Created) => rerunFilter
+    case Changed(_: GraphicalDslInstance, Updated) => // filter don't need to be rerun on model update
+    case Changed(_: GraphicalDslInstance, Deleted) => rerunFilter
   }
 
 }

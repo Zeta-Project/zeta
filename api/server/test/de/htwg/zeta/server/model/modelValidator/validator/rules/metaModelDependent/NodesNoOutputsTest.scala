@@ -22,14 +22,14 @@ class NodesNoOutputsTest extends FlatSpec with Matchers {
   it should "return false on nodes of type nodeType with outputs" in {
     val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = EdgeLink(output.name, Seq(""))
-    val node = emptyNode.copy(outputs = Seq(toEdge))
+    val node = emptyNode.copy(outputEdgeNames = Seq(toEdge))
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty output list" in {
     val output = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdge = EdgeLink(output.name, Seq())
-    val node = emptyNode.copy(outputs = Seq(toEdge))
+    val node = emptyNode.copy(outputEdgeNames = Seq(toEdge))
     rule.isValid(node).get should be(true)
   }
 

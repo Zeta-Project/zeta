@@ -20,21 +20,21 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
     val input1 = MReference("input1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = EdgeLink(referenceName = input1.name, edgeNames = Seq(""))
-    val node1 = emptyNode.copy(inputs = Seq(toEdges1))
+    val toEdges1 = EdgeLink(referenceName = input1.name, edgeName = Seq(""))
+    val node1 = emptyNode.copy(inputEdgeNames = Seq(toEdges1))
     rule.isValid(node1).get should be (true)
 
     val input2 = MReference("input2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = EdgeLink(referenceName = input1.name, edgeNames = Seq("", ""))
-    val node2 = emptyNode.copy(inputs = Seq(toEdges2))
+    val toEdges2 = EdgeLink(referenceName = input1.name, edgeName = Seq("", ""))
+    val node2 = emptyNode.copy(inputEdgeNames = Seq(toEdges2))
     rule.isValid(node2).get should be (true)
   }
 
   it should "return false on nodes of type nodeType with invalid input edges" in {
 
     val input = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = EdgeLink(referenceName = input.name, edgeNames = Seq(""))
-    val node = emptyNode.copy(inputs = Seq(toEdges))
+    val toEdges = EdgeLink(referenceName = input.name, edgeName = Seq(""))
+    val node = emptyNode.copy(inputEdgeNames = Seq(toEdges))
     rule.isValid(node).get should be (false)
   }
 

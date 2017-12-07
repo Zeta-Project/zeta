@@ -33,22 +33,22 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )
 
     val twoTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", ""))
 
-    val edgeTwoTargetNodes = emptyEdge.copy(target = Seq(twoTargetNodes))
+    val edgeTwoTargetNodes = emptyEdge.copy(targetNodeName = Seq(twoTargetNodes))
 
     rule.isValid(edgeTwoTargetNodes).get should be(true)
 
 
     val oneTargetNode = NodeLink(className = targetType.name, nodeNames = Seq(""))
 
-    val edgeOneTargetNode = emptyEdge.copy(target = Seq(oneTargetNode))
+    val edgeOneTargetNode = emptyEdge.copy(targetNodeName = Seq(oneTargetNode))
 
     rule.isValid(edgeOneTargetNode).get should be(true)
 
@@ -64,15 +64,15 @@ class EdgeTargetsUpperBoundTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )
 
     val threeTargetNodes = NodeLink(className = targetType.name, nodeNames = Seq("", "", ""))
 
-    val edgeThreeTargetNodes = emptyEdge.copy(target = Seq(threeTargetNodes))
+    val edgeThreeTargetNodes = emptyEdge.copy(targetNodeName = Seq(threeTargetNodes))
 
     rule.isValid(edgeThreeTargetNodes).get should be(false)
   }

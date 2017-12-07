@@ -21,19 +21,19 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
 
     val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdges1 = EdgeLink(output1.name, Seq(""))
-    val node1 = emptyNode.copy(outputs = Seq(toEdges1))
+    val node1 = emptyNode.copy(outputEdgeNames = Seq(toEdges1))
     rule.isValid(node1).get should be(true)
 
     val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdges2 = EdgeLink(output2.name, Seq("", ""))
-    val node2 = emptyNode.copy(outputs = Seq(toEdges2))
+    val node2 = emptyNode.copy(outputEdgeNames = Seq(toEdges2))
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with invalid output edges" in {
     val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
     val toEdges = EdgeLink(output.name, Seq(""))
-    val node = emptyNode.copy(outputs = Seq(toEdges))
+    val node = emptyNode.copy(outputEdgeNames = Seq(toEdges))
     rule.isValid(node).get should be(false)
   }
 

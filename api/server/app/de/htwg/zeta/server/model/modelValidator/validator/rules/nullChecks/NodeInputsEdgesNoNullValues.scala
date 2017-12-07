@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks
 
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
 
 /**
@@ -11,5 +11,5 @@ class NodeInputsEdgesNoNullValues extends ModelRule {
   override val description: String = "The input edges list inside a node contains Null values."
   override val possibleFix: String = "Remove the Null values."
 
-  override def check(model: Model): Boolean = !model.nodes.flatMap(_.inputs).flatMap(_.edgeNames).contains(null) // scalastyle:ignore null
+  override def check(model: GraphicalDslInstance): Boolean = !model.nodes.map(_.inputEdgeNames).contains(null) // scalastyle:ignore null
 }

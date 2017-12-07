@@ -1,9 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
-import de.htwg.zeta.server.model.modelValidator.Util
-import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
+import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -11,9 +9,9 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
  * A rule extending this trait will get the model edge by edge into its isValid method.
  * i.e. this rule will have to depend on just one edge, and not spanning multiple edges.
  */
-trait SingleEdgeRule extends ElementsRule {
+trait SingleEdgeRule extends EdgesRule {
 
-  override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = Util.getEdges(elements).flatMap(edge => check(edge))
+  override def check(elements: Seq[Edge]): Seq[ModelValidationResult] = elements.flatMap(edge => check(edge))
 
   /**
    * Checks one edge against the overridden isValid method returning a result
@@ -23,7 +21,7 @@ trait SingleEdgeRule extends ElementsRule {
    * @return A model validation result or None if the rule is not applicable to this edge.
    */
   def check(edge: Edge): Option[ModelValidationResult] = isValid(edge) match {
-    case Some(result) => Some(ModelValidationResult(this, result, Some(edge)))
+    case Some(result) => Some(ModelValidationResult(this, result, Some(Right(edge))))
     case _ => None
   }
 

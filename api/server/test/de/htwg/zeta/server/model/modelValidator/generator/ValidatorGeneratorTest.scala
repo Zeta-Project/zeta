@@ -4,15 +4,15 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class ValidatorGeneratorTest extends FlatSpec with Matchers {
 
-  val metaModel = MetaModel(
+  val metaModel = Concept(
     name = "metaModel",
     classes = Seq(),
     references = Seq(),

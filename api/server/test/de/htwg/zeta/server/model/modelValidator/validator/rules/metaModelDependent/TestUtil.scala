@@ -2,14 +2,14 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
 object TestUtil {
 
-  def classesToMetaModel(elements: Seq[MClass]): MetaModel = {
-    MetaModel(
+  def classesToMetaModel(elements: Seq[MClass]): Concept = {
+    Concept(
       name = "",
       classes = elements,
       references = Seq.empty,
@@ -20,8 +20,8 @@ object TestUtil {
     )
   }
 
-  def referencesToMetaModel(elements: Seq[MReference]): MetaModel = {
-    MetaModel(
+  def referencesToMetaModel(elements: Seq[MReference]): Concept = {
+    Concept(
       name = "",
       classes = Seq.empty,
       references = elements,

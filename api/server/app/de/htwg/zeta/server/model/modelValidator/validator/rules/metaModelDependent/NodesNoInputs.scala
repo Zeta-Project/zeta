@@ -1,11 +1,11 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -18,13 +18,13 @@ class NodesNoInputs(val nodeType: String) extends SingleNodeRule with DslRule {
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputs.flatten(_.edgeNames).isEmpty
+  def rule(node: Node): Boolean = node.inputEdgeNames.isEmpty
 
   override val dslStatement: String = s"""Nodes ofType "$nodeType" haveNoInputs ()"""
 }
 
 object NodesNoInputs extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.inheritInputs(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritInputs(Util.simplifyMetaModelGraph(metaModel))
     .filterNot(_.abstractness)
     .filter(_.inputs.isEmpty)
     .map(cl => new NodesNoInputs(cl.name))

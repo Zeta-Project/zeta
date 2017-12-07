@@ -1,5 +1,6 @@
 package de.htwg.zeta.server.controller.restApi
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe.TypeTag
@@ -13,7 +14,6 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
 import play.api.mvc.Controller
 import play.api.mvc.Result
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
 
 /**
  * Base class with utilities

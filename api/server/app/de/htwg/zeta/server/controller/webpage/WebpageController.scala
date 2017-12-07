@@ -9,9 +9,9 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
-import de.htwg.zeta.common.models.modelDefinitions.model.ModelShortInfo
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedMetaModelEntityRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedModelEntityRepository
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstanceShortInfo
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
@@ -19,8 +19,8 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 
 class WebpageController @Inject()(
-    modelEntityRepo: AccessRestrictedModelEntityRepository,
-    metaModelEntityRepo: AccessRestrictedMetaModelEntityRepository,
+    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
+    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
     ws: WSClient
 ) extends Controller {
 
@@ -33,16 +33,16 @@ class WebpageController @Inject()(
     val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.map(entity => {
-        MetaModelShortInfo(entity.id, entity.metaModel.name)
+        MetaModelShortInfo(entity.id, entity.name)
       }))
     }
   }
 
-  private def getModels[A](metaModelId: UUID, request: SecuredRequest[ZetaEnv, A]): Future[Seq[ModelShortInfo]] = {
+  private def getModels[A](metaModelId: UUID, request: SecuredRequest[ZetaEnv, A]): Future[Seq[GraphicalDslInstanceShortInfo]] = {
     val repo = modelEntityRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap { ids =>
-      Future.sequence(ids.toList.map(repo.read)).map(_.filter(_.model.metaModelId == metaModelId).map(entity => {
-        ModelShortInfo(entity.id, entity.model.metaModelId, entity.model.name)
+      Future.sequence(ids.toList.map(repo.read)).map(_.filter(_.graphicalDslId == metaModelId).map(entity => {
+        GraphicalDslInstanceShortInfo(entity.id, entity.graphicalDslId, entity.name)
       }))
     }
   }
@@ -51,7 +51,7 @@ class WebpageController @Inject()(
     val result = for {
       metaModels <- getMetaModels(request)
     } yield {
-      Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, None, Seq[ModelShortInfo]()))
+      Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, None, Seq[GraphicalDslInstanceShortInfo]()))
     }
 
     result.recover {
