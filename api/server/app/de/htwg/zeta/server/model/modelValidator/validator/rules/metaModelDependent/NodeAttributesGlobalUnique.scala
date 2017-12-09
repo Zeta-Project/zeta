@@ -9,9 +9,9 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
-import de.htwg.zeta.server.model.modelValidator.Util.El
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -85,7 +85,7 @@ object NodeAttributesGlobalUnique extends GeneratorRule {
 
   override def generateFor(metaModel: Concept): Seq[DslRule] = {
 
-    val graph = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
+    val graph = metaModel.classes
 
     val inheritanceRelationships = graph.map(el => (el, getInheritanceRelationship(el, graph)))
 
@@ -109,15 +109,15 @@ object NodeAttributesGlobalUnique extends GeneratorRule {
 
   }
 
-  def getInheritanceRelationship(el: El, graph: Seq[El]): Seq[El] = {
+  def getInheritanceRelationship(el: MClass, graph: Seq[MClass]): Seq[MClass] = {
 
-    def getSuperClasses: Seq[El] = {
+    def getSuperClasses: Seq[MClass] = {
 
-      def getSuperClassesRec(current: El, acc: Set[El]): Set[El] = {
-        if (current.superTypes.isEmpty) {
+      def getSuperClassesRec(current: MClass, acc: Set[MClass]): Set[MClass] = {
+        if (current.superTypeNames.isEmpty) {
           acc
         } else {
-          val superTypes = current.superTypes.flatMap(elName => graph.find(_.name == elName))
+          val superTypes = current.superTypeNames.flatMap(elName => graph.find(_.name == elName))
           superTypes.flatMap(getSuperClassesRec(_, acc ++ superTypes)).toSet
         }
       }
@@ -126,13 +126,14 @@ object NodeAttributesGlobalUnique extends GeneratorRule {
 
     }
 
-    def getSubClasses: Seq[El] = {
+    def getSubClasses: Seq[MClass] = {
 
-      def getSubClassesRec(current: El, acc: Set[El]): Set[El] = {
-        if (current.subTypes.isEmpty) {
+      def getSubClassesRec(current: MClass, acc: Set[MClass]): Set[MClass] = {
+        val sub = graph.filter(_.superTypeNames.contains(current.name))
+        if (sub.isEmpty) {
           acc
         } else {
-          val subTypes = current.subTypes.flatMap(elName => graph.find(_.name == elName))
+          val subTypes = sub.flatMap(elName => graph.find(_.name == elName))
           subTypes.flatMap(getSubClassesRec(_, acc ++ subTypes)).toSet
         }
       }

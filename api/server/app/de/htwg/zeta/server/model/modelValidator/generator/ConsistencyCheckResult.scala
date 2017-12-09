@@ -1,5 +1,5 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
-import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.MetaModelRule
+import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.ConceptRule
 
-case class ConsistencyCheckResult(valid: Boolean = true, failedRule: Option[MetaModelRule] = None)
+case class ConsistencyCheckResult(valid: Boolean = true, failedRule: Option[ConceptRule] = None)

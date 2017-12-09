@@ -134,13 +134,13 @@ class ConceptConsistencyCheckerTest extends FlatSpec with Matchers {
   )
 
   "checkConsistencs" should "return a valid result on a valid meta model" in {
-    val checker = new MetaModelConsistencyChecker(nonAmbiguousMetaModel)
+    val checker = new ConceptConsistencyChecker(nonAmbiguousMetaModel)
     val result = checker.checkConsistency()
     result.valid should be (true)
   }
 
   it should "return a invalid result on invalid meta model" in {
-    val checker = new MetaModelConsistencyChecker(ambiguousMetaModel)
+    val checker = new ConceptConsistencyChecker(ambiguousMetaModel)
     val result = checker.checkConsistency()
     result.valid should be (false)
     result.failedRule.get shouldBe a[NoAmbiguousAttributes]
