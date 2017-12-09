@@ -1,13 +1,13 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.server.model.modelValidator.Util
-import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
-import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.server.model.modelValidator.Util
+import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
+import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -33,11 +33,11 @@ class NodeAttributeEnumTypes(val nodeType: String, val attributeType: String, va
 
 object NodeAttributeEnumTypes extends GeneratorRule {
 
-  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(concept: Concept): Seq[DslRule] = Util.inheritAttributes(concept.classes)
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
 
-      acc ++ currentClass.attributes.flatMap(att => att.`type` match {
+      acc ++ currentClass.attributes.flatMap(att => att.typ match {
         case attType: MEnum => Some(new NodeAttributeEnumTypes(currentClass.name, att.name, attType.name))
         case _ => None
       })

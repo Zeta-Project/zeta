@@ -5,7 +5,7 @@ import scala.collection.mutable
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 
-class NoCyclicInheritance extends MetaModelRule {
+class NoCyclicInheritance extends ConceptRule {
 
   override val name: String = getClass.getSimpleName
   override val description: String = "MClasses in the meta model must not have cyclic inheritance relationships."

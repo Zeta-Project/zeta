@@ -59,12 +59,12 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
 object NodeAttributeScalarTypes extends GeneratorRule {
 
-  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritAttributes(metaModel.classes)
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
       acc ++ currentClass.attributes
-        .filter(att => Seq(StringType, IntType, BoolType, DoubleType).contains(att.`type`))
-        .map(att => new NodeAttributeScalarTypes(currentClass.name, att.name, att.`type`))
+        .filter(att => Seq(StringType, IntType, BoolType, DoubleType).contains(att.typ))
+        .map(att => new NodeAttributeScalarTypes(currentClass.name, att.name, att.typ))
     }
 
 }

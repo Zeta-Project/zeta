@@ -12,10 +12,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl.Att
 
 case class ValidatorGeneratorResult(success: Boolean, result: String)
 
-class ValidatorGenerator(metaModelEntity: GraphicalDsl) {
+class ValidatorGenerator(graphicalDsl: GraphicalDsl) {
 
   def generateValidator(): ValidatorGeneratorResult = {
-    val consistencyChecker = new MetaModelConsistencyChecker(metaModelEntity.concept)
+    val consistencyChecker = new ConceptConsistencyChecker(graphicalDsl.concept)
 
     consistencyChecker.checkConsistency() match {
       case ConsistencyCheckResult(valid, _) if valid => ValidatorGeneratorResult(success = true, result = doGenerate())
@@ -24,7 +24,7 @@ class ValidatorGenerator(metaModelEntity: GraphicalDsl) {
     }
   }
 
-  def doGenerate(): String = generateRules(metaModelEntity.concept).mkString(",\n")
+  def doGenerate(): String = generateRules(graphicalDsl.concept).mkString(",\n")
 
   def generateRules(metaModel: Concept): Seq[String] = rules(metaModel).map(_.dslStatement)
 

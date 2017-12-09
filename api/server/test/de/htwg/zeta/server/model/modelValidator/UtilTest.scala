@@ -1,22 +1,17 @@
 package de.htwg.zeta.server.model.modelValidator
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.server.model.modelValidator.Util.Att
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -39,9 +34,9 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    sourceClassName = Seq.empty,
-    targetClassName = Seq.empty,
-    attributes = Seq[MAttribute](),
+    sourceClassName = "",
+    targetClassName = "",
+    attributes = Seq.empty,
     methods = Seq.empty
   )
 
@@ -62,9 +57,9 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      sourceClassName = Seq.empty,
-      targetClassName = Seq.empty,
-      attributes = Seq[MAttribute](),
+      sourceClassName = "",
+      targetClassName = "",
+      attributes = Seq.empty,
       methods = Seq.empty
     ),
     MReference(
@@ -72,9 +67,9 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      sourceClassName = Seq.empty,
-      targetClassName = Seq.empty,
-      attributes = Seq[MAttribute](),
+      sourceClassName = "",
+      targetClassName = "",
+      attributes = Seq.empty,
       methods = Seq.empty
     ),
     MClass(
@@ -92,9 +87,9 @@ class UtilTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      sourceClassName = Seq.empty,
-      targetClassName = Seq.empty,
-      attributes = Seq[MAttribute](),
+      sourceClassName = "",
+      targetClassName = "",
+      attributes = Seq.empty,
       methods = Seq.empty
     ),
     MClass(
@@ -121,9 +116,7 @@ class UtilTest extends FlatSpec with Matchers {
     singleAssignment = false,
     expression = "",
     ordered = false,
-    transient = false,
-    upperBound = -1,
-    lowerBound = 0
+    transient = false
   )
 
   val superClassOneToSuperClassTwo = MReference(
@@ -131,21 +124,19 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    sourceClassName = Seq(),
-    targetClassName = Seq(),
-    attributes = Seq(),
+    sourceClassName = "",
+    targetClassName = "",
+    attributes = Seq.empty,
     methods = Seq.empty
   )
-  val superClassOneOutput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
-  val superClassTwoInput = MReferenceLinkDef(referenceName = superClassOneToSuperClassTwo.name, upperBound = -1, lowerBound = 0, deleteIfLower = false)
 
   val abstractSuperClassOne = MClass(
     name = "abstractSuperClassOne",
     description = "",
     abstractness = true,
-    superTypeNames = Seq(),
-    inputReferenceNames = Seq(),
-    outputReferenceNames = Seq(superClassOneOutput),
+    superTypeNames = Seq.empty,
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq(superClassOneToSuperClassTwo.name),
     attributes = Seq(abstractSuperClassOneAttribute),
     methods = Seq.empty
   )
@@ -153,10 +144,10 @@ class UtilTest extends FlatSpec with Matchers {
     name = "abstractSuperClassTwo",
     description = "",
     abstractness = true,
-    superTypeNames = Seq(),
-    inputReferenceNames = Seq(superClassTwoInput),
-    outputReferenceNames = Seq(),
-    attributes = Seq(),
+    superTypeNames = Seq.empty,
+    inputReferenceNames = Seq(superClassOneToSuperClassTwo.name),
+    outputReferenceNames = Seq.empty,
+    attributes = Seq.empty,
     methods = Seq.empty
   )
   val subClassOne = MClass(
@@ -164,9 +155,9 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputReferenceNames = Seq(),
-    outputReferenceNames = Seq(),
-    attributes = Seq(),
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq.empty,
+    attributes = Seq.empty,
     methods = Seq.empty
   )
   val subClassTwo = MClass(
@@ -174,14 +165,13 @@ class UtilTest extends FlatSpec with Matchers {
     description = "",
     abstractness = false,
     superTypeNames = Seq(abstractSuperClassOne.name, abstractSuperClassTwo.name),
-    inputReferenceNames = Seq(),
-    outputReferenceNames = Seq(),
-    attributes = Seq(),
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq.empty,
+    attributes = Seq.empty,
     methods = Seq.empty
   )
 
-  val metaModel = Concept(
-    name = "metaModelTest",
+  val concept = Concept(
     classes = Seq(abstractSuperClassOne, abstractSuperClassTwo, subClassOne, subClassTwo),
     references = Seq(superClassOneToSuperClassTwo),
     enums = Seq.empty,
@@ -190,22 +180,6 @@ class UtilTest extends FlatSpec with Matchers {
     uiState = ""
   )
 
-  val simplifiedGraph: scala.Seq[Util.El] = Util.simplifyMetaModelGraph(metaModel)
-
-
-  "getNodes" should "return all nodes" in {
-    val nodes = modelNodes
-    nodes.size should be(3)
-    nodes.map(_.name) should be(Seq("node1", "node2", "node3"))
-    nodes.forall(_.isInstanceOf[Node]) should be(true)
-  }
-
-  "getEdges" should "return all edges" in {
-    val edges = modelEdges
-    edges.size should be(2)
-    edges.map(_.name) should be(Seq("edge1", "edge2"))
-    edges.forall(_.isInstanceOf[Edge]) should be(true)
-  }
 
   "stringSeqToSeqString" should "return the correct string to use in DSL calls" in {
     val seq = Seq("a", "b", "c", "d")
@@ -214,42 +188,9 @@ class UtilTest extends FlatSpec with Matchers {
       """Seq("a", "b", "c", "d")""")
   }
 
-  "getAttributeTypeClassName" should "return the correct class name of an AttributeType" in {
-    StringType.asString should be("String")
-    DoubleType.asString should be("Double")
-    BoolType.asString should be("Boolean")
-    IntType.asString should be("Int")
-
-    val mEnum: MEnum = MEnum(name = "TestMEnum", valueNames = Seq.empty)
-
-    mEnum.asString should be("TestMEnum")
-  }
-
-  "simplifyMetaModelGraph" should "convert the meta model to a simpler structure" in {
-    val simplifiedGraph = Util.simplifyMetaModelGraph(metaModel)
-
-    simplifiedGraph.size should be(4)
-
-    simplifiedGraph.find(_.name == "subClassOne").get.superTypes.size should be(2)
-    simplifiedGraph.find(_.name == "subClassOne").get.superTypes should be(Seq("abstractSuperClassOne", "abstractSuperClassTwo"))
-    simplifiedGraph.find(_.name == "subClassOne").get.subTypes.size should be(0)
-
-    simplifiedGraph.find(_.name == "subClassTwo").get.superTypes.size should be(2)
-    simplifiedGraph.find(_.name == "subClassTwo").get.superTypes should be(Seq("abstractSuperClassOne", "abstractSuperClassTwo"))
-    simplifiedGraph.find(_.name == "subClassTwo").get.subTypes.size should be(0)
-
-    simplifiedGraph.find(_.name == "abstractSuperClassOne").get.superTypes.size should be(0)
-    simplifiedGraph.find(_.name == "abstractSuperClassOne").get.subTypes.size should be(2)
-    simplifiedGraph.find(_.name == "abstractSuperClassOne").get.subTypes should be(Seq("subClassOne", "subClassTwo"))
-
-    simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.superTypes.size should be(0)
-    simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.subTypes.size should be(2)
-    simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.subTypes should be(Seq("subClassOne", "subClassTwo"))
-  }
-
   "inheritAttributes" should "inherit all attributes from superclasses to their child classes" in {
 
-    val attributesInherited = Util.inheritAttributes(simplifiedGraph)
+    val attributesInherited = Util.inheritAttributes(concept.classes)
 
     attributesInherited.find(_.name == "abstractSuperClassOne").get.attributes.size should be(1)
     attributesInherited.find(_.name == "abstractSuperClassOne").get.attributes.head.name should be("abstractSuperClassOneAttribute")
@@ -263,11 +204,11 @@ class UtilTest extends FlatSpec with Matchers {
   }
 
   it should "inherit attributes that are defined exactly the same" in {
-    val elToRemove = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get
-    val abstractSuperClassTwoAttribute = simplifiedGraph.find(_.name == "abstractSuperClassOne").get.attributes
+    val elToRemove = concept.classes.find(_.name == "abstractSuperClassTwo").get
+    val abstractSuperClassTwoAttribute = concept.classes.find(_.name == "abstractSuperClassOne").get.attributes
     val elToAdd = elToRemove.copy(attributes = abstractSuperClassTwoAttribute)
 
-    val validAttributesInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
+    val validAttributesInherited = concept.classes.filterNot(_ == elToRemove) :+ elToAdd
 
     noException should be thrownBy Util.inheritAttributes(validAttributesInherited)
 
@@ -275,99 +216,77 @@ class UtilTest extends FlatSpec with Matchers {
 
   it should "fail on ambiguous attributes" in {
 
-    val elToRemove = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get
-    val abstractSuperClassTwoAttribute = Att(
+    val elToRemove = concept.classes.find(_.name == "abstractSuperClassTwo").get
+    val abstractSuperClassTwoAttribute = MAttribute(
       name = "abstractSuperClassOneAttribute", // same name
       globalUnique = false,
       localUnique = false,
-      `type` = BoolType, // different data type
-      default = "false",
+      typ = BoolType, // different data type
+      default = BoolValue(false),
       constant = false,
       singleAssignment = false,
       expression = "",
       ordered = false,
-      transient = false,
-      upperBound = -1,
-      lowerBound = 0
+      transient = false
     )
     val elToAdd = elToRemove.copy(attributes = Seq(abstractSuperClassTwoAttribute))
 
-    val invalidAttributeInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
+    val invalidAttributeInherited = concept.classes.filterNot(_ == elToRemove) :+ elToAdd
 
     an[IllegalStateException] should be thrownBy Util.inheritAttributes(invalidAttributeInherited)
   }
 
   "inheritInputs" should "inherit all inputs from superclasses to their child elements" in {
 
-    val inheritedInputs = Util.inheritInputs(simplifiedGraph)
+    val inheritedInputs = Util.inheritInputs(concept.classes)
 
-    inheritedInputs.find(_.name == "abstractSuperClassOne").get.inputs.size should be(0)
+    inheritedInputs.find(_.name == "abstractSuperClassOne").get.inputReferenceNames.size should be(0)
 
-    inheritedInputs.find(_.name == "abstractSuperClassTwo").get.inputs.size should be(1)
-    inheritedInputs.find(_.name == "abstractSuperClassTwo").get.inputs.head.name should be("superClassOneToSuperClassTwo")
+    inheritedInputs.find(_.name == "abstractSuperClassTwo").get.inputReferenceNames.size should be(1)
+    inheritedInputs.find(_.name == "abstractSuperClassTwo").get.inputReferenceNames.head should be("superClassOneToSuperClassTwo")
 
-    inheritedInputs.find(_.name == "subClassOne").get.inputs.size should be(1)
-    inheritedInputs.find(_.name == "subClassOne").get.inputs.head.name should be("superClassOneToSuperClassTwo")
+    inheritedInputs.find(_.name == "subClassOne").get.inputReferenceNames.size should be(1)
+    inheritedInputs.find(_.name == "subClassOne").get.inputReferenceNames.head should be("superClassOneToSuperClassTwo")
 
-    inheritedInputs.find(_.name == "subClassTwo").get.inputs.size should be(1)
-    inheritedInputs.find(_.name == "subClassTwo").get.inputs.head.name should be("superClassOneToSuperClassTwo")
+    inheritedInputs.find(_.name == "subClassTwo").get.inputReferenceNames.size should be(1)
+    inheritedInputs.find(_.name == "subClassTwo").get.inputReferenceNames.head should be("superClassOneToSuperClassTwo")
 
   }
 
   it should "inherit all inputs that are defined exactly the same" in {
-    val elToRemove = simplifiedGraph.find(_.name == "abstractSuperClassOne").get
-    val abstractSuperClassOneInput = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.inputs.head.copy()
-    val elToAdd = simplifiedGraph.find(_.name == "abstractSuperClassOne").get.copy(inputs = Seq(abstractSuperClassOneInput))
+    val elToRemove = concept.classes.find(_.name == "abstractSuperClassOne").get
+    val abstractSuperClassOneInput = concept.classes.find(_.name == "abstractSuperClassTwo").get.inputReferenceNames.head
+    val elToAdd = concept.classes.find(_.name == "abstractSuperClassOne").get.copy(inputReferenceNames = Seq(abstractSuperClassOneInput))
 
-    val validInputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
+    val validInputsInherited = concept.classes.filterNot(_ == elToRemove) :+ elToAdd
 
     noException should be thrownBy Util.inheritInputs(validInputsInherited)
   }
 
-  it should "fail on ambiguous inputs" in {
-    val elToRemove = simplifiedGraph.find(_.name == "abstractSuperClassOne").get
-    val abstractSuperClassOneInput = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.inputs.head.copy(lowerBound = 5) // defined differently
-    val elToAdd = simplifiedGraph.find(_.name == "abstractSuperClassOne").get.copy(inputs = Seq(abstractSuperClassOneInput))
-
-    val invalidInputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
-
-    an[IllegalStateException] should be thrownBy Util.inheritInputs(invalidInputsInherited)
-  }
-
   "inheritOutputs" should "inherit all outputs from superclasses to their child elements" in {
-    val inheritedOutputs = Util.inheritOutputs(simplifiedGraph)
+    val inheritedOutputs = Util.inheritOutputs(concept.classes)
 
-    inheritedOutputs.find(_.name == "abstractSuperClassTwo").get.outputs.size should be(0)
+    inheritedOutputs.find(_.name == "abstractSuperClassTwo").get.outputReferenceNames.size should be(0)
 
-    inheritedOutputs.find(_.name == "abstractSuperClassOne").get.outputs.size should be(1)
-    inheritedOutputs.find(_.name == "abstractSuperClassOne").get.outputs.head.name should be("superClassOneToSuperClassTwo")
+    inheritedOutputs.find(_.name == "abstractSuperClassOne").get.outputReferenceNames.size should be(1)
+    inheritedOutputs.find(_.name == "abstractSuperClassOne").get.outputReferenceNames.head should be("superClassOneToSuperClassTwo")
 
-    inheritedOutputs.find(_.name == "subClassOne").get.outputs.size should be(1)
-    inheritedOutputs.find(_.name == "subClassOne").get.outputs.head.name should be("superClassOneToSuperClassTwo")
+    inheritedOutputs.find(_.name == "subClassOne").get.outputReferenceNames.size should be(1)
+    inheritedOutputs.find(_.name == "subClassOne").get.outputReferenceNames.head should be("superClassOneToSuperClassTwo")
 
-    inheritedOutputs.find(_.name == "subClassTwo").get.outputs.size should be(1)
-    inheritedOutputs.find(_.name == "subClassTwo").get.outputs.head.name should be("superClassOneToSuperClassTwo")
+    inheritedOutputs.find(_.name == "subClassTwo").get.outputReferenceNames.size should be(1)
+    inheritedOutputs.find(_.name == "subClassTwo").get.outputReferenceNames.head should be("superClassOneToSuperClassTwo")
   }
 
   it should "inherit all outputs that are defined exactly the same" in {
-    val elToRemove = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get
-    val abstractSuperClassOneOutput = simplifiedGraph.find(_.name == "abstractSuperClassOne").get.outputs.head.copy()
-    val elToAdd = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.copy(outputs = Seq(abstractSuperClassOneOutput))
+    val elToRemove = concept.classes.find(_.name == "abstractSuperClassTwo").get
+    val abstractSuperClassOneOutput = concept.classes.find(_.name == "abstractSuperClassOne").get.outputReferenceNames.head
+    val elToAdd = concept.classes.find(_.name == "abstractSuperClassTwo").get.copy(outputReferenceNames = Seq(abstractSuperClassOneOutput))
 
-    val validOutputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
+    val validOutputsInherited = concept.classes.filterNot(_ == elToRemove) :+ elToAdd
 
     noException should be thrownBy Util.inheritOutputs(validOutputsInherited)
 
-  }
-
-  it should "fail on ambiguous outputs" in {
-    val elToRemove = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get
-    val abstractSuperClassOneOutput = simplifiedGraph.find(_.name == "abstractSuperClassOne").get.outputs.head.copy(lowerBound = 5) // defined differently
-    val elToAdd = simplifiedGraph.find(_.name == "abstractSuperClassTwo").get.copy(outputs = Seq(abstractSuperClassOneOutput))
-
-    val invalidOutputsInherited = simplifiedGraph.filterNot(_ == elToRemove) :+ elToAdd
-
-    an[IllegalStateException] should be thrownBy Util.inheritOutputs(invalidOutputsInherited)
   }
 
 }

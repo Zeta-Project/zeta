@@ -24,8 +24,8 @@ class NodesNoOutputs(val nodeType: String) extends SingleNodeRule with DslRule {
 }
 
 object NodesNoOutputs extends GeneratorRule {
-  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritOutputs(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(concept: Concept): Seq[DslRule] = concept.classes
     .filterNot(_.abstractness)
-    .filter(_.outputs.isEmpty)
+    .filter(_.outputReferenceNames.isEmpty)
     .map(cl => new NodesNoOutputs(cl.name))
 }
