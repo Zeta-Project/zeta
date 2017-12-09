@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -37,7 +38,7 @@ class NodesTest extends FlatSpec with Matchers {
   "generateFor" should "generate this rule from the meta model" in {
     val mClass1 = MClass("class1", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val mClass2 = MClass("class2", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val metaModel = TestUtil.classesToMetaModel(Seq(mClass1, mClass2))
+    val metaModel = Concept.empty.copy(classes = Seq(mClass1, mClass2))
     val result = Nodes.generateFor(metaModel)
 
     result.size should be(1)

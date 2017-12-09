@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -20,9 +21,9 @@ class NodeAttributesTest extends FlatSpec with Matchers {
   val rule = new NodeAttributes("nodeType", Seq("att1", "att2"))
 
   "isValid" should "return true for valid nodes" in {
-    val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "att1" -> Seq(StringValue("")),
-      "att2" -> Seq(BoolValue(false))
+    val attributes: Map[String, AttributeValue] = Map(
+      "att1" -> StringValue(""),
+      "att2" -> BoolValue(false)
     )
     val node = emptyNode.copy(attributeValues = attributes)
 
@@ -30,10 +31,10 @@ class NodeAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false for invalid nodes" in {
-    val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "att1" -> Seq(StringValue("")),
-      "att2" -> Seq(BoolValue(false)),
-      "att3" -> Seq(IntValue(0))
+    val attributes: Map[String, AttributeValue] = Map(
+      "att1" -> StringValue(""),
+      "att2" -> BoolValue(false),
+      "att3" -> IntValue(0)
     )
     val node = emptyNode.copy(attributeValues = attributes)
 
@@ -52,12 +53,12 @@ class NodeAttributesTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val attribute1 = MAttribute("attributeName1", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
-      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+      singleAssignment = false, "", ordered = false, transient = false)
     val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
-      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+      singleAssignment = false, "", ordered = false, transient = false)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](attribute1,
       attribute2), Seq.empty)
-    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
+    val metaModel = Concept.empty.copy(classes = Seq(mClass))
     val result = NodeAttributes.generateFor(metaModel)
 
     result.size should be(1)

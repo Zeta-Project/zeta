@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
@@ -21,20 +22,20 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
 
-  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
 
   val rule = new EdgeAttributes("reference", Seq("stringAttribute", "boolAttribute"))
 
   "the rule" should "be true for valid edge" in {
-    val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "stringAttribute" -> Seq(StringValue("test")),
-      "boolAttribute" -> Seq(BoolValue(true))
+    val attributes: Map[String, AttributeValue] = Map(
+      "stringAttribute" -> StringValue("test"),
+      "boolAttribute" -> BoolValue(true)
     )
     val edge = emptyEdge.copy(attributeValues = attributes)
 
@@ -42,22 +43,22 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "be false for invalid edges" in {
-    val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "stringAttribute" -> Seq(StringValue("test")),
-      "boolAttribute" -> Seq(BoolValue(true)),
-      "invalidAttribute" -> Seq(DoubleValue(1.0))
+    val attributes: Map[String, AttributeValue] = Map(
+      "stringAttribute" -> StringValue("test"),
+      "boolAttribute" -> BoolValue(true),
+      "invalidAttribute" -> DoubleValue(1.0)
     )
 
-    val edge = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributes)
+    val edge = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributes)
 
     rule.isValid(edge).get should be(false)
   }
 
   it should "be None for non-matching edges" in {
 
-    val attributes: Map[String, Seq[AttributeValue]] = Map(
-      "stringAttribute" -> Seq(StringValue("test")),
-      "boolAttribute" -> Seq(BoolValue(true))
+    val attributes: Map[String, AttributeValue] = Map(
+      "stringAttribute" -> StringValue("test"),
+      "boolAttribute" -> BoolValue(true)
     )
 
     val edge = emptyEdge.copy(referenceName = "nonMatchingReference", attributeValues = attributes)
@@ -72,12 +73,12 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false, singleAssignment = false,
-      "", ordered = false, transient = false, -1, 0)
+      "", ordered = false, transient = false)
     val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, IntValue(0), constant = false, singleAssignment = false,
-      "", ordered = false, transient = false, -1, 0)
-    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty, Seq[MAttribute]
+      "", ordered = false, transient = false)
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq[MAttribute]
       (attribute, attribute2), Seq.empty)
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
+    val metaModel = Concept.empty.copy(references = Seq(reference))
     val result = EdgeAttributes.generateFor(metaModel)
 
     result.size should be(1)

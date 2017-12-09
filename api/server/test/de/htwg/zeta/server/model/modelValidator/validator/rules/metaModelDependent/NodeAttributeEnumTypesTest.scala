@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -21,7 +22,7 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   "isValid" should "be true for valid nodes" in {
     val mEnum = MEnum("enumName", Seq())
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("enumName", mEnum.name)))
+    val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("enumName", mEnum.name))
     val node = emptyNode.copy(attributeValues = attribute)
 
     rule.isValid(node).get should be(true)
@@ -29,7 +30,7 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   it should "be false for invalid nodes" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(EnumValue("differentEnumName", differentEnum.name)))
+    val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("differentEnumName", differentEnum.name))
     val node = emptyNode.copy(attributeValues = attribute)
 
     rule.isValid(node).get should be(false)
@@ -48,14 +49,14 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val enumType = MEnum("enumName", Seq("enumValue1", "enumValue2"))
-    val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enumType, enumType.values.head, constant = false,
-      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+    val enum = MEnum("enumName", Seq("enumValue1", "enumValue2"))
+    val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enum.typ, enum.values.head, constant = false,
+      singleAssignment = false, "", ordered = false, transient = false)
     val scalarAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false, singleAssignment =
-      false, "", ordered = false, transient = false, -1, 0)
+      false, "", ordered = false, transient = false)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](enumAttribute, scalarAttribute),
       Seq())
-    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
+    val metaModel = Concept.empty.copy(classes = Seq(mClass))
     val result = NodeAttributeEnumTypes.generateFor(metaModel)
 
     result.size should be(1)
