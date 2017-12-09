@@ -2,12 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -17,11 +16,12 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty, Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
-  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
   val rule = new EdgeTargetNodes("edgeType", Seq("target1", "target2"))
 
   "isValid" should "return true on edges of type edgeType with valid target nodes" in {
@@ -37,9 +37,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes1 = NodeLink(className = target1.name, nodeNames = Seq(""))
-
-    val edge1 = emptyEdge.copy(targetNodeName = Seq(toNodes1))
+    val edge1 = emptyEdge.copy(targetNodeName = target1.name)
 
     rule.isValid(edge1).get should be(true)
 
@@ -54,9 +52,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val toNodes2 = NodeLink(className = target1.name, nodeNames = Seq("", ""))
-
-    val edge2 = emptyEdge.copy(targetNodeName = Seq(toNodes2))
+    val edge2 = emptyEdge.copy(targetNodeName = target1.name)
 
     rule.isValid(edge2).get should be(true)
 
@@ -74,9 +70,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       methods = Seq.empty
     )
 
-    val invalidToNodes = NodeLink(className = invalidTarget.name, nodeNames = Seq(""))
-
-    val edge1 = emptyEdge.copy(targetNodeName = Seq(invalidToNodes))
+    val edge1 = emptyEdge.copy(targetNodeName = invalidTarget.name)
 
     rule.isValid(edge1).get should be(false)
   }
@@ -87,8 +81,8 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
+      "",
+      "",
       Seq[MAttribute](),
       Seq.empty
     )
@@ -104,18 +98,16 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
   "generateFor" should "generate this rule from the meta model" in {
     val class1 = MClass("class1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val class2 = MClass("class2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val targetLinkDef1 = MClassLinkDef(class1.name, -1, 0, deleteIfLower = false)
-    val targetLinkDef2 = MClassLinkDef(class2.name, -1, 0, deleteIfLower = false)
-    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq(targetLinkDef1,
-      targetLinkDef2), Seq[MAttribute](), Seq.empty)
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, class1.name, class2.name,
+      Seq[MAttribute](), Seq.empty)
+    val metaModel = Concept.empty.copy(references = Seq(reference))
     val result = EdgeTargetNodes.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: EdgeTargetNodes =>
-        rule.edgeType should be ("reference")
-        rule.targetTypes should be (Seq("class1", "class2"))
+        rule.edgeType should be("reference")
+        rule.targetTypes should be(Seq("class1", "class2"))
       case _ => fail
     }
   }

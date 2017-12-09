@@ -2,12 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReferenceLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.EdgeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -19,21 +18,18 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on nodes of type nodeType with valid output edges" in {
 
-    val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges1 = EdgeLink(output1.name, Seq(""))
-    val node1 = emptyNode.copy(outputEdgeNames = Seq(toEdges1))
+    val output1 = MReference("output1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val node1 = emptyNode.copy(outputEdgeNames = Seq(output1.name))
     rule.isValid(node1).get should be(true)
 
-    val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges2 = EdgeLink(output2.name, Seq("", ""))
-    val node2 = emptyNode.copy(outputEdgeNames = Seq(toEdges2))
+    val output2 = MReference("output2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val node2 = emptyNode.copy(outputEdgeNames = Seq(output2.name))
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with invalid output edges" in {
-    val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val toEdges = EdgeLink(output.name, Seq(""))
-    val node = emptyNode.copy(outputEdgeNames = Seq(toEdges))
+    val output = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val node = emptyNode.copy(outputEdgeNames = Seq(output.name))
     rule.isValid(node).get should be(false)
   }
 
@@ -48,14 +44,12 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mReference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val mReference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(), Seq(), Seq(), Seq.empty)
-    val outputMLinkDef1 = MReferenceLinkDef(mReference1.name, -1, 0, deleteIfLower = false)
-    val outputMLinkDef2 = MReferenceLinkDef(mReference2.name, -1, 0, deleteIfLower = false)
+    val mReference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val mReference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
 
-    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(outputMLinkDef1, outputMLinkDef2), Seq[MAttribute](),
+    val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq(mReference1.name, mReference1.name), Seq[MAttribute](),
       Seq.empty)
-    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
+    val metaModel = Concept.empty.copy(classes = Seq(mClass))
     val result = NodeOutputEdges.generateFor(metaModel)
 
     result.size should be(1)

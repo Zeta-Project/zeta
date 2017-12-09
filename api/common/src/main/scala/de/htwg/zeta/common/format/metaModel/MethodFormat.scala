@@ -1,14 +1,14 @@
 package de.htwg.zeta.common.format.metaModel
 
-import scala.collection.immutable.SortedMap
+import scala.collection.immutable.ListMap
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 
@@ -31,7 +31,7 @@ class MethodFormat(
     sCode -> method.code
   )
 
-  private def writesParameters(parameters: SortedMap[String, AttributeType]): JsArray = JsArray(
+  private def writesParameters(parameters: ListMap[String, AttributeType]): JsArray = JsArray(
     parameters.map { case (name, typ) => Json.obj(
       sName -> name,
       sType -> attributeTypeFormat.writes(typ)
@@ -49,8 +49,8 @@ class MethodFormat(
     Method(name, parameters, description, returnType, code)
   }
 
-  private def readsParameters: Reads[SortedMap[String, AttributeType]] = Reads { json =>
-    json.validate(Reads.list(readsParameter)).map(SortedMap(_: _*))
+  private def readsParameters: Reads[ListMap[String, AttributeType]] = Reads { json =>
+    json.validate(Reads.list(readsParameter)).map(ListMap(_: _*))
   }
 
   private def readsParameter: Reads[(String, AttributeType)] = Reads { json =>

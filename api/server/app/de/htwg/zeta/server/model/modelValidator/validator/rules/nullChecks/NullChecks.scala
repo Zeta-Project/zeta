@@ -57,29 +57,13 @@ object NullChecks {
     new NodeAttributesNoNullValues,
     new NodeAttributesNamesNotNull,
     new NodeAttributesValuesNotNull,
-    new NodeAttributesValuesNoNullValues,
-    new NodeOutputsTypeNotNull,
-    new NodeOutputsEdgesNotNull,
-    new NodeOutputsEdgesNoNullValues,
-    new NodeInputsTypeNotNull,
-    new NodeInputsEdgesNotNull,
-    new NodeInputsEdgesNoNullValues,
     new EdgeTypeNotNull,
     new EdgeSourcesNotNull,
-    new EdgeSourcesNoNullValues,
     new EdgeTargetsNotNull,
-    new EdgeTargetsNoNullValues,
     new EdgeAttributesNotNull,
     new EdgeAttributesNoNullValues,
     new EdgeAttributesNamesNotNull,
-    new EdgeAttributesValuesNotNull,
-    new EdgeAttributesValuesNoNullValues,
-    new EdgeSourcesTypeNotNull,
-    new EdgeSourcesNodesNotNull,
-    new EdgeSourcesNodesNoNullValues,
-    new EdgeTargetsTypeNotNull,
-    new EdgeTargetsNodesNotNull,
-    new EdgeTargetsNodesNoNullValues
+    new EdgeAttributesValuesNotNull
   )
 
 }

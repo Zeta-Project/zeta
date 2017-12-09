@@ -54,7 +54,6 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
   )
 
   val nonCyclicMetaModel = Concept(
-    name = "metaModelTest",
     classes = Seq(nonCyclicClassOne, nonCyclicClassTwo, nonCyclicClassThree, nonCyclicClassFour),
     references = Seq(),
     enums = Seq.empty,
@@ -130,7 +129,6 @@ class NoCyclicInheritanceTest extends FlatSpec with Matchers {
   )
 
   val cyclicMetaModel = Concept(
-    name = "metaModelTest",
     classes = Seq(cyclicClassOne, cyclicClassTwo, cyclicClassThree, cyclicClassFour, cyclicClassFive, cyclicClassSix),
     references = Seq(),
     enums = Seq.empty,

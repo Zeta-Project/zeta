@@ -1,17 +1,12 @@
 package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 
+import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
-import scala.collection.immutable.SortedMap
-
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 
 case class Method(
     name: String,
-    parameters: SortedMap[String, AttributeType],
+    parameters: ListMap[String, AttributeType],
     description: String,
     returnType: AttributeType,
     code: String

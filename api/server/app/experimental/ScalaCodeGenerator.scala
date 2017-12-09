@@ -3,8 +3,8 @@ package experimental
 
 import java.util.UUID
 
+import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
-import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
@@ -18,8 +18,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 
 // scalastyle:off indentation multiple.string.literals
@@ -109,7 +109,7 @@ object ScalaCodeGenerator {
         |""".stripMargin
   }
 
-  private def generateParameters(p: SortedMap[String, AttributeType]): String = {
+  private def generateParameters(p: ListMap[String, AttributeType]): String = {
     p.map((generateParameter _).tupled).mkString(", ")
   }
 

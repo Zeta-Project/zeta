@@ -22,9 +22,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     singleAssignment = false,
     expression = "",
     ordered = false,
-    transient = false,
-    upperBound = -1,
-    lowerBound = 0
+    transient = false
   )
 
   val nonAmbiguousSuperClassAttribute = MAttribute(
@@ -37,9 +35,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     singleAssignment = false,
     expression = "",
     ordered = false,
-    transient = false,
-    upperBound = -1,
-    lowerBound = 0
+    transient = false
   )
 
   val ambiguousSuperClassAttribute = MAttribute(
@@ -52,9 +48,7 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
     singleAssignment = false,
     expression = "",
     ordered = false,
-    transient = false,
-    upperBound = -1,
-    lowerBound = 0
+    transient = false
   )
 
   val superClass = MClass(
@@ -113,7 +107,6 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
   )
 
   val nonAmbiguousMetaModel = Concept(
-    name = "nonAmbiguousMetaModel",
     classes = Seq(superClass, nonAmbiguousSuperClass, nonAmbiguousSubClass),
     references = Seq(),
     enums = Seq.empty,
@@ -123,7 +116,6 @@ class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
   )
 
   val ambiguousMetaModel = Concept(
-    name = "ambiguousMetaModel",
     classes = Seq(superClass, ambiguousSuperClass, ambiguousSubClass),
     references = Seq(),
     enums = Seq.empty,

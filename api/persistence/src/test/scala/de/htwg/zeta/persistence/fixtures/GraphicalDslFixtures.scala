@@ -2,8 +2,8 @@ package de.htwg.zeta.persistence.fixtures
 
 import java.util.UUID
 
+import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
-import scala.collection.immutable.SortedMap
 
 import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
@@ -19,8 +19,8 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeV
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 
 
 object GraphicalDslFixtures {
@@ -110,7 +110,7 @@ object GraphicalDslFixtures {
     methods = Seq(
       Method(
         name = "f1",
-        parameters = SortedMap(
+        parameters = ListMap(
           "p1" -> StringType,
           "p2" -> DoubleType
         ),
@@ -143,7 +143,7 @@ object GraphicalDslFixtures {
     methods = Seq(
       Method(
         name = "f2",
-        parameters = SortedMap(
+        parameters = ListMap(
           "p3" -> StringType,
           "p4" -> DoubleType
         ),
