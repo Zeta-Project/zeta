@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
@@ -18,28 +19,28 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
-  val rule = new EdgeAttributesGlobalUnique("edgeType", "attributeType")
+  val rule = new EdgesAttributesGlobalUnique("edgeType", "attributeType")
 
   "check" should "return success validation results on correct attributes" in {
 
-    val attributeOne: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value")))
-    val edgeOne = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeOne)
+    val attributeOne: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
+    val edgeOne = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeOne)
 
-    val attributeTwo: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("differentValue")))
-    val edgeTwo = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeTwo)
+    val attributeTwo: Map[String, AttributeValue] = Map("attributeType" -> StringValue("differentValue"))
+    val edgeTwo = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeTwo)
 
     val results = rule.check(Seq(edgeOne, edgeTwo))
 
     results.size should be(2)
     results.forall(_.valid) should be(true)
 
-    val attributeThree: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("anotherValue"), StringValue("yetAnotherValue")))
-    val edgeThree = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeThree)
+    val attributeThree: Map[String, AttributeValue] = Map("attributeType" -> StringValue("anotherValue"))
+    val edgeThree = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeThree)
 
     val secondResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree))
 
@@ -49,11 +50,11 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return failure validation results on invalid attributes" in {
-    val attributeOne: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
-    val edgeOne = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeOne)
+    val attributeOne: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
+    val edgeOne = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeOne)
 
-    val attributeTwo: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
-    val edgeTwo = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeTwo)
+    val attributeTwo: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
+    val edgeTwo = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeTwo)
 
     val results = rule.check(Seq(edgeOne, edgeTwo))
 
@@ -61,16 +62,16 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     results.head.valid should be(false)
     results.last.valid should be(false)
 
-    val attributeThree: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue"), StringValue("anotherValue")))
-    val edgeThree = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeThree)
+    val attributeThree: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
+    val edgeThree = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeThree)
 
     val secondResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree))
 
     secondResults.size should be(3)
     secondResults.forall(!_.valid) should be(true)
 
-    val attributeFour: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("differentValue")))
-    val edgeFour = Edge.empty("", mReference.name, Seq(), Seq()).copy(attributeValues = attributeFour)
+    val attributeFour: Map[String, AttributeValue] = Map("attributeType" -> StringValue("differentValue"))
+    val edgeFour = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeFour)
 
     val thirdResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree, edgeFour))
 
@@ -97,9 +98,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
       singleAssignment = false,
       "",
       ordered = false,
-      transient = false,
-      -1,
-      0
+      transient = false
     )
     val nonGlobalUniqueAttribute = MAttribute(
       "attributeName2",
@@ -111,26 +110,24 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
       singleAssignment = false,
       "",
       ordered = false,
-      transient = false,
-      -1,
-      0
+      transient = false
     )
     val reference = MReference(
       "reference",
       "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
+      "",
+      "",
       Seq[MAttribute](globalUniqueAttribute, nonGlobalUniqueAttribute),
       Seq.empty
     )
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
-    val result = EdgeAttributesGlobalUnique.generateFor(metaModel)
+    val metaModel = Concept.empty.copy(references = Seq(reference))
+    val result = EdgesAttributesGlobalUnique.generateFor(metaModel)
 
     result.size should be(1)
     result.head match {
-      case rule: EdgeAttributesGlobalUnique =>
+      case rule: EdgesAttributesGlobalUnique =>
         rule.edgeType should be("reference")
         rule.attributeType should be("attributeName")
       case _ => fail

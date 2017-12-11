@@ -4,7 +4,7 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 
 /**
@@ -17,7 +17,7 @@ class EdgeSourceNodes(val edgeType: String, val sourceTypes: Seq[String]) extend
 
   override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.source.map(_.className).foldLeft(true) { (acc, sourceName) =>
+  def rule(edge: Edge): Boolean = Seq(edge.sourceNodeName).foldLeft(true) { (acc, sourceName) =>
     if (sourceTypes.contains(sourceName)) acc else false
   }
 
@@ -25,12 +25,12 @@ class EdgeSourceNodes(val edgeType: String, val sourceTypes: Seq[String]) extend
 }
 
 object EdgeSourceNodes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
+  override def generateFor(metaModel: Concept): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
-      if (currentReference.source.isEmpty) {
+      if (currentReference.sourceClassName.isEmpty) {
         acc
       } else {
-        acc :+ new EdgeSourceNodes(currentReference.name, currentReference.source.map(_.className).toSeq)
+        acc :+ new EdgeSourceNodes(currentReference.name, Seq(currentReference.sourceClassName))
       }
     }
 }

@@ -4,7 +4,7 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 
 /**
@@ -21,5 +21,5 @@ class Edges(val edgeTypes: Seq[String]) extends SingleEdgeRule with DslRule {
 }
 
 object Edges extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Seq(new Edges(metaModel.referenceMap.values.map(_.name).toSeq))
+  override def generateFor(metaModel: Concept): Seq[DslRule] = Seq(new Edges(metaModel.referenceMap.values.map(_.name).toSeq))
 }

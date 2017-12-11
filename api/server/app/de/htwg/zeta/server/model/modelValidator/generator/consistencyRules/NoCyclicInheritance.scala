@@ -3,14 +3,14 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 import scala.collection.breakOut
 import scala.collection.mutable
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 
-class NoCyclicInheritance extends MetaModelRule {
+class NoCyclicInheritance extends ConceptRule {
 
   override val name: String = getClass.getSimpleName
   override val description: String = "MClasses in the meta model must not have cyclic inheritance relationships."
 
-  override def check(metaModel: MetaModel): Boolean = !isCyclic(metaModel.classes.map(el => el.name -> el.superTypeNames.toSeq).toMap)
+  override def check(metaModel: Concept): Boolean = !isCyclic(metaModel.classes.map(el => el.name -> el.superTypeNames.toSeq).toMap)
 
   // http://www.geeksforgeeks.org/detect-cycle-in-a-graph/
   def isCyclic(adjacencyMap: Map[String, Seq[String]]): Boolean = {

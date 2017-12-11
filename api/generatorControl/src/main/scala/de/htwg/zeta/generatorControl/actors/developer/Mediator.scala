@@ -12,6 +12,7 @@ import akka.cluster.pubsub.DistributedPubSub
 import akka.cluster.pubsub.DistributedPubSubMediator.Subscribe
 import akka.cluster.sharding.ShardRegion
 import akka.stream.ActorMaterializer
+import com.google.inject.Guice
 import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.entity.BondedTask
 import de.htwg.zeta.common.models.entity.Filter
@@ -51,8 +52,7 @@ import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.MasterTo
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.ToDeveloper
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerStreamedMessage
 import de.htwg.zeta.generatorControl.actors.worker.MasterWorkerProtocol.WorkerToDeveloper
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.Repository
+import de.htwg.zeta.persistence.PersistenceModule
 import play.api.libs.ws.ahc.AhcWSClient
 
 object Mediator {
@@ -80,16 +80,16 @@ class Mediator() extends Actor with ActorLogging {
   private val developerId: UUID = UUID.fromString(self.path.name)
   mediator ! Subscribe(developerId.toString, self)
 
-  private val repo: Repository = Persistence.restrictedAccessRepository(developerId)
+  private val injector = Guice.createInjector(new PersistenceModule)
 
   private val workQueue: ActorRef = context.actorOf(WorkQueue.props(developerId), "workQueue")
 
-  private val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, Persistence.fullAccessRepository), "generators")
+  private val generators: ActorRef = context.actorOf(GeneratorManager.props(workQueue, injector), "generators")
   private val modelRelease: ActorRef = context.actorOf(ModelReleaseManager.props(workQueue), "modelRelease")
-  private val bondedTasks: ActorRef = context.actorOf(BondedTasksManager.props(workQueue, repo), "bondedTasks")
-  private val eventDrivenTasks: ActorRef = context.actorOf(EventDrivenTasksManager.props(workQueue, repo), "eventDrivenTasks")
-  private val manualExecution: ActorRef = context.actorOf(ManualExecutionManager.props(workQueue, Persistence.fullAccessRepository), "manualExecution")
-  private val generatorRequest: ActorRef = context.actorOf(GeneratorRequestManager.props(workQueue, Persistence.fullAccessRepository), "generatorRequest")
+  private val bondedTasks: ActorRef = context.actorOf(BondedTasksManager.props(workQueue, injector), "bondedTasks")
+  private val eventDrivenTasks: ActorRef = context.actorOf(EventDrivenTasksManager.props(workQueue, injector), "eventDrivenTasks")
+  private val manualExecution: ActorRef = context.actorOf(ManualExecutionManager.props(workQueue, injector), "manualExecution")
+  private val generatorRequest: ActorRef = context.actorOf(GeneratorRequestManager.props(workQueue, injector), "generatorRequest")
   private val generatorConnection: ActorRef = context.actorOf(GeneratorConnectionManager.props(), "generatorConnection")
 
   private val developers = mutable.Map.empty[UUID, ToolDeveloper]

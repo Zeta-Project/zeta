@@ -2,12 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClassLinkDef
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.NodeLink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -18,13 +17,13 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
     description = "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
 
-  val emptyEdge: Edge = Edge.empty("", mReference.name, Seq.empty, Seq.empty)
+  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
 
   val rule = new EdgeSourceNodes("edgeType", Seq("source1", "source2"))
 
@@ -35,15 +34,13 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )
 
-    val toNodes1 = NodeLink(className = source1.name, nodeNames = Seq(""))
-
-    val edge1 = emptyEdge.copy(target = Seq(toNodes1))
+    val edge1 = emptyEdge.copy(targetNodeName = source1.name)
 
     rule.isValid(edge1).get should be(true)
 
@@ -52,15 +49,13 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )
 
-    val toNodes2 = NodeLink(className = source1.name, nodeNames = Seq("", ""))
-
-    val edge2 = emptyEdge.copy(source = Seq(toNodes2))
+    val edge2 = emptyEdge.copy(sourceNodeName = source1.name)
 
     rule.isValid(edge2).get should be(true)
 
@@ -72,15 +67,13 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       description = "",
       abstractness = false,
       superTypeNames = Seq(),
-      inputs = Seq(),
-      outputs = Seq(),
+      inputReferenceNames = Seq(),
+      outputReferenceNames = Seq(),
       attributes = Seq(),
       methods = Seq.empty
     )
 
-    val invalidToNodes = NodeLink(className = invalidSource.name, nodeNames = Seq(""))
-
-    val edge1 = emptyEdge.copy(source = Seq(invalidToNodes))
+    val edge1 = emptyEdge.copy(sourceNodeName = invalidSource.name)
 
     rule.isValid(edge1).get should be(false)
   }
@@ -91,8 +84,8 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
       description = "",
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      Seq.empty,
-      Seq.empty,
+      "",
+      "",
       Seq[MAttribute](),
       Seq.empty
     )
@@ -109,11 +102,9 @@ class EdgeSourceNodesTest extends FlatSpec with Matchers {
   "generateFor" should "generate this rule from the meta model" in {
     val class1 = MClass("class1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val class2 = MClass("class2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val sourceLinkDef1 = MClassLinkDef(class1.name, -1, 0, deleteIfLower = false)
-    val sourceLinkDef2 = MClassLinkDef(class2.name, -1, 0, deleteIfLower = false)
-    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq(sourceLinkDef1, sourceLinkDef2),
-      Seq.empty, Seq[MAttribute](), Seq.empty)
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference))
+    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, class1.name, class2.name,
+      Seq[MAttribute](), Seq.empty)
+    val metaModel = Concept.empty.copy(references = Seq(reference))
     val result = EdgeSourceNodes.generateFor(metaModel)
 
     result.size should be(1)

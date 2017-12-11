@@ -1,11 +1,11 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -17,7 +17,7 @@ class NodeInputEdges(val nodeType: String, val inputTypes: Seq[String]) extends 
 
   override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.inputs.map(_.referenceName).foldLeft(true) { (acc, inputName) =>
+  def rule(node: Node): Boolean = node.inputEdgeNames.foldLeft(true) { (acc, inputName) =>
     if (inputTypes.contains(inputName)) acc else false
   }
 
@@ -25,9 +25,9 @@ class NodeInputEdges(val nodeType: String, val inputTypes: Seq[String]) extends 
 }
 
 object NodeInputEdges extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.inheritInputs(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(concept: Concept): Seq[DslRule] = Util.inheritInputs(concept.classes)
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
-      if (currentClass.inputs.isEmpty) acc else acc :+ new NodeInputEdges(currentClass.name, currentClass.inputs.map(_.name))
+      if (currentClass.inputReferenceNames.isEmpty) acc else acc :+ new NodeInputEdges(currentClass.name, currentClass.inputReferenceNames)
     }
 }

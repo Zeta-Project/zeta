@@ -20,7 +20,7 @@ import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Remove
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Save
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Update
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.unitFuture
-import de.htwg.zeta.persistence.general.PasswordInfoPersistence
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import grizzled.slf4j.Logging
 
 
@@ -40,11 +40,11 @@ private[actorCache] object PasswordInfoCacheActor {
 
   private val unitFuture: Future[Unit] = Future.successful(())
 
-  def props(underlying: PasswordInfoPersistence, cacheDuration: FiniteDuration): Props = Props(new PasswordInfoCacheActor(underlying, cacheDuration))
+  def props(underlying: PasswordInfoRepository, cacheDuration: FiniteDuration): Props = Props(new PasswordInfoCacheActor(underlying, cacheDuration))
 
 }
 
-private[actorCache] class PasswordInfoCacheActor(underlying: PasswordInfoPersistence, cacheDuration: FiniteDuration) extends Actor with Logging {
+private[actorCache] class PasswordInfoCacheActor(underlying: PasswordInfoRepository, cacheDuration: FiniteDuration) extends Actor with Logging {
 
   private val cache: mutable.Map[LoginInfo, Future[Option[PasswordInfo]]] = mutable.Map.empty
 

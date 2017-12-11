@@ -2,6 +2,7 @@ package de.htwg.zeta.persistence.transient
 
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -15,6 +16,7 @@ import grizzled.slf4j.Logging
 /**
  * Transient Implementation of TokenCache.
  */
+@Singleton
 class TransientTokenCache extends TokenCache with Logging {
 
   private case class Token(userId: UUID, lastUse: Long)

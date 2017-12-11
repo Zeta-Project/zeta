@@ -3,34 +3,30 @@ package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel.MetaModelTraverseWrapper
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
-import play.api.libs.json.Json
-import play.api.libs.json.Reads
-import play.api.libs.json.Writes
 
 
 /** The MClass implementation
  *
- * @param name           the name of the MClass instance
- * @param abstractness   defines if the MClass is abstract
- * @param superTypeNames the names of the supertypes of the MClass
- * @param inputs         the incoming MReferences
- * @param outputs        the outgoing MReferences
- * @param attributes     the attributes of the MClass
+ * @param name                 the name of the MClass instance
+ * @param abstractness         defines if the MClass is abstract
+ * @param superTypeNames       the names of the supertypes of the MClass
+ * @param inputReferenceNames  the names of the incoming MReferences
+ * @param outputReferenceNames the names of the outgoing MReferences
+ * @param attributes           the attributes of the MClass
  */
 case class MClass(
     name: String,
     description: String,
     abstractness: Boolean,
     superTypeNames: Seq[String],
-    inputs: Seq[MReferenceLinkDef],
-    outputs: Seq[MReferenceLinkDef],
+    inputReferenceNames: Seq[String],
+    outputReferenceNames: Seq[String],
     attributes: Seq[MAttribute],
     methods: Seq[Method]
-) extends MObject with AttributeMap with MethodMap
+) extends AttributeMap with MethodMap
 
 object MClass {
 
@@ -39,8 +35,8 @@ object MClass {
     description = "",
     abstractness = false,
     superTypeNames = Seq.empty,
-    inputs = Seq.empty,
-    outputs = Seq.empty,
+    inputReferenceNames = Seq.empty,
+    outputReferenceNames = Seq.empty,
     attributes = Seq.empty,
     methods = Seq.empty
   )
@@ -95,7 +91,7 @@ object MClass {
      */
     def typeHasInput(inputName: String): Boolean = {
       typeHierarchy.exists(
-        cls => cls.value.inputs.exists(link => link.referenceName == inputName)
+        cls => cls.value.inputReferenceNames.contains(inputName)
       )
     }
 
@@ -107,7 +103,7 @@ object MClass {
      */
     def typeHasOutput(outputName: String): Boolean = {
       typeHierarchy.exists(
-        cls => cls.value.outputs.exists(link => link.referenceName == outputName)
+        cls => cls.value.outputReferenceNames.contains(outputName)
       )
     }
 
@@ -154,32 +150,5 @@ object MClass {
     }
 
   }
-
-  def playJsonReads(enums: Seq[MEnum]): Reads[MClass] = Reads { json =>
-    for {
-      name <- (json \ "name").validate[String]
-      description <- (json \ "description").validate[String]
-      abstractness <- (json \ "abstractness").validate[Boolean]
-      superTypeNames <- (json \ "superTypeNames").validate(Reads.list[String])
-      inputs <- (json \ "inputs").validate(Reads.list[MReferenceLinkDef])
-      outputs <- (json \ "outputs").validate(Reads.list[MReferenceLinkDef])
-      attributes <- (json \ "attributes").validate(Reads.list(MAttribute.playJsonReads(enums)))
-      methods <- (json \ "methods").validate(Reads.list(Method.playJsonReads(enums)))
-    } yield {
-      MClass(
-        name = name,
-        description = description,
-        abstractness = abstractness,
-        superTypeNames = superTypeNames,
-        inputs = inputs,
-        outputs = outputs,
-        attributes = attributes,
-        methods = methods
-      )
-    }
-  }
-
-
-  implicit val playJsonWrites: Writes[MClass] = Json.writes[MClass]
 
 }

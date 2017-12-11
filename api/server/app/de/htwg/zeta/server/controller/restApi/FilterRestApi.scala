@@ -1,14 +1,17 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+import javax.inject.Inject
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.format.entity.FilterFormat
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.server.controller.restApi.format.FilterFormat
+import de.htwg.zeta.persistence.general.FileRepository
+import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.data.validation.ValidationError
@@ -22,14 +25,16 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-import scalaoauth2.provider.OAuth2ProviderActionBuilders.executionContext
+
 
 /**
- * RESTful API for filter definitions
+ * REST-ful API for filter definitions
  */
-class FilterRestApi() extends Controller with Logging {
-
-  private val repo = Persistence.fullAccessRepository.filter
+class FilterRestApi @Inject()(
+    filterRepo: FilterRepository,
+    fileRepo: FileRepository,
+    filterFormat: FilterFormat
+) extends Controller with Logging {
 
   /** Lists all filter.
    *
@@ -45,15 +50,15 @@ class FilterRestApi() extends Controller with Logging {
   }
 
   private def getEntities: Future[List[Filter]] = {
-    repo.readAllIds().flatMap(ids => {
-      val list = ids.toList.map(repo.read)
+    filterRepo.readAllIds().flatMap(ids => {
+      val list = ids.toList.map(filterRepo.read)
       Future.sequence(list)
     })
   }
 
   private def getJsonArray(list: List[Filter]) = {
     val entities = list.filter(e => !e.deleted)
-    val entries = entities.map(FilterFormat.writes)
+    val entries = entities.map(filterFormat.writes)
     val json = JsArray(entries)
     Ok(json)
   }
@@ -65,9 +70,8 @@ class FilterRestApi() extends Controller with Logging {
    * @return The result
    */
   def get(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = Persistence.fullAccessRepository.filter
-    repo.read(id).flatMap(entity => {
-      Future(Ok(FilterFormat.writes(entity)))
+    filterRepo.read(id).flatMap(entity => {
+      Future(Ok(filterFormat.writes(entity)))
     }).recover {
       case e: Exception =>
         error("Exception while trying to read a single `Filter` from DB", e)
@@ -90,7 +94,7 @@ class FilterRestApi() extends Controller with Logging {
   }
 
   private def flagAsDeleted(id: UUID): Future[Filter] = {
-    repo.update(id, e => e.copy(deleted = true))
+    filterRepo.update(id, e => e.copy(deleted = true))
   }
 
   /**
@@ -112,7 +116,7 @@ class FilterRestApi() extends Controller with Logging {
   }
 
   private def parseJson(json: JsValue): Future[JsResult[Filter]] = {
-    json.validate(FilterFormat()) match {
+    json.validate(filterFormat) match {
       case s: JsSuccess[Filter] => Future.successful(s)
       case e: JsError => Future.successful(e)
     }
@@ -139,7 +143,7 @@ class FilterRestApi() extends Controller with Logging {
       name,
       content = fileTemplate()
     )
-    Persistence.fullAccessRepository.file.create(file)
+    fileRepo.create(file)
   }
 
   private def fileTemplate(): String = {
@@ -155,6 +159,6 @@ class FilterRestApi() extends Controller with Logging {
   private def createFilter(filter: Filter, file: File): Future[Filter] = {
     val files = Map(file.id -> file.name)
     val entity = filter.copy(files = files)
-    repo.create(entity)
+    filterRepo.create(entity)
   }
 }

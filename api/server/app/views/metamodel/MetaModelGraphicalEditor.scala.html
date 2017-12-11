@@ -1,47 +1,32 @@
 @import java.util.UUID
 
-@import de.htwg.zeta.common.models.entity.MetaModelEntity
+@import de.htwg.zeta.common.models.entity.GraphicalDsl
 @import de.htwg.zeta.common.models.entity.User
 @import play.api.libs.json.Json
 
-@(user: Option[User], id: UUID, metaModel: MetaModelEntity)
 
-@views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user) {
+@(user: Option[User], id: UUID, metaModel: GraphicalDsl)
 
+@styles = {
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.css")">
+}
+@scripts = {
     <script type="text/javascript">
-
-    // Hotfix for issue in the latest Chrome version, see https://github.com/clientIO/joint/issues/203
-    SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
-                return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
-            };
-
-    window.loadedMetaModel = {};
-    window.loadedMetaModel.uuid = "@id";
-    window.loadedMetaModel.name = "@metaModel.metaModel.name";
-    @if(metaModel.metaModel.uiState.nonEmpty) {
-    window.loadedMetaModel.loadOnStart = true;
-    window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.metaModel.uiState))));
+        window.loadedMetaModel = {};
+        window.loadedMetaModel.uuid = "@id";
+        window.loadedMetaModel.name = "@metaModel.name";
+    @if(metaModel.concept.uiState.nonEmpty) {
+        window.loadedMetaModel.loadOnStart = true;
+        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.concept.uiState))));
     }
-    $('#metamodel-name').text("Metamodel: "+window.loadedMetaModel.name);
+        // Hotfix for issue in the latest Chrome version, see https://github.com/clientIO/joint/issues/203
+        SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
+            return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
+        };
     </script>
-
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("jointjs/css/joint.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("jointjs/css/joint.ui.freeTransform.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("jointjs/css/joint.ui.selectionView.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("jointjs/css/joint.ui.paperScroller.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("jointjs/css/joint.format.print.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("jointjs/css/wireframe.css")">
-
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/layout.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/paper.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/inspector.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/stencil.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/halo.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/selection.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/toolbar.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/freetransform.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/style.css")">
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("graphicalEditor/css/linkTypeSelector.css")">
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.js")"></script>
+}
+@views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user, styles, scripts) {
 
 
     <div class="toolbar-container panel panel-default">
@@ -83,10 +68,10 @@
                 <span class="glyphicon glyphicon-trash"></span>
             </button>
             <button id="btn-to-front" class="btn btn-default" data-tooltip="Bring current Element to Front">
-                <img class="level-icon" src="@routes.ScalaRoutes.getAssets("graphicalEditor/images/icon-to-front.svg")">
+                <img class="level-icon" src="@routes.ScalaRoutes.getStaticFiles("images/icon-to-front.svg")">
             </button>
             <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
-                <img class="level-icon" src="@routes.ScalaRoutes.getAssets("graphicalEditor/images/icon-to-back.svg")">
+                <img class="level-icon" src="@routes.ScalaRoutes.getStaticFiles("images/icon-to-back.svg")">
             </button>
         </div>
 
@@ -154,63 +139,4 @@
 
 
     <div id="contextMenuContainer"></div>
-
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/mCoreUtil.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/edgeValidator.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/linkTypeSelector.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/mEnum.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/mAttribute.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/methodCodeEditor.js")"></script>
-
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/exportMetaModel/Constants.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/exportMetaModel/ExportedMetaModel.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/exportMetaModel/Attribute.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/exportMetaModel/ValidationResult.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/exportMetaModel/Graph.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/exportMetaModel/Exporter.js")"></script>
-
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/ext/collaboration.js")"></script>
-
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/lodash.min.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/backbone-min.new.js")"></script>
-    <script type="text/javascript">var backboneNew = Backbone.noConflict();</script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/backbone-min.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.shapes.uml.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.halo.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.dia.freeTransform.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.freeTransform.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.inspector.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.selectionView.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.clipboard.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.stencil.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.paperScroller.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.ui.tooltip.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.format.svg.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.format.raster.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.format.print.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.dia.command.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.dia.validator.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.layout.ForceDirected.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.layout.GridLayout.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/dist/joint.layout.DirectedGraph.js")"></script>
-
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/ext/guidelines.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/ext/distancelines.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/ext/de.htwg.group.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/ext/extendedSelectionView.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/ext/extendedElementView.js")"></script>
-
-    <script src="@routes.ScalaRoutes.getAssets("jointjs/lib/keyboard.js")"></script>
-
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/src/inspector.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/src/stencil.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("metaModelEditor/src/main.js")"></script>
-
-    <script type="text/javascript">
-            var app = new Rappid();
-            Backbone.history.start();
-    </script>
-
-
 }

@@ -4,8 +4,7 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Props
 
-/**
- */
+
 class DirectForwarder(to: ActorRef) extends Actor {
   override def receive: Receive = {
     case msg: Any => to.tell(msg, context.parent)

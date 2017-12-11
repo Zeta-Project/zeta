@@ -2,13 +2,12 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
@@ -34,20 +33,20 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
 
   def rule(edge: Edge): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Boolean = values.collect { case v: StringValue => v }.forall(_.attributeType == attributeDataType)
-    def handleBooleans(values: Seq[AttributeValue]): Boolean = values.collect { case v: BoolValue => v }.forall(_.attributeType == attributeDataType)
-    def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: IntValue => v }.forall(_.attributeType == attributeDataType)
-    def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: DoubleValue => v }.forall(_.attributeType == attributeDataType)
+    def handleString(value: StringValue): Boolean = value.attributeType == attributeDataType
+    def handleBoolean(value: BoolValue): Boolean = value.attributeType == attributeDataType
+    def handleInt(value: IntValue): Boolean = value.attributeType == attributeDataType
+    def handleDouble(value: DoubleValue): Boolean = value.attributeType == attributeDataType
 
     edge.attributeValues.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute.headOption match {
+      case Some(attribute) => Option(attribute) match {
         case None => true
         case Some(head) => head match {
-          case _: StringValue => handleStrings(attribute)
-          case _: BoolValue => handleBooleans(attribute)
-          case _: IntValue => handleInts(attribute)
-          case _: DoubleValue => handleDoubles(attribute)
+          case value: StringValue => handleString(value)
+          case value: BoolValue => handleBoolean(value)
+          case value: IntValue => handleInt(value)
+          case value: DoubleValue => handleDouble(value)
           case _ => true
         }
       }
@@ -59,7 +58,7 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
 }
 
 object EdgeAttributeScalarTypes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = metaModel.referenceMap.values
+  override def generateFor(metaModel: Concept): Seq[DslRule] = metaModel.referenceMap.values
     .foldLeft(Seq[DslRule]()) { (acc, currentReference) =>
       acc ++ currentReference.attributes
         .filter(att => Seq(StringType, IntType, BoolType, DoubleType).contains(att.typ))

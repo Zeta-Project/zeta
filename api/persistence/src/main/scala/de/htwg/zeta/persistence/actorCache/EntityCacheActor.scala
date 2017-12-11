@@ -20,7 +20,7 @@ import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Update
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.unitFuture
-import de.htwg.zeta.persistence.general.EntityPersistence
+import de.htwg.zeta.persistence.general.EntityRepository
 
 private[actorCache] object EntityCacheActor {
 
@@ -36,11 +36,11 @@ private[actorCache] object EntityCacheActor {
 
   private val unitFuture: Future[Unit] = Future.successful(())
 
-  def props[E <: Entity](underlying: EntityPersistence[E], cacheDuration: FiniteDuration): Props = Props(new EntityCacheActor(underlying, cacheDuration))
+  def props[E <: Entity](underlying: EntityRepository[E], cacheDuration: FiniteDuration): Props = Props(new EntityCacheActor(underlying, cacheDuration))
 
 }
 
-private[actorCache] class EntityCacheActor[E <: Entity](underlying: EntityPersistence[E], cacheDuration: FiniteDuration) extends Actor {
+private[actorCache] class EntityCacheActor[E <: Entity](underlying: EntityRepository[E], cacheDuration: FiniteDuration) extends Actor {
 
   private val cache: mutable.Map[UUID, Future[E]] = mutable.Map.empty
 

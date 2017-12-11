@@ -2,10 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -21,13 +22,13 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false on nodes of type nodeType with attributes" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("")))
+    val attribute: Map[String, AttributeValue] = Map("attributeType" -> StringValue(""))
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty attribute values" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq())
+    val attribute: Map[String, AttributeValue] = Map.empty
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(true)
   }
@@ -44,7 +45,7 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
+    val metaModel = Concept.empty.copy(classes = Seq(mClass))
     val result = NodesNoAttributes.generateFor(metaModel)
 
     result.size should be(1)

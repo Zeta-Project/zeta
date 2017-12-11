@@ -1,0 +1,56 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../bower_components/spinkit-element/spinkit-element.html">
+
+<dom-module id="my-status">
+  <template>
+    <style>
+    .green {
+      color: #77cb77;
+    }
+    .red {
+      color: #ff8760;
+    }
+    .yellow {
+      color: #ffa93e;
+    }
+    </style>
+    <iron-icon id="icon" class$=[[_getColor(status)]] icon="[[_getIcon(status)]]"></iron-icon>
+    <paper-tooltip for="icon">[[_getText(status)]]</paper-tooltip>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-status',
+
+      properties: {
+        status: String
+      },
+      _getColor(status){
+        if (status === 2) return 'yellow';
+        if (status === 1) return 'red';
+        if (status === 0) return 'green';
+        if (status === 143) return 'red';
+        return 'red';
+      },
+      _isRunning(status) {
+        return status === 'running' || status === 'waiting' || status === 'pending';
+      },
+      _getIcon(status) {
+        if (status === 2) return 'warning';
+        if (status === 1) return 'error';
+        if (status === 143) return 'error';
+        if (status === 0) return 'check-circle';
+        return 'check-circle';
+      },
+      _getText(status) {
+        if (status === 2) return 'Last Task execution ended with a warning.';
+        if (status === 1) return 'Last Task execution ended with an error';
+        return 'Last Task execution was successful.';
+      }
+    });
+  </script>
+
+</dom-module>

@@ -9,6 +9,4 @@ class TargetsOfEdges(edgeType: String) {
 
   def areOfTypes(targetTypes: Seq[String]): EdgeTargetNodes = new EdgeTargetNodes(edgeType, targetTypes)
 
-  def toNodes(nodeType: String): TargetsOfEdgesToNodes = new TargetsOfEdgesToNodes(edgeType, nodeType)
-
 }

@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
@@ -36,7 +36,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
 
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
-      image <- repository.generatorImage.read(imageId)
+      image <- generatorImagePersistence.read(imageId)
       file <- createFile()
       _ <- createGenerator(options, image, file)
     } yield {
@@ -51,13 +51,13 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   private def createFile(): Future[File] = {
     val content = "This is a demo of the remote capabilities which doesn't require a template to configure."
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   private def compiledGenerator(file: File) = {
@@ -80,7 +80,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
    * @param file The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
+  override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -95,8 +95,8 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     Thread.sleep(10000)
     val p = Promise[Result]
 
-    repository.modelEntity.read(options.modelId).map { entity =>
-      entity.model.nodeMap.values.foreach { node: Node =>
+    modelEntityPersistence.read(options.modelId).map { entity =>
+      entity.nodeMap.values.foreach { node: Node =>
         if (node.className == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))
         }
@@ -132,7 +132,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       }
     }
 
-    def transform(entity: ModelEntity): Future[Transformer] = {
+    def transform(entity: GraphicalDslInstance): Future[Transformer] = {
       val p = Promise[Transformer]
 
       val r1 = remote.call[RemoteOptions, File](generatorId, RemoteOptions("BasicActor", entity.id))

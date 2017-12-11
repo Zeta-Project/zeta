@@ -3,6 +3,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelIndepe
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
@@ -16,13 +17,13 @@ class NodesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
   val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on non-empty attribute names" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("attributeName1" -> Seq())
+    val attribute: Map[String, AttributeValue] = Map("attributeName1" -> StringValue(""))
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(true)
   }
 
   it should "return false on empty attribute names" in {
-    val attribute: Map[String, Seq[AttributeValue]] = Map("" -> Seq())
+    val attribute: Map[String, AttributeValue] = Map("" -> StringValue(""))
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(false)
   }

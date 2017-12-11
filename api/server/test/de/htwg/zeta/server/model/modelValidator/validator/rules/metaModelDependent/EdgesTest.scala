@@ -1,9 +1,8 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import java.util.UUID
-
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
@@ -17,8 +16,8 @@ class EdgesTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
@@ -27,8 +26,8 @@ class EdgesTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
@@ -37,23 +36,23 @@ class EdgesTest extends FlatSpec with Matchers {
     "",
     sourceDeletionDeletesTarget = false,
     targetDeletionDeletesSource = false,
-    Seq.empty,
-    Seq.empty,
+    "",
+    "",
     Seq[MAttribute](),
     Seq.empty
   )
   val rule = new Edges(Seq("edgeType1", "edgeType2"))
 
   "isValid" should "return true on valid edges" in {
-    val edge1 = Edge.empty("", mReference1.name, Seq(), Seq())
+    val edge1 = Edge.empty("", mReference1.name, "", "")
     rule.isValid(edge1).get should be(true)
 
-    val edge2 = Edge.empty("", mReference2.name, Seq(), Seq())
+    val edge2 = Edge.empty("", mReference2.name, "", "")
     rule.isValid(edge2).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val edge3 = Edge.empty("", mReference3.name, Seq(), Seq())
+    val edge3 = Edge.empty("", mReference3.name, "", "")
     rule.isValid(edge3).get should be(false)
   }
 
@@ -63,11 +62,11 @@ class EdgesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty,
+    val reference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "",
       Seq[MAttribute](), Seq.empty)
-    val reference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, Seq.empty, Seq.empty,
+    val reference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "",
       Seq[MAttribute](), Seq.empty)
-    val metaModel = TestUtil.referencesToMetaModel(Seq(reference1, reference2))
+    val metaModel = Concept.empty.copy(references = Seq(reference1, reference2))
     val result = Edges.generateFor(metaModel)
 
     result.size should be (1)

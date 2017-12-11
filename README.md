@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/Zeta-Project/zeta.svg?branch=master)](https://travis-ci.org/Zeta-Project/zeta)
-
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/Zeta-Project/zeta.svg?columns=all)](https://waffle.io/Zeta-Project/zeta)
 # Zeta
  Model-Driven Generation of Graphical Editors
 

@@ -37,7 +37,7 @@ object GeneratorShapeAndInlineStyle {
 
   def generateShapeStyle(shape: Shape, packageName: String, attrs: HashMap[String, HashMap[GeometricModel, String]]): String = {
 
-    if (shape != null && attrs.keys.exists(_ == shape.name)) {
+    if (shape != null && attrs.keys.exists(_ == shape.name)) { // scalastyle:ignore null
       val att = attrs(shape.name)
       s"""
         case "${shape.name}":
