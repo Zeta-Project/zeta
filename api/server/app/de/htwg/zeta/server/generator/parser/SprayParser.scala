@@ -29,7 +29,7 @@ import de.htwg.zeta.server.generator.model.shapecontainer.shape.geometrics.Text
 import de.htwg.zeta.server.generator.model.style.Style
 import de.htwg.zeta.server.generator.parser
 import grizzled.slf4j.Logging
-import de.htwg.zeta.common.models.entity.MetaModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 
@@ -41,12 +41,12 @@ object SprayParser
 /**
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
-class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) extends CommonParserMethods with Logging {
+class SprayParser(cache: Cache = Cache(), val metaModelE: GraphicalDsl) extends CommonParserMethods with Logging {
   type diaConnection = de.htwg.zeta.server.generator.model.diagram.edge.Connection
 
-  private val metaMapMClass: Map[String, MClass] = metaModelE.metaModel.classMap
+  private val metaMapMClass: Map[String, MClass] = metaModelE.concept.classMap
 
-  private val metaMapMReference: Map[String, MReference] = metaModelE.metaModel.referenceMap
+  private val metaMapMReference: Map[String, MReference] = metaModelE.concept.referenceMap
   require(metaMapMClass.nonEmpty)
 
   /* Style-specific---------------------------------------------------------------------------- */
@@ -135,7 +135,7 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
   private def shapeAttribute: Parser[(String, String)] = shapeVariable ~ arguments ^^ { case v ~ a => (v, a) }
 
   private def descriptionAttribute: Parser[(String, String)] = {
-    "description" ~> "(style\\s*([a-zA-ZüäöÜÄÖ][-_]?)+)?".r ~ argument_wrapped ^^ { case desStyl ~ args => (desStyl, args) }
+    "description" ~> "(style\\s*([a-zA-ZüäöÜÄÖ][-_]?)+)?".r ~ argument_wrapped ^^ { case desStyl ~ args => (desStyl, args) } // scalastyle:ignore non.ascii.character.disallowed
   }
 
   private def anchorAttribute: Parser[String] = {
@@ -488,14 +488,14 @@ class SprayParser(cache: Cache = Cache(), val metaModelE: MetaModelEntity) exten
           case (typ, edge: EdgeSketch) if typ == "edge" => edge.toEdge(style.flatMap(s => IDtoStyle(s)(cache)), cache)
         }
 
-        if (metaModelE.metaModel.name == metaModelName) {
+        if (metaModelE.name == metaModelName) {
           Some(Diagram(name, actionGroups, nodes, edges, OptionToStyle(style)(cache), metaModelE, cache))
         } else {
           None
         }
       case c: Any =>
         info(c.toString())
-        Some(Diagram("test", Map(), List(), List(), None, null, cache))
+        Some(Diagram("test", Map(), List(), List(), None, null, cache)) // scalastyle:ignore null
     }
   }
 

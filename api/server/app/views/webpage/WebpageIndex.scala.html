@@ -1,7 +1,15 @@
 @import de.htwg.zeta.common.models.entity.User
 @(user: Option[User])
 
-@views.html.webpage.WebpageGeneralLayout("Overview", user) {
+@styles = {
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("webpage.bundle.css")">
+}
+
+@scripts = {
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("webpage.bundle.js")"></script>
+}
+
+@views.html.webpage.WebpageGeneralLayout("Overview", user, styles, scripts) {
     <div class="row">
         <div class="lead col-xs-10 col-xs-offset-1">
             <p>Hello,
@@ -20,7 +28,7 @@
 
             <div class="tile lead col-xs-12 col-md-4">
                 <div class="tileBorder">
-                    <img class="backgroundImage" src="@routes.ScalaRoutes.getAssets("webpage/images/petri_test.png")"/>
+                    <img class="backgroundImage" src="@routes.ScalaRoutes.getStaticFiles("images/petri_test.png")"/>
                     <div class="transparentBackground"></div>
                     <div class="linkText">Models</div>
                     <a class="ecoreLink" href="@routes.ScalaRoutes.getOverviewNoArgs()"></a>
@@ -29,7 +37,7 @@
 
             <div class="tile lead col-xs-12 col-md-4">
                 <div class="tileBorder">
-                    <img class="backgroundImage" src="@routes.ScalaRoutes.getAssets("webpage/images/petri_test.png")"/>
+                    <img class="backgroundImage" src="@routes.ScalaRoutes.getStaticFiles("images/petri_test.png")"/>
                     <div class="transparentBackground"></div>
                     <div class="linkText">Generators</div>
                     <a class="ecoreLink" href="/app"></a>

@@ -6,38 +6,42 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent.Promise
 
+import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.generator.template.Error
 import de.htwg.zeta.generator.template.Result
 import de.htwg.zeta.generator.template.Settings
 import de.htwg.zeta.generator.template.Success
 import de.htwg.zeta.generator.template.Template
 import de.htwg.zeta.generator.template.Transformer
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.Persistence.fullAccessRepository
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.general.FileRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class MyTransformer() extends Transformer {
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def transform(entity: ModelEntity): Future[Transformer] = {
+  private val injector = Guice.createInjector(new PersistenceModule)
+  private val filePersistence = injector.getInstance(classOf[FileRepository])
+
+  def transform(entity: GraphicalDslInstance): Future[Transformer] = {
     logger.info("Start example")
     val p = Promise[Transformer]
 
     val filename = "example.txt"
     val content =
       s"""
-        |Number of nodes : ${entity.model.nodeMap.size}
-        |Number of edges : ${entity.model.edgeMap.size}
+        |Number of nodes : ${entity.nodeMap.size}
+        |Number of edges : ${entity.edgeMap.size}
       """.stripMargin
 
-    fullAccessRepository.file.create(File(entity.id, filename, content)).map { _ =>
-      logger.info(s"Successfully saved results to '$filename' for model '${entity.model.name}' (MetaModel '${entity.model.metaModelId}')")
+   filePersistence.create(File(entity.id, filename, content)).map { _ =>
+      logger.info(s"Successfully saved results to '$filename' for model '${entity.name}' (MetaModel '${entity.graphicalDslId}')")
       p.success(this)
     }.recover {
       case e: Exception => p.failure(e)
@@ -57,9 +61,8 @@ class MyTransformer() extends Transformer {
  */
 object Main extends Template[CreateOptions, String] {
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
-    val repository = Persistence.fullAccessRepository
     for {
-      image <- repository.generatorImage.read(imageId)
+      image <- generatorImagePersistence.read(imageId)
       file <- createFileContent()
       _ <- createGenerator(options, image, file)
     } yield {
@@ -74,13 +77,13 @@ object Main extends Template[CreateOptions, String] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   private def createFileContent(): Future[File] = {
     val content = "This is a demo to save the results of a generator. No further configuration is required."
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   /**
@@ -98,7 +101,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] =
+  override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] =
     Future.successful(new MyTransformer())
 
   /**

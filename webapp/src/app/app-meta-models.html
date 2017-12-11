@@ -1,0 +1,41 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="./base/my-documents-view.html">
+
+<dom-module id="app-meta-models">
+  <template>
+    <style>
+      :host {
+        display: block;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+
+    <my-documents-view id="view" type="MetaModelEntity" rest-list="/rest/v1/meta-models"></my-documents-view>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'app-meta-models',
+
+      ready() {
+        this.$.view.primary = function(item) {
+          return item.name
+        }
+        this.$.view.secondary = function(item) {
+          return [
+
+          ];
+        }
+        this.$.view.link = function(item) {
+          return '/editor/metaModels/' + item.id;
+        }
+        this.$.view.restDelete = function(item) {
+          return '/rest/v1/meta-models/' + item.id;
+        }
+      }
+    });
+  </script>
+</dom-module>

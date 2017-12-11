@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
 object ConsistencyRules {
 
-  val rules: Seq[MetaModelRule] = Seq(
+  val rules: Seq[ConceptRule] = Seq(
     new NoCyclicInheritance,
     new NoAmbiguousAttributes,
     new NoAmbiguousInputs,

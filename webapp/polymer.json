@@ -1,7 +1,11 @@
 {
   "entrypoint": "index.html",
-  "shell": "app/src/app-main.html",
+  "shell": "src/app-main.html",
   "fragments": [
-    "app/src/app-editor.html"
-  ]
+    "src/app-editor.html"
+  ],
+  "builds": [{
+    "preset": "es5-bundled",
+    "name": "app"
+  }]
 }

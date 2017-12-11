@@ -8,11 +8,12 @@ import scala.util.{Failure => TryFailure}
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
- * Created by julian on 03.11.15.
  * commonly used parsing methods
  */
 trait CommonParserMethods extends JavaTokenParsers {
   // basic stuff
+  // scalastyle:off non.ascii.character.disallowed
+
   def attribute: Parser[(String, String)] = variable ~ argument <~ ",?".r ^^ { case v ~ a => (v.toString, a.toString) }
   def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString }
   def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }

@@ -2,25 +2,28 @@
 @import de.htwg.zeta.common.models.entity.User
 @(user: Option[User], id: UUID, dslType: String)
 
-    @views.html.webpage.WebpageGeneralLayout("CodeEditor", user) {
-        @playscalajs.html.selectScript("client", "/assets")
-
-        <script type="text/javascript">
-                client.Main().main("@id.toString", "@dslType");
-        </script>
-
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ace.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace/ext-language_tools.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootstrap/js/bootstrap.min.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("codeEditor/ace-grammar/ace_grammar.min.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/bootbox.js/bootbox.js")"></script>
-        <script type="text/javascript" src="@routes.ScalaRoutes.getAssets("lib/jquery-ui/jquery-ui.min.js")"></script>
-
-        <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("codeEditor/codeEditor.css")">
-        <link rel='stylesheet' type="text/css" href="@routes.ScalaRoutes.getAssets("lib/typicons/typicons.css")"/>
-        <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/jquery-ui/jquery-ui.min.css")">
-        <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getAssets("lib/jquery-ui-themes/flick/jquery-ui.min.css")">
-
-        <div id="editor">
+@styles = {
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.css")">
+}
+@scripts = {
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.js")"></script>
+}
+@views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts) {
+    <div class="container code-editor" data-meta-model-id="@id.toString" data-dsl-type="@dslType">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title editor-title">
+                    <strong>@dslType</strong>
+                    <span class="pull-right">
+                        <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
+                        <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
+                        <span class="js-save btn btn-primary glyphicon glyphicon-floppy-disk" title="Save Document"></span>
+                    </span>
+                </h3>
+            </div>
+            <div class="panel-body editor-body" style="background-color: gray;">
+                <div class="editor"></div>
+            </div>
         </div>
-    }
+    </div>
+}

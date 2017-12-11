@@ -1,9 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
-import de.htwg.zeta.server.model.modelValidator.Util
-import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.ModelElement
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -11,9 +9,9 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
  * A rule extending this trait will get the model node by node into its isValid method.
  * i.e. this rule will have to depend on just one node, and not spanning multiple nodes.
  */
-trait SingleNodeRule extends ElementsRule {
+trait SingleNodeRule extends NodesRule {
 
-  override def check(elements: Seq[ModelElement]): Seq[ModelValidationResult] = Util.getNodes(elements).flatMap(node => check(node))
+  override def check(elements: Seq[Node]): Seq[ModelValidationResult] = elements.flatMap(node => check(node))
 
   /**
    * Checks one node against the overridden isValid method returning a result
@@ -23,7 +21,7 @@ trait SingleNodeRule extends ElementsRule {
    * @return A model validation result or None if the rule is not applicable to this node.
    */
   def check(node: Node): Option[ModelValidationResult] = isValid(node) match {
-    case Some(result) => Some(ModelValidationResult(this, result, Some(node)))
+    case Some(result) => Some(ModelValidationResult(this, result, Some(Left(node))))
     case None => None
   }
 

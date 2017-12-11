@@ -9,6 +9,4 @@ class OutputsOfNodes(nodeType: String) {
 
   def areOfTypes(outputTypes: Seq[String]): NodeOutputEdges = new NodeOutputEdges(nodeType, outputTypes)
 
-  def toEdges(edgeType: String): OutputsOfNodesToEdges = new OutputsOfNodesToEdges(nodeType, edgeType)
-
 }

@@ -2,11 +2,12 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -19,12 +20,12 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   "check" should "return success validation results on correct attributes" in {
 
-    val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value1")))
+    val attribute1: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value1"))
     val node1 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
 
-    val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value2")))
+    val attribute2: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value2"))
     val node2 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
-    val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value3")))
+    val attribute3: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value3"))
     val node3 = Node.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
@@ -34,11 +35,11 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return failure validation results on invalid attributes" in {
-    val attribute1: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
+    val attribute1: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
     val node1 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
-    val attribute2: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("value")))
+    val attribute2: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
     val node2 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
-    val attribute3: Map[String, Seq[AttributeValue]] = Map("attributeType" -> Seq(StringValue("duplicateValue")))
+    val attribute3: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
     val node3 = Node.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
@@ -56,12 +57,12 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   "generateFor" should "generate this rule from the meta model" in {
     val globalUniqueAttribute = MAttribute("attributeName", globalUnique = true, localUnique = false, StringType, StringValue(""), constant = false,
-      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+      singleAssignment = false, "", ordered = false, transient = false)
     val nonGlobalUniqueAttribute = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false,
-      singleAssignment = false, "", ordered = false, transient = false, -1, 0)
+      singleAssignment = false, "", ordered = false, transient = false)
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute]
       (nonGlobalUniqueAttribute, globalUniqueAttribute), Seq.empty)
-    val metaModel = TestUtil.classesToMetaModel(Seq(mClass))
+    val metaModel = Concept.empty.copy(classes = Seq(mClass))
     val result = NodeAttributesGlobalUnique.generateFor(metaModel)
 
     result.size should be(1)

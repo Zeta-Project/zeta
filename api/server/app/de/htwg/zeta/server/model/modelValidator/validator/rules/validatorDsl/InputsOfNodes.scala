@@ -9,6 +9,4 @@ class InputsOfNodes(nodeType: String) {
 
   def areOfTypes(inputTypes: Seq[String]): NodeInputEdges = new NodeInputEdges(nodeType, inputTypes)
 
-  def toEdges(edgeType: String): InputsOfNodesToEdges = new InputsOfNodesToEdges(nodeType, edgeType)
-
 }

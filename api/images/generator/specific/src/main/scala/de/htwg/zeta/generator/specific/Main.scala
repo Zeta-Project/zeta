@@ -9,10 +9,10 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.entity.ModelEntity
+import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.generator.template.Error
 import de.htwg.zeta.generator.template.Result
 import de.htwg.zeta.generator.template.Settings
@@ -42,7 +42,7 @@ object Main extends Template[CreateOptions, String] {
    * @param file      The file which was loaded for the generator
    * @return A Generator
    */
-  override def getTransformer(file: File, model: ModelEntity): Future[Transformer] = {
+  override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] = {
     compiledGenerator(file)
   }
 
@@ -134,19 +134,19 @@ object Main extends Template[CreateOptions, String] {
    */
   override def createTransformer(options: CreateOptions, imageId: UUID): Future[Result] = {
     for {
-      image <- repository.generatorImage.read(imageId)
-      metaModel <- repository.metaModelEntity.read(UUID.fromString(options.metaModelRelease))
+      image <- generatorImagePersistence.read(imageId)
+      metaModel <- metaModelEntityPersistence.read(UUID.fromString(options.metaModelRelease))
       file <- createFile(metaModel)
       _ <- createGenerator(options, image, file)
     } yield Success()
   }
 
-  private def createFile(metaModel: MetaModelEntity): Future[File] = {
-    val mClassList = metaModel.metaModel.classMap.values
-    val mReferenceList = metaModel.metaModel.referenceMap.values
+  private def createFile(metaModel: GraphicalDsl): Future[File] = {
+    val mClassList = metaModel.concept.classMap.values
+    val mReferenceList = metaModel.concept.referenceMap.values
     val content = createFileContent(mClassList, mReferenceList)
     val entity = File(UUID.randomUUID, Settings.generatorFile, content)
-    repository.file.create(entity)
+    filePersistence.create(entity)
   }
 
   private def createGenerator(options: CreateOptions, image: GeneratorImage, file: File): Future[Generator] = {
@@ -156,7 +156,7 @@ object Main extends Template[CreateOptions, String] {
       imageId = image.id,
       files = Map(file.id -> file.name)
     )
-    repository.generator.create(entity)
+    generatorPersistence.create(entity)
   }
 
   /**

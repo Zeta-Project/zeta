@@ -4,8 +4,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import de.htwg.zeta.common.models.entity.MetaModelRelease
-import de.htwg.zeta.persistence.Persistence
+import com.google.inject.Guice
+import de.htwg.zeta.common.models.entity.GraphicalDslRelease
+import de.htwg.zeta.persistence.PersistenceModule
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -34,19 +37,23 @@ object Main extends App {
   implicit val materializer = ActorMaterializer()
   implicit val client = AhcWSClient()
 
-  val documents = Persistence.fullAccessRepository
+  private val injector = Guice.createInjector(new PersistenceModule)
+  private val metaModelEntityPersistence = injector.getInstance(classOf[GraphicalDslRepository])
+  private val metaModelReleasePersistence = injector.getInstance(classOf[GraphicalDslReleaseRepository])
 
   cmd.id.foreach({ id =>
     logger.info("Create Model Release for " + id)
 
     val result = for {
-      from <- documents.metaModelEntity.read(UUID.fromString(id))
-      release <- documents.metaModelRelease.createOrUpdate(
-        MetaModelRelease(
+      from <- metaModelEntityPersistence.read(UUID.fromString(id))
+      release <- metaModelReleasePersistence.createOrUpdate(
+        GraphicalDslRelease(
           id = UUID.randomUUID(),
-          name = s"${from.metaModel.name}",
-          metaModel = from.metaModel,
-          dsl = from.dsl,
+          name = s"${from.name}",
+          concept = from.concept,
+          diagram = from.diagram,
+          shape = from.shape,
+          style = from.style,
           version = "1"
         )
       )

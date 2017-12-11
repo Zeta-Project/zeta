@@ -1,21 +1,16 @@
-import sbt.Project.projectToRef
-
 name := "zeta-api"
-
 version := "1.0.0"
 
+// Move into project server on startup
+onLoad in Global := (onLoad in Global).value.andThen(state => Command.process("project server", state))
+
 lazy val akkaVersion = "2.4.18"
-
-lazy val scalaV = "2.11.7"
-
-lazy val clients = Seq(client)
-
 lazy val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
 def baseSettings = {
   Revolver.settings ++ Seq(
     fork := true,
-    scalaVersion := scalaV,
+    scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(
       // logging
       "org.clapper" %% "grizzled-slf4j" % "1.2.0"
@@ -45,7 +40,7 @@ def baseSettings = {
 def baseProject(name: String, d: sbt.File) = Project(name, d).settings(baseSettings)
 
 lazy val parser = baseProject("parser", file("parser")).settings(
-  libraryDependencies  ++= Seq(
+  libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "3.0.1" % "test",
     "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6"
   )
@@ -57,9 +52,6 @@ lazy val server = baseProject("server", file("server")).settings(
   version := "0.1",
   packageName in Docker := "api",
   daemonUser in Docker := "root",
-
-  scalaJSProjects := clients,
-  pipelineStages := Seq(scalaJSProd, gzip),
 
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "Routes.scala",
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "RoutesPrefix.scala",
@@ -91,28 +83,16 @@ lazy val server = baseProject("server", file("server")).settings(
     "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",
     specs2 % Test,
     cache,
-    filters,
     ws,
 
-    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    "com.github.jahoefne" %% "scalot" % "0.4.4-SNAPSHOT",
     "com.novus" %% "salat" % "1.9.9",
     "com.lihaoyi" %% "upickle" % "0.3.4",
-    "com.vmunier" %% "play-scalajs-scripts" % "0.2.1",
     "com.typesafe.akka" %% "akka-contrib" % akkaVersion,
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-kernel" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
     "org.webjars" %% "webjars-play" % "2.4.0-1",
-    "org.webjars" % "font-awesome" % "4.1.0",
-    // "org.webjars" % "bootstrap" % "3.3.5",
-    "org.webjars.bower" % "polymer" % "1.0.7",
-    "org.webjars" % "jquery" % "2.1.4",
-    "org.webjars" % "jquery-ui" % "1.11.4",
-    "org.webjars" % "jquery-ui-themes" % "1.11.4",
     "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-    "org.webjars" % "typicons" % "2.0.7",
-    "org.webjars.bower" % "bootbox.js" % "4.4.0",
 
     "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.1",
     "org.mozilla" % "rhino" % "1.7.6",
@@ -124,55 +104,7 @@ lazy val server = baseProject("server", file("server")).settings(
     "org.scala-lang" % "scala-compiler" % "2.11.8",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   )
-).enablePlugins(PlayScala).aggregate(clients.map(projectToRef): _*).dependsOn(sharedJvm).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
-
-lazy val client = baseProject("client", file("client")).settings(
-  fork := false,
-  persistLauncher := true,
-  persistLauncher in Test := false,
-  sourceMapsDirectories += sharedJs.base / "..",
-
-  resolvers += "amateras-repo" at "http://amateras.sourceforge.jp/mvn-snapshot/",
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  libraryDependencies ++= Seq(
-    // "com.github.jahoefne" % "scalot_2.11" % "1.0",
-    "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT",
-    "org.scala-js" %%% "scalajs-dom" % "0.8.1",
-    "com.lihaoyi" %%% "scalatags" % "0.5.2",
-    "com.lihaoyi" %%% "scalarx" % "0.2.8",
-    "be.doeraene" %%% "scalajs-jquery" % "0.8.0",
-    "com.lihaoyi" %%% "upickle" % "0.3.4"
-  )
-).enablePlugins(ScalaJSPlugin, ScalaJSPlay).dependsOn(sharedJs)
-
-lazy val shared = (crossProject.crossType(CrossType.Pure) in file("shared")).settings(
-  scalaVersion := scalaV,
-  scalacOptions ++= Seq(
-    "-deprecation", // Emit warning and location for usages of deprecated APIs.
-    "-feature", // Emit warning and location for usages of features that should be imported explicitly.
-    "-unchecked", // Enable additional warnings where generated code depends on assumptions.
-    // "-Xfatal-warnings", // Fail the compilation if there are any warnings.
-    "-Xlint", // Enable recommended additional warnings.
-    "-Ywarn-adapted-args", // Warn if an argument list is modified to match the receiver.
-    "-Ywarn-dead-code", // Warn when dead code is identified.
-    "-Ywarn-inaccessible", // Warn about inaccessible types in method signatures.
-    "-Ywarn-nullary-override", // Warn when non-nullary overrides nullary, e.g. def foo() over def foo.
-    "-Ywarn-numeric-widen" // Warn when numerics are widened.
-  ),
-
-  resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
-  libraryDependencies ++= Seq(
-    "com.github.jahoefne" % "scalot_2.11" % "1.0" // "com.github.jahoefne" %%% "scalot" % "0.4.4-SNAPSHOT"
-  ),
-
-  scalastyleFailOnError := true,
-  compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-  compile in Compile := ((compile in Compile) dependsOn compileScalastyle).value,
-  wartremoverWarnings ++= Warts.unsafe
-).jsConfigure(_ enablePlugins ScalaJSPlay).jsSettings(sourceMapsBase := baseDirectory.value / "..")
-
-lazy val sharedJvm = shared.jvm
-lazy val sharedJs = shared.js
+).enablePlugins(PlayScala).dependsOn(common).dependsOn(generatorControl).dependsOn(persistence)
 
 
 lazy val common = baseProject("common", file("common")).settings(
@@ -196,14 +128,10 @@ lazy val common = baseProject("common", file("common")).settings(
       "org.scalaz" %% "scalaz-core" % "7.2.8",
       "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
       "org.reactivemongo" %% "reactivemongo" % "0.12.3",
-      "com.github.jahoefne" % "scalot_2.11" % "1.0"
+      "com.typesafe.play" %% "play-json" % "2.5.4"
     )
   )
 )
-
-// loads the jvm project at sbt startup
-onLoad in Global := (Command.process("project server", _: State)) compose (onLoad in Global).value
-
 
 def projectT(name: String, d: sbt.File) = {
   baseProject(name, d).settings(
@@ -222,25 +150,25 @@ def projectT(name: String, d: sbt.File) = {
 
 lazy val generatorControl = projectT("generatorControl", file("generatorControl")).settings(
   Seq(
-    name                   := "generatorControl",
-    version                := "0.1",
-    packageName in Docker  := "generatorControl",
-    daemonUser in Docker   := "root",
-    libraryDependencies   ++= Seq(
-      "org.iq80.leveldb"          % "leveldb"                   % "0.7",
-      "org.fusesource.leveldbjni" % "leveldbjni-all"            % "1.8",
-      "com.typesafe.akka"         %% "akka-testkit"             % akkaVersion     % "test",
+    name := "generatorControl",
+    version := "0.1",
+    packageName in Docker := "generatorControl",
+    daemonUser in Docker := "root",
+    libraryDependencies ++= Seq(
+      "org.iq80.leveldb" % "leveldb" % "0.7",
+      "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
+      "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
-      "com.typesafe.akka"         %% "akka-remote"              % akkaVersion,
-      "com.typesafe.akka"         %% "akka-stream"              % akkaVersion,
-      "com.typesafe.akka"         %% "akka-http-core"           % akkaVersion,
-      "com.typesafe.akka"         %% "akka-http-testkit"        % "10.0.6",
-      "com.typesafe.akka"         %% "akka-cluster-sharding"    % akkaVersion,
-      "com.spotify"               % "docker-client"             % "6.1.1",
-      "commons-io"                % "commons-io"                % "2.4"           % "test",
-      "org.rogach"                %% "scallop"                  % "2.0.2",
-      "com.github.romix.akka"     %% "akka-kryo-serialization"  % "0.4.1",
-      "com.neovisionaries"        % "nv-websocket-client"       % "1.30"
+      "com.typesafe.akka" %% "akka-remote" % akkaVersion,
+      "com.typesafe.akka" %% "akka-stream" % akkaVersion,
+      "com.typesafe.akka" %% "akka-http-core" % "10.0.6",
+      "com.typesafe.akka" %% "akka-http-testkit" % "10.0.6",
+      "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
+      "com.spotify" % "docker-client" % "6.1.1",
+      "commons-io" % "commons-io" % "2.4" % "test",
+      "org.rogach" %% "scallop" % "2.0.2",
+      "com.github.romix.akka" %% "akka-kryo-serialization" % "0.4.1",
+      "com.neovisionaries" % "nv-websocket-client" % "1.30"
     )
   )
 ).dependsOn(common).dependsOn(persistence)
@@ -252,16 +180,13 @@ lazy val persistence = projectT("persistence", file("persistence")).settings(
     // packageName in Docker  := "persistence",
     // daemonUser in Docker   := "root",
     libraryDependencies ++= Seq(
-      "com.typesafe.akka" %% "akka-http" % "10.0.6",
-      "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.6",
       "org.scalactic" %% "scalactic" % "3.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "com.mohiva" %% "play-silhouette" % "4.0.0",
-      "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
       "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
-      "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
-      "com.softwaremill.quicklens" %% "quicklens" % "1.4.8",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3"
+      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
+      "org.reactivemongo" %% "reactivemongo-play-json" % "0.12.3",
+      "net.codingwell" %% "scala-guice" % "4.0.1"
     )
   )
 ).dependsOn(common)
@@ -301,33 +226,33 @@ lazy val basicGenerator = image("basicGenerator", file("./images/generator/basic
 
 lazy val fileGenerator = image("fileGenerator", file("./images/generator/file")).settings(
   Seq(
-    name                   := "generator/file",
-    version                := "0.1",
-    packageName in Docker  := "generator/file"
+    name := "generator/file",
+    version := "0.1",
+    packageName in Docker := "generator/file"
   )
 ).dependsOn(scalaGeneratorTemplate)
 
 lazy val remoteGenerator = image("remoteGenerator", file("./images/generator/remote")).settings(
   Seq(
-    name                   := "generator/remote",
-    version                := "0.1",
-    packageName in Docker  := "generator/remote"
+    name := "generator/remote",
+    version := "0.1",
+    packageName in Docker := "generator/remote"
   )
 ).dependsOn(scalaGeneratorTemplate)
 
 lazy val specificGenerator = image("specificGenerator", file("./images/generator/specific")).settings(
   Seq(
-    name                   := "generator/specific",
-    version                := "0.1",
-    packageName in Docker  := "generator/specific"
+    name := "generator/specific",
+    version := "0.1",
+    packageName in Docker := "generator/specific"
   )
 ).dependsOn(scalaGeneratorTemplate)
 
 lazy val metaModelRelease = image("metaModelRelease", file("./images/metamodel/release")).settings(
   Seq(
-    name                   := "metamodel/release",
-    version                := "0.1",
-    packageName in Docker  := "metamodel/release"
+    name := "metamodel/release",
+    version := "0.1",
+    packageName in Docker := "metamodel/release"
   )
 )
 

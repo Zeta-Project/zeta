@@ -1,8 +1,8 @@
 package de.htwg.zeta.server.module
 
 import scala.concurrent.Future
+import scala.concurrent.duration.FiniteDuration
 
-import com.google.inject.AbstractModule
 import com.google.inject.Provides
 import com.google.inject.name.Named
 import com.mohiva.play.silhouette.api.Environment
@@ -39,9 +39,9 @@ import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -57,7 +57,7 @@ import play.api.libs.ws.WSClient
 /**
  * The Guice module which wires all Silhouette dependencies.
  */
-class SilhouetteModule extends AbstractModule with ScalaModule {
+class SilhouetteModule extends ScalaModule {
 
   /**
    * Configures the module.
@@ -85,17 +85,15 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     new PlayHTTPLayer(client)
   }
 
-
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
-
-
   /** Provides the UserIdentityService
    *
    * @return UserIdentityService
    */
   @Provides
-  def provideUserIdentityService: IdentityService[User] = {
+  def provideUserIdentityService(
+    loginInfoPersistence: LoginInfoRepository,
+    userPersistence: UserRepository
+  ): IdentityService[User] = {
     new IdentityService[User] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
         val userId = loginInfoPersistence.read(loginInfo)
@@ -142,8 +140,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
     val config = {
       // required for parsing JcaCookieSignerSettings
-      implicit val stringValueReader = Ficus.stringValueReader
-      implicit val booleanValueReader = Ficus.booleanValueReader
+      implicit val stringValueReader: ValueReader[String] = Ficus.stringValueReader
+      implicit val booleanValueReader: ValueReader[Boolean] = Ficus.booleanValueReader
 
       implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
 
@@ -161,8 +159,8 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   @Named("authenticator-crypter") // scalastyle:ignore multiple.string.literals
   def provideAuthenticatorCrypter(configuration: Configuration): Crypter = {
-    implicit val stringValueReader = Ficus.stringValueReader
-    implicit val booleanValueReader = Ficus.booleanValueReader
+    implicit val stringValueReader: ValueReader[String] = Ficus.stringValueReader
+    implicit val booleanValueReader: ValueReader[Boolean] = Ficus.booleanValueReader
     val config = configuration.underlying.as[JcaCrypterSettings]("silhouette.authenticator.crypter")
     new JcaCrypter(config)
   }
@@ -173,8 +171,10 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @return The auth info repository instance.
    */
   @Provides
-  def provideAuthInfoRepository: AuthInfoRepository = {
-    new DelegableAuthInfoRepository(Persistence.fullAccessRepository.passwordInfo)
+  def provideAuthInfoRepository(
+    passwordInfoPersistence: PasswordInfoRepository
+  ): AuthInfoRepository = {
+    new DelegableAuthInfoRepository(passwordInfoPersistence)
   }
 
   /**
@@ -199,9 +199,9 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   ): AuthenticatorService[CookieAuthenticator] = {
     val config = {
       // required for parsing CookieAuthenticatorSettings
-      implicit val stringValueReader = Ficus.stringValueReader
-      implicit val booleanValueReader = Ficus.booleanValueReader
-      implicit val finiteDurationReader = Ficus.finiteDurationReader
+      implicit val stringValueReader: ValueReader[String] = Ficus.stringValueReader
+      implicit val booleanValueReader: ValueReader[Boolean] = Ficus.booleanValueReader
+      implicit val finiteDurationReader: ValueReader[FiniteDuration] = Ficus.finiteDurationReader
 
       implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
 

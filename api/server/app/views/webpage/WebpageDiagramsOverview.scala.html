@@ -1,19 +1,24 @@
-@import de.htwg.zeta.common.models.entity.MetaModelEntity
+@import de.htwg.zeta.common.models.entity.GraphicalDsl
 @import de.htwg.zeta.common.models.entity.User
 @import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
-@import de.htwg.zeta.common.models.modelDefinitions.model.ModelShortInfo
+@import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstanceShortInfo
 
-@(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[MetaModelEntity], modelInstances: Seq[ModelShortInfo])
+@(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[GraphicalDsl], modelInstances: Seq[GraphicalDslInstanceShortInfo])
 
-@views.html.webpage.WebpageGeneralLayout("New Diagram", user) {
+@styles = {
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.css")">
+}
+
+@scripts = {
     @if(metaModel.isDefined) {
-        <script>
-                window.metaModelId = "@metaModel.get.id";
-        </script>
+    <script>
+            window.metaModelId = "@metaModel.get.id";
+    </script>
     }
-    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/modelValidatorUtil.js")"></script>
-    <script src="@routes.ScalaRoutes.getAssets("webpage/javascripts/diagramOverview.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.js")"></script>
+}
 
+@views.html.webpage.WebpageGeneralLayout("New Diagram", user, styles, scripts) {
     <div class="row">
         <div class="col-md-4">
             <div class="panel panel-default">
@@ -60,7 +65,7 @@
                         <div class="overlay" data-toggle="tooltip" title="Locked because there are model instances"></div>
                     }
                     <div class="panel-heading">
-                        <strong>Edit project <em>@metaModel.get.metaModel.name</em></strong>
+                        <strong>Edit project <em>@metaModel.get.name</em></strong>
                     </div>
                     <div class="text-center">
                         <div class="row no-margin" >

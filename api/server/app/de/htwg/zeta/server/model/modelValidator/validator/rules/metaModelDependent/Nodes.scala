@@ -4,7 +4,7 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 
 /**
@@ -21,6 +21,6 @@ class Nodes(val nodeTypes: Seq[String]) extends SingleNodeRule with DslRule {
 }
 
 object Nodes extends GeneratorRule {
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Seq(new Nodes(metaModel.classMap.values.filter(!_.abstractness).map(_
+  override def generateFor(metaModel: Concept): Seq[DslRule] = Seq(new Nodes(metaModel.classMap.values.filter(!_.abstractness).map(_
     .name).toSeq))
 }

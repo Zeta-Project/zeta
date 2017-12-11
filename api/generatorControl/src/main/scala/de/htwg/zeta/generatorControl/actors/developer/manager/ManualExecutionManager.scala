@@ -6,27 +6,35 @@ import akka.actor.Actor
 import akka.actor.ActorLogging
 import akka.actor.ActorRef
 import akka.actor.Props
-import de.htwg.zeta.persistence.general.Repository
+import com.google.inject.Injector
 import de.htwg.zeta.common.models.frontend.ExecuteFilterError
 import de.htwg.zeta.common.models.frontend.ExecuteGeneratorError
 import de.htwg.zeta.common.models.frontend.RunFilter
 import de.htwg.zeta.common.models.frontend.RunGenerator
 import de.htwg.zeta.common.models.worker.RunFilterManually
 import de.htwg.zeta.common.models.worker.RunGeneratorManually
+import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GeneratorImageRepository
+import de.htwg.zeta.persistence.general.GeneratorRepository
 
 object ManualExecutionManager {
-  def props(worker: ActorRef, repository: Repository) = Props(new ManualExecutionManager(worker, repository))
+  def props(worker: ActorRef, injector: Injector): Props = Props(new ManualExecutionManager(worker, injector))
 }
 
-class ManualExecutionManager(worker: ActorRef, repository: Repository) extends Actor with ActorLogging {
+class ManualExecutionManager(worker: ActorRef, injector: Injector) extends Actor with ActorLogging {
+
+  private val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
+  private val filterPersistence = injector.getInstance(classOf[FilterRepository])
+  private val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
+
   // find the generator and filter and send a job to the worker
   def runGenerator(run: RunGenerator) = {
     val reply = sender
 
     val result = for {
-      generator <- repository.generator.read(run.generatorId)
-      filter <- repository.filter.read(run.filterId)
-      image <- repository.generatorImage.read(generator.imageId)
+      generator <- generatorPersistence.read(run.generatorId)
+      filter <- filterPersistence.read(run.filterId)
+      image <- generatorImagePersistence.read(generator.imageId)
     } yield RunGeneratorManually(generator.id, image.dockerImage, filter.id)
 
     result.map { job =>
@@ -41,7 +49,7 @@ class ManualExecutionManager(worker: ActorRef, repository: Repository) extends A
     val reply = sender
 
     val result = for {
-      filter <- repository.filter.read(run.filterId)
+      filter <- filterPersistence.read(run.filterId)
     } yield RunFilterManually(filter.id)
 
     result.map { job =>

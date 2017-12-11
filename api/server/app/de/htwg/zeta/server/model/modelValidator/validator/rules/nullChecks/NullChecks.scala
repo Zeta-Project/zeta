@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.nullChecks
 
-import de.htwg.zeta.common.models.modelDefinitions.model.Model
+import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
 
 /**
@@ -27,7 +27,7 @@ object NullChecks {
    * @param model The model.
    * @return The result.
    */
-  def check(model: Model): NullChecksResult = {
+  def check(model: GraphicalDslInstance): NullChecksResult = {
     rules.foldLeft(NullChecksResult(valid = true, rule = None)) { (acc, rule) =>
       if (acc.valid) {
         if (rule.check(model)) {
@@ -57,29 +57,13 @@ object NullChecks {
     new NodeAttributesNoNullValues,
     new NodeAttributesNamesNotNull,
     new NodeAttributesValuesNotNull,
-    new NodeAttributesValuesNoNullValues,
-    new NodeOutputsTypeNotNull,
-    new NodeOutputsEdgesNotNull,
-    new NodeOutputsEdgesNoNullValues,
-    new NodeInputsTypeNotNull,
-    new NodeInputsEdgesNotNull,
-    new NodeInputsEdgesNoNullValues,
     new EdgeTypeNotNull,
     new EdgeSourcesNotNull,
-    new EdgeSourcesNoNullValues,
     new EdgeTargetsNotNull,
-    new EdgeTargetsNoNullValues,
     new EdgeAttributesNotNull,
     new EdgeAttributesNoNullValues,
     new EdgeAttributesNamesNotNull,
-    new EdgeAttributesValuesNotNull,
-    new EdgeAttributesValuesNoNullValues,
-    new EdgeSourcesTypeNotNull,
-    new EdgeSourcesNodesNotNull,
-    new EdgeSourcesNodesNoNullValues,
-    new EdgeTargetsTypeNotNull,
-    new EdgeTargetsNodesNotNull,
-    new EdgeTargetsNodesNoNullValues
+    new EdgeAttributesValuesNotNull
   )
 
 }

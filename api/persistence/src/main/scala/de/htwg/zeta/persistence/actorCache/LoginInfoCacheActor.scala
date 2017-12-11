@@ -21,7 +21,7 @@ import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Update
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.unitFuture
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 import grizzled.slf4j.Logging
 
 
@@ -39,11 +39,11 @@ private[actorCache] object LoginInfoCacheActor {
 
   private val unitFuture: Future[Unit] = Future.successful(())
 
-  def props(underlying: LoginInfoPersistence, cacheDuration: FiniteDuration): Props = Props(new LoginInfoCacheActor(underlying, cacheDuration))
+  def props(underlying: LoginInfoRepository, cacheDuration: FiniteDuration): Props = Props(new LoginInfoCacheActor(underlying, cacheDuration))
 
 }
 
-private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoPersistence, cacheDuration: FiniteDuration) extends Actor with Logging {
+private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoRepository, cacheDuration: FiniteDuration) extends Actor with Logging {
 
   private val cache: mutable.Map[LoginInfo, Future[UUID]] = mutable.Map.empty
 

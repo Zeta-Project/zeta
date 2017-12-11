@@ -13,10 +13,9 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.Persistence
-import de.htwg.zeta.persistence.general.EntityPersistence
-import de.htwg.zeta.persistence.general.LoginInfoPersistence
+import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
+import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -41,12 +40,11 @@ class SignUpController @Inject()(
     silhouette: Silhouette[ZetaEnv],
     authInfoRepository: AuthInfoRepository,
     passwordHasherRegistry: PasswordHasherRegistry,
-    mailerClient: MailerClient)
-  extends Controller {
-
-  private val tokenCache: TokenCache = Persistence.tokenCache
-  private val userPersistence: EntityPersistence[User] = Persistence.fullAccessRepository.user
-  private val loginInfoPersistence: LoginInfoPersistence = Persistence.fullAccessRepository.loginInfo
+    mailerClient: MailerClient,
+    tokenCache: TokenCache,
+    userRepo: UserRepository,
+    loginInfoRepo: LoginInfoRepository
+) extends Controller {
 
   /** Views the `Sign Up` page.
    *
@@ -70,9 +68,9 @@ class SignUpController @Inject()(
       data => {
         val result = Redirect(routes.ScalaRoutes.getSignUp()).flashing("info" -> messages("sign.up.email.sent", data.email))
         val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
-        val userId = loginInfoPersistence.read(loginInfo)
+        val userId = loginInfoRepo.read(loginInfo)
         userId.flatMap(userId =>
-          userPersistence.read(userId).flatMap(user =>
+          userRepo.read(userId).flatMap(user =>
             processAlreadySignedUp(user, result, data, request, messages)
           )).recoverWith {
           case _ => processSignUp(result, data, loginInfo, request, messages)
@@ -99,8 +97,8 @@ class SignUpController @Inject()(
     val user = User(id = UUID.randomUUID(), firstName = data.firstName, lastName = data.lastName, email = data.email, activated = false)
 
     for {
-      _ <- userPersistence.create(user)
-      _ <- loginInfoPersistence.create(loginInfo, user.id)
+      _ <- userRepo.create(user)
+      _ <- loginInfoRepo.create(loginInfo, user.id)
       _ <- authInfoRepository.add(loginInfo, authInfo)
       token <- tokenCache.create(user.id)
     } yield {

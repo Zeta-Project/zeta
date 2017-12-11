@@ -10,12 +10,9 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.MetaModelEntity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Diagram => DslDiagram}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.{Style => DslStyle}
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Dsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Shape
-import de.htwg.zeta.persistence.Persistence
+import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
 import de.htwg.zeta.server.generator.generators.style.StyleGenerator
@@ -31,10 +28,14 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 
-class ModelEditorGeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) extends Controller {
+class ModelEditorGeneratorController @Inject()(
+    silhouette: Silhouette[ZetaEnv],
+    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
+    filePersistence: AccessRestrictedFilePersistence
+) extends Controller {
 
   def generate(metaModelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    Persistence.restrictedAccessRepository(request.identity.id).metaModelEntity.read(metaModelId)
+    metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId)
       .flatMap(createGenerators(_, request.identity.id).map {
         case Success(_) => Ok("Generation successful")
         case Failure(error) => BadRequest(error)
@@ -44,50 +45,42 @@ class ModelEditorGeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) 
       }
   }
 
-  private def createGenerators(metaModel: MetaModelEntity, userId: UUID): Future[Unreliable[List[File]]] = {
+  private def createGenerators(metaModel: GraphicalDsl, userId: UUID): Future[Unreliable[List[File]]] = {
     val hierarchyContainer = Cache()
     parseMetaModel(metaModel, hierarchyContainer) match {
       case Success(dia) =>
         createAndSaveGeneratorFiles(metaModel, dia, hierarchyContainer, userId)
-      case f @ Failure(_) => Future.successful(f)
+      case f@Failure(_) => Future.successful(f)
     }
   }
 
-  private def parseMetaModel(metaModel: MetaModelEntity, hierarchyContainer: Cache): Unreliable[Diagram] = {
-    val parser = new SprayParser(hierarchyContainer, metaModel)
+  private def parseMetaModel(graphicalDsl: GraphicalDsl, hierarchyContainer: Cache): Unreliable[Diagram] = {
+    val parser = new SprayParser(hierarchyContainer, graphicalDsl)
 
-    def tryParse[E, R](get: Dsl => Option[E], parse: E => List[R], name: String): Unreliable[List[R]] = {
-      get(metaModel.dsl) match {
-        case None => Failure(s"$name not available")
-        case Some(e) => Unreliable(() => parse(e), s"$name failed parsing")
-      }
+    def tryParse[R](code: String, parse: String => List[R], name: String): Unreliable[List[R]] = {
+      Unreliable(() => parse(code), s"$name failed parsing")
     }
 
-    tryParse[DslStyle, Style](_.style, (s: DslStyle) => parser.parseStyle(s.code), "Style")
-      .flatMap(_ => tryParse[Shape, AnyRef](_.shape, s => parser.parseShape(s.code), "Shape"))
-      .flatMap(_ => tryParse[DslDiagram, Option[Diagram]](_.diagram, s => parser.parseDiagram(s.code), ModelEditorGeneratorController.diagramName))
+    tryParse[Style](graphicalDsl.style, s => parser.parseStyle(s), "Style")
+      .flatMap(_ => tryParse[AnyRef](graphicalDsl.shape, s => parser.parseShape(s), "Shape"))
+      .flatMap(_ => tryParse[Option[Diagram]](graphicalDsl.diagram, s => parser.parseDiagram(s), ModelEditorGeneratorController.diagramName))
       .flatMap {
         case Some(dia) :: _ => Success(dia)
         case _ => Failure(s"No ${ModelEditorGeneratorController.diagramName} available")
       }
   }
 
-  private def createAndSaveGeneratorFiles(metaModel: MetaModelEntity, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
+  private def createAndSaveGeneratorFiles(metaModel: GraphicalDsl, diagram: Diagram, hierarchyContainer: Cache, userId: UUID):
   Future[Unreliable[List[File]]] = {
-    val repo = Persistence.restrictedAccessRepository(userId).file
-
-    val allGen: Unreliable[(List[File], List[File])] = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id).flatMap(gen => {
-      createVrGeneratorFiles(diagram, hierarchyContainer).map(vrGen => {
-        (gen, vrGen)
-      })
-    })
+    val repo = filePersistence.restrictedTo(userId)
+    val allGen = createGeneratorFiles(diagram, hierarchyContainer, metaModel.id)
 
     allGen match {
-      case Success((gen: List[File], vrGen: List[File])) =>
-        Future.sequence((gen ++ vrGen).map(repo.createOrUpdate)).map(_ =>
-          Success(gen ::: vrGen)
+      case Success(gen: List[File]) =>
+        Future.sequence(gen.map(repo.createOrUpdate)).map(_ =>
+          Success(gen)
         )
-      case f @ Failure(_) => Future.successful(f)
+      case f@Failure(_) => Future.successful(f)
     }
   }
 
@@ -101,17 +94,6 @@ class ModelEditorGeneratorController @Inject()(silhouette: Silhouette[ZetaEnv]) 
 
     generate(generators)
   }
-
-  private def createVrGeneratorFiles(diagram: Diagram, hierarchyContainer: Cache): Unreliable[List[File]] = {
-    val generators: List[() => Unreliable[List[File]]] = List(
-      // Generate files for the VR - Editor
-      // FIXME: VR generators are not working. If you want to enable them again, check the commit that introduced this message
-      // Revision number: d60fbde380816a3a593a1bfdb4cdf72561977384
-    )
-
-    generate(generators)
-  }
-
 
   @tailrec
   private def generate(generators: List[() => Unreliable[List[File]]], carry: List[File] = Nil): Unreliable[List[File]] = {

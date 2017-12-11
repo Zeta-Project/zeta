@@ -2,13 +2,12 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModel
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
@@ -33,22 +32,23 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
   def rule(node: Node): Boolean = {
 
-    def handleStrings(values: Seq[AttributeValue]): Boolean = values.collect { case v: StringValue => v }.forall(_.attributeType == attributeDataType)
-    def handleBooleans(values: Seq[AttributeValue]): Boolean = values.collect { case v: BoolValue => v }.forall(_.attributeType == attributeDataType)
-    def handleInts(values: Seq[AttributeValue]): Boolean = values.collect { case v: IntValue => v }.forall(_.attributeType == attributeDataType)
-    def handleDoubles(values: Seq[AttributeValue]): Boolean = values.collect { case v: DoubleValue => v }.forall(_.attributeType == attributeDataType)
+    def handleStrings(values: StringValue): Boolean = values.attributeType == attributeDataType
+
+    def handleBooleans(values: BoolValue): Boolean = values.attributeType == attributeDataType
+
+    def handleInts(values: IntValue): Boolean = values.attributeType == attributeDataType
+
+    def handleDoubles(values: DoubleValue): Boolean = values.attributeType == attributeDataType
 
     node.attributeValues.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute.headOption match {
-        case None => true
-        case Some(head) => head match {
-          case _: StringValue => handleStrings(attribute)
-          case _: BoolValue => handleBooleans(attribute)
-          case _: IntValue => handleInts(attribute)
-          case _: DoubleValue => handleDoubles(attribute)
-          case _ => true
-        }
+      case Some(attribute) => attribute match {
+        case value: StringValue => handleStrings(value)
+        case value: BoolValue => handleBooleans(value)
+        case value: IntValue => handleInts(value)
+        case value: DoubleValue => handleDoubles(value)
+        case _ => true
+
       }
     }
   }
@@ -59,12 +59,12 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
 object NodeAttributeScalarTypes extends GeneratorRule {
 
-  override def generateFor(metaModel: MetaModel): Seq[DslRule] = Util.inheritAttributes(Util.simplifyMetaModelGraph(metaModel))
+  override def generateFor(metaModel: Concept): Seq[DslRule] = Util.inheritAttributes(metaModel.classes)
     .filterNot(_.abstractness)
     .foldLeft(Seq[DslRule]()) { (acc, currentClass) =>
       acc ++ currentClass.attributes
-        .filter(att => Seq(StringType, IntType, BoolType, DoubleType).contains(att.`type`))
-        .map(att => new NodeAttributeScalarTypes(currentClass.name, att.name, att.`type`))
+        .filter(att => Seq(StringType, IntType, BoolType, DoubleType).contains(att.typ))
+        .map(att => new NodeAttributeScalarTypes(currentClass.name, att.name, att.typ))
     }
 
 }
