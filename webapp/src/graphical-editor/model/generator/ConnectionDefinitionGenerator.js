@@ -1,10 +1,6 @@
 
 
-class ConnectionDefinitionGenerator {
-
-    constructor(head) {
-        this.head = ' """/*\n* This is a generated ShapeFile for JointJS\n*/\n"""'
-    }
+class ConnectionDefinitionGenerator { 
 
     generate(connections) {
         let result = {}
@@ -35,5 +31,44 @@ class ConnectionDefinitionGenerator {
         return connection;
     }
 
+    createConnection(connections) {
+        let styleConnection = {}
+        connections.map(function(connection) {
+            if (connection.style.isDefined) {
+                styleConnection[connection] = connection.style.name
+            } else {
 
+            }
+            styleConnection[connection] = connection.style
+        })
+        return styleConnection
+    }
+
+    createLabel(placing) {
+        return {
+            position: placing.position_offset,
+            attrs: 
+        }
+    }
+
+
+}
+
+export default class Generator{
+    constructor(connections) {
+        this.connections = connections
+        this.connectionDefinitionGenerator = new C
+    }
+
+    getConnectionStyle(styleName) {
+        
+    }
+
+    getPlacings(styleName) {
+
+    }
+
+    getLabels(styleName) {
+
+    }
 }
