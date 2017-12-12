@@ -46,9 +46,16 @@ class ConnectionDefinitionGenerator {
 
     createLabel(placing) {
         return {
-            position: placing.position_offset,
-            attrs: 
-        }
+            position: placing.positionOffset,
+            attrs: {
+              rect: {fill: 'transparent'},
+              text: {
+                y: placing.positionDistance.getOrElse(0),
+                text: placing.shape.textBody
+              }
+            },
+            id: placing.shape.id
+          }
     }
 
 
