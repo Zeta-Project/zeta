@@ -4,31 +4,11 @@ class ConnectionDefinitionGenerator {
 
     generate(connections) {
         let result = {}
-        connections.foreach(function(connection) {
+        connections.map(function(connection) {
             testFunction(connection)
             result.push(createConnection(connection))
         })
         return result;
-    }
-
-    getConnectionStyle(styleName) {
-        
-    }
-
-    getPlacings(styleName) {
-
-    }
-
-    getLabels(styleName) {
-
-    }
-
-    testFunction(connection) {
-        console.log(connection)
-    }
-
-    createConnection(connection) {
-        return connection;
     }
 
     createConnection(connections) {
@@ -44,27 +24,31 @@ class ConnectionDefinitionGenerator {
         return styleConnection
     }
 
+    createLabelList(connection) {
+        const labels = connection.placings.filter(placing => placing.shape.type === 'Label');
+        return labels.map(this.createLabel);
+    }
+
     createLabel(placing) {
         return {
             position: placing.positionOffset,
             attrs: {
               rect: {fill: 'transparent'},
               text: {
-                y: placing.positionDistance.getOrElse(0),
+                y: 'positionDistance' in placing ? placing.positionDistance : 0,
                 text: placing.shape.textBody
               }
             },
             id: placing.shape.id
-          }
+        };
     }
-
 
 }
 
 export default class Generator{
     constructor(connections) {
+        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator()
         this.connections = connections
-        this.connectionDefinitionGenerator = new C
     }
 
     getConnectionStyle(styleName) {
@@ -76,6 +60,7 @@ export default class Generator{
     }
 
     getLabels(styleName) {
-
+        const connection = this.connections.filter(c => c.name === styleName);
+        return connection.length === 1 ? this.connectionDefinitionGenerator.createLabelList(connection.pop()) : []
     }
 }
