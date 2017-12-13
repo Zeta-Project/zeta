@@ -1,6 +1,6 @@
 lazy val akkaVersion = "2.4.18"
 
-def baseSettings = {
+lazy val common = ZetaBuild.inCurrent(project).settings(
   Revolver.settings ++ Seq(
     fork := true,
     scalaVersion := "2.11.7",
@@ -17,12 +17,7 @@ def baseSettings = {
 
     dockerRepository := Some("modigen")
   )
-}
-
-def baseProject(name: String, d: sbt.File) = Project(name, d).settings(baseSettings)
-
-
-lazy val common = baseProject("common", file(".")).settings(
+).settings(
   Seq(
     version := "0.1",
     resolvers += Resolver.jcenterRepo,
