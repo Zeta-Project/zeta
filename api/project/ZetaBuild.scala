@@ -7,6 +7,11 @@ object ZetaBuild {
   lazy val persistence = project
   lazy val server = project
 
+  /**
+   * change project to current file
+   */
+  def inCurrent(project: Project) = project in file(".")
+
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
 
   val scalaOptions = Keys.scalacOptions ++= Seq(
