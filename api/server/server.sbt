@@ -1,29 +1,6 @@
 lazy val akkaVersion = "2.4.18"
 
-def baseSettings = {
-  Revolver.settings ++ Seq(
-    fork := true,
-    scalaVersion := "2.11.7",
-    libraryDependencies ++= Seq(
-      // logging
-      "org.clapper" %% "grizzled-slf4j" % "1.2.0"
-    ),
-    ZetaBuild.scalaOptions,
-
-    scalastyleFailOnError := true,
-    ZetaBuild.compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
-    compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
-    wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
-
-    dockerRepository := Some("modigen")
-  )
-}
-
-
-def baseProject(name: String, d: sbt.File) = Project(name, d).settings(baseSettings)
-
-
-lazy val server = baseProject("server", file(".")).settings(
+lazy val server = ZetaBuild.inCurrent(project).settings(
   // docker settings
   name := "api",
   version := "0.1",
@@ -80,5 +57,23 @@ lazy val server = baseProject("server", file(".")).settings(
     "org.scala-lang" % "scala-reflect" % "2.11.8",
     "org.scala-lang" % "scala-compiler" % "2.11.8",
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
-  )
-).enablePlugins(PlayScala).dependsOn(ZetaBuild.common).dependsOn(ZetaBuild.generatorControl).dependsOn(ZetaBuild.persistence)
+  ),
+  fork := true,
+  scalaVersion := "2.11.7",
+  libraryDependencies ++= Seq(
+    // logging
+    "org.clapper" %% "grizzled-slf4j" % "1.2.0"
+  ),
+  ZetaBuild.scalaOptions,
+
+  scalastyleFailOnError := true,
+  ZetaBuild.compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+  compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
+  wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
+
+  dockerRepository := Some("modigen")
+).enablePlugins(PlayScala).dependsOn(
+  ZetaBuild.common,
+  ZetaBuild.generatorControl,
+  ZetaBuild.persistence
+)
