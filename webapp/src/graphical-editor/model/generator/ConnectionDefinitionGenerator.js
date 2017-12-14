@@ -37,8 +37,27 @@ class ConnectionDefinitionGenerator {
         }
     }
 
+    styleGetCommonAttributes(style) {
+        // TODO 
+        return {"style": "dummy"}
+    }
+
+    generatePlacingShapeStyle(generatedShape, shape) {
+        generatedShape.attrs = 'style' in shape ? Object.assign(generatedShape.attrs, this.styleGetCommonAttributes(shape.style)): generatedShape.attrs;
+        return generatedShape;
+    }
+
     generateLineShape(line) {
-        
+        const shape = {
+            markup: '<line />',
+            attrs: {
+                x1: line.startPoint.x,
+                y1: line.startPoint.y,
+                x2: line.endPoint.x,
+                y2: line.endPoint.y
+            }
+        };
+        return this.generatePlacingShapeStyle(shape, line)
     }
 
     generatePolyLineShape(shape) {
