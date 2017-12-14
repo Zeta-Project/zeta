@@ -297,4 +297,38 @@ describe('createPlacing', () => {
         }
     ])
   })
+
+  test('with a Ellipse as Shape without a Style', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionDistance": 1,
+            "positionOffset": 1.0,            
+            "shape": {
+              "sizeHeight": 2,
+              "sizeWidth": 2,
+              "type": "Ellipse",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual(
+      [
+        {
+          position: 1.0,
+          markup: '<ellipse />',
+          attrs:{
+            rx: 1,
+            ry: 1,
+            cy: 1,
+          }
+        }
+    ])
+  })
 });

@@ -129,7 +129,15 @@ class ConnectionDefinitionGenerator {
       }*/
     
     generateEllipseShape(ellipse, distance) {
-
+        const shape = {
+            markup: '<ellipse />',
+            attrs:{
+                rx: ellipse.sizeWidth / 2,
+                ry: ellipse.sizeHeight / 2,
+                cy: distance,
+            }
+        }
+        return this.generatePlacingShapeStyle(shape, ellipse)         
     }
     
     generateTextShape(text) {
