@@ -104,8 +104,18 @@ class ConnectionDefinitionGenerator {
     }
     
     generateRoundedRectangleShape(roundedRectangle, distance) {
-     
-    }
+        const shape = {
+            markup: '<rect />',
+            attrs:{
+                height: roundedRectangle.sizeHeight,
+                width: roundedRectangle.sizeWidth,
+                rx: roundedRectangle.curveWidth,
+                ry: roundedRectangle.curveHeight,
+                y: distance - roundedRectangle.sizeHeight / 2,
+            }
+        }
+        return this.generatePlacingShapeStyle(shape, roundedRectangle)        
+      }
     
       /*
       private def generatePlacingShape(shape: Polygon, distance: Int) = {

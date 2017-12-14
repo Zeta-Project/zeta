@@ -259,4 +259,42 @@ describe('createPlacing', () => {
         }
     ])
   })
+
+  test('with a RoundedRectangle as Shape without a Style', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionDistance": 2,
+            "positionOffset": 1.0,
+            "shape": {
+              "curveHeight": 2,
+              "curveWidth": 1,
+              "sizeHeight": 2,
+              "sizeWidth": 1,
+              "type": "RoundedRectangle",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual(
+      [
+        {
+          position: 1.0,
+          markup: '<rect />',
+          attrs:{
+            height: 2,
+            width: 1,
+            rx: 1,
+            ry: 2,
+            y: 1
+          }
+        }
+    ])
+  })
 });
