@@ -21,49 +21,45 @@ lazy val server = ZetaBuild.inCurrent(project).settings(
   wartremoverErrors += Wart.AsInstanceOf,
 
   libraryDependencies ++= Seq(
-    // codec
-    "commons-codec" % "commons-codec" % "1.9",
+    // logging
+    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
+
     // silhouette
     "com.mohiva" %% "play-silhouette" % "4.0.0",
     "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
     "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
     "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
-    "org.webjars" %% "webjars-play" % "2.5.0-2",
+
+    //injection
     "net.codingwell" %% "scala-guice" % "4.0.1",
+
+    //typesafe
+    "org.webjars" %% "webjars-play" % "2.5.0-2",
     "com.iheart" %% "ficus" % "1.2.6",
     "com.typesafe.play" %% "play-mailer" % "5.0.0",
-    "com.enragedginger" %% "akka-quartz-scheduler" % "1.5.0-akka-2.4.x",
-    "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3",
-    "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",
-    specs2 % Test,
-    cache,
-    ws,
-
-    "com.novus" %% "salat" % "1.9.9",
-    "com.lihaoyi" %% "upickle" % "0.3.4",
-    "com.typesafe.akka" %% "akka-contrib" % akkaVersion,
-    "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-    "com.typesafe.akka" %% "akka-kernel" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
-    "org.webjars" %% "webjars-play" % "2.4.0-1",
+    "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3", // used in play for bootstrap integration
+    "com.typesafe.play" %% "filters-helpers" % "2.5.0",
+    "com.typesafe.akka" %% "akka-actor" % "2.4.18",
+    "com.typesafe.akka" %% "akka-kernel" % "2.4.18",
+    "com.typesafe.akka" %% "akka-cluster" % "2.4.18",
     "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
+    "com.typesafe.akka" %% "akka-cluster-sharding" % "2.4.18",
+    // "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",  // used for play integration testing
+    //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing
 
-    "com.nulab-inc" %% "play2-oauth2-provider" % "0.15.1",
+    //rhino
     "org.mozilla" % "rhino" % "1.7.6",
-    "net.codingwell" %% "scala-guice" % "4.0.0",
-    "org.reactivemongo" %% "play2-reactivemongo" % "0.12.3",
-    "org.scala-lang" % "scala-swing" % "2.11.0-M7",
-    "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
+
+    //scala
     "org.scala-lang" % "scala-reflect" % "2.11.8",
     "org.scala-lang" % "scala-compiler" % "2.11.8",
+
+    // quicklens
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   ),
   fork := true,
   scalaVersion := "2.11.7",
-  libraryDependencies ++= Seq(
-    // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0"
-  ),
+
   ZetaBuild.scalaOptions,
 
   scalastyleFailOnError := true,
