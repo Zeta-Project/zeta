@@ -1,20 +1,16 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.model.style.color.{Color => OldColor}
-import de.htwg.zeta.server.generator.model.style.{LineStyle => OldLineStyle}
-
-
 class StyleParserImpl extends StyleParser {
 
-  private val leftBraces = literal("{")
-  private val rightBraces = literal("}")
+  private val leftBrace = literal("{")
+  private val rightBrace = literal("}")
   private val eq = literal("=")
   private val comma = literal(",")
 
   override def styles: Parser[List[StyleParseTree]] = rep1(style)
 
   private def style: Parser[StyleParseTree] = {
-    name ~ opt(parentStyles) ~ leftBraces ~ description ~ attributes ~ rightBraces ^^ { parseSeq =>
+    name ~ opt(parentStyles) ~ leftBrace ~ description ~ attributes ~ rightBrace ^^ { parseSeq =>
       val name ~ parentStyles ~ _ ~ description ~ (attributes: List[StyleAttribute]) ~ _ = parseSeq
       StyleParseTree(
         name,
