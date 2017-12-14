@@ -61,11 +61,45 @@ class ConnectionDefinitionGenerator {
     }
 
     generatePolyLineShape(shape) {
-        
+        const polyLineShape = {
+            markup: '<polyline />',
+            attrs: {
+                points: [
+                    shape.points.map(function(point) {
+                        
+                    })
+                       //+ shape.points.map(point => point.x + ", " + point.y + { if (point != shape.points.last) " " else "\"" }).mkString("") + raw
+                ],
+                fill: 'transparent'
+            }
+        };  
+
+        if ('style' in polyLineShape) {
+            return Object.assign(polyLineShape.attrs, this.stylegetCommonAttributes(shape.style));
+        };
+        return polyLineShape;
     }
 
+    generatePoints(points) {
+        let pointString = "";
+
+        points.map(function(point) {
+            pointString += (`${point.x}, ${point.y}, `)
+        })
+        pointString.pop().pop();
+        pointString += "/";
+    }
     
     generateRectangleShape(rectangle, distance) {
+        const shape = {
+            markup: '<rect />',
+            attrs:{
+                height: rectangle.sizeHeight,
+                width: rectangle.sizeWidth,
+                y: distance - rectangle.sizeHeight / 2
+            }
+        };
+        return this.generatePlacingShapeStyle(shape, rectangle)
         
     }
     

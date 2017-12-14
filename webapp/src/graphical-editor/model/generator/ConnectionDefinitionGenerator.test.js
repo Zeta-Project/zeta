@@ -225,4 +225,38 @@ describe('createPlacing', () => {
         }
     ])
   })
+
+  test('with a Rectangle as Shape without a Style', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionDistance": 2,
+            "positionOffset": 1.0,
+            "shape": {
+              "sizeHeight": 2,
+              "sizeWidth": 1,
+              "type": "Rectangle",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual(
+      [
+        {
+          position: 1.0,
+          markup: '<rect />',
+          attrs:{
+              height: 2,
+              width: 1,
+              y: 1
+          }
+        }
+    ])
+  })
 });
