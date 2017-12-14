@@ -117,3 +117,40 @@ describe('createLabel', () => {
       )
   })
 });
+
+describe('createPlacing', () => {
+  function create(connections) {
+    const generator = new ConnectionDefinitionGenerator(connections)
+    return generator;
+  }
+
+  function createDefaultTestConnection(placing) {
+    return [
+      {
+        "name": "Connection1",
+        "placings": [
+          placing
+        ]
+      }
+    ]
+  }
+
+  test('with empty connetions', () => {
+    const generator = create([])
+
+    expect(generator.getPlacings('Connection1')).toEqual([])
+  })
+
+  test('with empty placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": []
+      }
+    ]
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual([])
+  })
+});
