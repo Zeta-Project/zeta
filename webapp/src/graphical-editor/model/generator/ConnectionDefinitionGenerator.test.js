@@ -1,5 +1,7 @@
 import ConnectionDefinitionGenerator from './ConnectionDefinitionGenerator';
 
+const defaultTestId = "1234"
+
 describe('createLabel', () => {
     function create(connections) {
         const generator = new ConnectionDefinitionGenerator(connections)
@@ -20,7 +22,7 @@ describe('createLabel', () => {
         }
       ]
 
-      const generator = create([])
+      const generator = create(connections)
 
       expect(generator.getLabels('Connection1')).toEqual([])
     })
@@ -35,7 +37,7 @@ describe('createLabel', () => {
                       "positionOffset": 1.0,
                       "shape": {
                         "textBody": "Hallo",
-                        "id": "123Auto",
+                        "id": defaultTestId,
                         "type": "Label",
                       }
                     }
@@ -55,7 +57,7 @@ describe('createLabel', () => {
                     text: "Hallo"
                     }
                 },
-                id: "123Auto"
+                id: defaultTestId
             }]
         )
     }) 
