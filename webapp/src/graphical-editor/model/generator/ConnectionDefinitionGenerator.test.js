@@ -29,26 +29,27 @@ describe('createLabel', () => {
 
     test('with one full defined connection and one placing', () => {
         const connections = [
-                {
-                  "name": "Connection1",
-                  "placings": [
-                    {
-                      "positionDistance": 1,
-                      "positionOffset": 1.0,
-                      "shape": {
-                        "textBody": "Hallo",
-                        "id": defaultTestId,
-                        "type": "Label",
-                      }
-                    }
-                  ]
+          {
+            "name": "Connection1",
+            "placings": [
+              {
+                "positionDistance": 1,
+                "positionOffset": 1.0,
+                "shape": {
+                  "textBody": "Hallo",
+                  "id": defaultTestId,
+                  "type": "Label",
                 }
-              ]
+              }
+            ]
+          }
+        ]
                 
         const generator = create(connections)
 
         expect(generator.getLabels('Connection1')).toEqual(
-            [{
+            [
+              {
                 position: 1.0,
                 attrs: {
                     rect: {fill: 'transparent'},
@@ -58,63 +59,66 @@ describe('createLabel', () => {
                     }
                 },
                 id: defaultTestId
-            }]
+            }
+          ]
         )
     }) 
 
     test('with one full defined connection and two placing', () => {
       const connections = [
-              {
-                "name": "Connection1",
-                "placings": [
-                  {
-                    "positionDistance": 1,
-                    "positionOffset": 1.0,
-                    "shape": {
-                      "textBody": "Hallo",
-                      "id": "placing1",
-                      "type": "Label",
-                    }
-                  },
-                  {
-                    "positionDistance": 1,
-                    "positionOffset": 1.0,
-                    "shape": {
-                      "textBody": "Hallo",
-                      "id": "placing2",
-                      "type": "Label",
-                    }
-                  }
-                ]
+        {
+          "name": "Connection1",
+          "placings": [
+            {
+              "positionDistance": 1,
+              "positionOffset": 1.0,
+              "shape": {
+                "textBody": "Hallo",
+                "id": "placing1",
+                "type": "Label",
               }
-            ]
+            },
+            {
+              "positionDistance": 1,
+              "positionOffset": 1.0,
+              "shape": {
+                "textBody": "Hallo",
+                "id": "placing2",
+                "type": "Label",
+              }
+            }
+          ]
+        }
+      ]
               
       const generator = create(connections)
 
       expect(generator.getLabels('Connection1')).toEqual(
-          [{
-              position: 1.0,
-              attrs: {
-                  rect: {fill: 'transparent'},
-                  text: {
-                  y: 1,
-                  text: "Hallo"
-                  }
-              },
-              id: "placing1"
+      [
+        {
+          position: 1.0,
+          attrs: {
+              rect: {fill: 'transparent'},
+              text: {
+              y: 1,
+              text: "Hallo"
+              }
           },
-          {
-            position: 1.0,
-            attrs: {
-                rect: {fill: 'transparent'},
-                text: {
-                y: 1,
-                text: "Hallo"
-                }
-            },
-            id: "placing2"
-        }]
-      )
+          id: "placing1"
+      },
+      {
+        position: 1.0,
+        attrs: {
+            rect: {fill: 'transparent'},
+            text: {
+            y: 1,
+            text: "Hallo"
+            }
+        },
+        id: "placing2"
+        }
+      ]
+    )
   })
 });
 
