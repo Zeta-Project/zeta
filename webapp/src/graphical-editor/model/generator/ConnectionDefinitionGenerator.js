@@ -141,7 +141,12 @@ class ConnectionDefinitionGenerator {
     }
     
     generateTextShape(text) {
-
+        return {
+            markup: `<text>${text.textBody}</text>`,
+            attrs:{
+                y: text.sizeHeight / 2
+            }
+        }
     }
     
     createLabelList(connection) {

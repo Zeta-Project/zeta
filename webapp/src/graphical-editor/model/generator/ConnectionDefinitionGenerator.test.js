@@ -331,4 +331,35 @@ describe('createPlacing', () => {
         }
     ])
   })
+
+  test('with a Text as Shape without a Style', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 1.0,            
+            "shape": {
+              "textBody": "Hallo",
+              "sizeHeight": 2,
+              "type": "Text",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual(
+      [
+        {
+          position: 1.0,
+          markup: '<text>Hallo</text>',
+          attrs:{
+            y: 1
+          }
+        }
+    ])
+  })
 });
