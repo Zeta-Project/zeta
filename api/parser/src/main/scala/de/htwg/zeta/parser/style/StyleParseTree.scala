@@ -37,6 +37,11 @@ case class LineStyle(style: String)                 extends StyleAttribute(Style
 case class LineWidth(width: Int)                    extends StyleAttribute(StyleAttribute.lineWidth)
 case class Transparency(transparency: Double)       extends StyleAttribute(StyleAttribute.transparency)
 
+object GradientOrientation {
+  val vertical = "vertical"
+  val horizontal = "horizontal"
+}
+
 case class StyleParseTree(
   name: String,
   description: String,

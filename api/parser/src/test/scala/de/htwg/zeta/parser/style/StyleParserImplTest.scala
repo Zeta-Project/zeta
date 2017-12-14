@@ -141,6 +141,14 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
      |}
     """.stripMargin
 
+  val styleWithInvalidGradientOrientation: String =
+    """
+      |style StyleWithInvalidGradientOrientation {
+      |  description = "allowed values: horizontal or vertical"
+      |  gradient-orientation = abc
+      |}
+    """.stripMargin
+
   val trivialCycle: String =
     """
      | style A extends B { description = "" }
@@ -254,6 +262,11 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
 
   "A StyleParser" should "fail if an invalid color is specified" in {
     val styleParser = parserToTest.parseStyles(styleWithInvalidColor)
+    styleParser.successful shouldBe false
+  }
+
+  "A StyleParser" should "fail if an invalid gradient orientation is specified" in {
+    val styleParser = parserToTest.parseStyles(styleWithInvalidGradientOrientation)
     styleParser.successful shouldBe false
   }
 }
