@@ -1,8 +1,7 @@
 lazy val akkaVersion = "2.4.18"
 
 lazy val common = ZetaBuild.inCurrent(project).settings(
-  Revolver.settings ++ Seq(
-    fork := true,
+      fork := true,
     scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(
       // logging
@@ -15,10 +14,8 @@ lazy val common = ZetaBuild.inCurrent(project).settings(
     compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
     wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
 
-    dockerRepository := Some("modigen")
-  )
-).settings(
-  Seq(
+    dockerRepository := Some("modigen"),
+
     version := "0.1",
     resolvers += Resolver.jcenterRepo,
 
@@ -40,5 +37,4 @@ lazy val common = ZetaBuild.inCurrent(project).settings(
       "org.reactivemongo" %% "reactivemongo" % "0.12.3",
       "com.typesafe.play" %% "play-json" % "2.5.4"
     )
-  )
 )
