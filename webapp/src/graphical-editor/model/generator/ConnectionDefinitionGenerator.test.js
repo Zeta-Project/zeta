@@ -190,4 +190,39 @@ describe('createPlacing', () => {
         }
     ])
   })
+
+  test('with a Line as Shape without a Style', () => {
+    const connections = createDefaultTestConnection(
+      {
+        "positionOffset": 1.0,
+        "shape": {
+          "endPoint": {
+            "x": 0,
+            "y": 0,
+          },
+          "startPoint": {
+            "x": 0,
+            "y": 0,
+          },
+          "type": "Line",
+        }
+      }
+    )
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual(
+      [
+        {
+          position: 1.0,
+          markup: '<line />',
+          attrs: {
+              x1: 0,
+              y1: 0,
+              x2: 0,
+              y2: 0
+          }
+        }
+    ])
+  })
 });
