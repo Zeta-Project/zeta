@@ -14,9 +14,9 @@ class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
   case class Width() extends Attribute
   case class Height() extends Attribute
 
-  private val parsePoint: Parser[UnorderedParseResult[Point]] = pointLiteral ^^ (_ => UnorderedParseResult(Point()))
-  private val parseWidth: Parser[UnorderedParseResult[Width]] = widthLiteral ^^ (_ => UnorderedParseResult(Width()))
-  private val parseHeight: Parser[UnorderedParseResult[Height]] = heightLiteral ^^ (_ => UnorderedParseResult(Height()))
+  private val parsePoint: Parser[Point] = pointLiteral ^^ (_ => Point())
+  private val parseWidth: Parser[Width] = widthLiteral ^^ (_ => Width())
+  private val parseHeight: Parser[Height] = heightLiteral ^^ (_ => Height())
 
   "An unordered parse will give" - {
     "a successful result when" - {
