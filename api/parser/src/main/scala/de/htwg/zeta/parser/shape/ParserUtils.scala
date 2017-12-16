@@ -7,7 +7,7 @@ import scala.util.parsing.combinator.JavaTokenParsers
 
 trait ParserUtils extends JavaTokenParsers {
 
-  def checkN[U](check: U => Boolean): PartialFunction[U, U] = {
+  private def checkN[U](check: U => Boolean): PartialFunction[U, U] = {
     object Check {
       def unapply(arg: U): Option[U] = Some(arg).filter(check)
     }
