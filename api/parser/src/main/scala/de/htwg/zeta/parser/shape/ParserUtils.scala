@@ -19,8 +19,10 @@ trait ParserUtils extends JavaTokenParsers {
 
   case class ParseConfiguration[A: TypeTag](t: Type, parser: Parser[A], count: Int)
   object ParseConfiguration {
-    def apply[A: TypeTag, B >: A](parser: Parser[UnorderedParseResult[A]], count: Int): ParseConfiguration[UnorderedParseResult[B]] =
-      ParseConfiguration(typeOf[UnorderedParseResult[A]], parser, count).asInstanceOf[ParseConfiguration[UnorderedParseResult[B]]]
+    def apply[A: TypeTag, B >: A](parser: Parser[A], count: Int): ParseConfiguration[UnorderedParseResult[B]] =
+      ParseConfiguration(typeOf[UnorderedParseResult[A]], parser.^^({
+        f => UnorderedParseResult(f)
+      }), count).asInstanceOf[ParseConfiguration[UnorderedParseResult[B]]]
   }
 
   case class UnorderedParseResult[A: TypeTag](elem: A, t: Type)
