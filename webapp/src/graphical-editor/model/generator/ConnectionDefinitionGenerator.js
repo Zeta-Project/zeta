@@ -181,12 +181,12 @@ export default class Generator{
     }
 
     getPlacings(styleName) {
-        const connection = this.connections.filter(c => c.name === styleName);
-        return connection.length === 1 ? this.connectionDefinitionGenerator.createPlacingList(connection.pop()) : []
+        const connection = this.connections.find(c => c.name === styleName);
+        return connection ? this.connectionDefinitionGenerator.createPlacingList(connection) : [];
     }
 
     getLabels(styleName) {
-        const connection = this.connections.filter(c => c.name === styleName); // find
-        return connection.length === 1 ? this.connectionDefinitionGenerator.createLabelList(connection.pop()) : []
+        const connection = this.connections.find(c => c.name === styleName);
+        return connection ? this.connectionDefinitionGenerator.createLabelList(connection) : [];
     }
 }
