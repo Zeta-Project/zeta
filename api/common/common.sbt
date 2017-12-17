@@ -1,7 +1,6 @@
 lazy val akkaVersion = "2.4.18"
 
 lazy val common = ZetaBuild.inCurrent(project).settings(
-      fork := true,
     scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(
       // logging
@@ -13,8 +12,6 @@ lazy val common = ZetaBuild.inCurrent(project).settings(
     ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
     compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
     wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
-
-    dockerRepository := Some("modigen"),
 
     version := "0.1",
     resolvers += Resolver.jcenterRepo,
