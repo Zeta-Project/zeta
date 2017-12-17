@@ -22,7 +22,6 @@ lazy val common = ZetaBuild.inCurrent(project).settings(
       "com.typesafe.play" %% "play-json" % "2.5.7",
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
-      "org.julienrf" %% "play-json-derived-codecs" % "3.3",
       "io.reactivex" %% "rxscala" % "0.26.2",
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
       "com.typesafe.play" %% "play-json" % "2.5.4"

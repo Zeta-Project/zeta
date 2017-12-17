@@ -3,9 +3,14 @@ package de.htwg.zeta.common.models.worker
 import java.util.Objects
 import java.util.UUID
 
-import julienrf.json.derived
-import play.api.libs.json.__
-import play.api.libs.json.OFormat
+import play.api.libs.json.Json
+import play.api.libs.json.Format
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
+import play.api.libs.json.JsString
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsResult
 
 sealed trait Job {
   /**
@@ -178,5 +183,63 @@ case class RerunFilterJob(filterId: UUID) extends Job {
 }
 
 object Job {
-  implicit val formatJob: OFormat[Job] = derived.flat.oformat((__ \ "type").format[String])
+
+  private val literalRunGeneratorFromGeneratorJob = "RunGeneratorFromGeneratorJob"
+  private val literalRunFilterManually = "RunFilterManually"
+  private val literalRunGeneratorManually = "RunGeneratorManually"
+  private val literalCreateGeneratorJob = "CreateGeneratorJob"
+  private val literalRunBondedTask = "RunBondedTask"
+  private val literalRunEventDrivenTask = "RunEventDrivenTask"
+  private val literalRunTimedTask = "RunTimedTask"
+  private val literalCreateMetaModelReleaseJob = "CreateMetaModelReleaseJob"
+  private val literalRerunFilterJob = "RerunFilterJob"
+  private val typeLiteral = "type"
+
+  private def transform[A](format: Format[A], name: String): Format[A] = {
+    Format(format, format.transform(Writes[JsValue] {
+      case jso: JsObject => JsObject((typeLiteral -> JsString(name)) +: jso.fields)
+      case _ => throw new IllegalArgumentException(s"trying to update JsValue and add $typeLiteral")
+    }))
+  }
+
+
+  private val formatRunGeneratorFromGeneratorJob = transform(Json.format[RunGeneratorFromGeneratorJob], literalRunGeneratorFromGeneratorJob)
+  private val formatRunFilterManually = transform(Json.format[RunFilterManually], literalRunFilterManually)
+  private val formatRunGeneratorManually = transform(Json.format[RunGeneratorManually], literalRunGeneratorManually)
+  private val formatCreateGeneratorJob = transform(Json.format[CreateGeneratorJob], literalCreateGeneratorJob)
+  private val formatRunBondedTask = transform(Json.format[RunBondedTask], literalRunBondedTask)
+  private val formatRunEventDrivenTask = transform(Json.format[RunEventDrivenTask], literalRunEventDrivenTask)
+  private val formatRunTimedTask = transform(Json.format[RunTimedTask], literalRunTimedTask)
+  private val formatCreateMetaModelReleaseJob = transform(Json.format[CreateMetaModelReleaseJob], literalCreateMetaModelReleaseJob)
+  private val formatRerunFilterJob = transform(Json.format[RerunFilterJob], literalRerunFilterJob)
+
+
+  private def findReads(typeName: String): JsValue => JsResult[Job] = typeName match {   // scalastyle:ignore cyclomatic.complexity
+    case this.literalRunGeneratorFromGeneratorJob => formatRunGeneratorFromGeneratorJob.reads
+    case this.literalRunFilterManually => formatRunFilterManually.reads
+    case this.literalRunGeneratorManually => formatRunGeneratorManually.reads
+    case this.literalCreateGeneratorJob => formatCreateGeneratorJob.reads
+    case this.literalRunBondedTask => formatRunBondedTask.reads
+    case this.literalRunEventDrivenTask => formatRunEventDrivenTask.reads
+    case this.literalRunTimedTask => formatRunTimedTask.reads
+    case this.literalCreateMetaModelReleaseJob => formatCreateMetaModelReleaseJob.reads
+    case this.literalRerunFilterJob => formatRerunFilterJob.reads
+    case _ => throw new IllegalArgumentException(s"trying to read Job of $typeLiteral $typeName")
+  }
+
+  private val readJob = Reads(jsv => (jsv \ typeLiteral).validate[String].flatMap(findReads(_)(jsv)))
+
+  private val writeJob = Writes[Job] {
+    case job: RunGeneratorFromGeneratorJob => formatRunGeneratorFromGeneratorJob.writes(job)
+    case job: RunFilterManually => formatRunFilterManually.writes(job)
+    case job: RunGeneratorManually => formatRunGeneratorManually.writes(job)
+    case job: CreateGeneratorJob => formatCreateGeneratorJob.writes(job)
+    case job: RunBondedTask => formatRunBondedTask.writes(job)
+    case job: RunEventDrivenTask => formatRunEventDrivenTask.writes(job)
+    case job: RunTimedTask => formatRunTimedTask.writes(job)
+    case job: CreateMetaModelReleaseJob => formatCreateMetaModelReleaseJob.writes(job)
+    case job: RerunFilterJob => formatRerunFilterJob.writes(job)
+  }
+
+  implicit val formatJob: Format[Job] = Format(readJob, writeJob)
 }
