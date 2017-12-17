@@ -21,17 +21,10 @@ lazy val common = ZetaBuild.inCurrent(project).settings(
       "com.mohiva" %% "play-silhouette" % "4.0.0",
       "com.typesafe.play" %% "play-json" % "2.5.7",
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-      "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
       "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
-      "com.typesafe.akka" %% "akka-cluster-metrics" % akkaVersion,
-      "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
-      "io.reactivex" % "rxscala_2.11" % "0.26.2",
       "org.julienrf" %% "play-json-derived-codecs" % "3.3",
-      "com.typesafe.play" %% "play-ws" % "2.5.9",
+      "io.reactivex" %% "rxscala" % "0.26.2",
       "com.neovisionaries" % "nv-websocket-client" % "1.30",
-      "org.scalaz" %% "scalaz-core" % "7.2.8",
-      "com.github.blemale" %% "scaffeine" % "2.0.0" % "compile",
-      "org.reactivemongo" %% "reactivemongo" % "0.12.3",
       "com.typesafe.play" %% "play-json" % "2.5.4"
     )
 )
