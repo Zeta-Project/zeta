@@ -11,7 +11,7 @@ lazy val generatorControl = ZetaBuild.inCurrent(project).settings(
   ZetaBuild.scalaOptions,
 
   scalastyleFailOnError := true,
-  ZetaBuild.compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
+  ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
   compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
   wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
 
