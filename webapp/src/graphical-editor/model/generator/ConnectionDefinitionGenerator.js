@@ -1,5 +1,4 @@
-const newLocal = 'style';
-
+// Style fliegt raus. Bloß noch ein String.
 
 class ConnectionDefinitionGenerator { 
 
@@ -26,6 +25,8 @@ class ConnectionDefinitionGenerator {
     createPlacingShape(placing) {
         const shape = placing.shape;
 
+        // lieber statisches Object das die Funktionen hält
+
         switch(shape.type) {
             case 'Line': return this.generateLineShape(shape);
             case 'PolyLine': return this.generatePolyLineShape(shape);
@@ -33,7 +34,6 @@ class ConnectionDefinitionGenerator {
             case 'RoundedRectangle': return this.generateRoundedRectangleShape(shape, placing.positionDistance);
             case 'Ellipse': return this.generateEllipseShape(shape, placing.positionDistance);    
             case 'Text': return this.generateTextShape(shape);        
-            
         }
     }
 
@@ -137,7 +137,7 @@ class ConnectionDefinitionGenerator {
                 cy: distance,
             }
         }
-        return this.generatePlacingShapeStyle(shape, ellipse)         
+        return this.generatePlacingShapeStyle(shape, ellipse);   
     }
     
     generateTextShape(text) {
@@ -146,7 +146,7 @@ class ConnectionDefinitionGenerator {
             attrs:{
                 y: text.sizeHeight / 2
             }
-        }
+        };
     }
     
     createLabelList(connection) {
@@ -186,7 +186,7 @@ export default class Generator{
     }
 
     getLabels(styleName) {
-        const connection = this.connections.filter(c => c.name === styleName);
+        const connection = this.connections.filter(c => c.name === styleName); // find
         return connection.length === 1 ? this.connectionDefinitionGenerator.createLabelList(connection.pop()) : []
     }
 }
