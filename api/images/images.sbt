@@ -9,11 +9,12 @@ def baseSettings = {
     ),
     ZetaBuild.scalaOptions,
 
+    /*
     scalastyleFailOnError := true,
     ZetaBuild.compileScalastyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value,
     compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
     wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
-
+    */
     dockerRepository := Some("modigen")
   )
 }
