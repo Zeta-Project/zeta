@@ -1,11 +1,8 @@
 lazy val akkaVersion = "2.4.18"
 
 lazy val server = ZetaBuild.inCurrent(project).settings(
-  // docker settings
   name := "api",
   version := "0.1",
-  packageName in Docker := "api",
-  daemonUser in Docker := "root",
 
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "Routes.scala",
   wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "RoutesPrefix.scala",
@@ -47,9 +44,6 @@ lazy val server = ZetaBuild.inCurrent(project).settings(
     // "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",  // used for play integration testing
     //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing
 
-    //rhino
-    "org.mozilla" % "rhino" % "1.7.6",
-
     //scala
     "org.scala-lang" % "scala-reflect" % "2.11.8",
     "org.scala-lang" % "scala-compiler" % "2.11.8",
@@ -57,7 +51,6 @@ lazy val server = ZetaBuild.inCurrent(project).settings(
     // quicklens
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
   ),
-  fork := true,
   scalaVersion := "2.11.7",
 
   ZetaBuild.scalaOptions,
@@ -65,9 +58,8 @@ lazy val server = ZetaBuild.inCurrent(project).settings(
   scalastyleFailOnError := true,
   ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
   compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
-  wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
+  wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements)
 
-  dockerRepository := Some("modigen")
 ).enablePlugins(PlayScala).dependsOn(
   ZetaBuild.common,
   ZetaBuild.generatorControl,
