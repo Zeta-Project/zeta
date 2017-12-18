@@ -1,20 +1,12 @@
 lazy val akkaVersion = "2.4.18"
 
 
-lazy val generatorControl = ZetaBuild.inCurrent(project).settings(
+lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
   fork := true,
-  scalaVersion := "2.11.7",
   libraryDependencies ++= Seq(
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.2.0"
   ),
-  ZetaBuild.scalaOptions,
-
-  scalastyleFailOnError := true,
-  ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
-  compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
-  wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
-
   dockerRepository := Some("modigen"),
 
   libraryDependencies ++= Seq(
