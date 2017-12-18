@@ -92,8 +92,8 @@ export default (function() {
         targetDeletionDeletesSource: this.graph.getTargetDeletionDeletesSource(reference),
         attributes: this.graph.getAttributes(reference),
         methods: this.graph.getEntityMethods(reference),
-        source: this.graph.getSources(reference),
-        target: this.graph.getTargets(reference)
+        sourceClassName: this.graph.getSources(reference),
+        targetClassName: this.graph.getTargets(reference)
       });
     }
     return references;
