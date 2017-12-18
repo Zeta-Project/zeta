@@ -2,12 +2,8 @@ lazy val akkaVersion = "2.4.18"
 
 
 lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
-  fork := true,
-  libraryDependencies ++= Seq(
-    // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0"
-  ),
-  dockerRepository := Some("modigen"),
+  name := "generatorControl",
+  version := "0.1",
 
   libraryDependencies ++= Seq(
     "com.typesafe.play" %% "play-json" % "2.5.7",
@@ -15,13 +11,9 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-metrics" % akkaVersion,
-    "com.typesafe.akka" %% "akka-persistence" % akkaVersion
-  ),
-  name := "generatorControl",
-  version := "0.1",
-  packageName in Docker := "generatorControl",
-  daemonUser in Docker := "root",
-  libraryDependencies ++= Seq(
+    "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
+    // logging
+    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
     "org.iq80.leveldb" % "leveldb" % "0.7",
     "org.fusesource.leveldbjni" % "leveldbjni-all" % "1.8",
     "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
