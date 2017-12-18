@@ -19,7 +19,6 @@ lazy val common = ZetaBuild.inCurrent(project).settings(
     "com.mohiva" %% "play-silhouette" % "4.0.0",
     // play json
     "com.typesafe.play" %% "play-json" % "2.5.7",
-    "com.typesafe.play" %% "play-json" % "2.5.4",
     // akka actor
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
