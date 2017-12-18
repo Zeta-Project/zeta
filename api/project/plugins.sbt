@@ -5,8 +5,6 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.5.4")
 
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0")
-
 addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 
 addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.0.3")
