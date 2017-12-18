@@ -1,4 +1,4 @@
-lazy val persistence = ZetaBuild.inCurrent(project).settings(
+lazy val persistence = ZetaBuild.defaultProject(project).settings(
   name := "persistence",
   version := "0.1",
 
@@ -18,16 +18,7 @@ lazy val persistence = ZetaBuild.inCurrent(project).settings(
     "org.scalatest" %% "scalatest" % "3.0.1" % "test",
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.2.0"
-  ),
-  scalaVersion := "2.11.7",
-
-  ZetaBuild.scalaOptions,
-
-  scalastyleFailOnError := true,
-  ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
-  compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
-  wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements)
-
+  )
 ).dependsOn(
   ZetaBuild.common
 ).enablePlugins(
