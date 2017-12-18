@@ -179,7 +179,7 @@ export default (function() {
                   type: "String",
                   value
                 };
-                break;  
+                break;
               default:
                 mAttributes[mAttributes.length - 1][key] = {
                   type: attributes.typ,
@@ -223,44 +223,44 @@ export default (function() {
     Returns all input references of the element.
    */
   Graph.prototype.getInputs = function(element) {
-    var inputs;
-    inputs = this.graph.getConnectedLinks(element, {
+    const inputs = this.graph.getConnectedLinks(element, {
       inbound: true
     }).filter(function(link) {
       return mCoreUtil.isReference(link);
     });
-    return this.createLinkdef(element, inputs, Constants.field.LINKDEF_INPUT);
+    return inputs.map(input => input.attributes.name);
+    //return this.createLinkdef(element, inputs, Constants.field.LINKDEF_INPUT);
   };
 
   /*
     Returns all output references of the element.
    */
   Graph.prototype.getOutputs = function(element) {
-    var outputs;
-    outputs = this.graph.getConnectedLinks(element, {
+    const outputs = this.graph.getConnectedLinks(element, {
       outbound: true
     }).filter(function(link) {
       return mCoreUtil.isReference(link);
     });
-    return this.createLinkdef(element, outputs, Constants.field.LINKDEF_OUTPUT);
+      return outputs.map(output => output.attributes.name);
+    //return this.createLinkdef(element, outputs, Constants.field.LINKDEF_OUTPUT);
   };
 
   /*
     Returns all source classes of the reference.
    */
   Graph.prototype.getSources = function(reference) {
-    var sources;
-    sources = [this.graph.getCell(reference.attributes.source.id)];
-    return this.createLinkdef(reference, sources, Constants.field.LINKDEF_SOURCE);
+    const source = [this.graph.getCell(reference.attributes.source.id)][0];
+    return source.attributes.name;
+    // return this.createLinkdef(reference, sources, Constants.field.LINKDEF_SOURCE);
   };
 
   /*
     Returns all target classes of the reference.
    */
   Graph.prototype.getTargets = function(reference) {
-    var targets;
-    targets = [this.graph.getCell(reference.attributes.target.id)];
-    return this.createLinkdef(reference, targets, Constants.field.LINKDEF_TARGET);
+    const target = [this.graph.getCell(reference.attributes.target.id)][0];
+    return target.attributes.name;
+    //return this.createLinkdef(reference, targets, Constants.field.LINKDEF_TARGET);
   };
 
   /*

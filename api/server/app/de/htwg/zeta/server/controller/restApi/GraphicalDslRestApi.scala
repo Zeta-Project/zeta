@@ -30,9 +30,9 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 
 /**
- * REST-ful API for MetaModel definitions
+ * REST-ful API for GraphicalDsl definitions
  */
-class MetaModelRestApi @Inject()(
+class GraphicalDslRestApi @Inject()(
     graphicalDslRepo: AccessRestrictedGraphicalDslRepository,
     conceptFormat: ConceptFormat,
     graphicalDslFormat: GraphicalDslFormat,
@@ -84,6 +84,7 @@ class MetaModelRestApi @Inject()(
    * @return result
    */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
+    info("updating concept: " + request.body.toString)
     request.body.validate(conceptFormat).fold(
       faulty => {
         faulty.foreach(error(_))
