@@ -19,8 +19,8 @@ class EdgeFormat(
     methodFormat: MethodFormat,
     sName: String = "name",
     sReferenceName: String = "referenceName",
-    sSource: String = "source",
-    sTarget: String = "target",
+    sSourceNodeName: String = "sourceNodeName",
+    sTargetNodeName: String = "targetNodeName",
     sAttributes: String = "attributes",
     sAttributeValues: String = "attributeValues",
     sMethods: String = "methods"
@@ -29,8 +29,8 @@ class EdgeFormat(
   override def writes(edge: Edge): JsObject = Json.obj(
     sName -> edge.name,
     sReferenceName -> edge.referenceName,
-    sSource -> edge.sourceNodeName,
-    sTarget -> edge.targetNodeName,
+    sSourceNodeName -> edge.sourceNodeName,
+    sTargetNodeName -> edge.targetNodeName,
     sAttributes -> Writes.seq(attributeFormat).writes(edge.attributes),
     sAttributeValues -> Writes.map(attributeValueFormat).writes(edge.attributeValues),
     sMethods -> Writes.seq(methodFormat).writes(edge.methods)
@@ -39,8 +39,8 @@ class EdgeFormat(
   override def reads(json: JsValue): JsResult[Edge] = for {
     name <- (json \ sName).validate[String]
     referenceName <- (json \ sReferenceName).validate[String]
-    source <- (json \ sSource).validate[String]
-    target <- (json \ sTarget).validate[String]
+    source <- (json \ sSourceNodeName).validate[String]
+    target <- (json \ sTargetNodeName).validate[String]
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
     attributeValues <- (json \ sAttributeValues).validate(Reads.map(attributeValueFormat))
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
