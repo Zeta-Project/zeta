@@ -44,14 +44,15 @@ object ZetaBuild {
   )
 
   val scalaVersion = Keys.scalaVersion := "2.11.7"
+//  val scalaVersion = Keys.scalaVersion := "2.12.4"
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
     // injection
-    "net.codingwell" %% "scala-guice" % "4.0.1",
+    "net.codingwell" %% "scala-guice" % "4.1.1",
     // test
     "org.scalatest" %% "scalatest" % "3.0.1" % "test",
     // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0"
+    "org.clapper" %% "grizzled-slf4j" % "1.3.2"
   )
 
   val defaultSettings: Seq[Def.SettingsDefinition] = linterSettings ++ Seq(

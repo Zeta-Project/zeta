@@ -13,7 +13,7 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
     // rxScala
-    "io.reactivex" %% "rxscala" % "0.26.2",
+    "io.reactivex" %% "rxscala" % "0.26.5",
     // websocket
     "com.neovisionaries" % "nv-websocket-client" % "1.30"
   )
