@@ -1,8 +1,5 @@
 
-lazy val akkaVersion = "2.4.18"
-
 lazy val parser = ZetaBuild.inCurrent(project).settings(
-  fork := true,
   scalaVersion := "2.11.7",
   scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -22,7 +19,6 @@ lazy val parser = ZetaBuild.inCurrent(project).settings(
   compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
   wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements),
 
-  dockerRepository := Some("modigen"),
   libraryDependencies ++= Seq(
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.2.0",
