@@ -25,7 +25,7 @@ import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
-import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
+import de.htwg.zeta.server.controller.restApi.GraphicalDslRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -48,7 +48,7 @@ class WebControllerContainer @Inject() private(
     val codeEditorController: Provider[CodeEditorController],
     val webJarAssets: Provider[WebJarAssets],
     val dynamicFileController: Provider[DynamicFileController],
-    val metaModelRestApi: Provider[MetaModelRestApi],
+    val metaModelRestApi: Provider[GraphicalDslRestApi],
     val modelRestApi: Provider[ModelRestApi],
     val webApp: Provider[WebAppController],
     val generatorImageRestApi: Provider[GeneratorImageRestApi],

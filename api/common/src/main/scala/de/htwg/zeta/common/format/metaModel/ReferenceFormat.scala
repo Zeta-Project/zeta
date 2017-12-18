@@ -2,9 +2,9 @@ package de.htwg.zeta.common.format.metaModel
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
