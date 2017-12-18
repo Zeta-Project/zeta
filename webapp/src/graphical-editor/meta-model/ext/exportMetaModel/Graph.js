@@ -146,53 +146,72 @@ export default (function() {
         attributes = _ref[_i];
         mAttributes.push({});
         for (key in attributes) {
-          value = attributes[key];
 
           if (key === 'default') {
-            switch (attributes.typ) {
-              case 'Bool':
-                mAttributes[mAttributes.length - 1][key] = {
-                  type: "Bool",
-                  value: (value === 'true')
-                };
-                break;
-              case 'Int':
-                if (!this.isNumeric(value)) {
-                  value = 0;
-                }
-                mAttributes[mAttributes.length - 1][key] = {
-                  type: "Int",
-                  value: parseInt(value)
-                };
-                break;
-              case 'Double':
-                if (!this.isNumeric(value)) {
-                  value = 0.0;
-                }
-                mAttributes[mAttributes.length - 1][key] = {
-                  type: "Double",
-                  value: parseFloat(value)
-                };
-                break;
-              case 'String':
-                mAttributes[mAttributes.length - 1][key] = {
-                  type: "String",
-                  value
-                };
-                break;
-              default:
-                mAttributes[mAttributes.length - 1][key] = {
-                  type: attributes.typ,
-                  value
-                };
-            }
+            mAttributes[mAttributes.length - 1][key] = this.attributeValueToJson(attributes.typ, attributes[key]);
+          } else if(key === 'typ') {
+            mAttributes[mAttributes.length - 1]['type'] = this.attributeTypeToJson(attributes.typ);
           } else {
-            mAttributes[mAttributes.length - 1][key] = value;
+            mAttributes[mAttributes.length - 1][key] = attributes[key];
           }
         }
       }
     }
     return mAttributes;
+  };
+
+  /*
+   Convert a attribute type into json
+  */
+  Graph.prototype.attributeTypeToJson = function(type) {
+    if(type === 'String' || type === 'Bool' || type === 'Int' || type === 'Double') {
+      return type;
+    } else {
+      return {
+        type: 'enum',
+        name: type
+      }
+    }
+  };
+
+  /*
+   Convert a attribute value into json
+  */
+  Graph.prototype.attributeValueToJson = function(type, value) {
+    switch (type) {
+      case 'Bool':
+        return {
+          type: 'Bool',
+          value: (value === 'true')
+        };
+      case 'Int':
+        if (!this.isNumeric(value)) {
+          value = 0;
+        }
+        return {
+          type: 'Int',
+          value: parseInt(value)
+        };
+      case 'Double':
+        if (!this.isNumeric(value)) {
+          value = 0.0;
+        }
+        return  {
+          type: 'Double',
+          value: parseFloat(value)
+        };
+      case 'String':
+        return {
+          type: 'String',
+          value
+        };
+      default:
+        return {
+          type: 'enum',
+          enumName: type,
+          valueName: value
+        };
+    }
   };
 
   /*
@@ -223,26 +242,26 @@ export default (function() {
     Returns all input references of the element.
    */
   Graph.prototype.getInputs = function(element) {
-    const inputs = this.graph.getConnectedLinks(element, {
+    return this.graph.getConnectedLinks(element, {
       inbound: true
     }).filter(function(link) {
       return mCoreUtil.isReference(link);
-    });
-    return inputs.map(input => input.attributes.name);
-    //return this.createLinkdef(element, inputs, Constants.field.LINKDEF_INPUT);
+    }).map(input =>
+      input.attributes.name
+    );
   };
 
   /*
     Returns all output references of the element.
    */
   Graph.prototype.getOutputs = function(element) {
-    const outputs = this.graph.getConnectedLinks(element, {
+    return this.graph.getConnectedLinks(element, {
       outbound: true
     }).filter(function(link) {
       return mCoreUtil.isReference(link);
-    });
-      return outputs.map(output => output.attributes.name);
-    //return this.createLinkdef(element, outputs, Constants.field.LINKDEF_OUTPUT);
+    }).map(output =>
+      output.attributes.name
+    );
   };
 
   /*
@@ -251,7 +270,6 @@ export default (function() {
   Graph.prototype.getSources = function(reference) {
     const source = [this.graph.getCell(reference.attributes.source.id)][0];
     return source.attributes.name;
-    // return this.createLinkdef(reference, sources, Constants.field.LINKDEF_SOURCE);
   };
 
   /*
@@ -260,7 +278,6 @@ export default (function() {
   Graph.prototype.getTargets = function(reference) {
     const target = [this.graph.getCell(reference.attributes.target.id)][0];
     return target.attributes.name;
-    //return this.createLinkdef(reference, targets, Constants.field.LINKDEF_TARGET);
   };
 
   /*
@@ -275,42 +292,6 @@ export default (function() {
    */
   Graph.prototype.getTargetDeletionDeletesSource = function(reference) {
     return reference.attributes[Constants.field.TARGET_DELETION_DELETES_SOURCE] || false;
-  };
-
-
-  /*
-    Creates the linkdef object for the element.
-    connectedCells is an array of the directly connected cells (if element is a class, connectedCells is a list
-    of references, if element is a reference, connectedCells is a list of classes).
-    FieldName is inputs, outputs, source or target.
-   */
-  Graph.prototype.createLinkdef = function(element, connectedCells, fieldName) {
-    var cell, linkdef, match, obj, _i, _len;
-    linkdef = [];
-    for (_i = 0, _len = connectedCells.length; _i < _len; _i++) {
-      cell = connectedCells[_i];
-      obj = {
-        type: cell.attributes.name,
-        upperBound: 1,
-        lowerBound: 1,
-        deleteIfLower: false
-      };
-      if ((element.attributes != null) && (element.attributes[fieldName] != null)) {
-        match = element.attributes[fieldName].filter(function(field) {
-          return field.type === obj.type;
-        });
-        if (match.length > 0) {
-          obj = {
-            type: obj.type,
-            upperBound: match[0].upperBound,
-            lowerBound: match[0].lowerBound,
-            deleteIfLower: match[0].deleteIfLower
-          };
-        }
-      }
-      linkdef.push(obj);
-    }
-    return linkdef;
   };
 
   return Graph;
