@@ -1,9 +1,8 @@
 package de.htwg.zeta.common.models.entity
 
+import java.time.LocalDateTime
+import java.time.Duration
 import java.util.UUID
-
-import org.joda.time.DateTime
-import org.joda.time.Minutes
 
 case class TimedTask(
     id: UUID,
@@ -16,10 +15,10 @@ case class TimedTask(
 ) extends Entity {
 
   def delay: Int = {
-    val first = DateTime.parse(start)
-    val now = new DateTime()
-    val diff = Minutes.minutesBetween(now, first).getMinutes
-    if (diff > 0) diff else 1
+    val time = Duration.between(LocalDateTime.parse(start), LocalDateTime.now()).toMinutes
+
+    // at least 1 minute, but a maximum of Int.MaxValue minutes.
+    Math.max(1, Math.min(Int.MaxValue.toLong, time).toInt)
   }
 
 }
