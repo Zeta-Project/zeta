@@ -5,8 +5,6 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
   resolvers += Resolver.jcenterRepo,
 
   libraryDependencies ++= Seq(
-    // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
     // silhouette
     "com.mohiva" %% "play-silhouette" % "4.0.0",
     // play json

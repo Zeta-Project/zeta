@@ -16,8 +16,6 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
     // this is needed in akka persistence
     "org.iq80.leveldb" % "leveldb" % "0.7",
-    // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
     // docker client
     "com.spotify" % "docker-client" % "6.1.1",
     // scallop
