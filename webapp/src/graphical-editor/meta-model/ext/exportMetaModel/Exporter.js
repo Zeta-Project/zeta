@@ -72,8 +72,8 @@ export default (function() {
         superTypeNames: this.graph.getSuperTypes(element),
         attributes: this.graph.getAttributes(element),
         methods: this.graph.getEntityMethods(element),
-        inputs: this.graph.getInputs(element),
-        outputs: this.graph.getOutputs(element)
+        inputReferenceNames: this.graph.getInputs(element),
+        outputReferenceNames: this.graph.getOutputs(element)
       });
     }
     return classes;
@@ -124,11 +124,8 @@ export default (function() {
           name: thisAttribute.name,
           upperBound: thisAttribute.upperBound,
           lowerBound: thisAttribute.lowerBound,
-          default: {
-            type: thisAttribute.typ,
-            value: thisAttribute.default,
-          },
-          typ: thisAttribute.typ,
+          default: this.graph.attributeValueToJson(thisAttribute.typ, thisAttribute.default),
+          type: this.graph.attributeTypeToJson(thisAttribute.typ),
           expression: thisAttribute.expression,
           localUnique: thisAttribute.localUnique,
           globalUnique: thisAttribute.globalUnique,
