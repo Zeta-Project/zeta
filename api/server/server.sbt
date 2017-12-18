@@ -1,6 +1,4 @@
-lazy val akkaVersion = "2.4.18"
-
-lazy val server = ZetaBuild.inCurrent(project).settings(
+lazy val server = ZetaBuild.defaultProject(project).settings(
   name := "api",
   version := "0.1",
 
@@ -50,16 +48,7 @@ lazy val server = ZetaBuild.inCurrent(project).settings(
 
     // quicklens
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
-  ),
-  scalaVersion := "2.11.7",
-
-  ZetaBuild.scalaOptions,
-
-  scalastyleFailOnError := true,
-  ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
-  compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
-  wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements)
-
+  )
 ).enablePlugins(PlayScala).dependsOn(
   ZetaBuild.common,
   ZetaBuild.generatorControl,
