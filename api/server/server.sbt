@@ -16,17 +16,11 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
   wartremoverErrors += Wart.AsInstanceOf,
 
   libraryDependencies ++= Seq(
-    // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.2.0",
-
     // silhouette
     "com.mohiva" %% "play-silhouette" % "4.0.0",
     "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
     "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
     "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
-
-    //injection
-    "net.codingwell" %% "scala-guice" % "4.0.1",
 
     //typesafe
     "org.webjars" %% "webjars-play" % "2.5.0-2",
@@ -37,7 +31,6 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-actor" % "2.4.18",
     "com.typesafe.akka" %% "akka-kernel" % "2.4.18",
     "com.typesafe.akka" %% "akka-cluster" % "2.4.18",
-    "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
     "com.typesafe.akka" %% "akka-cluster-sharding" % "2.4.18",
     // "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",  // used for play integration testing
     //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing

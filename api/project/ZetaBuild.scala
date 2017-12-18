@@ -7,6 +7,7 @@ import sbt.file
 import sbt.Compile
 import sbt.Keys
 import sbt.Def
+import sbt.toGroupID
 import sbt.Keys.scalacOptions
 import sbt.Keys.compile
 import wartremover.WartRemover.autoImport.Wart
@@ -44,9 +45,19 @@ object ZetaBuild {
 
   val scalaVersion = Keys.scalaVersion := "2.11.7"
 
+  val standardLibraries = Keys.libraryDependencies ++= Seq(
+    // injection
+    "net.codingwell" %% "scala-guice" % "4.0.1",
+    // test
+    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+    // logging
+    "org.clapper" %% "grizzled-slf4j" % "1.2.0"
+  )
+
   val defaultSettings: Seq[Def.SettingsDefinition] = linterSettings ++ Seq(
     scalaOptions,
-    scalaVersion
+    scalaVersion,
+    standardLibraries
   )
 
 
