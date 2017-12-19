@@ -17,10 +17,10 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
 
   libraryDependencies ++= Seq(
     // silhouette
-    "com.mohiva" %% "play-silhouette" % "4.0.0",
-    "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
-    "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
-    "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
+    "com.mohiva" %% "play-silhouette" % ZetaBuild.silhouetteVersion,
+    "com.mohiva" %% "play-silhouette-password-bcrypt" % ZetaBuild.silhouetteVersion,
+    "com.mohiva" %% "play-silhouette-persistence" % ZetaBuild.silhouetteVersion,
+    "com.mohiva" %% "play-silhouette-crypto-jca" % ZetaBuild.silhouetteVersion,
 
     //typesafe
     "org.webjars" %% "webjars-play" % "2.5.0-2",
@@ -32,7 +32,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-kernel" % "2.4.18",
     "com.typesafe.akka" %% "akka-cluster" % "2.4.18",
     "com.typesafe.akka" %% "akka-cluster-sharding" % "2.4.18",
-    // "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",  // used for play integration testing
+    // "com.mohiva" %% "play-silhouette-testkit" % ZetaBuild.silhouetteVersion % "test",  // used for play integration testing
     //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing
 
     //scala

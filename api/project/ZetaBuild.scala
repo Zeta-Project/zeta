@@ -22,6 +22,7 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
+  val silhouetteVersion = "4.0.0"
 
   val scalaOptions = scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
