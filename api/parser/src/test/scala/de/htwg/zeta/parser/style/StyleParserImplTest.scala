@@ -10,7 +10,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
 
   val parserToTest: StyleParserImpl = new StyleParserImpl
 
-  val styleToTestSuccess =
+  val styleToTestSuccess: String =
     """
      |style Y {
      |  description = "Style for a connection between an interface and its implementing class"
@@ -30,7 +30,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
      |}
     """.stripMargin
 
-  val styleToTestSuccess2 =
+  val styleToTestSuccess2: String =
     """
      |style
      |Y
@@ -45,7 +45,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
      |}
     """.stripMargin
 
-  val styleWithoutParentStyle =
+  val styleWithoutParentStyle: String =
     """
      |style MyStyle {
      | description = "Style without parent styles"
@@ -53,7 +53,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
     """.stripMargin
 
 
-  val styleWithSingleParentStyle =
+  val styleWithSingleParentStyle: String =
     """
      |style ParentStyle { description = "Parent style" }
      |style ChildStyle extends ParentStyle {
@@ -61,7 +61,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
      |}
     """.stripMargin
 
-  val styleWithMultipleParentStyles =
+  val styleWithMultipleParentStyles: String =
     """
      |style ParentStyle1 { description = "Parent Style1" }
      |style ParentStyle2 { description = "Parent Style2" }
@@ -71,21 +71,21 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
      |}
     """.stripMargin
 
-  val styleWithUndefinedParentStyle =
+  val styleWithUndefinedParentStyle: String =
     """
      |style MyStyle extends NoSuchParentStyleDefined {
      |  description = "Style with extends an undefined parent style"
      |}
     """.stripMargin
 
-  val styleWithInvalidParentStyle =
+  val styleWithInvalidParentStyle: String =
     """
      |style MyStyle extends {
      |  description = "This style uses the 'extends' keyword but does not specify a parent style"
      |}
     """.stripMargin
 
-  val styleWhichExtendsItself =
+  val styleWhichExtendsItself: String =
     """
      |style MyStyle extends MyStyle {
      |  description = "This style extends itself which is forbidden"
@@ -141,53 +141,12 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
      |}
     """.stripMargin
 
-  val trivialCycle: String =
+  val styleWithInvalidGradientOrientation: String =
     """
-     | style A extends B { description = "" }
-     | style B extends A { description = "" }
-    """.stripMargin
-
-  val selfCycleIn2ndParent: String =
-    """
-     | style A { description = "" }
-     | style B extends A, B { description = "" }
-    """.stripMargin
-
-  val trivialCycleIn2ndParent: String =
-    """
-     | style A { description = "" }
-     | style B extends A, C { description = "" }
-     | style C extends A, B { description = "" }
-    """.stripMargin
-
-  val triangleCycle: String =
-    """
-     | style A extends B { description = "" }
-     | style B extends C { description = "" }
-     | style C extends A { description = "" }
-    """.stripMargin
-
-  val acyclicGraph: String =
-    """
-     | style Parent { description = "" }
-     | style A extends Parent { description = "" }
-     | style B extends Parent { description = "" }
-    """.stripMargin
-
-  val diamondGraph: String =
-    """
-     | style A { description = "" }
-     | style B1 extends A { description = "" }
-     | style B2 extends A { description = "" }
-     | style C extends B1, B2 { description = "" }
-    """.stripMargin
-
-  val diamondGraphWithCycles: String =
-    """
-     | style A  extends C { description = "" }
-     | style B1 extends A { description = "" }
-     | style B2 extends A { description = "" }
-     | style C extends B1, B2 { description = "" }
+      |style StyleWithInvalidGradientOrientation {
+      |  description = "allowed values: horizontal or vertical"
+      |  gradient-orientation = abc
+      |}
     """.stripMargin
 
   "A StyleParser" should "succeed" in {
@@ -242,7 +201,7 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
     styleParser.successful shouldBe false
   }
 
-  "A StyleParser" should "fail without Braces" in {
+  "A StyleParser" should "fail without braces" in {
     val styleParser = parserToTest.parseStyles(styleWithoutBraces)
     styleParser.successful shouldBe false
   }
@@ -254,6 +213,11 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
 
   "A StyleParser" should "fail if an invalid color is specified" in {
     val styleParser = parserToTest.parseStyles(styleWithInvalidColor)
+    styleParser.successful shouldBe false
+  }
+
+  "A StyleParser" should "fail if an invalid gradient orientation is specified" in {
+    val styleParser = parserToTest.parseStyles(styleWithInvalidGradientOrientation)
     styleParser.successful shouldBe false
   }
 }
