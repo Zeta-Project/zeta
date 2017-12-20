@@ -72,7 +72,8 @@
  <check enabled="true" class="org.scalastyle.scalariform.EqualsHashCodeChecker" level="warning"/>
  <check enabled="true" class="org.scalastyle.scalariform.FieldNamesChecker" level="warning">
   <parameters>
-   <parameter name="regex">(^\(([a-z][A-Za-z0-9]*,\W)+[a-z][A-Za-z0-9]*\)$)|(^[a-z][A-Za-z0-9]*$)</parameter>
+   <parameter name="regex">^[a-z][A-Za-z0-9]*$</parameter>
+   <parameter name="objectFieldRegex">^[a-z][A-Za-z0-9]*$</parameter>
   </parameters>
  </check>
  <check enabled="true" class="org.scalastyle.scalariform.ForBraceChecker" level="warning"/>
@@ -170,7 +171,7 @@
  <check enabled="true" class="org.scalastyle.scalariform.SpacesAfterPlusChecker" level="warning"/>
  <check enabled="true" class="org.scalastyle.scalariform.SpacesBeforePlusChecker" level="warning"/>
  <check enabled="true" class="org.scalastyle.scalariform.StructuralTypeChecker" level="warning"/>
- <check enabled="true" class="org.scalastyle.scalariform.TodoCommentChecker" level="warning">
+ <check enabled="false" class="org.scalastyle.scalariform.TodoCommentChecker" level="warning">
   <parameters>
    <parameter default="TODO|FIXME" type="string" name="words"/>
   </parameters>
