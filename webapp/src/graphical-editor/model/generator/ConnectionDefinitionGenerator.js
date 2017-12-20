@@ -5,6 +5,7 @@ class ConnectionDefinitionGenerator {
         this.placingShape = {
             'line': (shape) => this.generateLineShape(shape),
             'polyline': (shape) => this.generatePolyLineShape(shape),
+            'polygon': (shape) => this.generatePolygonShape(shape),
             'rectangle': (shape, distance) => this.generateRectangleShape(shape, distance),
             'roundedRectangle': (shape, distance) => this.generateRoundedRectangleShape(shape, distance),
             'ellipse': (shape, distance) => this.generateEllipseShape(shape, distance),
@@ -103,16 +104,16 @@ class ConnectionDefinitionGenerator {
         return this.generatePlacingShapeStyle(shape, roundedRectangle)        
       }
     
-      /*
-      private def generatePlacingShape(shape: Polygon, distance: Int) = {
-        """
-        markup: '<polygon />',
-        attrs:{
-          points: """" + shape.points.map(point => point.x + "," + point.y + { if (point != shape.points.last) " " else "\"" }).mkString + raw""",
-          ${if (shape.style.isDefined) StyleGenerator.commonAttributes(shape.style.get) else ""}
+      
+      generatePolygonShape(polygon) {
+        const shape = {
+            markup: '<polygon />',
+            attrs:{
+              points: this.generatePoints(polygon.points)          
+            }
         }
-        """
-      }*/
+        return this.generatePlacingShapeStyle(shape, polygon);      
+      }
     
     generateEllipseShape(ellipse, distance) {
         const shape = {

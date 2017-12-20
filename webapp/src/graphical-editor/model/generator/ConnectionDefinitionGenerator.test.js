@@ -265,6 +265,40 @@ describe('createPlacing', () => {
     ])
   })
 
+  test('with a Polygon as Shape without a Style', () => {
+    const connections = createDefaultTestConnection(
+      {
+        "positionOffset": 1.0,
+        "shape": {
+          "points": [
+            {
+              "x": 0,
+              "y": 0,
+            },
+            {
+              "x": 1,
+              "y": 1,
+            }
+          ],
+          "type": "polygon",
+        }
+      }
+    )
+
+    const generator = create(connections)
+
+    expect(generator.getPlacings('Connection1')).toEqual(
+      [
+        {
+          position: 1.0,
+          markup: '<polygon />',
+          attrs: {
+              points: "0,0 1,1",
+          }
+        }
+    ])
+  })
+
   test('with a Rectangle as Shape without a Style', () => {
     const connections = [
       {
