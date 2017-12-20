@@ -468,3 +468,17 @@ describe('createPlacing', () => {
     ])
   })
 });
+
+describe('getConnectionStyle', () => {
+  function create(connections) {
+    const generator = new ConnectionDefinitionGenerator(connections)
+    return generator;
+  }
+
+  test('with empty connetions', () => {
+    const generator = create([])
+
+    expect(generator.getConnectionStyle('Connection1')).toEqual([])
+  })
+
+});

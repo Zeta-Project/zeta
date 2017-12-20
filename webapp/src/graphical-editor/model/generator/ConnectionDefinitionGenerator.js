@@ -14,22 +14,24 @@ class ConnectionDefinitionGenerator {
     }
 
     generate(connections) {
-        let result = {}
+        let result = {};
         connections.map(function(connection) {
             result.push(createConnection(connection))
-        })
+        });
         return result;
     }
 
+    createConnectionStyle(connection) {
+    }
+
     createPlacingList(connection) {
-        const result = connection.placings.map(this.createPlacing, this);
-        return result;
+        return connection.placings.map(this.createPlacing, this);
     }
 
     createPlacing(placing) {
         const generatedPlacing = {
             position: placing.positionOffset
-        }
+        };
         return Object.assign(generatedPlacing, this.createPlacingShape(placing));
     }
 
@@ -96,7 +98,7 @@ class ConnectionDefinitionGenerator {
     }
     
       
-      generatePolygonShape(polygon) {
+    generatePolygonShape(polygon) {
         return {
             markup: '<polygon />',
             attrs:{
@@ -148,12 +150,13 @@ class ConnectionDefinitionGenerator {
 
 export default class Generator{
     constructor(connections) {
-        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator()
-        this.connections = connections
+        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator();
+        this.connections = connections;
     }
 
     getConnectionStyle(styleName) {
-        
+        const connection = this.connections.find(c => c.name === styleName);
+        return connection ? this.connectionDefinitionGenerator.createConnectionStyle(connection): [];
     }
 
     getPlacings(styleName) {
