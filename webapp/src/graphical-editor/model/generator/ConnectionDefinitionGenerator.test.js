@@ -480,6 +480,44 @@ describe('getConnectionStyle', () => {
 
     expect(generator.getConnectionStyle('Connection1')).toEqual({})
   })
+
+  test('Dynamic Testing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "style": "testStyle"
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual({
+    })
+  })
+
+  test('a Connection without a Style', () => {
+    const connections = [
+      {
+        "name": "Connection1"
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual({
+      '.connection':{stroke: 'black'}
+    })
+  })
+
+  test('a Connection with a Style', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "style": "testStyle"
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual({}
+    )
   })
 
 });

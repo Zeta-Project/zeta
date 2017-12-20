@@ -22,6 +22,32 @@ class ConnectionDefinitionGenerator {
     }
 
     createConnectionStyle(connection) {
+
+        const style = Object.assign(
+            this.createStyle(connection),
+            this.handlePlacings(connection)
+        )
+
+        return style;
+    }
+
+    getStyle(styleName) {
+        return {}
+    }
+
+    createStyle(connection) {
+        if ('style' in connection) {
+            return this.getStyle(connection.style);
+        }
+        return {'.connection':{stroke: 'black'}}
+    }
+
+    createInlineStyle(connection) {
+        return {};
+    }
+
+    handlePlacings(connection) {
+        return {};
     }
 
     createPlacingList(connection) {
