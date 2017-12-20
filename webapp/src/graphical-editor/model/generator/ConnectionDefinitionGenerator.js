@@ -36,16 +36,13 @@ class ConnectionDefinitionGenerator {
     createPlacingShape(placing) {
 
         let placingShape = this.placingShape[placing.shape.type](placing.shape, placing.positionDistance);
+        placingShape.attrs = placing.shape.type !== 'text' && 'style' in placing.shape ? Object.assign(placingShape.attrs, {style: placing.shape.style}): placingShape.attrs;
+    
         return placingShape;
     }
 
-    generatePlacingShapeStyle(generatedShape, shape) {
-        generatedShape.attrs = 'style' in shape ? Object.assign(generatedShape.attrs, {style: shape.style}): generatedShape.attrs;
-        return generatedShape;
-    }
-
     generateLineShape(line) {
-        const shape = {
+        return {
             markup: '<line />',
             attrs: {
                 x1: line.startPoint.x,
@@ -54,19 +51,16 @@ class ConnectionDefinitionGenerator {
                 y2: line.endPoint.y
             }
         };
-        return this.generatePlacingShapeStyle(shape, line)
     }
 
     generatePolyLineShape(shape) {
-        const polyLineShape = {
+        return {
             markup: '<polyline />',
             attrs: {
                 points: this.generatePoints(shape.points),
                 fill: 'transparent'
             }
-        };  
-        return this.generatePlacingShapeStyle(polyLineShape, shape)
-        
+        };          
     }
 
     generatePoints(points) {
@@ -78,20 +72,18 @@ class ConnectionDefinitionGenerator {
     }
     
     generateRectangleShape(rectangle, distance) {
-        const shape = {
+        return {
             markup: '<rect />',
             attrs:{
                 height: rectangle.sizeHeight,
                 width: rectangle.sizeWidth,
                 y: distance - rectangle.sizeHeight / 2
             }
-        };
-        return this.generatePlacingShapeStyle(shape, rectangle)
-        
+        };        
     }
     
     generateRoundedRectangleShape(roundedRectangle, distance) {
-        const shape = {
+        return {
             markup: '<rect />',
             attrs:{
                 height: roundedRectangle.sizeHeight,
@@ -101,30 +93,27 @@ class ConnectionDefinitionGenerator {
                 y: distance - roundedRectangle.sizeHeight / 2,
             }
         }
-        return this.generatePlacingShapeStyle(shape, roundedRectangle)        
-      }
+    }
     
       
       generatePolygonShape(polygon) {
-        const shape = {
+        return {
             markup: '<polygon />',
             attrs:{
               points: this.generatePoints(polygon.points)          
             }
         }
-        return this.generatePlacingShapeStyle(shape, polygon);      
       }
     
     generateEllipseShape(ellipse, distance) {
-        const shape = {
+        return {
             markup: '<ellipse />',
             attrs:{
                 rx: ellipse.sizeWidth / 2,
                 ry: ellipse.sizeHeight / 2,
                 cy: distance,
             }
-        }
-        return this.generatePlacingShapeStyle(shape, ellipse);   
+        };
     }
     
     generateTextShape(text) {
