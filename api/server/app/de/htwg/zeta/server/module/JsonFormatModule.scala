@@ -42,7 +42,7 @@ class JsonFormatModule extends ScalaModule {
     bind[TimedTaskFormat].toInstance(new TimedTaskFormat)
     bind[AttributeTypeFormat].toInstance(new AttributeTypeFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble, sUnit = "Unit"))
     bind[AttributeValueFormat].toInstance(new AttributeValueFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble))
-    bind[EnumFormat].toInstance(new EnumFormat(sValueNames = "values"))
+    bind[EnumFormat].toInstance(new EnumFormat)
   }
 
   @Provides
