@@ -478,7 +478,8 @@ describe('getConnectionStyle', () => {
   test('with empty connetions', () => {
     const generator = create([])
 
-    expect(generator.getConnectionStyle('Connection1')).toEqual([])
+    expect(generator.getConnectionStyle('Connection1')).toEqual({})
+  })
   })
 
 });

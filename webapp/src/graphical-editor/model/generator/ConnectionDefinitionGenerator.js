@@ -96,7 +96,6 @@ class ConnectionDefinitionGenerator {
             }
         }
     }
-    
       
     generatePolygonShape(polygon) {
         return {
@@ -105,7 +104,7 @@ class ConnectionDefinitionGenerator {
               points: this.generatePoints(polygon.points)          
             }
         }
-      }
+    }
     
     generateEllipseShape(ellipse, distance) {
         return {
@@ -156,7 +155,7 @@ export default class Generator{
 
     getConnectionStyle(styleName) {
         const connection = this.connections.find(c => c.name === styleName);
-        return connection ? this.connectionDefinitionGenerator.createConnectionStyle(connection): [];
+        return connection ? this.connectionDefinitionGenerator.createConnectionStyle(connection): {};
     }
 
     getPlacings(styleName) {
