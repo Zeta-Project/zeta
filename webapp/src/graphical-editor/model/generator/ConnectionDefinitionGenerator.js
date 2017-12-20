@@ -4,14 +4,13 @@ class ConnectionDefinitionGenerator {
     constructor() {
         this.placingShape = {
             'line': (shape) => this.generateLineShape(shape),
-            'polyLine': (shape) => this.generatePolyLineShape(shape),
+            'polyline': (shape) => this.generatePolyLineShape(shape),
             'rectangle': (shape, distance) => this.generateRectangleShape(shape, distance),
             'roundedRectangle': (shape, distance) => this.generateRoundedRectangleShape(shape, distance),
             'ellipse': (shape, distance) => this.generateEllipseShape(shape, distance),
             'text': (shape) => this.generateTextShape(shape)
         };
     }
-    
 
     generate(connections) {
         let result = {}
@@ -61,30 +60,20 @@ class ConnectionDefinitionGenerator {
         const polyLineShape = {
             markup: '<polyline />',
             attrs: {
-                points: [
-                    shape.points.map(function(point) {
-                        
-                    })
-                       //+ shape.points.map(point => point.x + ", " + point.y + { if (point != shape.points.last) " " else "\"" }).mkString("") + raw
-                ],
+                points: this.generatePoints(shape.points),
                 fill: 'transparent'
             }
         };  
-
-        if ('style' in polyLineShape) {
-            return Object.assign(polyLineShape.attrs, this.stylegetCommonAttributes(shape.style));
-        };
-        return polyLineShape;
+        return this.generatePlacingShapeStyle(polyLineShape, shape)
+        
     }
 
     generatePoints(points) {
         let pointString = "";
-
         points.map(function(point) {
-            pointString += (`${point.x}, ${point.y}, `)
+            pointString += (`${point.x},${point.y} `)
         })
-        pointString.pop().pop();
-        pointString += "/";
+        return pointString.trim();
     }
     
     generateRectangleShape(rectangle, distance) {
