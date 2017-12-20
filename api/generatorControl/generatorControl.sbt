@@ -4,7 +4,7 @@ lazy val akkaVersion = "2.4.18"
 lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
   name := "generatorControl",
   version := "0.1",
-
+  fork := true, // this is needed for akka-kryo-serialization
   libraryDependencies ++= Seq(
     // akka
     "com.typesafe.akka" %% "akka-cluster-metrics" % akkaVersion,

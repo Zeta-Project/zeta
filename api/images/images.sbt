@@ -1,6 +1,6 @@
 
 def baseSettings = {
-  Revolver.settings ++ Seq(
+  Seq(
     fork := true,
     scalaVersion := "2.11.7",
     libraryDependencies ++= Seq(

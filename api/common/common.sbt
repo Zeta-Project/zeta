@@ -6,14 +6,14 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
 
   libraryDependencies ++= Seq(
     // silhouette
-    "com.mohiva" %% "play-silhouette" % "4.0.0",
+    "com.mohiva" %% "play-silhouette" % ZetaBuild.silhouetteVersion,
     // play json
     "com.typesafe.play" %% "play-json" % "2.5.7",
     // akka actor
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
     // rxScala
-    "io.reactivex" %% "rxscala" % "0.26.2",
+    "io.reactivex" %% "rxscala" % "0.26.5",
     // websocket
     "com.neovisionaries" % "nv-websocket-client" % "1.30"
   )
