@@ -1,6 +1,17 @@
-// Style fliegt raus. Bloß noch ein String.
 
 class ConnectionDefinitionGenerator { 
+
+    constructor() {
+        this.placingShape = {
+            'line': (shape) => this.generateLineShape(shape),
+            'polyLine': (shape) => this.generatePolyLineShape(shape),
+            'rectangle': (shape, distance) => this.generateRectangleShape(shape, distance),
+            'roundedRectangle': (shape, distance) => this.generateRoundedRectangleShape(shape, distance),
+            'ellipse': (shape, distance) => this.generateEllipseShape(shape, distance),
+            'text': (shape) => this.generateTextShape(shape)
+        };
+    }
+    
 
     generate(connections) {
         let result = {}
@@ -23,27 +34,13 @@ class ConnectionDefinitionGenerator {
     }
 
     createPlacingShape(placing) {
-        const shape = placing.shape;
 
-        // lieber statisches Object das die Funktionen hält
-
-        switch(shape.type) {
-            case 'Line': return this.generateLineShape(shape);
-            case 'PolyLine': return this.generatePolyLineShape(shape);
-            case 'Rectangle': return this.generateRectangleShape(shape, placing.positionDistance);
-            case 'RoundedRectangle': return this.generateRoundedRectangleShape(shape, placing.positionDistance);
-            case 'Ellipse': return this.generateEllipseShape(shape, placing.positionDistance);    
-            case 'Text': return this.generateTextShape(shape);        
-        }
-    }
-
-    styleGetCommonAttributes(style) {
-        // TODO 
-        return {"style": "dummy"}
+        let placingShape = this.placingShape[placing.shape.type](placing.shape, placing.positionDistance);
+        return placingShape;
     }
 
     generatePlacingShapeStyle(generatedShape, shape) {
-        generatedShape.attrs = 'style' in shape ? Object.assign(generatedShape.attrs, this.styleGetCommonAttributes(shape.style)): generatedShape.attrs;
+        generatedShape.attrs = 'style' in shape ? Object.assign(generatedShape.attrs, {style: shape.style}): generatedShape.attrs;
         return generatedShape;
     }
 

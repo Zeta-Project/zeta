@@ -172,7 +172,7 @@ describe('createPlacing', () => {
             "y": 0,
           },
           "style": "Style1",
-          "type": "Line",
+          "type": "line",
         }
       }
     )
@@ -189,7 +189,7 @@ describe('createPlacing', () => {
               y1: 0,
               x2: 0,
               y2: 0,
-              style: "dummy"
+              style: "Style1"
           }
         }
     ])
@@ -208,7 +208,7 @@ describe('createPlacing', () => {
             "x": 0,
             "y": 0,
           },
-          "type": "Line",
+          "type": "line",
         }
       }
     )
@@ -241,7 +241,7 @@ describe('createPlacing', () => {
             "shape": {
               "sizeHeight": 2,
               "sizeWidth": 1,
-              "type": "Rectangle",
+              "type": "rectangle",
             }
           }
         ]
@@ -277,7 +277,7 @@ describe('createPlacing', () => {
               "curveWidth": 1,
               "sizeHeight": 2,
               "sizeWidth": 1,
-              "type": "RoundedRectangle",
+              "type": "roundedRectangle",
             }
           }
         ]
@@ -313,7 +313,7 @@ describe('createPlacing', () => {
             "shape": {
               "sizeHeight": 2,
               "sizeWidth": 2,
-              "type": "Ellipse",
+              "type": "ellipse",
             }
           }
         ]
@@ -346,7 +346,7 @@ describe('createPlacing', () => {
             "shape": {
               "textBody": "Hallo",
               "sizeHeight": 2,
-              "type": "Text",
+              "type": "text",
             }
           }
         ]
