@@ -107,7 +107,7 @@ export default (function() {
       thisMEnum = _ref[_i];
       enums.push({
         name: thisMEnum.name,
-        values: thisMEnum.symbols
+        valueNames: thisMEnum.symbols
       });
     }
     return enums;
