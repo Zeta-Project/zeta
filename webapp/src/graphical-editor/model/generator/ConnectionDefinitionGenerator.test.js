@@ -485,7 +485,27 @@ describe('getConnectionStyle', () => {
     const connections = [
       {
         "name": "Connection1",
-        "style": "testStyle"
+        "style": "testStyle",
+        "placings": [
+          {
+            "positionOffset": 1.0,            
+            "shape": {
+              "textBody": "positionOffset1",
+              "sizeHeight": 2,
+              "type": "text",
+              "style": "exampleStyle"
+            }
+          },
+          {
+            "positionOffset": 0.0,            
+            "shape": {
+              "textBody": "positionOffset0",
+              "sizeHeight": 2,
+              "type": "text",
+              "style": "exampleStyle"
+            }
+          }
+        ]
       }
     ]
 
@@ -503,7 +523,8 @@ describe('getConnectionStyle', () => {
 
     const generator = create(connections);
     expect(generator.getConnectionStyle('Connection1')).toEqual({
-      '.connection':{stroke: 'black'}
+      '.connection':{stroke: 'black'},
+      '.marker-target': {"d": "M 0 0"}
     })
   })
 
@@ -516,7 +537,7 @@ describe('getConnectionStyle', () => {
     ]
 
     const generator = create(connections);
-    expect(generator.getConnectionStyle('Connection1')).toEqual({}
+    expect(generator.getConnectionStyle('Connection1')).toEqual({'.marker-target': {"d": "M 0 0"}}
     )
   })
 

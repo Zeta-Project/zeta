@@ -24,7 +24,7 @@ class ConnectionDefinitionGenerator {
     createConnectionStyle(connection) {
 
         const style = Object.assign(
-            this.createStyle(connection),
+            this.createBasicConnectionStyle(connection),
             this.handlePlacings(connection)
         )
 
@@ -32,10 +32,11 @@ class ConnectionDefinitionGenerator {
     }
 
     getStyle(styleName) {
+        // Dummy -> Return a Style from StyleGenerator
         return {}
     }
 
-    createStyle(connection) {
+    createBasicConnectionStyle(connection) {
         if ('style' in connection) {
             return this.getStyle(connection.style);
         }
@@ -47,7 +48,53 @@ class ConnectionDefinitionGenerator {
     }
 
     handlePlacings(connection) {
+        let placingStyle = {'.marker-target': {d: 'M 0 0'}};
+
+        if ('placings' in connection) {
+            const blub0 = connection.placings.find((p) => p.positionOffset === 0.0);  
+            const blub1 = connection.placings.find((p) => p.positionOffset === 1.0);  
+
+            if (blub0) {
+                placingStyle['.marker-source'] = this.createStyleMarkerSource(blub0);
+            }
+
+            if (blub1) {
+                placingStyle['.marker-target'] = this.createSpecificStyleMarkerTarget(blub1);
+            }/* else {
+                placingStyle['.marker-target'] = this.createDefaultStyleMarkerTarget();
+            }*/
+            
+            console.log(placingStyle);        
+            
+        }
+        return placingStyle;
+    }
+
+    handlePlacing(placing) {
+        console.log(placing)
+    }
+
+    createStyleMarkerSource(placing) {
         return {};
+    }
+
+    createSpecificStyleMarkerTarget(placing) {
+        return {};
+    }
+
+    createDefaultStyleMarkerTarget() {
+        return {
+            d: 'M 0 0' 
+          };
+    }
+
+    generateStyle(style) {
+        return {
+            dummy: 'Dummy',
+            text: {
+                textDummy: 'Dummy'
+            }
+        }
     }
 
     createPlacingList(connection) {
@@ -175,6 +222,7 @@ class ConnectionDefinitionGenerator {
 
 export default class Generator{
     constructor(connections) {
+        // Braucht eine Uebergabe eines StyleGenerators
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator();
         this.connections = connections;
     }
