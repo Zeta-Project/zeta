@@ -25,7 +25,7 @@ class ModelController @Inject()(
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     modelEntityRepo.restrictedTo(request.identity.id).read(modelId).map { model =>
-      Ok(views.html.model.ModelGraphicalEditor(model, request.identity))
+      Ok(views.html.model.ModelGraphicalEditor(model, request.identity.user))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }

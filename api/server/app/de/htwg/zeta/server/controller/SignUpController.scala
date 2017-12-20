@@ -18,6 +18,7 @@ import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
+import de.htwg.zeta.server.model.identity.ZetaIdentity
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -111,7 +112,7 @@ class SignUpController @Inject()(
         bodyHtml = Some(views.html.silhouette.emails.signUp(user, url, messages).body)
       ))
 
-      silhouette.env.eventBus.publish(SignUpEvent(user, request))
+      silhouette.env.eventBus.publish(SignUpEvent(ZetaIdentity(user), request))
       result
     }
   }

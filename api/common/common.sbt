@@ -5,8 +5,6 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
   resolvers += Resolver.jcenterRepo,
 
   libraryDependencies ++= Seq(
-    // silhouette
-    "com.mohiva" %% "play-silhouette" % ZetaBuild.silhouetteVersion,
     // play json
     "com.typesafe.play" %% "play-json" % "2.5.7",
     // akka actor

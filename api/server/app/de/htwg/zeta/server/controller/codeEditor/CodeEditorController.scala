@@ -21,27 +21,27 @@ class CodeEditorController @Inject()(
 ) extends Controller {
 
   def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity), metaModelId, dslType))
+    Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity.user), metaModelId, dslType))
   }
 
   def methodClassCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
       val code = metaModelEntity.concept.classMap(className).methodMap(methodName).code
-      Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity, metaModelId, methodName, "class", code, className))
+      Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity.user, metaModelId, methodName, "class", code, className))
     }
   }
 
   def methodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
       val code = metaModelEntity.concept.referenceMap(referenceName).methodMap(methodName).code
-      Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity, metaModelId, methodName, "reference", code, referenceName))
+      Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity.user, metaModelId, methodName, "reference", code, referenceName))
     }
   }
 
   def methodMainCodeEditor(metaModelId: UUID, methodName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
       val code = metaModelEntity.concept.methodMap(methodName).code
-      Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity, metaModelId, methodName, "common", code, ""))
+      Ok(views.html.methodCodeEditor.MethodCodeEditor(request.identity.user, metaModelId, methodName, "common", code, ""))
     }
   }
 

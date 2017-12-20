@@ -42,6 +42,7 @@ import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
+import de.htwg.zeta.server.model.identity.ZetaIdentity
 import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
 import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
 import de.htwg.zeta.server.util.auth.ZetaEnv
@@ -93,12 +94,12 @@ class SilhouetteModule extends ScalaModule {
   def provideUserIdentityService(
     loginInfoPersistence: LoginInfoRepository,
     userPersistence: UserRepository
-  ): IdentityService[User] = {
-    new IdentityService[User] {
-      override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = {
+  ): IdentityService[ZetaIdentity] = {
+    new IdentityService[ZetaIdentity] {
+      override def retrieve(loginInfo: LoginInfo): Future[Option[ZetaIdentity]] = {
         val userId = loginInfoPersistence.read(loginInfo)
         val user = userId.flatMap { userId => userPersistence.read(userId) }
-        user.map { user => Some(user)
+        user.map { user => Some(ZetaIdentity(user))
         }.recover {
           case _ => None
         }
@@ -116,7 +117,7 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   def provideEnvironment(
-      userService: IdentityService[User], // scalastyle:ignore
+      userService: IdentityService[ZetaIdentity], // scalastyle:ignore
       authenticatorService: AuthenticatorService[CookieAuthenticator],
       eventBus: EventBus
   ): Environment[ZetaEnv] = {
