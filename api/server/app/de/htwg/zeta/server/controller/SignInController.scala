@@ -16,6 +16,7 @@ import controllers.routes
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
+import de.htwg.zeta.server.model.identity.ZetaIdentity
 import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
@@ -83,7 +84,7 @@ class SignInController @Inject()(
                     authenticator
                   }
                 }.flatMap { authenticator =>
-                  silhouette.env.eventBus.publish(LoginEvent(user, request))
+                  silhouette.env.eventBus.publish(LoginEvent(ZetaIdentity(user), request))
                   silhouette.env.authenticatorService.init(authenticator)(request).flatMap { v =>
                     silhouette.env.authenticatorService.embed(v, Redirect("/"))(request)
                   }

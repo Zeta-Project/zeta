@@ -29,7 +29,7 @@ class ApplicationController @Inject()(
    * @return The result to display.
    */
   def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.webpage.WebpageIndex(Some(request.identity)))
+    Ok(views.html.webpage.WebpageIndex(Some(request.identity.user)))
   }
 
   /** Get the user id of the logged in user

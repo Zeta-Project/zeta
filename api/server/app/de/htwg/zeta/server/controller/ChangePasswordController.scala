@@ -42,7 +42,7 @@ class ChangePasswordController @Inject()(
    * @return The result to display.
    */
   def view(request: SecuredRequest[ZetaEnv, AnyContent], messages: Messages): Result = {
-    Ok(views.html.silhouette.changePassword(ChangePasswordForm.form, request.identity, request, messages))
+    Ok(views.html.silhouette.changePassword(ChangePasswordForm.form, request.identity.user, request, messages))
   }
 
   /**
@@ -54,7 +54,7 @@ class ChangePasswordController @Inject()(
    */
   def submit(request: SecuredRequest[ZetaEnv, AnyContent], messages: Messages): Future[Result] = {
     ChangePasswordForm.form.bindFromRequest()(request).fold(
-      form => Future.successful(BadRequest(views.html.silhouette.changePassword(form, request.identity, request, messages))),
+      form => Future.successful(BadRequest(views.html.silhouette.changePassword(form, request.identity.user, request, messages))),
       password => {
         val (currentPassword, newPassword) = password // scalastyle:ignore
         val credentials = Credentials(request.identity.email, currentPassword)
