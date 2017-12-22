@@ -23,7 +23,7 @@ import de.htwg.zeta.server.generator.parser.SprayParser
 import de.htwg.zeta.server.model.result.Failure
 import de.htwg.zeta.server.model.result.Success
 import de.htwg.zeta.server.model.result.Unreliable
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result

@@ -8,7 +8,7 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.Authorization
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.actions.SecuredRequestHandlerBuilder
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.i18n.MessagesApi
 import play.api.mvc.Request
 import play.api.mvc.Result

@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.metaModel.MetaModelWsActor
 import de.htwg.zeta.server.model.metaModel.MetaModelWsMediatorContainer
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller

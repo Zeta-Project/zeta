@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.model.identity
+package de.htwg.zeta.server.silhouette
 
 import java.util.UUID
 
