@@ -165,6 +165,9 @@ class HighlightGenerator {
     }
 }
 
+/**
+ * Generator of styles information for JointJS
+ */
 export default class Generator {
     constructor(styles) {
         this.styles = styles;
