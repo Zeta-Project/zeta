@@ -17,6 +17,23 @@ function findVal(edge, key) {
     return null;
 }
 
+function createMappingEdges(diagram) {
+    const mapper = {};
+    diagram.model.edges.forEach(edge => {
+        const attributes = edge.connection && edge.connection.vars ? createMappingAttribute(edge) : {};
+        mapper[edge.mReference] = attributes;
+    });
+    return mapper;
+}
+
+function createMappingAttribute(edge) {
+    const mapper = {};
+    edge.connection.vars.forEach(entry => {
+        mapper[entry.key] = entry.value;
+    });
+    return mapper;
+}
+
 /**
  * Generator of linkhelper for JointJS to map Reference attribute to
  * textbox and resolve label text
@@ -30,5 +47,10 @@ export default class LinkHelperGenerator {
     getLabelText(edgeName, textId) {
         const edge = findEdge(this.diagram, edgeName);
         return getEdgeVal(edge, textId);
+    }
+
+    get mapping() {
+        const condition = this.diagram && this.diagram.model && this.diagram.model.edges;
+        return condition ? createMappingEdges(this.diagram) : {};
     }
 }

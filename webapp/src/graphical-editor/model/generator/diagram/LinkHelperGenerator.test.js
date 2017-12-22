@@ -27,3 +27,35 @@ describe('getLabelText', () => {
         expect(linkhelper.getLabelText('association', 'text_id')).toEqual('label');
     });
 });
+
+describe('mapping', () => {
+    test('without var element', () => {
+        const linkhelper = new LinkHelperGenerator({});
+        expect(linkhelper.mapping).toEqual({});
+    });
+
+    test('with var element', () => {
+        const linkhelper = new LinkHelperGenerator({
+            model: {
+                edges: [
+                    {
+                        connection: {
+                            vars: [
+                                {
+                                    key: 'text_id',
+                                    value: 'model_attribute',
+                                }
+                            ]
+                        },
+                        mReference: 'Association',
+                    }
+                ]
+            }
+        });
+        expect(linkhelper.mapping).toEqual({
+            'Association': {
+                'text_id': 'model_attribute'
+            }
+        });
+    });
+});
