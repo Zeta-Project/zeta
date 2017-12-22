@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import './graphical-editor/graphical-editor';
+import './graphical-editor/meta-model/ext/LinkView';
 
 import '../assets/icon-to-back.svg';
 import '../assets/icon-to-front.svg';
