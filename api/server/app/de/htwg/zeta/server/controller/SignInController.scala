@@ -16,8 +16,8 @@ import controllers.routes
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
-import de.htwg.zeta.server.model.identity.ZetaIdentity
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaIdentity
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig

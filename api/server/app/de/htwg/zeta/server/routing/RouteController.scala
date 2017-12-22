@@ -13,7 +13,7 @@ import de.htwg.zeta.server.routing.authentication.AuthenticatedWebSocket
 import de.htwg.zeta.server.routing.authentication.AuthenticatedAction
 import de.htwg.zeta.server.routing.authentication.BasicAction
 import de.htwg.zeta.server.routing.authentication.BasicWebSocket
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.i18n.MessagesApi
 import play.api.mvc.Controller
 

@@ -11,7 +11,7 @@ import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result

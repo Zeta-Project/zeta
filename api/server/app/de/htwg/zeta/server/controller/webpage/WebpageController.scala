@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller

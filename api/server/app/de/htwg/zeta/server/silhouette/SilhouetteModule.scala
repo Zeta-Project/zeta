@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.module
+package de.htwg.zeta.server.silhouette
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
@@ -38,18 +38,13 @@ import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import de.htwg.zeta.common.models.entity.User
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
-import de.htwg.zeta.server.model.identity.ZetaIdentity
-import de.htwg.zeta.server.util.auth.CustomSecuredErrorHandler
-import de.htwg.zeta.server.util.auth.CustomUnsecuredErrorHandler
-import de.htwg.zeta.server.util.auth.ZetaEnv
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
-import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.ceedubs.ficus.readers.ValueReader
+import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits.defaultContext

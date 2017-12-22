@@ -13,7 +13,7 @@ import akka.stream.scaladsl.Flow
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.zeta.server.routing.authentication
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.http.websocket.Message
 import play.api.libs.streams.ActorFlow

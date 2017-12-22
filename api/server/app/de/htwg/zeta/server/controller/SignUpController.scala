@@ -18,8 +18,8 @@ import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
-import de.htwg.zeta.server.model.identity.ZetaIdentity
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaIdentity
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
