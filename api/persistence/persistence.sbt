@@ -2,6 +2,8 @@ lazy val persistence = ZetaBuild.defaultProject(project).settings(
   name := "persistence",
   version := "0.1",
 
+  resolvers += Resolver.jcenterRepo,
+
   libraryDependencies ++= Seq(
     // json parser
     "com.typesafe.play" %% "play-json" % "2.5.7",
