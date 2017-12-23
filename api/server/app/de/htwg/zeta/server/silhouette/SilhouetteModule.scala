@@ -175,7 +175,7 @@ class SilhouetteModule extends ScalaModule {
   def provideAuthInfoRepository(
     passwordInfoPersistence: PasswordInfoRepository
   ): AuthInfoRepository = {
-    new DelegableAuthInfoRepository(passwordInfoPersistence)
+    new DelegableAuthInfoRepository(new SilhouettePasswordInfoRepository(passwordInfoPersistence))
   }
 
   /**
