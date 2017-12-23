@@ -6,9 +6,9 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 
-import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
@@ -42,7 +42,7 @@ class ActivateAccountController @Inject()(
    */
   def send(email: String)(request: Request[AnyContent], messages: Messages): Future[Result] = {
     val decodedEmail = URLDecoder.decode(email, "UTF-8")
-    val loginInfo = LoginInfo(CredentialsProvider.ID, decodedEmail)
+    val loginInfo = ZetaLoginInfo(CredentialsProvider.ID, decodedEmail)
     val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("activation.email.sent", decodedEmail))
 
     val userId = loginInfoRepo.read(loginInfo)

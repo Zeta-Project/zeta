@@ -13,6 +13,7 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
@@ -68,7 +69,7 @@ class SignUpController @Inject()(
       form => Future.successful(BadRequest(views.html.silhouette.signUp(form, request, messages))),
       data => {
         val result = Redirect(routes.ScalaRoutes.getSignUp()).flashing("info" -> messages("sign.up.email.sent", data.email))
-        val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
+        val loginInfo = ZetaLoginInfo(LoginInfo(CredentialsProvider.ID, data.email))
         val userId = loginInfoRepo.read(loginInfo)
         userId.flatMap(userId =>
           userRepo.read(userId).flatMap(user =>
@@ -93,14 +94,14 @@ class SignUpController @Inject()(
     Future.successful(result)
   }
 
-  private def processSignUp(result: Result, data: Data, loginInfo: LoginInfo, request: Request[AnyContent], messages: Messages): Future[Result] = {
+  private def processSignUp(result: Result, data: Data, loginInfo: ZetaLoginInfo, request: Request[AnyContent], messages: Messages): Future[Result] = {
     val authInfo = passwordHasherRegistry.current.hash(data.password)
     val user = User(id = UUID.randomUUID(), firstName = data.firstName, lastName = data.lastName, email = data.email, activated = false)
 
     for {
       _ <- userRepo.create(user)
       _ <- loginInfoRepo.create(loginInfo, user.id)
-      _ <- authInfoRepository.add(loginInfo, authInfo)
+      _ <- authInfoRepository.add(loginInfo.toLoginInfo(), authInfo)
       token <- tokenCache.create(user.id)
     } yield {
       val url = routes.ScalaRoutes.getAccountActivate(token).absoluteURL()(request)
