@@ -1,14 +1,19 @@
-package de.htwg.zeta.persistence.general
+package de.htwg.zeta.server.silhouette
 
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
+import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import de.htwg.zeta.persistence.general.PasswordInfoRepository
+
 
 /**
  * Persistence for the PasswordInfo.
  */
-trait PasswordInfoRepository {
+class SilhouettePasswordInfoRepository (
+    passwordInfoRepo: PasswordInfoRepository
+) extends DelegableAuthInfoDAO[PasswordInfo] {
 
   /** Adds new auth info for the given login info.
    *
@@ -16,14 +21,16 @@ trait PasswordInfoRepository {
    * @param authInfo  The auth info to add.
    * @return The added auth info.
    */
-  def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
+    passwordInfoRepo.add(loginInfo, authInfo)
 
   /** Finds the auth info which is linked to the specified login info.
    *
    * @param loginInfo The linked login info.
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
-  def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]]
+  override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] =
+    passwordInfoRepo.find(loginInfo)
 
   /** Updates the auth info for the given login info.
    *
@@ -31,7 +38,8 @@ trait PasswordInfoRepository {
    * @param authInfo  The auth info to update.
    * @return The updated auth info.
    */
-  def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
+    passwordInfoRepo.update(loginInfo, authInfo)
 
   /** Saves the auth info for the given login info. This method either adds the auth info if it doesn't exists or it updates the auth info if it already exists.
    *
@@ -39,19 +47,15 @@ trait PasswordInfoRepository {
    * @param authInfo  The auth info to save.
    * @return The saved auth info.
    */
-  def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
+    passwordInfoRepo.save(loginInfo, authInfo)
 
   /** Removes the auth info for the given login info.
    *
    * @param loginInfo The login info for which the auth info should be removed.
    * @return A future to wait for the process to be completed.
    */
-  def remove(loginInfo: LoginInfo): Future[Unit]
-
-  /** Read all LoginInfo's
-   *
-   * @return all LoginInfo's
-   */
-  def readAllKeys(): Future[Set[LoginInfo]]
+  override def remove(loginInfo: LoginInfo): Future[Unit] =
+    passwordInfoRepo.remove(loginInfo)
 
 }
