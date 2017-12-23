@@ -5,7 +5,10 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
@@ -22,7 +25,7 @@ class SilhouettePasswordInfoRepository (
    * @return The added auth info.
    */
   override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
-    passwordInfoRepo.add(loginInfo, authInfo)
+    passwordInfoRepo.add(ZetaLoginInfo(loginInfo), ZetaPasswordInfo(authInfo)).map(_.toPasswordInfo())
 
   /** Finds the auth info which is linked to the specified login info.
    *
@@ -30,7 +33,7 @@ class SilhouettePasswordInfoRepository (
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] =
-    passwordInfoRepo.find(loginInfo)
+    passwordInfoRepo.find(ZetaLoginInfo(loginInfo)).map(_.map(_.toPasswordInfo()))
 
   /** Updates the auth info for the given login info.
    *
@@ -39,7 +42,7 @@ class SilhouettePasswordInfoRepository (
    * @return The updated auth info.
    */
   override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
-    passwordInfoRepo.update(loginInfo, authInfo)
+    passwordInfoRepo.update(ZetaLoginInfo(loginInfo), ZetaPasswordInfo(authInfo)).map(_.toPasswordInfo())
 
   /** Saves the auth info for the given login info. This method either adds the auth info if it doesn't exists or it updates the auth info if it already exists.
    *
@@ -48,7 +51,7 @@ class SilhouettePasswordInfoRepository (
    * @return The saved auth info.
    */
   override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
-    passwordInfoRepo.save(loginInfo, authInfo)
+    passwordInfoRepo.save(ZetaLoginInfo(loginInfo), ZetaPasswordInfo(authInfo)).map(_.toPasswordInfo())
 
   /** Removes the auth info for the given login info.
    *
@@ -56,6 +59,6 @@ class SilhouettePasswordInfoRepository (
    * @return A future to wait for the process to be completed.
    */
   override def remove(loginInfo: LoginInfo): Future[Unit] =
-    passwordInfoRepo.remove(loginInfo)
+    passwordInfoRepo.remove(ZetaLoginInfo(loginInfo))
 
 }
