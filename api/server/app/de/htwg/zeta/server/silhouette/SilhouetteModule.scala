@@ -89,13 +89,13 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   def provideUserIdentityService(
-      loginInfoPersistence: LoginInfoRepository,
+      loginInfoPersistence: SilhouetteLoginInfoRepository,
       userPersistence: UserRepository
   ): IdentityService[ZetaIdentity] = {
     new IdentityService[ZetaIdentity] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[ZetaIdentity]] = {
         val futureIdentityOpt = for { // future
-          userId <- loginInfoPersistence.read(ZetaLoginInfo(loginInfo))
+          userId <- loginInfoPersistence.read(loginInfo)
           user <- userPersistence.read(userId)
         } yield {
           Some(ZetaIdentity(user))

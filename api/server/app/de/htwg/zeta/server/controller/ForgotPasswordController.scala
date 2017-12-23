@@ -7,11 +7,10 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
-import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
-import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.ForgotPasswordForm
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoRepository
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
@@ -29,7 +28,7 @@ import play.api.mvc.Result
 class ForgotPasswordController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
-    loginInfoRepo: LoginInfoRepository,
+    loginInfoRepo: SilhouetteLoginInfoRepository,
     userRepo: UserRepository
 ) extends Controller {
 
@@ -57,7 +56,7 @@ class ForgotPasswordController @Inject()(
     ForgotPasswordForm.form.bindFromRequest()(request).fold(
       form => Future.successful(BadRequest(views.html.silhouette.forgotPassword(form, request, messages))),
       email => {
-        val loginInfo = ZetaLoginInfo(LoginInfo(CredentialsProvider.ID, email))
+        val loginInfo = LoginInfo(CredentialsProvider.ID, email)
         val result = Redirect(routes.ScalaRoutes.getSignIn()).flashing("info" -> messages("reset.email.sent"))
         val userId = loginInfoRepo.read(loginInfo)
         val user = userId.flatMap(userId => userRepo.read(userId))

@@ -13,12 +13,11 @@ import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
-import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
-import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoRepository
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig
@@ -43,7 +42,7 @@ class SignInController @Inject()(
     credentialsProvider: CredentialsProvider,
     configuration: Configuration,
     clock: Clock,
-    loginInfoRepo: LoginInfoRepository,
+    loginInfoRepo: SilhouetteLoginInfoRepository,
     userRepo: UserRepository
 ) extends Controller {
 
@@ -68,7 +67,7 @@ class SignInController @Inject()(
       form => Future.successful(BadRequest(views.html.silhouette.signIn(form, request, messages))),
       data => {
         credentialsProvider.authenticate(Credentials(data.email, data.password)).flatMap { loginInfo =>
-          loginInfoRepo.read(ZetaLoginInfo(loginInfo)).flatMap { userId =>
+          loginInfoRepo.read(loginInfo).flatMap { userId =>
             userRepo.read(userId).flatMap { user =>
               if (!user.activated) {
                 Future.successful(Ok(views.html.silhouette.activateAccount(data.email, request, messages)))
