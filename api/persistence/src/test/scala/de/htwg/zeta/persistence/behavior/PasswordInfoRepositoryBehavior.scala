@@ -1,10 +1,10 @@
 package de.htwg.zeta.persistence.behavior
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
@@ -15,13 +15,13 @@ trait PasswordInfoRepositoryBehavior extends AsyncFlatSpec with Matchers {
 
   def passwordInfoPersistenceBehavior(persistence: PasswordInfoRepository): Unit = { // scalastyle:ignore
 
-    val loginInfo1 = LoginInfo(providerID = "providerId1", providerKey = "providerKey1")
-    val loginInfo2 = LoginInfo(providerID = "providerId2", providerKey = "providerKey2")
-    val loginInfo3 = LoginInfo(providerID = "providerId3", providerKey = "providerKey3")
+    val loginInfo1 = ZetaLoginInfo(providerID = "providerId1", providerKey = "providerKey1")
+    val loginInfo2 = ZetaLoginInfo(providerID = "providerId2", providerKey = "providerKey2")
+    val loginInfo3 = ZetaLoginInfo(providerID = "providerId3", providerKey = "providerKey3")
 
-    val passwordInfo1 = PasswordInfo(hasher = "hasher1", password = "password1", salt = None)
-    val passwordInfo2 = PasswordInfo(hasher = "hasher2", password = "password2", salt = Some("salt2"))
-    val passwordInfo3 = PasswordInfo(hasher = "hasher3", password = "password3", salt = Some("salt3"))
+    val passwordInfo1 = ZetaPasswordInfo(hasher = "hasher1", password = "password1", salt = None)
+    val passwordInfo2 = ZetaPasswordInfo(hasher = "hasher2", password = "password2", salt = Some("salt2"))
+    val passwordInfo3 = ZetaPasswordInfo(hasher = "hasher3", password = "password3", salt = Some("salt3"))
 
     it should "remove all already existing PasswordInfo's" in {
       for {

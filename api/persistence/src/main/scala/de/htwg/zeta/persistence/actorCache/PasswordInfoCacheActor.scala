@@ -11,8 +11,6 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Add
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.CleanUp
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Find
@@ -20,21 +18,23 @@ import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Remove
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Save
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Update
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.unitFuture
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import grizzled.slf4j.Logging
 
 
 private[actorCache] object PasswordInfoCacheActor {
 
-  case class Add(loginInfo: LoginInfo, authInfo: PasswordInfo)
+  case class Add(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo)
 
-  case class Find(loginInfo: LoginInfo)
+  case class Find(loginInfo: ZetaLoginInfo)
 
-  case class Update(loginInfo: LoginInfo, authInfo: PasswordInfo)
+  case class Update(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo)
 
-  case class Save(loginInfo: LoginInfo, authInfo: PasswordInfo)
+  case class Save(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo)
 
-  case class Remove(loginInfo: LoginInfo)
+  case class Remove(loginInfo: ZetaLoginInfo)
 
   private case object CleanUp
 
@@ -46,9 +46,9 @@ private[actorCache] object PasswordInfoCacheActor {
 
 private[actorCache] class PasswordInfoCacheActor(underlying: PasswordInfoRepository, cacheDuration: FiniteDuration) extends Actor with Logging {
 
-  private val cache: mutable.Map[LoginInfo, Future[Option[PasswordInfo]]] = mutable.Map.empty
+  private val cache: mutable.Map[ZetaLoginInfo, Future[Option[ZetaPasswordInfo]]] = mutable.Map.empty
 
-  private val used: mutable.Set[LoginInfo] = mutable.Set.empty
+  private val used: mutable.Set[ZetaLoginInfo] = mutable.Set.empty
 
   private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
@@ -61,42 +61,42 @@ private[actorCache] class PasswordInfoCacheActor(underlying: PasswordInfoReposit
     case CleanUp => cleanUp()
   }
 
-  private def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Unit = {
+  private def add(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.add(loginInfo, authInfo))
     replyToSender(entry, sender)
     cache += (loginInfo -> entry.map(Some(_)))
     used += loginInfo
   }
 
-  private def find(loginInfo: LoginInfo): Unit = {
+  private def find(loginInfo: ZetaLoginInfo): Unit = {
     val entry = cache.get(loginInfo).fold(underlying.find(loginInfo))(_.recoverWith { case _ => underlying.find(loginInfo) })
     replyToSender(entry, sender)
     cache += (loginInfo -> entry)
     used += loginInfo
   }
 
-  private def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Unit = {
+  private def update(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.update(loginInfo, authInfo))
     replyToSender(entry, sender)
     cache += (loginInfo -> entry.map(Option(_)))
     used += loginInfo
   }
 
-  private def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Unit = {
+  private def save(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.save(loginInfo, authInfo))
     replyToSender(entry, sender)
     cache += (loginInfo -> entry.map(Option(_)))
     used += loginInfo
   }
 
-  private def remove(loginInfo: LoginInfo): Unit = {
+  private def remove(loginInfo: ZetaLoginInfo): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.remove(loginInfo))
     replyToSender(entry, sender)
     cache -= loginInfo
     used -= loginInfo
   }
 
-  private def mapOrRecoverToUnit(f: Option[Future[Option[PasswordInfo]]]): Future[Unit] = {
+  private def mapOrRecoverToUnit(f: Option[Future[Option[ZetaPasswordInfo]]]): Future[Unit] = {
     f.fold(unitFuture)(_.flatMap(_ => unitFuture).recoverWith { case _ => unitFuture })
   }
 
