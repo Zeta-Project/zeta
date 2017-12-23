@@ -25,7 +25,7 @@ class SilhouettePasswordInfoDao (
    * @return The added auth info.
    */
   override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
-    passwordInfoRepo.add(ZetaLoginInfo(loginInfo), ZetaPasswordInfo(authInfo)).map(_.toPasswordInfo())
+    passwordInfoRepo.add(toZetaLoginInfo(loginInfo), toZetaPasswordInfo(authInfo)).map(toPasswordInfo)
 
   /** Finds the auth info which is linked to the specified login info.
    *
@@ -33,7 +33,7 @@ class SilhouettePasswordInfoDao (
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
   override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] =
-    passwordInfoRepo.find(ZetaLoginInfo(loginInfo)).map(_.map(_.toPasswordInfo()))
+    passwordInfoRepo.find(toZetaLoginInfo(loginInfo)).map(_.map(toPasswordInfo))
 
   /** Updates the auth info for the given login info.
    *
@@ -42,7 +42,7 @@ class SilhouettePasswordInfoDao (
    * @return The updated auth info.
    */
   override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
-    passwordInfoRepo.update(ZetaLoginInfo(loginInfo), ZetaPasswordInfo(authInfo)).map(_.toPasswordInfo())
+    passwordInfoRepo.update(toZetaLoginInfo(loginInfo), toZetaPasswordInfo(authInfo)).map(toPasswordInfo)
 
   /** Saves the auth info for the given login info. This method either adds the auth info if it doesn't exists or it updates the auth info if it already exists.
    *
@@ -51,7 +51,7 @@ class SilhouettePasswordInfoDao (
    * @return The saved auth info.
    */
   override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
-    passwordInfoRepo.save(ZetaLoginInfo(loginInfo), ZetaPasswordInfo(authInfo)).map(_.toPasswordInfo())
+    passwordInfoRepo.save(toZetaLoginInfo(loginInfo), toZetaPasswordInfo(authInfo)).map(toPasswordInfo)
 
   /** Removes the auth info for the given login info.
    *
@@ -59,6 +59,11 @@ class SilhouettePasswordInfoDao (
    * @return A future to wait for the process to be completed.
    */
   override def remove(loginInfo: LoginInfo): Future[Unit] =
-    passwordInfoRepo.remove(ZetaLoginInfo(loginInfo))
+    passwordInfoRepo.remove(toZetaLoginInfo(loginInfo))
+
+  private def toPasswordInfo(pi: ZetaPasswordInfo): PasswordInfo = PasswordInfo(pi.hasher, pi.password, pi.salt)
+  private def toZetaPasswordInfo(passwordInfo: PasswordInfo): ZetaPasswordInfo = ZetaPasswordInfo(passwordInfo.hasher, passwordInfo.password, passwordInfo.salt)
+
+  private def toZetaLoginInfo(loginInfo: LoginInfo): ZetaLoginInfo = ZetaLoginInfo(loginInfo.providerID, loginInfo.providerKey)
 
 }

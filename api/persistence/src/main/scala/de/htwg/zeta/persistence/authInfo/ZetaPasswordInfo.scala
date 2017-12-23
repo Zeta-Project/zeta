@@ -1,6 +1,5 @@
 package de.htwg.zeta.persistence.authInfo
 
-import com.mohiva.play.silhouette.api.util.PasswordInfo
 import play.api.libs.json.OFormat
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
@@ -10,14 +9,9 @@ import play.api.libs.json.JsResult
 case class ZetaPasswordInfo(
     hasher: String,
     password: String,
-    salt: Option[String] = None) {
-
-  def toPasswordInfo(): PasswordInfo = PasswordInfo(hasher, password, salt)
-}
+    salt: Option[String] = None)
 
 object ZetaPasswordInfo extends OFormat[ZetaPasswordInfo] {
-
-  def apply(passwordInfo: PasswordInfo): ZetaPasswordInfo = ZetaPasswordInfo(passwordInfo.hasher, passwordInfo.password, passwordInfo.salt)
 
   private val hasherLiteral = "hasher"
   private val passwordLiteral = "password"

@@ -22,13 +22,15 @@ class SilhouetteLoginInfoDao @Inject()(
    * @param id        The id of the user.
    * @return Unit-Future, when successful.
    */
-  def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = repo.create(ZetaLoginInfo(loginInfo), id)
+  def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = repo.create(toZetaLoginInfo(loginInfo), id)
 
   /** Get a user that matches the specified LoginInfo.
    *
    * @param loginInfo The LoginInfo.
    * @return The id of the User.
    */
-  def read(loginInfo: LoginInfo): Future[UUID] = repo.read(ZetaLoginInfo(loginInfo))
+  def read(loginInfo: LoginInfo): Future[UUID] = repo.read(toZetaLoginInfo(loginInfo))
+
+  private def toZetaLoginInfo(loginInfo: LoginInfo): ZetaLoginInfo = ZetaLoginInfo(loginInfo.providerID, loginInfo.providerKey)
 
 }

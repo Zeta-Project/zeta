@@ -7,9 +7,6 @@ lazy val persistence = ZetaBuild.defaultProject(project).settings(
   libraryDependencies ++= Seq(
     // json parser
     "com.typesafe.play" %% "play-json" % "2.5.7",
-    // sillhouette
-    "com.mohiva" %% "play-silhouette" % ZetaBuild.silhouetteVersion,
-    "com.mohiva" %% "play-silhouette-persistence" % ZetaBuild.silhouetteVersion,
     // mongoDB accessor
     "org.reactivemongo" %% "reactivemongo" % "0.12.3",
     "org.reactivemongo" %% "reactivemongo-play-json" % "0.12.3",
