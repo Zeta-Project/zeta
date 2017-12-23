@@ -10,7 +10,7 @@ import controllers.routes
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.ForgotPasswordForm
-import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoRepository
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
@@ -28,7 +28,7 @@ import play.api.mvc.Result
 class ForgotPasswordController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
-    loginInfoRepo: SilhouetteLoginInfoRepository,
+    loginInfoRepo: SilhouetteLoginInfoDao,
     userRepo: UserRepository
 ) extends Controller {
 

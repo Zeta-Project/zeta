@@ -12,7 +12,7 @@ import de.htwg.zeta.persistence.general.LoginInfoRepository
 /**
  * Persistence to save the LoginInfo and the User-Id it belongs to.
  */
-class SilhouetteLoginInfoRepository @Inject()(
+class SilhouetteLoginInfoDao @Inject()(
     repo: LoginInfoRepository
 ) {
 

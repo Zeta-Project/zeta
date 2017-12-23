@@ -17,7 +17,7 @@ import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
-import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoRepository
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig
@@ -42,7 +42,7 @@ class SignInController @Inject()(
     credentialsProvider: CredentialsProvider,
     configuration: Configuration,
     clock: Clock,
-    loginInfoRepo: SilhouetteLoginInfoRepository,
+    loginInfoRepo: SilhouetteLoginInfoDao,
     userRepo: UserRepository
 ) extends Controller {
 
