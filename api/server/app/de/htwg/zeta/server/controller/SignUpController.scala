@@ -19,7 +19,7 @@ import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
-import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoRepository
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
@@ -44,7 +44,7 @@ class SignUpController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
     userRepo: UserRepository,
-    loginInfoRepo: SilhouetteLoginInfoRepository
+    loginInfoRepo: SilhouetteLoginInfoDao
 ) extends Controller {
 
   /** Views the `Sign Up` page.

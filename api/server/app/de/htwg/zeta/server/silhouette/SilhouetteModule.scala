@@ -89,7 +89,7 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   def provideUserIdentityService(
-      loginInfoPersistence: SilhouetteLoginInfoRepository,
+      loginInfoPersistence: SilhouetteLoginInfoDao,
       userPersistence: UserRepository
   ): IdentityService[ZetaIdentity] = {
     new IdentityService[ZetaIdentity] {
