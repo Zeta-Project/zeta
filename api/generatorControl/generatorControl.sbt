@@ -20,6 +20,8 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     "com.spotify" % "docker-client" % "6.1.1",
     // scallop
     "org.rogach" %% "scallop" % "2.0.2",
+    //play ws
+    "com.typesafe.play" %% "play-ws" % "2.5.9",
     // kryo serialization
     "com.github.romix.akka" %% "akka-kryo-serialization" % "0.4.1"
   )

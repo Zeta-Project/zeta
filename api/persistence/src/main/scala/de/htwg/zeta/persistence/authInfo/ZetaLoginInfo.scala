@@ -1,16 +1,12 @@
 package de.htwg.zeta.persistence.authInfo
 
-import com.mohiva.play.silhouette.api.LoginInfo
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsObject
 import play.api.libs.json.OFormat
 
-case class ZetaLoginInfo(providerID: String, providerKey: String) {
-
-  def toLoginInfo(): LoginInfo = LoginInfo(providerID, providerKey)
-}
+case class ZetaLoginInfo(providerID: String, providerKey: String)
 
 object ZetaLoginInfo extends OFormat[ZetaLoginInfo] {
   private val sProviderID = "providerID"
@@ -29,6 +25,4 @@ object ZetaLoginInfo extends OFormat[ZetaLoginInfo] {
     sProviderKey -> o.providerKey
   )
 
-
-  def apply(loginInfo: LoginInfo): ZetaLoginInfo = ZetaLoginInfo(loginInfo.providerID, loginInfo.providerKey)
 }
