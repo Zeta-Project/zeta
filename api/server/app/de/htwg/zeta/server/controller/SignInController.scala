@@ -13,6 +13,7 @@ import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
@@ -67,7 +68,7 @@ class SignInController @Inject()(
       form => Future.successful(BadRequest(views.html.silhouette.signIn(form, request, messages))),
       data => {
         credentialsProvider.authenticate(Credentials(data.email, data.password)).flatMap { loginInfo =>
-          loginInfoRepo.read(loginInfo).flatMap { userId =>
+          loginInfoRepo.read(ZetaLoginInfo(loginInfo)).flatMap { userId =>
             userRepo.read(userId).flatMap { user =>
               if (!user.activated) {
                 Future.successful(Ok(views.html.silhouette.activateAccount(data.email, request, messages)))

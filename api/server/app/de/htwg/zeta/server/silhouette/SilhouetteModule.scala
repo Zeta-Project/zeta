@@ -38,6 +38,7 @@ import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
@@ -81,21 +82,25 @@ class SilhouetteModule extends ScalaModule {
     new PlayHTTPLayer(client)
   }
 
+
   /** Provides the UserIdentityService
    *
    * @return UserIdentityService
    */
   @Provides
   def provideUserIdentityService(
-    loginInfoPersistence: LoginInfoRepository,
-    userPersistence: UserRepository
+      loginInfoPersistence: LoginInfoRepository,
+      userPersistence: UserRepository
   ): IdentityService[ZetaIdentity] = {
     new IdentityService[ZetaIdentity] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[ZetaIdentity]] = {
-        val userId = loginInfoPersistence.read(loginInfo)
-        val user = userId.flatMap { userId => userPersistence.read(userId) }
-        user.map { user => Some(ZetaIdentity(user))
-        }.recover {
+        val futureIdentityOpt = for { // future
+          userId <- loginInfoPersistence.read(ZetaLoginInfo(loginInfo))
+          user <- userPersistence.read(userId)
+        } yield {
+          Some(ZetaIdentity(user))
+        }
+        futureIdentityOpt.recover {
           case _ => None
         }
       }

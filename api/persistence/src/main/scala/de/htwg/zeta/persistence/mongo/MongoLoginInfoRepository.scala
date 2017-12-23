@@ -4,13 +4,11 @@ import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-import com.mohiva.play.silhouette.api.LoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoReader
-import de.htwg.zeta.persistence.mongo.MongoHandler.loginInfoWriter
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.UserIdReader
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.collectionName
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.keyProjection
@@ -23,6 +21,7 @@ import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
 import reactivemongo.bson.BSONDocumentReader
+
 
 @Singleton
 class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends LoginInfoRepository {
@@ -41,8 +40,9 @@ class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends Lo
    * @param id        The id of the user.
    * @return Unit-Future, when successful.
    */
-  override def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = {
+  override def create(loginInfo: ZetaLoginInfo, id: UUID): Future[Unit] = {
     collection.flatMap { collection =>
+      implicit val format: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
       collection.insert(BSONDocument(sLoginInfo -> loginInfo, sUserId -> id.toString)).flatMap(_ =>
         Future.successful(())
       )
@@ -55,9 +55,10 @@ class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends Lo
    * @param loginInfo The LoginInfo.
    * @return The id of the User.
    */
-  override def read(loginInfo: LoginInfo): Future[UUID] = {
+  override def read(loginInfo: ZetaLoginInfo): Future[UUID] = {
     implicit val reader: BSONDocumentReader[UUID] = UserIdReader
     collection.flatMap { collection =>
+      implicit val format: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
       collection.find(BSONDocument(sLoginInfo -> loginInfo)).requireOne[UUID]
     }
   }
@@ -68,9 +69,10 @@ class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends Lo
    * @param updated The updated LoginInfo.
    * @return Unit-Future
    */
-  override def update(old: LoginInfo, updated: LoginInfo): Future[Unit] = {
+  override def update(old: ZetaLoginInfo, updated: ZetaLoginInfo): Future[Unit] = {
     read(old).flatMap { userId =>
       collection.flatMap { collection =>
+        implicit val format: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
         collection.update(BSONDocument(sLoginInfo -> old), BSONDocument(sLoginInfo -> updated, sUserId -> userId.toString)).flatMap(result =>
           if (result.nModified == 1) {
             Future.successful(())
@@ -87,8 +89,9 @@ class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends Lo
    * @param loginInfo LoginInfo
    * @return Unit-Future
    */
-  override def delete(loginInfo: LoginInfo): Future[Unit] = {
+  override def delete(loginInfo: ZetaLoginInfo): Future[Unit] = {
     collection.flatMap { collection =>
+      implicit val format: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
       collection.remove(BSONDocument(sLoginInfo -> loginInfo)).flatMap(result =>
         if (result.n == 1) {
           Future.successful(())
@@ -103,10 +106,11 @@ class MongoLoginInfoRepository @Inject()(database: Future[DefaultDB]) extends Lo
    *
    * @return Future containing all LoginInfo's
    */
-  override def readAllKeys(): Future[Set[LoginInfo]] = {
+  override def readAllKeys(): Future[Set[ZetaLoginInfo]] = {
     collection.flatMap { collection =>
-      collection.find(BSONDocument.empty, keyProjection).cursor[LoginInfo]().
-        collect(-1, Cursor.FailOnError[Set[LoginInfo]]())
+      implicit val format: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
+      collection.find(BSONDocument.empty, keyProjection).cursor[ZetaLoginInfo]().
+        collect(-1, Cursor.FailOnError[Set[ZetaLoginInfo]]())
     }
   }
 
@@ -129,5 +133,4 @@ private object MongoLoginInfoRepository {
     }
 
   }
-
 }

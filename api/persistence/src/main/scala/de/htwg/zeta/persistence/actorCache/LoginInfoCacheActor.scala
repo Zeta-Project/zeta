@@ -14,26 +14,26 @@ import akka.actor.Actor
 import akka.actor.ActorRef
 import akka.actor.Cancellable
 import akka.actor.Props
-import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.CleanUp
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Update
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.unitFuture
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import grizzled.slf4j.Logging
 
 
 private[actorCache] object LoginInfoCacheActor {
 
-  case class Create(loginInfo: LoginInfo, userId: UUID)
+  case class Create(loginInfo: ZetaLoginInfo, userId: UUID)
 
-  case class Read(loginInfo: LoginInfo)
+  case class Read(loginInfo: ZetaLoginInfo)
 
-  case class Update(old: LoginInfo, updated: LoginInfo)
+  case class Update(old: ZetaLoginInfo, updated: ZetaLoginInfo)
 
-  case class Delete(loginInfo: LoginInfo)
+  case class Delete(loginInfo: ZetaLoginInfo)
 
   private case object CleanUp
 
@@ -45,9 +45,9 @@ private[actorCache] object LoginInfoCacheActor {
 
 private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoRepository, cacheDuration: FiniteDuration) extends Actor with Logging {
 
-  private val cache: mutable.Map[LoginInfo, Future[UUID]] = mutable.Map.empty
+  private val cache: mutable.Map[ZetaLoginInfo, Future[UUID]] = mutable.Map.empty
 
-  private val used: mutable.Set[LoginInfo] = mutable.Set.empty
+  private val used: mutable.Set[ZetaLoginInfo] = mutable.Set.empty
 
   private val cleanUpJob: Cancellable = context.system.scheduler.schedule(cacheDuration, cacheDuration, self, CleanUp)
 
@@ -59,28 +59,28 @@ private[actorCache] class LoginInfoCacheActor(underlying: LoginInfoRepository, c
     case CleanUp => cleanUp()
   }
 
-  private def create(loginInfo: LoginInfo, userId: UUID): Unit = {
+  private def create(loginInfo: ZetaLoginInfo, userId: UUID): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.create(loginInfo, userId))
     replyToSender(entry, sender)
     cache += (loginInfo -> entry.map(_ => userId))
     used += loginInfo
   }
 
-  private def read(loginInfo: LoginInfo): Unit = {
+  private def read(loginInfo: ZetaLoginInfo): Unit = {
     val entry = cache.get(loginInfo).fold(underlying.read(loginInfo))(_.recoverWith { case _ => underlying.read(loginInfo) })
     replyToSender(entry, sender)
     cache += (loginInfo -> entry)
     used += loginInfo
   }
 
-  private def update(old: LoginInfo, updated: LoginInfo): Unit = {
+  private def update(old: ZetaLoginInfo, updated: ZetaLoginInfo): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(old)).flatMap(_ => underlying.update(old, updated))
     replyToSender(entry, sender)
     cache -= old
     used -= old
   }
 
-  private def delete(loginInfo: LoginInfo): Unit = {
+  private def delete(loginInfo: ZetaLoginInfo): Unit = {
     val entry = mapOrRecoverToUnit(cache.get(loginInfo)).flatMap(_ => underlying.delete(loginInfo))
     replyToSender(entry, sender)
     cache -= loginInfo
