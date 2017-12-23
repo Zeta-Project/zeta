@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
  * Persistence for the PasswordInfo.
  */
-class SilhouettePasswordInfoRepository (
+class SilhouettePasswordInfoDao (
     passwordInfoRepo: PasswordInfoRepository
 ) extends DelegableAuthInfoDAO[PasswordInfo] {
 
