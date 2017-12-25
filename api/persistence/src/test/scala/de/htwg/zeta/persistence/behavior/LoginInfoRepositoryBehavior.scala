@@ -2,7 +2,6 @@ package de.htwg.zeta.persistence.behavior
 
 import java.util.UUID
 
-import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import org.scalatest.AsyncFlatSpec
 import org.scalatest.Matchers
