@@ -13,6 +13,8 @@ import play.api.mvc.AnyContent
 import play.api.mvc.BodyParsers
 import play.api.mvc.WebSocket
 
+// scalastyle:off number.of.methods
+
 /**
  * All routes are managed in this class
  */

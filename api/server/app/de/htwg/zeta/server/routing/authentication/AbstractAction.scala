@@ -3,6 +3,7 @@ package de.htwg.zeta.server.routing.authentication
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
+import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
@@ -23,11 +24,11 @@ import play.api.mvc.BodyParsers
  *
  */
 // scalastyle:off number.of.methods
-private[authentication] abstract class AbstractAction[REQ[_]](
-    messagesApi: MessagesApi,
-    silhouette: Silhouette[ZetaEnv]
-) extends HTMLResults with Logging {
+private[authentication] trait AbstractAction[REQ[_]] extends HTMLResults with Logging {
 
+  private[authentication] val dependencies: AbstractAction.Dependencies
+  private[authentication] val executionContext: ExecutionContext = dependencies.executionContext
+  private[authentication] val messagesApi: MessagesApi = dependencies.messagesApi
 
   protected[authentication] def executeChecked[R](block: () => R): R = {
     try {
@@ -61,16 +62,16 @@ private[authentication] abstract class AbstractAction[REQ[_]](
   }
 
   protected[authentication] def doActionFuture[A](bodyParser: BodyParser[A])(block: (REQ[A]) => Future[Result]): Action[A] = {
-    Async.async(bodyParser)(handleFutureRequest[A](block, Async.executionContext))
+    Async.async(bodyParser)(handleFutureRequest[A](block, executionContext))
   }
 
 
   protected object Async extends ActionBuilder[Request, AnyContent] {
-    override def executionContext: ExecutionContext =  play.api.libs.concurrent.Execution.defaultContext // FIXME
+    override def executionContext: ExecutionContext =  AbstractAction.this.executionContext
 
     override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = block(request)
 
-    override def parser: BodyParser[AnyContent] = new BodyParsers.Default(BodyParsers.parse) // FIXME
+    override def parser: BodyParser[AnyContent] = dependencies.bodyParser
   }
 
 
@@ -323,8 +324,16 @@ private[authentication] abstract class AbstractAction[REQ[_]](
   def apply[C](bodyParser: BodyParser[C], block: Future_REQ_EXC_MSG_Function[C]): Action[C] = doActionFuture(bodyParser)((r) => block.fnc(REQ(r), EXC(r), MSG(r)))
 
   // scalastyle:on
+}
 
+object AbstractAction{
 
+  private[routing] class Dependencies @Inject()(
+      val messagesApi: MessagesApi,
+      val executionContext: ExecutionContext,
+      val silhouette: Silhouette[ZetaEnv],
+      val bodyParser: BodyParsers.Default
+  )
 }
 
 /**
