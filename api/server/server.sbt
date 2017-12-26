@@ -29,7 +29,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
     "com.typesafe.play" %% "play-guice" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
-    "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3", // used in play for bootstrap integration
+    "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % "2.5.0",
     "com.typesafe.akka" %% "akka-actor" % "2.4.18",
     "com.typesafe.akka" %% "akka-kernel" % "2.4.18",
