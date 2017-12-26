@@ -15,12 +15,14 @@ import play.api.mvc.Action
 import play.api.mvc.ActionBuilder
 import play.api.mvc.Result
 import play.api.mvc.BodyParser
+import play.api.mvc.BodyParsers
 
 
 /**
  * Ordering or apply method parameters: Request, followed by everything else in alphabetical order
  *
  */
+// scalastyle:off number.of.methods
 private[authentication] abstract class AbstractAction[REQ[_]](
     messagesApi: MessagesApi,
     silhouette: Silhouette[ZetaEnv]
@@ -63,10 +65,12 @@ private[authentication] abstract class AbstractAction[REQ[_]](
   }
 
 
-  protected object Async extends ActionBuilder[Request] {
-    override def executionContext: ExecutionContext = super.executionContext
+  protected object Async extends ActionBuilder[Request, AnyContent] {
+    override def executionContext: ExecutionContext =  play.api.libs.concurrent.Execution.defaultContext // FIXME
 
     override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = block(request)
+
+    override def parser: BodyParser[AnyContent] = new BodyParsers.Default(BodyParsers.parse) // FIXME
   }
 
 
