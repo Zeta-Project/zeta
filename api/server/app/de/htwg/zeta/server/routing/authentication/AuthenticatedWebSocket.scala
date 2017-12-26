@@ -14,9 +14,7 @@ import play.api.mvc.Request
 /**
  */
 class AuthenticatedWebSocket(
-    override val system: ActorSystem,
-    override val silhouette: Silhouette[ZetaEnv],
-    override val mat: Materializer
+    override val dependencies: AbstractWebSocket.Dependencies
 ) extends AbstractWebSocketAPI[SecuredRequest[ZetaEnv, AnyContent]] {
 
   override protected[authentication] def handleRequest[T](request: Request[AnyContent])

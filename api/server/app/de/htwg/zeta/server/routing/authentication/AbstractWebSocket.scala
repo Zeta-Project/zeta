@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.routing.authentication
 
+import javax.inject.Inject
+
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.util.Failure
@@ -28,9 +30,10 @@ import play.api.mvc.WebSocket.MessageFlowTransformer
 
 trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logging { // scalastyle:ignore
 
-  protected[authentication] val system: ActorSystem
-  protected[authentication] val silhouette: Silhouette[ZetaEnv]
-  protected[authentication] val mat: Materializer
+  protected[authentication] val dependencies: AbstractWebSocket.Dependencies
+  protected[authentication] val system: ActorSystem = dependencies.system
+  protected[authentication] val silhouette: Silhouette[ZetaEnv] = dependencies.silhouette
+  protected[authentication] val mat: Materializer = dependencies.mat
 
   private def getPropsHandler[IN, OUT](futureProps: (REQ) => Future[(ActorRef) => (Props, MessageFlowTransformer[IN, OUT])])
     (req: REQ): Future[HandlerResult[(ActorRef) => (Props, MessageFlowTransformer[IN, OUT])]] = {
@@ -94,4 +97,11 @@ trait AbstractWebSocket[REQ <: Request[AnyContent]] extends Controller with Logg
 object AbstractWebSocket extends Controller {
   private[authentication] val defaultTans: MessageFlowTransformer[String, String] = MessageFlowTransformer.stringMessageFlowTransformer
   private[authentication] val onFailure: authentication.AbstractWebSocket.Status = InternalServerError
+
+  private[routing] class Dependencies @Inject()(
+      val system: ActorSystem,
+      val silhouette: Silhouette[ZetaEnv],
+      val mat: Materializer
+  )
+
 }

@@ -13,9 +13,7 @@ import play.api.mvc.Request
 /**
  */
 class BasicWebSocket(
-    override val system: ActorSystem,
-    override val silhouette: Silhouette[ZetaEnv],
-    override val mat: Materializer
+    override val dependencies: AbstractWebSocket.Dependencies
 ) extends AbstractWebSocketAPI[Request[AnyContent]] {
 
   override protected[authentication] def handleRequest[T](request: Request[AnyContent])
