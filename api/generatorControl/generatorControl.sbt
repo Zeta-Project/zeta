@@ -1,5 +1,3 @@
-lazy val akkaVersion = "2.4.18"
-
 
 lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
   name := "generatorControl",
@@ -7,13 +5,13 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
   fork := true, // this is needed for akka-kryo-serialization
   libraryDependencies ++= Seq(
     // akka
-    "com.typesafe.akka" %% "akka-cluster-metrics" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-sharding" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster" % akkaVersion,
-    "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-    "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-    "com.typesafe.akka" %% "akka-persistence" % akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-metrics" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-sharding" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-tools" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-stream" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-persistence" % ZetaBuild.akkaVersion,
     // this is needed in akka persistence
     "org.iq80.leveldb" % "leveldb" % "0.7",
     // docker client

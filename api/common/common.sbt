@@ -1,4 +1,3 @@
-lazy val akkaVersion = "2.4.18"
 
 lazy val common = ZetaBuild.defaultProject(project).settings(
   version := "0.1",
@@ -8,8 +7,8 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
     // play json
     "com.typesafe.play" %% "play-json" % ZetaBuild.playVersion,
     // akka actor
-    "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-    "com.typesafe.akka" %% "akka-cluster-tools" % akkaVersion,
+    "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-tools" % ZetaBuild.akkaVersion,
     // rxScala
     "io.reactivex" %% "rxscala" % "0.26.5",
     // websocket
