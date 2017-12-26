@@ -2,7 +2,7 @@
 def baseSettings = {
   Seq(
     fork := true,
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.8",
     libraryDependencies ++= Seq(
       // logging
       "org.clapper" %% "grizzled-slf4j" % "1.2.0"
@@ -26,9 +26,11 @@ def image(name: String, d: sbt.File) = {
   baseProject(name, d).settings(
     Seq(
       libraryDependencies ++= Seq(
-        "org.rogach" %% "scallop" % "2.0.2",
+        "org.rogach" %% "scallop" % "3.1.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
         "org.scala-lang" % "scala-reflect" % "2.11.8",
-        "org.scala-lang" % "scala-compiler" % "2.11.8"
+        "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
+        "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
+  "org.scala-lang" % "scala-compiler" % "2.11.8"
       )
     )
   ).enablePlugins(JavaAppPackaging).enablePlugins(DockerSpotifyClientPlugin).dependsOn(ZetaBuild.common).dependsOn(ZetaBuild.persistence)

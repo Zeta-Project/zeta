@@ -23,9 +23,12 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.mohiva" %% "play-silhouette-crypto-jca" % ZetaBuild.silhouetteVersion,
 
     //typesafe
-    "org.webjars" %% "webjars-play" % "2.5.0-2",
+    "org.webjars" %% "webjars-play" % "2.6.2",
     "com.iheart" %% "ficus" % "1.2.6",
-    "com.typesafe.play" %% "play-mailer" % "5.0.0",
+    "com.typesafe.play" %% "play-mailer" % "6.0.1",
+    "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
+    "com.typesafe.play" %% "play-guice" % ZetaBuild.playVersion,
+    "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
     "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % "2.5.0",
     "com.typesafe.akka" %% "akka-actor" % "2.4.18",
