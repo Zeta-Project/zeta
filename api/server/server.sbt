@@ -33,10 +33,10 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "play-ehcache" % ZetaBuild.playVersion,
     "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % "2.5.0",
-    "com.typesafe.akka" %% "akka-actor" % "2.4.18",
-    "com.typesafe.akka" %% "akka-kernel" % "2.4.18",
-    "com.typesafe.akka" %% "akka-cluster" % "2.4.18",
-    "com.typesafe.akka" %% "akka-cluster-sharding" % "2.4.18",
+    "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-kernel" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-cluster-sharding" % ZetaBuild.akkaVersion,
     // "com.mohiva" %% "play-silhouette-testkit" % ZetaBuild.silhouetteVersion % "test",  // used for play integration testing
     //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing
 
