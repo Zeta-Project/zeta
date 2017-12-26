@@ -22,7 +22,7 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
-  val silhouetteVersion = "4.0.0"
+  val silhouetteVersion = "5.0.2"
   val playVersion = "2.6.6"
 
   val scalaOptions = scalacOptions ++= Seq(

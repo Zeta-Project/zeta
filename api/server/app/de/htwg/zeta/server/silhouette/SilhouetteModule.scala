@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.SilhouetteProvider
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
-import com.mohiva.play.silhouette.api.crypto.CookieSigner
+import com.mohiva.play.silhouette.api.crypto.Signer
 import com.mohiva.play.silhouette.api.crypto.Crypter
 import com.mohiva.play.silhouette.api.crypto.CrypterAuthenticatorEncoder
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
@@ -26,8 +26,8 @@ import com.mohiva.play.silhouette.api.util.IDGenerator
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PlayHTTPLayer
-import com.mohiva.play.silhouette.crypto.JcaCookieSigner
-import com.mohiva.play.silhouette.crypto.JcaCookieSignerSettings
+import com.mohiva.play.silhouette.crypto.JcaSigner
+import com.mohiva.play.silhouette.crypto.JcaSignerSettings
 import com.mohiva.play.silhouette.crypto.JcaCrypter
 import com.mohiva.play.silhouette.crypto.JcaCrypterSettings
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
@@ -38,8 +38,6 @@ import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
-import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
-import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import net.ceedubs.ficus.Ficus
@@ -50,6 +48,7 @@ import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.ws.WSClient
+import play.api.mvc.CookieHeaderEncoding
 
 /**
  * The Guice module which wires all Silhouette dependencies.
@@ -138,7 +137,7 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   @Named("authenticator-cookie-signer") // scalastyle:ignore multiple.string.literals
-  def provideAuthenticatorCookieSigner(configuration: Configuration): CookieSigner = {
+  def provideAuthenticatorCookieSigner(configuration: Configuration): Signer = {
     val config = {
       // required for parsing JcaCookieSignerSettings
       implicit val stringValueReader: ValueReader[String] = Ficus.stringValueReader
@@ -146,9 +145,9 @@ class SilhouetteModule extends ScalaModule {
 
       implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
 
-      configuration.underlying.as[JcaCookieSignerSettings]("silhouette.authenticator.cookie.signer")
+      configuration.underlying.as[JcaSignerSettings]("silhouette.authenticator.cookie.signer")
     }
-    new JcaCookieSigner(config)
+    new JcaSigner(config)
   }
 
   /**
@@ -191,11 +190,12 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   def provideAuthenticatorService(
-      @Named("authenticator-cookie-signer") cookieSigner: CookieSigner, // scalastyle:ignore
+      @Named("authenticator-cookie-signer") cookieSigner: Signer, // scalastyle:ignore
       @Named("authenticator-crypter") crypter: Crypter,
       fingerprintGenerator: FingerprintGenerator,
       idGenerator: IDGenerator,
       configuration: Configuration,
+      cookieHeaderEncoding: CookieHeaderEncoding,
       clock: Clock
   ): AuthenticatorService[CookieAuthenticator] = {
     val config = {
@@ -210,7 +210,7 @@ class SilhouetteModule extends ScalaModule {
     }
     val encoder = new CrypterAuthenticatorEncoder(crypter)
 
-    new CookieAuthenticatorService(config, None, cookieSigner, encoder, fingerprintGenerator, idGenerator, clock)
+    new CookieAuthenticatorService(config, None, cookieSigner, cookieHeaderEncoding, encoder, fingerprintGenerator, idGenerator, clock)
   }
 
   /**

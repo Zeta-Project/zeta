@@ -25,7 +25,7 @@
  <check enabled="false" class="org.scalastyle.file.NoNewLineAtEofChecker" level="warning"/>
  <check enabled="true" class="org.scalastyle.file.RegexChecker" level="warning">
   <parameters>
-   <parameter name="regex"><![CDATA[println|print]]></parameter>
+   <parameter name="regex"><![CDATA[^println|^print]]></parameter>
   </parameters>
   <customMessage>Use logger instead of println or print!</customMessage>
  </check>
