@@ -23,6 +23,7 @@ object ZetaBuild {
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "4.0.0"
+  val playVersion = "2.6.6"
 
   val scalaOptions = scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.

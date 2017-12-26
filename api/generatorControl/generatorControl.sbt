@@ -21,7 +21,7 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     // scallop
     "org.rogach" %% "scallop" % "2.0.2",
     //play ws
-    "com.typesafe.play" %% "play-ws" % "2.5.9",
+    "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
     // kryo serialization
     "com.github.romix.akka" %% "akka-kryo-serialization" % "0.4.1"
   )
