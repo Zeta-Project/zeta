@@ -24,9 +24,10 @@ object ZetaBuild {
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "5.0.2"
   val playVersion = "2.6.6"
-//  val akkaVersion = "2.5.5"
-  val akkaVersion = "2.4.18"
+  val akkaVersion = "2.5.8"
 
+  val scalaVersionNumber = "2.12.4"
+  val scalaVersion = Keys.scalaVersion := scalaVersionNumber
 
   val scalaOptions = scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -47,9 +48,6 @@ object ZetaBuild {
     compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
     wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements)
   )
-
-  val scalaVersion = Keys.scalaVersion := "2.11.7"
-//  val scalaVersion = Keys.scalaVersion := "2.12.4"
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
     // injection
