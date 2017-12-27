@@ -24,7 +24,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
 
     //typesafe
     "org.webjars" %% "webjars-play" % "2.6.2",
-    "com.iheart" %% "ficus" % "1.2.6",
+    "com.iheart" %% "ficus" % "1.4.3",
     "com.typesafe.play" %% "play-mailer" % "6.0.1",
     "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
     "com.typesafe.play" %% "play-guice" % ZetaBuild.playVersion,
@@ -34,15 +34,14 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % "2.5.0",
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
-    "com.typesafe.akka" %% "akka-kernel" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-sharding" % ZetaBuild.akkaVersion,
     // "com.mohiva" %% "play-silhouette-testkit" % ZetaBuild.silhouetteVersion % "test",  // used for play integration testing
     //"com.typesafe.play" %% "play-specs2"% "2.5.9" % "test",  // used for play integration testing
 
     //scala
-    "org.scala-lang" % "scala-reflect" % "2.11.8",
-    "org.scala-lang" % "scala-compiler" % "2.11.8",
+    "org.scala-lang" % "scala-reflect" % ZetaBuild.scalaVersionNumber,
+    "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber,
 
     // quicklens
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"

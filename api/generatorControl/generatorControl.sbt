@@ -17,11 +17,11 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     // docker client
     "com.spotify" % "docker-client" % "6.1.1",
     // scallop
-    "org.rogach" %% "scallop" % "2.0.2",
+    "org.rogach" %% "scallop" % "3.1.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
     //play ws
     "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
     // kryo serialization
-    "com.github.romix.akka" %% "akka-kryo-serialization" % "0.4.1"
+    "com.github.romix.akka" %% "akka-kryo-serialization" % "0.5.2"
   )
 ).enablePlugins(
   JavaAppPackaging,
