@@ -63,3 +63,34 @@ describe('validator.outputMatrix', () => {
         });
     });
 });
+
+describe('validator.getEdgeData', () => {
+    test('diagram has no edges', () => {
+        const validator = new ValidatorGenerator({}, {});
+        expect(validator.getEdgeData('Edge')).not.toBeDefined();
+    });
+
+    test('diagram has edge', () => {
+        const validator = new ValidatorGenerator({}, {
+            model: {
+                edges: [
+                    {
+                        name: 'Edge',
+                        mReference: 'Reference',
+                        from: 'SourceMClass',
+                        to: 'TargetMClass',
+                        connection: {
+                            name: 'Connection'
+                        }
+                    }
+                ]
+            }
+        });
+        expect(validator.getEdgeData('Edge')).toEqual({
+            'type': 'Reference',
+            'from': 'SourceMClass',
+            'to': 'TargetMClass',
+            'style': 'Connection',
+        });
+    });
+});

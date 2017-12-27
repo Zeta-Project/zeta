@@ -27,8 +27,9 @@ class MatrixGenerator {
 }
 
 export default class {
-    constructor(metaModel) {
+    constructor(metaModel, diagram) {
         this.model = metaModel;
+        this.diagram = diagram;
         this.matrix = new MatrixGenerator();
     }
 
@@ -38,5 +39,19 @@ export default class {
 
     get outputMatrix() {
         return this.model.classes ? this.matrix.generateOuput(this.model.classes) : {};
+    }
+
+    getEdgeData(edgeName) {
+        if (this.diagram.model && this.diagram.model.edges) {
+            const edge = this.diagram.model.edges.find(e => e.name === edgeName);
+            if (edge) {
+                return {
+                    type: edge.mReference,
+                    from: edge.from,
+                    to: edge.to,
+                    style: edge.connection.name,
+                };
+            }
+        }
     }
 }
