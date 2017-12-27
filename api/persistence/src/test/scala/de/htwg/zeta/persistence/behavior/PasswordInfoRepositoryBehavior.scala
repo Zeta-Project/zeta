@@ -1,7 +1,6 @@
 package de.htwg.zeta.persistence.behavior
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
