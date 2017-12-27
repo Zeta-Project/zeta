@@ -115,10 +115,12 @@ class ShapesGenerator {
  * 
  */
 export default class StencilGenerator {
-    constructor(diagram, metaModel, shapeStyleGenerator) {
+    constructor(diagram, metaModel, shapeStyleGenerator, styleGenerator) {
+        this.diagram = diagram;
         this.metaModel = metaModel;
         this.nodes = diagram.model && diagram.model.nodes ? diagram.model.nodes : [];
         this.shapesGenerator = new ShapesGenerator(shapeStyleGenerator);
+        this.styleGenerator = styleGenerator;
     }
 
     get groups() {
@@ -128,5 +130,15 @@ export default class StencilGenerator {
     get shapes() {
         const classes = this.metaModel && this.metaModel.classes ? this.metaModel.classes : [];
         return this.shapesGenerator.create(this.nodes, classes);
+    }
+
+    addStyleElementToDocument() {
+        if (this.diagram.model && this.diagram.model.style) {
+            const style = document.createElement('style');
+            style.id = 'highlighting-style';
+            style.type = 'text/css';
+            style.innerHTML = this.styleGenerator.getDiagramHighlighting("${style.name}");
+            document.getElementsByTagName('head')[0].appendChild(style);
+        }
     }
 }

@@ -1,3 +1,5 @@
+import StencilGenerator from './StencilGenerator';
+
 jest.mock('jointjs');
 
 describe('Stencil.groups', () => {
@@ -90,7 +92,7 @@ describe('Stencil.shapes', () => {
     }
     class ShapeStyle {
         getShapeStyle() {
-            return {};          
+            return {};
         }
     }
     require('jointjs').shapes.zeta = { Box };
@@ -331,5 +333,42 @@ describe('Stencil.shapes', () => {
             expect(shape.attr.mock.calls[1]).toHaveLength(1);
             expect(shape.attr.mock.calls[1][0]).toEqual({ 'text_id': {'text': 'label' } });
         });
+    });
+});
+
+describe('addStyleElementToDocument', () => {
+    class Style {
+        constructor() {
+            this.getDiagramHighlighting = jest.fn();
+        }
+    }
+
+    test('with empty diagram', () => {
+        const style = new Style();
+        const Stencil = new StencilGenerator({}, {}, {}, style);
+        Stencil.addStyleElementToDocument();
+
+        expect(style.getDiagramHighlighting.mock.calls).toHaveLength(0);
+        expect(document.getElementById('highlighting-style')).toEqual(null);
+    });
+
+    test('diagramm has style', () => {
+        const style = new Style();
+        style.getDiagramHighlighting.mockReturnValue('.some-style { color: blue; }');
+        const Stencil = new StencilGenerator({
+            model: {
+                style: 'DefaultStyle',
+            }
+        }, {}, {}, style);
+        Stencil.addStyleElementToDocument();
+
+        expect(style.getDiagramHighlighting.mock.calls).toHaveLength(1);
+        const element = document.getElementById('highlighting-style');
+        expect(element).toBeDefined();
+        expect(element.parentElement).toBeInstanceOf(HTMLHeadElement);
+        expect(element.innerHTML).toEqual('.some-style { color: blue; }');
+        
+        // Cleanup
+        element.parentElement.removeChild(element);
     });
 });
