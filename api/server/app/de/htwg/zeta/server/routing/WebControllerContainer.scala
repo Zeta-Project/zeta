@@ -3,7 +3,6 @@ package de.htwg.zeta.server.routing
 import javax.inject.Inject
 
 import com.google.inject.Provider
-import controllers.WebJarAssets
 import de.htwg.zeta.server.controller.ActivateAccountController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.ChangePasswordController
@@ -29,6 +28,7 @@ import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
+import org.webjars.play.WebJarAssets
 
 /**
  */
