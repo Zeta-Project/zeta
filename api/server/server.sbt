@@ -2,11 +2,10 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
   name := "api",
   version := "0.1",
 
-  wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "Routes.scala",
-  wartremoverExcluded += crossTarget.value / "routes" / "main" / "router" / "RoutesPrefix.scala",
-  wartremoverExcluded += crossTarget.value / "routes" / "main" / "controllers" / "ReverseRoutes.scala",
-  wartremoverExcluded += crossTarget.value / "routes" / "main" / "controllers" / "javascript" / "JavaScriptReverseRoutes.scala",
+  wartremoverExcluded += baseDirectory.value / "conf" / "routes",
+  wartremoverExcluded += baseDirectory.value / "target" / "scala-2.11" / "routes" / "main" / "router" / "Routes.scala",
 
+  wartremoverExcluded ++= routes.in(Compile).value,
   routesGenerator := InjectedRoutesGenerator,
   routesImport += "de.htwg.zeta.server.util.route.Binders._",
 
