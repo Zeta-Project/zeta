@@ -1,13 +1,5 @@
 import joint from 'jointjs';
 
-function createGroups(nodes) {
-    return getPalettes(nodes).reduce((result, palette, i) => {
-        const key = getVarName(palette);
-        result[key] = { index: i + 1, label: palette };
-        return result;
-    }, {});
-}
-
 function getPalettes(nodes) {
     const palettes = nodes.reduce((result, node) => {
         result[node.palette] = true;
@@ -124,7 +116,11 @@ export default class StencilGenerator {
     }
 
     get groups() {
-        return createGroups(this.nodes);
+        return getPalettes(this.nodes).reduce((result, palette, i) => {
+            const key = getVarName(palette);
+            result[key] = { index: i + 1, label: palette };
+            return result;
+        }, {});
     }
 
     get shapes() {
