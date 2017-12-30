@@ -2,8 +2,14 @@ organization := "de.htwg"
 name := "zeta-api"
 version := "1.0.0"
 
+val switchToServer: State => State =
+  (state: State) =>
+    state.copy(remainingCommands = Exec("project server", None) +: state.remainingCommands)
+
+
 // Move into project server on startup
-onLoad in Global := (onLoad in Global).value.andThen(state => Command.process("project server", state))
+onLoad in Global := (onLoad in Global).value.andThen(switchToServer)
+
 
 lazy val common = ZetaBuild.common
 lazy val generatorControl = ZetaBuild.generatorControl

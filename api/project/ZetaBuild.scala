@@ -7,7 +7,7 @@ import sbt.file
 import sbt.Compile
 import sbt.Keys
 import sbt.Def
-import sbt.toGroupID
+import sbt.stringToOrganization
 import sbt.Keys.scalacOptions
 import sbt.Keys.compile
 import wartremover.WartRemover.autoImport.Wart
