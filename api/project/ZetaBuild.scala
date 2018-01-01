@@ -22,8 +22,8 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
-  val silhouetteVersion = "5.0.2"
-  val playVersion = "2.6.6"
+  val silhouetteVersion = "5.0.3"
+  val playVersion = "2.6.10"
   val akkaVersion = "2.5.8"
 
   val scalaVersionNumber = "2.12.4"
@@ -53,7 +53,7 @@ object ZetaBuild {
     // injection
     "net.codingwell" %% "scala-guice" % "4.1.1",
     // test
-    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.4" % "test",
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.3.2"
   )
