@@ -68,13 +68,14 @@ class ModelRestApi @Inject()(
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    (request.body \ "metaModelId").validate[UUID].fold(
+    info("updating GraphicalDslInstance: " + request.body.toString)
+    (request.body \ "graphicalDslId").validate[UUID].fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { _ =>
-        request.body.validate(graphicalDslInstanceFormat).fold(
+        request.body.validate(graphicalDslInstanceFormat.withId(id)).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))

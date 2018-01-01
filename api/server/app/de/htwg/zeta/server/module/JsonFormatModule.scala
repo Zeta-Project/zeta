@@ -40,9 +40,9 @@ class JsonFormatModule extends ScalaModule {
     bind[GeneratorImageFormat].toInstance(new GeneratorImageFormat(sSchema = s"$$schema", sRef = s"$$ref"))
     bind[GeneratorFormat].toInstance(new GeneratorFormat)
     bind[TimedTaskFormat].toInstance(new TimedTaskFormat)
-    bind[AttributeTypeFormat].toInstance(new AttributeTypeFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble))
+    bind[AttributeTypeFormat].toInstance(new AttributeTypeFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble, sUnit = "Unit"))
     bind[AttributeValueFormat].toInstance(new AttributeValueFormat(sString = sString, sBoolean = sBoolean, sInt = sInt, sDouble = sDouble))
-    bind[EnumFormat].toInstance(new EnumFormat(sValueNames = "values"))
+    bind[EnumFormat].toInstance(new EnumFormat)
   }
 
   @Provides
@@ -51,7 +51,7 @@ class JsonFormatModule extends ScalaModule {
       attributeFormat: AttributeFormat,
       methodFormat: MethodFormat
   ): ClassFormat = {
-    new ClassFormat(attributeFormat, methodFormat, sInputReferenceNames = "inputs", sOutputReferenceNames = "outputs")
+    new ClassFormat(attributeFormat, methodFormat)
   }
 
   @Provides
@@ -129,7 +129,7 @@ class JsonFormatModule extends ScalaModule {
       attributeTypeFormat: AttributeTypeFormat,
       attributeValueFormat: AttributeValueFormat
   ): AttributeFormat = {
-    new AttributeFormat(attributeTypeFormat, attributeValueFormat, sType = "typ")
+    new AttributeFormat(attributeTypeFormat, attributeValueFormat)
   }
 
   @Provides
