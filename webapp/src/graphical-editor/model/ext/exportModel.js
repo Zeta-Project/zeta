@@ -23,7 +23,7 @@ export default (function modelExporter () {
 
         var data = JSON.stringify({
             name: window._global_model_name,
-            metaModelId: window._global_graph_type,
+            graphicalDslId: window._global_graph_type,
             nodes: nodes,
             edges: edges,
             attributes: [], // TODO
@@ -59,8 +59,8 @@ export default (function modelExporter () {
             var element = {
                 name: ele.id,
                 className: ele.attributes.mClass,
-                outputs: {},
-                inputs: {},
+                outputEdgeNames: [],
+                inputEdgeNames: [],
                 attributes: [],
                 attributeValues: {},
                 methods: []
@@ -111,8 +111,8 @@ export default (function modelExporter () {
             var element = {
                 name: link.id,
                 referenceName: link.attributes.mReference,
-                source: {},
-                target: {},
+                sourceNodeName: {},
+                targetNodeName: {},
                 attributes: [],
                 attributeValues: {},
                 methods: []

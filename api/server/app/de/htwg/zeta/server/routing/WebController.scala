@@ -21,7 +21,7 @@ import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
 import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
-import de.htwg.zeta.server.controller.restApi.MetaModelRestApi
+import de.htwg.zeta.server.controller.restApi.GraphicalDslRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
@@ -48,7 +48,7 @@ trait WebController {
   protected lazy val CodeEditorController: CodeEditorController = webCont.codeEditorController.get()
   protected lazy val WebJarAssets: WebJarAssets = webCont.webJarAssets.get()
   protected lazy val DynamicFileController: DynamicFileController = webCont.dynamicFileController.get()
-  protected lazy val MetaModelRestApi: MetaModelRestApi = webCont.metaModelRestApi.get()
+  protected lazy val MetaModelRestApi: GraphicalDslRestApi = webCont.metaModelRestApi.get()
   protected lazy val ModelRestApi: ModelRestApi = webCont.modelRestApi.get()
   protected lazy val WebAppController: WebAppController = webCont.webApp.get()
   protected lazy val GeneratorImageRestApi: GeneratorImageRestApi = webCont.generatorImageRestApi.get()
