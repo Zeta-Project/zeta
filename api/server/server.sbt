@@ -31,7 +31,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "play-cache" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-ehcache" % ZetaBuild.playVersion,
     "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
-    "com.typesafe.play" %% "filters-helpers" % "2.5.0",
+    "com.typesafe.play" %% "filters-helpers" % ZetaBuild.playVersion,
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-sharding" % ZetaBuild.akkaVersion,
@@ -43,7 +43,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber,
 
     // quicklens
-    "com.softwaremill.quicklens" %% "quicklens" % "1.4.8"
+    "com.softwaremill.quicklens" %% "quicklens" % "1.4.11"
   )
 ).enablePlugins(PlayScala).dependsOn(
   ZetaBuild.common,

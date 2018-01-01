@@ -1,5 +1,7 @@
 // Comment to get more information during initialization
 logLevel := Level.Warn
+resolvers += Resolver.sbtPluginRepo("releases")
+
 
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
