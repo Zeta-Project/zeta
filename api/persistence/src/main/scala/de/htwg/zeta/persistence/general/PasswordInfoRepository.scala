@@ -2,14 +2,13 @@ package de.htwg.zeta.persistence.general
 
 import scala.concurrent.Future
 
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
-import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 
 /**
  * Persistence for the PasswordInfo.
  */
-trait PasswordInfoRepository extends DelegableAuthInfoDAO[PasswordInfo] {
+trait PasswordInfoRepository {
 
   /** Adds new auth info for the given login info.
    *
@@ -17,14 +16,14 @@ trait PasswordInfoRepository extends DelegableAuthInfoDAO[PasswordInfo] {
    * @param authInfo  The auth info to add.
    * @return The added auth info.
    */
-  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+  def add(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo]
 
   /** Finds the auth info which is linked to the specified login info.
    *
    * @param loginInfo The linked login info.
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
-  override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]]
+  def find(loginInfo: ZetaLoginInfo): Future[Option[ZetaPasswordInfo]]
 
   /** Updates the auth info for the given login info.
    *
@@ -32,7 +31,7 @@ trait PasswordInfoRepository extends DelegableAuthInfoDAO[PasswordInfo] {
    * @param authInfo  The auth info to update.
    * @return The updated auth info.
    */
-  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+  def update(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo]
 
   /** Saves the auth info for the given login info. This method either adds the auth info if it doesn't exists or it updates the auth info if it already exists.
    *
@@ -40,19 +39,19 @@ trait PasswordInfoRepository extends DelegableAuthInfoDAO[PasswordInfo] {
    * @param authInfo  The auth info to save.
    * @return The saved auth info.
    */
-  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo]
+  def save(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo]
 
   /** Removes the auth info for the given login info.
    *
    * @param loginInfo The login info for which the auth info should be removed.
    * @return A future to wait for the process to be completed.
    */
-  override def remove(loginInfo: LoginInfo): Future[Unit]
+  def remove(loginInfo: ZetaLoginInfo): Future[Unit]
 
   /** Read all LoginInfo's
    *
    * @return all LoginInfo's
    */
-  def readAllKeys(): Future[Set[LoginInfo]]
+  def readAllKeys(): Future[Set[ZetaLoginInfo]]
 
 }

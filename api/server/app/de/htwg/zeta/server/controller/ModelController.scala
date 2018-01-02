@@ -11,7 +11,7 @@ import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -25,7 +25,7 @@ class ModelController @Inject()(
 
   def modelEditor(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     modelEntityRepo.restrictedTo(request.identity.id).read(modelId).map { model =>
-      Ok(views.html.model.ModelGraphicalEditor(model, request.identity))
+      Ok(views.html.model.ModelGraphicalEditor(model, request.identity.user))
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
     }

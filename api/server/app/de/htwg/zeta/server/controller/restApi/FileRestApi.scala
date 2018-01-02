@@ -10,13 +10,13 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.entity.FileFormat
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.FileRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
-import play.api.data.validation.ValidationError
 import play.api.libs.json.JsError
 import play.api.libs.json.JsPath
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
+import play.api.libs.json.JsonValidationError
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -73,7 +73,7 @@ class FileRestApi @Inject()(
     }
   }
 
-  private def jsErrorToResult(errors: Seq[(JsPath, Seq[ValidationError])]): Future[Result] = {
+  private def jsErrorToResult(errors: Seq[(JsPath, Seq[JsonValidationError])]): Future[Result] = {
     val json = JsError.toJson(errors)
     val result = BadRequest(json)
     Future.successful(result)

@@ -1,6 +1,5 @@
 package de.htwg.zeta.server.routing
 
-import controllers.WebJarAssets
 import de.htwg.zeta.server.controller.ActivateAccountController
 import de.htwg.zeta.server.controller.ApplicationController
 import de.htwg.zeta.server.controller.ChangePasswordController
@@ -26,6 +25,7 @@ import de.htwg.zeta.server.controller.restApi.GraphicalDslRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
+import org.webjars.play.WebJarAssets
 
 /**
  */
