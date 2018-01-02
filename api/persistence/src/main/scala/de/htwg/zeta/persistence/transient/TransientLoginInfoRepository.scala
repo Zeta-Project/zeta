@@ -6,7 +6,7 @@ import javax.inject.Singleton
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
-import com.mohiva.play.silhouette.api.LoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 
 /**
@@ -15,7 +15,7 @@ import de.htwg.zeta.persistence.general.LoginInfoRepository
 @Singleton
 class TransientLoginInfoRepository extends LoginInfoRepository {
 
-  private val cache: TrieMap[LoginInfo, UUID] = TrieMap.empty
+  private val cache: TrieMap[ZetaLoginInfo, UUID] = TrieMap.empty
 
   /** Create a LoginInfo.
    *
@@ -23,7 +23,7 @@ class TransientLoginInfoRepository extends LoginInfoRepository {
    * @param id        The id of the user.
    * @return Unit-Future, when successful.
    */
-  override def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = {
+  override def create(loginInfo: ZetaLoginInfo, id: UUID): Future[Unit] = {
     cache.putIfAbsent(loginInfo, id).fold {
       Future.successful(())
     } { _ =>
@@ -37,7 +37,7 @@ class TransientLoginInfoRepository extends LoginInfoRepository {
    * @param loginInfo The LoginInfo.
    * @return The id of the User.
    */
-  override def read(loginInfo: LoginInfo): Future[UUID] = {
+  override def read(loginInfo: ZetaLoginInfo): Future[UUID] = {
     cache.get(loginInfo).fold[Future[UUID]] {
       Future.failed(new NoSuchElementException)
     } { id =>
@@ -51,7 +51,7 @@ class TransientLoginInfoRepository extends LoginInfoRepository {
    * @param updated The updated LoginInfo.
    * @return Unit-Future
    */
-  override def update(old: LoginInfo, updated: LoginInfo): Future[Unit] = {
+  override def update(old: ZetaLoginInfo, updated: ZetaLoginInfo): Future[Unit] = {
     cache.remove(old).fold[Future[Unit]] {
       Future.failed(new NoSuchElementException)
     } { id =>
@@ -69,7 +69,7 @@ class TransientLoginInfoRepository extends LoginInfoRepository {
    * @param loginInfo LoginInfo
    * @return Unit-Future
    */
-  override def delete(loginInfo: LoginInfo): Future[Unit] = {
+  override def delete(loginInfo: ZetaLoginInfo): Future[Unit] = {
     cache.remove(loginInfo).fold[Future[Unit]] {
       Future.failed(new NoSuchElementException)
     } { _ =>
@@ -81,7 +81,7 @@ class TransientLoginInfoRepository extends LoginInfoRepository {
    *
    * @return Future containing all LoginInfo's
    */
-  override def readAllKeys(): Future[Set[LoginInfo]] = {
+  override def readAllKeys(): Future[Set[ZetaLoginInfo]] = {
     Future.successful(cache.keys.toSet)
   }
 

@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -51,7 +51,7 @@ class WebpageController @Inject()(
     val result = for {
       metaModels <- getMetaModels(request)
     } yield {
-      Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, None, Seq[GraphicalDslInstanceShortInfo]()))
+      Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity.user), metaModels, None, Seq[GraphicalDslInstanceShortInfo]()))
     }
 
     result.recover {
@@ -69,7 +69,7 @@ class WebpageController @Inject()(
         models <- getModels(id, request)
         metaModel <- metaModelEntityRepo.restrictedTo(request.identity.id).read(id)
       } yield {
-        Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity), metaModels, Some(metaModel), models))
+        Ok(views.html.webpage.WebpageDiagramsOverview(Some(request.identity.user), metaModels, Some(metaModel), models))
       }
 
       result.recover {

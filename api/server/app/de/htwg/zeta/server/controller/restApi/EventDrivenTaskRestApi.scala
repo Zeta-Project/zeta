@@ -10,7 +10,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.entity.EventDrivenTaskFormat
 import de.htwg.zeta.common.models.entity.EventDrivenTask
 import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.mvc.AnyContent

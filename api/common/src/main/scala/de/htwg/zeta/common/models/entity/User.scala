@@ -2,7 +2,6 @@ package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
-import com.mohiva.play.silhouette.api.Identity
 import play.api.libs.json.Format
 import play.api.libs.json.Json
 
@@ -20,7 +19,7 @@ case class User(
     lastName: String,
     email: String,
     activated: Boolean
-) extends Identity with Entity {
+) extends Entity {
 
   /** The full name of the user. */
   val fullName = s"$firstName $lastName"

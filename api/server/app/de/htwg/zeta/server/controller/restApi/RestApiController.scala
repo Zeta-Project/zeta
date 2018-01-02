@@ -6,12 +6,12 @@ import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe.TypeTag
 
 import grizzled.slf4j.Logging
-import play.api.data.validation.ValidationError
 import play.api.libs.json.JsError
 import play.api.libs.json.JsPath
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
 import play.api.libs.json.Reads
+import play.api.libs.json.JsonValidationError
 import play.api.mvc.Controller
 import play.api.mvc.Result
 
@@ -33,7 +33,7 @@ class RestApiController[T: TypeTag] extends Controller with Logging {
     })
   }
 
-  private def jsErrorToResult(errors: Seq[(JsPath, Seq[ValidationError])]): Future[Result] = {
+  private def jsErrorToResult(errors: Seq[(JsPath, Seq[JsonValidationError])]): Future[Result] = {
     val json = JsError.toJson(errors)
     val result = BadRequest(json)
     Future.successful(result)

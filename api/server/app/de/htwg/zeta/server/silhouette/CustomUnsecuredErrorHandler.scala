@@ -1,4 +1,4 @@
-package de.htwg.zeta.server.util.auth
+package de.htwg.zeta.server.silhouette
 
 import scala.concurrent.Future
 
