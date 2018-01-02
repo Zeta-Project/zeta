@@ -166,7 +166,7 @@ object StencilGenerator {
       if (mapping.contains(paletteName)) {
         mapping(paletteName) += node
       } else {
-        mapping += (paletteName -> (ListBuffer[Node]() += node))
+        mapping.put(paletteName, ListBuffer[Node](node))
       }
     }
     mapping

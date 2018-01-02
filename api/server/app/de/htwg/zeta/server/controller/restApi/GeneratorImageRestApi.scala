@@ -10,7 +10,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.entity.GeneratorImageFormat
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.mvc.AnyContent

@@ -13,10 +13,11 @@ import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
-import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaIdentity
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import net.ceedubs.ficus.Ficus.finiteDurationReader
 import net.ceedubs.ficus.Ficus.optionValueReader
 import net.ceedubs.ficus.Ficus.toFicusConfig
@@ -41,7 +42,7 @@ class SignInController @Inject()(
     credentialsProvider: CredentialsProvider,
     configuration: Configuration,
     clock: Clock,
-    loginInfoRepo: LoginInfoRepository,
+    loginInfoRepo: SilhouetteLoginInfoDao,
     userRepo: UserRepository
 ) extends Controller {
 
@@ -83,7 +84,7 @@ class SignInController @Inject()(
                     authenticator
                   }
                 }.flatMap { authenticator =>
-                  silhouette.env.eventBus.publish(LoginEvent(user, request))
+                  silhouette.env.eventBus.publish(LoginEvent(ZetaIdentity(user), request))
                   silhouette.env.authenticatorService.init(authenticator)(request).flatMap { v =>
                     silhouette.env.authenticatorService.embed(v, Redirect("/"))(request)
                   }

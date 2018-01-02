@@ -9,7 +9,7 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import controllers.routes
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -29,7 +29,7 @@ class ApplicationController @Inject()(
    * @return The result to display.
    */
   def index(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.webpage.WebpageIndex(Some(request.identity)))
+    Ok(views.html.webpage.WebpageIndex(Some(request.identity.user)))
   }
 
   /** Get the user id of the logged in user

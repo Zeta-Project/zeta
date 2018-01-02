@@ -7,16 +7,14 @@ import akka.stream.Materializer
 import com.mohiva.play.silhouette.api.HandlerResult
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Request
 
 /**
  */
 class AuthenticatedWebSocket(
-    override val system: ActorSystem,
-    override val silhouette: Silhouette[ZetaEnv],
-    override val mat: Materializer
+    override val dependencies: AbstractWebSocket.Dependencies
 ) extends AbstractWebSocketAPI[SecuredRequest[ZetaEnv, AnyContent]] {
 
   override protected[authentication] def handleRequest[T](request: Request[AnyContent])

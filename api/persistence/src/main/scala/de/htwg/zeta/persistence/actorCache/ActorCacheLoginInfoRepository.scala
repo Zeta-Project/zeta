@@ -16,11 +16,11 @@ import akka.pattern.ask
 import akka.routing.ConsistentHashingPool
 import akka.routing.ConsistentHashingRouter.ConsistentHashMapping
 import akka.util.Timeout
-import com.mohiva.play.silhouette.api.LoginInfo
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Read
 import de.htwg.zeta.persistence.actorCache.LoginInfoCacheActor.Update
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 
 /**
@@ -58,7 +58,7 @@ class ActorCacheLoginInfoRepository @Inject()(
    * @param id        The id of the user.
    * @return Unit-Future, when successful.
    */
-  override def create(loginInfo: LoginInfo, id: UUID): Future[Unit] = {
+  override def create(loginInfo: ZetaLoginInfo, id: UUID): Future[Unit] = {
     (router ? Create(loginInfo, id)).flatMap {
       case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
@@ -70,7 +70,7 @@ class ActorCacheLoginInfoRepository @Inject()(
    * @param loginInfo The LoginInfo.
    * @return The id of the User.
    */
-  override def read(loginInfo: LoginInfo): Future[UUID] = {
+  override def read(loginInfo: ZetaLoginInfo): Future[UUID] = {
     (router ? Read(loginInfo)).flatMap {
       case Success(userId: UUID) => Future.successful(userId)
       case Failure(e) => Future.failed(e)
@@ -83,7 +83,7 @@ class ActorCacheLoginInfoRepository @Inject()(
    * @param updated The updated LoginInfo.
    * @return Unit-Future
    */
-  override def update(old: LoginInfo, updated: LoginInfo): Future[Unit] = {
+  override def update(old: ZetaLoginInfo, updated: ZetaLoginInfo): Future[Unit] = {
     (router ? Update(old, updated)).flatMap {
       case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
@@ -95,7 +95,7 @@ class ActorCacheLoginInfoRepository @Inject()(
    * @param loginInfo LoginInfo
    * @return Unit-Future
    */
-  override def delete(loginInfo: LoginInfo): Future[Unit] = {
+  override def delete(loginInfo: ZetaLoginInfo): Future[Unit] = {
     (router ? Delete(loginInfo)).flatMap {
       case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
@@ -106,7 +106,7 @@ class ActorCacheLoginInfoRepository @Inject()(
    *
    * @return Future containing all LoginInfo's
    */
-  override def readAllKeys(): Future[Set[LoginInfo]] = {
+  override def readAllKeys(): Future[Set[ZetaLoginInfo]] = {
     underlying.readAllKeys()
   }
 

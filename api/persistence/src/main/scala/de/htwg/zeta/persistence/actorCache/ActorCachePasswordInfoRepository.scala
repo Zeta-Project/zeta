@@ -15,13 +15,13 @@ import akka.pattern.ask
 import akka.routing.ConsistentHashingPool
 import akka.routing.ConsistentHashingRouter.ConsistentHashMapping
 import akka.util.Timeout
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Add
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Find
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Remove
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Save
 import de.htwg.zeta.persistence.actorCache.PasswordInfoCacheActor.Update
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 
 /**
@@ -61,9 +61,9 @@ class ActorCachePasswordInfoRepository @Inject()(
    * @param authInfo  The auth info to add.
    * @return The added auth info.
    */
-  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def add(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
     (router ? Add(loginInfo, authInfo)).flatMap {
-      case Success(authInfo: PasswordInfo) => Future.successful(authInfo)
+      case Success(authInfo: ZetaPasswordInfo) => Future.successful(authInfo)
       case Failure(e) => Future.failed(e)
     }
   }
@@ -73,9 +73,9 @@ class ActorCachePasswordInfoRepository @Inject()(
    * @param loginInfo The linked login info.
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
-  override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
+  override def find(loginInfo: ZetaLoginInfo): Future[Option[ZetaPasswordInfo]] = {
     (router ? Find(loginInfo)).flatMap {
-      case Success(authInfo: Option[PasswordInfo]) => Future.successful(authInfo)
+      case Success(authInfo: Option[ZetaPasswordInfo]) => Future.successful(authInfo)
       case Failure(e) => Future.failed(e)
     }
   }
@@ -86,9 +86,9 @@ class ActorCachePasswordInfoRepository @Inject()(
    * @param authInfo  The auth info to update.
    * @return The updated auth info.
    */
-  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def update(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
     (router ? Update(loginInfo, authInfo)).flatMap {
-      case Success(authInfo: PasswordInfo) => Future.successful(authInfo)
+      case Success(authInfo: ZetaPasswordInfo) => Future.successful(authInfo)
       case Failure(e) => Future.failed(e)
     }
   }
@@ -99,9 +99,9 @@ class ActorCachePasswordInfoRepository @Inject()(
    * @param authInfo  The auth info to save.
    * @return The saved auth info.
    */
-  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def save(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
     (router ? Save(loginInfo, authInfo)).flatMap {
-      case Success(authInfo: PasswordInfo) => Future.successful(authInfo)
+      case Success(authInfo: ZetaPasswordInfo) => Future.successful(authInfo)
       case Failure(e) => Future.failed(e)
     }
   }
@@ -111,7 +111,7 @@ class ActorCachePasswordInfoRepository @Inject()(
    * @param loginInfo The login info for which the auth info should be removed.
    * @return A future to wait for the process to be completed.
    */
-  override def remove(loginInfo: LoginInfo): Future[Unit] = {
+  override def remove(loginInfo: ZetaLoginInfo): Future[Unit] = {
     (router ? Remove(loginInfo)).flatMap {
       case Success(()) => Future.successful(())
       case Failure(e) => Future.failed(e)
@@ -122,7 +122,7 @@ class ActorCachePasswordInfoRepository @Inject()(
    *
    * @return all LoginInfo's
    */
-  override def readAllKeys(): Future[Set[LoginInfo]] = {
+  override def readAllKeys(): Future[Set[ZetaLoginInfo]] = {
     underlying.readAllKeys()
   }
 

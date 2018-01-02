@@ -17,7 +17,7 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslIns
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
@@ -68,13 +68,14 @@ class ModelRestApi @Inject()(
 
   /** updates whole model structure */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
-    (request.body \ "metaModelId").validate[UUID].fold(
+    info("updating GraphicalDslInstance: " + request.body.toString)
+    (request.body \ "graphicalDslId").validate[UUID].fold(
       faulty => {
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
       metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { _ =>
-        request.body.validate(graphicalDslInstanceFormat).fold(
+        request.body.validate(graphicalDslInstanceFormat.withId(id)).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))

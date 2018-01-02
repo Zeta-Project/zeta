@@ -13,12 +13,13 @@ import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import controllers.routes
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaIdentity
+import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
@@ -43,7 +44,7 @@ class SignUpController @Inject()(
     mailerClient: MailerClient,
     tokenCache: TokenCache,
     userRepo: UserRepository,
-    loginInfoRepo: LoginInfoRepository
+    loginInfoRepo: SilhouetteLoginInfoDao
 ) extends Controller {
 
   /** Views the `Sign Up` page.
@@ -111,7 +112,7 @@ class SignUpController @Inject()(
         bodyHtml = Some(views.html.silhouette.emails.signUp(user, url, messages).body)
       ))
 
-      silhouette.env.eventBus.publish(SignUpEvent(user, request))
+      silhouette.env.eventBus.publish(SignUpEvent(ZetaIdentity(user), request))
       result
     }
   }

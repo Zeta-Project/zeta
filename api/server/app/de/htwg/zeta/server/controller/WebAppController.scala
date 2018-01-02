@@ -5,14 +5,11 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-import akka.stream.scaladsl.Source
-import akka.util.ByteString
 import grizzled.slf4j.Logging
 import play.api.http.HttpVerbs
 import play.api.i18n.Messages
-import play.api.libs.ws.StreamedResponse
 import play.api.libs.ws.WSClient
-import play.api.libs.ws.WSResponseHeaders
+import play.api.libs.ws.WSResponse
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -46,15 +43,13 @@ class WebAppController @Inject()(
   }
 
   private def executeRequest(url: String): Future[Result] = {
-    ws.url(url).withMethod(HttpVerbs.GET).stream().map {
-      case StreamedResponse(response, body) => processResponse(url, response, body)
-    }
+    ws.url(url).withMethod(HttpVerbs.GET).stream().map(processResponse(url))
   }
 
-  private def processResponse(url: String, response: WSResponseHeaders, body: Source[ByteString, _]): Result = {
+  private def processResponse(url: String)(response: WSResponse): Result = {
     if (response.status == OK) {
       val contentType = response.headers.get(CONTENT_TYPE).flatMap(_.headOption).getOrElse("application/octet-stream")
-      Ok.chunked(body).as(contentType)
+      Ok.chunked(response.bodyAsSource).as(contentType)
     } else {
       error(s"Requesting `$url` failed: ${response.status}")
       BadGateway

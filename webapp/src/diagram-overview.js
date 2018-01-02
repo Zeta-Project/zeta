@@ -40,7 +40,7 @@ import modelValidatorUtil from './modelValidatorUtil';
 
         const model = {
             name: name,
-            metaModelId: window.metaModelId
+            graphicalDslId: window.metaModelId
         };
 
         $.ajax({
