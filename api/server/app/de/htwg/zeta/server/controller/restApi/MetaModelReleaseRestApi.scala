@@ -10,7 +10,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
-import de.htwg.zeta.server.util.auth.ZetaEnv
+import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.Writes
 import play.api.mvc.AnyContent

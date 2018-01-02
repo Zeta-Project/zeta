@@ -7,7 +7,7 @@ import sbt.file
 import sbt.Compile
 import sbt.Keys
 import sbt.Def
-import sbt.toGroupID
+import sbt.stringToOrganization
 import sbt.Keys.scalacOptions
 import sbt.Keys.compile
 import wartremover.WartRemover.autoImport.Wart
@@ -23,7 +23,12 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
-  val silhouetteVersion = "4.0.0"
+  val silhouetteVersion = "5.0.3"
+  val playVersion = "2.6.10"
+  val akkaVersion = "2.5.8"
+
+  val scalaVersionNumber = "2.12.4"
+  val scalaVersion = Keys.scalaVersion := scalaVersionNumber
 
   val scalaOptions = scalacOptions ++= Seq(
     "-deprecation", // Emit warning and location for usages of deprecated APIs.
@@ -45,14 +50,11 @@ object ZetaBuild {
     wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements)
   )
 
-  val scalaVersion = Keys.scalaVersion := "2.11.7"
-//  val scalaVersion = Keys.scalaVersion := "2.12.4"
-
   val standardLibraries = Keys.libraryDependencies ++= Seq(
     // injection
     "net.codingwell" %% "scala-guice" % "4.1.1",
     // test
-    "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.4" % "test",
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.3.2"
   )

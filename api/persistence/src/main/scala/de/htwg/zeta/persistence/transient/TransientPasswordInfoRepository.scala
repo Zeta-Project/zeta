@@ -5,8 +5,8 @@ import javax.inject.Singleton
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
-import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
+import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 
 /**
@@ -15,14 +15,14 @@ import de.htwg.zeta.persistence.general.PasswordInfoRepository
 @Singleton
 class TransientPasswordInfoRepository extends PasswordInfoRepository {
 
-  private val cache: TrieMap[LoginInfo, PasswordInfo] = TrieMap.empty
+  private val cache: TrieMap[ZetaLoginInfo, ZetaPasswordInfo] = TrieMap.empty
 
   /** Finds the auth info which is linked to the specified login info.
    *
    * @param loginInfo The linked login info.
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
-  override def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
+  override def find(loginInfo: ZetaLoginInfo): Future[Option[ZetaPasswordInfo]] = {
     Future.successful(cache.get(loginInfo))
   }
 
@@ -32,7 +32,7 @@ class TransientPasswordInfoRepository extends PasswordInfoRepository {
    * @param authInfo  The auth info to add.
    * @return The added auth info.
    */
-  override def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def add(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
     cache.putIfAbsent(loginInfo, authInfo).fold {
       Future.successful(authInfo)
     } { _ =>
@@ -46,8 +46,8 @@ class TransientPasswordInfoRepository extends PasswordInfoRepository {
    * @param authInfo  The auth info to update.
    * @return The updated auth info.
    */
-  override def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
-    cache.replace(loginInfo, authInfo).fold[Future[PasswordInfo]] {
+  override def update(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
+    cache.replace(loginInfo, authInfo).fold[Future[ZetaPasswordInfo]] {
       Future.failed(new IllegalStateException)
     } { _ =>
       Future.successful(authInfo)
@@ -60,7 +60,7 @@ class TransientPasswordInfoRepository extends PasswordInfoRepository {
    * @param authInfo  The auth info to save.
    * @return The saved auth info.
    */
-  override def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
+  override def save(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
     cache.update(loginInfo, authInfo)
     Future.successful(authInfo)
   }
@@ -70,7 +70,7 @@ class TransientPasswordInfoRepository extends PasswordInfoRepository {
    * @param loginInfo The login info for which the auth info should be removed.
    * @return A future to wait for the process to be completed.
    */
-  override def remove(loginInfo: LoginInfo): Future[Unit] = {
+  override def remove(loginInfo: ZetaLoginInfo): Future[Unit] = {
     cache.remove(loginInfo)
     Future.successful(())
   }
@@ -79,7 +79,7 @@ class TransientPasswordInfoRepository extends PasswordInfoRepository {
    *
    * @return all LoginInfo's
    */
-  override def readAllKeys(): Future[Set[LoginInfo]] = {
+  override def readAllKeys(): Future[Set[ZetaLoginInfo]] = {
     Future.successful(cache.keys.toSet)
   }
 

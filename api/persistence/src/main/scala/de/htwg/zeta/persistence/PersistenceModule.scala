@@ -69,7 +69,7 @@ import de.htwg.zeta.persistence.mongo.MongoUserRepository
 import de.htwg.zeta.persistence.transient.TransientTokenCache
 import grizzled.slf4j.Logging
 import net.codingwell.scalaguice.ScalaModule
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.MongoDriver
 
