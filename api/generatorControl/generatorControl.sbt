@@ -13,9 +13,9 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-stream" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-persistence" % ZetaBuild.akkaVersion,
     // this is needed in akka persistence
-    "org.iq80.leveldb" % "leveldb" % "0.7",
+    "org.iq80.leveldb" % "leveldb" % "0.10",
     // docker client
-    "com.spotify" % "docker-client" % "6.1.1",
+    "com.spotify" % "docker-client" % "8.10.0",
     // scallop
     "org.rogach" %% "scallop" % "3.1.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
     //play ws
