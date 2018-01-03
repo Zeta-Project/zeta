@@ -9,7 +9,7 @@ lazy val persistence = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "play-json" % "2.6.8",
     // mongoDB accessor
     "org.reactivemongo" %% "reactivemongo" % "0.12.7",
-    "org.reactivemongo" %% "reactivemongo-play-json" % "0.12.4",
+    "org.reactivemongo" %% "reactivemongo-play-json" % 	"0.12.7-play26",
     // akka actor system
     "com.typesafe.akka" %% "akka-actor" %  ZetaBuild.akkaVersion
   )
