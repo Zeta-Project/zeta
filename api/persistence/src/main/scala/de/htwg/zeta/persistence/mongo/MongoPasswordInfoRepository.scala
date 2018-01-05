@@ -3,8 +3,8 @@ package de.htwg.zeta.persistence.mongo
 import javax.inject.Inject
 import javax.inject.Singleton
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
@@ -19,9 +19,14 @@ import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.Index
 import reactivemongo.api.indexes.IndexType
 import reactivemongo.bson.BSONDocument
+import reactivemongo.bson.BSONDocumentReader
 
 @Singleton
 class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends PasswordInfoRepository {
+
+  private val loginFormatter: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
+  private val passwordFormatter: ExplicitBsonPlayFormat[ZetaPasswordInfo] = ExplicitBsonPlayFormat(ZetaPasswordInfo)
+
 
   private val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](collectionName))
@@ -37,10 +42,14 @@ class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends
    * @return The found auth info or None if no auth info could be found for the given login info.
    */
   override def find(loginInfo: ZetaLoginInfo): Future[Option[ZetaPasswordInfo]] = {
-    collection.flatMap { collection =>
-      implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
-      implicit val passwordFormat: ExplicitBsonPlayFormat[ZetaPasswordInfo] = ExplicitBsonPlayFormat(ZetaPasswordInfo)
-      collection.find(BSONDocument(sLoginInfo -> loginInfo)).one[ZetaPasswordInfo]
+    implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = loginFormatter
+    implicit val passwordFormat: BSONDocumentReader[Option[ZetaPasswordInfo]] = BSONDocumentReader(_.getAs(sPasswordInfo)(passwordFormatter))
+
+    for {
+      coll <- collection
+      elementOpt <- coll.find(BSONDocument(sLoginInfo -> loginInfo)).one[Option[ZetaPasswordInfo]]
+    } yield {
+      elementOpt.flatten
     }
   }
 
@@ -51,9 +60,9 @@ class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends
    * @return The added auth info.
    */
   override def add(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
+    implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = loginFormatter
+    implicit val passwordFormat: ExplicitBsonPlayFormat[ZetaPasswordInfo] = passwordFormatter
     collection.flatMap { collection =>
-      implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
-      implicit val passwordFormat: ExplicitBsonPlayFormat[ZetaPasswordInfo] = ExplicitBsonPlayFormat(ZetaPasswordInfo)
       collection.insert(BSONDocument(sLoginInfo -> loginInfo, sPasswordInfo -> authInfo)).flatMap(_ =>
         Future.successful(authInfo))
     }
@@ -66,9 +75,9 @@ class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends
    * @return The updated auth info.
    */
   override def update(loginInfo: ZetaLoginInfo, authInfo: ZetaPasswordInfo): Future[ZetaPasswordInfo] = {
+    implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = loginFormatter
+    implicit val passwordFormat: ExplicitBsonPlayFormat[ZetaPasswordInfo] = passwordFormatter
     collection.flatMap { collection =>
-      implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
-      implicit val passwordFormat: ExplicitBsonPlayFormat[ZetaPasswordInfo] = ExplicitBsonPlayFormat(ZetaPasswordInfo)
       collection.update(BSONDocument(sLoginInfo -> loginInfo), BSONDocument(sLoginInfo -> loginInfo, sPasswordInfo -> authInfo)).flatMap(result =>
         if (result.nModified == 1) {
           Future.successful(authInfo)
@@ -96,8 +105,8 @@ class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends
    * @return A future to wait for the process to be completed.
    */
   override def remove(loginInfo: ZetaLoginInfo): Future[Unit] = {
+    implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = loginFormatter
     collection.flatMap { collection =>
-      implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
       collection.remove(BSONDocument(sLoginInfo -> loginInfo)).flatMap(result =>
         if (result.n == 1) {
           Future.successful(())
@@ -113,10 +122,14 @@ class MongoPasswordInfoRepository @Inject()(database: Future[DefaultDB]) extends
    * @return all LoginInfo's
    */
   override def readAllKeys(): Future[Set[ZetaLoginInfo]] = {
+    implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = loginFormatter
+    implicit val reader: BSONDocumentReader[Option[ZetaLoginInfo]] = BSONDocumentReader(_.getAs(sLoginInfo)(loginFormatter))
+
     collection.flatMap { collection =>
-      implicit val loginFormat: ExplicitBsonPlayFormat[ZetaLoginInfo] = ExplicitBsonPlayFormat(ZetaLoginInfo)
-      collection.find(BSONDocument.empty, loginInfoProjection).cursor[ZetaLoginInfo]().
-        collect(-1, Cursor.FailOnError[Set[ZetaLoginInfo]]())
+      val cursor: Cursor[Option[ZetaLoginInfo]] = collection.find(BSONDocument.empty, loginInfoProjection).cursor[Option[ZetaLoginInfo]]()
+      val futOptSet = cursor.collect(-1, Cursor.FailOnError[Set[Option[ZetaLoginInfo]]]())
+
+      futOptSet.map(_.flatten)
     }
   }
 
