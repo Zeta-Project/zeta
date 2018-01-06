@@ -10,37 +10,54 @@ class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
   val heightLiteral = "height"
 
   trait Attribute
+
   case class Point() extends Attribute
+
   case class Width() extends Attribute
+
   case class Height() extends Attribute
 
   private val parsePoint: Parser[Point] = pointLiteral ^^ (_ => Point())
   private val parseWidth: Parser[Width] = widthLiteral ^^ (_ => Width())
   private val parseHeight: Parser[Height] = heightLiteral ^^ (_ => Height())
 
-  "An unordered parse will give" - {
-    "a successful result when" - {
-      "one point element is found in 'point'" in {
-        val conf = List(ParseConfiguration(parsePoint, 1))
-        val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), pointLiteral)
-        result.successful shouldBe true
-        result.get should contain(Point())
-        result.get should have size 1
+  "An unordered parse will give " - {
+    "a successful result when " - {
+      "min one point element and max three point elements should be found " - {
+        val parser: Parser[List[Attribute]] = unordered(range(1, 3, parsePoint))
+
+        "in 'point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, pointLiteral)
+          result.successful shouldBe true
+          result.get should contain(Point())
+          result.get should have size 1
+        }
+        "in 'point point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point")
+          result.successful shouldBe true
+          result.get.count(e => e.equals(Point())) shouldBe 2
+          result.get should have size 2
+        }
+        "in 'point point point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point point")
+          result.successful shouldBe true
+          result.get.count(e => e.equals(Point())) shouldBe 3
+          result.get should have size 3
+        }
       }
 
-      "one point and one width element should be found" - {
-        val conf: List[ParseConfiguration[UnorderedParseResult[Attribute]]] =
-          List(ParseConfiguration(parsePoint, 1), ParseConfiguration(parseWidth, 1))
+      "exact one point and one width element should be found" - {
+        val parser: Parser[List[Attribute]] = unordered(exact(1, parsePoint), exact(1, parseWidth))
 
         "in 'point width'" in {
-          val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "point width")
+          val result: ParseResult[List[Attribute]] = parse(parser, "point width")
           result.successful shouldBe true
           result.get should contain(Point())
           result.get should contain(Width())
           result.get should have size 2
         }
         "and in 'point width'" in {
-          val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "width point")
+          val result: ParseResult[List[Attribute]] = parse(parser, "width point")
           result.successful shouldBe true
           result.get should contain(Point())
           result.get should contain(Width())
@@ -48,24 +65,11 @@ class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
         }
       }
 
-      "one point and two width and one height elements should be found" - {
-        val conf: List[ParseConfiguration[UnorderedParseResult[Attribute]]] =
-          List(
-            ParseConfiguration(parsePoint, 1),
-            ParseConfiguration(parseWidth, 2),
-            ParseConfiguration(parseHeight, 1)
-          )
-
-        // parse(unordered(rep(parsePoint, 1) & rep(parseWidth, 2) & rep(parseHeight, 1, -1)))
-        // parse(unordered(exact(parsePoint, 1) & min(parseWidth, 2) & max(parseHeight, 1, -1), exact(parsepoint, 1, 2))
-        // parse(unordered(exact(1, parsePoint) & max(2, parseWidth) & min(1, parseHeight) & range(1 , 2, parsepoint))
-        // parse(unordered(exact(1, parsePoint), max(2, parseWidth), min(1, parseHeight), range(1 , 2, parsepoint))
-        // parse(unordered(exact(1, parsePoint), exact(1, parsePoint)) // bad
-        // parse(unordered(exact(1, parsePoint), max(1, parsePoint)) // bad
-
+      "one point and min one width and max one height elements should be found" - {
+        val parser: Parser[List[Attribute]] = unordered(exact(1, parsePoint), max(1, parseHeight), min(1, parseWidth))
 
         "in 'point width height width'" in {
-          val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "point width height width")
+          val result: ParseResult[List[Attribute]] = parse(parser, "point width height width")
           result.successful shouldBe true
           result.get should contain(Point())
           result.get.count(e => e.equals(Width())) shouldBe 2
@@ -74,7 +78,6 @@ class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
         }
 
         "in 'point width height width' NEW" in {
-          val parser: Parser[List[Attribute]] = unordered(exact(1, parsePoint), max(1, parseHeight), min(1, parseWidth))
           val result: ParseResult[List[Attribute]] = parse(parser, "point width height width")
           result.successful shouldBe true
           result.get should contain(Point())
@@ -83,7 +86,7 @@ class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
           result.get should have size 4
         }
         "and 'width point width height'" in {
-          val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "width point width height")
+          val result: ParseResult[List[Attribute]] = parse(parser, "width point width height")
           result.successful shouldBe true
           result.get should contain(Point())
           result.get.count(e => e.equals(Width())) shouldBe 2
@@ -91,41 +94,114 @@ class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
           result.get should have size 4
         }
         "and 'width width point height'" in {
-          val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "width width point height")
+          val result: ParseResult[List[Attribute]] = parse(parser, "width width point height")
           result.successful shouldBe true
           result.get should contain(Point())
           result.get.count(e => e.equals(Width())) shouldBe 2
           result.get should contain(Height())
           result.get should have size 4
         }
+        "and 'width point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "width point")
+          result.successful shouldBe true
+          result.get should contain(Point())
+          result.get should contain(Width())
+          result.get should have size 2
+        }
+        "and 'width width width point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "width width width point")
+          result.successful shouldBe true
+          result.get should contain(Point())
+          result.get.count(e => e.equals(Width())) shouldBe 3
+          result.get should have size 4
+        }
       }
 
     }
 
-    "a not successful result when" - {
-      "one point element should be found in 'height'" in {
-        val conf = List(ParseConfiguration(parsePoint, 1))
-        val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), heightLiteral)
-        result.successful shouldBe false
+    "a not successful result when " - {
+      "exact one point element should be found " - {
+        val parser: Parser[List[Attribute]] = unordered(exact(1, parsePoint))
+
+        "in 'height'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, heightLiteral)
+          result.successful shouldBe false
+        }
+        "in 'point point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point")
+          result.successful shouldBe false
+        }
+        "in ''" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "")
+          result.successful shouldBe false
+        }
       }
-      "one point element should be found in 'xy'" in {
-        val conf = List(ParseConfiguration(parsePoint, 1))
-        val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "xy")
-        result.successful shouldBe false
+      "minimum two point elements should be found " - {
+        val parser: Parser[List[Attribute]] = unordered(min(2, parsePoint))
+
+        "in 'point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, pointLiteral)
+          result.successful shouldBe false
+        }
+        "in ''" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "")
+          result.successful shouldBe false
+        }
       }
-      "two point elements should be found in 'point point'" in {
-        val conf = List(ParseConfiguration(parsePoint, 1))
-        val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "point point")
-        result.successful shouldBe false
+      "maximum two point elements should be found " - {
+        val parser: Parser[List[Attribute]] = unordered(max(2, parsePoint))
+
+        "in 'point point point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point point")
+          result.successful shouldBe false
+        }
       }
-      "one point element and two height elements should be found in 'height point'" in {
-        val conf: List[ParseConfiguration[UnorderedParseResult[Attribute]]] =
-          List(ParseConfiguration(parsePoint, 1), ParseConfiguration(parseHeight, 2))
-        val result: ParseResult[List[Attribute]] = parse(unorderedOld(conf), "height point")
-        result.successful shouldBe false
+      "min two and max three point elements should be found " - {
+        val parser: Parser[List[Attribute]] = unordered(range(2, 3, parsePoint))
+
+        "in 'point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, pointLiteral)
+          result.successful shouldBe false
+        }
+        "in 'point point point point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point point point")
+          result.successful shouldBe false
+        }
+      }
+      "min two and max three point elements with exact one height element should be found " - {
+        val parser: Parser[List[Attribute]] = unordered(range(2, 3, parsePoint), exact(1, parseHeight))
+
+        "in 'point height'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point height")
+          result.successful shouldBe false
+        }
+        "in 'point point point point height'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point point point height")
+          result.successful shouldBe false
+        }
+        "in 'point point point'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point point")
+          result.successful shouldBe false
+        }
+        "in 'point point point height height'" in {
+          val result: ParseResult[List[Attribute]] = parse(parser, "point point point height height")
+          result.successful shouldBe false
+        }
       }
     }
 
+    "if the unordered parse method is not correctly used by the developer and " - {
+      "a parser is configured twice with different methods " - {
+        an[IllegalArgumentException] should be thrownBy {
+          unordered(max(1, parsePoint), min(1, parsePoint))
+        }
+      }
+      "a parser is configured twice with same methods " - {
+        an[IllegalArgumentException] should be thrownBy {
+          unordered(exact(1, parsePoint), exact(1, parsePoint))
+        }
+      }
+    }
   }
 
 }
