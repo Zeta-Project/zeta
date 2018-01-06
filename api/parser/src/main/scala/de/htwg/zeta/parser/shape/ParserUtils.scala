@@ -78,7 +78,7 @@ trait ParserUtils extends JavaTokenParsers {
   private def checkParsersUnique(parsers: Seq[Parser[_]]): Unit = {
     parsers.diff(parsers.distinct) match {
       case Seq() =>
-      case nonEmpty: Parser[_] =>
+      case nonEmpty: Seq[Parser[_]] =>
         throw new IllegalArgumentException(
           "Each parser can only be configured once in an unordered context. duplicate parsers: " +
             nonEmpty.distinct.mkString(", ")
