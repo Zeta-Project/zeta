@@ -1,9 +1,8 @@
-package de.htwg.zeta.parser.shape
+package de.htwg.zeta.parser
 
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.{FreeSpec, Matchers}
 
-class ParserUtilsTest extends FreeSpec with Matchers with ParserUtils {
+class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser {
 
   val pointLiteral = "point"
   val widthLiteral = "width"
