@@ -130,6 +130,14 @@ class ConnectionDefinitionGenerator {
     
     generatePolygonSvgPathData(shape) {
     }
+    
+    generateEllipseSvgPathData(shape) {
+        const rx = shape.sizeWidth / 2
+        const ry = shape.sizeHeight / 2
+        return "M " + shape.position.x + " " + shape.position.y + " a  " + rx + " " + ry + " 0 0 1 " + rx + " -" + ry + " a  " + rx + " " + ry + " 0 0 1 " + rx + " " +
+          ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " -" + ry
+    }
+
     generateStyle(style) {
         return {
             dummy: 'Dummy',

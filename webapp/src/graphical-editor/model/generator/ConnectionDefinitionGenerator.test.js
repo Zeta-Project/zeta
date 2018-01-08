@@ -700,13 +700,22 @@ describe('getConnectionStyle', () => {
   )
   })
 
+  test('a Style by a Connection with a Ellipse Placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "style": "testStyle",
+        "placings": [
           {
             "positionOffset": 0.0,            
             "shape": {
-              "textBody": "positionOffset0",
-              "sizeHeight": 2,
-              "type": "text",
-              "style": "exampleStyle"
+              "sizeHeight": 4,
+              "sizeWidth": 4,
+              "position": {
+                "x": 1,
+                "y": 1
+              },
+              "type": "ellipse"
             }
           }
         ]
