@@ -75,7 +75,7 @@ class ConnectionDefinitionGenerator {
     }
 
     createSpecificStyleMarkerTarget(placing) {
-        return {};
+        return Object.assign(this.generateMirroredMarker(placing), this.generateMarkerSourceCorrection());
     }
 
     generateMarkerSourceCorrection() {
@@ -116,6 +116,7 @@ class ConnectionDefinitionGenerator {
     }
     
     generateRectangleSvgPathData(shape) {
+        return "M " + shape.position.x + " " + shape.position.y + "l " + shape.sizeWidth + " 0 l 0 " + shape.sizeHeight + " l -" + shape.sizeWidth + " 0 z"
     }
     
     generateRoundedRectangleSvgPathData(shape) {

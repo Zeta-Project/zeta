@@ -635,12 +635,38 @@ describe('getConnectionStyle', () => {
   })
             "positionOffset": 1.0,            
             "shape": {
+  test('a Style by a Connection with a Rectangle Placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 0.0,            
+            "shape": {
               "textBody": "positionOffset1",
               "sizeHeight": 2,
-              "type": "text",
-              "style": "exampleStyle"
+              "sizeWidth": 3,
+              "position": {
+                "x": 0,
+                "y": 0,
+              },
+              "type": "rectangle",
             }
-          },
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual({
+      ".connection": {"stroke": "black"},
+      ".marker-source": {
+        "d": "M 0 0l 3 0 l 0 2 l -3 0 z", 
+        "transform": "scale(1,1)"},
+      ".marker-target": {"d": "M 0 0"}}
+  )
+  })
+
           {
             "positionOffset": 0.0,            
             "shape": {
