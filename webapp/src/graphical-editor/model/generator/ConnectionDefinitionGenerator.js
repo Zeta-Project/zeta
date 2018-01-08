@@ -11,14 +11,15 @@ class ConnectionDefinitionGenerator {
             'ellipse': (shape, distance) => this.generateEllipseShape(shape, distance),
             'text': (shape) => this.generateTextShape(shape)
         };
-    }
 
-    generate(connections) {
-        let result = {};
-        connections.map(function(connection) {
-            result.push(createConnection(connection))
-        });
-        return result;
+        this.generateSvgPathData = {
+            'line': (shape) => this.generateLineSvgPathData(shape),
+            'polyline': (shape) => this.generatePolyLineSvgPathData(shape),
+            'polygon': (shape) => this.generatePolygonSvgPathData(shape),
+            'rectangle': (shape, distance) => this.generateRectangleSvgPathData(shape, distance),
+            'roundedRectangle': (shape, distance) => this.generateRoundedRectangleSvgPathData(shape),
+            'ellipse': (shape, distance) => this.generateEllipseSvgPathData(shape),
+        };
     }
 
     createConnectionStyle(connection) {
@@ -51,27 +52,18 @@ class ConnectionDefinitionGenerator {
         let placingStyle = {'.marker-target': {d: 'M 0 0'}};
 
         if ('placings' in connection) {
-            const blub0 = connection.placings.find((p) => p.positionOffset === 0.0);  
-            const blub1 = connection.placings.find((p) => p.positionOffset === 1.0);  
-
-            if (blub0) {
-                placingStyle['.marker-source'] = this.createStyleMarkerSource(blub0);
+            const commonMarker = connection.placings.find((p) => p.positionOffset === 0.0 && p.shape.type !== 'text');  
+            const mirroredMarker = connection.placings.find((p) => p.positionOffset === 1.0 && p.shape.type !== 'text');
+            
+            if (commonMarker) {
+                placingStyle['.marker-source'] = this.createStyleMarkerSource(commonMarker);
             }
 
-            if (blub1) {
-                placingStyle['.marker-target'] = this.createSpecificStyleMarkerTarget(blub1);
-            }/* else {
-                placingStyle['.marker-target'] = this.createDefaultStyleMarkerTarget();
-            }*/
-            
-            console.log(placingStyle);        
-            
+            if (mirroredMarker) {
+                placingStyle['.marker-target'] = this.createSpecificStyleMarkerTarget(mirroredMarker);
+            }            
         }
         return placingStyle;
-    }
-
-    handlePlacing(placing) {
-        console.log(placing)
     }
 
     createStyleMarkerSource(placing) {
@@ -82,12 +74,39 @@ class ConnectionDefinitionGenerator {
         return {};
     }
 
-    createDefaultStyleMarkerTarget() {
+    generateMarkerSourceCorrection() {
+    }
+
+    generateStyleCorrections(){
+    }
+
+    generateMarker(placing) {
         return {
             d: 'M 0 0' 
           };
     }
 
+    generateMirroredPolyLine(shape) {
+    }
+    
+    generateMirroredPolygon(shape) {
+    }
+
+    generateLineSvgPathData(shape) {
+    }
+
+    
+    generatePolyLineSvgPathData(shape) {
+    }
+    
+    generateRectangleSvgPathData(shape) {
+    }
+    
+    generateRoundedRectangleSvgPathData(shape) {
+    }
+    
+    generatePolygonSvgPathData(shape) {
+    }
     generateStyle(style) {
         return {
             dummy: 'Dummy',
