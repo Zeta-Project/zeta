@@ -67,7 +67,11 @@ class ConnectionDefinitionGenerator {
     }
 
     createStyleMarkerSource(placing) {
-        return {};
+        let shapeStyle = {};
+        if ('style' in placing.shape) {
+            shapeStyle = this.generateStyle(placing.shape.style);
+        }
+        return Object.assign(shapeStyle, this.generateMarker(placing), this.generateMarkerSourceCorrection());
     }
 
     createSpecificStyleMarkerTarget(placing) {
