@@ -109,6 +109,10 @@ class ConnectionDefinitionGenerator {
 
     
     generatePolyLineSvgPathData(shape) {
+        const head = shape.points[0];
+        const tail = shape.points.slice(1);
+        
+        return ("M " + head.x + " " + head.y + " " + tail.map(point => "L " + point.x + " " + point.y)).replace(",", "");
     }
     
     generateRectangleSvgPathData(shape) {
