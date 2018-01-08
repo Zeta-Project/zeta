@@ -104,6 +104,7 @@ class ConnectionDefinitionGenerator {
     }
 
     generateLineSvgPathData(shape) {
+        return "M " + shape.startPoint.x + " " + shape.startPoint.y + " L " + shape.endPoint.x + " " + shape.endPoint.y
     }
 
     

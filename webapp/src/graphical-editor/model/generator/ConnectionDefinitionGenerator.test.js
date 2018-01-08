@@ -481,7 +481,74 @@ describe('getConnectionStyle', () => {
     expect(generator.getConnectionStyle('Connection1')).toEqual({})
   })
 
-  test('Dynamic Testing', () => {
+  test('a Style by a Connection with a Line Placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 0.0,            
+            "shape": {
+              "endPoint": {
+                "x": 1,
+                "y": 1,
+              },
+              "startPoint": {
+                "x": 0,
+                "y": 0,
+              },
+              "type": "line",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual(
+      {
+        ".connection": {"stroke": "black"}, 
+        ".marker-source": {"d": "M 0 0 L 1 1",
+        "transform": "scale(1,1)"},
+        ".marker-target": {"d": "M 0 0"}
+      }
+    )
+  })
+
+  test('a Style by a Connection with a Line Placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 0.0,            
+            "shape": {
+              "endPoint": {
+                "x": 1,
+                "y": 1,
+              },
+              "startPoint": {
+                "x": 0,
+                "y": 0,
+              },
+              "type": "line",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual(
+      {
+        ".connection": {"stroke": "black"}, 
+        ".marker-source": {"d": "M 0 0 L 1 1",
+        "transform": "scale(1,1)"},
+        ".marker-target": {"d": "M 0 0"}
+      }
+    )
+  })
+
     const connections = [
       {
         "name": "Connection1",
