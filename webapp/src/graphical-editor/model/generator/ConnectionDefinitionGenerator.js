@@ -95,6 +95,19 @@ class ConnectionDefinitionGenerator {
             d: this.generateSvgPathData[placing.shape.type](placing.shape)
         };
     }
+
+    generateMirroredMarker(placing) {
+        const type = placing.shape.type;
+
+        let marker;
+        if (type === 'polygon') {
+            marker = this.generateMirroredPolygon(placing.shape);
+        } else if (type === 'polyline') {
+            marker = this.generateMirroredPolyLine(placing.shape);
+        } else {
+            marker = this.generateMarker(placing);
+        }
+        return {d: marker};
     }
 
     generateMirroredPolyLine(shape) {
