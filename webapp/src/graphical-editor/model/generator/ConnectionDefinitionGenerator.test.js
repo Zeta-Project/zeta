@@ -756,6 +756,49 @@ describe('getConnectionStyle', () => {
     )
   })
 
+  test('a Style by a Connection with a Polygon Placing (mirrored points)', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 1.0,            
+            "shape": {
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": 1,
+                  "y": 1
+                }
+                ,
+                {
+                  "x": 2,
+                  "y": 2
+                }
+              ],
+              "type": "polygon",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual( {
+         ".connection": {
+           "stroke": "black",
+         },
+         ".marker-target": {
+           "d": "M 0 0 L -1 -1L -2 -2z",
+           "transform": "scale(1,1)",
+         }
+       }
+    )
+  })
+
   test('a Style by a Connection with a Rectangle Placing', () => {
     const connections = [
       {
@@ -845,7 +888,13 @@ describe('getConnectionStyle', () => {
 
     const generator = create(connections);
     expect(generator.getConnectionStyle('Connection1')).toEqual({
-    })
+      ".marker-source": {
+        "d": "M 1 1 a  2 2 0 0 1 2 -2 a  2 2 0 0 1 2 2 a  2 2 0 0 1 -2 2 a  2 2 0 0 1 -2 -2",
+        "transform": "scale(1,1)"
+      },
+      ".marker-target": {"d": "M 0 0"}
+    }
+  )
   })
 
   test('a Connection without a Style', () => {

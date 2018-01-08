@@ -120,6 +120,11 @@ class ConnectionDefinitionGenerator {
     }
     
     generateMirroredPolygon(shape) {
+        const mirroredPoints = shape.points.map(function(p) {return {x: p.x * -1, y: (p.y * -1)}})
+        const head = mirroredPoints[0];
+        const tail = mirroredPoints.slice(1);
+
+        return ("M " + head.x + " " + head.y + " " + tail.map(p => "L " + p.x + " " + p.y)).replace(",", "");
     }
 
     generateLineSvgPathData(shape) {
