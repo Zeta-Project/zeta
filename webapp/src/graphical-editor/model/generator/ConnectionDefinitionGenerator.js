@@ -92,8 +92,9 @@ class ConnectionDefinitionGenerator {
 
     generateMarker(placing) {
         return {
-            d: 'M 0 0' 
-          };
+            d: this.generateSvgPathData[placing.shape.type](placing.shape)
+        };
+    }
     }
 
     generateMirroredPolyLine(shape) {
