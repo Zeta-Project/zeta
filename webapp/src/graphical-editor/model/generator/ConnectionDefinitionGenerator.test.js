@@ -587,6 +587,39 @@ describe('getConnectionStyle', () => {
        })
   })
 
+  test('a Style by a Connection with a Polyline Placing with one point (mirrored-point)', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 1.0,            
+            "shape": {
+              "points": [
+                {
+                  "x": 1,
+                  "y": 1
+                }
+              ],
+              "type": "polyline",
+            }
+          }
+          
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual(
+      {
+        ".connection": {"stroke": "black"},
+        ".marker-target": {
+          "d": "M -1 1 ",
+          "transform": "scale(1,1)"
+        }
+      })
+  })
+
   test('a Style by a Connection with a Polyline Placing with multiple point', () => {
     const connections = [
       {
@@ -633,8 +666,49 @@ describe('getConnectionStyle', () => {
          }
        })
   })
+
+  test('a Style by a Connection with a Polyline Placing with multiple point (mirrored points)', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
             "positionOffset": 1.0,            
             "shape": {
+              "points": [
+                {
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "x": 2,
+                  "y": 2
+                }
+                ,
+                {
+                  "x": 3,
+                  "y": 3
+                }
+              ],
+              "type": "polyline",
+            }
+          }
+          
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual(
+      {
+        ".connection": {"stroke": "black"},
+        ".marker-target": {
+          "d": "M -1 1 L -2 2L -3 3",
+          "transform": "scale(1,1)"
+        }
+      }
+)
+  })
 
   test('a Style by a Connection with a Polygon Placing', () => {
     const connections = [

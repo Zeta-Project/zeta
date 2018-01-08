@@ -111,6 +111,12 @@ class ConnectionDefinitionGenerator {
     }
 
     generateMirroredPolyLine(shape) {
+        const mirroredPoints = shape.points.map(function(p) {return {x: p.x * -1, y: p.y}});
+        const head = mirroredPoints[0];
+        const tail = mirroredPoints.slice(1);
+
+        const res = ("M " + head.x + " " + head.y + " " + tail.map(point => "L " + point.x + " " + point.y)).replace(",", "");
+        return res;
     }
     
     generateMirroredPolygon(shape) {
