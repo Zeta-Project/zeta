@@ -129,6 +129,10 @@ class ConnectionDefinitionGenerator {
     }
     
     generatePolygonSvgPathData(shape) {
+        const head = shape.points[0];
+        const tail = shape.points.slice(1);
+
+        return ("M " + head.x + " " + head.y + " " + tail.map(p => "L " + p.x + " " + p.y)).replace(",", "") + "z"
     }
     
     generateEllipseSvgPathData(shape) {

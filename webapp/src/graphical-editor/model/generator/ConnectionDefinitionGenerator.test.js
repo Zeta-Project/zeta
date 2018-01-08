@@ -635,6 +635,53 @@ describe('getConnectionStyle', () => {
   })
             "positionOffset": 1.0,            
             "shape": {
+
+  test('a Style by a Connection with a Polygon Placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 0.0,            
+            "shape": {
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": 1,
+                  "y": 1
+                }
+                ,
+                {
+                  "x": 2,
+                  "y": 2
+                }
+              ],
+              "type": "polygon",
+            }
+          }
+        ]
+      }
+    ]
+
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual( {
+         ".connection": {
+           "stroke": "black",
+         },
+         ".marker-source": {
+           "d": "M 0 0 L 1 1L 2 2z",
+           "transform": "scale(1,1)",
+         },
+         ".marker-target": {
+           "d": "M 0 0",
+         },
+       }
+    )
+  })
+
   test('a Style by a Connection with a Rectangle Placing', () => {
     const connections = [
       {
