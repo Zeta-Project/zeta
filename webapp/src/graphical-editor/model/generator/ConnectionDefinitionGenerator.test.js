@@ -667,6 +667,39 @@ describe('getConnectionStyle', () => {
   )
   })
 
+  test('a Style by a Connection with a RoundedRectangle Placing', () => {
+    const connections = [
+      {
+        "name": "Connection1",
+        "placings": [
+          {
+            "positionOffset": 0.0,            
+            "shape": {
+              "curveWidth": 4,
+              "curveHeight": 4,
+              "position": {
+                "x": 1,
+                "y": 1
+              },
+              "sizeHeight": 3,
+              "sizeWidth": 3,
+              "type": "roundedRectangle",
+            }
+          }
+        ]
+      }
+    ]
+    const generator = create(connections);
+    expect(generator.getConnectionStyle('Connection1')).toEqual({
+      ".connection": {"stroke": "black"},
+      ".marker-source": {
+        "d": "M 1 4 1 4 l -5l 0 a 4 4 0 0 1 4 4l 0 -5 a 4 4 0 0 1 -4 4 l --5 0 a 4 4 0 0 1 -4 -4 l 0 --5 a 4 4 0 0 1 4 -4",
+        "transform": "scale(1,1)"
+      },
+      ".marker-target": {"d": "M 0 0"}}
+  )
+  })
+
           {
             "positionOffset": 0.0,            
             "shape": {
