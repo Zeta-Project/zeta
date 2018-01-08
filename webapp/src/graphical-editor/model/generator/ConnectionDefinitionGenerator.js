@@ -79,9 +79,15 @@ class ConnectionDefinitionGenerator {
     }
 
     generateMarkerSourceCorrection() {
+        return {
+            transform: 'scale(1,1)'
+        };
     }
 
     generateStyleCorrections(){
+        return {
+            fill: 'transparent'
+        };
     }
 
     generateMarker(placing) {
