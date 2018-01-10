@@ -5,15 +5,19 @@ import scala.util.parsing.combinator.JavaTokenParsers
 trait UnorderedParser extends JavaTokenParsers {
 
   sealed abstract class ParseConf[+A](min: Int, max: Int) {
+    if (min < 0 || max < 0 || min > max) {
+      throw new IllegalArgumentException(s"Illegal min/max-values: min=$min, max=$max")
+    }
+
     val parser: Parser[A]
 
-    private def toErrorString(mod: String) = s"failed parsing $parser. Element occured $mod than $max times"
+    private def toErrorString(mod: String, times: Int) = s"failed parsing $parser. Element occurred $mod than $times times"
 
     def checkSize(size: Int): Option[String] = {
       if (size < min) {
-        Some(toErrorString("less"))
+        Some(toErrorString("less", min))
       } else if (size > max) {
-        Some(toErrorString("more"))
+        Some(toErrorString("more", max))
       } else {
         None
       }

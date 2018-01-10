@@ -200,6 +200,21 @@ class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser {
           unordered(exact(1, parsePoint), exact(1, parsePoint))
         }
       }
+      "a parser has a negative minimum" - {
+        an[IllegalArgumentException] should be thrownBy {
+          unordered(exact(-2, parsePoint))
+        }
+      }
+      "a parser has a negative maximum" - {
+        an[IllegalArgumentException] should be thrownBy {
+          unordered(exact(-2, parsePoint))
+        }
+      }
+      "a parser has a minimum which is higher than the maximum" - {
+        an[IllegalArgumentException] should be thrownBy {
+          unordered(range(2, 1, parsePoint))
+        }
+      }
     }
   }
 
