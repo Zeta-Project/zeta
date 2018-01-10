@@ -16,24 +16,9 @@ describe('createLabel', () => {
 });
 
 describe('createPlacing', () => {
-  function create(connections) {
-    const generator = new ConnectionDefinitionGenerator(connections)
-    return generator;
-  }
-
-  function createDefaultTestConnection(placing) {
-    return [
-      {
-        "name": "Connection1",
-        "placings": [
-          placing
-        ]
-      }
-    ]
-  }
 
   test('with empty connetions', () => {
-    const generator = create([])
+    const generator = new ConnectionDefinitionGenerator([])
 
     expect(generator.getPlacings('Connection1')).toEqual([])
   })
