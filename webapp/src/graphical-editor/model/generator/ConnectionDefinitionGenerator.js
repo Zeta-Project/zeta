@@ -30,10 +30,6 @@ class ConnectionDefinitionGenerator {
         return {'.connection':{stroke: 'black'}}
     }
 
-    createInlineStyle(connection) {
-        return {};
-    }
-
     handlePlacings(connection) {
         let placingStyle = {'.marker-target': {d: 'M 0 0'}};
 
@@ -53,11 +49,7 @@ class ConnectionDefinitionGenerator {
     }
 
     createStyleMarkerSource(placing) {
-        let shapeStyle = {};
-        if ('style' in placing.shape) {
-            shapeStyle = this.generateStyle(placing.shape.style);
-        }
-        return Object.assign(shapeStyle, this.svgDataPathGenerator.generateMarker(placing), this.generateMarkerSourceCorrection());
+        return Object.assign(this.svgDataPathGenerator.generateMarker(placing), this.generateMarkerSourceCorrection());
     }
 
     createSpecificStyleMarkerTarget(placing) {
