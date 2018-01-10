@@ -1,4 +1,5 @@
 import ConnectionDefinitionGenerator from './ConnectionDefinitionGenerator';
+import StyleGenerator from './StyleGenerator'
 
 const defaultTestId = "1234"
 
@@ -26,7 +27,14 @@ describe('createPlacing', () => {
 
 describe('getConnectionStyle', () => {
   function create(connections) {
-    const generator = new ConnectionDefinitionGenerator(connections)
+    const defaultStyle = [
+      {
+        name: 'DefaultStyle',
+      }
+    ];
+
+    const styleGenerator = new StyleGenerator(defaultStyle)
+    const generator = new ConnectionDefinitionGenerator(connections, styleGenerator)
     return generator;
   }
 
@@ -36,7 +44,6 @@ describe('getConnectionStyle', () => {
     expect(generator.getConnectionStyle('Connection1')).toEqual({})
   })
 
-  // Braucht eine Version mit positionOffset 1.0
   test('a Style by a Connection with a Line Placing', () => {
     const connections = [
       {
@@ -424,7 +431,6 @@ describe('getConnectionStyle', () => {
     const connections = [
       {
         "name": "Connection1",
-        "style": "testStyle",
         "placings": [
           {
             "positionOffset": 0.0,            
@@ -444,6 +450,7 @@ describe('getConnectionStyle', () => {
 
     const generator = create(connections);
     expect(generator.getConnectionStyle('Connection1')).toEqual({
+      ".connection": {"stroke": "black"},
       ".marker-source": {
         "d": "M 1 1 a  2 2 0 0 1 2 -2 a  2 2 0 0 1 2 2 a  2 2 0 0 1 -2 2 a  2 2 0 0 1 -2 -2",
         "transform": "scale(1,1)"
@@ -471,12 +478,28 @@ describe('getConnectionStyle', () => {
     const connections = [
       {
         "name": "Connection1",
-        "style": "testStyle"
+        "style": "DefaultStyle"
       }
     ]
 
     const generator = create(connections);
-    expect(generator.getConnectionStyle('Connection1')).toEqual({'.marker-target': {"d": "M 0 0"}}
+    expect(generator.getConnectionStyle('Connection1')).toEqual(
+      {
+        '.marker-target': {"d": "M 0 0"},
+        "style": {
+          "fill-opacity": 1,
+          "stroke": "#000000",
+          "stroke-dasharray": "0",
+          "stroke-width": 0,
+          "text": {
+            "dominant-baseline": "text-before-edge",
+            "fill": "#000000",
+            "font-family": "sans-serif",
+            "font-size": "11",
+            "font-weight": "normal"
+          }
+        }
+      }
     )
   })
 
