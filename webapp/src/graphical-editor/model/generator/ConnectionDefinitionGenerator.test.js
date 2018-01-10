@@ -486,19 +486,18 @@ describe('getConnectionStyle', () => {
     expect(generator.getConnectionStyle('Connection1')).toEqual(
       {
         '.marker-target': {"d": "M 0 0"},
-        "style": {
-          "fill-opacity": 1,
-          "stroke": "#000000",
-          "stroke-dasharray": "0",
-          "stroke-width": 0,
-          "text": {
-            "dominant-baseline": "text-before-edge",
-            "fill": "#000000",
-            "font-family": "sans-serif",
-            "font-size": "11",
-            "font-weight": "normal"
-          }
+        "fill-opacity": 1,
+        "stroke": "#000000",
+        "stroke-dasharray": "0",
+        "stroke-width": 0,
+        "text": {
+          "dominant-baseline": "text-before-edge",
+          "fill": "#000000",
+          "font-family": "sans-serif",
+          "font-size": "11",
+          "font-weight": "normal"
         }
+        
       }
     )
   })
