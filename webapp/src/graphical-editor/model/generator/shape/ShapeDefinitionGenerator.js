@@ -343,6 +343,7 @@ export default class {
     constructor(shape) {
         this.shapes = shape.shapes ? shape.shapes : [];
         this.generator = new ShapeGenerator();
+        this.calculator = new Calculator();
     }
 
     get zeta() {
@@ -350,5 +351,15 @@ export default class {
             result[shape.name] = this.generator.create(shape);
             return result;
         }, {});
+    }
+
+    calculateHeight(shape) {
+        const elements = shape.elements ? shape.elements : [];
+        return this.calculator.calculateHeight(elements);
+    }
+
+    calculateWidth() {
+        const elements = shape.elements ? shape.elements : [];
+        return this.calculator.calculateWidth(elements);
     }
 }
