@@ -1,11 +1,11 @@
-
 import PlacingDefinitionGenerator from './connectionDefinitionGenerator/PlacingDefinitionGenerator'
 import LabelDefinitionGenerator from './connectionDefinitionGenerator/LabelDefinitionGenerator'
 import SvgDataPathGenerator from './connectionDefinitionGenerator/SvgDataPathGenerator'
 
 class ConnectionDefinitionGenerator { 
 
-    constructor() {
+    constructor(styleGenerator) {
+        this.styleGenerator = styleGenerator;
         this.svgDataPathGenerator = new SvgDataPathGenerator();
     }
 
@@ -20,8 +20,7 @@ class ConnectionDefinitionGenerator {
     }
 
     getStyle(styleName) {
-        // Dummy -> Return a Style from StyleGenerator
-        return {}
+        return this.styleGenerator.getStyle(styleName)
     }
 
     createBasicConnectionStyle(connection) {
@@ -91,12 +90,12 @@ class ConnectionDefinitionGenerator {
 }
 
 export default class Generator{
-    constructor(connections) {
+    constructor(connections, styleGenerator) {
         // Braucht eine Uebergabe eines StyleGenerators
-        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator();
+        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
+        this.connections = connections;
         this.labelDefininitonGenerator = new LabelDefinitionGenerator();
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator();
-        this.connections = connections;
     }
 
     getConnectionStyle(styleName) {
