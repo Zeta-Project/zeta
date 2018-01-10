@@ -1,5 +1,6 @@
 
 import PlacingDefinitionGenerator from './connectionDefinitionGenerator/PlacingDefinitionGenerator'
+import LabelDefinitionGenerator from './connectionDefinitionGenerator/LabelDefinitionGenerator'
 
 class ConnectionDefinitionGenerator { 
 
@@ -168,24 +169,7 @@ class ConnectionDefinitionGenerator {
         }
     }
     
-    createLabelList(connection) {
-        const labels = connection.placings.filter(placing => placing.shape.type === 'Label');
-        return labels.map(this.createLabel);
-    }
-
-    createLabel(placing) {
-        return {
-            position: placing.positionOffset,
-            attrs: {
-              rect: {fill: 'transparent'},
-              text: {
-                y: 'positionDistance' in placing ? placing.positionDistance : 0,
-                text: placing.shape.textBody
-              }
-            },
-            id: placing.shape.id
-        };
-    }
+    
 
 }
 
@@ -193,7 +177,8 @@ export default class Generator{
     constructor(connections) {
         // Braucht eine Uebergabe eines StyleGenerators
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator();
-        this.placingDefinitionGenerator = new PlacingDefinitionGenerator(connections);
+        this.labelDefininitonGenerator = new LabelDefinitionGenerator();
+        this.placingDefinitionGenerator = new PlacingDefinitionGenerator();
         this.connections = connections;
     }
 
@@ -209,6 +194,6 @@ export default class Generator{
 
     getLabels(styleName) {
         const connection = this.connections.find(c => c.name === styleName);
-        return connection ? this.connectionDefinitionGenerator.createLabelList(connection) : [];
+        return connection ? this.labelDefininitonGenerator.createLabelList(connection) : [];
     }
 }
