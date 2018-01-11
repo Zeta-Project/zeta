@@ -1,5 +1,4 @@
 
-
 class SvgDataPathGenerator {
     
     constructor() {
@@ -87,12 +86,12 @@ export default class Generator {
 
         let marker;
         if (type === 'polygon') {
-            marker = this.svgDataPathGenerator.generateMirroredPolygon(placing.shape);
+            marker = {d: this.svgDataPathGenerator.generateMirroredPolygon(placing.shape)};
         } else if (type === 'polyline') {
-            marker = this.svgDataPathGenerator.generateMirroredPolyLine(placing.shape);
+            marker = {d: this.svgDataPathGenerator.generateMirroredPolyLine(placing.shape)};
         } else {
-            marker = this.svgDataPathGenerator.generateMarker(placing);
+            marker = this.generateMarker(placing);
         }
-        return {d: marker};
+        return marker;
     } 
 }
