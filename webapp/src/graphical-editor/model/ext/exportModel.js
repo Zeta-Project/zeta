@@ -84,19 +84,11 @@ export default (function modelExporter () {
             });
 
             _graph.getConnectedLinks(ele, {outbound: true}).forEach(function(link) {
-                if(element.outputs.hasOwnProperty(link.attributes.mReference)) {
-                    element.outputs[link.attributes.mReference].push(link.attributes.id);
-                } else {
-                    element.outputs[link.attributes.mReference] = [link.attributes.id];
-                }
+                element.outputEdgeNames.push(link.attributes.source.id);
             });
 
             _graph.getConnectedLinks(ele, {inbound: true}).forEach(function(link) {
-                if(element.inputs.hasOwnProperty(link.attributes.mReference)) {
-                    element.inputs[link.attributes.mReference].push(link.attributes.id);
-                } else {
-                    element.inputs[link.attributes.mReference] = [link.attributes.id];
-                }
+                   element.inputEdgeNames.push(link.attributes.target.id);
             });
             elements.push(element);
         });
@@ -117,10 +109,9 @@ export default (function modelExporter () {
                 attributeValues: {},
                 methods: []
             };
-            // In the Metamodel a connection can have multiple sources/targets
-            // but in joint.js this is not possible
-            element.source[link.attributes.sourceAttribute] = [link.attributes.source.id];
-            element.target[link.attributes.targetAttribute] = [link.attributes.target.id];
+
+            element.sourceNodeName = link.attributes.source.id;
+            element.targetNodeName = link.attributes.target.id;
 
             // add attributes
             link.attributes.labels.forEach(function(label) {
