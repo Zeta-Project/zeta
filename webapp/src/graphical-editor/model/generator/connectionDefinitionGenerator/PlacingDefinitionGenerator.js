@@ -1,7 +1,7 @@
 
-
 class PlacingDefinitionGenerator {
-    constructor() {
+    constructor(styleGenerator) {
+        this.styleGenerator = styleGenerator;
 
         this.placingShape = {
             'line': (shape) => this.generateLineShape(shape),
@@ -28,9 +28,13 @@ class PlacingDefinitionGenerator {
     createPlacingShape(placing) {
 
         let placingShape = this.placingShape[placing.shape.type](placing.shape, placing.positionDistance);
-        placingShape.attrs = placing.shape.type !== 'text' && 'style' in placing.shape ? Object.assign(placingShape.attrs, {style: placing.shape.style}): placingShape.attrs;
+        placingShape.attrs = placing.shape.type !== 'text' && 'style' in placing.shape ? Object.assign(placingShape.attrs, this.getCommonAttributesStyle(placing)): placingShape.attrs;
     
         return placingShape;
+    }
+
+    getCommonAttributesStyle(placing) {
+        return this.styleGenerator.createCommonAttributes(placing.shape.style);
     }
 
     generateLineShape(line) {
@@ -118,8 +122,8 @@ class PlacingDefinitionGenerator {
 }
 
 export default class Generator {
-    constructor() {
-        this.generator = new PlacingDefinitionGenerator();
+    constructor(styleGenerator) {
+        this.generator = new PlacingDefinitionGenerator(styleGenerator);
     }
 
     createPlacingList(connection) {

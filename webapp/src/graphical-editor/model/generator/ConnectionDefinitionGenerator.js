@@ -10,24 +10,28 @@ class ConnectionDefinitionGenerator {
     }
 
     createConnectionStyle(connection) {
-
-        const style = Object.assign(
+        return Object.assign(
             this.createBasicConnectionStyle(connection),
             this.handlePlacings(connection)
-        )
-
-        return style;
-    }
-
-    getStyle(styleName) {
-        return this.styleGenerator.getStyle(styleName)
+        );
     }
 
     createBasicConnectionStyle(connection) {
+        let basicStyle = {'.connection': {stroke: 'black'}};
+        let connectionStyle = {};
+
         if ('style' in connection) {
-            return this.getStyle(connection.style);
+            basicStyle = this.styleGenerator.getStyle(connection.style);
+            connectionStyle = this.generateConnectionStyle(connection.style);
         }
-        return {'.connection':{stroke: 'black'}}
+        return Object.assign(basicStyle, connectionStyle);
+    }
+
+    generateConnectionStyle(style) {
+
+        const commonAttributes = this.styleGenerator.createCommonAttributes(style);
+        const fontAttributes = this.styleGenerator.createFontAttributes(style);
+        return {'.connection, .marker-target, .marker-source': Object.assign(commonAttributes, fontAttributes)};
     }
 
     handlePlacings(connection) {
@@ -38,14 +42,30 @@ class ConnectionDefinitionGenerator {
             const mirroredMarker = connection.placings.find((p) => p.positionOffset === 1.0 && p.shape.type !== 'text');
             
             if (commonMarker) {
-                placingStyle['.marker-source'] = this.createStyleMarkerSource(commonMarker);
+                const styleMarker = this.createStyleMarkerSource(commonMarker);
+                const style = this.generatePlacingStyle(commonMarker);
+                placingStyle['.marker-source'] = Object.assign(styleMarker, style);
             }
 
             if (mirroredMarker) {
-                placingStyle['.marker-target'] = this.createSpecificStyleMarkerTarget(mirroredMarker);
+                const styleMarker = this.createSpecificStyleMarkerTarget(mirroredMarker);
+                const style = this.generatePlacingStyle(mirroredMarker);
+                placingStyle['.marker-target'] = Object.assign(styleMarker, style)  ;
             }            
         }
         return placingStyle;
+    }
+
+    generatePlacingStyle(placing) {
+        if ('style' in placing.shape) {
+            const commonAttributes = this.styleGenerator.createCommonAttributes(placing.shape.style);
+            const fontAttributes = this.styleGenerator.createFontAttributes(placing.shape.style);
+            return Object.assign(
+                commonAttributes,
+                {text: fontAttributes}
+            );
+        }
+        return {};
     }
 
     createStyleMarkerSource(placing) {
@@ -68,13 +88,15 @@ class ConnectionDefinitionGenerator {
         };
     }
 
-    generateStyle(style) {
-        return {
-            dummy: 'Dummy',
-            text: {
-                textDummy: 'Dummy'
-            }
-        }
+    generateInlineStyle(styleName) {
+        const commonAttributes = this.styleGenerator.createCommonAttributes(styleName);
+        const fontAttributes = this.styleGenerator.createFontAttributes(styleName);
+        const style = {'.connection, .marker-target, .marker-source': {
+            commonAttributes,
+            fontAttributes
+        }};
+
+        return style;
     }
     
     
@@ -82,12 +104,12 @@ class ConnectionDefinitionGenerator {
 }
 
 export default class Generator{
+    //JSON extract conntact
     constructor(connections, styleGenerator) {
-        // Braucht eine Uebergabe eines StyleGenerators
-        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
         this.connections = connections;
+        this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
         this.labelDefininitonGenerator = new LabelDefinitionGenerator();
-        this.placingDefinitionGenerator = new PlacingDefinitionGenerator();
+        this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);
     }
 
     getConnectionStyle(styleName) {
