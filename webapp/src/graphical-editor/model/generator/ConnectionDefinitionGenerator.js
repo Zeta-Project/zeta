@@ -105,8 +105,8 @@ class ConnectionDefinitionGenerator {
 
 export default class Generator{
     //JSON extract conntact
-    constructor(connections, styleGenerator) {
-        this.connections = connections;
+    constructor(shape, styleGenerator) {
+        this.connections = 'connections' in shape ? shape.connections : [];
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
         this.labelDefininitonGenerator = new LabelDefinitionGenerator();
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);

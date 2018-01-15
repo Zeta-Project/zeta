@@ -16,7 +16,7 @@ function create(connections) {
 describe('createLabel', () => {
 
   test('with empty connetions', () => {
-    const generator = create([])
+    const generator = create({connections: []})
 
     expect(generator.getLabels('TestConnection')).toEqual([])
   })
@@ -25,7 +25,7 @@ describe('createLabel', () => {
 describe('createPlacing', () => {
 
   test('with empty connetions', () => {
-    const generator = create([]);
+    const generator = create({connections: []});
 
     expect(generator.getPlacings('TestConnection')).toEqual([])
   })
@@ -34,35 +34,37 @@ describe('createPlacing', () => {
 describe('getConnectionStyle', () => {
 
   test('with empty connetions', () => {
-    const generator = create([])
+    const generator = create({connections: []})
 
     expect(generator.getConnectionStyle('TestConnection')).toEqual({})
   })
 
   test('with an example Placing (Line)', () => {
-    const connections = [
-      {
-        "name": "TestConnection",
-        "placings": [
-          {
-            "positionOffset": 0.0,            
-            "shape": {
-              "endPoint": {
-                "x": 1,
-                "y": 1,
-              },
-              "startPoint": {
-                "x": 0,
-                "y": 0,
-              },
-              "type": "line",
+    const shapeJSON = {
+      connections: [
+        {
+          "name": "TestConnection",
+          "placings": [
+            {
+              "positionOffset": 0.0,            
+              "shape": {
+                "endPoint": {
+                  "x": 1,
+                  "y": 1,
+                },
+                "startPoint": {
+                  "x": 0,
+                  "y": 0,
+                },
+                "type": "line",
+              }
             }
-          }
-        ]
-      }
-    ]
+          ]
+        }
+      ]
+    }
 
-    const generator = create(connections);
+    const generator = create(shapeJSON);
     expect(generator.getConnectionStyle('TestConnection')).toEqual(
       {
         ".connection": {"stroke": "black"}, 
@@ -76,13 +78,15 @@ describe('getConnectionStyle', () => {
   })
 
   test('a Connection without a Style', () => {
-    const connections = [
-      {
-        "name": "TestConnection"
-      }
-    ]
+    const shapeJSON = {
+      connections:  [
+        {
+          "name": "TestConnection"
+        }
+      ]
+    }
 
-    const generator = create(connections);
+    const generator = create(shapeJSON);
     expect(generator.getConnectionStyle('TestConnection')).toEqual({
       '.connection':{stroke: 'black'},
       '.marker-target': {"d": "M 0 0"}
@@ -90,14 +94,16 @@ describe('getConnectionStyle', () => {
   })
 
   test('a Connection with a default Style', () => {
-    const connections = [
-      {
-        "name": "TestConnection",
-        "style": "DefaultStyle"
-      }
-    ]
+    const shapeJSON = {
+      connections: [
+        {
+          "name": "TestConnection",
+          "style": "DefaultStyle"
+        }
+      ]
+    }
 
-    const generator = create(connections);
+    const generator = create(shapeJSON);
 
     expect(generator.getConnectionStyle('TestConnection')).toEqual(
       {
@@ -131,30 +137,32 @@ describe('getConnectionStyle', () => {
 
   test('a Connection with a default Style and an example mirrored Placing (Line)', () => {
     
-    const connections = [
-      {
-        "name": "TestConnection",
-        "placings": [
-          {
-            "positionOffset": 1.0,            
-            "shape": {
-              "endPoint": {
-                "x": 1,
-                "y": 1,
-              },
-              "startPoint": {
-                "x": 0,
-                "y": 0,
-              },
-              "type": "line",
-              "style": "DefaultStyle"
+    const shapeJSON = {
+      connections: [
+        {
+          "name": "TestConnection",
+          "placings": [
+            {
+              "positionOffset": 1.0,            
+              "shape": {
+                "endPoint": {
+                  "x": 1,
+                  "y": 1,
+                },
+                "startPoint": {
+                  "x": 0,
+                  "y": 0,
+                },
+                "type": "line",
+                "style": "DefaultStyle"
+              }
             }
-          }
-        ]      
-      }
-    ]
+          ]      
+        }
+      ]
+    }
 
-    const generator = create(connections);
+    const generator = create(shapeJSON);
 
     expect(generator.getConnectionStyle('TestConnection')).toEqual(
       {
@@ -179,30 +187,32 @@ describe('getConnectionStyle', () => {
 
   test('a Connection with a default Style and an example Placing (Line)', () => {
     
-    const connections = [
-      {
-        "name": "TestConnection",
-        "placings": [
-          {
-            "positionOffset": 0.0,            
-            "shape": {
-              "endPoint": {
-                "x": 1,
-                "y": 1,
-              },
-              "startPoint": {
-                "x": 0,
-                "y": 0,
-              },
-              "type": "line",
-              "style": "DefaultStyle"
+    const shapeJSON = {
+        connections: [
+        {
+          "name": "TestConnection",
+          "placings": [
+            {
+              "positionOffset": 0.0,            
+              "shape": {
+                "endPoint": {
+                  "x": 1,
+                  "y": 1,
+                },
+                "startPoint": {
+                  "x": 0,
+                  "y": 0,
+                },
+                "type": "line",
+                "style": "DefaultStyle"
+              }
             }
-          }
-        ]      
-      }
-    ]
+          ]      
+        }
+      ]
+    }
 
-    const generator = create(connections);
+    const generator = create(shapeJSON);
 
     expect(generator.getConnectionStyle('TestConnection')).toEqual(
       {
