@@ -1,8 +1,6 @@
 
 import LabelDefinitionGenerator from './LabelDefinitionGenerator';
 
-const defaultTestId = "1234"
-
 describe('createLabel', () => {
   function create() {
       const generator = new LabelDefinitionGenerator()
@@ -12,7 +10,7 @@ describe('createLabel', () => {
   test('with empty placing', () => {
     const connection = 
       {
-        "name": "Connection1",
+        "name": "TestConnection",
         "placings": []
       }
     
@@ -25,14 +23,14 @@ describe('createLabel', () => {
   test('with one full defined connection and one placing', () => {
     const connection = 
       {
-        "name": "Connection1",
+        "name": "TestConnection",
         "placings": [
           {
             "positionDistance": 1,
             "positionOffset": 1.0,
             "shape": {
-              "textBody": "Hallo",
-              "id": defaultTestId,
+              "textBody": "ExampleText",
+              "id": 1234,
               "type": "label",
             }
           }
@@ -50,10 +48,10 @@ describe('createLabel', () => {
                 rect: {fill: 'transparent'},
                 text: {
                 y: 1,
-                text: "Hallo"
+                text: "ExampleText"
                 }
             },
-            id: defaultTestId
+            id: 1234
         }
       ]
     )
@@ -62,13 +60,13 @@ describe('createLabel', () => {
   test('with one full defined connection and two placing', () => {
     const connection = 
       {
-        "name": "Connection1",
+        "name": "TestConnection",
         "placings": [
           {
             "positionDistance": 1,
             "positionOffset": 1.0,
             "shape": {
-              "textBody": "Hallo",
+              "textBody": "ExampleText",
               "id": "placing1",
               "type": "label",
             }
@@ -77,7 +75,7 @@ describe('createLabel', () => {
             "positionDistance": 1,
             "positionOffset": 1.0,
             "shape": {
-              "textBody": "Hallo",
+              "textBody": "ExampleText",
               "id": "placing2",
               "type": "label",
             }
@@ -96,7 +94,7 @@ describe('createLabel', () => {
               rect: {fill: 'transparent'},
               text: {
               y: 1,
-              text: "Hallo"
+              text: "ExampleText"
               }
           },
           id: "placing1"
@@ -107,7 +105,7 @@ describe('createLabel', () => {
             rect: {fill: 'transparent'},
             text: {
             y: 1,
-            text: "Hallo"
+            text: "ExampleText"
             }
         },
         id: "placing2"

@@ -15,7 +15,7 @@ describe('createPlacing', () => {
 
   function createDefaultTestConnection(placing) {
     return {
-        "name": "Connection1",
+        "name": "TestConnection",
         "placings": [
           placing
         ]
@@ -25,7 +25,7 @@ describe('createPlacing', () => {
 
   test('with empty placing', () => {
       const connection = {
-          "name": "Connection1",
+          "name": "TestConnection",
           "placings": []
       };
       const generator = create();
