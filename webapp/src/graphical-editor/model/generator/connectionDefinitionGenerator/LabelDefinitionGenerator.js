@@ -2,6 +2,7 @@
 
 class LabelDefinitionGenerator {
     
+    //TODO bloß Methode Exportieren
     generateLabelList(connection) {
         const labels = connection.placings.filter(placing => placing.shape.type === 'label');
         return labels.map(this.generateLabel);

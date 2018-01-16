@@ -46,6 +46,7 @@ class SvgDataPathGenerator {
     }
     
     generateRoundedRectangleSvgPathData(shape) {
+        //TODO String Template statt Konkatinierung
         return "M " + shape.position.x + " " + shape.curveWidth + " " + shape.position.y + " " + shape.curveHeight + " l " + (shape.sizeWidth - 2 * shape.curveWidth) +
           "l 0 a " + shape.curveWidth + " " + shape.curveHeight + " 0 0 1 " + shape.curveWidth + " " + shape.curveHeight + "l 0 " +
           (shape.sizeHeight - 2 * shape.curveHeight) + " a " + shape.curveWidth + " " + shape.curveHeight + " 0 0 1 -" + shape.curveWidth +

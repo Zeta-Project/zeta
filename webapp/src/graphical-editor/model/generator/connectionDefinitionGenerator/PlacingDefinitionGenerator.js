@@ -3,6 +3,8 @@ class PlacingDefinitionGenerator {
     constructor(styleGenerator) {
         this.styleGenerator = styleGenerator;
 
+        //TODO TypenMapping prüfen ob type existiert -> Fehlermeldung Exception
+
         this.placingShape = {
             'line': (shape) => this.generateLineShape(shape),
             'polyline': (shape) => this.generatePolyLineShape(shape),
@@ -15,6 +17,10 @@ class PlacingDefinitionGenerator {
     }
     
     generatePlacingList(connection) {
+        //TODO Filter if Offste != 0.0 und kein Text
+
+        const placings = connection.placings.filter((p) => p.)
+        console.log(connection);
         return connection.placings.map(this.generatePlacing, this);
     }
 
