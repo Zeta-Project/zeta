@@ -82,29 +82,10 @@ class ConnectionDefinitionGenerator {
         };
     }
 
-    generateStyleCorrections(){
-        return {
-            fill: 'transparent'
-        };
-    }
-
-    generateInlineStyle(styleName) {
-        const commonAttributes = this.styleGenerator.createCommonAttributes(styleName);
-        const fontAttributes = this.styleGenerator.createFontAttributes(styleName);
-        const style = {'.connection, .marker-target, .marker-source': {
-            commonAttributes,
-            fontAttributes
-        }};
-
-        return style;
-    }
-    
-    
-
 }
 
 export default class Generator{
-    //JSON extract conntact
+
     constructor(shape, styleGenerator) {
         this.connections = 'connections' in shape ? shape.connections : [];
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
