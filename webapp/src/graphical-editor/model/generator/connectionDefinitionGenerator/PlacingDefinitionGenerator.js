@@ -2,9 +2,7 @@
 class PlacingDefinitionGenerator {
     constructor(styleGenerator) {
         this.styleGenerator = styleGenerator;
-
-        //TODO TypenMapping prüfen ob type existiert -> Fehlermeldung Exception
-
+        
         this.placingShape = {
             'line': (shape) => this.generateLineShape(shape),
             'polyline': (shape) => this.generatePolyLineShape(shape),
