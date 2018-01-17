@@ -1,5 +1,5 @@
 import PlacingDefinitionGenerator from './connectionDefinitionGenerator/PlacingDefinitionGenerator'
-import LabelDefinitionGenerator from './connectionDefinitionGenerator/LabelDefinitionGenerator'
+import createLabelList from './connectionDefinitionGenerator/LabelDefinitionGenerator'
 import SvgDataPathGenerator from './connectionDefinitionGenerator/SvgDataPathGenerator'
 
 class ConnectionDefinitionGenerator { 
@@ -89,7 +89,7 @@ export default class Generator{
     constructor(shape, styleGenerator) {
         this.connections = 'connections' in shape ? shape.connections : [];
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
-        this.labelDefininitonGenerator = new LabelDefinitionGenerator();
+        //this.labelDefininitonGenerator = new LabelDefinitionGenerator();
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);
     }
 
@@ -105,6 +105,6 @@ export default class Generator{
 
     getLabels(styleName) {
         const connection = this.connections.find(c => c.name === styleName);
-        return connection ? this.labelDefininitonGenerator.createLabelList(connection) : [];
+        return connection ? createLabelList(connection) : [];
     }
 }

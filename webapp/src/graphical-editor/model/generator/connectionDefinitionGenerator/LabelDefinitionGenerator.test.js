@@ -1,11 +1,6 @@
-
-import LabelDefinitionGenerator from './LabelDefinitionGenerator';
+import createLabelList from './LabelDefinitionGenerator';
 
 describe('createLabel', () => {
-  function create() {
-      const generator = new LabelDefinitionGenerator()
-      return generator;
-  }
 
   test('with empty placing', () => {
     const connection = 
@@ -13,11 +8,8 @@ describe('createLabel', () => {
         "name": "TestConnection",
         "placings": []
       }
-    
 
-    const generator = create()
-
-    expect(generator.createLabelList(connection)).toEqual([])
+    expect(createLabelList(connection)).toEqual([])
   })
 
   test('with one full defined connection and one placing', () => {
@@ -36,11 +28,8 @@ describe('createLabel', () => {
           }
         ]
       }
-    
-              
-    const generator = create()
 
-    expect(generator.createLabelList(connection)).toEqual(
+    expect(createLabelList(connection)).toEqual(
         [
           {
             position: 1.0,
@@ -82,11 +71,8 @@ describe('createLabel', () => {
           }
         ]
       }
-    
-            
-    const generator = create()
 
-    expect(generator.createLabelList(connection)).toEqual(
+    expect(createLabelList(connection)).toEqual(
       [
         {
           position: 1.0,
