@@ -17,9 +17,9 @@ class StyleGenerator {
 
     createCommonAttributes(style) {
         return Object.assign(this.createBackgroundAttribute(style), this.createLineAttributes(style),
-                            {
-                                'fill-opacity': style.transparency === undefined ? 1.0: style.transparency,
-                            });
+            {
+                'fill-opacity': style.transparency === undefined ? 1.0: style.transparency,
+            });
     }
 
     createMandatoryAttributes(style) {
