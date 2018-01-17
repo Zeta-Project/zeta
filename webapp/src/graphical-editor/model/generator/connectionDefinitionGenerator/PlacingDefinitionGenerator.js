@@ -17,11 +17,8 @@ class PlacingDefinitionGenerator {
     }
     
     generatePlacingList(connection) {
-        //TODO Filter if Offste != 0.0 und kein Text
-
-        const placings = connection.placings.filter((p) => p.)
-        console.log(connection);
-        return connection.placings.map(this.generatePlacing, this);
+        const placings = connection.placings.filter((p) => p.positionOffset !== 0.0 && p.positionOffset !== 1.0);
+        return placings.map(this.generatePlacing, this);
     }
 
     generatePlacing(placing) {

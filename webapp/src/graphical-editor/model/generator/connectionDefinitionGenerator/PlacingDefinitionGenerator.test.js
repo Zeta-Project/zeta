@@ -36,7 +36,7 @@ describe('createPlacing', () => {
   test('with a Line as Shape with a Style', () => {
     const connection = createDefaultTestConnection(
       {
-        "positionOffset": 1.0,
+        "positionOffset": 0.5,
         "shape": {
           "endPoint": {
             "x": 0,
@@ -57,7 +57,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<line />',
           attrs: {
               x1: 0,
@@ -76,7 +76,7 @@ describe('createPlacing', () => {
   test('with a Line as Shape without a Style', () => {
     const connection = createDefaultTestConnection(
       {
-        "positionOffset": 1.0,
+        "positionOffset": 0.5,
         "shape": {
           "endPoint": {
             "x": 0,
@@ -96,7 +96,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<line />',
           attrs: {
               x1: 0,
@@ -111,7 +111,7 @@ describe('createPlacing', () => {
   test('with a PolyLine as Shape without a Style', () => {
     const connection = createDefaultTestConnection(
       {
-        "positionOffset": 1.0,
+        "positionOffset": 0.5,
         "shape": {
           "points": [
             {
@@ -133,7 +133,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<polyline />',
           attrs: {
               points: "0,0 1,1",
@@ -146,7 +146,7 @@ describe('createPlacing', () => {
   test('with a Polygon as Shape without a Style', () => {
     const connection = createDefaultTestConnection(
       {
-        "positionOffset": 1.0,
+        "positionOffset": 0.5,
         "shape": {
           "points": [
             {
@@ -168,7 +168,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<polygon />',
           attrs: {
               points: "0,0 1,1",
@@ -181,7 +181,7 @@ describe('createPlacing', () => {
       const connection = createDefaultTestConnection(
       {
           "positionDistance": 2,
-          "positionOffset": 1.0,
+          "positionOffset": 0.5,
           "shape": {
               "sizeHeight": 2,
               "sizeWidth": 1,
@@ -194,7 +194,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<rect />',
           attrs:{
               height: 2,
@@ -209,7 +209,7 @@ describe('createPlacing', () => {
     const connection = createDefaultTestConnection(
       {
           "positionDistance": 2,
-          "positionOffset": 1.0,
+          "positionOffset": 0.5,
           "shape": {
             "curveHeight": 2,
             "curveWidth": 1,
@@ -225,7 +225,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<rect />',
           attrs:{
             height: 2,
@@ -242,7 +242,7 @@ describe('createPlacing', () => {
       const connection = createDefaultTestConnection(
       {
           "positionDistance": 1,
-          "positionOffset": 1.0,            
+          "positionOffset": 0.5,            
           "shape": {
               "sizeHeight": 2,
               "sizeWidth": 2,
@@ -255,7 +255,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<ellipse />',
           attrs:{
             rx: 1,
@@ -269,7 +269,7 @@ describe('createPlacing', () => {
   test('with a Text as Shape without a Style', () => {
     const connection = createDefaultTestConnection(
       {
-          "positionOffset": 1.0,            
+          "positionOffset": 0.5,            
           "shape": {
               "textBody": "Hallo",
               "sizeHeight": 2,
@@ -282,7 +282,7 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<text>Hallo</text>',
           attrs:{
             y: 1
@@ -294,7 +294,7 @@ describe('createPlacing', () => {
   test('with a Text as Shape with a Style', () => {
       const connection = createDefaultTestConnection(
       {
-          "positionOffset": 1.0,            
+          "positionOffset":0.5,            
           "shape": {
             "textBody": "Hallo",
             "sizeHeight": 2,
@@ -308,12 +308,76 @@ describe('createPlacing', () => {
     expect(generator.createPlacingList(connection)).toEqual(
       [
         {
-          position: 1.0,
+          position: 0.5,
           markup: '<text>Hallo</text>',
           attrs:{
             y: 1
           }
         }
     ])
+  })
+
+  test('with an example Shape (Text) with positionOffset 1.0', () => {
+    const connection = createDefaultTestConnection(
+      {
+          "positionOffset": 1.0,            
+          "shape": {
+              "textBody": "Hallo",
+              "sizeHeight": 2,
+              "type": "text",
+          }
+      });
+
+    const generator = create();
+
+    expect(generator.createPlacingList(connection)).toEqual([])
+  })
+
+  test('with a example Shape (Line) with positionOffset of 0.0', () => {
+    const connection = createDefaultTestConnection(
+      {
+        "positionOffset": 0.0,
+        "shape": {
+          "endPoint": {
+            "x": 0,
+            "y": 0,
+          },
+          "startPoint": {
+            "x": 0,
+            "y": 0,
+          },
+          "style": "DefaultStyle",
+          "type": "line",
+        }
+      }
+    )
+
+    const generator = create();
+
+    expect(generator.createPlacingList(connection)).toEqual([])
+  })
+
+  test('with a example Shape (Line) with positionOffset of 1.0', () => {
+    const connection = createDefaultTestConnection(
+      {
+        "positionOffset": 1.0,
+        "shape": {
+          "endPoint": {
+            "x": 0,
+            "y": 0,
+          },
+          "startPoint": {
+            "x": 0,
+            "y": 0,
+          },
+          "style": "DefaultStyle",
+          "type": "line",
+        }
+      }
+    )
+
+    const generator = create();
+
+    expect(generator.createPlacingList(connection)).toEqual([])
   })
 });
