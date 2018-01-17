@@ -89,7 +89,6 @@ export default class Generator{
     constructor(shape, styleGenerator) {
         this.connections = 'connections' in shape ? shape.connections : [];
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
-        //this.labelDefininitonGenerator = new LabelDefinitionGenerator();
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);
     }
 
