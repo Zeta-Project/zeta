@@ -154,6 +154,19 @@ describe('generateMarker', () => {
             "d": "M 1 1 a  2 2 0 0 1 2 -2 a  2 2 0 0 1 2 2 a  2 2 0 0 1 -2 2 a  2 2 0 0 1 -2 -2"
         })
     })
+    
+    test('with a Placing with an unknown type', () => {
+        const placing = {
+            "positionOffset": 0.5,            
+            "shape": {
+                "type": "unknownType"
+            }
+        }
+      
+        const generator = create();
+    
+        expect(() => generator.generateMarker(placing)).toThrowError('Unknown placing: unknownType');
+    })
 });
 
 describe('generateMirroredMarker', () => {

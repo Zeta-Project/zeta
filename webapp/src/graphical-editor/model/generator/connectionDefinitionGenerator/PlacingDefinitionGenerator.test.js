@@ -380,4 +380,20 @@ describe('createPlacing', () => {
 
     expect(generator.createPlacingList(connection)).toEqual([])
   })
+
+  test('with a placing with a unknown type', () => {
+    const connection = createDefaultTestConnection(
+      {
+        "positionOffset": 0.5,
+        "shape": {
+          "type": "unknownType",
+        }
+      }
+    )
+
+    const generator = create();
+
+    expect(() => generator.createPlacingList(connection)).toThrowError('Unknown placing: unknownType');
+  })
+
 });

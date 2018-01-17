@@ -30,10 +30,14 @@ class PlacingDefinitionGenerator {
 
     createPlacingShape(placing) {
 
-        let placingShape = this.placingShape[placing.shape.type](placing.shape, placing.positionDistance);
-        placingShape.attrs = placing.shape.type !== 'text' && 'style' in placing.shape ? Object.assign(placingShape.attrs, this.getCommonAttributesStyle(placing)): placingShape.attrs;
+        const placingType = placing.shape.type;
+        if (placingType in this.placingShape) {
+            let placingShape = this.placingShape[placingType](placing.shape, placing.positionDistance);
+            placingShape.attrs = placingType !== 'text' && 'style' in placing.shape ? Object.assign(placingShape.attrs, this.getCommonAttributesStyle(placing)): placingShape.attrs;
     
-        return placingShape;
+            return placingShape;
+        }
+        throw new Error(`Unknown placing: ${placingType}`);
     }
 
     getCommonAttributesStyle(placing) {

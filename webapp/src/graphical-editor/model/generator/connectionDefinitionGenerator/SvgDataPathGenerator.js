@@ -77,9 +77,11 @@ export default class Generator {
     }
 
     generateMarker(placing) {
-        return {
-            d: this.svgDataPathGenerator.generateSvgPathData[placing.shape.type](placing.shape)
-        };
+        const placingType = placing.shape.type;
+        if (placingType in this.svgDataPathGenerator.generateSvgPathData) {
+            return {d: this.svgDataPathGenerator.generateSvgPathData[placing.shape.type](placing.shape)};
+        }
+        throw new Error(`Unknown placing: ${placingType}`);        
     }
 
     generateMirroredMarker(placing) {
