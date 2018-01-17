@@ -46,6 +46,39 @@ describe('createLabel', () => {
     )
   }) 
 
+  test('with one full defined connection and one placing', () => {
+    const connection = 
+      {
+        "name": "TestConnection",
+        "placings": [
+          {
+            "positionOffset": 1.0,
+            "shape": {
+              "textBody": "ExampleText",
+              "id": 1234,
+              "type": "text",
+            }
+          }
+        ]
+      }
+
+    expect(createLabelList(connection)).toEqual(
+        [
+          {
+            position: 1.0,
+            attrs: {
+                rect: {fill: 'transparent'},
+                text: {
+                y: 0,
+                text: "ExampleText"
+                }
+            },
+            id: 1234
+        }
+      ]
+    )
+  }) 
+
   test('with one full defined connection and two placing', () => {
     const connection = 
       {

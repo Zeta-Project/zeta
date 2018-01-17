@@ -857,3 +857,47 @@ describe('getDiagramHighlighting', () => {
         );
     });
 });
+
+describe('createCommonAttributes', () => {
+    function create(styles) {
+        const generator = new StyleGenerator(styles)
+        return (styleName) => generator.createCommonAttributes(styleName);
+    }
+
+    test('with style not found', () => {
+        const getStyle = create([]);
+        expect(getStyle('DefaultStyle')).toEqual({});
+    });
+
+    test('with style not found', () => {
+        const getStyle = create([]);
+        expect(getStyle('DefaultStyle')).toEqual({});
+    });
+
+    test('with transparency `0.5`', () => {
+        const style = {
+            name: 'DefaultStyle',
+            transparency: 0.5,
+        };
+
+        const getStyle = create([style]);
+        expect(getStyle('DefaultStyle')).toEqual({
+            'fill-opacity': 0.5,
+            'stroke': '#000000',
+            'stroke-width': 0,
+            'stroke-dasharray': "0"
+        });
+    });
+});
+
+describe('createFontAttributes', () => {
+    function create(styles) {
+        const generator = new StyleGenerator(styles)
+        return (styleName) => generator.createFontAttributes(styleName);
+    }
+
+    test('with style not found', () => {
+        const getStyle = create([]);
+        expect(getStyle('DefaultStyle')).toEqual({});
+    });
+});
