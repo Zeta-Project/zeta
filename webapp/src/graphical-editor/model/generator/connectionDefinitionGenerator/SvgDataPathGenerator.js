@@ -17,8 +17,7 @@ class SvgDataPathGenerator {
         const head = mirroredPoints[0];
         const tail = mirroredPoints.slice(1);
 
-        const res = ("M " + head.x + " " + head.y + " " + tail.map(point => "L " + point.x + " " + point.y)).replace(",", "");
-        return res;
+        return (`M ${head.x} ${head.y} ` + tail.map(point => `L ${point.x} ${point.y}`)).replace(",", "");
     }
     
     generateMirroredPolygon(shape) {
@@ -26,11 +25,11 @@ class SvgDataPathGenerator {
         const head = mirroredPoints[0];
         const tail = mirroredPoints.slice(1);
 
-        return ("M " + head.x + " " + head.y + " " + tail.map(p => "L " + p.x + " " + p.y) + "z").replace(",", "");
+        return (`M ${head.x} ${head.y} `+ tail.map(p => `L ${p.x} ${p.y}`) + 'z').replace(",", "");
     }
 
     generateLineSvgPathData(shape) {
-        return "M " + shape.startPoint.x + " " + shape.startPoint.y + " L " + shape.endPoint.x + " " + shape.endPoint.y
+        return `M ${shape.startPoint.x} ${shape.startPoint.y} L ${shape.endPoint.x} ${shape.endPoint.y}`
     }
 
     
@@ -38,35 +37,32 @@ class SvgDataPathGenerator {
         const head = shape.points[0];
         const tail = shape.points.slice(1);
         
-        return ("M " + head.x + " " + head.y + " " + tail.map(point => "L " + point.x + " " + point.y)).replace(",", "");
+        return (`M ${head.x} ${head.y} ` + tail.map(point => `L ${point.x} ${point.y}`)).replace(",", "");
     }
     
     generateRectangleSvgPathData(shape) {
-        return "M " + shape.position.x + " " + shape.position.y + "l " + shape.sizeWidth + " 0 l 0 " + shape.sizeHeight + " l -" + shape.sizeWidth + " 0 z"
+        return `M ${shape.position.x} ${shape.position.y}l ${shape.sizeWidth} 0 l 0 ${shape.sizeHeight} l -${shape.sizeWidth} 0 z`
     }
     
     generateRoundedRectangleSvgPathData(shape) {
-        //TODO String Template statt Konkatinierung
-        return "M " + shape.position.x + " " + shape.curveWidth + " " + shape.position.y + " " + shape.curveHeight + " l " + (shape.sizeWidth - 2 * shape.curveWidth) +
-          "l 0 a " + shape.curveWidth + " " + shape.curveHeight + " 0 0 1 " + shape.curveWidth + " " + shape.curveHeight + "l 0 " +
-          (shape.sizeHeight - 2 * shape.curveHeight) + " a " + shape.curveWidth + " " + shape.curveHeight + " 0 0 1 -" + shape.curveWidth +
-          " " + shape.curveHeight + " l -" + (shape.sizeWidth - 2 * shape.curveWidth) + " 0 a " + shape.curveWidth + " " + shape.curveHeight +
-          " 0 0 1 -" + shape.curveWidth + " -" + shape.curveHeight + " l 0 -" + (shape.sizeHeight - 2 * shape.curveHeight) +
-          " a " + shape.curveWidth + " " + shape.curveHeight + " 0 0 1 " + shape.curveWidth + " -" + shape.curveHeight
+        return `M ${shape.position.x} ${shape.curveWidth} ${shape.position.y} ${shape.curveHeight} l ${(shape.sizeWidth - 2 * shape.curveWidth)}` +
+        `l 0 a ${shape.curveWidth} ${shape.curveHeight} 0 0 1 ${shape.curveWidth} ${shape.curveHeight}l 0 ${(shape.sizeHeight - 2 * shape.curveHeight)}` +
+        ` a ${shape.curveWidth} ${shape.curveHeight} 0 0 1 -${shape.curveWidth} ${shape.curveHeight} l -${(shape.sizeWidth - 2 * shape.curveWidth)} 0 a ` +
+        `${shape.curveWidth} ${shape.curveHeight} 0 0 1 -${shape.curveWidth} -${shape.curveHeight} l 0 -${(shape.sizeHeight - 2 * shape.curveHeight)} a ` +
+        `${shape.curveWidth} ${shape.curveHeight} 0 0 1 ${shape.curveWidth} -${shape.curveHeight}`
     }
     
     generatePolygonSvgPathData(shape) {
         const head = shape.points[0];
         const tail = shape.points.slice(1);
 
-        return ("M " + head.x + " " + head.y + " " + tail.map(p => "L " + p.x + " " + p.y)).replace(",", "") + "z"
+        return (`M ${head.x} ${head.y} ` + tail.map(p => `L ${p.x} ${p.y}`)).replace(",", "") + 'z'
     }
     
     generateEllipseSvgPathData(shape) {
         const rx = shape.sizeWidth / 2
         const ry = shape.sizeHeight / 2
-        return "M " + shape.position.x + " " + shape.position.y + " a  " + rx + " " + ry + " 0 0 1 " + rx + " -" + ry + " a  " + rx + " " + ry + " 0 0 1 " + rx + " " +
-          ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " " + ry + " a  " + rx + " " + ry + " 0 0 1 -" + rx + " -" + ry
+        return `M ${shape.position.x} ${shape.position.y} a  ${rx} ${ry} 0 0 1 ${rx} -${ry} a  ${rx} ${ry} 0 0 1 ${rx} ${ry} a  ${rx} ${ry} 0 0 1 -${rx} ${ry} a  ${rx} ${ry} 0 0 1 -${rx} -${ry}`
     }
 }
 
