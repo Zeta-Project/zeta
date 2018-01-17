@@ -23,7 +23,7 @@ describe('createLabel', () => {
             "shape": {
               "textBody": "ExampleText",
               "id": 1234,
-              "type": "label",
+              "type": "text",
             }
           }
         ]
@@ -57,7 +57,7 @@ describe('createLabel', () => {
             "shape": {
               "textBody": "ExampleText",
               "id": "placing1",
-              "type": "label",
+              "type": "text",
             }
           },
           {
@@ -66,7 +66,7 @@ describe('createLabel', () => {
             "shape": {
               "textBody": "ExampleText",
               "id": "placing2",
-              "type": "label",
+              "type": "text",
             }
           }
         ]
@@ -99,4 +99,44 @@ describe('createLabel', () => {
       ]
     )
   })
+
+  test('with a Label with a positionOffset of 0.0', () => {
+    const connection = 
+      {
+        "name": "TestConnection",
+        "placings": [
+          {
+            "positionDistance": 1,
+            "positionOffset": 0.0,
+            "shape": {
+              "textBody": "ExampleText",
+              "id": 1234,
+              "type": "text",
+            }
+          }
+        ]
+      }
+
+    expect(createLabelList(connection)).toEqual([])
+  }) 
+
+  test('with a Placing without type "text"', () => {
+    const connection = 
+      {
+        "name": "TestConnection",
+        "placings": [
+          {
+            "positionDistance": 1,
+            "positionOffset": 0.0,
+            "shape": {
+              "textBody": "ExampleText",
+              "id": 1234,
+              "type": "line",
+            }
+          }
+        ]
+      }
+
+    expect(createLabelList(connection)).toEqual([])
+  }) 
 });
