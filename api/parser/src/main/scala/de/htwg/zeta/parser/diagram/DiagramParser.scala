@@ -31,7 +31,7 @@ object DiagramParser extends CommonParserMethods {
 
   private def nodes: Parser[Seq[String]] = rep(node)
 
-  private def node: Parser[String] = stringLiteral
+  private def node: Parser[String] = ident
 
   private def diagramName = literal("diagram") ~> ident
 

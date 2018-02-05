@@ -39,6 +39,55 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
         palette.nodes shouldBe empty
       }
 
+      "a diagram with a single node" in {
+        val diagramWithSingleNode =
+          """
+            |diagram myDiagram {
+            |  palette myPalette {
+            |    myNode
+            |  }
+            |}
+          """.stripMargin
+        val result = DiagramParser.parseDiagrams(diagramWithSingleNode)
+        result.successful shouldBe true
+        val tree = result.get
+        tree.size shouldBe 1
+        val diagram = tree.head
+        diagram.name shouldBe "myDiagram"
+        diagram.palettes.size shouldBe 1
+        val palette = diagram.palettes.head
+        palette.name shouldBe "myPalette"
+        palette.nodes.size shouldBe 1
+        val node = palette.nodes.head
+        node shouldBe "myNode"
+      }
+
+      "a diagram with multiple nodes" in {
+        val diagramWithMultipleNodes =
+          """
+            |diagram myDiagram {
+            |  palette myPalette {
+            |    node0
+            |    node1
+            |    node2
+            |  }
+            |}
+          """.stripMargin
+        val result = DiagramParser.parseDiagrams(diagramWithMultipleNodes)
+        result.successful shouldBe true
+        val tree = result.get
+        tree.size shouldBe 1
+        val diagram = tree.head
+        diagram.name shouldBe "myDiagram"
+        diagram.palettes.size shouldBe 1
+        val palette = diagram.palettes.head
+        palette.name shouldBe "myPalette"
+        palette.nodes.size shouldBe 3
+        palette.nodes.head shouldBe "node0"
+        palette.nodes(1) shouldBe "node1"
+        palette.nodes(2) shouldBe "node2"
+      }
+
       "a diagram with multiple empty palettes" in {
         val diagramWithMultipleEmptyPalettes =
           """
