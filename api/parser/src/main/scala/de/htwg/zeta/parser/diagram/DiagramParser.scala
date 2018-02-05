@@ -33,8 +33,8 @@ object DiagramParser extends CommonParserMethods {
 
   private def node: Parser[String] = ident
 
-  private def diagramName = literal("diagram") ~> ident
+  private def diagramName: Parser[String] = literal("diagram") ~> ident
 
-  private def paletteName = literal("palette") ~> ident
+  private def paletteName: Parser[String] = literal("palette") ~> ident
 
 }
