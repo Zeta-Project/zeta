@@ -9,6 +9,14 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
 
     "succeed in parsing" - {
 
+      "an empty string" in {
+        val noDiagrams = ""
+        val result = DiagramParser.parseDiagrams(noDiagrams)
+        result.successful shouldBe true
+        val diagrams = result.get
+        diagrams shouldBe empty
+      }
+
       "a diagram without palettes" in {
         val diagramWithoutPalettes = "diagram myDiagram { }"
         val result = DiagramParser.parseDiagrams(diagramWithoutPalettes)
@@ -59,7 +67,7 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
         palette.name shouldBe "myPalette"
         palette.nodes should have size 1
         val node = palette.nodes.head
-        node shouldBe "myNode"
+        node.name shouldBe "myNode"
       }
 
       "a diagram with multiple nodes" in {
@@ -83,9 +91,9 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
         val palette = diagram.palettes.head
         palette.name shouldBe "myPalette"
         palette.nodes should have size 3
-        palette.nodes.head shouldBe "node0"
-        palette.nodes(1) shouldBe "node1"
-        palette.nodes(2) shouldBe "node2"
+        palette.nodes.head.name shouldBe "node0"
+        palette.nodes(1).name shouldBe "node1"
+        palette.nodes(2).name shouldBe "node2"
       }
 
       "a diagram with multiple empty palettes" in {
@@ -139,14 +147,14 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
         baumDiagramm.palettes should have size 1
         baumDiagramm.palettes.head.name shouldBe "BaumElemente"
         baumDiagramm.palettes.head.nodes should have size 1
-        baumDiagramm.palettes.head.nodes.head shouldBe "KnotenNode"
+        baumDiagramm.palettes.head.nodes.head.name shouldBe "KnotenNode"
 
         val matroschkaDiagramm = tree(1)
         matroschkaDiagramm.name shouldBe "MatroschkaDiagramm"
         matroschkaDiagramm.palettes should have size 1
         matroschkaDiagramm.palettes.head.name shouldBe "MatroschkaElemente"
         matroschkaDiagramm.palettes.head.nodes should have size 1
-        matroschkaDiagramm.palettes.head.nodes.head shouldBe "MatroschkaNode"
+        matroschkaDiagramm.palettes.head.nodes.head.name shouldBe "MatroschkaNode"
       }
 
     }
