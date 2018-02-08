@@ -7,11 +7,11 @@ object DiagramParser extends CommonParserMethods {
   private val leftBrace = "{"
   private val rightBrace = "}"
 
-  def parseDiagrams(input: String): ParseResult[Seq[DiagramParseTree]] = {
+  def parseDiagrams(input: String): ParseResult[List[DiagramParseTree]] = {
     parse(diagrams, input)
   }
 
-  private def diagrams: Parser[Seq[DiagramParseTree]] = rep(diagram)
+  private def diagrams: Parser[List[DiagramParseTree]] = rep(diagram)
 
   private def diagram: Parser[DiagramParseTree] = {
     diagramName ~ leftBrace ~ palettes ~ rightBrace ^^ { parseResult =>
@@ -20,7 +20,7 @@ object DiagramParser extends CommonParserMethods {
     }
   }
 
-  private def palettes: Parser[Seq[PaletteParseTree]] = rep(palette)
+  private def palettes: Parser[List[PaletteParseTree]] = rep(palette)
 
   private def palette: Parser[PaletteParseTree] = {
     paletteName ~ leftBrace ~ nodes ~ rightBrace ^^ { parseResult =>
@@ -29,7 +29,7 @@ object DiagramParser extends CommonParserMethods {
     }
   }
 
-  private def nodes: Parser[Seq[NodeParseTree]] = rep(node)
+  private def nodes: Parser[List[NodeParseTree]] = rep(node)
 
   private def node: Parser[NodeParseTree] = ident ^^  NodeParseTree
 

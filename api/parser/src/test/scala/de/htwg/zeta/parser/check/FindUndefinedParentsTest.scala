@@ -3,10 +3,11 @@ package de.htwg.zeta.parser.check
 import de.htwg.zeta.parser.check.Check.Id
 import org.scalatest.{FreeSpec, Inside, Matchers}
 
+//noinspection ScalaStyle
 class FindUndefinedParentsTest extends FreeSpec with Matchers with Inside {
 
   val elementToId: Element => Id = element => element.name
-  val getParentIds: Element => Seq[Id] = element => element.parents
+  val getParentIds: Element => List[Id] = element => element.parents.toList
   val findUndefinedParents = new FindUndefinedParents[Element](elementToId, getParentIds)
 
   "Check for undefined parents will result in" - {
