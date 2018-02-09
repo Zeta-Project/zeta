@@ -6,10 +6,10 @@ import org.scalatest.{FreeSpec, Inside, Matchers}
 
 class FindGraphCyclesTest extends FreeSpec with Matchers with Inside {
 
-  private def findGraphCycles(elements: Seq[Element]): Seq[Id] = {
+  private def findGraphCycles(elements: List[Element]): List[Id] = {
     val elementToId: Element => Id = element => element.name
     val getElement: Id => Option[Element] = id => elements.find(_.name == id)
-    val getParentIds: Element => Seq[Id] = element => element.parents
+    val getParentIds: Element => List[Id] = element => element.parents.toList
     val findGraphCycles = new FindGraphCycles[Element](elementToId, getElement, getParentIds)
     findGraphCycles(elements)
   }

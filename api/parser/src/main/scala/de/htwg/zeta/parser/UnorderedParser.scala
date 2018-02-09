@@ -37,10 +37,10 @@ trait UnorderedParser extends JavaTokenParsers {
   def range[A](min: Int, max: Int, parser: Parser[A]): ParseConf[A] = RangeParseConf(min, max, parser)
 
 
-  private def checkParsersUnique(parsers: Seq[Parser[_]]): Unit = {
+  private def checkParsersUnique(parsers: List[Parser[_]]): Unit = {
     parsers.diff(parsers.distinct) match {
-      case Seq() =>
-      case nonEmpty: Seq[Parser[_]] =>
+      case Nil =>
+      case nonEmpty: List[Parser[_]] =>
         throw new IllegalArgumentException(
           "Each parser can only be configured once in an unordered context. duplicate parsers: " +
             nonEmpty.distinct.mkString(", ")
@@ -50,7 +50,7 @@ trait UnorderedParser extends JavaTokenParsers {
 
 
   def unordered[A](configs: ParseConf[A]*): Parser[List[A]] = {
-    checkParsersUnique(configs.map(_.parser))
+    checkParsersUnique(configs.map(_.parser).toList)
 
     def parser: Parser[(ParseConf[A], A)] = configs.map(p => p.parser.map(a => (p, a))).reduceLeft(_ | _)
 
