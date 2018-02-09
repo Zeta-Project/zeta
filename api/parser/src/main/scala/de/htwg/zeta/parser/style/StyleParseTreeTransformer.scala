@@ -13,16 +13,16 @@ import scalaz.{Failure, Success, Validation}
 
 object StyleParseTreeTransformer {
 
-  def transform(styleTrees: Seq[StyleParseTree]): Validation[Seq[String], Seq[Style]] = {
+  def transform(styleTrees: List[StyleParseTree]): Validation[List[String], List[Style]] = {
     checkForErrors(styleTrees) match {
       case Nil => Success(styleTrees.map(transform))
       case errors: List[String] => Failure(errors)
     }
   }
 
-  private def checkForErrors(styleTrees: Seq[StyleParseTree]): List[String] = {
+  private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] = {
     val toId: StyleParseTree => Id = _.name
-    val getParentIds: StyleParseTree => Seq[Id] = _.parentStyles
+    val getParentIds: StyleParseTree => List[Id] = _.parentStyles
     val toElement: Id => Option[StyleParseTree] = id => styleTrees.find(_.name == id)
 
     val findDuplicates = new FindDuplicates[StyleParseTree](toId)

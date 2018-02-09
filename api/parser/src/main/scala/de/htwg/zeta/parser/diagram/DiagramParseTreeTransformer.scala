@@ -9,26 +9,26 @@ import scalaz.Validation
 
 object DiagramParseTreeTransformer {
 
-  def transform(diagrams: Seq[DiagramParseTree]): Validation[Seq[String], Seq[Diagram]] = {
+  def transform(diagrams: List[DiagramParseTree]): Validation[List[String], List[Diagram]] = {
     checkForErrors(diagrams) match {
-      case Seq() => Success(diagrams.map(transform))
-      case errors: Seq[String] => Failure(errors)
+      case Nil => Success(diagrams.map(transform))
+      case errors: List[String] => Failure(errors)
     }
   }
 
-  private def checkForErrors(diagrams: Seq[DiagramParseTree]): Seq[String] = {
+  private def checkForErrors(diagrams: List[DiagramParseTree]): List[String] = {
 
-    def findDuplicateDiagrams(): Seq[String] = {
+    def findDuplicateDiagrams(): List[String] = {
       val findDuplicates = new FindDuplicates[DiagramParseTree](_.name)
       findDuplicates(diagrams)
     }
 
-    def findDuplicatePalettes(): Seq[String] = {
+    def findDuplicatePalettes(): List[String] = {
       val findDuplicates = new FindDuplicates[PaletteParseTree](_.name)
       diagrams.map(_.palettes).flatMap(findDuplicates(_))
     }
 
-    def findDuplicateNodes(): Seq[String] = {
+    def findDuplicateNodes(): List[String] = {
       val findDuplicates = new FindDuplicates[NodeParseTree](_.name)
       diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findDuplicates(_))
     }
@@ -47,8 +47,8 @@ object DiagramParseTreeTransformer {
     }
   }
 
-  private def createErrorIfNotEmpty(errorMessage: String, errorIds: Seq[Id]): Option[String] = errorIds match {
-    case Seq() => None
+  private def createErrorIfNotEmpty(errorMessage: String, errorIds: List[Id]): Option[String] = errorIds match {
+    case Nil => None
     case _ => Some(errorMessage + errorIds.mkString(","))
   }
 
