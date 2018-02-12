@@ -56,6 +56,43 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         )
       }
 
+      "a node with a repeating box" in {
+        val nodeWithRepeatingBox =
+          """
+            |node MyNode for SomeConceptClass {
+            |  sizeMax(width: 40, height: 80)
+            |  sizeMin(width: 20, height: 50)
+            |  style: MyStyle
+            |
+            |  repeatingBox {
+            |    editable: true
+            |    for(each: hatKind, as: kind)
+            |
+            |    ellipse {
+            |      style: None
+            |      position(x: 1, y: 1)
+            |      size(width: 100, height: 20)
+            |    }
+            |  }
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(nodeWithRepeatingBox)
+        result.successful shouldBe true
+        val node = result.get.head.asInstanceOf[NodeParseTree]
+        node.geoModels shouldBe List(
+          RepeatingBox(
+            Editable(true),
+            For(each = "hatKind", as = "kind"),
+            List(Ellipse(
+              Style("None"),
+              Position(1, 1),
+              Size(100, 20),
+              Nil
+            ))
+          )
+        )
+      }
+
       "a node with all attributes and children" in {
         val fullNodeExample =
           """

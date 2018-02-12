@@ -8,7 +8,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
 
   def geoModels: Parser[List[GeoModel]] = rep(geoModel)
 
-  def geoModel: Parser[GeoModel] = ellipse | textfield
+  def geoModel: Parser[GeoModel] = ellipse | textfield | repeatingBox
 
   private def ellipse: Parser[Ellipse] = {
     val attributes = unordered(once(style), once(position), once(size))
@@ -27,6 +27,15 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
     }
   }
 
+  private def repeatingBox: Parser[RepeatingBox] = {
+    val attributes = unordered(once(editable), once(foreach))
+    "repeatingBox" ~> leftBrace ~> attributes ~ rep1(geoModel) <~ rightBrace ^^ { parseResult =>
+      val attributes ~ geoModels = parseResult
+      implicit val attributeList: List[Any] = attributes
+      RepeatingBox(!![Editable], !![For], geoModels)
+    }
+  }
+
   private def style = include(AttributeParser.style)
 
   private def position = include(AttributeParser.position)
@@ -39,4 +48,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
 
   private def multiline = include(AttributeParser.multiline)
 
+  private def editable = include(AttributeParser.editable)
+
+  private def foreach = include(AttributeParser.foreach)
 }

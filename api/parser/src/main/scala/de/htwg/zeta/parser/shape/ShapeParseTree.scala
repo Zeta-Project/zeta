@@ -16,6 +16,7 @@ case class Ellipse(style: Style, position: Position, size: Size, children: List[
 
 case class Textfield(identifier: Identifier, multiline: Multiline, position: Position, size: Size, align: Align) extends GeoModel
 
+case class RepeatingBox(editable: Editable, foreach: For, children: List[GeoModel]) extends GeoModel
 
 object Attributes {
 
@@ -48,6 +49,10 @@ object Attributes {
   case class Identifier(name: String) extends Attribute
 
   case class Multiline(multiline: Boolean) extends Attribute
+
+  case class For(each: String, as: String) extends Attribute
+
+  case class Editable(editable: Boolean) extends Attribute
 
 }
 
