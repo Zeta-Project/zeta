@@ -18,32 +18,6 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         shapes shouldBe empty
       }
 
-      "a simple node without anything" in {
-        val simpleNode = "node MyNode for SomeConceptClass { }"
-        val result = ShapeParser.parseShapes(simpleNode)
-        result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
-        node.identifier shouldBe "MyNode"
-        node.conceptClass shouldBe "SomeConceptClass"
-      }
-
-      "a node with edges" in {
-        val nodeWithEdges =
-          """
-            |node MyNode for SomeConceptClass {
-            |  edges {
-            |    Edge0
-            |    Edge1
-            |    Edge2
-            |  }
-            |}
-          """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithEdges)
-        result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
-        node.edges shouldBe List("Edge0", "Edge1", "Edge2")
-      }
-
       "a node with attributes" in {
         val nodeWithAttributes =
           """
@@ -56,10 +30,30 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         val result = ShapeParser.parseShapes(nodeWithAttributes)
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
-        val attributes = node.attributes
-        attributes.head shouldBe Style("MyStyle")
-        attributes(1) shouldBe SizeMin(20, 50)
-        attributes(2) shouldBe SizeMax(40, 80)
+        node.attributes shouldBe List(
+          Style("MyStyle"),
+          SizeMin(20, 50),
+          SizeMax(40, 80)
+        )
+      }
+
+      "a node with unordered attributes" in {
+        val nodeWithUnorderedAttributes =
+          """
+            |node MyNode for SomeConceptClass {
+            |  sizeMax(width: 40, height: 80)
+            |  sizeMin(width: 20, height: 50)
+            |  style: MyStyle
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(nodeWithUnorderedAttributes)
+        result.successful shouldBe true
+        val node = result.get.head.asInstanceOf[NodeParseTree]
+        node.attributes shouldBe List(
+          SizeMax(40, 80),
+          SizeMin(20, 50),
+          Style("MyStyle")
+        )
       }
 
       "a node with all attributes and children" in {
@@ -70,10 +64,11 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |    Edge0
             |    Edge1
             |  }
+            |
             |  style: MyStyle
+            |  resizing(horizontal: false, vertical: false, proportional: true)
             |  sizeMin(width: 20, height: 75)
             |  sizeMax(width: 50, height: 85)
-            |  resizing(horizontal: false, vertical: false, proportional: true)
             |
             |  ellipse {
             |    style: BlackWhiteStyle
@@ -94,11 +89,12 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
         node.edges shouldBe List("Edge0", "Edge1")
-        val attributes = node.attributes
-        attributes.head shouldBe Style("MyStyle")
-        attributes(1) shouldBe SizeMin(20, 75)
-        attributes(2) shouldBe SizeMax(50, 85)
-        attributes(3) shouldBe Resizing(horizontal = false, vertical = false, proportional = true)
+        node.attributes shouldBe List(
+          Style("MyStyle"),
+          Resizing(horizontal = false, vertical = false, proportional = true),
+          SizeMin(20, 75),
+          SizeMax(50, 85)
+        )
         node.geoModels shouldBe List(
           Ellipse(
             Style("BlackWhiteStyle"),
@@ -106,7 +102,7 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             Size(10, 15),
             List(
               Textfield(
-                "ueberschrift",
+                Identifier("ueberschrift"),
                 multiline = false,
                 Position(3, 4),
                 Size(10, 15),
