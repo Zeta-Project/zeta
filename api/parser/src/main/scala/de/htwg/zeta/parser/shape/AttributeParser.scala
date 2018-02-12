@@ -37,7 +37,9 @@ object AttributeParser extends CommonParserMethods with UniteParsers with ShapeT
     Identifier
   }
 
-  def multiline: Parser[Boolean] = "multiline" ~> colon ~> argument_boolean
+  def multiline: Parser[Multiline] = "multiline" ~> colon ~> argument_boolean ^^ {
+    Multiline
+  }
 
   def style: Parser[Style] = "style" ~> colon ~> ident ^^ {
     Style

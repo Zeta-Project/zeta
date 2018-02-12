@@ -22,7 +22,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
   private def textfield: Parser[Textfield] = {
     val attributes = unordered(once(identifier), optional(multiline), once(position), once(size), optional(align))
     "textfield" ~> leftBrace ~> attributes <~ rightBrace ^^ { implicit attributes =>
-      Textfield(!![Identifier], ?[Boolean].getOrElse(false), !![Position], !![Size],
+      Textfield(!![Identifier], ?[Multiline].getOrElse(Multiline(false)), !![Position], !![Size],
         ?[Align].getOrElse(Align(HorizontalAlignment.middle, VerticalAlignment.middle)))
     }
   }

@@ -13,7 +13,9 @@ case class NodeParseTree(identifier: String, conceptClass: String,
 sealed trait GeoModel
 
 case class Ellipse(style: Style, position: Position, size: Size, children: List[GeoModel]) extends GeoModel
-case class Textfield(identifier: Identifier, multiline: Boolean, position: Position, size: Size, align: Align) extends GeoModel
+
+case class Textfield(identifier: Identifier, multiline: Multiline, position: Position, size: Size, align: Align) extends GeoModel
+
 
 object Attributes {
 
@@ -44,6 +46,8 @@ object Attributes {
   case class Style(identifier: String) extends Attribute
 
   case class Identifier(name: String) extends Attribute
+
+  case class Multiline(multiline: Boolean) extends Attribute
 
 }
 

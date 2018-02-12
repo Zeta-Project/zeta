@@ -103,7 +103,7 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             List(
               Textfield(
                 Identifier("ueberschrift"),
-                multiline = false,
+                Multiline(false),
                 Position(3, 4),
                 Size(10, 15),
                 Align(
