@@ -1,5 +1,6 @@
 package de.htwg.zeta.parser
 
+import scala.reflect.ClassTag
 import scala.util.parsing.combinator.JavaTokenParsers
 
 trait UnorderedParser extends JavaTokenParsers {
@@ -23,9 +24,13 @@ trait UnorderedParser extends JavaTokenParsers {
       }
     }
   }
+
   case class MinParseConf[A](min: Int, parser: Parser[A]) extends ParseConf[A](min, Int.MaxValue)
+
   case class MaxParseConf[A](max: Int, parser: Parser[A]) extends ParseConf[A](0, max)
+
   case class ExactParseConf[A](exact: Int, parser: Parser[A]) extends ParseConf[A](exact, exact)
+
   case class RangeParseConf[A](min: Int, max: Int, parser: Parser[A]) extends ParseConf[A](min, max)
 
   def min[A](min: Int, parser: Parser[A]): ParseConf[A] = MinParseConf(min, parser)
@@ -51,7 +56,6 @@ trait UnorderedParser extends JavaTokenParsers {
         )
     }
   }
-
 
   def unordered[A](configs: ParseConf[A]*): Parser[List[A]] = {
     checkParsersUnique(configs.map(_.parser).toList)
@@ -79,4 +83,15 @@ trait UnorderedParser extends JavaTokenParsers {
       }
     }
   }
+
+
+  // get all values by type
+  def *[T](implicit list: List[Any], classTag: ClassTag[T]) = list.collect { case x: T => x }
+
+  // get single value by type (optional)
+  def ?[T](implicit list: List[Any], classTag: ClassTag[T]) = *(list, classTag).headOption
+
+  // get single value by type (throws)
+  def !![T](implicit list: List[Any], classTag: ClassTag[T]) = ?(list, classTag).get
+
 }
