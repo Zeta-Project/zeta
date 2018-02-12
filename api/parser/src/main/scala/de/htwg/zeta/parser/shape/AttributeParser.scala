@@ -17,9 +17,13 @@ object AttributeParser extends CommonParserMethods with UniteParsers with ShapeT
       Align(horizontal, vertical)
     }
 
-  private def horizontal = ("left" | "middle" | "right") ^^ { alignment => HorizontalAlignment.withName(alignment) }
+  private def horizontal = ("left" | "middle" | "right") ^^ {
+    HorizontalAlignment.withName
+  }
 
-  private def vertical = ("top" | "middle" | "bottom") ^^ { alignment => VerticalAlignment.withName(alignment) }
+  private def vertical = ("top" | "middle" | "bottom") ^^ {
+    VerticalAlignment.withName
+  }
 
   def resizing: Parser[Resizing] =
     ("resizing" ~> lp ~> "horizontal" ~> colon ~> argument_boolean <~ comma) ~
@@ -29,11 +33,15 @@ object AttributeParser extends CommonParserMethods with UniteParsers with ShapeT
       Resizing(horizontal, vertical, proportional)
     }
 
-  def identifier: Parser[String] = "identifier" ~> colon ~> ident
+  def identifier: Parser[Identifier] = "identifier" ~> colon ~> ident ^^ {
+    Identifier
+  }
 
   def multiline: Parser[Boolean] = "multiline" ~> colon ~> argument_boolean
 
-  def style: Parser[Style] = "style" ~> colon ~> ident ^^ { style => Style(style) }
+  def style: Parser[Style] = "style" ~> colon ~> ident ^^ {
+    Style
+  }
 
   def position: Parser[Position] = parseNaturalNumberTuple("position", "x", "y").map(Position.tupled)
 
