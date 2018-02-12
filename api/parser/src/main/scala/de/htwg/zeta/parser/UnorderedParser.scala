@@ -36,6 +36,10 @@ trait UnorderedParser extends JavaTokenParsers {
 
   def range[A](min: Int, max: Int, parser: Parser[A]): ParseConf[A] = RangeParseConf(min, max, parser)
 
+  def optional[A](parser: Parser[A]): ParseConf[A] = range(0, 1, parser)
+
+  def once[A](parser: Parser[A]): ParseConf[A] = exact(1, parser)
+
 
   private def checkParsersUnique(parsers: List[Parser[_]]): Unit = {
     parsers.diff(parsers.distinct) match {
