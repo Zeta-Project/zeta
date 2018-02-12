@@ -58,4 +58,13 @@ object AttributeParser extends CommonParserMethods with UniteParsers with ShapeT
       val first ~ second = tuple
       (first, second)
     }
+
+  def editable: Parser[Editable] = "editable" ~> colon ~> argument_boolean ^^ {
+    Editable
+  }
+
+  def foreach: Parser[For] = ("for" ~> lp ~> "each" ~> colon ~> ident <~ comma) ~ ("as" ~> colon ~> ident <~ rp) ^^ { result =>
+    val each ~ as = result
+    For(each, as)
+  }
 }
