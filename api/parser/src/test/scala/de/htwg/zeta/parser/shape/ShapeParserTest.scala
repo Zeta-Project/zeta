@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.shape
 
-import de.htwg.zeta.parser.shape.NodeAttributes.{SizeMax, SizeMin, Style}
+import de.htwg.zeta.parser.shape.Attributes._
 import org.scalatest.{FreeSpec, Inside, Matchers}
 
 //noinspection ScalaStyle
@@ -41,10 +41,7 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         val result = ShapeParser.parseShapes(nodeWithEdges)
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
-        node.edges should have size 3
-        node.edges.head shouldBe "Edge0"
-        node.edges(1) shouldBe "Edge1"
-        node.edges(2) shouldBe "Edge2"
+        node.edges shouldBe List("Edge0", "Edge1", "Edge2")
       }
 
       "a node with attributes" in {
@@ -60,12 +57,66 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
         val attributes = node.attributes
-        val style = attributes.head
-        style shouldBe Style("MyStyle")
-        val sizeMin = attributes(1)
-        sizeMin shouldBe SizeMin(20, 50)
-        val sizeMax = attributes(2)
-        sizeMax shouldBe SizeMax(40, 80)
+        attributes.head shouldBe Style("MyStyle")
+        attributes(1) shouldBe SizeMin(20, 50)
+        attributes(2) shouldBe SizeMax(40, 80)
+      }
+
+      "a node with all attributes and children" in {
+        val fullNodeExample =
+          """
+            |node MyNode for SomeConceptClass {
+            |  edges {
+            |    Edge0
+            |    Edge1
+            |  }
+            |  style: MyStyle
+            |  sizeMin(width: 20, height: 75)
+            |  sizeMax(width: 50, height: 85)
+            |  resizing(horizontal: false, vertical: false, proportional: true)
+            |
+            |  ellipse {
+            |    style: BlackWhiteStyle
+            |    position(x: 3, y: 4)
+            |    size(width: 10, height: 15)
+            |
+            |    textfield {
+            |      identifier: ueberschrift
+            |      multiline: false
+            |      position(x: 3, y: 4)
+            |      size(width: 10, height: 15)
+            |      align(horizontal: middle, vertical: middle)
+            |    }
+            |  }
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(fullNodeExample)
+        result.successful shouldBe true
+        val node = result.get.head.asInstanceOf[NodeParseTree]
+        node.edges shouldBe List("Edge0", "Edge1")
+        val attributes = node.attributes
+        attributes.head shouldBe Style("MyStyle")
+        attributes(1) shouldBe SizeMin(20, 75)
+        attributes(2) shouldBe SizeMax(50, 85)
+        attributes(3) shouldBe Resizing(horizontal = false, vertical = false, proportional = true)
+        node.geoModels shouldBe List(
+          Ellipse(
+            Style("BlackWhiteStyle"),
+            Position(3, 4),
+            Size(10, 15),
+            List(
+              Textfield(
+                "ueberschrift",
+                multiline = false,
+                Position(3, 4),
+                Size(10, 15),
+                Align(
+                  HorizontalAlignment.middle,
+                  VerticalAlignment.middle)
+              )
+            )
+          )
+        )
       }
     }
 
