@@ -18,6 +18,7 @@ trait CommonParserMethods extends JavaTokenParsers {
   def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString }
   def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
   def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
+  def natural_number: Parser[Int] = "\\d+".r ^^ { _.toInt }
   def argument: Parser[String] =
     "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString }
 
