@@ -72,14 +72,7 @@ trait CommonParserMethods extends JavaTokenParsers {
    * Some explicit usages
    */
   def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ { list => list }
-  def position: Parser[Option[(Int, Int)]] = "[Pp]osition\\s*\\(\\s*(x=)?".r ~> argument ~ ((",\\s*(y=)?".r ~> argument) <~ ")") ^^ {
-    case xarg ~ yarg => Some((xarg.toInt, yarg.toInt))
-    case _ => None
-  }
-  def size: Parser[Option[(Int, Int)]] = "[Ss]ize\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
-  }
+
   def curve: Parser[Option[(Int, Int)]] = "[Cc]urve\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
     case width ~ height => Some((width.toInt, height.toInt))
     case _ => None
