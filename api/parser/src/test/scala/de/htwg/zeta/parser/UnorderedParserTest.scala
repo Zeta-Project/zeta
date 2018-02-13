@@ -1,5 +1,7 @@
 package de.htwg.zeta.parser
 
+import java.util.NoSuchElementException
+
 import org.scalatest.{FreeSpec, Matchers}
 
 class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser {
@@ -113,6 +115,36 @@ class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser {
           result.get should contain(Point())
           result.get.count(e => e.equals(Width())) shouldBe 3
           result.get should have size 4
+        }
+      }
+
+    }
+
+    "items by type" - {
+
+      "for * operator" in {
+        implicit val list: List[Any] = List(1,2,3,"Test",3.14)
+        *[Int] shouldBe List(1,2,3)
+        *[String] shouldBe List("Test")
+        *[Double] shouldBe List(3.14)
+        *[Float] shouldBe Nil
+      }
+
+      "for ? operator" in {
+        implicit val list: List[Any] = List(1,2,3,"Test",3.14)
+        ?[Int] shouldBe Some(1)
+        ?[String] shouldBe Some("Test")
+        ?[Double] shouldBe Some(3.14)
+        ?[Float] shouldBe None
+      }
+
+      "for !! operator" in {
+        implicit val list: List[Any] = List(1,2,3,"Test",3.14)
+        !![Int] shouldBe 1
+        !![String] shouldBe "Test"
+        !![Double] shouldBe 3.14
+        assertThrows[NoSuchElementException] {
+          !![Float]
         }
       }
 
