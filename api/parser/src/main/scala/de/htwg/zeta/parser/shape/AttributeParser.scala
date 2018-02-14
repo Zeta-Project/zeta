@@ -2,7 +2,6 @@ package de.htwg.zeta.parser.shape
 
 
 import de.htwg.zeta.parser.UniteParsers
-import de.htwg.zeta.parser.shape.Attributes.HorizontalAlignment.HorizontalAlignment
 import de.htwg.zeta.parser.shape.Attributes._
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
@@ -46,6 +45,8 @@ object AttributeParser extends CommonParserMethods with UniteParsers with ShapeT
   }
 
   def position: Parser[Position] = parseNaturalNumberTuple("position", "x", "y").map(Position.tupled)
+
+  def point: Parser[Point] = parseNaturalNumberTuple("point", "x", "y").map(Point.tupled)
 
   def size: Parser[Size] = parseNaturalNumberTuple("size", "width", "height").map(Size.tupled)
 

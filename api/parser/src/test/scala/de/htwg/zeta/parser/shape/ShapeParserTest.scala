@@ -56,6 +56,68 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         )
       }
 
+      "a node with a line" in {
+        val nodeWithLine =
+          """
+            |node MyNode for SomeConceptClass {
+            |  sizeMax(width: 40, height: 80)
+            |  sizeMin(width: 20, height: 50)
+            |  style: MyStyle
+            |
+            |  line {
+            |    style: BoldLineStyle
+            |    point(x: 1, y: 2)
+            |    point(x: 3, y: 4)
+            |  }
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(nodeWithLine)
+        result.successful shouldBe true
+        val node = result.get.head.asInstanceOf[NodeParseTree]
+        node.geoModels shouldBe List(
+          Line(
+            Some(Style("BoldLineStyle")),
+            Point(1, 2),
+            Point(3, 4)
+          )
+        )
+      }
+
+      "a node with a polyline" in {
+        val nodeWithLine =
+          """
+            |node MyNode for SomeConceptClass {
+            |  sizeMax(width: 40, height: 80)
+            |  sizeMin(width: 20, height: 50)
+            |  style: MyStyle
+            |
+            |  polyline {
+            |    style: BlaBla
+            |    point(x: 1, y: 2)
+            |    point(x: 3, y: 4)
+            |    point(x: 5, y: 6)
+            |    point(x: 7, y: 8)
+            |    point(x: 9, y: 0)
+            |  }
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(nodeWithLine)
+        result.successful shouldBe true
+        val node = result.get.head.asInstanceOf[NodeParseTree]
+        node.geoModels shouldBe List(
+          Polyline(
+            Some(Style("BlaBla")),
+            List(
+              Point(1, 2),
+              Point(3, 4),
+              Point(5, 6),
+              Point(7, 8),
+              Point(9, 0),
+            )
+          )
+        )
+      }
+
       "a node with a repeating box" in {
         val nodeWithRepeatingBox =
           """
@@ -119,6 +181,11 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |      size(width: 10, height: 15)
             |      align(horizontal: middle, vertical: middle)
             |    }
+            |
+            |    line {
+            |      point(x: 1, y: 1)
+            |      point(x: 5, y: 10)
+            |    }
             |  }
             |}
           """.stripMargin
@@ -146,6 +213,11 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
                 Align(
                   HorizontalAlignment.middle,
                   VerticalAlignment.middle)
+              ),
+              Line(
+                None,
+                Point(1, 1),
+                Point(5, 10)
               )
             )
           )
