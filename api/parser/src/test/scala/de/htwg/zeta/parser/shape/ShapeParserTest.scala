@@ -118,6 +118,24 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         )
       }
 
+      "a node with a polygon" in {
+        val nodeWithPolygon =
+          """
+            |node MyNode for SomeConceptClass {
+            |  sizeMax(width: 40, height: 80)
+            |  sizeMin(width: 20, height: 50)
+            |  style: MyStyle
+            |
+            |  polygon {
+            |    style: PolygonStyle
+            |    point(x: 1, y: 2, curveBefore: 1, curveAfter: 1)
+            |    point(x: 3, y: 4, curveBefore: 1, curveAfter: 1)
+            |    point(x: 5, y: 6, curveBefore: 1, curveAfter: 1)
+            |  }
+            |}
+          """.stripMargin
+      }
+
       "a node with a repeating box" in {
         val nodeWithRepeatingBox =
           """

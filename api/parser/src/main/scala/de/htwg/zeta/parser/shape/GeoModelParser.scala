@@ -8,7 +8,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
 
   def geoModels: Parser[List[GeoModel]] = rep(geoModel)
 
-  def geoModel: Parser[GeoModel] = ellipse | textfield | repeatingBox | line | polyline
+  def geoModel: Parser[GeoModel] = ellipse | textfield | repeatingBox | line | polyline | polygon
 
   private def ellipse: Parser[Ellipse] = {
     val attributes = unordered(once(style), once(position), once(size))
@@ -39,7 +39,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
   private def line: Parser[Line] = {
     val attributes = unordered(optional(style), exact(2, point))
     "line" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
-      implicit val attribtes: List[Any] = parseResult
+      implicit val attributes: List[Any] = parseResult
       val from :: to :: Nil = *[Point]
       Line(?[Style], from, to)
     }
@@ -53,11 +53,21 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with ShapeTo
     }
   }
 
+  private def polygon: Parser[Polygon] = {
+    val attributes = unordered(optional(style), min(2, curvedPoint))
+    "polygon" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
+      implicit val points: List[Any] = parseResult
+      Polygon(?[Style], *[CurvedPoint])
+    }
+  }
+
   private def style = include(AttributeParser.style)
 
   private def position = include(AttributeParser.position)
 
   private def point = include(AttributeParser.point)
+
+  private def curvedPoint = include(AttributeParser.curvedPoint)
 
   private def size = include(AttributeParser.size)
 
