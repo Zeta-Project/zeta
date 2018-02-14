@@ -24,6 +24,10 @@ case class Polyline(style: Option[Style], points: List[Point]) extends GeoModel 
   require(points.size >= 2)
 }
 
+case class Polygon(style: Option[Style], curvedPoints: List[CurvedPoint]) extends GeoModel {
+  require(curvedPoints.size >= 2)
+}
+
 object Attributes {
 
   object HorizontalAlignment extends Enumeration {
@@ -38,11 +42,13 @@ object Attributes {
 
   sealed trait Attribute
 
-  case class Align(horizontal: HorizontalAlignment, vertical: VerticalAlignment)
+  case class Align(horizontal: HorizontalAlignment, vertical: VerticalAlignment) extends Attribute
 
-  case class Position(x: Int, y: Int)
+  case class Position(x: Int, y: Int) extends Attribute
 
-  case class Point(x: Int, y: Int)
+  case class Point(x: Int, y: Int) extends Attribute
+
+  case class CurvedPoint(x: Int, y: Int, curveBefore: Int, curveAfter: Int) extends Attribute
 
   case class Resizing(horizontal: Boolean, vertical: Boolean, proportional: Boolean) extends Attribute
 
