@@ -18,6 +18,12 @@ case class Textfield(identifier: Identifier, multiline: Multiline, position: Pos
 
 case class RepeatingBox(editable: Editable, foreach: For, children: List[GeoModel]) extends GeoModel
 
+case class Line(style: Option[Style], from: Point, to: Point) extends GeoModel
+
+case class Polyline(style: Option[Style], points: List[Point]) extends GeoModel {
+  require(points.size >= 2)
+}
+
 object Attributes {
 
   object HorizontalAlignment extends Enumeration {
@@ -35,6 +41,8 @@ object Attributes {
   case class Align(horizontal: HorizontalAlignment, vertical: VerticalAlignment)
 
   case class Position(x: Int, y: Int)
+
+  case class Point(x: Int, y: Int)
 
   case class Resizing(horizontal: Boolean, vertical: Boolean, proportional: Boolean) extends Attribute
 
