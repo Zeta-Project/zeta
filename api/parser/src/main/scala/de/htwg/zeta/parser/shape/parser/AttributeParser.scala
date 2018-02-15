@@ -66,6 +66,8 @@ object AttributeParser extends CommonParserMethods with UniteParsers {
 
   def sizeMin: Parser[SizeMin] = parseNaturalNumberTuple("sizeMin", "width", "height").map(SizeMin.tupled)
 
+  def curve: Parser[Curve] = parseNaturalNumberTuple("curve", "width", "height").map(Curve.tupled)
+
   def curvedPoint: Parser[CurvedPoint] = {
     ("point" ~> lp ~> "x" ~> colon ~> natural_number <~ comma) ~
       ("y" ~> colon ~> natural_number <~ comma) ~
