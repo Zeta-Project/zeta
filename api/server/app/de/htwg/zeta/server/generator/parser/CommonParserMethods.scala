@@ -11,6 +11,16 @@ import scala.util.parsing.combinator.JavaTokenParsers
  * commonly used parsing methods
  */
 trait CommonParserMethods extends JavaTokenParsers {
+
+  // language independent
+  val leftBrace = "{"
+  val rightBrace = "}"
+  val colon = ":"
+  val leftParenthesis = "("
+  val rightParenthesis = ")"
+  val comma = ","
+  val eq = "="
+
   // basic stuff
   // scalastyle:off non.ascii.character.disallowed
 

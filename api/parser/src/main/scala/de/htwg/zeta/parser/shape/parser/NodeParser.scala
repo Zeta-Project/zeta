@@ -1,10 +1,11 @@
-package de.htwg.zeta.parser.shape
+package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.shape.Attributes.Attribute
+import de.htwg.zeta.parser.shape.parsetree.Attributes.Attribute
+import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.{UniteParsers, UnorderedParser}
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
-object NodeParser extends CommonParserMethods with UniteParsers with ShapeTokens with UnorderedParser {
+object NodeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
   def parseNode: Parser[NodeParseTree] = {
     val attributes = unordered(once(style), once(sizeMin), once(sizeMax), optional(resizing))

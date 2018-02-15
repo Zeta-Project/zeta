@@ -1,32 +1,8 @@
-package de.htwg.zeta.parser.shape
+package de.htwg.zeta.parser.shape.parsetree
 
-import de.htwg.zeta.parser.shape.Attributes.HorizontalAlignment.HorizontalAlignment
-import de.htwg.zeta.parser.shape.Attributes.VerticalAlignment.VerticalAlignment
-import de.htwg.zeta.parser.shape.Attributes._
+import de.htwg.zeta.parser.shape.parsetree.Attributes.HorizontalAlignment.HorizontalAlignment
+import de.htwg.zeta.parser.shape.parsetree.Attributes.VerticalAlignment.VerticalAlignment
 
-sealed trait ShapeParseTree
-
-case class NodeParseTree(identifier: String, conceptClass: String,
-                         edges: List[String], attributes: List[Attribute],
-                         geoModels: List[GeoModel]) extends ShapeParseTree
-
-sealed trait GeoModel
-
-case class Ellipse(style: Style, position: Position, size: Size, children: List[GeoModel]) extends GeoModel
-
-case class Textfield(identifier: Identifier, multiline: Multiline, position: Position, size: Size, align: Align) extends GeoModel
-
-case class RepeatingBox(editable: Editable, foreach: For, children: List[GeoModel]) extends GeoModel
-
-case class Line(style: Option[Style], from: Point, to: Point) extends GeoModel
-
-case class Polyline(style: Option[Style], points: List[Point]) extends GeoModel {
-  require(points.size >= 2)
-}
-
-case class Polygon(style: Option[Style], curvedPoints: List[CurvedPoint]) extends GeoModel {
-  require(curvedPoints.size >= 2)
-}
 
 object Attributes {
 
@@ -69,5 +45,4 @@ object Attributes {
   case class Editable(editable: Boolean) extends Attribute
 
 }
-
 

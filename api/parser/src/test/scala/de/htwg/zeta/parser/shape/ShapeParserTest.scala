@@ -1,6 +1,8 @@
 package de.htwg.zeta.parser.shape
 
-import de.htwg.zeta.parser.shape.Attributes._
+import de.htwg.zeta.parser.shape.parser.ShapeParser
+import de.htwg.zeta.parser.shape.parsetree.Attributes._
+import de.htwg.zeta.parser.shape.parsetree.{EllipseParseTree, LineParseTree, NodeParseTree, TextfieldParseTree}
 import org.scalatest.{FreeSpec, Inside, Matchers}
 
 //noinspection ScalaStyle
@@ -124,12 +126,13 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
           SizeMax(50, 85)
         )
         node.geoModels shouldBe List(
-          Ellipse(
-            Style("BlackWhiteStyle"),
+          EllipseParseTree(
+            Some(Style("BlackWhiteStyle")),
             Position(3, 4),
             Size(10, 15),
             List(
-              Textfield(
+              TextfieldParseTree(
+                style = None,
                 Identifier("ueberschrift"),
                 Multiline(false),
                 Position(3, 4),
@@ -138,8 +141,8 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
                   HorizontalAlignment.middle,
                   VerticalAlignment.middle)
               ),
-              Line(
-                None,
+              LineParseTree(
+                style = None,
                 Point(1, 1),
                 Point(5, 10)
               )
