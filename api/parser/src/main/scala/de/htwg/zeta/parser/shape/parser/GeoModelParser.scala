@@ -9,7 +9,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
 
   def geoModels: Parser[List[GeoModelParseTree]] = rep(geoModel)
 
-  def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon
+  def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon | rectangle
 
   private def ellipse: Parser[EllipseParseTree] = {
     val attributes = unordered(optional(style), once(position), once(size))
@@ -87,6 +87,21 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     }
   }
 
+  private def rectangle: Parser[RectangleParseTree] = {
+    val attributes = unordered(optional(style), once(position), once(size), optional(curve))
+    "rectangle" ~> leftBrace ~> attributes ~ geoModels <~ rightBrace ^^ {parseResult =>
+      val attributes ~ geoModels = parseResult
+      implicit val attributeList: List[Attribute] = attributes
+      RectangleParseTree(
+        ?[Style],
+        !![Position],
+        !![Size],
+        ?[Curve],
+        geoModels
+      )
+    }
+  }
+
   private def style = include(AttributeParser.style)
 
   private def position = include(AttributeParser.position)
@@ -106,4 +121,6 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   private def editable = include(AttributeParser.editable)
 
   private def foreach = include(AttributeParser.foreach)
+
+  private def curve = include(AttributeParser.curve)
 }

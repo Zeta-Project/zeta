@@ -111,6 +111,37 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
         )
       }
 
+      "a rectangle" in {
+        val rectangle =
+          """
+            |rectangle {
+            |  style: RectStyle
+            |  position(x:3, y:4)
+            |  size(width:10, height:15)
+            |  curve(width:3, height:10)
+            |
+            |  line {
+            |    point(x:1, y:4)
+            |    point(x:3, y:5)
+            |  }
+            |}
+          """.stripMargin
+        val result = parseGeoModel(rectangle)
+        result.successful shouldBe true
+        result.get shouldBe RectangleParseTree(
+          Some(Style("RectStyle")),
+          Position(3,4),
+          Size(10, 15),
+          Some(Curve(3, 10)),
+          List(
+            LineParseTree(
+              style = None,
+              Point(1, 4),
+              Point(3, 5)
+            )
+          )
+        )
+      }
     }
   }
 

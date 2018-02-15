@@ -83,10 +83,6 @@ trait CommonParserMethods extends JavaTokenParsers {
    */
   def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ { list => list }
 
-  def curve: Parser[Option[(Int, Int)]] = "[Cc]urve\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
-  }
   def idAsString: Parser[String] = "(id|ID)\\s*=?\\s*".r ~> argument ^^ { arg => arg }
   /**
    * takes a String and parses a boolean value out of it -> if string is yes|true|y

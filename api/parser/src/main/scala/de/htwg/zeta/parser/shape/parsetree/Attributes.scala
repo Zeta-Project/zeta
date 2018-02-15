@@ -20,6 +20,8 @@ object Attributes {
 
   case class Align(horizontal: HorizontalAlignment, vertical: VerticalAlignment) extends Attribute
 
+  case class Curve(width: Int, height: Int) extends Attribute
+
   case class Position(x: Int, y: Int) extends Attribute
 
   case class Point(x: Int, y: Int) extends Attribute
