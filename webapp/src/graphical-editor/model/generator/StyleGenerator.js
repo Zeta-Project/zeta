@@ -15,6 +15,13 @@ class StyleGenerator {
         );
     }
 
+    createCommonAttributes(style) {
+        return Object.assign(this.createBackgroundAttribute(style), this.createLineAttributes(style),
+            {
+                'fill-opacity': style.transparency === undefined ? 1.0: style.transparency,
+            });
+    }
+
     createMandatoryAttributes(style) {
         return {
             'text': Object.assign(this.createTextAttributes(style.font), this.createOptionalFontStyle(style.font)),
@@ -183,5 +190,15 @@ export default class Generator {
     getDiagramHighlighting(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
         return style ? this.highlightGenerator.generate(style) : '';
+    }
+
+    createCommonAttributes(styleName) {
+        const style = this.styles.find((s) => s.name === styleName);
+        return style ? this.styleGenerator.createCommonAttributes(style) : {};
+    }
+
+    createFontAttributes(styleName) {
+        const style = this.styles.find((s) => s.name === styleName);
+        return style ? this.styleGenerator.createTextAttributes(style) : {};
     }
 }
