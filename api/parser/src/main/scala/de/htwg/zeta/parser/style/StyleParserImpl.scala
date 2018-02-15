@@ -2,11 +2,6 @@ package de.htwg.zeta.parser.style
 
 class StyleParserImpl extends StyleParser {
 
-  private val leftBrace = literal("{")
-  private val rightBrace = literal("}")
-  private val eq = literal("=")
-  private val comma = literal(",")
-
   override def styles: Parser[List[StyleParseTree]] = rep1(style)
 
   private def style: Parser[StyleParseTree] = {

@@ -1,6 +1,7 @@
-package de.htwg.zeta.parser.shape
+package de.htwg.zeta.parser.shape.parser
 
 import de.htwg.zeta.parser.UniteParsers
+import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object ShapeParser extends CommonParserMethods with UniteParsers {

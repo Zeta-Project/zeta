@@ -1,6 +1,8 @@
 package de.htwg.zeta.parser.shape
 
-import de.htwg.zeta.parser.shape.Attributes._
+import de.htwg.zeta.parser.shape.parser.GeoModelParser
+import de.htwg.zeta.parser.shape.parsetree.Attributes._
+import de.htwg.zeta.parser.shape.parsetree._
 import org.scalatest.{FreeSpec, Inside, Matchers}
 
 class GeoModelParserTest extends FreeSpec with Matchers with Inside {
@@ -24,7 +26,7 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           """.stripMargin
         val result = parseGeoModel(line)
         result.successful shouldBe true
-        result.get shouldBe Line(
+        result.get shouldBe LineParseTree(
           Some(Style("BoldLineStyle")),
           Point(1, 2),
           Point(3, 4)
@@ -45,7 +47,7 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           """.stripMargin
         val result = parseGeoModel(polyline)
         result.successful shouldBe true
-        result.get shouldBe Polyline(
+        result.get shouldBe PolylineParseTree(
           Some(Style("BlaBla")),
           List(
             Point(1, 2),
@@ -69,7 +71,7 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           """.stripMargin
         val result = parseGeoModel(polygon)
         result.successful shouldBe true
-        result.get shouldBe Polygon(
+        result.get shouldBe PolygonParseTree(
           Some(Style("PolygonStyle")),
           List(
             CurvedPoint(1, 2, 1, 1),
@@ -95,12 +97,12 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           """.stripMargin
         val result = parseGeoModel(repeatingBox)
         result.successful shouldBe true
-        result.get shouldBe RepeatingBox(
+        result.get shouldBe RepeatingBoxParseTree(
           Editable(true),
           For(each = "hatKind", as = "kind"),
           List(
-            Ellipse(
-              Style("None"),
+            EllipseParseTree(
+              Some(Style("None")),
               Position(1, 1),
               Size(100, 20),
               Nil

@@ -1,11 +1,10 @@
-package de.htwg.zeta.parser.shape
-
+package de.htwg.zeta.parser.shape.parser
 
 import de.htwg.zeta.parser.UniteParsers
-import de.htwg.zeta.parser.shape.Attributes._
+import de.htwg.zeta.parser.shape.parsetree.Attributes._
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
-object AttributeParser extends CommonParserMethods with UniteParsers with ShapeTokens {
+object AttributeParser extends CommonParserMethods with UniteParsers {
 
   private val lp = leftParenthesis
   private val rp = rightParenthesis
