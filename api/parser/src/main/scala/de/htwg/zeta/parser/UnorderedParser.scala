@@ -1,9 +1,9 @@
 package de.htwg.zeta.parser
 
 import scala.reflect.ClassTag
-import scala.util.parsing.combinator.JavaTokenParsers
+import scala.util.parsing.combinator.Parsers
 
-trait UnorderedParser extends JavaTokenParsers {
+trait UnorderedParser extends Parsers {
 
   sealed abstract class ParseConf[+A](min: Int, max: Int) {
     //noinspection ScalaStyle
