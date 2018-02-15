@@ -6,9 +6,10 @@ import scala.util.parsing.combinator.JavaTokenParsers
 trait UnorderedParser extends JavaTokenParsers {
 
   sealed abstract class ParseConf[+A](min: Int, max: Int) {
-    if (min < 0 || max < 0 || min > max) {
-      throw new IllegalArgumentException(s"Illegal min/max-values: min=$min, max=$max")
-    }
+    //noinspection ScalaStyle
+    require(min >= 0,   s"min must be greater than or equal to zero! Current: min=$min")
+    require(max >= 1,   s"max must be greater than zero! Current: max=$max")
+    require(max >= min, s"max must be greater than or equal to min! Current: min=$min, max=$max")
 
     val parser: Parser[A]
 
