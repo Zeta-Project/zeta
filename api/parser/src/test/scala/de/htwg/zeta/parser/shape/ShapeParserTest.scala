@@ -200,6 +200,7 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
     }
 
     "fail in parsing" - {
+
       "a node with negative size" in {
         val nodeWithNegativeSize =
           """
@@ -208,8 +209,23 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             | }
           """.stripMargin
         val result = ShapeParser.parseShapes(nodeWithNegativeSize)
-        // HOWTO: should fail instead of returning an empty list!
-        //result.successful shouldBe false
+        result.successful shouldBe false
+      }
+
+      "a node without attributes" in {
+        val nodeWithoutAttributes =
+          """
+            |node MyNode for SomeConceptClass {
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(nodeWithoutAttributes)
+        result.successful shouldBe false
+      }
+
+      "an invalid input" in {
+        val notANode = "bla bla"
+        val result = ShapeParser.parseShapes(notANode)
+        result.successful shouldBe false
       }
     }
   }
