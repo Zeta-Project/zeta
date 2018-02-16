@@ -9,7 +9,7 @@ object ShapeParser extends CommonParserMethods with UniteParsers {
   private def node = include(NodeParser.parseNode)
 
   def parseShapes(input: String): ParseResult[List[ShapeParseTree]] = {
-    parse(phrase(shapes), input)
+    parseAll(shapes, input)
   }
 
   private def shapes = rep(node)
