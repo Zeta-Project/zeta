@@ -1,7 +1,8 @@
 package de.htwg.zeta.parser.shape
 
 import de.htwg.zeta.parser.shape.parser.GeoModelParser
-import de.htwg.zeta.parser.shape.parsetree.Attributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees._
 import de.htwg.zeta.parser.shape.parsetree._
 import org.scalatest.{FreeSpec, Inside, Matchers}
 

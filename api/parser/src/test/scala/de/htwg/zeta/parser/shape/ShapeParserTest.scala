@@ -1,8 +1,10 @@
 package de.htwg.zeta.parser.shape
 
 import de.htwg.zeta.parser.shape.parser.ShapeParser
-import de.htwg.zeta.parser.shape.parsetree.Attributes._
-import de.htwg.zeta.parser.shape.parsetree.{EllipseParseTree, LineParseTree, NodeParseTree, TextfieldParseTree}
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{EllipseParseTree, LineParseTree, TextfieldParseTree}
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
+import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import org.scalatest.{FreeSpec, Inside, Matchers}
 
 //noinspection ScalaStyle
@@ -42,6 +44,27 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         node.edges shouldBe List("Edge0", "Edge1", "Edge2")
       }
 
+      "a node with anchors" in {
+        val nodeWithAnchors =
+          """
+            |node MyNode for SomeConceptClass {
+            |  sizeMin(width: 20, height: 50)
+            |  sizeMax(width: 40, height: 80)
+            |  anchor(x: 1, y: 1)
+            |  anchor(xoffset: 5, yoffset: 20)
+            |  anchor(predefined: corner)
+            |}
+          """.stripMargin
+        val result = ShapeParser.parseShapes(nodeWithAnchors)
+        result.successful shouldBe true
+        val node = result.get.head.asInstanceOf[NodeParseTree]
+        node.anchors shouldBe List(
+          AbsoluteAnchor(1, 1),
+          RelativeAnchor(5, 20),
+          PredefinedAnchor(AnchorPosition.corner)
+        )
+      }
+
       "a node with attributes" in {
         val nodeWithAttributes =
           """
@@ -54,10 +77,16 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         val result = ShapeParser.parseShapes(nodeWithAttributes)
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
-        node.attributes shouldBe List(
-          Style("MyStyle"),
+        node shouldBe NodeParseTree(
+          "MyNode",
+          "SomeConceptClass",
+          edges = Nil,
           SizeMin(20, 50),
-          SizeMax(40, 80)
+          SizeMax(40, 80),
+          Some(NodeStyle("MyStyle")),
+          resizing = None,
+          anchors = Nil,
+          geoModels = Nil
         )
       }
 
@@ -73,10 +102,16 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         val result = ShapeParser.parseShapes(nodeWithUnorderedAttributes)
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
-        node.attributes shouldBe List(
-          SizeMax(40, 80),
+        node shouldBe NodeParseTree(
+          "MyNode",
+          "SomeConceptClass",
+          edges = Nil,
           SizeMin(20, 50),
-          Style("MyStyle")
+          SizeMax(40, 80),
+          Some(NodeStyle("MyStyle")),
+          resizing = None,
+          anchors = Nil,
+          geoModels = Nil
         )
       }
 
@@ -94,6 +129,9 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |  resizing(horizontal: false, vertical: false, proportional: true)
             |  sizeMin(width: 20, height: 75)
             |  sizeMax(width: 50, height: 85)
+            |  anchor(x: 1, y: 1)
+            |  anchor(xoffset: 5, yoffset: 20)
+            |  anchor(predefined: corner)
             |
             |  ellipse {
             |    style: BlackWhiteStyle
@@ -118,33 +156,42 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
         val result = ShapeParser.parseShapes(fullNodeExample)
         result.successful shouldBe true
         val node = result.get.head.asInstanceOf[NodeParseTree]
-        node.edges shouldBe List("Edge0", "Edge1")
-        node.attributes shouldBe List(
-          Style("MyStyle"),
-          Resizing(horizontal = false, vertical = false, proportional = true),
+
+        node shouldBe NodeParseTree(
+          "MyNode",
+          "SomeConceptClass",
+          List("Edge0", "Edge1"),
           SizeMin(20, 75),
-          SizeMax(50, 85)
-        )
-        node.geoModels shouldBe List(
-          EllipseParseTree(
-            Some(Style("BlackWhiteStyle")),
-            Position(3, 4),
-            Size(10, 15),
-            List(
-              TextfieldParseTree(
-                style = None,
-                Identifier("ueberschrift"),
-                Multiline(false),
-                Position(3, 4),
-                Size(10, 15),
-                Align(
-                  HorizontalAlignment.middle,
-                  VerticalAlignment.middle)
-              ),
-              LineParseTree(
-                style = None,
-                Point(1, 1),
-                Point(5, 10)
+          SizeMax(50, 85),
+          Some(NodeStyle("MyStyle")),
+          Some(Resizing(horizontal = false, vertical = false, proportional = true)),
+          List(
+            AbsoluteAnchor(1, 1),
+            RelativeAnchor(5, 20),
+            PredefinedAnchor(AnchorPosition.corner)
+          ),
+          List(
+            EllipseParseTree(
+              Some(de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style("BlackWhiteStyle")),
+              Position(3, 4),
+              Size(10, 15),
+              List(
+                TextfieldParseTree(
+                  style = None,
+                  Identifier("ueberschrift"),
+                  Multiline(false),
+                  Position(3, 4),
+                  Size(10, 15),
+                  Align(
+                    HorizontalAlignment.middle,
+                    VerticalAlignment.middle
+                  )
+                ),
+                LineParseTree(
+                  style = None,
+                  Point(1, 1),
+                  Point(5, 10)
+                )
               )
             )
           )
