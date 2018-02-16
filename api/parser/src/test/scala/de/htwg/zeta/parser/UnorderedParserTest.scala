@@ -120,36 +120,6 @@ class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser wi
 
     }
 
-    "items by type" - {
-
-      "for * operator" in {
-        implicit val list: List[Any] = List(1, 2, 3, "Test", 3.14)
-        *[Int] shouldBe List(1, 2, 3)
-        *[String] shouldBe List("Test")
-        *[Double] shouldBe List(3.14)
-        *[Float] shouldBe Nil
-      }
-
-      "for ? operator" in {
-        implicit val list: List[Any] = List(1, 2, 3, "Test", 3.14)
-        ?[Int] shouldBe Some(1)
-        ?[String] shouldBe Some("Test")
-        ?[Double] shouldBe Some(3.14)
-        ?[Float] shouldBe None
-      }
-
-      "for !! operator" in {
-        implicit val list: List[Any] = List(1, 2, 3, "Test", 3.14)
-        !![Int] shouldBe 1
-        !![String] shouldBe "Test"
-        !![Double] shouldBe 3.14
-        assertThrows[NoSuchElementException] {
-          !![Float]
-        }
-      }
-
-    }
-
     "a not successful result when " - {
       "exact one point element should be found " - {
         val parser: Parser[List[Attribute]] = unordered(exact(1, parsePoint))
