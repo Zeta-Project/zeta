@@ -1,7 +1,7 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.shape.parsetree.Attributes._
-import de.htwg.zeta.parser.shape.parsetree._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees._
 import de.htwg.zeta.parser.{Collector, UniteParsers, UnorderedParser}
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
@@ -103,25 +103,25 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     }
   }
 
-  private def style = include(AttributeParser.style)
+  private def style = include(GeoModelAttributeParser.style)
 
-  private def position = include(AttributeParser.position)
+  private def position = include(GeoModelAttributeParser.position)
 
-  private def point = include(AttributeParser.point)
+  private def point = include(GeoModelAttributeParser.point)
 
-  private def curvedPoint = include(AttributeParser.curvedPoint)
+  private def curvedPoint = include(GeoModelAttributeParser.curvedPoint)
 
-  private def size = include(AttributeParser.size)
+  private def size = include(GeoModelAttributeParser.size)
 
-  private def align = include(AttributeParser.align)
+  private def align = include(GeoModelAttributeParser.align)
 
-  private def identifier = include(AttributeParser.identifier)
+  private def identifier = include(GeoModelAttributeParser.identifier)
 
-  private def multiline = include(AttributeParser.multiline)
+  private def multiline = include(GeoModelAttributeParser.multiline)
 
-  private def editable = include(AttributeParser.editable)
+  private def editable = include(GeoModelAttributeParser.editable)
 
-  private def foreach = include(AttributeParser.foreach)
+  private def foreach = include(GeoModelAttributeParser.foreach)
 
-  private def curve = include(AttributeParser.curve)
+  private def curve = include(GeoModelAttributeParser.curve)
 }

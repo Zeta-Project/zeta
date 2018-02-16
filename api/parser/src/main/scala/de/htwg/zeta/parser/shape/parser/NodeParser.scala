@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.shape.parsetree.Attributes.Attribute
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.{Collector, UniteParsers, UnorderedParser}
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
@@ -8,15 +8,21 @@ import de.htwg.zeta.server.generator.parser.CommonParserMethods
 object NodeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
   def parseNode: Parser[NodeParseTree] = {
-    val attributes = unordered(once(style), once(sizeMin), once(sizeMax), optional(resizing))
+    val attributes = unordered(once(sizeMin), once(sizeMax), optional(style), optional(resizing), arbitrary(anchor))
     ("node" ~> ident) ~ ("for" ~> ident) ~ leftBrace ~ edges ~ attributes ~ geoModels ~ rightBrace ^^ { parseResult =>
       val nodeName ~ conceptElement ~ _ ~ edges ~ attributes ~ geoModels ~ _ = parseResult
       val attrs = Collector(attributes)
-      NodeParseTree(nodeName,
+      NodeParseTree(
+        nodeName,
         conceptElement,
         edges,
-        attrs.*[Attribute],
-        geoModels)
+        attrs.![SizeMin],
+        attrs.![SizeMax],
+        attrs.?[NodeStyle],
+        attrs.?[Resizing],
+        attrs.*[Anchor],
+        geoModels
+      )
     }
   }
 
@@ -27,13 +33,15 @@ object NodeParser extends CommonParserMethods with UniteParsers with UnorderedPa
     }
   }
 
-  private def resizing = include(AttributeParser.resizing)
+  private def resizing = include(NodeAttributeParser.resizing)
 
-  private def style = include(AttributeParser.style)
+  private def style = include(NodeAttributeParser.style)
 
-  private def sizeMin = include(AttributeParser.sizeMin)
+  private def sizeMin = include(NodeAttributeParser.sizeMin)
 
-  private def sizeMax = include(AttributeParser.sizeMax)
+  private def sizeMax = include(NodeAttributeParser.sizeMax)
+
+  private def anchor = include(NodeAttributeParser.anchor)
 
   private def geoModels = include(GeoModelParser.geoModels)
 
