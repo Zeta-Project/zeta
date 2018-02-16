@@ -46,6 +46,8 @@ trait UnorderedParser extends Parsers {
 
   def once[A](parser: Parser[A]): ParseConf[A] = exact(1, parser)
 
+  def arbitrary[A](parser: Parser[A]): ParseConf[A] = min(0, parser)
+
 
   private def checkParsersUnique(parsers: List[Parser[_]]): Unit = {
     parsers.diff(parsers.distinct) match {
