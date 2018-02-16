@@ -2,7 +2,7 @@ package de.htwg.zeta.parser.shape.parser
 
 import de.htwg.zeta.parser.shape.parsetree.Attributes.Attribute
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
-import de.htwg.zeta.parser.{UniteParsers, UnorderedParser}
+import de.htwg.zeta.parser.{Collector, UniteParsers, UnorderedParser}
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object NodeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
@@ -11,8 +11,12 @@ object NodeParser extends CommonParserMethods with UniteParsers with UnorderedPa
     val attributes = unordered(once(style), once(sizeMin), once(sizeMax), optional(resizing))
     ("node" ~> ident) ~ ("for" ~> ident) ~ leftBrace ~ edges ~ attributes ~ geoModels ~ rightBrace ^^ { parseResult =>
       val nodeName ~ conceptElement ~ _ ~ edges ~ attributes ~ geoModels ~ _ = parseResult
-      implicit val attributeList: List[Any] = attributes
-      NodeParseTree(nodeName, conceptElement, edges, *[Attribute], geoModels)
+      val attrs = Collector(attributes)
+      NodeParseTree(nodeName,
+        conceptElement,
+        edges,
+        attrs.*[Attribute],
+        geoModels)
     }
   }
 
