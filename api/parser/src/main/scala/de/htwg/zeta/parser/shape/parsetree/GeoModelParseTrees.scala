@@ -47,4 +47,8 @@ object GeoModelParseTrees {
                                 curve: Option[Curve],
                                 children: List[GeoModelParseTree]) extends GeoModelParseTree(style) with Children
 
+  case class HorizontalLayoutParseTree(override val style: Option[Style], children: List[GeoModelParseTree]) extends GeoModelParseTree(style) with Children
+
+  case class VerticalLayoutParseTree(override val style: Option[Style], children: List[GeoModelParseTree]) extends GeoModelParseTree(style) with Children
+
 }

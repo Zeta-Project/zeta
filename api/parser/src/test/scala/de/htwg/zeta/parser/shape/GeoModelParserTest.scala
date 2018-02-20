@@ -143,6 +143,80 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           )
         )
       }
+
+      "a horizontalLayout" in {
+        val horizontalLayout =
+          """
+            |horizontalLayout {
+            |  rectangle {
+            |    position(x: 5, y: 10)
+            |    size(width: 10, height: 20)
+            |  }
+            |  rectangle {
+            |    position(x: 15, y: 20)
+            |    size(width: 20, height: 40)
+            |  }
+            |}
+          """.stripMargin
+        val result = parseGeoModel(horizontalLayout)
+        result.successful shouldBe true
+        result.get shouldBe HorizontalLayoutParseTree(
+          style = None,
+          List(
+            RectangleParseTree(
+              style = None,
+              Position(5, 10),
+              Size(10, 20),
+              curve = None,
+              children = Nil
+            ),
+            RectangleParseTree(
+              style = None,
+              Position(15, 20),
+              Size(20, 40),
+              curve = None,
+              children = Nil
+            )
+          )
+        )
+      }
+
+      "a verticalLayout" in {
+        val verticalLayout =
+          """
+            |verticalLayout {
+            |  rectangle {
+            |    position(x: 5, y: 10)
+            |    size(width: 10, height: 20)
+            |  }
+            |  rectangle {
+            |    position(x: 15, y: 20)
+            |    size(width: 20, height: 40)
+            |  }
+            |}
+          """.stripMargin
+        val result = parseGeoModel(verticalLayout)
+        result.successful shouldBe true
+        result.get shouldBe VerticalLayoutParseTree(
+          style = None,
+          List(
+            RectangleParseTree(
+              style = None,
+              Position(5, 10),
+              Size(10, 20),
+              curve = None,
+              children = Nil
+            ),
+            RectangleParseTree(
+              style = None,
+              Position(15, 20),
+              Size(20, 40),
+              curve = None,
+              children = Nil
+            )
+          )
+        )
+      }
     }
   }
 
