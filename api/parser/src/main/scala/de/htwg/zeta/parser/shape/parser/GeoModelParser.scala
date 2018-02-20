@@ -9,7 +9,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
 
   def geoModels: Parser[List[GeoModelParseTree]] = rep(geoModel)
 
-  def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon | rectangle
+  def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon | rectangle | horizontalLayout | verticalLayout
 
   private def ellipse: Parser[EllipseParseTree] = {
     val attributes = unordered(optional(style), once(position), once(size))
@@ -101,6 +101,22 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
         geoModels
       )
     }
+  }
+
+  private def horizontalLayout: Parser[HorizontalLayoutParseTree] = {
+    parseLayout("horizontalLayout").map {
+      case style ~ geoModels => HorizontalLayoutParseTree(style, geoModels)
+    }
+  }
+
+  private def verticalLayout: Parser[VerticalLayoutParseTree] = {
+    parseLayout("verticalLayout").map {
+      case style ~ geoModels => VerticalLayoutParseTree(style, geoModels)
+    }
+  }
+
+  private def parseLayout(layoutName: String) = {
+    layoutName ~> leftBrace ~> opt(style) ~ geoModels <~ rightBrace
   }
 
   private def style = include(GeoModelAttributeParser.style)

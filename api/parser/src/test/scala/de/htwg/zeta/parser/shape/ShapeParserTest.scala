@@ -2,7 +2,7 @@ package de.htwg.zeta.parser.shape
 
 import de.htwg.zeta.parser.shape.parser.ShapeParser
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{EllipseParseTree, LineParseTree, TextfieldParseTree}
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{EllipseParseTree, HorizontalLayoutParseTree, LineParseTree, TextfieldParseTree}
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import org.scalatest.{FreeSpec, Inside, Matchers}
@@ -138,19 +138,23 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |    position(x: 3, y: 4)
             |    size(width: 10, height: 15)
             |
-            |    textfield {
-            |      identifier: ueberschrift
-            |      multiline: false
-            |      position(x: 3, y: 4)
-            |      size(width: 10, height: 15)
-            |      align(horizontal: middle, vertical: middle)
-            |    }
+            |    horizontalLayout {
             |
-            |    line {
-            |      point(x: 1, y: 1)
-            |      point(x: 5, y: 10)
+            |      textfield {
+            |        identifier: ueberschrift
+            |        multiline: false
+            |        position(x: 3, y: 4)
+            |        size(width: 10, height: 15)
+            |        align(horizontal: middle, vertical: middle)
+            |      }
+            |
+            |      line {
+            |        point(x: 1, y: 1)
+            |        point(x: 5, y: 10)
+            |      }
             |    }
             |  }
+            |
             |}
           """.stripMargin
         val result = ShapeParser.parseShapes(fullNodeExample)
@@ -176,21 +180,26 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
               Position(3, 4),
               Size(10, 15),
               List(
-                TextfieldParseTree(
+                HorizontalLayoutParseTree(
                   style = None,
-                  Identifier("ueberschrift"),
-                  Multiline(false),
-                  Position(3, 4),
-                  Size(10, 15),
-                  Align(
-                    HorizontalAlignment.middle,
-                    VerticalAlignment.middle
+                  List(
+                    TextfieldParseTree(
+                      style = None,
+                      Identifier("ueberschrift"),
+                      Multiline(false),
+                      Position(3, 4),
+                      Size(10, 15),
+                      Align(
+                        HorizontalAlignment.middle,
+                        VerticalAlignment.middle
+                      )
+                    ),
+                    LineParseTree(
+                      style = None,
+                      Point(1, 1),
+                      Point(5, 10)
+                    )
                   )
-                ),
-                LineParseTree(
-                  style = None,
-                  Point(1, 1),
-                  Point(5, 10)
                 )
               )
             )
