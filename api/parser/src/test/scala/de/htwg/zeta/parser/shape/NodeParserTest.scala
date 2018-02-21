@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.shape
 
-import de.htwg.zeta.parser.shape.parser.ShapeParser
+import de.htwg.zeta.parser.shape.parser.NodeParser
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{EllipseParseTree, HorizontalLayoutParseTree, LineParseTree, TextfieldParseTree}
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
@@ -8,19 +8,15 @@ import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import org.scalatest.{FreeSpec, Inside, Matchers}
 
 //noinspection ScalaStyle
-class ShapeParserTest extends FreeSpec with Matchers with Inside {
+class NodeParserTest extends FreeSpec with Matchers with Inside {
 
-  "A shape parser will" - {
+  private def parse(input: String) = {
+    NodeParser.parse(NodeParser.node, input)
+  }
+
+  "A node parser will" - {
 
     "succeed in parsing" - {
-
-      "an empty string" in {
-        val noShapes = ""
-        val result = ShapeParser.parseShapes(noShapes)
-        result.successful shouldBe true
-        val shapes = result.get
-        shapes shouldBe empty
-      }
 
       "a node with edges" in {
         val nodeWithEdges =
@@ -38,9 +34,9 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |  sizeMax(width: 40, height: 80)
             |}
           """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithEdges)
+        val result = parse(nodeWithEdges)
         result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
+        val node = result.get
         node.edges shouldBe List("Edge0", "Edge1", "Edge2")
       }
 
@@ -55,9 +51,9 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |  anchor(predefined: corner)
             |}
           """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithAnchors)
+        val result = parse(nodeWithAnchors)
         result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
+        val node = result.get
         node.anchors shouldBe List(
           AbsoluteAnchor(1, 1),
           RelativeAnchor(5, 20),
@@ -74,9 +70,9 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |  sizeMax(width: 40, height: 80)
             |}
           """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithAttributes)
+        val result = parse(nodeWithAttributes)
         result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
+        val node = result.get
         node shouldBe NodeParseTree(
           "MyNode",
           "SomeConceptClass",
@@ -99,9 +95,9 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |  style: MyStyle
             |}
           """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithUnorderedAttributes)
+        val result = parse(nodeWithUnorderedAttributes)
         result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
+        val node = result.get
         node shouldBe NodeParseTree(
           "MyNode",
           "SomeConceptClass",
@@ -157,10 +153,9 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |
             |}
           """.stripMargin
-        val result = ShapeParser.parseShapes(fullNodeExample)
+        val result = parse(fullNodeExample)
         result.successful shouldBe true
-        val node = result.get.head.asInstanceOf[NodeParseTree]
-
+        val node = result.get
         node shouldBe NodeParseTree(
           "MyNode",
           "SomeConceptClass",
@@ -176,7 +171,7 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
           ),
           List(
             EllipseParseTree(
-              Some(de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style("BlackWhiteStyle")),
+              Some(Style("BlackWhiteStyle")),
               Position(3, 4),
               Size(10, 15),
               List(
@@ -220,7 +215,7 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |   minSize(width: -20, 20)
             | }
           """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithNegativeSize)
+        val result = parse(nodeWithNegativeSize)
         result.successful shouldBe false
       }
 
@@ -230,13 +225,13 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
             |node MyNode for SomeConceptClass {
             |}
           """.stripMargin
-        val result = ShapeParser.parseShapes(nodeWithoutAttributes)
+        val result = parse(nodeWithoutAttributes)
         result.successful shouldBe false
       }
 
       "an invalid input" in {
         val notANode = "bla bla"
-        val result = ShapeParser.parseShapes(notANode)
+        val result = parse(notANode)
         result.successful shouldBe false
       }
     }
