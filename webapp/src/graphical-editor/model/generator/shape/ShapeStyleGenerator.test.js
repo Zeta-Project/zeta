@@ -1,5 +1,5 @@
-import ShapeStyleGenerator from './StyleGenerator';
-import StyleGenerator from '../StyleGenerator';
+import ShapeStyleGenerator from './ShapeStyleGenerator';
+import StyleGenerator from '../style/StyleGenerator';
 
 describe('getShapeStyle', () => {
     let style;

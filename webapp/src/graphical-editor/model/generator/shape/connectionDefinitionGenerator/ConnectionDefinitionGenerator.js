@@ -1,6 +1,6 @@
-import PlacingDefinitionGenerator from './connectionDefinitionGenerator/PlacingDefinitionGenerator'
-import createLabelList from './connectionDefinitionGenerator/LabelDefinitionGenerator'
-import SvgDataPathGenerator from './connectionDefinitionGenerator/SvgDataPathGenerator'
+import PlacingDefinitionGenerator from './PlacingDefinitionGenerator'
+import createLabelList from './LabelDefinitionGenerator'
+import SvgDataPathGenerator from './SvgDataPathGenerator'
 
 class ConnectionDefinitionGenerator { 
 
