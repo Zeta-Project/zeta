@@ -122,7 +122,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   }
 
   private def roundedRectangle: Parser[RoundedRectangleParseTree] = {
-    val attributes = List(optional(style), once(position), once(size))
+    val attributes = List(optional(style), once(position), once(size), once(curve))
     parseGeoModel("roundedRectangle", attributes).map {
       case (attrs, geoModels) =>
         RoundedRectangleParseTree(
