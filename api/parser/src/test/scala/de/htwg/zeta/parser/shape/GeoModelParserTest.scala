@@ -16,6 +16,26 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
 
     "succeed in parsing" - {
 
+      "a roundedRectangle" in {
+        val roundedRectangle =
+          """
+            |roundedRectangle {
+            |  curve(width: 10, height: 1)
+            |  position(x: 0, y: 0)
+            |  size(width: 100, height: 20)
+            |}
+          """.stripMargin
+        val result = parseGeoModel(roundedRectangle)
+        result.successful shouldBe true
+        result.get shouldBe RoundedRectangleParseTree(
+          style = None,
+          Position(0, 0),
+          Size(100, 20),
+          Curve(10, 1),
+          children = Nil
+        )
+      }
+
       "a statictext" in {
         val statictext =
           """
