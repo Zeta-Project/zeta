@@ -7,7 +7,7 @@ import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object NodeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
-  def parseNode: Parser[NodeParseTree] = {
+  def node: Parser[NodeParseTree] = {
     val attributes = unordered(once(sizeMin), once(sizeMax), optional(style), optional(resizing), arbitrary(anchor))
     ("node" ~> ident) ~ ("for" ~> ident) ~ leftBrace ~ edges ~ attributes ~ geoModels ~ rightBrace ^^ { parseResult =>
       val nodeName ~ conceptElement ~ _ ~ edges ~ attributes ~ geoModels ~ _ = parseResult

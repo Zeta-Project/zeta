@@ -45,6 +45,8 @@ object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedPa
 
   private def geoModel = include(GeoModelParser.geoModel)
 
+  // Concept connections can be addressed with java / scala object syntax
+  // e.g.: Knoten.hatKind
   private def conceptConnection = "\\w+(.\\w+)*".r
 
 }

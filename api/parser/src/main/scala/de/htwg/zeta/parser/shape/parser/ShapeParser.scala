@@ -6,12 +6,14 @@ import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object ShapeParser extends CommonParserMethods with UniteParsers {
 
-  private def node = include(NodeParser.parseNode)
-
   def parseShapes(input: String): ParseResult[List[ShapeParseTree]] = {
     parseAll(shapes, input)
   }
 
-  private def shapes = rep(node)
+  private def shapes = rep(node | edge)
+
+  private def node = include(NodeParser.node)
+
+  private def edge = include(EdgeParser.edge)
 
 }
