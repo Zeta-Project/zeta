@@ -158,6 +158,16 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
       }
 
     }
+
+    "fail in parsing" - {
+
+      "an invalid diagram" in {
+        val invalid = "bli bla blub"
+        val result = DiagramParser.parseDiagrams(invalid)
+        result.successful shouldBe false
+      }
+
+    }
   }
 
 }
