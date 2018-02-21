@@ -9,7 +9,7 @@
     "watch": "gulp watch",
     "build": "NODE_ENV=production webpack",
     "test": "npm run test:js",
-    "test:js": "jest",
+    "test:js": "jest --coverage",
     "test:polymer": "polymer test"
   },
   "dependencies": {
