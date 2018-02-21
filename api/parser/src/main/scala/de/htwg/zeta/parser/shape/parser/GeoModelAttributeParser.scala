@@ -1,28 +1,18 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.UniteParsers
+import de.htwg.zeta.parser.{EnumParser, UniteParsers}
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
   def align: Parser[Align] = {
+    val horizontal = include(EnumParser.parseEnum(HorizontalAlignment))
+    val vertical = include(EnumParser.parseEnum(VerticalAlignment))
     ("align" ~> leftParenthesis ~> "horizontal" ~> colon ~> horizontal <~ comma) ~
       ("vertical" ~> colon ~> vertical <~ rightParenthesis) ^^ { result =>
       val horizontal ~ vertical = result
       Align(horizontal, vertical)
-    }
-  }
-
-  private def horizontal = {
-    ("left" | "middle" | "right") ^^ {
-      HorizontalAlignment.withName
-    }
-  }
-
-  private def vertical = {
-    ("top" | "middle" | "bottom") ^^ {
-      VerticalAlignment.withName
     }
   }
 
@@ -59,7 +49,6 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
       (first, second)
     }
   }
-
 
   def editable: Parser[Editable] = {
     "editable" ~> colon ~> argument_boolean ^^ {
