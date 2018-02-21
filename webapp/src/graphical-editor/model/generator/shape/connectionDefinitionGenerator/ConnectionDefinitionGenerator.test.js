@@ -1,5 +1,5 @@
 import ConnectionDefinitionGenerator from './ConnectionDefinitionGenerator';
-import StyleGenerator from './StyleGenerator'
+import StyleGenerator from '../../style/StyleGenerator'
 
 function create(connections) {
   const defaultStyle = [
