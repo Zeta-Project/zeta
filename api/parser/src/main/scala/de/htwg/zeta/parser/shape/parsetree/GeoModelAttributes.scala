@@ -26,8 +26,6 @@ object GeoModelAttributes {
 
   case class Point(x: Int, y: Int) extends GeoModelAttribute
 
-  case class CurvedPoint(x: Int, y: Int, curveBefore: Int, curveAfter: Int) extends GeoModelAttribute
-
   case class Size(width: Int, height: Int) extends GeoModelAttribute
 
   case class Style(identifier: String) extends GeoModelAttribute

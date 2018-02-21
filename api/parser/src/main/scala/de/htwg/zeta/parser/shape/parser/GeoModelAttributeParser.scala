@@ -52,16 +52,6 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
   def curve: Parser[Curve] = parseNaturalNumberTuple("curve", "width", "height").map(Curve.tupled)
 
-  def curvedPoint: Parser[CurvedPoint] = {
-    ("point" ~> leftParenthesis ~> "x" ~> colon ~> natural_number <~ comma) ~
-      ("y" ~> colon ~> natural_number <~ comma) ~
-      ("curveBefore" ~> colon ~> natural_number <~ comma) ~
-      ("curveAfter" ~> colon ~> natural_number <~ rightParenthesis) ^^ { result =>
-      val x ~ y ~ curvedBefore ~ curvedAfter = result
-      CurvedPoint(x, y, curvedBefore, curvedAfter)
-    }
-  }
-
   private def parseNaturalNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
     (name ~> leftParenthesis ~> arg1 ~> colon ~> natural_number <~ comma) ~
       (arg2 ~> colon ~> natural_number <~ rightParenthesis) ^^ { tuple =>
