@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.UniteParsers
+import de.htwg.zeta.parser.{EnumParser, UniteParsers}
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
@@ -63,10 +63,9 @@ object NodeAttributeParser extends CommonParserMethods with UniteParsers {
   }
 
   def predefinedAnchor: Parser[PredefinedAnchor] = {
-    val anchorPosition = "corner" | "center" | "edges"
-    ("predefined" ~> colon ~> anchorPosition) ^^ { parseResult =>
-      val anchorPosition = parseResult
-      PredefinedAnchor(AnchorPosition.withName(anchorPosition))
+    val anchorPosition = include(EnumParser.parseEnum(AnchorPosition))
+    ("predefined" ~> colon ~> anchorPosition) ^^ {
+      PredefinedAnchor
     }
   }
 
