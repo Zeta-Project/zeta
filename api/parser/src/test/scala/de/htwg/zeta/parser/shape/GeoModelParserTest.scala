@@ -16,6 +16,26 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
 
     "succeed in parsing" - {
 
+      "a statictext" in {
+        val statictext =
+          """
+            |statictext {
+            |  text: "Hey Zeta, whats up?"
+            |  position(x: 0, y: 0)
+            |  size(width: 100, height: 20)
+            |}
+          """.stripMargin
+        val result = parseGeoModel(statictext)
+        result.successful shouldBe true
+        result.get shouldBe StatictextParseTree(
+          style = None,
+          Size(100, 20),
+          Position(0, 0),
+          text = Text("Hey Zeta, whats up?"),
+          children = Nil
+        )
+      }
+
       "a line" in {
         val line =
           """
@@ -30,7 +50,8 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
         result.get shouldBe LineParseTree(
           Some(Style("BoldLineStyle")),
           Point(1, 2),
-          Point(3, 4)
+          Point(3, 4),
+          children = Nil
         )
       }
 
@@ -56,7 +77,8 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
             Point(5, 6),
             Point(7, 8),
             Point(9, 0),
-          )
+          ),
+          children = Nil
         )
       }
 
@@ -65,9 +87,9 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           """
             |polygon {
             |  style: PolygonStyle
-            |  point(x: 1, y: 2, curveBefore: 1, curveAfter: 1)
-            |  point(x: 3, y: 4, curveBefore: 1, curveAfter: 1)
-            |  point(x: 5, y: 6, curveBefore: 1, curveAfter: 1)
+            |  point(x: 1, y: 2)
+            |  point(x: 3, y: 4)
+            |  point(x: 5, y: 6)
             |}
           """.stripMargin
         val result = parseGeoModel(polygon)
@@ -75,10 +97,11 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
         result.get shouldBe PolygonParseTree(
           Some(Style("PolygonStyle")),
           List(
-            CurvedPoint(1, 2, 1, 1),
-            CurvedPoint(3, 4, 1, 1),
-            CurvedPoint(5, 6, 1, 1)
-          )
+            Point(1, 2),
+            Point(3, 4),
+            Point(5, 6)
+          ),
+          children = Nil
         )
       }
 
@@ -117,13 +140,12 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           """
             |rectangle {
             |  style: RectStyle
-            |  position(x:3, y:4)
+            |  position(x: 3, y: 4)
             |  size(width:10, height:15)
-            |  curve(width:3, height:10)
             |
             |  line {
-            |    point(x:1, y:4)
-            |    point(x:3, y:5)
+            |    point(x: 1, y: 4)
+            |    point(x: 3, y: 5)
             |  }
             |}
           """.stripMargin
@@ -131,14 +153,14 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
         result.successful shouldBe true
         result.get shouldBe RectangleParseTree(
           Some(Style("RectStyle")),
-          Position(3,4),
+          Position(3, 4),
           Size(10, 15),
-          Some(Curve(3, 10)),
           List(
             LineParseTree(
               style = None,
               Point(1, 4),
-              Point(3, 5)
+              Point(3, 5),
+              children = Nil
             )
           )
         )
@@ -167,14 +189,12 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
               style = None,
               Position(5, 10),
               Size(10, 20),
-              curve = None,
               children = Nil
             ),
             RectangleParseTree(
               style = None,
               Position(15, 20),
               Size(20, 40),
-              curve = None,
               children = Nil
             )
           )
@@ -204,14 +224,12 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
               style = None,
               Position(5, 10),
               Size(10, 20),
-              curve = None,
               children = Nil
             ),
             RectangleParseTree(
               style = None,
               Position(15, 20),
               Size(20, 40),
-              curve = None,
               children = Nil
             )
           )

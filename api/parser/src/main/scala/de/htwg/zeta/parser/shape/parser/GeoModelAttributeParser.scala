@@ -84,4 +84,11 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
       For(each, as)
     }
   }
+
+  def text: Parser[Text] = {
+    "text" ~> colon ~> stringLiteral ^^ { string =>
+      // string starts and ends with quotation marks -> drop them
+      Text(string.drop(1).dropRight(1))
+    }
+  }
 }

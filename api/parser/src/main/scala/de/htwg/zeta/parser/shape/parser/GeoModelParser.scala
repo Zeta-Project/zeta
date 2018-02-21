@@ -9,14 +9,19 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
 
   def geoModels: Parser[List[GeoModelParseTree]] = rep(geoModel)
 
-  def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon | rectangle | horizontalLayout | verticalLayout
+  def geoModel: Parser[GeoModelParseTree] = ellipse | textfield | repeatingBox | line | polyline | polygon |
+    rectangle | horizontalLayout | verticalLayout | statictext | roundedRectangle
+
+  private def parseGeoModel(name: String, attributes: List[ParseConf[GeoModelAttribute]]): Parser[(Collector, List[GeoModelParseTree])] = {
+    (name ~> leftBrace ~> unordered(attributes: _*) ~ geoModels <~ rightBrace).map {
+      case attrs ~ geoModels => (Collector(attrs), geoModels)
+    }
+  }
 
   private def ellipse: Parser[EllipseParseTree] = {
-    val attributes = unordered(optional(style), once(position), once(size))
-    "ellipse" ~> leftBrace ~> attributes ~ geoModels <~ rightBrace ^^ { parseResult =>
-      val attributes ~ geoModels = parseResult
-      val attrs = Collector(attributes)
-      EllipseParseTree(
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("ellipse", attributes).map {
+      case (attrs, geoModels) => EllipseParseTree(
         attrs.?[Style],
         attrs.![Position],
         attrs.![Size],
@@ -25,27 +30,39 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     }
   }
 
+  private def statictext: Parser[StatictextParseTree] = {
+    val attributes = List(optional(style), once(position), once(size), once(text))
+    parseGeoModel("statictext", attributes).map {
+      case (attrs, geoModels) => StatictextParseTree(
+        attrs.?[Style],
+        attrs.![Size],
+        attrs.![Position],
+        attrs.![Text],
+        geoModels
+      )
+    }
+  }
+
   private def textfield: Parser[TextfieldParseTree] = {
-    val attributes = unordered(optional(style), once(identifier), optional(multiline), once(position), once(size), optional(align))
-    "textfield" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
-      val attrs = Collector(parseResult)
-      TextfieldParseTree(
+    val attributes = List(optional(style), once(identifier), optional(multiline), once(position), once(size), optional(align))
+    parseGeoModel("textfield", attributes).map {
+      case (attrs, geoModels) => TextfieldParseTree(
         attrs.?[Style],
         attrs.![Identifier],
-        attrs.?[Multiline].getOrElse(Multiline(false)),
         attrs.![Position],
         attrs.![Size],
-        attrs.?[Align].getOrElse(Align(HorizontalAlignment.middle, VerticalAlignment.middle))
+        attrs.?[Multiline],
+        attrs.?[Align],
+        attrs.?[Editable],
+        geoModels
       )
     }
   }
 
   private def repeatingBox: Parser[RepeatingBoxParseTree] = {
-    val attributes = unordered(once(editable), once(foreach))
-    "repeatingBox" ~> leftBrace ~> attributes ~ rep1(geoModel) <~ rightBrace ^^ { parseResult =>
-      val attributes ~ geoModels = parseResult
-      val attrs = Collector(attributes)
-      RepeatingBoxParseTree(
+    val attributes = List(once(editable), once(foreach))
+    parseGeoModel("repeatingBox", attributes).map {
+      case (attrs, geoModels) => RepeatingBoxParseTree(
         attrs.![Editable],
         attrs.![For],
         geoModels
@@ -54,78 +71,99 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   }
 
   private def line: Parser[LineParseTree] = {
-    val attributes = unordered(optional(style), exact(2, point))
-    "line" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
-      val attrs = Collector(parseResult)
-      val from :: to :: Nil = attrs.*[Point]
-      LineParseTree(
-        attrs.?[Style],
-        from,
-        to
-      )
+    val attributes = List(optional(style), exact(2, point))
+    parseGeoModel("line", attributes).map {
+      case (attrs, geoModels) =>
+        val startPoint :: endPoint :: Nil = attrs.*[Point]
+        LineParseTree(
+          attrs.?[Style],
+          startPoint,
+          endPoint,
+          geoModels
+        )
     }
   }
 
   private def polyline: Parser[PolylineParseTree] = {
-    val attributes = unordered(optional(style), min(2, point))
-    "polyline" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
-      val attrs = Collector(parseResult)
-      PolylineParseTree(
-        attrs.?[Style],
-        attrs.*[Point]
-      )
+    val attributes = List(optional(style), min(2, point))
+    parseGeoModel("polyline", attributes).map {
+      case (attrs, geoModels) =>
+        PolylineParseTree(
+          attrs.?[Style],
+          attrs.*[Point],
+          geoModels
+        )
     }
   }
 
   private def polygon: Parser[PolygonParseTree] = {
-    val attributes = unordered(optional(style), min(2, curvedPoint))
-    "polygon" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
-      val attrs = Collector(parseResult)
-      PolygonParseTree(
-        attrs.?[Style],
-        attrs.*[CurvedPoint]
-      )
+    val attributes = List(optional(style), min(2, point))
+    parseGeoModel("polygon", attributes).map {
+      case (attrs, geoModels) =>
+        PolygonParseTree(
+          attrs.?[Style],
+          attrs.*[Point],
+          geoModels
+        )
     }
   }
 
   private def rectangle: Parser[RectangleParseTree] = {
-    val attributes = unordered(optional(style), once(position), once(size), optional(curve))
-    "rectangle" ~> leftBrace ~> attributes ~ geoModels <~ rightBrace ^^ { parseResult =>
-      val attributes ~ geoModels = parseResult
-      val attrs = Collector(attributes)
-      RectangleParseTree(
-        attrs.?[Style],
-        attrs.![Position],
-        attrs.![Size],
-        attrs.?[Curve],
-        geoModels
-      )
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("rectangle", attributes).map {
+      case (attrs, geoModels) =>
+        RectangleParseTree(
+          attrs.?[Style],
+          attrs.![Position],
+          attrs.![Size],
+          geoModels
+        )
+    }
+  }
+
+  private def roundedRectangle: Parser[RoundedRectangleParseTree] = {
+    val attributes = List(optional(style), once(position), once(size))
+    parseGeoModel("roundedRectangle", attributes).map {
+      case (attrs, geoModels) =>
+        RoundedRectangleParseTree(
+          attrs.?[Style],
+          attrs.![Position],
+          attrs.![Size],
+          attrs.![Curve],
+          geoModels
+        )
     }
   }
 
   private def horizontalLayout: Parser[HorizontalLayoutParseTree] = {
-    parseLayout("horizontalLayout").map {
-      case style ~ geoModels => HorizontalLayoutParseTree(style, geoModels)
+    val attributes = List(optional(style))
+    parseGeoModel("horizontalLayout", attributes).map {
+      case (attrs, geoModels) =>
+        HorizontalLayoutParseTree(
+          attrs.?[Style],
+          geoModels
+        )
     }
   }
 
   private def verticalLayout: Parser[VerticalLayoutParseTree] = {
-    parseLayout("verticalLayout").map {
-      case style ~ geoModels => VerticalLayoutParseTree(style, geoModels)
+    val attributes = List(optional(style))
+    parseGeoModel("verticalLayout", attributes).map {
+      case (attrs, geoModels) =>
+        VerticalLayoutParseTree(
+          attrs.?[Style],
+          geoModels
+        )
     }
   }
 
-  private def parseLayout(layoutName: String) = {
-    layoutName ~> leftBrace ~> opt(style) ~ geoModels <~ rightBrace
-  }
+  private def text = include(GeoModelAttributeParser.text)
 
   private def style = include(GeoModelAttributeParser.style)
 
   private def position = include(GeoModelAttributeParser.position)
 
   private def point = include(GeoModelAttributeParser.point)
-
-  private def curvedPoint = include(GeoModelAttributeParser.curvedPoint)
 
   private def size = include(GeoModelAttributeParser.size)
 

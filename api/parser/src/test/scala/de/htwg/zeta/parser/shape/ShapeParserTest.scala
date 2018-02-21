@@ -186,18 +186,21 @@ class ShapeParserTest extends FreeSpec with Matchers with Inside {
                     TextfieldParseTree(
                       style = None,
                       Identifier("ueberschrift"),
-                      Multiline(false),
                       Position(3, 4),
                       Size(10, 15),
-                      Align(
+                      multiline = Some(Multiline(false)),
+                      Some(Align(
                         HorizontalAlignment.middle,
                         VerticalAlignment.middle
-                      )
+                      )),
+                      editable = None,
+                      children = Nil
                     ),
                     LineParseTree(
                       style = None,
                       Point(1, 1),
-                      Point(5, 10)
+                      Point(5, 10),
+                      children = Nil
                     )
                   )
                 )

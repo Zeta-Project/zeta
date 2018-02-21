@@ -40,5 +40,7 @@ object GeoModelAttributes {
 
   case class Editable(editable: Boolean) extends GeoModelAttribute
 
+  case class Text(text: String) extends GeoModelAttribute
+
 }
 
