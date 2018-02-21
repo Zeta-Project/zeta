@@ -1,6 +1,5 @@
 package de.htwg.zeta.parser
 
-import scala.reflect.ClassTag
 import scala.util.parsing.combinator.Parsers
 
 trait UnorderedParser extends Parsers {
