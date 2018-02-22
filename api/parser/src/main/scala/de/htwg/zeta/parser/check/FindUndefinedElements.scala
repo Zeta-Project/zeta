@@ -7,9 +7,8 @@ import de.htwg.zeta.parser.check.Check.Id
   *
   * @param toId                    Function which returns the id for a given element.
   * @param getReferencedElementIds Function which returns a list of referenced element ids for a given element.
-  * @tparam T Type of the elements which will be checked.
   */
-class FindUndefinedElements[T](toId: T => Id, getReferencedElementIds: T => List[Id]) extends Check[T] {
+class FindUndefinedElements(toId: PartialFunction[Any, Id], getReferencedElementIds: PartialFunction[Any, List[Id]]) extends Check[Any] {
 
   /**
     * Checks each element if it references an undefined element.
@@ -17,12 +16,20 @@ class FindUndefinedElements[T](toId: T => Id, getReferencedElementIds: T => List
     * @param elements List of elements which will be checked for references which are undefined.
     * @return A list of referenced element ids which are referenced but never undefined.
     */
-  override def apply(elements: List[T]): List[Id] = {
-    val definedElementIds = elements.map(toId).toSet
-    elements.flatMap { element =>
-      val referencedIds = getReferencedElementIds(element).toSet
-      val undefinedElementIds = referencedIds.diff(definedElementIds)
-      undefinedElementIds
+  override def apply(elements: List[Any]): List[Id] = {
+
+    val knownIds = elements.collect {
+      case elem: Any if toId.isDefinedAt(elem) => toId(elem)
+    }.toSet
+
+    val elementsToCheck = elements.collect {
+      case elem: Any if getReferencedElementIds.isDefinedAt(elem) => elem
+    }
+
+    elementsToCheck.flatMap { elem =>
+      val referencedIds = getReferencedElementIds(elem).toSet
+      val diff = referencedIds.diff(knownIds)
+      diff
     }.distinct
   }
 
