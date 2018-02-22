@@ -16,7 +16,16 @@ case class NodeParseTree(identifier: String,
                          style: Option[NodeStyle],
                          resizing: Option[Resizing],
                          anchors: List[Anchor],
-                         geoModels: List[GeoModelParseTree]) extends ShapeParseTree
+                         geoModels: List[GeoModelParseTree]) extends ShapeParseTree {
+
+  def allGeoModels: List[GeoModelParseTree] = {
+    geoModels.flatMap(allGeoModels)
+  }
+
+  private def allGeoModels(geoModelParseTree: GeoModelParseTree): List[GeoModelParseTree] = {
+    geoModelParseTree +: geoModelParseTree.children.flatMap(allGeoModels)
+  }
+}
 
 case class EdgeParseTree(identifier: String,
                          conceptConnection: String,
