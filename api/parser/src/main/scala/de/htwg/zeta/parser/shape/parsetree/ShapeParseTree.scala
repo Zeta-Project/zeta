@@ -18,12 +18,13 @@ case class NodeParseTree(identifier: String,
                          anchors: List[Anchor],
                          geoModels: List[GeoModelParseTree]) extends ShapeParseTree {
 
+  // retrieve all geo models and child geo models recursive
   def allGeoModels: List[GeoModelParseTree] = {
     geoModels.flatMap(allGeoModels)
   }
 
-  private def allGeoModels(geoModelParseTree: GeoModelParseTree): List[GeoModelParseTree] = {
-    geoModelParseTree +: geoModelParseTree.children.flatMap(allGeoModels)
+  private def allGeoModels(geoModel: GeoModelParseTree): List[GeoModelParseTree] = {
+    geoModel +: geoModel.children.flatMap(allGeoModels)
   }
 }
 

@@ -135,7 +135,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val concept = Concept.empty
         val result = ShapeParseTreeTransformer.transformShapes(shapeParseTrees, styles, concept)
         result shouldBe Failure(
-          List("Node 'MyNode' references undefined concept class 'MyConceptClass'")
+          List("Concept class 'MyConceptClass' for node 'MyNode' not found!")
         )
       }
 
@@ -145,7 +145,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transformShapes(shapeParseTrees, styles, concept)
         result shouldBe Failure(
-          List("The following attributes of class 'MyConceptClass' are referenced but not defined: noSuchAttribute")
+          List("Textfield identifier 'noSuchAttribute' not found!")
         )
       }
 
