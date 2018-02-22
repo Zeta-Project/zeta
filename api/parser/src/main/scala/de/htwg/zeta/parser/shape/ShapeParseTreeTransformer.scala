@@ -1,6 +1,7 @@
 package de.htwg.zeta.parser.shape
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Edge, Node}
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.FindDuplicates
@@ -8,6 +9,8 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.{EdgeParseTree, NodeParseTree, ShapeParseTree}
 import de.htwg.zeta.server.generator.model.style.Style
 
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scalaz.{Failure, Success, Validation}
 
 object ShapeParseTreeTransformer {
@@ -103,9 +106,7 @@ object ShapeParseTreeTransformer {
   }
 
   // check if there are concept elements referenced which are not defined
-  private def checkForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree],
-                                               concept: Concept): Option[String] = {
-
+  private def checkForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept): Option[String] = {
     val nodes = shapeParseTrees.collect { case n: NodeParseTree => n }
     val nodeErrors = checkNodesForUndefinedConceptElements(nodes, concept)
 
@@ -118,42 +119,55 @@ object ShapeParseTreeTransformer {
     }
   }
 
-  // check if there are nodes which reference undefined concept elements
-  private def checkNodesForUndefinedConceptElements(nodeParseTrees: List[NodeParseTree],
-                                                    concept: Concept): List[String] = {
 
-    // collect all textfields which are not within a repeating box
-    def collectTextfields(geoModel: GeoModelParseTree): List[TextfieldParseTree] = {
-      geoModel match {
-        case tf: TextfieldParseTree => tf.children.flatMap(collectTextfields) :+ tf
-        case _: RepeatingBoxParseTree => Nil
-        case other: GeoModelParseTree => other.children.flatMap(collectTextfields)
-      }
+  private def checkNodesForUndefinedConceptElements(nodeParseTrees: List[NodeParseTree], concept: Concept): List[String] = {
+    //noinspection ScalaStyle -> makes code much more easier to read
+    var errors = new ListBuffer[String]()
+
+    // todo: prefixes must be a list
+    def check(geoModel: GeoModelParseTree, context: MClass, prefix: String = ""): Unit = geoModel match {
+      case textfield: TextfieldParseTree =>
+        // check if identifier is a valid attribute
+        val identifier = textfield.identifier.name.drop(prefix.length)
+        val attributeExists = context.attributes.map(_.name).contains(identifier)
+        if (!attributeExists) {
+          errors += s"Textfield identifier '$identifier' not found!"
+        }
+        textfield.children.foreach(child => check(child, context, prefix))
+      case repeatingBox: RepeatingBoxParseTree =>
+        // check if reference exists for 'each'-identifier
+        val variableName = repeatingBox.foreach.as
+        val referenceName = repeatingBox.foreach.each
+        val referenceExists = context.outputReferenceNames.contains(referenceName)
+        if (!referenceExists) {
+          errors += s"Concept class '${context.name}' has no reference named '$referenceName'!"
+        } else {
+          val reference = concept.references.find(_.name == referenceName)
+            .getOrElse(throw new Exception("Concept model is invalid!"))
+          val newContext = concept.classes.find(_.name == reference.targetClassName)
+            .getOrElse(throw new Exception("Concept model is invalid!"))
+          repeatingBox.children.foreach(child => check(child, newContext, prefix = s"$variableName."))
+        }
+      case other: GeoModelParseTree =>
+        // nothing to check, continue with children
+        other.children.foreach(child => check(child, context, prefix))
     }
 
-    val errors = nodeParseTrees.flatMap { node =>
-      val correspondingConceptClass = concept.classes.find(_.name == node.conceptClass)
-      correspondingConceptClass match {
+    for {node <- nodeParseTrees} {
+      val maybeClass = concept.classes.find(_.name == node.conceptClass)
+      maybeClass match {
         case None =>
-          Some(s"Node '${node.identifier}' references undefined concept class '${node.conceptClass}'")
-        case Some(conceptClass) =>
-          val textfields = node.geoModels.flatMap(collectTextfields)
-          val referencedAttributes = textfields.map(_.identifier.name).toSet
-          val definedAttributes = conceptClass.attributes.map(_.name).toSet
-          val undefinedAttributes = referencedAttributes.diff(definedAttributes).toList
-
-          undefinedAttributes match {
-            case Nil => None
-            case _ => Some(s"The following attributes of class '${node.conceptClass}' are referenced but not defined: ${undefinedAttributes.mkString(",")}")
-          }
+          errors += s"Concept class '${node.conceptClass}' for node '${node.identifier}' not found!"
+        case Some(context) =>
+          node.geoModels.foreach(geoModel => check(geoModel, context))
       }
     }
-    errors
+
+    errors.toList
   }
 
   // check if there are edges which reference undefined concept elements
-  private def checkEdgesForUndefinedConceptElements(nodeParseTrees: List[EdgeParseTree],
-                                                    concept: Concept): List[String] = {
+  private def checkEdgesForUndefinedConceptElements(nodeParseTrees: List[EdgeParseTree], concept: Concept): List[String] = {
     Nil
   }
 
