@@ -28,7 +28,7 @@ object GeoModelAttributes {
 
   case class Size(width: Int, height: Int) extends GeoModelAttribute
 
-  case class Style(identifier: String) extends GeoModelAttribute
+  case class Style(name: String) extends GeoModelAttribute
 
   case class Identifier(name: String) extends GeoModelAttribute
 
