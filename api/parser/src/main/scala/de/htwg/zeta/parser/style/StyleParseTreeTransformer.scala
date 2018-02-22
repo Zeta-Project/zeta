@@ -21,17 +21,23 @@ object StyleParseTreeTransformer {
   }
 
   private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] = {
-    val toId: StyleParseTree => Id = _.name
-    val getParentIds: StyleParseTree => List[Id] = _.parentStyles
+    val toId: PartialFunction[Any, Id] = {
+      case style: StyleParseTree => style.name
+    }
+    val getParentIds: PartialFunction[Any, List[Id]] = {
+      case style: StyleParseTree => style.parentStyles
+    }
+
     val toElement: Id => Option[StyleParseTree] = id => styleTrees.find(_.name == id)
 
-    val findDuplicates = new FindDuplicates[StyleParseTree](toId)
-    val findUndefinedParents = new FindUndefinedElements[StyleParseTree](toId, getParentIds)
-    val findGraphCycles = new FindGraphCycles[StyleParseTree](toId, toElement, getParentIds)
+    val findDuplicates = new FindDuplicates[StyleParseTree](_.name)
+    val findUndefinedParents = new FindUndefinedElements(toId, getParentIds)
+    val findGraphCycles = new FindGraphCycles[StyleParseTree](_.name, toElement, getParentIds)
 
     val checks = List(findDuplicates, findUndefinedParents, findGraphCycles)
     checks.flatMap(check => check(styleTrees))
   }
+
 
   def transform(styleParseTree: StyleParseTree): Style = {
 
