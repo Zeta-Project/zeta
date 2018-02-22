@@ -12,10 +12,10 @@ import de.htwg.zeta.parser.check.Check.Id
 class FindUndefinedElements[T](toId: T => Id, getReferencedElementIds: T => List[Id]) extends Check[T] {
 
   /**
-    * Checks each element if it is defined multiple times.
+    * Checks each element if it references an undefined element.
     *
-    * @param elements List of elements which will be checked for referenced but undefined parents.
-    * @return A list of referenced element ids which are undefined.
+    * @param elements List of elements which will be checked for references which are undefined.
+    * @return A list of referenced element ids which are referenced but never undefined.
     */
   override def apply(elements: List[T]): List[Id] = {
     val definedElementIds = elements.map(toId)
