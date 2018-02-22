@@ -4,7 +4,9 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.{Placing, Target}
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 
-sealed trait ShapeParseTree
+sealed trait ShapeParseTree {
+  val identifier: String
+}
 
 case class NodeParseTree(identifier: String,
                          conceptClass: String,
@@ -19,6 +21,6 @@ case class NodeParseTree(identifier: String,
 case class EdgeParseTree(identifier: String,
                          conceptConnection: String,
                          conceptTarget: Target,
-                         placing: List[Placing]) extends ShapeParseTree
+                         placings: List[Placing]) extends ShapeParseTree
 
 
