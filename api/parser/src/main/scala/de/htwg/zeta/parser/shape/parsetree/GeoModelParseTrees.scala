@@ -10,6 +10,10 @@ object GeoModelParseTrees {
     val children: List[GeoModelParseTree]
   }
 
+  trait HasIdentifier {
+    val identifier: Identifier
+  }
+
   case class EllipseParseTree(style: Option[Style],
                               position: Position,
                               size: Size,
@@ -22,7 +26,7 @@ object GeoModelParseTrees {
                                 multiline: Option[Multiline],
                                 align: Option[Align],
                                 editable: Option[Editable],
-                                children: List[GeoModelParseTree]) extends GeoModelParseTree
+                                children: List[GeoModelParseTree]) extends GeoModelParseTree with HasIdentifier
 
   case class StatictextParseTree(style: Option[Style],
                                  size: Size,
