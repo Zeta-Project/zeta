@@ -6,7 +6,7 @@ object NodeAttributes {
 
   trait NodeAttribute
 
-  case class NodeStyle(identifier: String) extends NodeAttribute
+  case class NodeStyle(name: String) extends NodeAttribute
 
   case class Resizing(horizontal: Boolean, vertical: Boolean, proportional: Boolean) extends NodeAttribute
 
