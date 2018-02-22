@@ -3,7 +3,7 @@ package de.htwg.zeta.parser.shape
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Edge, Node}
 import de.htwg.zeta.parser.check.Check.Id
-import de.htwg.zeta.parser.check.{FindDuplicates, FindUndefinedElements}
+import de.htwg.zeta.parser.check.FindDuplicates
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{GeoModelParseTree, RepeatingBoxParseTree, TextfieldParseTree}
 import de.htwg.zeta.parser.shape.parsetree.{EdgeParseTree, NodeParseTree, ShapeParseTree}
 import de.htwg.zeta.server.generator.model.style.Style
@@ -39,7 +39,7 @@ object ShapeParseTreeTransformer {
                              styles: List[Style],
                              concept: Concept): List[String] = {
     val maybeErrors = List(
-      checkForDuplicates(shapeParseTrees),
+      checkForDuplicateShapes(shapeParseTrees),
       checkForUndefinedEdges(shapeParseTrees),
       checkForUndefinedStyles(shapeParseTrees, styles),
       checkForUndefinedConceptElements(shapeParseTrees, concept)
@@ -50,7 +50,7 @@ object ShapeParseTreeTransformer {
   }
 
   // check if there are any shapes with the same identifier
-  private def checkForDuplicates(shapeParseTrees: List[ShapeParseTree]): Option[String] = {
+  private def checkForDuplicateShapes(shapeParseTrees: List[ShapeParseTree]): Option[String] = {
     val findDuplicates = new FindDuplicates[ShapeParseTree](_.identifier)
     findDuplicates(shapeParseTrees) match {
       case Nil =>
@@ -62,39 +62,42 @@ object ShapeParseTreeTransformer {
 
   // check if there are nodes which reference an edge which is not defined
   private def checkForUndefinedEdges(shapeParseTrees: List[ShapeParseTree]): Option[String] = {
-    val toId: (ShapeParseTree) => Id = _.identifier
-    val getReferencedElements: (ShapeParseTree) => List[Id] = {
+    val definedEdges = shapeParseTrees.collect {
+      case edge: EdgeParseTree => edge.identifier
+    }.toSet
+
+    val referencedEdges = shapeParseTrees.collect {
       case node: NodeParseTree => node.edges
-      case _ => Nil
-    }
-    val findUndefinedEdges = new FindUndefinedElements(toId, getReferencedElements)
-    findUndefinedEdges.apply(shapeParseTrees) match {
+    }.flatten.toSet
+
+    val undefinedEdges = referencedEdges.diff(definedEdges).toList
+    undefinedEdges match {
       case Nil =>
         None
-      case undefinedEdges: List[Id] =>
+      case _ =>
         Some(s"The following edges are referenced but not defined: ${undefinedEdges.mkString(",")}")
     }
   }
 
+
   // check if there are styles referenced which are not defined
   private def checkForUndefinedStyles(shapeParseTrees: List[ShapeParseTree],
                                       styles: List[Style]): Option[String] = {
-    val toId: (Object) => Id = {
-      case style: Style => style.name
-      case _ => ""
-    }
-    val getReferencedStyles: (Object) => List[Id] = {
+    val definedStyles = styles.map(_.name).toSet
+
+    val referencedStyles = shapeParseTrees.collect {
       case node: NodeParseTree =>
         node.allGeoModels.flatMap(_.style).map(_.name) ++ node.style.map(_.name).toList
       case edge: EdgeParseTree =>
         edge.placings.map(_.geoModel).flatMap(_.style).map(_.name)
-      case _ => Nil
-    }
-    val findUndefinedStyles = new FindUndefinedElements(toId, getReferencedStyles)
-    findUndefinedStyles.apply(shapeParseTrees ++ styles) match {
+    }.flatten.toSet
+
+    val undefinedStyles = referencedStyles.diff(definedStyles).toList
+
+    undefinedStyles match {
       case Nil =>
         None
-      case undefinedStyles: List[Id] =>
+      case _ =>
         Some(s"The following styles are referenced but not defined: ${undefinedStyles.mkString(",")}")
     }
   }
@@ -104,15 +107,14 @@ object ShapeParseTreeTransformer {
                                                concept: Concept): Option[String] = {
 
     val nodes = shapeParseTrees.collect { case n: NodeParseTree => n }
-    val edges = shapeParseTrees.collect { case e: EdgeParseTree => e }
-
     val nodeErrors = checkNodesForUndefinedConceptElements(nodes, concept)
-    val edgeErrors = checkEdgesForUndefinedConceptElements(edges, concept)
-    val errors = nodeErrors ++ edgeErrors
 
-    errors match {
+    val edges = shapeParseTrees.collect { case e: EdgeParseTree => e }
+    val edgeErrors = checkEdgesForUndefinedConceptElements(edges, concept)
+
+    nodeErrors ++ edgeErrors match {
       case Nil => None
-      case _ => Some(errors.mkString(",\n"))
+      case errors: List[String] => Some(errors.mkString(",\n"))
     }
   }
 
