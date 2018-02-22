@@ -62,13 +62,11 @@ object ShapeParseTreeTransformer {
 
   // check if there are nodes which reference an edge which is not defined
   private def checkForUndefinedEdges(shapeParseTrees: List[ShapeParseTree]): Option[String] = {
-    val toId: PartialFunction[Any, Id] = {
-      case edge: EdgeParseTree => edge.identifier
-    }
-    val getReferencedElements: PartialFunction[Any, List[Id]] = {
+    val toId: (ShapeParseTree) => Id = _.identifier
+    val getReferencedElements: (ShapeParseTree) => List[Id] = {
       case node: NodeParseTree => node.edges
+      case _ => Nil
     }
-
     val findUndefinedEdges = new FindUndefinedElements(toId, getReferencedElements)
     findUndefinedEdges.apply(shapeParseTrees) match {
       case Nil =>
@@ -78,27 +76,26 @@ object ShapeParseTreeTransformer {
     }
   }
 
-
   // check if there are styles referenced which are not defined
   private def checkForUndefinedStyles(shapeParseTrees: List[ShapeParseTree],
                                       styles: List[Style]): Option[String] = {
-    val toId: PartialFunction[Any, Id] = {
+    val toId: (Object) => Id = {
       case style: Style => style.name
+      case _ => ""
     }
-    val getReferencedStyles: PartialFunction[Any, List[Id]] = {
+    val getReferencedStyles: (Object) => List[Id] = {
       case node: NodeParseTree =>
         node.allGeoModels.flatMap(_.style).map(_.name) ++ node.style.map(_.name).toList
       case edge: EdgeParseTree =>
         edge.placings.map(_.geoModel).flatMap(_.style).map(_.name)
+      case _ => Nil
     }
     val findUndefinedStyles = new FindUndefinedElements(toId, getReferencedStyles)
     findUndefinedStyles.apply(shapeParseTrees ++ styles) match {
       case Nil =>
         None
       case undefinedStyles: List[Id] =>
-        Some(s"The following styles are referenced but not defined: ${
-          undefinedStyles.mkString(",")
-        }")
+        Some(s"The following styles are referenced but not defined: ${undefinedStyles.mkString(",")}")
     }
   }
 
@@ -106,12 +103,8 @@ object ShapeParseTreeTransformer {
   private def checkForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree],
                                                concept: Concept): Option[String] = {
 
-    val nodes = shapeParseTrees.collect {
-      case n: NodeParseTree => n
-    }
-    val edges = shapeParseTrees.collect {
-      case e: EdgeParseTree => e
-    }
+    val nodes = shapeParseTrees.collect { case n: NodeParseTree => n }
+    val edges = shapeParseTrees.collect { case e: EdgeParseTree => e }
 
     val nodeErrors = checkNodesForUndefinedConceptElements(nodes, concept)
     val edgeErrors = checkEdgesForUndefinedConceptElements(edges, concept)
@@ -136,31 +129,22 @@ object ShapeParseTreeTransformer {
       }
     }
 
-    val errors = nodeParseTrees.flatMap {
-      node =>
-        val correspondingConceptClass = concept.classes.find(_.name == node.conceptClass)
-        correspondingConceptClass match {
-          case None =>
-            Some(s"Node '${
-              node.identifier
-            }' references undefined concept class '${
-              node.conceptClass
-            }'")
-          case Some(conceptClass) =>
-            val textfields = node.geoModels.flatMap(collectTextfields)
-            val referencedAttributes = textfields.map(_.identifier.name).toSet
-            val definedAttributes = conceptClass.attributes.map(_.name).toSet
-            val undefinedAttributes = referencedAttributes.diff(definedAttributes).toList
+    val errors = nodeParseTrees.flatMap { node =>
+      val correspondingConceptClass = concept.classes.find(_.name == node.conceptClass)
+      correspondingConceptClass match {
+        case None =>
+          Some(s"Node '${node.identifier}' references undefined concept class '${node.conceptClass}'")
+        case Some(conceptClass) =>
+          val textfields = node.geoModels.flatMap(collectTextfields)
+          val referencedAttributes = textfields.map(_.identifier.name).toSet
+          val definedAttributes = conceptClass.attributes.map(_.name).toSet
+          val undefinedAttributes = referencedAttributes.diff(definedAttributes).toList
 
-            undefinedAttributes match {
-              case Nil => None
-              case _ => Some(s"The following attributes of class '${
-                node.conceptClass
-              }' are referenced but not defined: ${
-                undefinedAttributes.mkString(",")
-              }")
-            }
-        }
+          undefinedAttributes match {
+            case Nil => None
+            case _ => Some(s"The following attributes of class '${node.conceptClass}' are referenced but not defined: ${undefinedAttributes.mkString(",")}")
+          }
+      }
     }
     errors
   }
