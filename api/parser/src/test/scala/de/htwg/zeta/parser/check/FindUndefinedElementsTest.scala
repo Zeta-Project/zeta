@@ -6,13 +6,9 @@ import org.scalatest.{FreeSpec, Inside, Matchers}
 //noinspection ScalaStyle
 class FindUndefinedElementsTest extends FreeSpec with Matchers with Inside {
 
-  val elementToId: PartialFunction[Any, Id] = {
-    case e: Element => e.name
-  }
-  val getParentIds: PartialFunction[Any, List[Id]] = {
-    case e: Element => e.parents.toList
-  }
-  val findUndefinedParents = new FindUndefinedElements(elementToId, getParentIds)
+  val elementToId: Element => Id = element => element.name
+  val getParentIds: Element => List[Id] = element => element.parents.toList
+  val findUndefinedParents = new FindUndefinedElements[Element](elementToId, getParentIds)
 
   "Check for undefined parents will result in" - {
 
