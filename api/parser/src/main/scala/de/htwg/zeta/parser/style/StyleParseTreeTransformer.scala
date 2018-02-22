@@ -3,7 +3,7 @@ package de.htwg.zeta.parser.style
 import javafx.scene.paint.Color
 
 import de.htwg.zeta.parser.check.Check.Id
-import de.htwg.zeta.parser.check.{FindDuplicates, FindGraphCycles, FindUndefinedParents}
+import de.htwg.zeta.parser.check.{FindDuplicates, FindGraphCycles, FindUndefinedElements}
 import de.htwg.zeta.server.generator.model.style.color.{ColorOrGradient, ColorWithTransparency, Color => OldColor}
 import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
 import de.htwg.zeta.server.generator.model.style.{Style, LineStyle => OldLineStyle}
@@ -26,7 +26,7 @@ object StyleParseTreeTransformer {
     val toElement: Id => Option[StyleParseTree] = id => styleTrees.find(_.name == id)
 
     val findDuplicates = new FindDuplicates[StyleParseTree](toId)
-    val findUndefinedParents = new FindUndefinedParents[StyleParseTree](toId, getParentIds)
+    val findUndefinedParents = new FindUndefinedElements[StyleParseTree](toId, getParentIds)
     val findGraphCycles = new FindGraphCycles[StyleParseTree](toId, toElement, getParentIds)
 
     val checks = List(findDuplicates, findUndefinedParents, findGraphCycles)
