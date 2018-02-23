@@ -143,7 +143,7 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
         result.successful shouldBe true
         result.get shouldBe RepeatingBoxParseTree(
           Editable(true),
-          For(each = "hatKind", as = "kind"),
+          For(each = Identifier("hatKind"), as = "kind"),
           List(
             EllipseParseTree(
               Some(Style("None")),
