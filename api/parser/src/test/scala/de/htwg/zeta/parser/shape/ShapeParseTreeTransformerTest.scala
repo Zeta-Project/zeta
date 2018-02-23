@@ -4,8 +4,6 @@ import scalaz.Failure
 import scalaz.Success
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
@@ -82,8 +80,9 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
 
       "nested repeating boxes" in {
         /*
-        ShoppingCart example:
-        ShoppingCart(totalPrice) --hasArticles--> Article(id) --hasProducers--> Producer(name)
+        ShoppingCart(totalPrice) has articles
+        Article(nettoPrice, calcBruttoPrice) has producers
+        Producer(name)
         */
         val shoppingCartNode = Helper.createNode(
           identifier = "ShoppingCartNode",

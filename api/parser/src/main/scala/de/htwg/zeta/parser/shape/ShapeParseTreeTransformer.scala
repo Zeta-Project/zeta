@@ -4,7 +4,6 @@ import scala.collection.mutable.ListBuffer
 import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
-
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -13,13 +12,14 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.FindDuplicates
+import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HasIdentifier
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
-import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 import de.htwg.zeta.server.generator.model.style.Style
+
 
 object ShapeParseTreeTransformer {
 
@@ -50,10 +50,7 @@ object ShapeParseTreeTransformer {
   }
 
   // apply a number of checks and return error messages
-  private def checkForErrors(
-      shapeParseTrees: List[ShapeParseTree],
-      styles: List[Style],
-      concept: Concept): List[String] = {
+  private def checkForErrors(shapeParseTrees: List[ShapeParseTree], styles: List[Style], concept: Concept): List[String] = {
     val maybeErrors = List(
       checkForDuplicateShapes(shapeParseTrees),
       checkForUndefinedEdges(shapeParseTrees),
@@ -87,6 +84,7 @@ object ShapeParseTreeTransformer {
     }.flatten.toSet
 
     val undefinedEdges = referencedEdges.diff(definedEdges).toList
+
     undefinedEdges match {
       case Nil =>
         None
@@ -97,9 +95,7 @@ object ShapeParseTreeTransformer {
 
 
   // check if there are styles referenced which are not defined
-  private def checkForUndefinedStyles(
-      shapeParseTrees: List[ShapeParseTree],
-      styles: List[Style]): Option[String] = {
+  private def checkForUndefinedStyles(shapeParseTrees: List[ShapeParseTree], styles: List[Style]): Option[String] = {
     val definedStyles = styles.map(_.name).toSet
 
     val referencedStyles = shapeParseTrees.collect {
@@ -122,9 +118,9 @@ object ShapeParseTreeTransformer {
   // check if there are concept elements referenced which are not defined
   private def checkForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept): Option[String] = {
     val nodes = shapeParseTrees.collect { case n: NodeParseTree => n }
-    val nodeErrors = checkNodesForUndefinedConceptElements(nodes, concept)
-
     val edges = shapeParseTrees.collect { case e: EdgeParseTree => e }
+
+    val nodeErrors = checkNodesForUndefinedConceptElements(nodes, concept)
     val edgeErrors = checkEdgesForUndefinedConceptElements(edges, concept)
 
     nodeErrors ++ edgeErrors match {
@@ -150,55 +146,49 @@ object ShapeParseTreeTransformer {
       }
     }
 
+    // check if a specified identifier is in a valid context
     def checkConceptIdentifier(geoModel: GeoModelParseTree with HasIdentifier, contexts: Map[String, MClass]): Unit = {
-      val prefixes = contexts.keys.toList
       val (prefix, identifier) = geoModel.identifier.split
-      if (!prefixes.contains(prefix)) {
-        errors += s"Illegal prefix '$prefix' specified!"
-      } else {
-        val context = contexts(prefix)
-        if (!isValidIdentifier(identifier, context)) {
+      contexts.get(prefix) match {
+        case None =>
+          errors += s"Illegal prefix '$prefix' specified!"
+        case Some(context) if !isValidIdentifier(identifier, context) =>
           errors += s"Textfield identifier '$identifier' not found!"
-        }
+        case _ => // content is valid
       }
       geoModel.children.foreach(child => check(child, contexts))
     }
 
-    def getReference(name: String): MReference = {
-      concept.references.find(_.name == name)
-        .getOrElse(throw new Exception(s"Concept model is invalid! Reference '$name' does not exist!"))
+    def getReferenceOrThrow(referenceName: String): MReference = {
+      concept.references.find(_.name == referenceName)
+        .getOrElse(throw new Exception(s"Concept model is invalid! Reference '$referenceName' does not exist!"))
     }
 
-    def getClass(name: String): MClass = {
-      concept.classes.find(_.name == name)
-        .getOrElse(throw new Exception(s"Concept model is invalid! Class '$name' does not exist!"))
-    }
-
-    def isPrefixValid(prefix: String, contexts: Map[String, MClass]): Boolean = {
-      val validPrefixes = contexts.keys.toList
-      validPrefixes.contains(prefix)
+    def getClassOrThrow(className: String): MClass = {
+      concept.classes.find(_.name == className)
+        .getOrElse(throw new Exception(s"Concept model is invalid! Class '$className' does not exist!"))
     }
 
     def checkConceptReference(repeatingBox: RepeatingBoxParseTree, contexts: Map[String, MClass]): Unit = {
+
+      // check if there is already a context with this prefix
+      val newPrefix = repeatingBox.foreach.as
+      if (contexts.contains(newPrefix)) {
+        errors += s"Prefix '$newPrefix' already defined in outer scope!"
+        return
+      }
+
       val (prefix, referenceName) = repeatingBox.foreach.each.split
-      if (!isPrefixValid(prefix, contexts)) {
-        errors += s"RepeatingBox reference name '$referenceName' not found!"
-      } else {
-        val context = contexts(prefix)
-        if (!context.outputReferenceNames.contains(referenceName)) {
+      contexts.get(prefix) match {
+        case None =>
+          errors += s"RepeatingBox reference name '$referenceName' not found!"
+        case Some(context) if !context.outputReferenceNames.contains(referenceName) =>
           errors += s"Concept class '${context.name}' has no reference named '$referenceName'!"
-        } else {
-          val reference = getReference(referenceName)
-          val newContext = getClass(reference.targetClassName)
-          val prefixes = contexts.keys.toList
-          val newPrefix = repeatingBox.foreach.as
-          if (prefixes.contains(newPrefix)) {
-            errors += s"Prefix '$newPrefix' already defined in outer scope!"
-          } else {
-            val updatedContexts = contexts + (newPrefix -> newContext)
-            repeatingBox.children.foreach(child => check(child, updatedContexts))
-          }
-        }
+        case Some(_) =>
+          val reference = getReferenceOrThrow(referenceName)
+          val newContext = getClassOrThrow(reference.targetClassName)
+          val updatedContexts = contexts + (newPrefix -> newContext)
+          repeatingBox.children.foreach(child => check(child, updatedContexts))
       }
     }
 
@@ -217,7 +207,8 @@ object ShapeParseTreeTransformer {
         case None =>
           errors += s"Concept class '${node.conceptClass}' for node '${node.identifier}' not found!"
         case Some(context) =>
-          val contexts = Map[String, MClass](/*prefix=*/ "" -> context)
+          val defaultPrefix = ""
+          val contexts = Map[String, MClass](defaultPrefix -> context)
           node.geoModels.foreach(geoModel => check(geoModel, contexts))
       }
     }
