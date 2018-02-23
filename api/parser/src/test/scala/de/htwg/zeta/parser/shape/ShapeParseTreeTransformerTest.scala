@@ -4,19 +4,13 @@ import scalaz.Failure
 import scalaz.Success
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
-import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
 import org.scalatest.FreeSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
@@ -24,29 +18,21 @@ import org.scalatest.Matchers
 //noinspection ScalaStyle
 class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
 
-  private val textfield = TextfieldParseTree(
-    Some(Style("MyStyle")),
-    Identifier("myAttribute"),
-    Position(0, 0),
-    Size(100, 100),
-    multiline = None,
-    align = None,
-    editable = None,
-    children = Nil
+  private val myStyle = de.htwg.zeta.server.generator.model.style.Style(
+    name = "MyStyle"
   )
 
-  private val textfieldWithInvalidIdentifier = textfield.copy(identifier = Identifier("noSuchAttribute"))
+  private val myTextfield = Helper.createTextfield(
+    Some(Style(myStyle.name)),
+    identifier = "myAttribute"
+  )
 
-  private val myNode = NodeParseTree(
+  private val myNode = Helper.createNode(
     "MyNode",
     "MyConceptClass",
     edges = List("MyEdge"),
-    SizeMin(10, 10),
-    SizeMax(100, 100),
-    Some(NodeStyle("MyStyle")),
-    resizing = None,
-    anchors = Nil,
-    geoModels = List(textfield)
+    Some(NodeStyle(myStyle.name)),
+    geoModels = List(myTextfield)
   )
 
   private val myEdge = EdgeParseTree(
@@ -58,28 +44,11 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
 
   private val myConcept = Concept(
     classes = List(
-      MClass(
-        name = "MyConceptClass",
-        description = "",
-        abstractness = false,
-        superTypeNames = Nil,
-        inputReferenceNames = Nil,
-        outputReferenceNames = Nil,
+      Helper.createConceptClass(
+        "MyConceptClass",
         attributes = List(
-          MAttribute(
-            name = "myAttribute",
-            globalUnique = false,
-            localUnique = false,
-            StringType,
-            StringValue(""),
-            constant = false,
-            singleAssignment = false,
-            expression = "?",
-            ordered = false,
-            transient = true
-          )
-        ),
-        methods = Nil,
+          Helper.createConceptAttribute("myAttribute")
+        )
       )
     ),
     references = Nil,
@@ -89,15 +58,11 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
     uiState = ""
   )
 
-  private val myStyle = de.htwg.zeta.server.generator.model.style.Style(
-    name = "MyStyle"
-  )
-
   "A ShapeParseTreeTransformer should" - {
 
-    "succeed" - {
+    "succeed in transforming" - {
 
-      "to transform an empty list of shape trees" in {
+      "an empty list of shape trees" in {
         val shapeParseTrees = Nil
         val styles = List(myStyle)
         val concept = myConcept
@@ -105,13 +70,77 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         result shouldBe Success(NodesAndEdges(nodes = Nil, edges = Nil))
       }
 
-      "to transform a valid shape definition" in {
+      "a valid shape definition" in {
         val shapeParseTrees = List(myNode, myEdge)
         val styles = List(myStyle)
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transformShapes(shapeParseTrees, styles, concept)
         result.isSuccess shouldBe true
         // TODO: check success tuple
+      }
+
+      "nested repeating boxes" in {
+        /*
+        ShoppingCart example:
+        ShoppingCart(totalPrice) --hasArticles--> Article(id) --hasProducers--> Producer(name)
+        */
+        val shoppingCartNode = Helper.createNode(
+          identifier = "ShoppingCartNode",
+          conceptClass = "ShoppingCart",
+          geoModels = List(
+            Helper.createTextfield(identifier = "totalPrice"),
+            Helper.createRepeatingBox(
+              For(each = Identifier("hasArticles"), as = "article"),
+              children = List(
+                Helper.createTextfield(identifier = "article.id"),
+                Helper.createRepeatingBox(
+                  For(each = Identifier("article.hasProducers"), as = "producer"),
+                  children = List(
+                    Helper.createTextfield(identifier = "totalPrice"),
+                    Helper.createTextfield(identifier = "article.id"),
+                    Helper.createTextfield(identifier = "producer.name")
+                  )
+                )
+              )
+            )
+          )
+        )
+        val concept = Concept(
+          classes = List(
+            Helper.createConceptClass(
+              "ShoppingCart",
+              outputReferences = List("hasArticles"),
+              attributes = List(
+                Helper.createConceptAttribute("totalPrice")
+              )
+            ),
+            Helper.createConceptClass(
+              "Article",
+              inputReferences = List("hasArticles"),
+              outputReferences = List("hasProducers"),
+              attributes = List(
+                Helper.createConceptAttribute("id")
+              )
+            ),
+            Helper.createConceptClass(
+              "Producer",
+              inputReferences = List("hasProducers"),
+              attributes = List(
+                Helper.createConceptAttribute("name")
+              )
+            )
+          ),
+          references = List(
+            MReference.empty("hasArticles", "ShoppingCart", "Article"),
+            MReference.empty("hasProducers", "Article", "Producer")
+          ),
+          enums = Nil,
+          attributes = Nil,
+          methods = Nil,
+          uiState = ""
+        )
+        val result = ShapeParseTreeTransformer.transformShapes(List(shoppingCartNode), Nil, concept)
+        result.isSuccess shouldBe true
       }
     }
 
@@ -148,6 +177,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
       }
 
       "when undefined concept class attribute is referenced" in {
+        val textfieldWithInvalidIdentifier = myTextfield.copy(identifier = Identifier("noSuchAttribute"))
         val shapeParseTrees = List(myEdge, myNode.copy(geoModels = List(textfieldWithInvalidIdentifier)))
         val styles = List(myStyle)
         val concept = myConcept
