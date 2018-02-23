@@ -4,6 +4,7 @@ import scalaz.Failure
 import scalaz.Success
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
@@ -92,12 +93,12 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             Helper.createRepeatingBox(
               For(each = Identifier("hasArticles"), as = "article"),
               children = List(
-                Helper.createTextfield(identifier = "article.id"),
+                Helper.createTextfield(identifier = "article.nettoPrice"),
                 Helper.createRepeatingBox(
                   For(each = Identifier("article.hasProducers"), as = "producer"),
                   children = List(
                     Helper.createTextfield(identifier = "totalPrice"),
-                    Helper.createTextfield(identifier = "article.id"),
+                    Helper.createTextfield(identifier = "article.calcBruttoPrice"),
                     Helper.createTextfield(identifier = "producer.name")
                   )
                 )
@@ -119,7 +120,10 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
               inputReferences = List("hasArticles"),
               outputReferences = List("hasProducers"),
               attributes = List(
-                Helper.createConceptAttribute("id")
+                Helper.createConceptAttribute("nettoPrice")
+              ),
+              methods = List(
+                Helper.createConceptMethod("calcBruttoPrice")
               )
             ),
             Helper.createConceptClass(

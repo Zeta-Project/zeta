@@ -1,10 +1,15 @@
 package de.htwg.zeta.parser.shape
 
+import scala.collection.immutable.ListMap
+
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Editable
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
@@ -61,7 +66,7 @@ object Helper {
     )
   }
 
-  def createConceptClass(name: String, inputReferences: List[String] = Nil, outputReferences: List[String] = Nil, attributes: List[MAttribute] = Nil): MClass = {
+  def createConceptClass(name: String, inputReferences: List[String] = Nil, outputReferences: List[String] = Nil, attributes: List[MAttribute] = Nil, methods: List[Method] = Nil): MClass = {
     MClass(
       name,
       description = "",
@@ -70,7 +75,7 @@ object Helper {
       inputReferenceNames = inputReferences,
       outputReferenceNames = outputReferences,
       attributes = attributes,
-      methods = Nil
+      methods = methods
     )
   }
 
@@ -86,6 +91,16 @@ object Helper {
       expression = "?",
       ordered = false,
       transient = true
+    )
+  }
+
+  def createConceptMethod(name: String, returnType: AttributeType = IntType): Method = {
+    Method(
+      name,
+      parameters = ListMap[String, AttributeType](),
+      description = "",
+      returnType,
+      code = ""
     )
   }
 
