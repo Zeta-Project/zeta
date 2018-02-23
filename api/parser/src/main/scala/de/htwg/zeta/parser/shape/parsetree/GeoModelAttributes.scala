@@ -30,11 +30,18 @@ object GeoModelAttributes {
 
   case class Style(name: String) extends GeoModelAttribute
 
-  case class Identifier(name: String) extends GeoModelAttribute
+  case class Identifier(name: String) extends GeoModelAttribute {
+    def split: (String, String) = {
+      name.split("\\.").toList match {
+        case prefix :: identifier :: Nil => (prefix, identifier)
+        case _ => ("", name)
+      }
+    }
+  }
 
   case class Multiline(multiline: Boolean) extends GeoModelAttribute
 
-  case class For(each: String, as: String) extends GeoModelAttribute
+  case class For(each: Identifier, as: String) extends GeoModelAttribute
 
   case class Editable(editable: Boolean) extends GeoModelAttribute
 

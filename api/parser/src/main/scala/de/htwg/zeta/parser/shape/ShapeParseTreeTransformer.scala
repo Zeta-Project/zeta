@@ -125,17 +125,9 @@ object ShapeParseTreeTransformer {
   private def checkNodesForUndefinedConceptElements(nodeParseTrees: List[NodeParseTree], concept: Concept): List[String] = {
     var errors = new ListBuffer[String]()
 
-    def splitPrefix(string: String): (String, String) = {
-      string.split("\\.").toList match {
-        case prefix :: identifier :: Nil => (prefix, identifier)
-        case _ => ("", string)
-      }
-    }
-
     def checkConceptIdentifier(geoModel: GeoModelParseTree with HasIdentifier, contexts: Map[String, MClass]): Unit = {
       val prefixes = contexts.keys.toList
-      val fullIdentifier = geoModel.identifier.name
-      val (prefix, identifier) = splitPrefix(fullIdentifier)
+      val (prefix, identifier) = geoModel.identifier.split
       if (!prefixes.contains(prefix)) {
         errors += s"Illegal prefix '$prefix' specified!"
       } else {
@@ -150,8 +142,7 @@ object ShapeParseTreeTransformer {
 
     def checkConceptReference(repeatingBox: RepeatingBoxParseTree, contexts: Map[String, MClass]): Unit = {
       val prefixes = contexts.keys.toList
-      val fullReferenceName = repeatingBox.foreach.each
-      val (prefix, referenceName) = splitPrefix(fullReferenceName)
+      val (prefix, referenceName) = repeatingBox.foreach.each.split
       if (!prefixes.contains(prefix)) {
         errors += s"RepeatingBox reference name '$referenceName' not found!"
       } else {
