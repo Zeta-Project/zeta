@@ -154,7 +154,7 @@ object ShapeParseTreeTransformer {
           errors += s"Illegal prefix '$prefix' specified!"
         case Some(context) if !isValidIdentifier(identifier, context) =>
           errors += s"Textfield identifier '$identifier' not found!"
-        case _ => // content is valid
+        case _ => // identifier is valid in the given context
       }
       geoModel.children.foreach(child => check(child, contexts))
     }
