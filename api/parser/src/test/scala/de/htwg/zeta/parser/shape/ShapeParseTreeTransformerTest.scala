@@ -1,17 +1,25 @@
 package de.htwg.zeta.parser.shape
 
+import scalaz.Failure
+import scalaz.Success
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.{AttributeType, MAttribute, MClass}
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{LineParseTree, TextfieldParseTree}
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.{NodeStyle, SizeMax, SizeMin}
-import de.htwg.zeta.parser.shape.parsetree.{EdgeParseTree, NodeParseTree}
-import org.scalatest.{FreeSpec, Inside, Matchers}
-
-import scalaz.{Failure, Success}
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
+import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
+import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
+import org.scalatest.FreeSpec
+import org.scalatest.Inside
+import org.scalatest.Matchers
 
 //noinspection ScalaStyle
 class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
@@ -94,7 +102,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val styles = List(myStyle)
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transformShapes(shapeParseTrees, styles, concept)
-        result shouldBe Success((Nil, Nil))
+        result shouldBe Success(NodesAndEdges(nodes = Nil, edges = Nil))
       }
 
       "to transform a valid shape definition" in {
