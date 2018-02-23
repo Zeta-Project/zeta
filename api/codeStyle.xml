@@ -25,7 +25,6 @@
         <option value="all other imports" />
       </array>
     </option>
-    <option name="sortAsScalastyle" value="true" />
     <option name="FINALLY_BRACE_FORCE" value="3" />
     <option name="TRY_BRACE_FORCE" value="3" />
     <option name="USE_ALTERNATE_CONTINUATION_INDENT_FOR_PARAMS" value="true" />
