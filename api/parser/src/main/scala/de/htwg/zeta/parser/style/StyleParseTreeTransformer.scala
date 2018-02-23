@@ -39,11 +39,11 @@ object StyleParseTreeTransformer {
       val color: Color
 
       val getRGBValue: String = {
-        val r = color.getRed * 255.0.round.toInt
-        val g = color.getGreen * 255.0.round.toInt
-        val b = color.getBlue * 255.0.round.toInt
+        val r = (color.getRed * 255.0).round.toInt
+        val g = (color.getGreen * 255.0).round.toInt
+        val b = (color.getBlue * 255.0).round.toInt
 
-        s"$r$g$b"
+        s"$r,$g,$b"
       }
     }
 
