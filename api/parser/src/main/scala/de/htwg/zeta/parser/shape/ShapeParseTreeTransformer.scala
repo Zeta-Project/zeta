@@ -1,20 +1,27 @@
 package de.htwg.zeta.parser.shape
 
+import scala.collection.mutable.ListBuffer
+import scalaz.Failure
+import scalaz.Success
+import scalaz.Validation
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Edge, Node}
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.FindDuplicates
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{GeoModelParseTree, HasIdentifier, RepeatingBoxParseTree, TextfieldParseTree}
-import de.htwg.zeta.parser.shape.parsetree.{EdgeParseTree, NodeParseTree, ShapeParseTree}
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HasIdentifier
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
+import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
+import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
+import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 import de.htwg.zeta.server.generator.model.style.Style
 
-import scala.annotation.tailrec
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-import scalaz.{Failure, Success, Validation}
-
 object ShapeParseTreeTransformer {
+
+  case class NodesAndEdges(nodes: List[Node], edges: List[Edge])
 
   /**
     * Transform a list of shape parse trees into model instances
@@ -28,11 +35,12 @@ object ShapeParseTreeTransformer {
     */
   def transformShapes(shapeParseTrees: List[ShapeParseTree],
                       styles: List[Style],
-                      concept: Concept): Validation[List[String], (List[Node], List[Edge])] = {
+                      concept: Concept): Validation[List[String], NodesAndEdges] = {
     checkForErrors(shapeParseTrees, styles, concept) match {
       case Nil =>
         val (nodes, edges) = doTransformShapes(shapeParseTrees, styles, concept)
-        Success((nodes, edges))
+        val nodesAndEdges = NodesAndEdges(nodes, edges)
+        Success(nodesAndEdges)
       case errors: List[String] =>
         Failure(errors)
     }
