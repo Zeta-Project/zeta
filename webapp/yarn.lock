@@ -1586,11 +1586,11 @@ babylon@^6.17.4, babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-backbone@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.2.1.tgz#d7219c5ed49e5e131dbffaf25c96d6d2cc3ca03e"
+backbone@1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.3.3.tgz#4cc80ea7cb1631ac474889ce40f2f8bc683b2999"
   dependencies:
-    underscore ">=1.7.0"
+    underscore ">=1.8.3"
 
 backo2@1.0.2:
   version "1.0.2"
@@ -5559,14 +5559,14 @@ jodid25519@^1.0.0:
   dependencies:
     jsbn "~0.1.0"
 
-jointjs@0.9.5:
-  version "0.9.5"
-  resolved "https://registry.yarnpkg.com/jointjs/-/jointjs-0.9.5.tgz#63d640e7ba9b86b0af58f050a39e3effb5db5594"
+jointjs@2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/jointjs/-/jointjs-2.0.1.tgz#256b770b7c48b88cdb7dd498fcf0bccf1b09030f"
   dependencies:
-    backbone "1.2.1"
+    backbone "1.3.3"
     dagre "0.7.4"
     graphlib "1.0.7"
-    jquery "2.1.3"
+    jquery "3.1.1"
     lodash "3.10.1"
 
 jquery-ui-themes@1.12.0:
@@ -5577,13 +5577,13 @@ jquery-ui@1.12.1:
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.12.1.tgz#bcb4045c8dd0539c134bc1488cdd3e768a7a9e51"
 
-jquery@2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.1.3.tgz#6ec55204673d505d39432c5bf5cfad10e1dbad2e"
+jquery@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.1.1.tgz#347c1c21c7e004115e0a4da32cece041fad3c8a3"
 
-jquery@2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.1.4.tgz#228bde698a0c61431dc2630a6a154f15890d2317"
+jquery@3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
 
 js-base64@^2.1.9:
   version "2.3.2"
@@ -9523,7 +9523,7 @@ underscore@1.7.x:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.7.0.tgz#6bbaf0877500d36be34ecaa584e0db9fef035209"
 
-underscore@>=1.7.0, underscore@^1.8.3:
+underscore@>=1.8.3, underscore@^1.8.3:
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.8.3.tgz#4f3fb53b106e6097fcf9cb4109f2a5e9bdfa5022"
 
