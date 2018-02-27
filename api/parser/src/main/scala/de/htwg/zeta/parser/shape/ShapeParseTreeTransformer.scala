@@ -1,9 +1,11 @@
 package de.htwg.zeta.parser.shape
 
 import scala.collection.mutable.ListBuffer
+import scala.collection.immutable
 import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
+
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
@@ -228,11 +230,27 @@ object ShapeParseTreeTransformer {
   }
 
   def doTransformEdges(shapeParseTrees: List[ShapeParseTree], styles: List[Style], concept: Concept): List[Edge] = {
-    Nil
+    shapeParseTrees.collect{case t: EdgeParseTree => t}.map(n => {
+      Edge(n.identifier,
+        "",
+        "",
+        "",
+        immutable.Seq(),
+        immutable.Map(),
+        immutable.Seq())
+    })
   }
 
   def doTransformNodes(shapeParseTrees: List[ShapeParseTree], edges: List[Edge], styles: List[Style], concept: Concept): List[Node] = {
-    Nil
+    shapeParseTrees.collect{case t: NodeParseTree => t}.map(n => {
+      Node(n.identifier,
+        n.conceptClass,
+        immutable.Seq(),
+        immutable.Seq(),
+        immutable.Seq(),
+        immutable.Map(),
+        immutable.Seq())
+    })
   }
 
 }
