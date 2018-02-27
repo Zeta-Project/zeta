@@ -60,7 +60,7 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
     ("for" ~> leftParenthesis ~> "each" ~> colon ~> ident <~ comma) ~
       ("as" ~> colon ~> ident <~ rightParenthesis) ^^ { result =>
       val each ~ as = result
-      For(each, as)
+      For(Identifier(each), as)
     }
   }
 
