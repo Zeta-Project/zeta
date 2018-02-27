@@ -75,6 +75,10 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transformShapes(shapeParseTrees, styles, concept)
         result.isSuccess shouldBe true
+        val resultNodes = result.getOrElse(NodesAndEdges(Nil, Nil)).nodes
+        val resultEdges = result.getOrElse(NodesAndEdges(Nil, Nil)).edges
+        resultNodes.size shouldBe 1
+        resultEdges.size shouldBe 1
         // TODO: check success tuple
       }
 
@@ -169,7 +173,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         )
       }
 
-      "when undefined concept classes is referenced" in {
+      "when undefined concept classes are referenced" in {
         val shapeParseTrees = List(myNode, myEdge)
         val styles = List(myStyle)
         val concept = Concept.empty
