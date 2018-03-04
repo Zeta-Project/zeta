@@ -1,38 +1,67 @@
-/* * This is a generated stencil file for JointJS */
-Stencil.groups = {anchors: {index: 2, label: 'Anchors'}, entity: {index: 1, label: 'Entity'}};
-var
-    entity = new joint.shapes.zeta.entity({
-        nodeName: 'entity',
-        mClass: 'Entity',
-        mClassAttributeInfo: [{name: 'fix', type: 'StringType'}, {name: 'in', type: 'StringType'}, {name: 'out', type: 'StringType'}]
-    })
-;var
-    periodStart = new joint.shapes.zeta.periodStart({
-        nodeName: 'periodStart',
-        mClass: 'PeriodStart',
-        mClassAttributeInfo: []
-    })
-;var
-    teamStart = new joint.shapes.zeta.teamStart({
-        nodeName: 'teamStart',
-        mClass: 'TeamStart',
-        mClassAttributeInfo: []
-    })
-;Stencil.shapes = {
-    entity: [
-        entity
-    ], anchors: [
-        periodStart,
-        teamStart
+//OLD
+Stencil.groups = {
+    interface: {index: 3, label: 'Interface'},
+    abstractClass: {index: 2, label: 'AbstractClass'},
+    class: {index: 1, label: 'Class'}
+};
+
+var classNode = new joint.shapes.zeta.klasse({
+
+    nodeName: 'classNode',
+    mClass: 'Klasse',
+    mClassAttributeInfo: []
+});
+
+var abClassNode = new joint.shapes.zeta.abstractKlasse({
+
+    nodeName: 'abClassNode',
+    mClass: 'AbstractKlasse',
+    mClassAttributeInfo: []
+});
+
+var inClassNode = new joint.shapes.zeta.interface({
+
+    nodeName: 'inClassNode',
+    mClass: 'InterfaceKlasse',
+    mClassAttributeInfo: []
+});
+
+
+Stencil.shapes = {
+
+    abstractClass: [
+        abClassNode
+
     ]
-}
-;$(document).ready(function () {
-    entity.attr(getShapeStyle('entity'));
-    periodStart.attr(getShapeStyle('periodStart'));
-    teamStart.attr(getShapeStyle('teamStart'));
+    ,
+    class: [
+        classNode
+
+    ]
+    ,
+    interface: [
+        inClassNode
+
+    ]
+
+};
+
+
+$(document).ready(function () {
+
+    classNode.attr(getShapeStyle("klasse"));
+
+
+    abClassNode.attr(getShapeStyle("abstractKlasse"));
+
+
+    inClassNode.attr(getShapeStyle("interface"));
+
+
     var style = document.createElement('style');
     style.id = 'highlighting-style';
     style.type = 'text/css';
-    style.innerHTML = getDiagramHighlighting("Default");
+    style.innerHTML = getDiagramHighlighting("X");
     document.getElementsByTagName('head')[0].appendChild(style);
+
 });

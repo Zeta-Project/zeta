@@ -1,20 +1,30 @@
-/** This is a generated linkhelper file for JointJS*/
+//OLD
 var linkhelper = {
+
     placingTexts: {
-        drop: {}
-        ,
-        reference: {}
-        ,
-        link: {}
-        ,
-        map: {}
-    }
-    ,
+        inheritance: {}, realization: {}, BaseClassRealization: {}
+    },
+
+
     getLabelText: function (edge, textId) {
         var text = this.placingTexts[edge][textId];
         if (text === undefined) {
             text = "";
         }
         return text;
-    }, mapping: {drop: {}, reference: {}, link: {}, link: {}}
+    },
+
+
+    mapping: {
+
+        Inheritance: {}
+        ,
+        Realization: {}
+        ,
+        BaseClassRealization: {}
+
+    }
+
 };
+    
+    
