@@ -1,34 +1,60 @@
+//OLD
 function getShapeStyle(elementName) {
     var style = {};
     switch (elementName) {
 
-        case "entity":
-            style['rect.bdb2b0bf-32a3-4f1b-ab6f-1d1d3435602c'] = getStyle('(child_of -> DefaultDefault)');
-            style['text.04e89195-b013-49bd-a7ee-b90571b87d9a'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['.04e89195-b013-49bd-a7ee-b90571b87d9a'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['rect.3142e6f7-d844-430b-a13f-122530c56862'] = getStyle('(child_of -> DefaultDefault)');
-            style['text.99f3e4be-728d-4ddf-a1e6-65df237a8913'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['.99f3e4be-728d-4ddf-a1e6-65df237a8913'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['rect.708f3a8f-96e2-4a02-967f-fa26a952ca80'] = getStyle('(child_of -> DefaultDefault)');
-            style['text.f72584e6-c4cc-4bb9-beeb-ef4cf3d40396'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['.f72584e6-c4cc-4bb9-beeb-ef4cf3d40396'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['rect.832c988f-f4b8-436f-9c44-dd9f09699fa4'] = getStyle('(child_of -> DefaultDefault)');
-            style['text.9c2877f9-21bd-49d4-963e-ac2868be66c7'] = getStyle('(child_of -> DefaultDefault)').text;
-            style['.9c2877f9-21bd-49d4-963e-ac2868be66c7'] = getStyle('(child_of -> DefaultDefault)').text;
+        case "klasse":
+
+            style['rect.5c487482-2943-4980-8b65-b14498c354ba'] = getStyle('(child_of -> XX)');
+            style['text.5c264f7b-4821-4dd5-9798-70c44b8333ab'] = getStyle('(child_of -> XX)').text;
+            style['.5c264f7b-4821-4dd5-9798-70c44b8333ab'] = getStyle('(child_of -> XX)').text;
+
+            style['rect.7b5ada00-b651-45cf-a008-915ecd505140'] = getStyle('(child_of -> XX)');
+            style['text.5d37c65b-879b-41a9-9afa-391b81d89368'] = getStyle('(child_of -> XX)').text;
+            style['.5d37c65b-879b-41a9-9afa-391b81d89368'] = getStyle('(child_of -> XX)').text;
+
+            style['rect.f48cfa94-c651-4ff2-a2bb-cb3eec43d065'] = getStyle('(child_of -> XX)');
+            style['text.76794e3f-0e79-4f5f-8bf2-c84ba07327e0'] = getStyle('(child_of -> XX)').text;
+            style['.76794e3f-0e79-4f5f-8bf2-c84ba07327e0'] = getStyle('(child_of -> XX)').text;
+
             break;
-        case "periodStart":
-            style['ellipse.c52e2e13-0c39-4276-84c0-256147f4f1c4'] = getStyle('(child_of -> Default & Red)');
-            style['text.0946fd95-dec8-4e8a-85e3-02b16c2b09e4'] = getStyle('(child_of -> Default & Red)').text;
-            style['.0946fd95-dec8-4e8a-85e3-02b16c2b09e4'] = getStyle('(child_of -> Default & Red)').text;
+
+        case "abstractKlasse":
+
+            style['rect.b39e7aa2-a142-4dea-9013-52bd0eab784d'] = getStyle('(child_of -> XX)');
+            style['text.8ea01922-fbdf-4671-8bce-ce10658c49da'] = getStyle('(child_of -> XX)').text;
+            style['.8ea01922-fbdf-4671-8bce-ce10658c49da'] = getStyle('(child_of -> XX)').text;
+
+            style['rect.1780c339-5031-4181-9aa6-53294cfa4310'] = getStyle('(child_of -> XX)');
+            style['text.3324620f-e3be-4809-b404-c46be93ece5a'] = getStyle('(child_of -> XX)').text;
+            style['.3324620f-e3be-4809-b404-c46be93ece5a'] = getStyle('(child_of -> XX)').text;
+
+            style['rect.163911d7-57f3-4f45-a434-e6d431025885'] = getStyle('(child_of -> XX)');
+            style['text.7f1a0b19-b973-494a-9f99-cf52011eab4d'] = getStyle('(child_of -> XX)').text;
+            style['.7f1a0b19-b973-494a-9f99-cf52011eab4d'] = getStyle('(child_of -> XX)').text;
+
             break;
-        case "teamStart":
-            style['ellipse.5370cce1-af7a-43d2-bb82-686cc277c9f3'] = getStyle('(child_of -> Default & Blue)');
-            style['text.949d3660-0b0a-4671-ac55-14d3acc32dcd'] = getStyle('(child_of -> Default & Blue)').text;
-            style['.949d3660-0b0a-4671-ac55-14d3acc32dcd'] = getStyle('(child_of -> Default & Blue)').text;
+
+        case "interface":
+
+            style['rect.9f393e03-e371-41a9-8065-a62b13991229'] = getStyle('(child_of -> XX)');
+            style['text.f01bed45-534c-40c2-a17e-094afb22fc9d'] = getStyle('(child_of -> XX)').text;
+            style['.f01bed45-534c-40c2-a17e-094afb22fc9d'] = getStyle('(child_of -> XX)').text;
+
+            style['rect.1d879b3a-cfa3-4955-99ff-6af1f5bf2ced'] = getStyle('(child_of -> XX)');
+            style['text.94cca154-a761-4824-9cc2-bb20a53e6cf9'] = getStyle('(child_of -> XX)').text;
+            style['.94cca154-a761-4824-9cc2-bb20a53e6cf9'] = getStyle('(child_of -> XX)').text;
+
+            style['rect.d89d5ff7-f9f1-4816-aa59-8d5df9c27424'] = getStyle('(child_of -> XX)');
+            style['text.436e2eb9-27e7-493d-a527-fc1bf54616a6'] = getStyle('(child_of -> XX)').text;
+            style['.436e2eb9-27e7-493d-a527-fc1bf54616a6'] = getStyle('(child_of -> XX)').text;
+
             break;
+
         default:
             style = {};
             break;
     }
     return style;
 }
+    

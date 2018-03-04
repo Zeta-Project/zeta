@@ -1,115 +1,117 @@
-/** This is a generated validator file for JointJS     */
+//OLD
+
 var validator = {
+
+
     inputMatrix: {
-        Entity: {
-            link: {
+
+        InterfaceKlasse: {
+            BaseClassRealization: {
                 upperBound: 1,
                 lowerBound: 1
-            }
-            ,
-            reference: {
-                upperBound: 1,
-                lowerBound: 1
-            }
-            ,
-            map: {
-                upperBound: 1,
-                lowerBound: 1
-            }
-            ,
-            drop: {
+            }, Realization: {
                 upperBound: 1,
                 lowerBound: 1
             }
         }
-    }
-    ,
+        ,
+        AbstractKlasse: {
+            Inheritance: {
+                upperBound: 1,
+                lowerBound: 1
+            }
+        }
+
+    },
     outputMatrix: {
-        Entity: {
-            link: {
+
+        Klasse: {
+            Inheritance: {
                 upperBound: 1,
                 lowerBound: 1
-            }
-            ,
-            reference: {
-                upperBound: 1,
-                lowerBound: 1
-            }
-            ,
-            map: {
-                upperBound: 1,
-                lowerBound: 1
-            }
-        },
-        FrameworkAnchor: {
-            drop: {
+            }, BaseClassRealization: {
                 upperBound: 1,
                 lowerBound: 1
             }
         }
-    }
-    ,
+        ,
+        AbstractKlasse: {
+            Realization: {
+                upperBound: 1,
+                lowerBound: 1
+            }
+        }
+
+    },
+
+
     targetMatrix: {
-        teamStart: {
-            map: false, link:
-                false, reference:
-                false, drop:
-                false
+        abClassNode: {
+
+            BaseClassRealization: false, inheritance: true, realization: false
+
+        }, classNode: {
+
+            inheritance: false, BaseClassRealization: false, realization: false
+
+        }, inClassNode: {
+
+            realization: true, inheritance: false, BaseClassRealization: true
+
         }
-        ,
-        periodStart: {
-            map: false, link:
-                false, reference:
-                false, drop:
-                false
-        }
-        ,
-        entity: {
-            reference: true, link:
-                true, drop:
-                true, map:
-                true
-        }
-    }
-    ,
+    },
+
+
     sourceMatrix: {
-        teamStart: {
-            map: false, link:
-                false, reference:
-                false, drop:
-                true
+        abClassNode: {
+
+            realization: true, inheritance: false, BaseClassRealization: false
+
+        }, classNode: {
+
+            BaseClassRealization: true, inheritance: true, realization: false
+
+        }, inClassNode: {
+
+            inheritance: false, BaseClassRealization: false, realization: false
+
         }
-        ,
-        periodStart: {
-            map: false, link:
-                false, reference:
-                false, drop:
-                true
-        }
-        ,
-        entity: {
-            reference: true, link:
-                true, map:
-                true, drop:
-                false
-        }
-    }
-    ,
+    },
+
+
     edgeData: {
-        drop: {
-            type:
-                "drop", from: "FrameworkAnchor", to: "Entity", style: "drop"
-        },
-        reference: {type: "reference", from: "Entity", to: "Entity", style: "reference"},
-        link: {type: "link", from: "Entity", to: "Entity", style: "link"},
-        map: {type: "link", from: "Entity", to: "Entity", style: "link"}
-    }, isValidTarget: function (nodeName, edgeName) {
+        inheritance: {
+            type: "Inheritance",
+            from: "Klasse",
+            to: "AbstractKlasse",
+            style: "inheritance"
+        }, realization: {
+            type: "Realization",
+            from: "AbstractKlasse",
+            to: "InterfaceKlasse",
+            style: "realization"
+        }, BaseClassRealization: {
+            type: "BaseClassRealization",
+            from: "Klasse",
+            to: "InterfaceKlasse",
+            style: "realization"
+        }
+    },
+
+
+    isValidTarget: function (nodeName, edgeName) {
         return this.targetMatrix[nodeName][edgeName];
-    }, isValidSource: function (nodeName, edgeName) {
+    },
+
+    isValidSource: function (nodeName, edgeName) {
         return this.sourceMatrix[nodeName][edgeName];
-    }, getEdgeData: function (edgeName) {
+    },
+
+    getEdgeData: function (edgeName) {
         return this.edgeData[edgeName];
-    }, getValidEdges: function (sourceName, targetName) {
+    },
+
+    getValidEdges: function (sourceName, targetName) {
         var validEdges = [];
         var candidateEdges = Object.keys(this.sourceMatrix[sourceName]);
         for (var i = 0; i < candidateEdges.length; i++) {
@@ -117,10 +119,17 @@ var validator = {
                 validEdges.push(candidateEdges[i]);
             }
         }
+
         return validEdges;
-    }, getValidCompartments: function (childName, parentName) {
+    },
+
+    getValidCompartments: function (childName, parentName) {
         return this.compartmentMatrix[childName][parentName];
-    }, isValidChild: function (childName, parentName) {
+    },
+
+    isValidChild: function (childName, parentName) {
         return this.getValidCompartments(childName, parentName).length > 0;
     }
+
 };
+    
