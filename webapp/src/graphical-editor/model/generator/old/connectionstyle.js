@@ -1,0 +1,118 @@
+/*     * This is a generated ShapeFile for JointJS     */
+function getConnectionStyle(stylename) {
+    var style;
+    switch (stylename) {
+
+        case 'drop':
+            style = getStyle('(child_of -> DefaultDefault)');
+            //Get inline style
+            var inline = {
+                '.connection, .marker-target, .marker-source': {
+                    fill: '#ffffff',
+                    'fill-opacity': 1.0,
+                    stroke: '#000000',
+                    'stroke-width': 1,
+                    'stroke-dasharray': "0",
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+                }
+            };
+            //Merge with default style
+            jQuery.extend(style, inline);
+            style['.marker-target'] = {
+                d: 'M 10 -10 L 0 0L 10 10L 0 0z',
+                fill: '#ffffff',
+                'fill-opacity': 1.0,
+                stroke: '#000000',
+                'stroke-width': 1,
+                'stroke-dasharray': "0",
+                text: {'dominant-baseline': "text-before-edge", 'font-family': 'sans-serif', 'font-size': '20', 'fill': '#000000', 'font-weight': ' normal'},
+            };
+            break;
+        case 'reference':
+            style = getStyle('(child_of -> DefaultDefault)');
+            //Get inline style
+            var inline = {
+                '.connection, .marker-target, .marker-source': {
+                    fill: '#ffffff',
+                    'fill-opacity': 1.0,
+                    stroke: '#000000',
+                    'stroke-width': 1,
+                    'stroke-dasharray': "0",
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+                }
+            };
+            //Merge with default style
+            jQuery.extend(style, inline);
+            style['.marker-target'] = {
+                d: 'M 10 -10 L 0 0L 10 10L 0 0z',
+                fill: '#ffffff',
+                'fill-opacity': 1.0,
+                stroke: '#000000',
+                'stroke-width': 1,
+                'stroke-dasharray': "0",
+                text: {'dominant-baseline': "text-before-edge", 'font-family': 'sans-serif', 'font-size': '20', 'fill': '#000000', 'font-weight': ' normal'},
+            };
+            break;
+        case 'link':
+            style = getStyle('(child_of -> Default & Dotted)');
+            //Get inline style
+            var inline = {
+                '.connection, .marker-target, .marker-source': {
+                    fill: '#ffffff',
+                    'fill-opacity': 1.0,
+                    stroke: '#808080',
+                    'stroke-width': 1,
+                    'stroke-dasharray': "5,5",
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+                }
+            };
+            //Merge with default style
+            jQuery.extend(style, inline);
+            style['.marker-target'] = {
+                d: 'M 10 -10 L 0 0L 10 10L 0 0z',
+                fill: '#ffffff',
+                'fill-opacity': 1.0,
+                stroke: '#808080',
+                'stroke-width': 1,
+                'stroke-dasharray': "5,5",
+                text: {'dominant-baseline': "text-before-edge", 'font-family': 'sans-serif', 'font-size': '20', 'fill': '#000000', 'font-weight': ' normal'},
+            };
+            break;
+        default:
+            style = {};
+            break;
+    }
+    return style;
+}
+
+function getPlacings(stylename) {
+    var placings;
+    switch (stylename) {
+        default:
+            placings = [];
+            break;
+    }
+    return placings;
+}
+
+function getLabels(stylename) {
+    var labels;
+    switch (stylename) {
+        default:
+            labels = [];
+            break;
+    }
+    return labels;
+}
