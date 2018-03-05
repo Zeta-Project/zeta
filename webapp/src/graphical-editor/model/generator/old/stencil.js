@@ -1,4 +1,11 @@
 //OLD
+import $ from 'jquery';
+import joint from 'jointjs';
+import Stencil from '../../../../graphical-editor/model/stencil';
+import '../old/shape';
+import {getShapeStyle} from "./elementAndInlineStyle";
+import {getDiagramHighlighting} from "./style";
+
 Stencil.groups = {
     interface: {index: 3, label: 'Interface'},
     abstractClass: {index: 2, label: 'AbstractClass'},

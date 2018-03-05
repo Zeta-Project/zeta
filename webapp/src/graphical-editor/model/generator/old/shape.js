@@ -1,17 +1,19 @@
 //OLD
-if (typeof exports === 'object') {
+// if (typeof exports === 'object') {
+//
+//     var joint = {
+//         util: require('jointjs/src/core/').util,
+//         shapes: {
+//             basic: require('jointjs/plugins/shapes/joint.shapes.basic')
+//         },
+//         dia: {
+//             ElementView: require('jointjs/src/joint.dia.element').ElementView,
+//             Link: require('jointjs/src/joint.dia.link').Link
+//         }
+//     };
+// }
 
-    var joint = {
-        util: require('../src/core').util,
-        shapes: {
-            basic: require('./joint.shapes.basic')
-        },
-        dia: {
-            ElementView: require('../src/joint.dia.element').ElementView,
-            Link: require('../src/joint.dia.link').Link
-        }
-    };
-}
+import joint from 'jointjs';
 
 joint.shapes.zeta = {};
 
