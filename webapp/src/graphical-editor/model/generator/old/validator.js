@@ -1,6 +1,5 @@
 //OLD
-
-var validator = {
+export var validator = {
 
 
     inputMatrix: {

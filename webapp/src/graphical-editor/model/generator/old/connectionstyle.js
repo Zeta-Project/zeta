@@ -1,5 +1,7 @@
 //OLD
-function getConnectionStyle(stylename) {
+import {getStyle} from "./style";
+
+export function getConnectionStyle(stylename) {
     var style;
     switch (stylename) {
 
@@ -129,7 +131,7 @@ function getConnectionStyle(stylename) {
     return style;
 }
 
-function getPlacings(stylename) {
+export function getPlacings(stylename) {
     var placings;
     switch (stylename) {
 
@@ -141,7 +143,7 @@ function getPlacings(stylename) {
     return placings;
 }
 
-function getLabels(stylename) {
+export function getLabels(stylename) {
     var labels;
     switch (stylename) {
 

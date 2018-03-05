@@ -1,5 +1,5 @@
 //OLD
-var linkhelper = {
+export var linkhelper = {
 
     placingTexts: {
         inheritance: {}, realization: {}, BaseClassRealization: {}

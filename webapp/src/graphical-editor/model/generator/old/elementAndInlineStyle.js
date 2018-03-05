@@ -1,5 +1,7 @@
 //OLD
-function getShapeStyle(elementName) {
+import {getStyle} from "./style";
+export function getShapeStyle(elementName) {
+
     var style = {};
     switch (elementName) {
 
