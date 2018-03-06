@@ -1,3 +1,6 @@
 package de.htwg.zeta.common.model.shape
 
-class Shape ()
+case class Shape(
+    nodes: List[Node],
+    edges: List[Edge]
+)
