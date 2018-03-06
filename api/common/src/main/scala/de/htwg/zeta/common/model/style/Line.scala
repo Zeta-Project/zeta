@@ -11,6 +11,13 @@ object Line {
   val defaultStyle: LineStyle = Solid()
   val defaultTransparent: Boolean = false
   val defaultWidth: Int = 1
+
+  val defaultLine: Line = Line(
+    defaultColor,
+    defaultStyle,
+    defaultTransparent,
+    defaultWidth
+  )
 }
 
 sealed trait LineStyle

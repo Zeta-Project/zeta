@@ -15,4 +15,13 @@ object Font {
   val defaultName: String = "Arial"
   val defaultSize: Int = 10
   val defaultTransparent: Boolean = false
+
+  val defaultFont: Font = Font(
+    "default",
+    defaultBold,
+    defaultColor,
+    defaultItalic,
+    defaultSize,
+    defaultTransparent
+  )
 }
