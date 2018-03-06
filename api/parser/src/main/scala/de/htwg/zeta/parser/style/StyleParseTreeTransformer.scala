@@ -1,15 +1,19 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint.Color
-
-import de.htwg.zeta.parser.check.Check.Id
-import de.htwg.zeta.parser.check.{FindDuplicates, FindGraphCycles, FindUndefinedElements}
-import de.htwg.zeta.server.generator.model.style.color.{ColorOrGradient, ColorWithTransparency, Color => OldColor}
-import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
-import de.htwg.zeta.server.generator.model.style.{Style, LineStyle => OldLineStyle}
-
 import scala.reflect.ClassTag
-import scalaz.{Failure, Success, Validation}
+import scalaz.Failure
+import scalaz.Success
+import scalaz.Validation
+
+import de.htwg.zeta.common.model.style.Background
+import de.htwg.zeta.common.model.style.Color
+import de.htwg.zeta.common.model.style.Font
+import de.htwg.zeta.common.model.style.Line
+import de.htwg.zeta.common.model.style.Style
+import de.htwg.zeta.parser.check.Check.Id
+import de.htwg.zeta.parser.check.FindDuplicates
+import de.htwg.zeta.parser.check.FindGraphCycles
+import de.htwg.zeta.parser.check.FindUndefinedElements
 
 object StyleParseTreeTransformer {
 
@@ -35,24 +39,6 @@ object StyleParseTreeTransformer {
 
   def transform(styleParseTree: StyleParseTree): Style = {
 
-    trait ColorToRBGColor {
-      val color: Color
-
-      val getRGBValue: String = {
-        val r = (color.getRed * 255.0).round.toInt
-        val g = (color.getGreen * 255.0).round.toInt
-        val b = (color.getBlue * 255.0).round.toInt
-
-        s"$r,$g,$b"
-      }
-    }
-
-    case class ColorOrGradientImpl(color: Color) extends ColorOrGradient with ColorToRBGColor
-
-    case class ColorWithTransparencyImpl(color: Color) extends ColorWithTransparency with ColorToRBGColor
-
-    case class ColorImpl(color: Color) extends OldColor with ColorToRBGColor
-
     class CollectAttributeWrapper[T](val t: Option[T]) {
       def map[R](func: T => R): Option[R] = t.map(func)
     }
@@ -66,23 +52,34 @@ object StyleParseTreeTransformer {
 
     new Style(
       name = styleParseTree.name,
-      description = Some(styleParseTree.description),
-      transparency = collectAttribute[Transparency].map(_.transparency),
-      background_color = collectAttribute[BackgroundColor].map(bg => ColorOrGradientImpl(bg.color)),
-      line_color = collectAttribute[LineColor].map(lc => ColorWithTransparencyImpl(lc.color)),
-      line_style = collectAttribute[LineStyle].map(_.style).flatMap(OldLineStyle.getIfValid),
-      line_width = collectAttribute[LineWidth].map(_.width),
-      font_color = collectAttribute[FontColor].map(fc => ColorImpl(fc.color)),
-      font_name = collectAttribute[FontName].map(_.name),
-      font_size = collectAttribute[FontSize].map(_.size),
-      font_bold = collectAttribute[FontBold].map(_.bold),
-      font_italic = collectAttribute[FontItalic].map(_.italic),
-      gradient_orientation = collectAttribute[GradientOrientation].map(_.orientation).flatMap(GradientAlignment.ifValid),
-      selected_highlighting = None,
-      multiselected_highlighting = None,
-      allowed_highlighting = None,
-      unallowed_highlighting = None,
-      parents = List()
+      description = styleParseTree.description,
+      background = new Background(
+        color = collectAttribute[BackgroundColor]
+          .map(bg => Color(bg.color))
+          .getOrElse(Background.defaultColor)
+      ),
+      font = new Font(
+        bold = collectAttribute[FontBold].map(_.bold).getOrElse(Font.defaultBold),
+        color = collectAttribute[FontColor].map(fc => Color(fc.color))
+          .getOrElse(Font.defaultColor),
+        italic = collectAttribute[FontItalic].map(_.italic)
+          .getOrElse(Font.defaultItalic),
+        name = collectAttribute[FontName].map(_.name)
+          .getOrElse(Font.defaultName),
+        size = collectAttribute[FontSize].map(_.size)
+          .getOrElse(Font.defaultSize),
+        transparent = ??? // TODO
+      ),
+      line = new Line(
+        color = collectAttribute[LineColor].map(lc => Color(lc.color))
+          .getOrElse(Line.defaultColor),
+        style = ???, //collectAttribute[LineStyle].map(_.style).flatMap(OldLineStyle.getIfValid)
+        transparent = ???,
+        width = collectAttribute[LineWidth].map(_.width)
+          .getOrElse(Line.defaultWidth)
+      ),
+      transparency = collectAttribute[Transparency].map(_.transparency)
+        .getOrElse(Style.defaultTransparency)
     )
   }
 

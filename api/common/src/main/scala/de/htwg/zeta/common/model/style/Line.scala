@@ -6,6 +6,10 @@ case class Line(
     transparent: Boolean,
     width: Int
 )
+object Line {
+  val defaultColor: Color = Color("0,0,0")
+  val defaultWidth: Int = 1
+}
 
 sealed trait LineStyle {
   def value: String
