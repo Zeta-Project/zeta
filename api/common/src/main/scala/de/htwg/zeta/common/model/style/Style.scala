@@ -9,5 +9,5 @@ case class Style(
     transparency: Double
 )
 object Style {
-  val defaultTransparency: Double = 0
+  val defaultTransparency: Double = 1.0
 }
