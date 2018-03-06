@@ -5,10 +5,15 @@ import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
+import de.htwg.zeta.common.model.style
 import de.htwg.zeta.common.model.style.Background
 import de.htwg.zeta.common.model.style.Color
+import de.htwg.zeta.common.model.style.Dashed
+import de.htwg.zeta.common.model.style.Dotted
+import de.htwg.zeta.common.model.style.DoubleLine
 import de.htwg.zeta.common.model.style.Font
 import de.htwg.zeta.common.model.style.Line
+import de.htwg.zeta.common.model.style.Solid
 import de.htwg.zeta.common.model.style.Style
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.FindDuplicates
@@ -50,6 +55,14 @@ object StyleParseTreeTransformer {
       new CollectAttributeWrapper(attribute)
     }
 
+    def transformLineStyle(string: String): style.LineStyle = string match {
+      case "dotted" => Dotted()
+      case "solid" => Solid()
+      case "double" => DoubleLine()
+      case "dash" => Dashed()
+      case _ => Line.defaultStyle
+    }
+
     new Style(
       name = styleParseTree.name,
       description = styleParseTree.description,
@@ -68,13 +81,14 @@ object StyleParseTreeTransformer {
           .getOrElse(Font.defaultName),
         size = collectAttribute[FontSize].map(_.size)
           .getOrElse(Font.defaultSize),
-        transparent = ??? // TODO
+        transparent = Font.defaultTransparent // TODO
       ),
       line = new Line(
         color = collectAttribute[LineColor].map(lc => Color(lc.color))
           .getOrElse(Line.defaultColor),
-        style = ???, //collectAttribute[LineStyle].map(_.style).flatMap(OldLineStyle.getIfValid)
-        transparent = ???,
+        style = collectAttribute[LineStyle].map(_.style).map(transformLineStyle)
+          .getOrElse(Line.defaultStyle),
+        transparent = Line.defaultTransparent, // TODO
         width = collectAttribute[LineWidth].map(_.width)
           .getOrElse(Line.defaultWidth)
       ),
