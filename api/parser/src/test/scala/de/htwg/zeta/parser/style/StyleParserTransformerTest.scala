@@ -33,21 +33,23 @@ class StyleParserTransformerTest extends FlatSpec with Matchers {
     val styleParser = parser.parseStyles(styleToTestSuccess)
     styleParser.successful shouldBe true
 
-    val style = StyleParseTreeTransformer.transform(styleParser.get).getOrElse(List()).head
-    style.name shouldBe "Y"
-    style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
-    style.background.color shouldBe Color("255,255,255")
-    style.font.name shouldBe "Helvetica"
-    style.font.bold shouldBe true
-    style.font.color shouldBe Color("0,0,0")
-    style.font.italic shouldBe true
-    style.font.size shouldBe 20
-    style.font.transparent shouldBe false
-    style.line.color shouldBe Color("0,0,0")
-    style.line.style shouldBe Dashed()
-    style.line.transparent shouldBe false
-    style.line.width shouldBe 1
-    style.transparency shouldBe 1.0
+    StyleParseTreeTransformer.transform(styleParser.get).getOrElse(List())
+      .headOption.fold(fail())(style => {
+      style.name shouldBe "Y"
+      style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
+      style.background.color shouldBe Color(255, 255, 255)
+      style.font.name shouldBe "Helvetica"
+      style.font.bold shouldBe true
+      style.font.color shouldBe Color(0, 0, 0)
+      style.font.italic shouldBe true
+      style.font.size shouldBe 20
+      style.font.transparent shouldBe false
+      style.line.color shouldBe Color(0, 0, 0)
+      style.line.style shouldBe Dashed()
+      style.line.transparent shouldBe false
+      style.line.width shouldBe 1
+      style.transparency shouldBe 1.0
+    })
   }
 
   val styleToTestColors: String =
@@ -64,10 +66,12 @@ class StyleParserTransformerTest extends FlatSpec with Matchers {
     val styleParser = parser.parseStyles(styleToTestColors)
     styleParser.successful shouldBe true
 
-    val style = StyleParseTreeTransformer.transform(styleParser.get).getOrElse(List()).head
-    style.background.color shouldBe Color("255,165,0")
-    style.line.color shouldBe Color("128,128,128")
-    style.font.color shouldBe Color("0,128,0")
+    StyleParseTreeTransformer.transform(styleParser.get).getOrElse(List())
+      .headOption.fold(fail())(style => {
+      style.background.color shouldBe Color(255, 165, 0)
+      style.line.color shouldBe Color(128, 128, 128)
+      style.font.color shouldBe Color(0, 128, 0)
+    })
   }
 
 }
