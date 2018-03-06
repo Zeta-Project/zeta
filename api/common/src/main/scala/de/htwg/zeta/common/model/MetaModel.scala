@@ -8,5 +8,5 @@ case class MetaModel(
     id: String,
     diagrams: List[Diagram],
     styles: List[Style],
-    shapes: List[Shape]
+    shape: Shape
 )

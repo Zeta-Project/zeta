@@ -1,3 +1,6 @@
 package de.htwg.zeta.common.model.diagram
 
-class Diagram()
+case class Diagram(
+    name: String,
+    palettes: Palette
+)
