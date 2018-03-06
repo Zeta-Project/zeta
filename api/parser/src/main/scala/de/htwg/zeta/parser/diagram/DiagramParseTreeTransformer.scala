@@ -7,7 +7,6 @@ import scalaz.Validation
 import de.htwg.zeta.common.model.diagram.Diagram
 import de.htwg.zeta.common.model.diagram.Palette
 import de.htwg.zeta.common.model.shape.Node
-import de.htwg.zeta.parser.Checker
 import de.htwg.zeta.parser.ErrorChecker
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.Check.Id
@@ -47,10 +46,10 @@ object DiagramParseTreeTransformer {
     }
 
     ErrorChecker()
-      .add(Checker(ids => s"The following diagrams are defined multiple times: $ids", findDuplicateDiagrams))
-      .add(Checker(ids => s"The following palettes are defined multiple times: $ids", findDuplicatePalettes))
-      .add(Checker(ids => s"The following nodes are defined multiple times: $ids", findDuplicateNodes))
-      .add(Checker(ids => s"The following nodes are not defined in shape: $ids", findInvalidNodeIds))
+      .add(ids => s"The following diagrams are defined multiple times: $ids", findDuplicateDiagrams)
+      .add(ids => s"The following palettes are defined multiple times: $ids", findDuplicatePalettes)
+      .add(ids => s"The following nodes are defined multiple times: $ids", findDuplicateNodes)
+      .add(ids => s"The following nodes are not defined in shape: $ids", findInvalidNodeIds)
       .run()
   }
 
