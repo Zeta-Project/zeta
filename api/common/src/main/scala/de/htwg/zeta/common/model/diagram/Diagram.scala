@@ -2,5 +2,5 @@ package de.htwg.zeta.common.model.diagram
 
 case class Diagram(
     name: String,
-    palettes: Palette
+    palettes: List[Palette]
 )
