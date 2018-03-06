@@ -206,8 +206,8 @@ object ShapeParseTreeTransformer {
       .add(ids => s"The following shapes are defined multiple times: $ids", checkForDuplicateShapes)
       .add(ids => s"The following edges are referenced but not defined: $ids", checkForUndefinedEdges)
       .add(ids => s"The following styles are referenced but not defined: $ids", checkForUndefinedStyles)
-      .add(ids => s"Error in concept check TODO: $ids", checkForUndefinedNodeConceptElements()) // TODO
-      .add(ids => s"Error in concept check TODO: $ids", checkForUndefinedEdgeConceptElements()) // TODO
+      .add(errors => s"$errors", checkForUndefinedNodeConceptElements())
+      .add(errors => s"$errors", checkForUndefinedEdgeConceptElements())
       .run()
   }
 
