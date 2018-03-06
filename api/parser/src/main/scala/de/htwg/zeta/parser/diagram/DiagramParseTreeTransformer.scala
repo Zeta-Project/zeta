@@ -7,9 +7,9 @@ import scalaz.Validation
 import de.htwg.zeta.common.model.diagram.Diagram
 import de.htwg.zeta.common.model.diagram.Palette
 import de.htwg.zeta.common.model.shape.Node
-import de.htwg.zeta.parser.ErrorChecker
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.Check.Id
+import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.check.FindDuplicates
 import de.htwg.zeta.parser.check.FindInvalidReferences
 
