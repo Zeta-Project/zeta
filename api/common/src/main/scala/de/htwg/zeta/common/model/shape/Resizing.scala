@@ -5,3 +5,9 @@ case class Resizing(
     vertical: Boolean,
     proportional: Boolean
 )
+
+object Resizing {
+  val defaultHorizontal: Boolean = false
+  val defaultVertical: Boolean = false
+  val defaultProportional: Boolean = false
+}

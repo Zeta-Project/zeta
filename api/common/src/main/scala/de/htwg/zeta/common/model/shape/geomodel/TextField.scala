@@ -12,3 +12,16 @@ case class TextField(
     childGeoModels: List[GeoModel],
     style: Style
 ) extends GeoModel
+
+object TextField {
+  val default: TextField = TextField(
+    identifier = "default",
+    size = Size.default,
+    position = Position.default,
+    editable = false,
+    multiline = false,
+    align = Align.default,
+    childGeoModels = List(),
+    style = Style.defaultStyle
+  )
+}

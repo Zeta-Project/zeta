@@ -70,34 +70,23 @@ object StyleParseTreeTransformer {
       name = styleParseTree.name,
       description = styleParseTree.description,
       background = new Background(
-        color = styleAttributes.?[BackgroundColor]
-          .map(_.color)
-          .map(Color(_))
-          .getOrElse(Background.defaultColor)
+        color = styleAttributes.?[BackgroundColor].map(c => Color(c.color)).getOrElse(Background.defaultColor)
       ),
       font = new Font(
         bold = styleAttributes.?[FontBold].map(_.bold).getOrElse(Font.defaultBold),
-        color = styleAttributes.?[FontColor].map(fc => Color(fc.color))
-          .getOrElse(Font.defaultColor),
-        italic = styleAttributes.?[FontItalic].map(_.italic)
-          .getOrElse(Font.defaultItalic),
-        name = styleAttributes.?[FontName].map(_.name)
-          .getOrElse(Font.defaultName),
-        size = styleAttributes.?[FontSize].map(_.size)
-          .getOrElse(Font.defaultSize),
+        color = styleAttributes.?[FontColor].map(fc => Color(fc.color)).getOrElse(Font.defaultColor),
+        italic = styleAttributes.?[FontItalic].map(_.italic).getOrElse(Font.defaultItalic),
+        name = styleAttributes.?[FontName].map(_.name).getOrElse(Font.defaultName),
+        size = styleAttributes.?[FontSize].map(_.size).getOrElse(Font.defaultSize),
         transparent = Font.defaultTransparent // TODO
       ),
       line = new Line(
-        color = styleAttributes.?[LineColor].map(lc => Color(lc.color))
-          .getOrElse(Line.defaultColor),
-        style = styleAttributes.?[LineStyle].map(_.style).map(transformLineStyle)
-          .getOrElse(Line.defaultStyle),
+        color = styleAttributes.?[LineColor].map(lc => Color(lc.color)).getOrElse(Line.defaultColor),
+        style = styleAttributes.?[LineStyle].map(_.style).map(transformLineStyle).getOrElse(Line.defaultStyle),
         transparent = Line.defaultTransparent, // TODO
-        width = styleAttributes.?[LineWidth].map(_.width)
-          .getOrElse(Line.defaultWidth)
+        width = styleAttributes.?[LineWidth].map(_.width).getOrElse(Line.defaultWidth)
       ),
-      transparency = styleAttributes.?[Transparency].map(_.transparency)
-        .getOrElse(Style.defaultTransparency)
+      transparency = styleAttributes.?[Transparency].map(_.transparency).getOrElse(Style.defaultTransparency)
     )
   }
 
