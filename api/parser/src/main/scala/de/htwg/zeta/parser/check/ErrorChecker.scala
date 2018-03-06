@@ -1,4 +1,4 @@
-package de.htwg.zeta.parser
+package de.htwg.zeta.parser.check
 
 import de.htwg.zeta.parser.check.Check.Id
 
@@ -7,7 +7,7 @@ case class Checker(message: (String) => String, check: () => List[Id])
 case class ErrorChecker(checks: List[Checker]) {
   def add(check: Checker): ErrorChecker = copy(checks = checks :+ check)
 
-  def add(message: (String) => String, check: () => List[Id]): ErrorChecker = copy(checks = checks :+ Checker(message, check))
+  def add(message: (String) => String, check: () => List[Id]): ErrorChecker = add(Checker(message, check))
 
   def run(): List[String] = checks.map(check => check.check() match {
     case Nil => None

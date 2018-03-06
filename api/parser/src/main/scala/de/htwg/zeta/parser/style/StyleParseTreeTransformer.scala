@@ -15,8 +15,8 @@ import de.htwg.zeta.common.model.style.Line
 import de.htwg.zeta.common.model.style.Solid
 import de.htwg.zeta.common.model.style.Style
 import de.htwg.zeta.parser.Collector
-import de.htwg.zeta.parser.ErrorChecker
 import de.htwg.zeta.parser.check.Check.Id
+import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.check.FindDuplicates
 import de.htwg.zeta.parser.check.FindGraphCycles
 import de.htwg.zeta.parser.check.FindUndefinedElements
