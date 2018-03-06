@@ -13,7 +13,7 @@ import joint from 'jointjs';
 import Backbone from 'backbone1.0';
 import chat from './graphical-editor/model/ext/chat';
 import { CommonInspectorInputs, CommonInspectorGroups, inp } from './graphical-editor/model/inspector';
-import Stencil from '../src/graphical-editor/model/generator/old/stencil';
+import Stencil from './graphical-editor/model/generator/tmp/old/stencil';
 import Main from './graphical-editor/model';
 
 $(document).ready(function() {

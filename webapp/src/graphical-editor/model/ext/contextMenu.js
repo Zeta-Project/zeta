@@ -1,7 +1,7 @@
-import {linkhelper} from '../../model/generator/old/linkhelper'
-import {validator} from '../../model/generator/old/validator'
-import{getConnectionStyle,getPlacings,getLabels} from "../generator/old/connectionstyle";
-import '../generator/old/connectionstyle';
+import {linkhelper} from '../generator/tmp/old/linkhelper'
+import {validator} from '../generator/tmp/old/validator'
+import{getConnectionStyle,getPlacings,getLabels} from "../generator/tmp/old/connectionstyle";
+import '../generator/tmp/old/connectionstyle';
 
 var contextMenu = {
      DEBUG: false,
