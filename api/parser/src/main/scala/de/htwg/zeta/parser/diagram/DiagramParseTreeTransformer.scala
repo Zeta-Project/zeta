@@ -7,6 +7,8 @@ import scalaz.Validation
 import de.htwg.zeta.common.model.diagram.Diagram
 import de.htwg.zeta.common.model.diagram.Palette
 import de.htwg.zeta.common.model.shape.Node
+import de.htwg.zeta.parser.Checker
+import de.htwg.zeta.parser.ErrorChecker
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.FindDuplicates
@@ -24,45 +26,32 @@ object DiagramParseTreeTransformer {
 
   private def checkForErrors(diagrams: List[DiagramParseTree], nodes: ReferenceCollector[Node]): List[String] = {
 
-    def findDuplicateDiagrams(): List[String] = {
+    def findDuplicateDiagrams(): List[Id] = {
       val findDuplicates = FindDuplicates[DiagramParseTree](_.name)
       findDuplicates(diagrams)
     }
 
-    def findDuplicatePalettes(): List[String] = {
+    def findDuplicatePalettes(): List[Id] = {
       val findDuplicates = FindDuplicates[PaletteParseTree](_.name)
       diagrams.map(_.palettes).flatMap(findDuplicates(_))
     }
 
-    def findDuplicateNodes(): List[String] = {
+    def findDuplicateNodes(): List[Id] = {
       val findDuplicates = FindDuplicates[NodeParseTree](_.name)
       diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findDuplicates(_))
     }
 
-    def findInvalidNodeIds(): List[String] = {
+    def findInvalidNodeIds(): List[Id] = {
       val findInvalidIds = FindInvalidReferences[NodeParseTree](_.name, nodes.identifiers())
       diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findInvalidIds(_))
     }
 
-    val duplicateDiagrams = findDuplicateDiagrams()
-    val duplicatePalettes = findDuplicatePalettes()
-    val duplicateNodes = findDuplicateNodes()
-    val invalidNodeIds = findInvalidNodeIds()
-
-    val maybeErrors = List(
-      createErrorIfNotEmpty("The following diagrams are defined multiple times: ", duplicateDiagrams),
-      createErrorIfNotEmpty("The following palettes are defined multiple times: ", duplicatePalettes),
-      createErrorIfNotEmpty("The following nodes are defined multiple times: ", duplicateNodes),
-      createErrorIfNotEmpty("The following nodes are not defined in shape: ", invalidNodeIds)
-    )
-    maybeErrors.collect {
-      case Some(error) => error
-    }
-  }
-
-  private def createErrorIfNotEmpty(errorMessage: String, errorIds: List[Id]): Option[String] = errorIds match {
-    case Nil => None
-    case _ => Some(errorMessage + errorIds.mkString(","))
+    ErrorChecker()
+      .add(Checker(ids => s"The following diagrams are defined multiple times: $ids", findDuplicateDiagrams))
+      .add(Checker(ids => s"The following palettes are defined multiple times: $ids", findDuplicatePalettes))
+      .add(Checker(ids => s"The following nodes are defined multiple times: $ids", findDuplicateNodes))
+      .add(Checker(ids => s"The following nodes are not defined in shape: $ids", findInvalidNodeIds))
+      .run()
   }
 
   private def transform(diagramTree: DiagramParseTree, nodes: ReferenceCollector[Node]): Diagram = {
