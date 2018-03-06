@@ -15,6 +15,7 @@ import de.htwg.zeta.common.model.style.Line
 import de.htwg.zeta.common.model.style.Solid
 import de.htwg.zeta.common.model.style.Style
 import de.htwg.zeta.parser.Collector
+import de.htwg.zeta.parser.ErrorChecker
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.FindDuplicates
 import de.htwg.zeta.parser.check.FindGraphCycles
@@ -30,16 +31,27 @@ object StyleParseTreeTransformer {
   }
 
   private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] = {
-    val toId: StyleParseTree => Id = _.name
-    val getParentIds: StyleParseTree => List[Id] = _.parentStyles
-    val toElement: Id => Option[StyleParseTree] = id => styleTrees.find(_.name == id)
 
-    val findDuplicates = FindDuplicates[StyleParseTree](toId)
-    val findUndefinedParents = FindUndefinedElements[StyleParseTree](toId, getParentIds)
-    val findGraphCycles = FindGraphCycles[StyleParseTree](toId, toElement, getParentIds)
+    def findDuplicateStyles(): List[Id] = {
+      val findDuplicates = FindDuplicates[StyleParseTree](_.name)
+      findDuplicates(styleTrees)
+    }
 
-    val checks = List(findDuplicates, findUndefinedParents, findGraphCycles)
-    checks.flatMap(check => check(styleTrees))
+    def findUndefinedParents(): List[Id] = {
+      val findUndefined = FindUndefinedElements[StyleParseTree](_.name, _.parentStyles)
+      findUndefined(styleTrees)
+    }
+
+    def findGraphCycles(): List[Id] = {
+      val findCycles = FindGraphCycles[StyleParseTree](_.name, id => styleTrees.find(_.name == id), _.parentStyles)
+      findCycles(styleTrees)
+    }
+
+    ErrorChecker()
+      .add(ids => s"The following styles are defined multiple times: $ids", findDuplicateStyles)
+      .add(ids => s"The following styles are referenced as parent but not defined: $ids", findUndefinedParents)
+      .add(ids => s"The following styles defines a graph circle with its parent styles: $ids", findGraphCycles)
+      .run()
   }
 
   def transform(styleParseTree: StyleParseTree): Style = {
