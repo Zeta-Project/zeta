@@ -6,57 +6,60 @@
       "elements": [
         {
           "type": "rectangle",
+          "id": "rectangle1",
           "sizeHeight": 50,
           "sizeWidth": 200,
           "position": {
             "x": 0,
             "y": 0
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text1",
-              "textBody": "Klasse",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text1"
+        },
+        {
+          "type": "text",
+          "id": "text1",
+          "textBody": "Klasse",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle1"
         },
         {
           "type": "rectangle",
+          "id": "rectangle2",
           "sizeHeight": 100,
           "sizeWidth": 200,
           "position": {
             "x": 0,
             "y": 50
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text2",
-              "textBody": "Attribute",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text2"
+        },
+        {
+          "type": "text",
+          "id": "text2",
+          "textBody": "Attribute",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle2"
         },
         {
           "type": "rectangle",
+          "id": "rectangle3",
           "sizeHeight": 100,
           "sizeWidth": 200,
           "position": {
             "x": 0,
             "y": 150
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text3",
-              "textBody": "Methoden",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text3"
+        },
+        {
+          "type": "text",
+          "id": "text3",
+          "textBody": "Methoden",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle3"
         }
       ]
     },
@@ -66,57 +69,60 @@
       "elements": [
         {
           "type": "rectangle",
+          "id": "rectangle11",
           "sizeHeight": 50,
           "sizeWidth": 200,
           "position": {
             "x": 10,
             "y": 0
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text11",
-              "textBody": "<<AbstractClass>>",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text11"
+        },
+        {
+          "type": "text",
+          "id": "text11",
+          "textBody": "<<AbstractClass>>",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle11"
         },
         {
           "type": "rectangle",
+          "id": "rectangle21",
           "sizeHeight": 100,
           "sizeWidth": 200,
           "position": {
             "x": 10,
             "y": 50
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text21",
-              "textBody": "Attribute",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text21"
+        },
+        {
+          "type": "text",
+          "id": "text21",
+          "textBody": "Attribute",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle21"
         },
         {
           "type": "rectangle",
+          "id": "rectangle31",
           "sizeHeight": 100,
           "sizeWidth": 200,
           "position": {
             "x": 10,
             "y": 150
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text31",
-              "textBody": "Methoden",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text31"
+        },
+        {
+          "type": "text",
+          "id": "text31",
+          "textBody": "Methoden",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle31"
         }
       ]
     },
@@ -126,57 +132,60 @@
       "elements": [
         {
           "type": "rectangle",
+          "id": "rectangle113",
           "sizeHeight": 50,
           "sizeWidth": 200,
           "position": {
             "x": 10,
             "y": 0
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text113",
-              "textBody": "<<Interface>>",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text113"
+        },
+        {
+          "type": "text",
+          "id": "text113",
+          "textBody": "<<Interface>>",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle113"
         },
         {
           "type": "rectangle",
+          "id": "rectangle213",
           "sizeHeight": 100,
           "sizeWidth": 200,
           "position": {
             "x": 10,
             "y": 50
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text213",
-              "textBody": "Attribute",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text213"
+        },
+        {
+          "type": "text",
+          "id": "text213",
+          "textBody": "Attribute",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle213"
         },
         {
           "type": "rectangle",
+          "id": "rectangle313",
           "sizeHeight": 100,
           "sizeWidth": 200,
           "position": {
             "x": 10,
             "y": 150
           },
-          "elements": [
-            {
-              "type": "text",
-              "id": "text313",
-              "textBody": "Methoden",
-              "sizeHeight": 40,
-              "sizeWidth": 10
-            }
-          ]
+          "children": "text313"
+        },
+        {
+          "type": "text",
+          "id": "text313",
+          "textBody": "Methoden",
+          "sizeHeight": 40,
+          "sizeWidth": 10,
+          "parent": "rectangle313"
         }
       ]
     }
