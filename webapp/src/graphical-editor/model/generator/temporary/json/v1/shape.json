@@ -1,0 +1,314 @@
+{
+  "shapes": [
+    {
+      "name": "klasse",
+      "style": "X",
+      "elements": [
+        {
+          "type": "rectangle",
+          "sizeHeight": 50,
+          "sizeWidth": 200,
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text1",
+              "textBody": "Klasse",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "sizeHeight": 100,
+          "sizeWidth": 200,
+          "position": {
+            "x": 0,
+            "y": 50
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text2",
+              "textBody": "Attribute",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "sizeHeight": 100,
+          "sizeWidth": 200,
+          "position": {
+            "x": 0,
+            "y": 150
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text3",
+              "textBody": "Methoden",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "abstractKlasse",
+      "style": "X",
+      "elements": [
+        {
+          "type": "rectangle",
+          "sizeHeight": 50,
+          "sizeWidth": 200,
+          "position": {
+            "x": 10,
+            "y": 0
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text11",
+              "textBody": "<<AbstractClass>>",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "sizeHeight": 100,
+          "sizeWidth": 200,
+          "position": {
+            "x": 10,
+            "y": 50
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text21",
+              "textBody": "Attribute",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "sizeHeight": 100,
+          "sizeWidth": 200,
+          "position": {
+            "x": 10,
+            "y": 150
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text31",
+              "textBody": "Methoden",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "interface",
+      "style": "X",
+      "elements": [
+        {
+          "type": "rectangle",
+          "sizeHeight": 50,
+          "sizeWidth": 200,
+          "position": {
+            "x": 10,
+            "y": 0
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text113",
+              "textBody": "<<Interface>>",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "sizeHeight": 100,
+          "sizeWidth": 200,
+          "position": {
+            "x": 10,
+            "y": 50
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text213",
+              "textBody": "Attribute",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "sizeHeight": 100,
+          "sizeWidth": 200,
+          "position": {
+            "x": 10,
+            "y": 150
+          },
+          "elements": [
+            {
+              "type": "text",
+              "id": "text313",
+              "textBody": "Methoden",
+              "sizeHeight": 40,
+              "sizeWidth": 10
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "name": "inheritance",
+      "style": "X",
+      "placings": [
+        {
+          "positionOffset": 1.0,
+          "shape": {
+            "type": "polygon",
+            "points": [
+              {
+                "x": -10,
+                "y": 10
+              },
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": -10,
+                "y": -10
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "realization",
+      "style": "X",
+      "placings": [
+        {
+          "positionOffset": 1.0,
+          "shape": {
+            "type": "polygon",
+            "points": [
+              {
+                "x": -10,
+                "y": 10
+              },
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": -10,
+                "y": -10
+              }
+            ],
+            "style": {
+              "line": {
+                "style": "SOLID"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "component",
+      "style": "X",
+      "placings": [
+        {
+          "positionOffset": 1.0,
+          "shape": {
+            "type": "polygon",
+            "points": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": 20,
+                "y": 10
+              },
+              {
+                "x": 40,
+                "y": 0
+              },
+              {
+                "x": 20,
+                "y": -10
+              }
+            ],
+            "style": {
+              "background": {
+                "color": "#000000"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "aggregation",
+      "style": "X",
+      "placings": [
+        {
+          "positionOffset": 1.0,
+          "shape": {
+            "type": "polygon",
+            "points": [
+              {
+                "x": 0,
+                "y": 0
+              },
+              {
+                "x": -20,
+                "y": 10
+              },
+              {
+                "x": -40,
+                "y": 0
+              },
+              {
+                "x": -20,
+                "y": -10
+              }
+            ],
+            "style": {
+              "background": {
+                "color": "#FFFFFF"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
