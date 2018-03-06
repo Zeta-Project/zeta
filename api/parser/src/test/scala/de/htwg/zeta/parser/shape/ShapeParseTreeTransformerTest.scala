@@ -190,7 +190,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transformShapes(shapeParseTrees, styles, concept)
         result shouldBe Failure(
-          List("Textfield identifier 'noSuchAttribute' not found!")
+          List("Textfield identifier 'noSuchAttribute' not found or it has return type 'Unit'!")
         )
       }
 

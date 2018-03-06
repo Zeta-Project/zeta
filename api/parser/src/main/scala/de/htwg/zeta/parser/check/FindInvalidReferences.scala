@@ -22,3 +22,6 @@ class FindInvalidReferences[T](toId: T => Id, available: List[Id]) extends Check
   }
 
 }
+object FindInvalidReferences {
+  def apply[T](toId: T => Id, available: List[Id]): FindInvalidReferences[T] = new FindInvalidReferences[T](toId, available)
+}

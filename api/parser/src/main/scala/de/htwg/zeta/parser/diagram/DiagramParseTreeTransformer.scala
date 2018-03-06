@@ -25,22 +25,22 @@ object DiagramParseTreeTransformer {
   private def checkForErrors(diagrams: List[DiagramParseTree], nodes: ReferenceCollector[Node]): List[String] = {
 
     def findDuplicateDiagrams(): List[String] = {
-      val findDuplicates = new FindDuplicates[DiagramParseTree](_.name)
+      val findDuplicates = FindDuplicates[DiagramParseTree](_.name)
       findDuplicates(diagrams)
     }
 
     def findDuplicatePalettes(): List[String] = {
-      val findDuplicates = new FindDuplicates[PaletteParseTree](_.name)
+      val findDuplicates = FindDuplicates[PaletteParseTree](_.name)
       diagrams.map(_.palettes).flatMap(findDuplicates(_))
     }
 
     def findDuplicateNodes(): List[String] = {
-      val findDuplicates = new FindDuplicates[NodeParseTree](_.name)
+      val findDuplicates = FindDuplicates[NodeParseTree](_.name)
       diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findDuplicates(_))
     }
 
     def findInvalidNodeIds(): List[String] = {
-      val findInvalidIds = new FindInvalidReferences[NodeParseTree](_.name, nodes.identifiers())
+      val findInvalidIds = FindInvalidReferences[NodeParseTree](_.name, nodes.identifiers())
       diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findInvalidIds(_))
     }
 
