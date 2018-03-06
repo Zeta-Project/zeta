@@ -1,3 +1,6 @@
 package de.htwg.zeta.common.model.shape.geomodel
 
-trait GeoModel
+case class Point(
+    x: Int,
+    y: Int
+)
