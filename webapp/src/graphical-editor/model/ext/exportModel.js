@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import {linkhelper} from '../../model/generator/old/linkhelper'
+import {linkhelper} from '../generator/tmp/old/linkhelper'
 
 export default (function modelExporter () {
     'use strict';
