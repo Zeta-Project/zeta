@@ -27,6 +27,7 @@ import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.GraphicalDslRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
+import de.htwg.zeta.server.controller.restApi.DslRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
 import org.webjars.play.WebJarAssets
 
@@ -58,4 +59,5 @@ class WebControllerContainer @Inject() private(
     val bondedTaskRestApi: Provider[BondedTaskRestApi],
     val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi],
     val timedTaskRestApi: Provider[TimedTaskRestApi],
-    val fileRestApi: Provider[FileRestApi])
+    val fileRestApi: Provider[FileRestApi],
+    val dslRestApi: Provider[DslRestApi])
