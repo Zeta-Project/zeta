@@ -205,6 +205,10 @@ class ScalaRoutes @Inject()(
   /* ### File REST API */
   def getFiles(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(FileRestApi.get(id, name) _)
   def putFiles(id: UUID, name: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, FileRestApi.update(id, name) _)
+  /* ### DSL REST API */
+  def getDslV1(id: UUID, apiType: String): Action[AnyContent] = AuthenticatedGet(DslRestApi.getV1(id, apiType) _)
+  def getDslV2(id: UUID, apiType: String): Action[AnyContent] = AuthenticatedGet(DslRestApi.getV2(id, apiType) _)
+
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
