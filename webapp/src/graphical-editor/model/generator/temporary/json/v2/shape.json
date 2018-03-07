@@ -1,0 +1,403 @@
+{
+  "shapes": {
+    "nodes": [
+      {
+        "name": "classNode",
+        "conceptElement": "Klasse",
+        "style": "X",
+        "edges": [
+          "inheritance",
+          "BaseClassRealization",
+          "component",
+          "aggregation"
+        ],
+        "geoModels": [
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 50
+            },
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Klasse"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 0,
+              "y": 50
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Attribute"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 0,
+              "y": 150
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Methoden"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "abClassNode",
+        "conceptElement": "AbstractKlasse",
+        "style": "X",
+        "edges": [
+          "realization"
+        ],
+        "geoModels": [
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 50
+            },
+            "position": {
+              "x": 10,
+              "y": 0
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "<<AbstractClass>>"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 50
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Attribute"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 150
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Methoden"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "inClassNode",
+        "conceptElement": "InterfaceKlasse",
+        "style": "X",
+        "edges": [
+        ],
+        "geoModels": [
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 50
+            },
+            "position": {
+              "x": 10,
+              "y": 0
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "<<Interface>>"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 50
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Attribute"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 150
+            },
+            "childGeoModels": [
+              {
+                "type": "statictext",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Methoden"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "name": "inheritance",
+        "style": "X",
+        "conceptElement": "Inheritance",
+        "target": "AbstractKlasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoModel": {
+              "type": "polygon",
+              "points": [
+                {
+                  "x": -10,
+                  "y": 10
+                },
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -10,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "realization",
+        "style": "Y",
+        "conceptElement": "Realization",
+        "target": "InterfaceKlasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoModel": {
+              "type": "polygon",
+              "style": {
+                "line": {
+                  "style": "SOLID"
+                }
+              },
+              "points": [
+                {
+                  "x": -10,
+                  "y": 10
+                },
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -10,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "component",
+        "style": "X",
+        "conceptElement": "Component",
+        "target": "Klasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoModel": {
+              "type": "polygon",
+              "style": {
+                "background-color": "rgba(0, 0, 0, 1)"
+              },
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": 20,
+                  "y": 10
+                },
+                {
+                  "x": 40,
+                  "y": 0
+                },
+                {
+                  "x": 20,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "aggregation",
+        "style": "X",
+        "conceptElement": "Aggregation",
+        "target": "Klasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoModel": {
+              "type": "polygon",
+              "style": {
+                "background-color": "rgba(255, 255, 255, 1)"
+              },
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -20,
+                  "y": 10
+                },
+                {
+                  "x": -40,
+                  "y": 0
+                },
+                {
+                  "x": -20,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "BaseClassRealization",
+        "style": "Y",
+        "conceptElement": "BaseClassRealization",
+        "target": "InterfaceKlasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoModel": {
+              "type": "polygon",
+              "style": {
+                "line": {
+                  "style": "SOLID"
+                }
+              },
+              "points": [
+                {
+                  "x": -10,
+                  "y": 10
+                },
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -10,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
