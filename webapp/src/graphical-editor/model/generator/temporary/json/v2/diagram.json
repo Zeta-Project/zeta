@@ -1,0 +1,27 @@
+{
+  "diagrams": [
+    {
+      "name": "klassendiagramm1",
+      "palettes": [
+        {
+          "name": "Class",
+          "nodes": [
+            "classNode"
+          ]
+        },
+        {
+          "name": "AbstractClass",
+          "nodes": [
+            "abClassNode"
+          ]
+        },
+        {
+          "name": "Interface",
+          "nodes": [
+            "inClassNode"
+          ]
+        }
+      ]
+    }
+  ]
+}
