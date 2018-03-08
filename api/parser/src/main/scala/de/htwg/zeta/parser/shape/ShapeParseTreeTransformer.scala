@@ -1,6 +1,5 @@
 package de.htwg.zeta.parser.shape
 
-import scala.collection.mutable.ListBuffer
 import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
@@ -28,19 +27,18 @@ import de.htwg.zeta.common.model.shape.geomodel.TextField
 import de.htwg.zeta.common.model.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.model.style.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.parser.ReferenceCollector
-import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorChecker
-import de.htwg.zeta.parser.check.FindDuplicates
+import de.htwg.zeta.parser.shape.check.CheckEdgesForUndefinedConceptElements
+import de.htwg.zeta.parser.shape.check.CheckForDuplicateShapes
+import de.htwg.zeta.parser.shape.check.CheckForUndefinedEdges
+import de.htwg.zeta.parser.shape.check.CheckForUndefinedStyles
+import de.htwg.zeta.parser.shape.check.CheckNodesForUndefinedConceptElements
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HasIdentifier
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.PolygonParseTree
@@ -70,146 +68,14 @@ object ShapeParseTreeTransformer {
     }
   }
 
-  private def checkForErrors(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style], concept: Concept): List[String] = {
-
-    // check if there are any shapes with the same identifier
-    def checkForDuplicateShapes(): List[Id] = {
-      val findDuplicates = FindDuplicates[ShapeParseTree](_.identifier)
-      findDuplicates(shapeParseTrees)
-    }
-
-    // check if there are nodes which reference an edge which is not defined
-    def checkForUndefinedEdges(): List[Id] = {
-      val definedEdges = shapeParseTrees.collect {
-        case edge: EdgeParseTree => edge.identifier
-      }.toSet
-      val referencedEdges = shapeParseTrees.collect {
-        case node: NodeParseTree => node.edges
-      }.flatten.toSet
-      referencedEdges.diff(definedEdges).toList
-    }
-
-    // check if there are styles referenced which are not defined
-    def checkForUndefinedStyles(): List[Id] = {
-      val referencedStyles = shapeParseTrees.collect {
-        case node: NodeParseTree =>
-          node.allGeoModels.flatMap(_.style).map(_.name) ++ node.style.map(_.name).toList
-        case edge: EdgeParseTree =>
-          edge.placings.map(_.geoModel).flatMap(_.style).map(_.name)
-      }.flatten.toSet
-      referencedStyles.diff(styles.identifiers().toSet).toList
-    }
-
-    def checkForUndefinedNodeConceptElements(): () => List[Id] = {
-      val nodes = shapeParseTrees.collect { case n: NodeParseTree => n }
-      () => checkNodesForUndefinedConceptElements(nodes, concept)
-    }
-
-    def checkForUndefinedEdgeConceptElements(): () => List[Id] = {
-      val edges = shapeParseTrees.collect { case e: EdgeParseTree => e }
-      () => checkEdgesForUndefinedConceptElements(edges, concept)
-    }
-
-    //noinspection ScalaStyle
-    // this thing is a mess!
-    def checkNodesForUndefinedConceptElements(nodeParseTrees: List[NodeParseTree], concept: Concept): List[Id] = {
-      var errors = new ListBuffer[String]()
-
-      // check if there is an attribute or method with name 'identifier' in class 'context'
-      def isValidIdentifier(identifier: String, context: MClass): Boolean = {
-        val maybeAttribute = context.attributes.find(_.name == identifier)
-        val maybeMethod = context.methods.find(_.name == identifier)
-        (maybeAttribute, maybeMethod) match {
-          // attribute type / method return type may not be unit!
-          case (Some(attr), _) if attr.typ != UnitType => true
-          case (_, Some(method)) if method.returnType != UnitType => true
-          case (_, _) => false
-        }
-      }
-
-      // check if a specified identifier is in a valid context
-      def checkConceptIdentifier(geoModel: GeoModelParseTree with HasIdentifier, contexts: Map[String, MClass]): Unit = {
-        val (prefix, identifier) = geoModel.identifier.split
-        contexts.get(prefix) match {
-          case None =>
-            errors += s"Illegal prefix '$prefix' specified!"
-          case Some(context) if !isValidIdentifier(identifier, context) =>
-            errors += s"Textfield identifier '$identifier' not found or it has return type 'Unit'!"
-          case _ => // identifier is valid in the given context
-        }
-        geoModel.children.foreach(child => check(child, contexts))
-      }
-
-      def getReferenceOrThrow(referenceName: String): MReference = {
-        concept.references.find(_.name == referenceName)
-          .getOrElse(throw new Exception(s"Concept model is invalid! Reference '$referenceName' does not exist!"))
-      }
-
-      def getClassOrThrow(className: String): MClass = {
-        concept.classes.find(_.name == className)
-          .getOrElse(throw new Exception(s"Concept model is invalid! Class '$className' does not exist!"))
-      }
-
-      def checkConceptReference(repeatingBox: RepeatingBoxParseTree, contexts: Map[String, MClass]): Unit = {
-
-        // check if there is already a context with this prefix
-        val newPrefix = repeatingBox.foreach.as
-        if (contexts.contains(newPrefix)) {
-          errors += s"Prefix '$newPrefix' already defined in outer scope!"
-          return
-        }
-
-        val (prefix, referenceName) = repeatingBox.foreach.each.split
-        contexts.get(prefix) match {
-          case None =>
-            errors += s"RepeatingBox reference name '$referenceName' not found!"
-          case Some(context) if !context.outputReferenceNames.contains(referenceName) =>
-            errors += s"Concept class '${context.name}' has no reference named '$referenceName'!"
-          case Some(_) =>
-            val reference = getReferenceOrThrow(referenceName)
-            val newContext = getClassOrThrow(reference.targetClassName)
-            val updatedContexts = contexts + (newPrefix -> newContext)
-            repeatingBox.children.foreach(child => check(child, updatedContexts))
-        }
-      }
-
-      def check(geoModel: GeoModelParseTree, contexts: Map[String, MClass]): Unit = geoModel match {
-        case geoModel: HasIdentifier =>
-          checkConceptIdentifier(geoModel, contexts)
-        case repeatingBox: RepeatingBoxParseTree =>
-          checkConceptReference(repeatingBox, contexts)
-        case other: GeoModelParseTree =>
-          other.children.foreach(child => check(child, contexts))
-      }
-
-      for {node <- nodeParseTrees} {
-        val maybeClass = concept.classes.find(_.name == node.conceptClass)
-        maybeClass match {
-          case None =>
-            errors += s"Concept class '${node.conceptClass}' for node '${node.identifier}' not found!"
-          case Some(context) =>
-            val defaultPrefix = ""
-            val contexts = Map[String, MClass](defaultPrefix -> context)
-            node.geoModels.foreach(geoModel => check(geoModel, contexts))
-        }
-      }
-
-      errors.toList
-    }
-
-    // check if there are edges which reference undefined concept elements
-    def checkEdgesForUndefinedConceptElements(nodeParseTrees: List[EdgeParseTree], concept: Concept): List[String] = {
-      Nil // TODO
-    }
-
+  private def checkForErrors(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style], concept: Concept): List[String] =
     ErrorChecker()
-      .add(ids => s"The following shapes are defined multiple times: $ids", checkForDuplicateShapes)
-      .add(ids => s"The following edges are referenced but not defined: $ids", checkForUndefinedEdges)
-      .add(ids => s"The following styles are referenced but not defined: $ids", checkForUndefinedStyles)
-      .add(errors => s"$errors", checkForUndefinedNodeConceptElements())
-      .add(errors => s"$errors", checkForUndefinedEdgeConceptElements())
+      .add(ids => s"The following shapes are defined multiple times: $ids", CheckForDuplicateShapes(shapeParseTrees).check)
+      .add(ids => s"The following edges are referenced but not defined: $ids", CheckForUndefinedEdges(shapeParseTrees).check)
+      .add(ids => s"The following styles are referenced but not defined: $ids", CheckForUndefinedStyles(shapeParseTrees, styles).check)
+      .add(errors => s"$errors", CheckNodesForUndefinedConceptElements(shapeParseTrees, concept).check)
+      .add(errors => s"$errors", CheckEdgesForUndefinedConceptElements(shapeParseTrees, concept).check)
       .run()
-  }
 
 
   private def doTransformShapes(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style], concept: Concept): (List[Node], List[Edge]) = {
