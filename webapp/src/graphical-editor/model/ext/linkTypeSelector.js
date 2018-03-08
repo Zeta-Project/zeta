@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import joint from 'jointjs';
-import {validator} from '../generator/temporary/old/validator'
-import {getConnectionStyle,getLabels,getPlacings} from "../generator/temporary/old/connectionstyle";
+import {validator} from '../generator/editor/ValidatorGenerator'
+import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
 
 /**
  * linkTypeSelector provides functions for creating and managing the context menu to choose a link type from.

@@ -1,7 +1,6 @@
-import {linkhelper} from '../generator/temporary/old/linkhelper'
-import {validator} from '../generator/temporary/old/validator'
-import{getConnectionStyle,getPlacings,getLabels} from "../generator/temporary/old/connectionstyle";
-import '../generator/temporary/old/connectionstyle';
+import {linkhelper} from '../generator/editor/LinkHelperGenerator'
+import {validator} from '../generator/editor/ValidatorGenerator'
+import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
 
 var contextMenu = {
      DEBUG: false,
