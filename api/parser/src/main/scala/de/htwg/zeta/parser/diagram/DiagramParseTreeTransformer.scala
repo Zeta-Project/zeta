@@ -8,10 +8,11 @@ import de.htwg.zeta.common.model.diagram.Diagram
 import de.htwg.zeta.common.model.diagram.Palette
 import de.htwg.zeta.common.model.shape.Node
 import de.htwg.zeta.parser.ReferenceCollector
-import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorChecker
-import de.htwg.zeta.parser.check.FindDuplicates
-import de.htwg.zeta.parser.check.FindInvalidReferences
+import de.htwg.zeta.parser.diagram.check.CheckDuplicateDiagrams
+import de.htwg.zeta.parser.diagram.check.CheckDuplicateNodes
+import de.htwg.zeta.parser.diagram.check.CheckDuplicatePalettes
+import de.htwg.zeta.parser.diagram.check.CheckUndefinedNodes
 
 object DiagramParseTreeTransformer {
 
@@ -23,35 +24,13 @@ object DiagramParseTreeTransformer {
     }
   }
 
-  private def checkForErrors(diagrams: List[DiagramParseTree], nodes: ReferenceCollector[Node]): List[String] = {
-
-    def findDuplicateDiagrams(): List[Id] = {
-      val findDuplicates = FindDuplicates[DiagramParseTree](_.name)
-      findDuplicates(diagrams)
-    }
-
-    def findDuplicatePalettes(): List[Id] = {
-      val findDuplicates = FindDuplicates[PaletteParseTree](_.name)
-      diagrams.map(_.palettes).flatMap(findDuplicates(_))
-    }
-
-    def findDuplicateNodes(): List[Id] = {
-      val findDuplicates = FindDuplicates[NodeParseTree](_.name)
-      diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findDuplicates(_))
-    }
-
-    def findInvalidNodeIds(): List[Id] = {
-      val findInvalidIds = FindInvalidReferences[NodeParseTree](_.name, nodes.identifiers())
-      diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findInvalidIds(_))
-    }
-
+  private def checkForErrors(diagrams: List[DiagramParseTree], nodes: ReferenceCollector[Node]): List[String] =
     ErrorChecker()
-      .add(ids => s"The following diagrams are defined multiple times: $ids", findDuplicateDiagrams)
-      .add(ids => s"The following palettes are defined multiple times: $ids", findDuplicatePalettes)
-      .add(ids => s"The following nodes are defined multiple times: $ids", findDuplicateNodes)
-      .add(ids => s"The following nodes are not defined in shape: $ids", findInvalidNodeIds)
+      .add(CheckDuplicateDiagrams(diagrams), ids => s"The following diagrams are defined multiple times: $ids")
+      .add(CheckDuplicatePalettes(diagrams), ids => s"The following palettes are defined multiple times: $ids")
+      .add(CheckDuplicateNodes(diagrams), ids => s"The following nodes are defined multiple times: $ids")
+      .add(CheckUndefinedNodes(diagrams, nodes), ids => s"The following nodes are not defined in shape: $ids")
       .run()
-  }
 
   private def transform(diagramTree: DiagramParseTree, nodes: ReferenceCollector[Node]): Diagram = {
     Diagram(
