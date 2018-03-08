@@ -15,11 +15,10 @@ import de.htwg.zeta.common.model.style.Line
 import de.htwg.zeta.common.model.style.Solid
 import de.htwg.zeta.common.model.style.Style
 import de.htwg.zeta.parser.Collector
-import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorChecker
-import de.htwg.zeta.parser.check.FindDuplicates
-import de.htwg.zeta.parser.check.FindGraphCycles
-import de.htwg.zeta.parser.check.FindUndefinedElements
+import de.htwg.zeta.parser.style.check.CheckDuplicateStyles
+import de.htwg.zeta.parser.style.check.CheckGraphCycles
+import de.htwg.zeta.parser.style.check.CheckUndefinedParents
 
 object StyleParseTreeTransformer {
 
@@ -30,29 +29,12 @@ object StyleParseTreeTransformer {
     }
   }
 
-  private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] = {
-
-    def findDuplicateStyles(): List[Id] = {
-      val findDuplicates = FindDuplicates[StyleParseTree](_.name)
-      findDuplicates(styleTrees)
-    }
-
-    def findUndefinedParents(): List[Id] = {
-      val findUndefined = FindUndefinedElements[StyleParseTree](_.name, _.parentStyles)
-      findUndefined(styleTrees)
-    }
-
-    def findGraphCycles(): List[Id] = {
-      val findCycles = FindGraphCycles[StyleParseTree](_.name, id => styleTrees.find(_.name == id), _.parentStyles)
-      findCycles(styleTrees)
-    }
-
+  private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] =
     ErrorChecker()
-      .add(ids => s"The following styles are defined multiple times: $ids", findDuplicateStyles)
-      .add(ids => s"The following styles are referenced as parent but not defined: $ids", findUndefinedParents)
-      .add(ids => s"The following styles defines a graph circle with its parent styles: $ids", findGraphCycles)
+      .add(CheckDuplicateStyles(styleTrees), ids => s"The following styles are defined multiple times: $ids")
+      .add(CheckUndefinedParents(styleTrees), ids => s"The following styles are referenced as parent but not defined: $ids")
+      .add(CheckGraphCycles(styleTrees), ids => s"The following styles defines a graph circle with its parent styles: $ids")
       .run()
-  }
 
   def transform(styleParseTree: StyleParseTree): Style = {
 
