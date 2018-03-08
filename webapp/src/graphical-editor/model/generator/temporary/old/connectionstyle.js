@@ -1,9 +1,9 @@
 //OLD
 import {getStyle} from "./style";
 
-export function getConnectionStyle(stylename) {
+export function getConnectionStyle(stylename){
     var style;
-    switch (stylename) {
+    switch(stylename){
 
         case 'inheritance':
             style = getStyle('(child_of -> XX)');
@@ -11,15 +11,15 @@ export function getConnectionStyle(stylename) {
 
             //Get inline style
             var inline = {
-                '.connection, .marker-target, .marker-source': {
+                '.connection, .marker-target, .marker-source':{
 
 
                     fill: '#ffffff',
 
-                    'fill-opacity': 1.0,
+                    'fill-opacity':1.0,
 
                     stroke: '#000000',
-                    'stroke-width': 1,
+                    'stroke-width':1,
                     'stroke-dasharray': "0"
 
                     ,
@@ -44,10 +44,10 @@ export function getConnectionStyle(stylename) {
 
                 fill: '#ffffff',
 
-                'fill-opacity': 1.0,
+                'fill-opacity':1.0,
 
                 stroke: '#000000',
-                'stroke-width': 1,
+                'stroke-width':1,
                 'stroke-dasharray': "0"
 
                 ,
@@ -70,15 +70,15 @@ export function getConnectionStyle(stylename) {
 
             //Get inline style
             var inline = {
-                '.connection, .marker-target, .marker-source': {
+                '.connection, .marker-target, .marker-source':{
 
 
                     fill: '#ffffff',
 
-                    'fill-opacity': 1.0,
+                    'fill-opacity':1.0,
 
                     stroke: '#000000',
-                    'stroke-width': 1,
+                    'stroke-width':1,
                     'stroke-dasharray': "10,10"
 
                     ,
@@ -103,10 +103,128 @@ export function getConnectionStyle(stylename) {
 
                 fill: '#ffffff',
 
-                'fill-opacity': 1.0,
+                'fill-opacity':1.0,
 
                 stroke: '#000000',
-                'stroke-width': 1,
+                'stroke-width':1,
+                'stroke-dasharray': "0"
+
+                ,
+                text: {
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                },
+            };
+            break;
+
+        case 'component':
+            style = getStyle('(child_of -> XX)');
+
+
+            //Get inline style
+            var inline = {
+                '.connection, .marker-target, .marker-source':{
+
+
+                    fill: '#ffffff',
+
+                    'fill-opacity':1.0,
+
+                    stroke: '#000000',
+                    'stroke-width':1,
+                    'stroke-dasharray': "0"
+
+                    ,
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                }
+            };
+
+            //Merge with default style
+            jQuery.extend(style, inline);
+
+            style['.marker-target'] = {
+                d: 'M 0 0 L -20 -10L -40 0L -20 10z'
+                ,
+
+
+                fill: '#000000',
+
+                'fill-opacity':1.0,
+
+                stroke: '#000000',
+                'stroke-width':1,
+                'stroke-dasharray': "0"
+
+                ,
+                text: {
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                },
+            };
+            break;
+
+        case 'aggregation':
+            style = getStyle('(child_of -> XX)');
+
+
+            //Get inline style
+            var inline = {
+                '.connection, .marker-target, .marker-source':{
+
+
+                    fill: '#ffffff',
+
+                    'fill-opacity':1.0,
+
+                    stroke: '#000000',
+                    'stroke-width':1,
+                    'stroke-dasharray': "0"
+
+                    ,
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                }
+            };
+
+            //Merge with default style
+            jQuery.extend(style, inline);
+
+            style['.marker-target'] = {
+                d: 'M 0 0 L 20 -10L 40 0L 20 10z'
+                ,
+
+
+                fill: '#ffffff',
+
+                'fill-opacity':1.0,
+
+                stroke: '#000000',
+                'stroke-width':1,
                 'stroke-dasharray': "0"
 
                 ,
@@ -131,9 +249,9 @@ export function getConnectionStyle(stylename) {
     return style;
 }
 
-export function getPlacings(stylename) {
+export function getPlacings(stylename){
     var placings;
-    switch (stylename) {
+    switch(stylename){
 
         default:
             placings = [];
@@ -143,9 +261,9 @@ export function getPlacings(stylename) {
     return placings;
 }
 
-export function getLabels(stylename) {
+export function getLabels(stylename){
     var labels;
-    switch (stylename) {
+    switch(stylename){
 
         default:
             labels = [];

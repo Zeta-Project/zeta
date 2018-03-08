@@ -17,27 +17,27 @@ import joint from 'jointjs';
 
 joint.shapes.zeta = {};
 
-
 joint.shapes.zeta.rootShape = joint.shapes.basic.Generic.extend({
-    markup: '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /></g></g>',
+    markup:  '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /></g></g>',
     defaults: joint.util.deepSupplement({
         type: 'zeta.rootShape',
         'init-size': {
             width: 0,
-            height: 0
-        },
+            height: 0},
         size: {
             width: 0, height: 0
         },
 
 
-        resize: {
+
+
+        resize:{
             horizontal: true,
             vertical: true,
             proportional: true
         },
         attrs: {
-            'rect.bounding-box': {
+            'rect.bounding-box':{
                 height: 0,
                 width: 0
             },
@@ -48,30 +48,31 @@ joint.shapes.zeta.rootShape = joint.shapes.basic.Generic.extend({
 });
 
 joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
-    markup: '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /><rect class="5c487482-2943-4980-8b65-b14498c354ba" /><text class="5c264f7b-4821-4dd5-9798-70c44b8333ab text1" > </text><rect class="7b5ada00-b651-45cf-a008-915ecd505140" /><text class="5d37c65b-879b-41a9-9afa-391b81d89368 text2" > </text><rect class="f48cfa94-c651-4ff2-a2bb-cb3eec43d065" /><text class="76794e3f-0e79-4f5f-8bf2-c84ba07327e0 text3" > </text></g></g>',
+    markup:  '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /><rect class="0b800d24-7d92-4fad-89df-3203d277fe4f" /><text class="e477df6c-e8da-462e-9dc3-2f88d830547f text1" > </text><rect class="d62b0c84-6348-4cd3-b308-508d25012db9" /><text class="ade81ec0-d7d0-44e0-ab85-0e6253c45bc1 text2" > </text><rect class="cc40a695-e82d-4ea7-b5e6-86ac2ae249bd" /><text class="90a7d93a-5efd-4c40-a90f-e74a9f76bfe3 text3" > </text></g></g>',
     defaults: joint.util.deepSupplement({
         type: 'zeta.klasse',
         'init-size': {
             width: 200,
-            height: 250
-        },
+            height: 250},
         size: {
             width: 64, height: 80
         },
 
 
-        resize: {
+
+
+        resize:{
             horizontal: true,
             vertical: true,
             proportional: true
         },
         attrs: {
-            'rect.bounding-box': {
+            'rect.bounding-box':{
                 height: 250,
                 width: 200
             },
 
-            '.5c487482-2943-4980-8b65-b14498c354ba': {
+            '.0b800d24-7d92-4fad-89df-3203d277fe4f':{
 
 
                 x: 0,
@@ -82,20 +83,20 @@ joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.5c264f7b-4821-4dd5-9798-70c44b8333ab': {
+            'text.e477df6c-e8da-462e-9dc3-2f88d830547f':{
 
 
                 x: 0,
                 y: 0,
 
-                'id': 'text1',
+                'id' : 'text1',
                 'width': 10,
                 'height': 40,
                 text: ["Klasse"] // Is overwritten in stencil, but needed here for scaling
 
             }
             ,
-            '.7b5ada00-b651-45cf-a008-915ecd505140': {
+            '.d62b0c84-6348-4cd3-b308-508d25012db9':{
 
 
                 x: 0,
@@ -106,20 +107,20 @@ joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.5d37c65b-879b-41a9-9afa-391b81d89368': {
+            'text.ade81ec0-d7d0-44e0-ab85-0e6253c45bc1':{
 
 
                 x: 0,
                 y: 50,
 
-                'id': 'text2',
+                'id' : 'text2',
                 'width': 10,
                 'height': 40,
                 text: ["Attribute"] // Is overwritten in stencil, but needed here for scaling
 
             }
             ,
-            '.f48cfa94-c651-4ff2-a2bb-cb3eec43d065': {
+            '.cc40a695-e82d-4ea7-b5e6-86ac2ae249bd':{
 
 
                 x: 0,
@@ -130,13 +131,13 @@ joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.76794e3f-0e79-4f5f-8bf2-c84ba07327e0': {
+            'text.90a7d93a-5efd-4c40-a90f-e74a9f76bfe3':{
 
 
                 x: 0,
                 y: 150,
 
-                'id': 'text3',
+                'id' : 'text3',
                 'width': 10,
                 'height': 40,
                 text: ["Methoden"] // Is overwritten in stencil, but needed here for scaling
@@ -149,30 +150,31 @@ joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
 });
 
 joint.shapes.zeta.abstractKlasse = joint.shapes.basic.Generic.extend({
-    markup: '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /><rect class="b39e7aa2-a142-4dea-9013-52bd0eab784d" /><text class="8ea01922-fbdf-4671-8bce-ce10658c49da text11" > </text><rect class="1780c339-5031-4181-9aa6-53294cfa4310" /><text class="3324620f-e3be-4809-b404-c46be93ece5a text21" > </text><rect class="163911d7-57f3-4f45-a434-e6d431025885" /><text class="7f1a0b19-b973-494a-9f99-cf52011eab4d text31" > </text></g></g>',
+    markup:  '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /><rect class="f4a773b8-fa32-4c6e-a5e3-30d742ff5cbb" /><text class="b5762097-dfcf-41a9-8b11-2190c618e6e9 text11" > </text><rect class="bd0fa679-b080-4d84-9eeb-fe7ae99a42cd" /><text class="0685d1f3-9273-42f9-b15f-34ea4a6be378 text21" > </text><rect class="8586b658-768a-4273-b366-d4f1597c561e" /><text class="60cee325-f76b-4d41-b08f-e51427aadf66 text31" > </text></g></g>',
     defaults: joint.util.deepSupplement({
         type: 'zeta.abstractKlasse',
         'init-size': {
             width: 210,
-            height: 250
-        },
+            height: 250},
         size: {
             width: 67, height: 80
         },
 
 
-        resize: {
+
+
+        resize:{
             horizontal: true,
             vertical: true,
             proportional: true
         },
         attrs: {
-            'rect.bounding-box': {
+            'rect.bounding-box':{
                 height: 250,
                 width: 210
             },
 
-            '.b39e7aa2-a142-4dea-9013-52bd0eab784d': {
+            '.f4a773b8-fa32-4c6e-a5e3-30d742ff5cbb':{
 
 
                 x: 10,
@@ -183,20 +185,20 @@ joint.shapes.zeta.abstractKlasse = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.8ea01922-fbdf-4671-8bce-ce10658c49da': {
+            'text.b5762097-dfcf-41a9-8b11-2190c618e6e9':{
 
 
                 x: 10,
                 y: 0,
 
-                'id': 'text11',
+                'id' : 'text11',
                 'width': 10,
                 'height': 40,
                 text: ["<<AbstractClass>>"] // Is overwritten in stencil, but needed here for scaling
 
             }
             ,
-            '.1780c339-5031-4181-9aa6-53294cfa4310': {
+            '.bd0fa679-b080-4d84-9eeb-fe7ae99a42cd':{
 
 
                 x: 10,
@@ -207,20 +209,20 @@ joint.shapes.zeta.abstractKlasse = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.3324620f-e3be-4809-b404-c46be93ece5a': {
+            'text.0685d1f3-9273-42f9-b15f-34ea4a6be378':{
 
 
                 x: 10,
                 y: 50,
 
-                'id': 'text21',
+                'id' : 'text21',
                 'width': 10,
                 'height': 40,
                 text: ["Attribute"] // Is overwritten in stencil, but needed here for scaling
 
             }
             ,
-            '.163911d7-57f3-4f45-a434-e6d431025885': {
+            '.8586b658-768a-4273-b366-d4f1597c561e':{
 
 
                 x: 10,
@@ -231,13 +233,13 @@ joint.shapes.zeta.abstractKlasse = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.7f1a0b19-b973-494a-9f99-cf52011eab4d': {
+            'text.60cee325-f76b-4d41-b08f-e51427aadf66':{
 
 
                 x: 10,
                 y: 150,
 
-                'id': 'text31',
+                'id' : 'text31',
                 'width': 10,
                 'height': 40,
                 text: ["Methoden"] // Is overwritten in stencil, but needed here for scaling
@@ -250,30 +252,31 @@ joint.shapes.zeta.abstractKlasse = joint.shapes.basic.Generic.extend({
 });
 
 joint.shapes.zeta.interface = joint.shapes.basic.Generic.extend({
-    markup: '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /><rect class="9f393e03-e371-41a9-8065-a62b13991229" /><text class="f01bed45-534c-40c2-a17e-094afb22fc9d text113" > </text><rect class="1d879b3a-cfa3-4955-99ff-6af1f5bf2ced" /><text class="94cca154-a761-4824-9cc2-bb20a53e6cf9 text213" > </text><rect class="d89d5ff7-f9f1-4816-aa59-8d5df9c27424" /><text class="436e2eb9-27e7-493d-a527-fc1bf54616a6 text313" > </text></g></g>',
+    markup:  '<g class="rotatable"><g class="scalable"><rect class="bounding-box" /><rect class="9461a54c-fbb2-49a2-94ac-77848fbc1f88" /><text class="418aa18b-d386-4d43-b74e-9b0701ef2dee text113" > </text><rect class="73e17224-4508-463a-a388-c299a5adde76" /><text class="5215ddbc-bcb1-414d-878c-4cea63c06ff5 text213" > </text><rect class="75f2205e-9a60-45e9-9d33-98e84de80d66" /><text class="2636f960-1374-46ab-b6a0-fc8e2cb3d80d text313" > </text></g></g>',
     defaults: joint.util.deepSupplement({
         type: 'zeta.interface',
         'init-size': {
             width: 210,
-            height: 250
-        },
+            height: 250},
         size: {
             width: 67, height: 80
         },
 
 
-        resize: {
+
+
+        resize:{
             horizontal: true,
             vertical: true,
             proportional: true
         },
         attrs: {
-            'rect.bounding-box': {
+            'rect.bounding-box':{
                 height: 250,
                 width: 210
             },
 
-            '.9f393e03-e371-41a9-8065-a62b13991229': {
+            '.9461a54c-fbb2-49a2-94ac-77848fbc1f88':{
 
 
                 x: 10,
@@ -284,20 +287,20 @@ joint.shapes.zeta.interface = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.f01bed45-534c-40c2-a17e-094afb22fc9d': {
+            'text.418aa18b-d386-4d43-b74e-9b0701ef2dee':{
 
 
                 x: 10,
                 y: 0,
 
-                'id': 'text113',
+                'id' : 'text113',
                 'width': 10,
                 'height': 40,
                 text: ["<<Interface>>"] // Is overwritten in stencil, but needed here for scaling
 
             }
             ,
-            '.1d879b3a-cfa3-4955-99ff-6af1f5bf2ced': {
+            '.73e17224-4508-463a-a388-c299a5adde76':{
 
 
                 x: 10,
@@ -308,20 +311,20 @@ joint.shapes.zeta.interface = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.94cca154-a761-4824-9cc2-bb20a53e6cf9': {
+            'text.5215ddbc-bcb1-414d-878c-4cea63c06ff5':{
 
 
                 x: 10,
                 y: 50,
 
-                'id': 'text213',
+                'id' : 'text213',
                 'width': 10,
                 'height': 40,
                 text: ["Attribute"] // Is overwritten in stencil, but needed here for scaling
 
             }
             ,
-            '.d89d5ff7-f9f1-4816-aa59-8d5df9c27424': {
+            '.75f2205e-9a60-45e9-9d33-98e84de80d66':{
 
 
                 x: 10,
@@ -332,13 +335,13 @@ joint.shapes.zeta.interface = joint.shapes.basic.Generic.extend({
 
             }
             ,
-            'text.436e2eb9-27e7-493d-a527-fc1bf54616a6': {
+            'text.2636f960-1374-46ab-b6a0-fc8e2cb3d80d':{
 
 
                 x: 10,
                 y: 150,
 
-                'id': 'text313',
+                'id' : 'text313',
                 'width': 10,
                 'height': 40,
                 text: ["Methoden"] // Is overwritten in stencil, but needed here for scaling

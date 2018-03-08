@@ -8,11 +8,7 @@ import {getDiagramHighlighting} from "./style";
 
 export default Stencil
 
-Stencil.groups = {
-    interface: {index: 3, label: 'Interface'},
-    abstractClass: {index: 2, label: 'AbstractClass'},
-    class: {index: 1, label: 'Class'}
-};
+Stencil.groups = {interface: {index: 3, label: 'Interface'}, abstractClass: {index: 2, label: 'AbstractClass'}, class: {index: 1, label: 'Class'}};
 
 var classNode = new joint.shapes.zeta.klasse({
 
@@ -38,16 +34,19 @@ var inClassNode = new joint.shapes.zeta.interface({
 
 Stencil.shapes = {
 
-    abstractClass: [
-        abClassNode
+    interface: [
+        inClassNode
+
     ]
     ,
     class: [
         classNode
+
     ]
     ,
-    interface: [
-        inClassNode
+    abstractClass: [
+        abClassNode
+
     ]
 
 };

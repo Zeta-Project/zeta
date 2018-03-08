@@ -2,7 +2,7 @@
 export var linkhelper = {
 
     placingTexts: {
-        inheritance: {}, realization: {}, BaseClassRealization: {}
+        inheritance: {}, realization: {}, BaseClassRealization: {}, component: {}, aggregation: {}
     },
 
 
@@ -22,9 +22,15 @@ export var linkhelper = {
         Realization: {}
         ,
         BaseClassRealization: {}
+        ,
+        Component: {}
+        ,
+        Aggregation: {}
 
     }
 
 };
+
+
     
     

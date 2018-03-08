@@ -14,6 +14,16 @@ export var validator = {
             }
         }
         ,
+        Klasse: {
+            Aggregation: {
+                upperBound: 1,
+                lowerBound: 1
+            }, Component: {
+                upperBound: 1,
+                lowerBound: 1
+            }
+        }
+        ,
         AbstractKlasse: {
             Inheritance: {
                 upperBound: 1,
@@ -31,6 +41,12 @@ export var validator = {
             }, BaseClassRealization: {
                 upperBound: 1,
                 lowerBound: 1
+            }, Aggregation: {
+                upperBound: 1,
+                lowerBound: 1
+            }, Component: {
+                upperBound: 1,
+                lowerBound: 1
             }
         }
         ,
@@ -45,34 +61,34 @@ export var validator = {
 
 
     targetMatrix: {
-        abClassNode: {
+        inClassNode: {
 
-            BaseClassRealization: false, inheritance: true, realization: false
+            realization: true, inheritance: false, BaseClassRealization: true, aggregation: false, component: false
+
+        }, abClassNode: {
+
+            BaseClassRealization: false, aggregation: false, inheritance: true, component: false, realization: false
 
         }, classNode: {
 
-            inheritance: false, BaseClassRealization: false, realization: false
-
-        }, inClassNode: {
-
-            realization: true, inheritance: false, BaseClassRealization: true
+            inheritance: false, BaseClassRealization: false, aggregation: true, component: true, realization: false
 
         }
     },
 
 
     sourceMatrix: {
-        abClassNode: {
+        inClassNode: {
 
-            realization: true, inheritance: false, BaseClassRealization: false
+            inheritance: false, BaseClassRealization: false, aggregation: false, component: false, realization: false
 
         }, classNode: {
 
-            BaseClassRealization: true, inheritance: true, realization: false
+            BaseClassRealization: true, aggregation: true, component: true, inheritance: true, realization: false
 
-        }, inClassNode: {
+        }, abClassNode: {
 
-            inheritance: false, BaseClassRealization: false, realization: false
+            realization: true, inheritance: false, BaseClassRealization: false, aggregation: false, component: false
 
         }
     },
@@ -94,6 +110,16 @@ export var validator = {
             from: "Klasse",
             to: "InterfaceKlasse",
             style: "realization"
+        }, component: {
+            type: "Component",
+            from: "Klasse",
+            to: "Klasse",
+            style: "component"
+        }, aggregation: {
+            type: "Aggregation",
+            from: "Klasse",
+            to: "Klasse",
+            style: "aggregation"
         }
     },
 
@@ -131,4 +157,3 @@ export var validator = {
     }
 
 };
-    
