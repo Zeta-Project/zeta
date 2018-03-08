@@ -53,6 +53,12 @@ class DslRestApi @Inject()() extends Controller with Logging {
     }
   }
 
+  def getTotalApiV1(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    Future(Ok(allDslV1()))
+  }
+
+
+
   private def diagramDslV1(): JsValue = {
     Json.parse(
       """
@@ -1044,6 +1050,14 @@ class DslRestApi @Inject()() extends Controller with Logging {
  |  }
  |}
       """.stripMargin
+    )
+  }
+
+  private def allDslV1(): JsValue = {
+    Json.obj(
+      "diagram" -> diagramDslV1(),
+      "style" -> styleDslV1(),
+      "shape" -> shapeDslV1()
     )
   }
 }
