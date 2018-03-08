@@ -31,9 +31,9 @@ object StyleParseTreeTransformer {
 
   private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] =
     ErrorChecker()
-      .add(CheckDuplicateStyles(styleTrees), ids => s"The following styles are defined multiple times: $ids")
-      .add(CheckUndefinedParents(styleTrees), ids => s"The following styles are referenced as parent but not defined: $ids")
-      .add(CheckGraphCycles(styleTrees), ids => s"The following styles defines a graph circle with its parent styles: $ids")
+      .add(CheckDuplicateStyles(styleTrees))
+      .add(CheckUndefinedParents(styleTrees))
+      .add(CheckGraphCycles(styleTrees))
       .run()
 
   def transform(styleParseTree: StyleParseTree): Style = {

@@ -82,6 +82,7 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         val result = StyleParseTreeTransformer.transform(styleToTestDuplicates)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
+        errors.size shouldBe 1
         errors should contain("The following styles are defined multiple times: style1")
       }
 
@@ -95,7 +96,8 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         val result = StyleParseTreeTransformer.transform(styleToTestUndefinedParents)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
-        errors should contain("The following styles are referenced as parent but not defined: style4")
+        errors.size shouldBe 1
+        errors should contain("The following style is referenced as parent but not defined: style4")
       }
 
       "transforming styles with cycling dependencies" in {
@@ -108,7 +110,8 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         val result = StyleParseTreeTransformer.transform(styleToTestGraphCycle)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
-        errors should contain("The following styles defines a graph circle with its parent styles: style1,style2,style3")
+        errors.size shouldBe 1
+        errors should contain("The following styles defines a graph circle with its parent styles: style1, style2, style3")
       }
     }
   }

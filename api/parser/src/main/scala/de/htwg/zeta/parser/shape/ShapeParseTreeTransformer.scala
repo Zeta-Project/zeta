@@ -70,11 +70,11 @@ object ShapeParseTreeTransformer {
 
   private def checkForErrors(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style], concept: Concept): List[String] =
     ErrorChecker()
-      .add(CheckDuplicateShapes(shapeParseTrees), ids => s"The following shapes are defined multiple times: $ids")
-      .add(CheckUndefinedEdges(shapeParseTrees), ids => s"The following edges are referenced but not defined: $ids")
-      .add(CheckUndefinedStyles(shapeParseTrees, styles), ids => s"The following styles are referenced but not defined: $ids")
-      .add(CheckNodesForUndefinedConceptElements(shapeParseTrees, concept), errors => s"$errors")
-      .add(CheckEdgesForUndefinedConceptElements(shapeParseTrees, concept), errors => s"$errors")
+      .add(CheckDuplicateShapes(shapeParseTrees))
+      .add(CheckUndefinedEdges(shapeParseTrees))
+      .add(CheckUndefinedStyles(shapeParseTrees, styles))
+      .add(CheckNodesForUndefinedConceptElements(shapeParseTrees, concept))
+      .add(CheckEdgesForUndefinedConceptElements(shapeParseTrees, concept))
       .run()
 
 

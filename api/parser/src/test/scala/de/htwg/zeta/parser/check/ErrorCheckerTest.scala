@@ -1,72 +1,54 @@
 package de.htwg.zeta.parser.check
 
-import de.htwg.zeta.parser.check.Check.Id
 import org.scalatest.FreeSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
 
 class ErrorCheckerTest extends FreeSpec with Matchers with Inside {
 
+  case class ErrorCheckImpl(definedErrors: List[String]) extends ErrorCheck[String] {
+    override def check(): List[String] = definedErrors
+  }
+
   "An error checker" - {
-    "should run a single configured checker class" - {
+    "should run a single configured checker class" in {
       val errors = ErrorChecker()
-        .add(Checker(error => s"Printed Error: $error", () => List("1", "2")))
-        .run()
-
-      errors.size shouldBe 1
-      errors should contain("Printed Error: 1,2")
-    }
-
-    "should run multiple configured checker classes in right order" - {
-      val errors = ErrorChecker()
-        .add(Checker(error => s"Printed Error1: $error", () => List("1", "2")))
-        .add(Checker(error => s"Printed Error2: $error", () => List("3")))
+        .add(ErrorCheckImpl(List("Printed Error: 1", "Printed Error: 2")))
         .run()
 
       errors.size shouldBe 2
-      errors should contain("Printed Error1: 1,2")
-      errors should contain("Printed Error2: 3")
+      errors should contain("Printed Error: 1")
+      errors should contain("Printed Error: 2")
     }
 
-    "should return an empty list if no errors occurred" - {
+    "should run multiple configured checker classes in right order" in {
       val errors = ErrorChecker()
-        .add(Checker(error => s"Printed Error1: $error", () => List()))
-        .add(Checker(error => s"Printed Error2: $error", () => List()))
+        .add(ErrorCheckImpl(List("Printed Error: 1", "Printed Error: 2")))
+        .add(ErrorCheckImpl(List("Printed Error: 3")))
+        .run()
+
+      errors.size shouldBe 3
+      errors should contain("Printed Error: 1")
+      errors should contain("Printed Error: 2")
+      errors should contain("Printed Error: 3")
+    }
+
+    "should return an empty list if no errors occurred" in {
+      val errors = ErrorChecker()
+        .add(ErrorCheckImpl(List()))
+        .add(ErrorCheckImpl(List()))
         .run()
 
       errors.size shouldBe 0
     }
 
-    "should return an empty list if no errors occurred and Nil is returned" - {
+    "should return an empty list if no errors occurred and Nil is returned" in {
       val errors = ErrorChecker()
-        .add(Checker(error => s"Printed Error1: $error", () => Nil))
-        .add(Checker(error => s"Printed Error2: $error", () => Nil))
+        .add(ErrorCheckImpl(Nil))
+        .add(ErrorCheckImpl(Nil))
         .run()
 
       errors.size shouldBe 0
-    }
-
-    "should run multiple configured checker with shortcut method in right order" - {
-      val errors = ErrorChecker()
-        .add(error => s"Printed Error1: $error", () => List("1", "2"))
-        .add(error => s"Printed Error2: $error", () => List("3"))
-        .run()
-
-      errors.size shouldBe 2
-      errors should contain("Printed Error1: 1,2")
-      errors should contain("Printed Error2: 3")
-    }
-
-    "should handle a configured ErrorCheck correctly" - {
-      case class ErrorCheckImpl() extends ErrorCheck {
-        override def check(): List[Id] = List("Working!")
-      }
-      val errors = ErrorChecker()
-        .add(ErrorCheckImpl(), s => s)
-        .run()
-
-      errors.size shouldBe 1
-      errors should contain("Working!")
     }
   }
 

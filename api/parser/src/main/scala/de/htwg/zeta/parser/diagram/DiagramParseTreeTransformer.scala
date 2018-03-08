@@ -26,10 +26,10 @@ object DiagramParseTreeTransformer {
 
   private def checkForErrors(diagrams: List[DiagramParseTree], nodes: ReferenceCollector[Node]): List[String] =
     ErrorChecker()
-      .add(CheckDuplicateDiagrams(diagrams), ids => s"The following diagrams are defined multiple times: $ids")
-      .add(CheckDuplicatePalettes(diagrams), ids => s"The following palettes are defined multiple times: $ids")
-      .add(CheckDuplicateNodes(diagrams), ids => s"The following nodes are defined multiple times: $ids")
-      .add(CheckUndefinedNodes(diagrams, nodes), ids => s"The following nodes are not defined in shape: $ids")
+      .add(CheckDuplicateDiagrams(diagrams))
+      .add(CheckDuplicatePalettes(diagrams))
+      .add(CheckDuplicateNodes(diagrams))
+      .add(CheckUndefinedNodes(diagrams, nodes))
       .run()
 
   private def transform(diagramTree: DiagramParseTree, nodes: ReferenceCollector[Node]): Diagram = {
