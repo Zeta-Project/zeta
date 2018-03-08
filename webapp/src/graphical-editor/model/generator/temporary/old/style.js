@@ -31,14 +31,14 @@ export function getStyle(stylename) {
             };
             break;
 
-        case '(child_of -> (child_of -> X & Y) & Anonymous_Stylec7bf3fcf-d143-45df-9c90-7569922f688b)':
+        case 'Anonymous_Style41434898-0143-44dc-9d21-0e2a7ae97450':
             style = {
 
                 text: {
 
                     'dominant-baseline': "text-before-edge",
                     'font-family': 'sans-serif',
-                    'font-size': '20',
+                    'font-size': '11',
                     'fill': '#000000',
                     'font-weight': ' normal'
 
@@ -47,12 +47,10 @@ export function getStyle(stylename) {
 
 
 
-                fill: '#ffffff',
-
                 'fill-opacity':1.0,
 
                 stroke: '#000000',
-                'stroke-width':1,
+                'stroke-width': 0,
                 'stroke-dasharray': "0"
 
 
@@ -115,14 +113,14 @@ export function getStyle(stylename) {
             };
             break;
 
-        case 'Anonymous_Stylec7bf3fcf-d143-45df-9c90-7569922f688b':
+        case '(child_of -> (child_of -> XX) & Anonymous_Styleaa78766a-ac17-42bf-ad75-b0c860a20857)':
             style = {
 
                 text: {
 
                     'dominant-baseline': "text-before-edge",
                     'font-family': 'sans-serif',
-                    'font-size': '11',
+                    'font-size': '20',
                     'fill': '#000000',
                     'font-weight': ' normal'
 
@@ -131,10 +129,12 @@ export function getStyle(stylename) {
 
 
 
+                fill: '#000000',
+
                 'fill-opacity':1.0,
 
                 stroke: '#000000',
-                'stroke-width': 0,
+                'stroke-width':1,
                 'stroke-dasharray': "0"
 
 
@@ -170,6 +170,118 @@ export function getStyle(stylename) {
             break;
 
         case '(child_of -> XX)':
+            style = {
+
+                text: {
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                },
+
+
+
+                fill: '#ffffff',
+
+                'fill-opacity':1.0,
+
+                stroke: '#000000',
+                'stroke-width':1,
+                'stroke-dasharray': "0"
+
+
+            };
+            break;
+
+        case 'Anonymous_Styleaa78766a-ac17-42bf-ad75-b0c860a20857':
+            style = {
+
+                text: {
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '11',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                },
+
+
+
+                fill: '#000000',
+
+                'fill-opacity':1.0,
+
+                stroke: '#000000',
+                'stroke-width': 0,
+                'stroke-dasharray': "0"
+
+
+            };
+            break;
+
+        case '(child_of -> (child_of -> X & Y) & Anonymous_Style41434898-0143-44dc-9d21-0e2a7ae97450)':
+            style = {
+
+                text: {
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '20',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                },
+
+
+
+                fill: '#ffffff',
+
+                'fill-opacity':1.0,
+
+                stroke: '#000000',
+                'stroke-width':1,
+                'stroke-dasharray': "0"
+
+
+            };
+            break;
+
+        case 'Anonymous_Style23958a22-a1b2-4554-ad8a-643c48e81dc9':
+            style = {
+
+                text: {
+
+                    'dominant-baseline': "text-before-edge",
+                    'font-family': 'sans-serif',
+                    'font-size': '11',
+                    'fill': '#000000',
+                    'font-weight': ' normal'
+
+
+                },
+
+
+
+                fill: '#ffffff',
+
+                'fill-opacity':1.0,
+
+                stroke: '#000000',
+                'stroke-width': 0,
+                'stroke-dasharray': "0"
+
+
+            };
+            break;
+
+        case '(child_of -> (child_of -> XX) & Anonymous_Style23958a22-a1b2-4554-ad8a-643c48e81dc9)':
             style = {
 
                 text: {

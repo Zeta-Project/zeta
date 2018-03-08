@@ -534,7 +534,7 @@ class DslRestApi @Inject()() extends Controller with Logging {
         {
  |  "diagrams": [
  |    {
- |      "name": "klassendiagramm1",
+ |      "name": "Test",
  |      "palettes": [
  |        {
  |          "name": "Class",

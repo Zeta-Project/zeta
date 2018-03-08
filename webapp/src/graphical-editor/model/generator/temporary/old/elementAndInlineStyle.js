@@ -1,55 +1,55 @@
 //OLD
 import {getStyle} from "./style";
-export function getShapeStyle(elementName) {
 
+export function getShapeStyle(elementName) {
     var style = {};
-    switch (elementName) {
+    switch(elementName) {
 
         case "klasse":
 
-            style['rect.5c487482-2943-4980-8b65-b14498c354ba'] = getStyle('(child_of -> XX)');
-            style['text.5c264f7b-4821-4dd5-9798-70c44b8333ab'] = getStyle('(child_of -> XX)').text;
-            style['.5c264f7b-4821-4dd5-9798-70c44b8333ab'] = getStyle('(child_of -> XX)').text;
+            style['rect.0b800d24-7d92-4fad-89df-3203d277fe4f'] = getStyle('(child_of -> XX)');
+            style['text.e477df6c-e8da-462e-9dc3-2f88d830547f'] = getStyle('(child_of -> XX)').text;
+            style['.e477df6c-e8da-462e-9dc3-2f88d830547f'] = getStyle('(child_of -> XX)').text;
 
-            style['rect.7b5ada00-b651-45cf-a008-915ecd505140'] = getStyle('(child_of -> XX)');
-            style['text.5d37c65b-879b-41a9-9afa-391b81d89368'] = getStyle('(child_of -> XX)').text;
-            style['.5d37c65b-879b-41a9-9afa-391b81d89368'] = getStyle('(child_of -> XX)').text;
+            style['rect.d62b0c84-6348-4cd3-b308-508d25012db9'] = getStyle('(child_of -> XX)');
+            style['text.ade81ec0-d7d0-44e0-ab85-0e6253c45bc1'] = getStyle('(child_of -> XX)').text;
+            style['.ade81ec0-d7d0-44e0-ab85-0e6253c45bc1'] = getStyle('(child_of -> XX)').text;
 
-            style['rect.f48cfa94-c651-4ff2-a2bb-cb3eec43d065'] = getStyle('(child_of -> XX)');
-            style['text.76794e3f-0e79-4f5f-8bf2-c84ba07327e0'] = getStyle('(child_of -> XX)').text;
-            style['.76794e3f-0e79-4f5f-8bf2-c84ba07327e0'] = getStyle('(child_of -> XX)').text;
+            style['rect.cc40a695-e82d-4ea7-b5e6-86ac2ae249bd'] = getStyle('(child_of -> XX)');
+            style['text.90a7d93a-5efd-4c40-a90f-e74a9f76bfe3'] = getStyle('(child_of -> XX)').text;
+            style['.90a7d93a-5efd-4c40-a90f-e74a9f76bfe3'] = getStyle('(child_of -> XX)').text;
 
             break;
 
         case "abstractKlasse":
 
-            style['rect.b39e7aa2-a142-4dea-9013-52bd0eab784d'] = getStyle('(child_of -> XX)');
-            style['text.8ea01922-fbdf-4671-8bce-ce10658c49da'] = getStyle('(child_of -> XX)').text;
-            style['.8ea01922-fbdf-4671-8bce-ce10658c49da'] = getStyle('(child_of -> XX)').text;
+            style['rect.f4a773b8-fa32-4c6e-a5e3-30d742ff5cbb'] = getStyle('(child_of -> XX)');
+            style['text.b5762097-dfcf-41a9-8b11-2190c618e6e9'] = getStyle('(child_of -> XX)').text;
+            style['.b5762097-dfcf-41a9-8b11-2190c618e6e9'] = getStyle('(child_of -> XX)').text;
 
-            style['rect.1780c339-5031-4181-9aa6-53294cfa4310'] = getStyle('(child_of -> XX)');
-            style['text.3324620f-e3be-4809-b404-c46be93ece5a'] = getStyle('(child_of -> XX)').text;
-            style['.3324620f-e3be-4809-b404-c46be93ece5a'] = getStyle('(child_of -> XX)').text;
+            style['rect.bd0fa679-b080-4d84-9eeb-fe7ae99a42cd'] = getStyle('(child_of -> XX)');
+            style['text.0685d1f3-9273-42f9-b15f-34ea4a6be378'] = getStyle('(child_of -> XX)').text;
+            style['.0685d1f3-9273-42f9-b15f-34ea4a6be378'] = getStyle('(child_of -> XX)').text;
 
-            style['rect.163911d7-57f3-4f45-a434-e6d431025885'] = getStyle('(child_of -> XX)');
-            style['text.7f1a0b19-b973-494a-9f99-cf52011eab4d'] = getStyle('(child_of -> XX)').text;
-            style['.7f1a0b19-b973-494a-9f99-cf52011eab4d'] = getStyle('(child_of -> XX)').text;
+            style['rect.8586b658-768a-4273-b366-d4f1597c561e'] = getStyle('(child_of -> XX)');
+            style['text.60cee325-f76b-4d41-b08f-e51427aadf66'] = getStyle('(child_of -> XX)').text;
+            style['.60cee325-f76b-4d41-b08f-e51427aadf66'] = getStyle('(child_of -> XX)').text;
 
             break;
 
         case "interface":
 
-            style['rect.9f393e03-e371-41a9-8065-a62b13991229'] = getStyle('(child_of -> XX)');
-            style['text.f01bed45-534c-40c2-a17e-094afb22fc9d'] = getStyle('(child_of -> XX)').text;
-            style['.f01bed45-534c-40c2-a17e-094afb22fc9d'] = getStyle('(child_of -> XX)').text;
+            style['rect.9461a54c-fbb2-49a2-94ac-77848fbc1f88'] = getStyle('(child_of -> XX)');
+            style['text.418aa18b-d386-4d43-b74e-9b0701ef2dee'] = getStyle('(child_of -> XX)').text;
+            style['.418aa18b-d386-4d43-b74e-9b0701ef2dee'] = getStyle('(child_of -> XX)').text;
 
-            style['rect.1d879b3a-cfa3-4955-99ff-6af1f5bf2ced'] = getStyle('(child_of -> XX)');
-            style['text.94cca154-a761-4824-9cc2-bb20a53e6cf9'] = getStyle('(child_of -> XX)').text;
-            style['.94cca154-a761-4824-9cc2-bb20a53e6cf9'] = getStyle('(child_of -> XX)').text;
+            style['rect.73e17224-4508-463a-a388-c299a5adde76'] = getStyle('(child_of -> XX)');
+            style['text.5215ddbc-bcb1-414d-878c-4cea63c06ff5'] = getStyle('(child_of -> XX)').text;
+            style['.5215ddbc-bcb1-414d-878c-4cea63c06ff5'] = getStyle('(child_of -> XX)').text;
 
-            style['rect.d89d5ff7-f9f1-4816-aa59-8d5df9c27424'] = getStyle('(child_of -> XX)');
-            style['text.436e2eb9-27e7-493d-a527-fc1bf54616a6'] = getStyle('(child_of -> XX)').text;
-            style['.436e2eb9-27e7-493d-a527-fc1bf54616a6'] = getStyle('(child_of -> XX)').text;
+            style['rect.75f2205e-9a60-45e9-9d33-98e84de80d66'] = getStyle('(child_of -> XX)');
+            style['text.2636f960-1374-46ab-b6a0-fc8e2cb3d80d'] = getStyle('(child_of -> XX)').text;
+            style['.2636f960-1374-46ab-b6a0-fc8e2cb3d80d'] = getStyle('(child_of -> XX)').text;
 
             break;
 
@@ -59,4 +59,5 @@ export function getShapeStyle(elementName) {
     }
     return style;
 }
+
     
