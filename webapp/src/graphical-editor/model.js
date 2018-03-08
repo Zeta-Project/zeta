@@ -10,8 +10,8 @@ import linkTypeSelector from './model/ext/linkTypeSelector';
 import modelExporter from './model/ext/exportModel';
 import sizeManager from './model/ext/sizeManager';
 import compartmentManager from './model/ext/compartmentManager';
-import Stencil from './model/generator/temporary/old/stencil';
-import {InspectorDefs} from './model/generator/temporary/old/inspector';
+import Stencil from './model/generator/editor/StencilGenerator';
+import {InspectorDefs} from './model/generator/editor/InspectorGenerator';
 
 export default Backbone.Router.extend({
 
