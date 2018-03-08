@@ -6,7 +6,7 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
-case class CheckForUndefinedEdges(shapeParseTrees: List[ShapeParseTree]) extends ErrorCheck {
+case class CheckUndefinedEdges(shapeParseTrees: List[ShapeParseTree]) extends ErrorCheck {
 
   // check if there are nodes which reference an edge which is not defined
   override def check(): List[Id] = {

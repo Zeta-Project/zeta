@@ -8,7 +8,7 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
-case class CheckForUndefinedStyles(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style]) extends ErrorCheck {
+case class CheckUndefinedStyles(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style]) extends ErrorCheck {
 
   // check if there are styles referenced which are not defined
   override def check(): List[Id] = {
