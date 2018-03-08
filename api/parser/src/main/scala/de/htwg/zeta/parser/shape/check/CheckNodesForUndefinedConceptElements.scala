@@ -8,15 +8,16 @@ import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorCheck
+import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HasIdentifier
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
-case class CheckNodesForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept) extends ErrorCheck {
+case class CheckNodesForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept) extends ErrorCheck[ErrorMessage] {
 
-  override def check(): List[Id] = {
+  override def check(): List[ErrorMessage] = {
     val nodes = shapeParseTrees.collect { case n: NodeParseTree => n }
     checkNodesForUndefinedConceptElements(nodes, concept)
   }

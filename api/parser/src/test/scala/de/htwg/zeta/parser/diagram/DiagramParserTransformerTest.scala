@@ -134,7 +134,8 @@ class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
         val result = DiagramParseTreeTransformer.transform(diagrams, nodes)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
-        errors should contain("The following diagrams are defined multiple times: diagram")
+        errors.size shouldBe 1
+        errors should contain("The following diagram is defined multiple times: diagram")
       }
 
       "there are duplicated palettes within a single diagram" in {
@@ -145,20 +146,22 @@ class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
         val result = DiagramParseTreeTransformer.transform(List(diagram), nodes)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
+        errors.size shouldBe 1
         errors should contain("The following palettes are defined multiple times: palette")
       }
 
       "there are duplicated nodes within a single palette" in {
         val diagram = DiagramParseTree("diagram", List(
           PaletteParseTree("palette", List(
-            NodeParseTree("node"),
-            NodeParseTree("node")
+            NodeParseTree("node0"),
+            NodeParseTree("node0")
           ))
         ))
         val result = DiagramParseTreeTransformer.transform(List(diagram), nodes)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
-        errors should contain("The following nodes are defined multiple times: node")
+        errors.size shouldBe 1
+        errors should contain("The following node is defined multiple times: node0")
       }
 
       "there are referenced nodes which does not exists" in {
@@ -170,6 +173,7 @@ class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
         val result = DiagramParseTreeTransformer.transform(List(diagram), nodes)
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
+        errors.size shouldBe 1
         errors should contain("The following nodes are not defined in shape: node5")
       }
 

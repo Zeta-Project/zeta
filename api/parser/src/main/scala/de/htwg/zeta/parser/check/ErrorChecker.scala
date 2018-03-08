@@ -1,24 +1,15 @@
 package de.htwg.zeta.parser.check
 
-import de.htwg.zeta.parser.check.Check.Id
+import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
 
-case class Checker(message: (String) => String, check: () => List[Id])
+case class ErrorChecker[T](checks: List[ErrorCheck[T]]) {
+  def add(check: ErrorCheck[T]): ErrorChecker[T] = copy(checks = checks :+ check)
 
-case class ErrorChecker(checks: List[Checker]) {
-  def add(check: Checker): ErrorChecker = copy(checks = checks :+ check)
-
-  def add(message: (String) => String, check: () => List[Id]): ErrorChecker = add(Checker(message, check))
-
-  def add(check: ErrorCheck, message: (String) => String): ErrorChecker = add(message, () => check.check())
-
-  def run(): List[String] = checks.map(check => check.check() match {
-    case Nil => None
-    case errorIds => Some(check.message(errorIds.mkString(",")))
-  }).collect({
-    case Some(error) => error
+  def run(): List[T] = checks.flatMap(_.check()).distinct.collect({
+    case errors => errors
   })
 }
 
 object ErrorChecker {
-  def apply(): ErrorChecker = new ErrorChecker(List())
+  def apply(): ErrorChecker[ErrorMessage] = new ErrorChecker[ErrorMessage](List())
 }

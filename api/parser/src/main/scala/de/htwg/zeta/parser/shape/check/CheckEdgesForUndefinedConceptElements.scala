@@ -1,14 +1,14 @@
 package de.htwg.zeta.parser.shape.check
 
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorCheck
+import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
-case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept) extends ErrorCheck {
+case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept) extends ErrorCheck[ErrorMessage] {
 
-  override def check(): List[Id] = {
+  override def check(): List[ErrorMessage] = {
     val edges = shapeParseTrees.collect { case e: EdgeParseTree => e }
     checkEdgesForUndefinedConceptElements(edges, concept)
   }

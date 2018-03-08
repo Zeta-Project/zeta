@@ -1,7 +1,9 @@
 package de.htwg.zeta.parser.check
 
-import de.htwg.zeta.parser.check.Check.Id
+trait ErrorCheck[T] {
+  def check(): List[T]
+}
 
-trait ErrorCheck {
-  def check(): List[Id]
+object ErrorCheck {
+  type ErrorMessage = String
 }
