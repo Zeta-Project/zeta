@@ -11,9 +11,10 @@
           "component",
           "aggregation"
         ],
-        "geoModels": [
+        "geoElements": [
           {
             "type": "rectangle",
+            "id":"rt1",
             "size": {
               "width": 200,
               "height": 50
@@ -22,9 +23,10 @@
               "x": 0,
               "y": 0
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st1",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -35,6 +37,7 @@
           },
           {
             "type": "rectangle",
+            "id":"rt2",
             "size": {
               "width": 200,
               "height": 100
@@ -43,9 +46,10 @@
               "x": 0,
               "y": 50
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st2",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -56,6 +60,7 @@
           },
           {
             "type": "rectangle",
+            "id":"rt3",
             "size": {
               "width": 200,
               "height": 100
@@ -64,9 +69,10 @@
               "x": 0,
               "y": 150
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st3",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -84,9 +90,10 @@
         "edges": [
           "realization"
         ],
-        "geoModels": [
+        "geoElements": [
           {
             "type": "rectangle",
+            "id":"rt4",
             "size": {
               "width": 200,
               "height": 50
@@ -95,9 +102,10 @@
               "x": 10,
               "y": 0
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st4",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -108,6 +116,7 @@
           },
           {
             "type": "rectangle",
+            "id":"rt5",
             "size": {
               "width": 200,
               "height": 100
@@ -116,9 +125,10 @@
               "x": 10,
               "y": 50
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st5",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -129,6 +139,7 @@
           },
           {
             "type": "rectangle",
+            "id":"rt6",
             "size": {
               "width": 200,
               "height": 100
@@ -137,9 +148,10 @@
               "x": 10,
               "y": 150
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st6",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -156,9 +168,10 @@
         "style": "X",
         "edges": [
         ],
-        "geoModels": [
+        "geoElements": [
           {
             "type": "rectangle",
+            "id":"rt7",
             "size": {
               "width": 200,
               "height": 50
@@ -167,9 +180,10 @@
               "x": 10,
               "y": 0
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st7",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -180,6 +194,7 @@
           },
           {
             "type": "rectangle",
+            "id":"rt8",
             "size": {
               "width": 200,
               "height": 100
@@ -188,9 +203,10 @@
               "x": 10,
               "y": 50
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st8",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -201,6 +217,7 @@
           },
           {
             "type": "rectangle",
+            "id":"rt9",
             "size": {
               "width": 200,
               "height": 100
@@ -209,9 +226,10 @@
               "x": 10,
               "y": 150
             },
-            "childGeoModels": [
+            "childGeoElements": [
               {
                 "type": "statictext",
+                "id":"st9",
                 "size": {
                   "width": 10,
                   "height": 40
@@ -234,8 +252,9 @@
             "position": {
               "offset": 1.0
             },
-            "geoModel": {
+            "geoElement": {
               "type": "polygon",
+              "id":"py1",
               "points": [
                 {
                   "x": -10,
@@ -264,8 +283,9 @@
             "position": {
               "offset": 1.0
             },
-            "geoModel": {
+            "geoElement": {
               "type": "polygon",
+              "id":"py2",
               "style": {
                 "line": {
                   "style": "SOLID"
@@ -299,8 +319,9 @@
             "position": {
               "offset": 1.0
             },
-            "geoModel": {
+            "geoElement": {
               "type": "polygon",
+              "id":"py3",
               "style": {
                 "background-color": "rgba(0, 0, 0, 1)"
               },
@@ -336,8 +357,9 @@
             "position": {
               "offset": 1.0
             },
-            "geoModel": {
+            "geoElement": {
               "type": "polygon",
+              "id":"py4",
               "style": {
                 "background-color": "rgba(255, 255, 255, 1)"
               },
@@ -373,8 +395,9 @@
             "position": {
               "offset": 1.0
             },
-            "geoModel": {
+            "geoElement": {
               "type": "polygon",
+              "id":"py5",
               "style": {
                 "line": {
                   "style": "SOLID"
