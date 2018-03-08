@@ -1,10 +1,11 @@
 package de.htwg.zeta.parser.check
 
+import de.htwg.zeta.parser.check.Check.Id
 import org.scalatest.FreeSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
 
-class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
+class ErrorCheckerTest extends FreeSpec with Matchers with Inside {
 
   "An error checker" - {
     "should run a single configured checker class" - {
@@ -44,7 +45,7 @@ class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
 
       errors.size shouldBe 0
     }
-    
+
     "should run multiple configured checker with shortcut method in right order" - {
       val errors = ErrorChecker()
         .add(error => s"Printed Error1: $error", () => List("1", "2"))
@@ -54,6 +55,18 @@ class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
       errors.size shouldBe 2
       errors should contain("Printed Error1: 1,2")
       errors should contain("Printed Error2: 3")
+    }
+
+    "should handle a configured ErrorCheck correctly" - {
+      case class ErrorCheckImpl() extends ErrorCheck {
+        override def check(): List[Id] = List("Working!")
+      }
+      val errors = ErrorChecker()
+        .add(ErrorCheckImpl(), s => s)
+        .run()
+
+      errors.size shouldBe 1
+      errors should contain("Working!")
     }
   }
 

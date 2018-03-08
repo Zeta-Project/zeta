@@ -9,6 +9,8 @@ case class ErrorChecker(checks: List[Checker]) {
 
   def add(message: (String) => String, check: () => List[Id]): ErrorChecker = add(Checker(message, check))
 
+  def add(check: ErrorCheck, message: (String) => String): ErrorChecker = add(message, () => check.check())
+
   def run(): List[String] = checks.map(check => check.check() match {
     case Nil => None
     case errorIds => Some(check.message(errorIds.mkString(",")))
