@@ -29,11 +29,11 @@ import de.htwg.zeta.common.model.style.Style
 import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.ErrorChecker
+import de.htwg.zeta.parser.shape.check.CheckDuplicateShapes
 import de.htwg.zeta.parser.shape.check.CheckEdgesForUndefinedConceptElements
-import de.htwg.zeta.parser.shape.check.CheckForDuplicateShapes
-import de.htwg.zeta.parser.shape.check.CheckForUndefinedEdges
-import de.htwg.zeta.parser.shape.check.CheckForUndefinedStyles
 import de.htwg.zeta.parser.shape.check.CheckNodesForUndefinedConceptElements
+import de.htwg.zeta.parser.shape.check.CheckUndefinedEdges
+import de.htwg.zeta.parser.shape.check.CheckUndefinedStyles
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes
@@ -70,9 +70,9 @@ object ShapeParseTreeTransformer {
 
   private def checkForErrors(shapeParseTrees: List[ShapeParseTree], styles: ReferenceCollector[Style], concept: Concept): List[String] =
     ErrorChecker()
-      .add(CheckForDuplicateShapes(shapeParseTrees), ids => s"The following shapes are defined multiple times: $ids")
-      .add(CheckForUndefinedEdges(shapeParseTrees), ids => s"The following edges are referenced but not defined: $ids")
-      .add(CheckForUndefinedStyles(shapeParseTrees, styles), ids => s"The following styles are referenced but not defined: $ids")
+      .add(CheckDuplicateShapes(shapeParseTrees), ids => s"The following shapes are defined multiple times: $ids")
+      .add(CheckUndefinedEdges(shapeParseTrees), ids => s"The following edges are referenced but not defined: $ids")
+      .add(CheckUndefinedStyles(shapeParseTrees, styles), ids => s"The following styles are referenced but not defined: $ids")
       .add(CheckNodesForUndefinedConceptElements(shapeParseTrees, concept), errors => s"$errors")
       .add(CheckEdgesForUndefinedConceptElements(shapeParseTrees, concept), errors => s"$errors")
       .run()
