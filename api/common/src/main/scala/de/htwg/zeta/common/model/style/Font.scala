@@ -5,8 +5,7 @@ case class Font(
     bold: Boolean,
     color: Color,
     italic: Boolean,
-    size: Int,
-    transparent: Boolean
+    size: Int
 )
 object Font {
   val defaultBold: Boolean = false
@@ -14,14 +13,12 @@ object Font {
   val defaultItalic: Boolean = false
   val defaultName: String = "Arial"
   val defaultSize: Int = 10
-  val defaultTransparent: Boolean = false
 
   val defaultFont: Font = Font(
     "default",
     defaultBold,
     defaultColor,
     defaultItalic,
-    defaultSize,
-    defaultTransparent
+    defaultSize
   )
 }

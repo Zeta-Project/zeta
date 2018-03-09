@@ -28,8 +28,8 @@ class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
         "TestStyle",
         "TestDescription",
         Background(Color(0, 0, 0)),
-        Font("TestFont", bold = false, Color(0, 0, 0), italic = false, 0, transparent = false),
-        Line(Color(0, 0, 0), Dashed(), transparent = true, 1),
+        Font("TestFont", bold = false, Color(0, 0, 0), italic = false, 0),
+        Line(Color(0, 0, 0), Dashed(), 1),
         1.0
       ),
       resizing = Resizing(horizontal = false, vertical = false, proportional = false),
