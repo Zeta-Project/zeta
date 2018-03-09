@@ -44,10 +44,8 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         style.font.color shouldBe Color(0, 0, 0)
         style.font.italic shouldBe true
         style.font.size shouldBe 20
-        style.font.transparent shouldBe false
         style.line.color shouldBe Color(0, 0, 0)
         style.line.style shouldBe Dashed()
-        style.line.transparent shouldBe false
         style.line.width shouldBe 1
         style.transparency shouldBe 1.0
       }

@@ -59,13 +59,11 @@ object StyleParseTreeTransformer {
         color = styleAttributes.?[FontColor].map(fc => Color(fc.color)).getOrElse(Font.defaultColor),
         italic = styleAttributes.?[FontItalic].map(_.italic).getOrElse(Font.defaultItalic),
         name = styleAttributes.?[FontName].map(_.name).getOrElse(Font.defaultName),
-        size = styleAttributes.?[FontSize].map(_.size).getOrElse(Font.defaultSize),
-        transparent = Font.defaultTransparent // TODO
+        size = styleAttributes.?[FontSize].map(_.size).getOrElse(Font.defaultSize)
       ),
       line = new Line(
         color = styleAttributes.?[LineColor].map(lc => Color(lc.color)).getOrElse(Line.defaultColor),
         style = styleAttributes.?[LineStyle].map(_.style).map(transformLineStyle).getOrElse(Line.defaultStyle),
-        transparent = Line.defaultTransparent, // TODO
         width = styleAttributes.?[LineWidth].map(_.width).getOrElse(Line.defaultWidth)
       ),
       transparency = styleAttributes.?[Transparency].map(_.transparency).getOrElse(Style.defaultTransparency)
