@@ -18,16 +18,16 @@ import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.BondedTaskRestApi
+import de.htwg.zeta.server.controller.restApi.DslRestApi
 import de.htwg.zeta.server.controller.restApi.EventDrivenTaskRestApi
 import de.htwg.zeta.server.controller.restApi.FileRestApi
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
-import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.GraphicalDslRestApi
+import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
-import de.htwg.zeta.server.controller.restApi.DslRestApi
 import de.htwg.zeta.server.controller.webpage.WebpageController
 import org.webjars.play.WebJarAssets
 
