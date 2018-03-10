@@ -15,12 +15,16 @@ import chat from './graphical-editor/model/ext/chat';
 import { CommonInspectorInputs, CommonInspectorGroups, inp } from './graphical-editor/model/inspector';
 import Stencil from './graphical-editor/model/generator/editor/StencilGenerator';
 import Main from './graphical-editor/model';
+import GeneratorFactory from './graphical-editor/model/generator/generatorFactory';
 
 $(document).ready(function() {
     joint.shapes.zeta.MLink = MLink;
     joint.shapes.zeta.MLinkView = MLinkView;
-    new Main();
-    Backbone.history.start();
+    new GeneratorFactory(() => {
+        new Main();
+        Backbone.history.start();
+    });
+
 });
 
 global.joint = joint;
