@@ -29,27 +29,11 @@ class DslRestApi @Inject()() extends Controller with Logging {
    * @param request The request
    * @return A JSON of a concept-API
    */
-  def getV1(id: UUID, apiType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+  def getDSL(id: UUID, apiType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     apiType match {
       case "diagram" => Future(Ok(diagramDslV1()))
       case "shape" => Future(Ok(shapeDslV1()))
       case "style" => Future(Ok(styleDslV1()))
-    }
-  }
-
-  /**
-   * Get a single concept-API v2 JSON
-   *
-   * @param id      Identifier of Concept
-   * @param apiType Type of the asked concept-API instance
-   * @param request The request
-   * @return A JSON of a concept-API
-   */
-  def getV2(id: UUID, apiType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    apiType match {
-      case "diagram" => Future(Ok(diagramDslV2()))
-      case "shape" => Future(Ok(shapeDslV2()))
-      case "style" => Future(Ok(styleDslV2()))
     }
   }
 
