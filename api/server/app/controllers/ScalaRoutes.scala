@@ -208,6 +208,7 @@ class ScalaRoutes @Inject()(
   /* ### DSL REST API */
   def getDslV1(id: UUID, apiType: String): Action[AnyContent] = AuthenticatedGet(DslRestApi.getV1(id, apiType) _)
   def getDslV2(id: UUID, apiType: String): Action[AnyContent] = AuthenticatedGet(DslRestApi.getV2(id, apiType) _)
+  def getAllDslV1(id: UUID): Action[AnyContent] = AuthenticatedGet(DslRestApi.getTotalApiV1(id) _)
 
 
   // ### Code Editor
