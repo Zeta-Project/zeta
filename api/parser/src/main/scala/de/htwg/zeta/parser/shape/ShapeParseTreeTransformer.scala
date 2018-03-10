@@ -8,6 +8,7 @@ import de.htwg.zeta.common.model.shape
 import de.htwg.zeta.common.model.shape.Edge
 import de.htwg.zeta.common.model.shape.Node
 import de.htwg.zeta.common.model.shape.Resizing
+import de.htwg.zeta.common.model.shape.Shape
 import de.htwg.zeta.common.model.shape.Size
 import de.htwg.zeta.common.model.shape.geomodel
 import de.htwg.zeta.common.model.shape.geomodel.Align
@@ -55,14 +56,12 @@ import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
 object ShapeParseTreeTransformer {
 
-  case class NodesAndEdges(nodes: List[Node], edges: List[Edge])
-
-  def transform(shapeParseTrees: List[ShapeParseTree], styles: List[Style], concept: Concept): Validation[List[String], NodesAndEdges] = {
+  def transform(shapeParseTrees: List[ShapeParseTree], styles: List[Style], concept: Concept): Validation[List[String], Shape] = {
     val referencedStyles = ReferenceCollector[Style](styles, _.name)
     checkForErrors(shapeParseTrees, referencedStyles, concept) match {
       case Nil =>
         val (nodes, edges) = transformShapes(shapeParseTrees, referencedStyles, concept)
-        Success(NodesAndEdges(nodes, edges))
+        Success(Shape(nodes, edges))
       case errors: List[String] =>
         Failure(errors)
     }
