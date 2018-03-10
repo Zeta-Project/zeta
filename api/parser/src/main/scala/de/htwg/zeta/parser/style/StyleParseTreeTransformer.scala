@@ -24,7 +24,7 @@ object StyleParseTreeTransformer {
 
   def transform(styleTrees: List[StyleParseTree]): Validation[List[String], List[Style]] = {
     checkForErrors(styleTrees) match {
-      case Nil => Success(styleTrees.map(transform))
+      case Nil => Success(styleTrees.map(transformStyle))
       case errors: List[String] => Failure(errors)
     }
   }
@@ -36,10 +36,7 @@ object StyleParseTreeTransformer {
       .add(CheckGraphCycles(styleTrees))
       .run()
 
-  def transform(styleParseTree: StyleParseTree): Style = {
-
-    val styleAttributes = Collector(styleParseTree.attributes)
-
+  private def transformStyle(styleParseTree: StyleParseTree): Style = {
     def transformLineStyle(string: String): style.LineStyle = string match {
       case "dotted" => Dotted()
       case "solid" => Solid()
@@ -47,6 +44,8 @@ object StyleParseTreeTransformer {
       case "dash" => Dashed()
       case _ => Line.defaultStyle
     }
+
+    val styleAttributes = Collector(styleParseTree.attributes)
 
     new Style(
       name = styleParseTree.name,
