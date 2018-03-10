@@ -47,25 +47,25 @@ object StyleParseTreeTransformer {
 
     val styleAttributes = Collector(styleParseTree.attributes)
 
-    new Style(
+    Style(
       name = styleParseTree.name,
       description = styleParseTree.description,
-      background = new Background(
-        color = styleAttributes.?[BackgroundColor].map(c => Color(c.color)).getOrElse(Background.defaultColor)
+      background = Background(
+        color = styleAttributes.?[BackgroundColor].fold(Background.defaultColor)(c => Color(c.color))
       ),
-      font = new Font(
-        bold = styleAttributes.?[FontBold].map(_.bold).getOrElse(Font.defaultBold),
-        color = styleAttributes.?[FontColor].map(fc => Color(fc.color)).getOrElse(Font.defaultColor),
-        italic = styleAttributes.?[FontItalic].map(_.italic).getOrElse(Font.defaultItalic),
-        name = styleAttributes.?[FontName].map(_.name).getOrElse(Font.defaultName),
-        size = styleAttributes.?[FontSize].map(_.size).getOrElse(Font.defaultSize)
+      font = Font(
+        bold = styleAttributes.?[FontBold].fold(Font.defaultBold)(_.bold),
+        color = styleAttributes.?[FontColor].fold(Font.defaultColor)(fc => Color(fc.color)),
+        italic = styleAttributes.?[FontItalic].fold(Font.defaultItalic)(_.italic),
+        name = styleAttributes.?[FontName].fold(Font.defaultName)(_.name),
+        size = styleAttributes.?[FontSize].fold(Font.defaultSize)(_.size)
       ),
-      line = new Line(
-        color = styleAttributes.?[LineColor].map(lc => Color(lc.color)).getOrElse(Line.defaultColor),
-        style = styleAttributes.?[LineStyle].map(_.style).map(transformLineStyle).getOrElse(Line.defaultStyle),
-        width = styleAttributes.?[LineWidth].map(_.width).getOrElse(Line.defaultWidth)
+      line = Line(
+        color = styleAttributes.?[LineColor].fold(Line.defaultColor)(lc => Color(lc.color)),
+        style = styleAttributes.?[LineStyle].fold(Line.defaultStyle)(s => transformLineStyle(s.style)),
+        width = styleAttributes.?[LineWidth].fold(Line.defaultWidth)(_.width)
       ),
-      transparency = styleAttributes.?[Transparency].map(_.transparency).getOrElse(Style.defaultTransparency)
+      transparency = styleAttributes.?[Transparency].fold(Style.defaultTransparency)(_.transparency)
     )
   }
 
