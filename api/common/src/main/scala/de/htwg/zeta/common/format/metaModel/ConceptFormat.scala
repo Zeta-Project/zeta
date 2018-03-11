@@ -1,6 +1,7 @@
 package de.htwg.zeta.common.format.metaModel
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.project.concept
+import de.htwg.zeta.common.models.project.concept.Concept
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -41,7 +42,7 @@ class ConceptFormat(
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
     uiState <- (json \ sUiState).validate[String]
   } yield {
-    Concept(
+    concept.Concept(
       classes = classes,
       references = references,
       enums = enums,

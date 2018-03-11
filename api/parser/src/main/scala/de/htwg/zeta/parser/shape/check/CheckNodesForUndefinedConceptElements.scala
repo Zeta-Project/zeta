@@ -2,10 +2,10 @@ package de.htwg.zeta.parser.shape.check
 
 import scala.collection.mutable.ListBuffer
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.UnitType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.UnitType
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorCheck
 import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage

@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.models.modelDefinitions.concept.elements
+package de.htwg.zeta.common.models.project.concept.elements
 
 import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
