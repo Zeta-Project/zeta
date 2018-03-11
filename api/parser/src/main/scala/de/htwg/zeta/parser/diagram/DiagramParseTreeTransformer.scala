@@ -1,66 +1,48 @@
 package de.htwg.zeta.parser.diagram
 
-import de.htwg.zeta.parser.check.Check.Id
-import de.htwg.zeta.parser.check.FindDuplicates
-import de.htwg.zeta.server.generator.model.diagram.Diagram
 import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
+import de.htwg.zeta.common.model.diagram.Diagram
+import de.htwg.zeta.common.model.diagram.Palette
+import de.htwg.zeta.common.model.shape.Node
+import de.htwg.zeta.parser.ReferenceCollector
+import de.htwg.zeta.parser.check.ErrorChecker
+import de.htwg.zeta.parser.diagram.check.CheckDuplicateDiagrams
+import de.htwg.zeta.parser.diagram.check.CheckDuplicateNodes
+import de.htwg.zeta.parser.diagram.check.CheckDuplicatePalettes
+import de.htwg.zeta.parser.diagram.check.CheckUndefinedNodes
+
 object DiagramParseTreeTransformer {
 
-  def transform(diagrams: List[DiagramParseTree]): Validation[List[String], List[Diagram]] = {
-    checkForErrors(diagrams) match {
-      case Nil => Success(diagrams.map(transform))
+  def transform(diagrams: List[DiagramParseTree], nodes: List[Node]): Validation[List[String], List[Diagram]] = {
+    val referencedNodes = ReferenceCollector[Node](nodes, _.name)
+    checkForErrors(diagrams, referencedNodes) match {
+      case Nil => Success(diagrams.map(transformDiagram(_, referencedNodes)))
       case errors: List[String] => Failure(errors)
     }
   }
 
-  private def checkForErrors(diagrams: List[DiagramParseTree]): List[String] = {
+  private def checkForErrors(diagrams: List[DiagramParseTree], nodes: ReferenceCollector[Node]): List[String] =
+    ErrorChecker()
+      .add(CheckDuplicateDiagrams(diagrams))
+      .add(CheckDuplicatePalettes(diagrams))
+      .add(CheckDuplicateNodes(diagrams))
+      .add(CheckUndefinedNodes(diagrams, nodes))
+      .run()
 
-    def findDuplicateDiagrams(): List[String] = {
-      val findDuplicates = new FindDuplicates[DiagramParseTree](_.name)
-      findDuplicates(diagrams)
-    }
-
-    def findDuplicatePalettes(): List[String] = {
-      val findDuplicates = new FindDuplicates[PaletteParseTree](_.name)
-      diagrams.map(_.palettes).flatMap(findDuplicates(_))
-    }
-
-    def findDuplicateNodes(): List[String] = {
-      val findDuplicates = new FindDuplicates[NodeParseTree](_.name)
-      diagrams.flatMap(_.palettes).map(_.nodes).flatMap(findDuplicates(_))
-    }
-
-    val duplicateDiagrams = findDuplicateDiagrams()
-    val duplicatePalettes = findDuplicatePalettes()
-    val duplicateNodes = findDuplicateNodes()
-
-    val maybeErrors = List(
-      createErrorIfNotEmpty("The following diagrams are defined multiple times: ", duplicateDiagrams),
-      createErrorIfNotEmpty("The following palettes are defined multiple times: ", duplicatePalettes),
-      createErrorIfNotEmpty("The following nodes are defined multiple times: ", duplicateNodes)
+  private def transformDiagram(diagramTree: DiagramParseTree, nodes: ReferenceCollector[Node]): Diagram = {
+    Diagram(
+      name = diagramTree.name,
+      palettes = diagramTree.palettes.map(transformPalette(_, nodes))
     )
-    maybeErrors.collect {
-      case Some(error) => error
-    }
   }
 
-  private def createErrorIfNotEmpty(errorMessage: String, errorIds: List[Id]): Option[String] = errorIds match {
-    case Nil => None
-    case _ => Some(errorMessage + errorIds.mkString(","))
-  }
-
-  private def transform(diagramTree: DiagramParseTree): Diagram = {
-    //noinspection ScalaStyle
-    Diagram(diagramTree.name,
-      Map(),
-      List(),
-      List(),
-      None,
-      null,
-      null
+  private def transformPalette(palette: PaletteParseTree, nodes: ReferenceCollector[Node]): Palette = {
+    Palette(
+      name = palette.name,
+      nodes = palette.nodes.map(t => nodes.!(t.name))
     )
   }
 }

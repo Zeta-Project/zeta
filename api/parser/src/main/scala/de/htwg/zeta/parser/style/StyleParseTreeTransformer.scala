@@ -1,88 +1,71 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint.Color
+import scalaz.Failure
+import scalaz.Success
+import scalaz.Validation
 
-import de.htwg.zeta.parser.check.Check.Id
-import de.htwg.zeta.parser.check.{FindDuplicates, FindGraphCycles, FindUndefinedParents}
-import de.htwg.zeta.server.generator.model.style.color.{ColorOrGradient, ColorWithTransparency, Color => OldColor}
-import de.htwg.zeta.server.generator.model.style.gradient.GradientAlignment
-import de.htwg.zeta.server.generator.model.style.{Style, LineStyle => OldLineStyle}
-
-import scala.reflect.ClassTag
-import scalaz.{Failure, Success, Validation}
+import de.htwg.zeta.common.model.style
+import de.htwg.zeta.common.model.style.Background
+import de.htwg.zeta.common.model.style.Color
+import de.htwg.zeta.common.model.style.Dashed
+import de.htwg.zeta.common.model.style.Dotted
+import de.htwg.zeta.common.model.style.DoubleLine
+import de.htwg.zeta.common.model.style.Font
+import de.htwg.zeta.common.model.style.Line
+import de.htwg.zeta.common.model.style.Solid
+import de.htwg.zeta.common.model.style.Style
+import de.htwg.zeta.parser.Collector
+import de.htwg.zeta.parser.check.ErrorChecker
+import de.htwg.zeta.parser.style.check.CheckDuplicateStyles
+import de.htwg.zeta.parser.style.check.CheckGraphCycles
+import de.htwg.zeta.parser.style.check.CheckUndefinedParents
 
 object StyleParseTreeTransformer {
 
   def transform(styleTrees: List[StyleParseTree]): Validation[List[String], List[Style]] = {
     checkForErrors(styleTrees) match {
-      case Nil => Success(styleTrees.map(transform))
+      case Nil => Success(styleTrees.map(transformStyle))
       case errors: List[String] => Failure(errors)
     }
   }
 
-  private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] = {
-    val toId: StyleParseTree => Id = _.name
-    val getParentIds: StyleParseTree => List[Id] = _.parentStyles
-    val toElement: Id => Option[StyleParseTree] = id => styleTrees.find(_.name == id)
+  private def checkForErrors(styleTrees: List[StyleParseTree]): List[String] =
+    ErrorChecker()
+      .add(CheckDuplicateStyles(styleTrees))
+      .add(CheckUndefinedParents(styleTrees))
+      .add(CheckGraphCycles(styleTrees))
+      .run()
 
-    val findDuplicates = new FindDuplicates[StyleParseTree](toId)
-    val findUndefinedParents = new FindUndefinedParents[StyleParseTree](toId, getParentIds)
-    val findGraphCycles = new FindGraphCycles[StyleParseTree](toId, toElement, getParentIds)
-
-    val checks = List(findDuplicates, findUndefinedParents, findGraphCycles)
-    checks.flatMap(check => check(styleTrees))
-  }
-
-  def transform(styleParseTree: StyleParseTree): Style = {
-
-    trait ColorToRBGColor {
-      val color: Color
-
-      val getRGBValue: String = {
-        val r = color.getRed * 255.0.round.toInt
-        val g = color.getGreen * 255.0.round.toInt
-        val b = color.getBlue * 255.0.round.toInt
-
-        s"$r$g$b"
-      }
+  private def transformStyle(styleParseTree: StyleParseTree): Style = {
+    def transformLineStyle(string: String): style.LineStyle = string match {
+      case "dotted" => Dotted()
+      case "solid" => Solid()
+      case "double" => DoubleLine()
+      case "dash" => Dashed()
+      case _ => Line.defaultStyle
     }
 
-    case class ColorOrGradientImpl(color: Color) extends ColorOrGradient with ColorToRBGColor
+    val styleAttributes = Collector(styleParseTree.attributes)
 
-    case class ColorWithTransparencyImpl(color: Color) extends ColorWithTransparency with ColorToRBGColor
-
-    case class ColorImpl(color: Color) extends OldColor with ColorToRBGColor
-
-    class CollectAttributeWrapper[T](val t: Option[T]) {
-      def map[R](func: T => R): Option[R] = t.map(func)
-    }
-
-    def collectAttribute[T: ClassTag]: CollectAttributeWrapper[T] = {
-      val attribute = styleParseTree.attributes.collectFirst {
-        case t: T => t
-      }
-      new CollectAttributeWrapper(attribute)
-    }
-
-    new Style(
+    Style(
       name = styleParseTree.name,
-      description = Some(styleParseTree.description),
-      transparency = collectAttribute[Transparency].map(_.transparency),
-      background_color = collectAttribute[BackgroundColor].map(bg => ColorOrGradientImpl(bg.color)),
-      line_color = collectAttribute[LineColor].map(lc => ColorWithTransparencyImpl(lc.color)),
-      line_style = collectAttribute[LineStyle].map(_.style).flatMap(OldLineStyle.getIfValid),
-      line_width = collectAttribute[LineWidth].map(_.width),
-      font_color = collectAttribute[FontColor].map(fc => ColorImpl(fc.color)),
-      font_name = collectAttribute[FontName].map(_.name),
-      font_size = collectAttribute[FontSize].map(_.size),
-      font_bold = collectAttribute[FontBold].map(_.bold),
-      font_italic = collectAttribute[FontItalic].map(_.italic),
-      gradient_orientation = collectAttribute[GradientOrientation].map(_.orientation).flatMap(GradientAlignment.ifValid),
-      selected_highlighting = None,
-      multiselected_highlighting = None,
-      allowed_highlighting = None,
-      unallowed_highlighting = None,
-      parents = List()
+      description = styleParseTree.description,
+      background = Background(
+        color = styleAttributes.?[BackgroundColor].fold(Background.defaultColor)(c => Color(c.color))
+      ),
+      font = Font(
+        bold = styleAttributes.?[FontBold].fold(Font.defaultBold)(_.bold),
+        color = styleAttributes.?[FontColor].fold(Font.defaultColor)(fc => Color(fc.color)),
+        italic = styleAttributes.?[FontItalic].fold(Font.defaultItalic)(_.italic),
+        name = styleAttributes.?[FontName].fold(Font.defaultName)(_.name),
+        size = styleAttributes.?[FontSize].fold(Font.defaultSize)(_.size)
+      ),
+      line = Line(
+        color = styleAttributes.?[LineColor].fold(Line.defaultColor)(lc => Color(lc.color)),
+        style = styleAttributes.?[LineStyle].fold(Line.defaultStyle)(s => transformLineStyle(s.style)),
+        width = styleAttributes.?[LineWidth].fold(Line.defaultWidth)(_.width)
+      ),
+      transparency = styleAttributes.?[Transparency].fold(Style.defaultTransparency)(_.transparency)
     )
   }
 
