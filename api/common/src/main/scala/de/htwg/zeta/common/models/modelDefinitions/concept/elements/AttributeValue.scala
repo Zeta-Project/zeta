@@ -1,9 +1,9 @@
-package de.htwg.zeta.common.models.modelDefinitions.metaModel.elements
+package de.htwg.zeta.common.models.modelDefinitions.concept.elements
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
 
 sealed trait AttributeValue
 

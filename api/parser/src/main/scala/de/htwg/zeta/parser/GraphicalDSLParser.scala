@@ -6,7 +6,7 @@ import scalaz.Validation
 
 import de.htwg.zeta.common.model.MetaModel
 import de.htwg.zeta.common.model.shape.Shape
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 import de.htwg.zeta.parser.diagram.DiagramParseTreeTransformer
 import de.htwg.zeta.parser.diagram.DiagramParser
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer

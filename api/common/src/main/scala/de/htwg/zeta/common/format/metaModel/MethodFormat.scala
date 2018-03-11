@@ -2,8 +2,8 @@ package de.htwg.zeta.common.format.metaModel
 
 import scala.collection.immutable.ListMap
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult

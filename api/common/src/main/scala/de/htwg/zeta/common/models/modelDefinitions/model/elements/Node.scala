@@ -2,12 +2,12 @@ package de.htwg.zeta.common.models.modelDefinitions.model.elements
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.HasAttributeValues
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.HasAttributeValues
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method.MethodMap
 
 /** Represents an MClass type instance.
  *

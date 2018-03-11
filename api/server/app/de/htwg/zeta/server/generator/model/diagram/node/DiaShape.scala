@@ -8,9 +8,9 @@ import de.htwg.zeta.server.generator.parser.Cache
 import de.htwg.zeta.server.generator.parser.ShapeSketch
 import de.htwg.zeta.server.generator.parser.IDtoShapeSketch
 import de.htwg.zeta.common.models.entity.GraphicalDsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 
 /**
  * Created by julian on 30.11.15.

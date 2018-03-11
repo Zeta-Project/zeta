@@ -1,19 +1,19 @@
-package de.htwg.zeta.common.models.modelDefinitions.metaModel
+package de.htwg.zeta.common.models.modelDefinitions.concept
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept.MetaModelTraverseWrapper
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum.EnumMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.ClassMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass.MClassTraverseWrapper
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference.ReferenceMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept.MetaModelTraverseWrapper
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum.EnumMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass.ClassMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass.MClassTraverseWrapper
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method.MethodMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference.ReferenceMap
 
 
 /**

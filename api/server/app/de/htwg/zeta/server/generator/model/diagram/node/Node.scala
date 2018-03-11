@@ -10,8 +10,8 @@ import de.htwg.zeta.server.generator.model.diagram.methodes.OnDelete
 import de.htwg.zeta.server.generator.model.diagram.traits.Container
 import de.htwg.zeta.server.generator.model.diagram.traits.Palette
 import de.htwg.zeta.server.generator.model.style.Style
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 
 /**
  * Created by julian on 24.11.15.

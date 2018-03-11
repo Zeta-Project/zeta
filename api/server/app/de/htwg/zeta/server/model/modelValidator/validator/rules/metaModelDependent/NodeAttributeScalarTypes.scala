@@ -2,16 +2,16 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
