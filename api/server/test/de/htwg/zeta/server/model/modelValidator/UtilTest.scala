@@ -11,7 +11,7 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -41,9 +41,9 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelNodes = Seq(
-    Node.empty("node1", mClass.name, Seq.empty, Seq.empty),
-    Node.empty("node2", mClass.name, Seq.empty, Seq.empty),
-    Node.empty("node3", mClass.name, Seq.empty, Seq.empty)
+    NodeInstance.empty("node1", mClass.name, Seq.empty, Seq.empty),
+    NodeInstance.empty("node2", mClass.name, Seq.empty, Seq.empty),
+    NodeInstance.empty("node3", mClass.name, Seq.empty, Seq.empty)
   )
 
   val modelEdges = Seq(

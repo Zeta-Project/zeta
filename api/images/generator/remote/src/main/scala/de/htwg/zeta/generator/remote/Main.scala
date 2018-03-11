@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
 import de.htwg.zeta.generator.template.Result
@@ -97,7 +97,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     val p = Promise[Result]
 
     modelEntityPersistence.read(options.modelId).map { entity =>
-      entity.nodeMap.values.foreach { node: Node =>
+      entity.nodeMap.values.foreach { node: NodeInstance =>
         if (node.className == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))
         }
@@ -109,7 +109,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
 
   private case class MyGenerator(generatorId: UUID = UUID.randomUUID) extends Transformer {
 
-    private def transformBasicActorNode(node: Node) = {
+    private def transformBasicActorNode(node: NodeInstance) = {
       val actorName = "AttributeValue"
       val filename = s"${actorName}.scala"
       val content =
@@ -124,9 +124,9 @@ object Main extends Template[CreateOptions, RemoteOptions] {
       File(UUID.randomUUID, filename, content)
     }
 
-    private def transformPersistentActorNode(node: Node) = "transformPersistentActorNode"
+    private def transformPersistentActorNode(node: NodeInstance) = "transformPersistentActorNode"
 
-    private def transformNode(node: Node) = {
+    private def transformNode(node: NodeInstance) = {
       node.className match {
         case "BasicActor" => transformBasicActorNode(node)
         case "PersistentActor" => transformPersistentActorNode(node)

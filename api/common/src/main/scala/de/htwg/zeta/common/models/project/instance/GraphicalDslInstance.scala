@@ -11,7 +11,7 @@ import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeM
 import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 
 
 /** A instance of a GraphicalDsl (formerly named Model)
@@ -27,7 +27,7 @@ case class GraphicalDslInstance(
     id: UUID,
     name: String,
     graphicalDslId: UUID,
-    nodes: Seq[Node],
+    nodes: Seq[NodeInstance],
     edges: Seq[EdgeInstance],
     attributes: Seq[MAttribute],
     attributeValues: Map[String, AttributeValue],

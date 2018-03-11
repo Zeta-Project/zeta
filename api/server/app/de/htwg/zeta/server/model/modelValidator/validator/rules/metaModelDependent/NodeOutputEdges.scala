@@ -1,7 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -17,9 +17,9 @@ class NodeOutputEdges(val nodeType: String, val outputTypes: Seq[String]) extend
   override val possibleFix: String =
     s"Remove all output edges that are not of types ${outputTypes.mkString("{", ", ", "}")} from nodes of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
+  override def isValid(node: NodeInstance): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.outputEdgeNames.foldLeft(true) { (acc, outputName) =>
+  def rule(node: NodeInstance): Boolean = node.outputEdgeNames.foldLeft(true) { (acc, outputName) =>
     if (outputTypes.contains(outputName)) acc else false
   }
 
