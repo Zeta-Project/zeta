@@ -15,14 +15,14 @@ import play.api.libs.json.__
  * @param id   the id of the metamodel
  * @param name the name of the metamodel
  */
-case class MetaModelShortInfo(id: UUID, name: String)
+case class ProjectShortInfo(id: UUID, name: String)
 
-object MetaModelShortInfo {
+object ProjectShortInfo {
 
-  implicit val reads: Reads[MetaModelShortInfo] = (
+  implicit val reads: Reads[ProjectShortInfo] = (
     (__ \ "id").read[UUID] and
       (__ \ "metaModel" \ "name").read[String]
-    ) (MetaModelShortInfo.apply _)
+    ) (ProjectShortInfo.apply _)
 
-  implicit val writes: Writes[MetaModelShortInfo] = Json.writes[MetaModelShortInfo]
+  implicit val writes: Writes[ProjectShortInfo] = Json.writes[ProjectShortInfo]
 }

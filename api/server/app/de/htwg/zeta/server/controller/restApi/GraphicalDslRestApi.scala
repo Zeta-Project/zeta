@@ -15,7 +15,7 @@ import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.project.GdslProject
-import de.htwg.zeta.common.models.project.concept.MetaModelShortInfo
+import de.htwg.zeta.common.models.project.concept.ProjectShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
@@ -49,9 +49,9 @@ class GraphicalDslRestApi @Inject()(
     val repo = graphicalDslRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
-        MetaModelShortInfo(id = mm.id, name = mm.name)
+        ProjectShortInfo(id = mm.id, name = mm.name)
       })
-    }).map((set: Set[MetaModelShortInfo]) => Ok(JsArray(set.toList.map(MetaModelShortInfo.writes.writes)))).recover {
+    }).map((set: Set[ProjectShortInfo]) => Ok(JsArray(set.toList.map(ProjectShortInfo.writes.writes)))).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
