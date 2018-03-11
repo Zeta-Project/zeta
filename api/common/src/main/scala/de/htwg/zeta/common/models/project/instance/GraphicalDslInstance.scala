@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.Node
 
 
@@ -28,7 +28,7 @@ case class GraphicalDslInstance(
     name: String,
     graphicalDslId: UUID,
     nodes: Seq[Node],
-    edges: Seq[Edge],
+    edges: Seq[EdgeInstance],
     attributes: Seq[MAttribute],
     attributeValues: Map[String, AttributeValue],
     methods: Seq[Method],

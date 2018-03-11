@@ -5,7 +5,7 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -44,15 +44,15 @@ class EdgesTest extends FlatSpec with Matchers {
   val rule = new Edges(Seq("edgeType1", "edgeType2"))
 
   "isValid" should "return true on valid edges" in {
-    val edge1 = Edge.empty("", mReference1.name, "", "")
+    val edge1 = EdgeInstance.empty("", mReference1.name, "", "")
     rule.isValid(edge1).get should be(true)
 
-    val edge2 = Edge.empty("", mReference2.name, "", "")
+    val edge2 = EdgeInstance.empty("", mReference2.name, "", "")
     rule.isValid(edge2).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val edge3 = Edge.empty("", mReference3.name, "", "")
+    val edge3 = EdgeInstance.empty("", mReference3.name, "", "")
     rule.isValid(edge3).get should be(false)
   }
 

@@ -10,14 +10,14 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.String
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   val mReference: MReference = MReference.empty("reference", "", "")
-  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
+  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
   val rule = new EdgeAttributeEnumTypes("reference", "attributeType", "enumName")
 
 
@@ -40,7 +40,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge.empty("", differentMReference.name, "", "")
+    val edge = EdgeInstance.empty("", differentMReference.name, "", "")
 
     rule.isValid(edge) should be(None)
   }
@@ -48,7 +48,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
     val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("differentEnumName", differentEnum.name))
-    val edge = Edge.empty("", mReference.name, "", "").copy(attributeValues = attribute)
+    val edge = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -64,7 +64,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = Edge.empty("", differentReference.name, "", "")
+    val edge = EdgeInstance.empty("", differentReference.name, "", "")
     rule.isValid(edge) should be(None)
   }
 

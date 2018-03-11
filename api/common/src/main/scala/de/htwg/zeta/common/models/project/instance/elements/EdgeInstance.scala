@@ -18,7 +18,7 @@ import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
  * @param targetNodeName  the name of the node that can be reached
  * @param attributeValues a map with attribute names and the assigned values
  */
-case class Edge(
+case class EdgeInstance(
     name: String,
     referenceName: String,
     sourceNodeName: String,
@@ -28,18 +28,18 @@ case class Edge(
     methods: Seq[Method]
 ) extends HasAttributeValues with AttributeMap with MethodMap
 
-object Edge {
+object EdgeInstance {
 
-  def empty(name: String, referenceName: String, source: String, target: String): Edge =
-    Edge(name, referenceName, source, target, Seq.empty, Map.empty, Seq.empty)
+  def empty(name: String, referenceName: String, source: String, target: String): EdgeInstance =
+    EdgeInstance(name, referenceName, source, target, Seq.empty, Map.empty, Seq.empty)
 
   trait EdgeMap {
 
-    val edges: Seq[Edge]
+    val edges: Seq[EdgeInstance]
 
     /** Edges mapped to their own names. */
-    final val edgeMap: Map[String, Edge] = Option(edges).fold(
-      Map.empty[String, Edge]
+    final val edgeMap: Map[String, EdgeInstance] = Option(edges).fold(
+      Map.empty[String, EdgeInstance]
     ) { edges =>
       edges.filter(Option(_).isDefined).map(edge => (edge.name, edge)).toMap
       }

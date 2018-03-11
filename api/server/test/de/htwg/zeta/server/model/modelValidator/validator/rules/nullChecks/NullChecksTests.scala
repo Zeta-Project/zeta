@@ -13,7 +13,7 @@ import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.Node
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -23,14 +23,14 @@ class NullChecksTests extends FlatSpec with Matchers {
 
   def nodesToModel(nodes: Seq[Node]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = nodes)
 
-  def edgesToModel(edges: Seq[Edge]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = edges)
+  def edgesToModel(edges: Seq[EdgeInstance]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = edges)
 
   val mReference: MReference = MReference.empty("edgeType", "", "")
   val mClass: MClass = MClass.empty("nodeType")
 
   val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
 
-  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
+  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
 
   "EdgeAttributesNamesNotNull" should "check for null in edge attributes names" in {
     val rule = new EdgeAttributesNamesNotNull
