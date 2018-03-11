@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.models.modelDefinitions.model
+package de.htwg.zeta.common.models.project.instance
 
 import java.util.UUID
 
@@ -10,10 +10,8 @@ import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.EdgeMap
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node.NodeMap
+import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.Node
 
 
 /** A instance of a GraphicalDsl (formerly named Model)

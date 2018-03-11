@@ -4,8 +4,8 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleNodeRule
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.Node
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).

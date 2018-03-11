@@ -2,8 +2,8 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.Edge
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule

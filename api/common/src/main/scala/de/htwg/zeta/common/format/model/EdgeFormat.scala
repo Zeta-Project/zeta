@@ -3,7 +3,7 @@ package de.htwg.zeta.common.format.model
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.Edge
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult

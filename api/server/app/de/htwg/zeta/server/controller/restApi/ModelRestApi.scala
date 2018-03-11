@@ -12,7 +12,8 @@ import de.htwg.zeta.common.format.model.EdgeFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.elements.Node
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator

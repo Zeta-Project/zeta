@@ -5,7 +5,9 @@ import java.util.UUID
 import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance
+import de.htwg.zeta.common.models.project.instance
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -55,7 +57,7 @@ class GraphicalDslInstanceFormat(
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
     uiState <- (json \ sUiState).validate[String]
   } yield {
-    GraphicalDslInstance(
+    instance.GraphicalDslInstance(
       id = id,
       name = name,
       graphicalDslId = graphicalDslId,
@@ -88,7 +90,7 @@ class GraphicalDslInstanceFormat(
       methods <- (json \ sMethods).validate(Reads.list(methodFormat))
       uiState <- (json \ sUiState).validate[String]
     } yield {
-      GraphicalDslInstance(
+      instance.GraphicalDslInstance(
         id = id,
         name = name,
         graphicalDslId = graphicalDslId,

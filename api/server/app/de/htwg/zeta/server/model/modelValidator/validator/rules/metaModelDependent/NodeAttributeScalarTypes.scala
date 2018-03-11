@@ -11,8 +11,8 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolVa
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule

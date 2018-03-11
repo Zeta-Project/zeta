@@ -1,7 +1,9 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.Node
+import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.Node
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 
 /**

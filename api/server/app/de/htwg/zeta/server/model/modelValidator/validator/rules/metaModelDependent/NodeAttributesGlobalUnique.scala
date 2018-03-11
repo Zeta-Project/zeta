@@ -9,8 +9,8 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeVal
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule

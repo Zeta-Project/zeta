@@ -6,7 +6,7 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 

@@ -11,7 +11,8 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
 import de.htwg.zeta.generator.template.Result
