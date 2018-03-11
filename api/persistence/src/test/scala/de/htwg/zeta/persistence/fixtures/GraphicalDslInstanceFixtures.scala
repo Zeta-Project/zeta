@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.Node
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.Node
 
 object GraphicalDslInstanceFixtures {
@@ -41,7 +41,7 @@ object GraphicalDslInstanceFixtures {
     methods = Seq.empty
   )
 
-  val edge1 = Edge(
+  val edge1 = EdgeInstance(
     name = "edge1",
     referenceName = GraphicalDslFixtures.reference1.name,
     sourceNodeName = nodeName1,
@@ -51,7 +51,7 @@ object GraphicalDslInstanceFixtures {
     methods = Seq.empty
   )
 
-  val edge2 = Edge(
+  val edge2 = EdgeInstance(
     name = "edge2",
     referenceName = GraphicalDslFixtures.reference2.name,
     sourceNodeName = nodeName2,

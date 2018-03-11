@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 
 /**
@@ -11,7 +11,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
  */
 trait SingleEdgeRule extends EdgesRule {
 
-  override def check(elements: Seq[Edge]): Seq[ModelValidationResult] = elements.flatMap(edge => check(edge))
+  override def check(elements: Seq[EdgeInstance]): Seq[ModelValidationResult] = elements.flatMap(edge => check(edge))
 
   /**
    * Checks one edge against the overridden isValid method returning a result
@@ -20,7 +20,7 @@ trait SingleEdgeRule extends EdgesRule {
    * @param edge The edge to validate.
    * @return A model validation result or None if the rule is not applicable to this edge.
    */
-  def check(edge: Edge): Option[ModelValidationResult] = isValid(edge) match {
+  def check(edge: EdgeInstance): Option[ModelValidationResult] = isValid(edge) match {
     case Some(result) => Some(ModelValidationResult(this, result, Some(Right(edge))))
     case _ => None
   }
@@ -32,6 +32,6 @@ trait SingleEdgeRule extends EdgesRule {
    * @param edge The edge.
    * @return Boolean indicating if the edge is valid in respect to this rule.
    */
-  def isValid(edge: Edge): Option[Boolean]
+  def isValid(edge: EdgeInstance): Option[Boolean]
 
 }

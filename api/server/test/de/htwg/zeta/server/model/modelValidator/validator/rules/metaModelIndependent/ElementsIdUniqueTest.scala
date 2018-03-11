@@ -9,7 +9,7 @@ import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -24,8 +24,8 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
     val elements = GraphicalDslInstance.empty("", UUID.randomUUID())
       .copy(
         edges = Seq(
-          Edge.empty("id1", mReference.name, "", ""),
-          Edge.empty("id3", mReference.name, "", "")
+          EdgeInstance.empty("id1", mReference.name, "", ""),
+          EdgeInstance.empty("id3", mReference.name, "", "")
         ),
         nodes = Seq(
           Node.empty("id2", mClass.name, Seq(), Seq()),
@@ -44,8 +44,8 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
     val elements = GraphicalDslInstance.empty("", UUID.randomUUID())
       .copy(
         edges = Seq(
-          Edge.empty(id1, mReference.name, "", ""),
-          Edge.empty(id1, mReference.name, "", "")
+          EdgeInstance.empty(id1, mReference.name, "", ""),
+          EdgeInstance.empty(id1, mReference.name, "", "")
         ),
         nodes = Seq(
           Node.empty(id2, mClass.name, Seq(), Seq()),

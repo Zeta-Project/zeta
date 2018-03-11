@@ -7,7 +7,7 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeVal
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -22,7 +22,7 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     Seq[MAttribute](),
     Seq.empty
   )
-  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
+  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
   val rule = new EdgesNoAttributes("edgeType")
 
   "isValid" should "return true on edges of type edgeType with no attributes" in {

@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator
 
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.project.instance.Node
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.Node
 import de.htwg.zeta.server.model.modelValidator.validator.rules.Rule
 import play.api.libs.json.JsBoolean
@@ -21,7 +21,7 @@ import play.api.libs.json.Writes
  * @param valid        Element is valid or invalid.
  * @param modelElement The modelElement.
  */
-case class ModelValidationResult(rule: Rule, valid: Boolean, modelElement: Option[Either[Node, Edge]] = None)
+case class ModelValidationResult(rule: Rule, valid: Boolean, modelElement: Option[Either[Node, EdgeInstance]] = None)
 
 object ModelValidationResult {
 
@@ -42,7 +42,7 @@ object ModelValidationResult {
           "type" -> JsString("node"),
           "typeName" -> JsString(node.className)
         )
-        case Some(Right(edge: Edge)) => Json.obj(
+        case Some(Right(edge: EdgeInstance)) => Json.obj(
           "id" -> JsString(edge.name),
           "type" -> JsString("edge"),
           "typeName" -> JsString(edge.referenceName)

@@ -11,7 +11,7 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.String
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -28,7 +28,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     Seq.empty
   )
 
-  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
+  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
 
   val rule = new EdgeAttributes("reference", Seq("stringAttribute", "boolAttribute"))
 
@@ -49,7 +49,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "invalidAttribute" -> DoubleValue(1.0)
     )
 
-    val edge = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributes)
+    val edge = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributes)
 
     rule.isValid(edge).get should be(false)
   }

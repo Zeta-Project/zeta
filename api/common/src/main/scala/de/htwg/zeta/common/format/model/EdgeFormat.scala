@@ -3,7 +3,7 @@ package de.htwg.zeta.common.format.model
 import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.AttributeFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -24,9 +24,9 @@ class EdgeFormat(
     sAttributes: String = "attributes",
     sAttributeValues: String = "attributeValues",
     sMethods: String = "methods"
-) extends OFormat[Edge] {
+) extends OFormat[EdgeInstance] {
 
-  override def writes(edge: Edge): JsObject = Json.obj(
+  override def writes(edge: EdgeInstance): JsObject = Json.obj(
     sName -> edge.name,
     sReferenceName -> edge.referenceName,
     sSourceNodeName -> edge.sourceNodeName,
@@ -36,7 +36,7 @@ class EdgeFormat(
     sMethods -> Writes.seq(methodFormat).writes(edge.methods)
   )
 
-  override def reads(json: JsValue): JsResult[Edge] = for {
+  override def reads(json: JsValue): JsResult[EdgeInstance] = for {
     name <- (json \ sName).validate[String]
     referenceName <- (json \ sReferenceName).validate[String]
     source <- (json \ sSourceNodeName).validate[String]
@@ -45,7 +45,7 @@ class EdgeFormat(
     attributeValues <- (json \ sAttributeValues).validate(Reads.map(attributeValueFormat))
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
   } yield {
-    Edge(
+    EdgeInstance(
       name = name,
       referenceName = referenceName,
       sourceNodeName = source,
