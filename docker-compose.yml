@@ -1,32 +1,35 @@
 version: '2'
 services:
   generatorControl:
-    image: 1science/sbt:0.13-oracle-jdk-8
+    image: zeta-sbt:1.0.3
+    build: ./api
     volumes:
       - ./api:/app
       - ./sbt/generatorControl:/root
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["sbt", "project generatorControl", "run --master-port 2551 --master-num 1 --workers 3 --worker-seeds generatorControl:2551 --dev-port 2552 --dev-seeds generatorControl:2551"]
+    command: ["project generatorControl", "run --master-port 2551 --master-num 1 --workers 3 --worker-seeds generatorControl:2551 --dev-port 2552 --dev-seeds generatorControl:2551"]
     environment:
       - ZETA_MONGODB_SERVER=mongodb
     links:
       - mongodb
 
   mongodb:
-    image: mongo:3.3
+    image: mongo:3.4.13
     volumes:
       - ./mongodb:/data/db
     ports:
-      - 27017:27017
+      - 127.0.0.1:27017:27017
 
   api:
-    image: 1science/sbt:0.13-oracle-jdk-8
+    image: zeta-sbt:1.0.3
+    build: ./api
     volumes:
       - ./api:/app
       - ./sbt/server:/root
     environment:
       - APPLICATION_SECRET=superSecret
       - ZETA_MONGODB_SERVER=mongodb
+      - ZETA_DEPLOYMENT=production
     stdin_open: true
     ports:
       - 9000:9000
@@ -34,17 +37,18 @@ services:
       - mongodb
       - webapp
       - generatorControl
-    command: ["sbt", "project server", "-Dzeta.actor.cluster.0=generatorControl:2551 -Dzeta.webapp.host=webapp -Dzeta.deployment.environment=production", "run"]
+    command: ["-Dzeta.actor.cluster.0=generatorControl:2551", "-Dzeta.webapp.host=webapp", "project server", "run"]
 
   webapp:
-    image: node:6 # Alpine cannot be used, because git executable is needed
+    image: node:6.13.0 # Alpine cannot be used, because git executable is needed
     volumes:
       - ./webapp:/src
     command: "bash -c 'yarn; npm run dev'"
     working_dir: /src
 
   images:
-    image: 1science/sbt:0.13-oracle-jdk-8
+    image: zeta-sbt:1.0.3
+    build: ./api
     volumes:
       - ./api:/app
       - ./sbt/images:/root
