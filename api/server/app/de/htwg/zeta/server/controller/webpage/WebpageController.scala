@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.common.models.project.concept.ProjectShortInfo
+import de.htwg.zeta.common.format.ProjectShortInfo
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
