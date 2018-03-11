@@ -20,7 +20,7 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
-import de.htwg.zeta.common.models.project.GraphicalDsl
+import de.htwg.zeta.common.models.project.GdslProject
 
 
 object GraphicalDslFixtures {
@@ -183,7 +183,7 @@ object GraphicalDslFixtures {
     methods = Seq.empty
   )
 
-  val entity1 = GraphicalDsl(
+  val entity1 = GdslProject(
     id = UUID.randomUUID,
     name = "name1",
     concept = concept1,
@@ -193,7 +193,7 @@ object GraphicalDslFixtures {
     validator = Some("validator1")
   )
 
-  val entity2 = GraphicalDsl(
+  val entity2 = GdslProject(
     id = UUID.randomUUID,
     name = "name2",
     concept = concept2,
@@ -203,9 +203,9 @@ object GraphicalDslFixtures {
     validator = Some("validator2")
   )
 
-  val entity2Updated: GraphicalDsl = entity2.copy(diagram = "diagramUpdated")
+  val entity2Updated: GdslProject = entity2.copy(diagram = "diagramUpdated")
 
-  val entity3 = GraphicalDsl(
+  val entity3 = GdslProject(
     id = UUID.randomUUID,
     name = "name3",
     concept = concept2,

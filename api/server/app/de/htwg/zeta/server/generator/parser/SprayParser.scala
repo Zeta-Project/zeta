@@ -31,7 +31,7 @@ import de.htwg.zeta.server.generator.parser
 import grizzled.slf4j.Logging
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
-import de.htwg.zeta.common.models.project.GraphicalDsl
+import de.htwg.zeta.common.models.project.GdslProject
 
 /**
  * SprayParser
@@ -41,7 +41,7 @@ object SprayParser
 /**
  * offers functions like parseRawShape/Style, which parses style or shape strings to instances
  */
-class SprayParser(cache: Cache = Cache(), val metaModelE: GraphicalDsl) extends CommonParserMethods with Logging {
+class SprayParser(cache: Cache = Cache(), val metaModelE: GdslProject) extends CommonParserMethods with Logging {
   type diaConnection = de.htwg.zeta.server.generator.model.diagram.edge.Connection
 
   private val metaMapMClass: Map[String, MClass] = metaModelE.concept.classMap

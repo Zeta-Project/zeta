@@ -15,7 +15,7 @@ import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.models.modelDefinitions.concept.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
-import de.htwg.zeta.common.models.project.GraphicalDsl
+import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
@@ -177,7 +177,7 @@ class GraphicalDslRestApi @Inject()(
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDsl => Result): Future[Result] = {
+  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GdslProject => Result): Future[Result] = {
     graphicalDslRepo.restrictedTo(request.identity.id).read(id).map { graphicalDsl =>
       trans(graphicalDsl)
     }.recover {
@@ -303,7 +303,7 @@ class GraphicalDslRestApi @Inject()(
    * @return The validator.
    */
   def getValidator(id: UUID, generateOpt: Option[Boolean], get: Boolean)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (metaModelEntity: GraphicalDsl) => {
+    protectedRead(id, request, (metaModelEntity: GdslProject) => {
 
       val generate = generateOpt.getOrElse(false)
 
