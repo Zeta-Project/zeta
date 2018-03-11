@@ -4,9 +4,6 @@ import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object DiagramParser extends CommonParserMethods {
 
-  private val leftBrace = "{"
-  private val rightBrace = "}"
-
   def parseDiagrams(input: String): ParseResult[List[DiagramParseTree]] = {
     parseAll(diagrams, input)
   }

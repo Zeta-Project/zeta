@@ -11,6 +11,16 @@ import scala.util.parsing.combinator.JavaTokenParsers
  * commonly used parsing methods
  */
 trait CommonParserMethods extends JavaTokenParsers {
+
+  // language independent
+  val leftBrace = "{"
+  val rightBrace = "}"
+  val colon = ":"
+  val leftParenthesis = "("
+  val rightParenthesis = ")"
+  val comma = ","
+  val eq = "="
+
   // basic stuff
   // scalastyle:off non.ascii.character.disallowed
 
@@ -18,6 +28,7 @@ trait CommonParserMethods extends JavaTokenParsers {
   def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString }
   def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
   def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
+  def natural_number: Parser[Int] = "\\d+".r ^^ { _.toInt }
   def argument: Parser[String] =
     "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString }
 
@@ -71,18 +82,7 @@ trait CommonParserMethods extends JavaTokenParsers {
    * Some explicit usages
    */
   def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ { list => list }
-  def position: Parser[Option[(Int, Int)]] = "[Pp]osition\\s*\\(\\s*(x=)?".r ~> argument ~ ((",\\s*(y=)?".r ~> argument) <~ ")") ^^ {
-    case xarg ~ yarg => Some((xarg.toInt, yarg.toInt))
-    case _ => None
-  }
-  def size: Parser[Option[(Int, Int)]] = "[Ss]ize\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
-  }
-  def curve: Parser[Option[(Int, Int)]] = "[Cc]urve\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
-  }
+
   def idAsString: Parser[String] = "(id|ID)\\s*=?\\s*".r ~> argument ^^ { arg => arg }
   /**
    * takes a String and parses a boolean value out of it -> if string is yes|true|y

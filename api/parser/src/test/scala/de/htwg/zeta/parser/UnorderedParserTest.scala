@@ -1,8 +1,10 @@
 package de.htwg.zeta.parser
 
+import java.util.NoSuchElementException
 import org.scalatest.{FreeSpec, Matchers}
+import scala.util.parsing.combinator.JavaTokenParsers
 
-class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser {
+class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser with JavaTokenParsers {
 
   val pointLiteral = "point"
   val widthLiteral = "width"
@@ -213,6 +215,11 @@ class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser {
       "a parser has a minimum which is higher than the maximum" - {
         an[IllegalArgumentException] should be thrownBy {
           unordered(range(2, 1, parsePoint))
+        }
+      }
+      "a parser has an invalid maximum" - {
+        an[IllegalArgumentException] should be thrownBy {
+          unordered(max(0, parsePoint))
         }
       }
     }

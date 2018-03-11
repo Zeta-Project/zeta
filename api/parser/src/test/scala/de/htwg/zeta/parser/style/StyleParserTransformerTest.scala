@@ -1,53 +1,117 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.model.style.{DASH, Style}
-import de.htwg.zeta.server.generator.model.style.gradient.VERTICAL
-import org.scalatest.FlatSpec
+import javafx.scene.paint
+
+import de.htwg.zeta.common.model.style.Color
+import de.htwg.zeta.common.model.style.Dashed
+import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
-class StyleParserTransformerTest extends FlatSpec with Matchers {
+class StyleParserTransformerTest extends FreeSpec with Matchers {
 
-  val parserToTest: StyleParserImpl = new StyleParserImpl
+  "A style transformer will" - {
+    "transform without errors" - {
+      "when building a valid style" in {
+        val styleToTestSuccess = List(
+          StyleParseTree("Y", "\"Style for a connection between an interface and its implementing class\"", List(), List(
+            Transparency(1.0),
+            BackgroundColor(paint.Color.valueOf("white")),
+            LineColor(paint.Color.valueOf("black")),
+            LineStyle("dash"),
+            LineWidth(1),
+            FontColor(paint.Color.valueOf("black")),
+            FontName("Helvetica"),
+            FontSize(20),
+            FontBold(true),
+            FontItalic(true),
+            GradientOrientation("vertical"),
+            GradientAreaColor(paint.Color.valueOf("black")),
+            GradientAreaOffset(2.0)
+          ))
+        )
 
-  val styleToTestSuccess: String =
-    """
-      |style Y {
-      |  description = "Style for a connection between an interface and its implementing class"
-      |  transparency = 1.0
-      |  background-color = white
-      |  line-color = black
-      |  line-style = dash
-      |  line-width = 1
-      |  font-color = black
-      |  font-name = Helvetica
-      |  font-size = 20
-      |  font-bold = true
-      |  font-italic = true
-      |  gradient-orientation = vertical
-      |  gradient-area-color = black
-      |  gradient-area-offset = 2.0
-      |}
-    """.stripMargin
+        val result = StyleParseTreeTransformer.transform(styleToTestSuccess)
+        result.isSuccess shouldBe true
 
-  "A converter" should "build a style" in {
+        val styles = result.toOption.get
+        styles.size shouldBe 1
+        val style = styles.head
+        style.name shouldBe "Y"
+        style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
+        style.background.color shouldBe Color(255, 255, 255)
+        style.font.name shouldBe "Helvetica"
+        style.font.bold shouldBe true
+        style.font.color shouldBe Color(0, 0, 0)
+        style.font.italic shouldBe true
+        style.font.size shouldBe 20
+        style.line.color shouldBe Color(0, 0, 0)
+        style.line.style shouldBe Dashed()
+        style.line.width shouldBe 1
+        style.transparency shouldBe 1.0
+      }
 
-    val styleParser = parserToTest.parseStyles(styleToTestSuccess)
-    styleParser.successful shouldBe true
-    val styleTrees = styleParser.get
-    val styles = StyleParseTreeTransformer.transform(styleTrees).getOrElse(List())
-    val deprecatedStyle: Style = styles.head
+      "when building a valid style with different colors" in {
+        val styleToTestColors = List(
+          StyleParseTree("Y", "Style for a connection between an interface and its implementing class", List(), List(
+            BackgroundColor(paint.Color.valueOf("orange")),
+            LineColor(paint.Color.valueOf("gray")),
+            FontColor(paint.Color.valueOf("green"))
+          ))
+        )
+        val result = StyleParseTreeTransformer.transform(styleToTestColors)
+        result.isSuccess shouldBe true
 
-    deprecatedStyle.description shouldBe Some("\"Style for a connection between an interface and its implementing class\"")
-    deprecatedStyle.line_width shouldBe Some(1)
-    deprecatedStyle.background_color.map(_.getRGBValue) shouldBe Some("255.0255.0255.0")
-    deprecatedStyle.line_style shouldBe Some(DASH)
-    deprecatedStyle.line_width shouldBe Some(1)
-    deprecatedStyle.font_color.map(_.getRGBValue) shouldBe Some("0.00.00.0")
-    deprecatedStyle.font_name shouldBe Some("Helvetica")
-    deprecatedStyle.font_size shouldBe Some(20)
-    deprecatedStyle.font_bold shouldBe Some(true)
-    deprecatedStyle.font_italic shouldBe Some(true)
-    deprecatedStyle.gradient_orientation shouldBe Some(VERTICAL)
+        val styles = result.toOption.get
+        styles.size shouldBe 1
+        val style = styles.head
+        style.background.color shouldBe Color(255, 165, 0)
+        style.line.color shouldBe Color(128, 128, 128)
+        style.font.color shouldBe Color(0, 128, 0)
+      }
+    }
+    "find errors when" - {
+      "transforming styles which are duplicated" in {
+        val styleToTestDuplicates = List(
+          StyleParseTree("style1", "test", List("style3"), List()),
+          StyleParseTree("style1", "test", List("style3"), List()),
+          StyleParseTree("style3", "test", List(), List())
+        )
+
+        val result = StyleParseTreeTransformer.transform(styleToTestDuplicates)
+        result.isSuccess shouldBe false
+        val errors = result.toEither.left.get
+        errors.size shouldBe 1
+        errors should contain("The following styles are defined multiple times: style1")
+      }
+
+      "transforming styles with undefined parents" in {
+        val styleToTestUndefinedParents = List(
+          StyleParseTree("style1", "test", List("style2"), List()),
+          StyleParseTree("style2", "test", List("style4"), List()),
+          StyleParseTree("style3", "test", List("style4"), List())
+        )
+
+        val result = StyleParseTreeTransformer.transform(styleToTestUndefinedParents)
+        result.isSuccess shouldBe false
+        val errors = result.toEither.left.get
+        errors.size shouldBe 1
+        errors should contain("The following style is referenced as parent but not defined: style4")
+      }
+
+      "transforming styles with cycling dependencies" in {
+        val styleToTestGraphCycle = List(
+          StyleParseTree("style1", "test", List("style2"), List()),
+          StyleParseTree("style2", "test", List("style3"), List()),
+          StyleParseTree("style3", "test", List("style1"), List())
+        )
+
+        val result = StyleParseTreeTransformer.transform(styleToTestGraphCycle)
+        result.isSuccess shouldBe false
+        val errors = result.toEither.left.get
+        errors.size shouldBe 1
+        errors should contain("The following styles defines a graph circle with its parent styles: style1, style2, style3")
+      }
+    }
   }
 
 }

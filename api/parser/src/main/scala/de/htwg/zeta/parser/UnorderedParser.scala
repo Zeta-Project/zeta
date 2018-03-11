@@ -1,13 +1,14 @@
 package de.htwg.zeta.parser
 
-import scala.util.parsing.combinator.JavaTokenParsers
+import scala.util.parsing.combinator.Parsers
 
-trait UnorderedParser extends JavaTokenParsers {
+trait UnorderedParser extends Parsers {
 
   sealed abstract class ParseConf[+A](min: Int, max: Int) {
-    if (min < 0 || max < 0 || min > max) {
-      throw new IllegalArgumentException(s"Illegal min/max-values: min=$min, max=$max")
-    }
+    //noinspection ScalaStyle
+    require(min >= 0,   s"min must be greater than or equal to zero! Current: min=$min")
+    require(max >= 1,   s"max must be greater than zero! Current: max=$max")
+    require(max >= min, s"max must be greater than or equal to min! Current: min=$min, max=$max")
 
     val parser: Parser[A]
 
@@ -23,9 +24,13 @@ trait UnorderedParser extends JavaTokenParsers {
       }
     }
   }
+
   case class MinParseConf[A](min: Int, parser: Parser[A]) extends ParseConf[A](min, Int.MaxValue)
+
   case class MaxParseConf[A](max: Int, parser: Parser[A]) extends ParseConf[A](0, max)
+
   case class ExactParseConf[A](exact: Int, parser: Parser[A]) extends ParseConf[A](exact, exact)
+
   case class RangeParseConf[A](min: Int, max: Int, parser: Parser[A]) extends ParseConf[A](min, max)
 
   def min[A](min: Int, parser: Parser[A]): ParseConf[A] = MinParseConf(min, parser)
@@ -35,6 +40,12 @@ trait UnorderedParser extends JavaTokenParsers {
   def exact[A](exact: Int, parser: Parser[A]): ParseConf[A] = ExactParseConf(exact, parser)
 
   def range[A](min: Int, max: Int, parser: Parser[A]): ParseConf[A] = RangeParseConf(min, max, parser)
+
+  def optional[A](parser: Parser[A]): ParseConf[A] = range(0, 1, parser)
+
+  def once[A](parser: Parser[A]): ParseConf[A] = exact(1, parser)
+
+  def arbitrary[A](parser: Parser[A]): ParseConf[A] = min(0, parser)
 
 
   private def checkParsersUnique(parsers: List[Parser[_]]): Unit = {
@@ -47,7 +58,6 @@ trait UnorderedParser extends JavaTokenParsers {
         )
     }
   }
-
 
   def unordered[A](configs: ParseConf[A]*): Parser[List[A]] = {
     checkParsersUnique(configs.map(_.parser).toList)
@@ -75,4 +85,5 @@ trait UnorderedParser extends JavaTokenParsers {
       }
     }
   }
+
 }
