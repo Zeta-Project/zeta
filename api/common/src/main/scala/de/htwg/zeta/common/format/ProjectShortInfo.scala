@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.models.project.concept
+package de.htwg.zeta.common.format
 
 import java.util.UUID
 
@@ -10,10 +10,10 @@ import play.api.libs.json.__
 
 
 /**
- * Represents concise information on a metamodel, used for REST-API overview uri
+ * Represents concise information on a graphical dsl project, used for REST-API overview uri
  *
- * @param id   the id of the metamodel
- * @param name the name of the metamodel
+ * @param id   the id of the project
+ * @param name the name of the project
  */
 case class ProjectShortInfo(id: UUID, name: String)
 
