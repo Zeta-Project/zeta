@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.models.modelDefinitions.model.elements
+package de.htwg.zeta.common.models.project.instance.elements
 
 import scala.collection.immutable.Seq
 

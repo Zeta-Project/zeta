@@ -5,7 +5,7 @@ import scala.collection.immutable.Seq
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.Edge
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 

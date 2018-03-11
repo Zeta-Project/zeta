@@ -8,7 +8,10 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.Double
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.Node
+import de.htwg.zeta.common.models.project.instance.elements.Edge
+import de.htwg.zeta.common.models.project.instance.elements.Node
 
 object GraphicalDslInstanceFixtures {
 

@@ -19,8 +19,8 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 
 // scalastyle:off indentation multiple.string.literals
 object ScalaCodeGenerator {
