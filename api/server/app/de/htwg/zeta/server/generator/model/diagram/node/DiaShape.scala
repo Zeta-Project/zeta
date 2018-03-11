@@ -10,7 +10,7 @@ import de.htwg.zeta.server.generator.parser.IDtoShapeSketch
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
-import de.htwg.zeta.common.models.project.GraphicalDsl
+import de.htwg.zeta.common.models.project.GdslProject
 
 /**
  * Created by julian on 30.11.15.
@@ -18,7 +18,7 @@ import de.htwg.zeta.common.models.project.GraphicalDsl
  */
 class DiaShape(
     corporateStyle: Option[Style], shape: String,
-    propertiesAndCompartmentsOpt: Option[List[(String, (String, String))]], cache: Cache, mc: MClass, metaModelEntity: GraphicalDsl) {
+    propertiesAndCompartmentsOpt: Option[List[(String, (String, String))]], cache: Cache, mc: MClass, metaModelEntity: GdslProject) {
   val referencedShape: Shape = {
     val shapesketch: ShapeSketch = IDtoShapeSketch(shape)(cache)
     // Here we finally create real Shapes out of ShapeSketches!

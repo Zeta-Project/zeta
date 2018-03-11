@@ -2,7 +2,7 @@ package de.htwg.zeta.common.format.metaModel
 
 import java.util.UUID
 
-import de.htwg.zeta.common.models.project.GraphicalDsl
+import de.htwg.zeta.common.models.project.GdslProject
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -20,9 +20,9 @@ class GraphicalDslFormat(
     sShape: String = "shape",
     sStyle: String = "style",
     sValidator: String = "validator"
-) extends OFormat[GraphicalDsl] {
+) extends OFormat[GdslProject] {
 
-  override def writes(graphicalDsl: GraphicalDsl): JsObject = Json.obj(
+  override def writes(graphicalDsl: GdslProject): JsObject = Json.obj(
     sId -> graphicalDsl.id,
     sName -> graphicalDsl.name,
     sConcept -> conceptFormat.writes(graphicalDsl.concept),
@@ -32,7 +32,7 @@ class GraphicalDslFormat(
     sValidator -> graphicalDsl.validator
   )
 
-  override def reads(json: JsValue): JsResult[GraphicalDsl] = for {
+  override def reads(json: JsValue): JsResult[GdslProject] = for {
     id <- (json \ sId).validate[UUID]
     name <- (json \ sName).validate[String]
     concept <- (json \ sConcept).validate(conceptFormat)
@@ -41,12 +41,12 @@ class GraphicalDslFormat(
     style <- (json \ sStyle).validate[String]
     validator <- (json \ sValidator).validateOpt[String]
   } yield {
-    GraphicalDsl(id, name, concept, diagram, shape, style, validator)
+    GdslProject(id, name, concept, diagram, shape, style, validator)
   }
 
-  def empty: Reads[GraphicalDsl] = new Reads[GraphicalDsl] {
-    override def reads(json: JsValue): JsResult[GraphicalDsl] = {
-      (json \ sName).validate[String].map(GraphicalDsl.empty)
+  def empty: Reads[GdslProject] = new Reads[GdslProject] {
+    override def reads(json: JsValue): JsResult[GdslProject] = {
+      (json \ sName).validate[String].map(GdslProject.empty)
     }
   }
 

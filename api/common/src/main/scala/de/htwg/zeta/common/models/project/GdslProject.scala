@@ -6,7 +6,7 @@ import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 
 /** Graphical-DSL (formerly named MetaModelEntity). */
-case class GraphicalDsl(
+case class GdslProject(
     id: UUID,
     name: String,
     concept: Concept,
@@ -16,9 +16,9 @@ case class GraphicalDsl(
     validator: Option[String] = None
 ) extends Entity
 
-object GraphicalDsl {
+object GdslProject {
 
-  def empty(name: String): GraphicalDsl = GraphicalDsl(
+  def empty(name: String): GdslProject = GdslProject(
     id = UUID.randomUUID(),
     name = name,
     concept = Concept.empty,
