@@ -2,10 +2,10 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelIndepe
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers

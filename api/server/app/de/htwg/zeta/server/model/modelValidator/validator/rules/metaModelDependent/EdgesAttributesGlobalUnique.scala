@@ -1,13 +1,13 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.EdgesRule

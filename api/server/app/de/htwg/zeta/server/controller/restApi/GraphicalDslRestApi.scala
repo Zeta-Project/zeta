@@ -13,9 +13,9 @@ import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.ConceptFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
-import de.htwg.zeta.common.models.modelDefinitions.concept.MetaModelShortInfo
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.concept.MetaModelShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult

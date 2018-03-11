@@ -1,11 +1,11 @@
 package de.htwg.zeta.common.format.metaModel
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import play.api.libs.json.JsError
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json

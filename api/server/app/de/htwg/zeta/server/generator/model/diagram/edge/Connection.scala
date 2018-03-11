@@ -5,7 +5,7 @@ import de.htwg.zeta.server.generator.parser.Cache
 import de.htwg.zeta.server.generator.parser.ConnectionSketch
 import de.htwg.zeta.server.generator.parser.PropsAndComps
 import de.htwg.zeta.server.generator.parser.IDtoConnectionSketch
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.elements.MReference
 
 /**
  * Created by julian on 11.12.15.

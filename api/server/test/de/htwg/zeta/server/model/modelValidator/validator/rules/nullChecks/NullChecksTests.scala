@@ -4,11 +4,11 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node

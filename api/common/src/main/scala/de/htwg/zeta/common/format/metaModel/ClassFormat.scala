@@ -1,6 +1,6 @@
 package de.htwg.zeta.common.format.metaModel
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MClass
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult

@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
 import scala.util.Try
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.server.model.modelValidator.Util
 
 class NoAmbiguousOutputs extends ConceptRule {

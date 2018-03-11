@@ -27,7 +27,7 @@ import de.htwg.zeta.common.model.shape.geomodel.StaticText
 import de.htwg.zeta.common.model.shape.geomodel.TextField
 import de.htwg.zeta.common.model.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.model.style.Style
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.shape.check.CheckDuplicateShapes

@@ -1,8 +1,8 @@
-package de.htwg.zeta.common.models.modelDefinitions.concept.elements
+package de.htwg.zeta.common.models.project.concept.elements
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
 
 
 sealed trait AttributeType {
