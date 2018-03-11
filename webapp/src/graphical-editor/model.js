@@ -293,8 +293,7 @@ export default Backbone.Router.extend({
 
         }, this);
 
-        this.paper.on('link:options', function(evt, cellView, x, y) {
-
+        this.paper.on('link:options', function(cellView, evt, x, y) {
             this.createInspector(cellView);
         }, this);
     },
