@@ -2,7 +2,7 @@ package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 
 /** Graphical-DSL (formerly named MetaModelEntity). */
 case class GraphicalDsl(

@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 
 trait ConceptRule {
 

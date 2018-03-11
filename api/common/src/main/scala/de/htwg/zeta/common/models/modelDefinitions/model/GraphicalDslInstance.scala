@@ -5,11 +5,11 @@ import java.util.UUID
 import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.entity.Entity
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute.AttributeMap
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.Method.MethodMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method.MethodMap
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge.EdgeMap
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node

@@ -3,7 +3,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 
 /**

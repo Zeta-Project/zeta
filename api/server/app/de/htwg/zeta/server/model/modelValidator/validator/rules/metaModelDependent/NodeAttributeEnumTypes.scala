@@ -1,8 +1,8 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule

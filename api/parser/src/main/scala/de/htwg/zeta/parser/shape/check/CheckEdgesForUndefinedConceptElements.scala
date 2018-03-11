@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.shape.check
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 import de.htwg.zeta.parser.check.ErrorCheck
 import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree

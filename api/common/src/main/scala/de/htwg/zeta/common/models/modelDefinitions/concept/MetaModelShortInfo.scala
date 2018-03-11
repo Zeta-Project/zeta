@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.models.modelDefinitions.metaModel
+package de.htwg.zeta.common.models.modelDefinitions.concept
 
 import java.util.UUID
 

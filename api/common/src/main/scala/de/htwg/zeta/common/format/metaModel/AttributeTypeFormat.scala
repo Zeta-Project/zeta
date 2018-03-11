@@ -1,12 +1,12 @@
 package de.htwg.zeta.common.format.metaModel
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.EnumType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.UnitType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.EnumType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.UnitType
 import play.api.libs.json.Format
 import play.api.libs.json.JsError
 import play.api.libs.json.JsObject

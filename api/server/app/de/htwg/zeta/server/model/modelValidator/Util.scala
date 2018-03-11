@@ -2,8 +2,8 @@ package de.htwg.zeta.server.model.modelValidator
 
 import scala.annotation.tailrec
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (Mar 2017 - Sep 2017).

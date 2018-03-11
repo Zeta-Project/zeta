@@ -1,6 +1,6 @@
 package de.htwg.zeta.common.format.metaModel
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue

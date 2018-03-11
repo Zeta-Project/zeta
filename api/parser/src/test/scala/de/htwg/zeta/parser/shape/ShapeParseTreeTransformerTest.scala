@@ -9,7 +9,7 @@ import de.htwg.zeta.common.model.style.Dashed
 import de.htwg.zeta.common.model.style.Font
 import de.htwg.zeta.common.model.style.Line
 import de.htwg.zeta.common.model.style.Style
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
