@@ -3,7 +3,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -17,9 +17,9 @@ class NodeAttributeEnumTypes(val nodeType: String, val attributeType: String, va
   override val description: String = s"Attributes of type $attributeType in nodes of type $nodeType must be of type enum $enumName."
   override val possibleFix: String = s"Remove attribute values of attribute $attributeType in node $nodeType which are not of type enum $enumName."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
+  override def isValid(node: NodeInstance): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributeValues.get(attributeType) match {
+  def rule(node: NodeInstance): Boolean = node.attributeValues.get(attributeType) match {
     case None => true
     case Some(attribute) => attribute match {
       case enumValue: EnumValue => enumValue.enumName == enumName

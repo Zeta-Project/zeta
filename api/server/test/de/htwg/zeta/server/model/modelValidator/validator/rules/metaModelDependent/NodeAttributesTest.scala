@@ -10,14 +10,14 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeVal
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class NodeAttributesTest extends FlatSpec with Matchers {
 
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
+  val emptyNode: NodeInstance = NodeInstance.empty("", mClass.name, Seq.empty, Seq.empty)
   val rule = new NodeAttributes("nodeType", Seq("att1", "att2"))
 
   "isValid" should "return true for valid nodes" in {

@@ -14,21 +14,21 @@ import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.Node
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 // scalastyle:off null
 class NullChecksTests extends FlatSpec with Matchers {
 
-  def nodesToModel(nodes: Seq[Node]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = nodes)
+  def nodesToModel(nodes: Seq[NodeInstance]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = nodes)
 
   def edgesToModel(edges: Seq[EdgeInstance]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(edges = edges)
 
   val mReference: MReference = MReference.empty("edgeType", "", "")
   val mClass: MClass = MClass.empty("nodeType")
 
-  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
+  val emptyNode: NodeInstance = NodeInstance.empty("", mClass.name, Seq.empty, Seq.empty)
 
   val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
 

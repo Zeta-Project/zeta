@@ -17,7 +17,7 @@ import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
  * @param inputEdgeNames  the names of the incoming edges
  * @param attributeValues a map with attribute names and the assigned values
  */
-case class Node(
+case class NodeInstance(
     name: String,
     className: String,
     outputEdgeNames: Seq[String],
@@ -27,18 +27,18 @@ case class Node(
     methods: Seq[Method]
 ) extends AttributeMap with HasAttributeValues with MethodMap
 
-object Node {
+object NodeInstance {
 
-  def empty(name: String, className: String, outputs: Seq[String], inputs: Seq[String]): Node =
-    Node(name, className, outputs, inputs, Seq.empty, Map.empty, Seq.empty)
+  def empty(name: String, className: String, outputs: Seq[String], inputs: Seq[String]): NodeInstance =
+    NodeInstance(name, className, outputs, inputs, Seq.empty, Map.empty, Seq.empty)
 
   trait NodeMap {
 
-    val nodes: Seq[Node]
+    val nodes: Seq[NodeInstance]
 
     /** Nodes mapped to their own names. */
-    final val nodeMap: Map[String, Node] = Option(nodes).fold(
-      Map.empty[String, Node]
+    final val nodeMap: Map[String, NodeInstance] = Option(nodes).fold(
+      Map.empty[String, NodeInstance]
     ) { nodes =>
       nodes.filter(Option(_).isDefined).map(node => (node.name, node)).toMap
       }

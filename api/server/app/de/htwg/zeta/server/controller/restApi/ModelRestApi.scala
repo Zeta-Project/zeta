@@ -13,7 +13,7 @@ import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
@@ -123,7 +123,7 @@ class ModelRestApi @Inject()(
   def getNode(modelId: UUID, nodeName: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(modelId, request, (m: GraphicalDslInstance) => {
       m.nodeMap.get(nodeName) match {
-        case Some(node: Node) => Ok(nodeFormat.writes(node))
+        case Some(node: NodeInstance) => Ok(nodeFormat.writes(node))
         case None => NotFound
       }
     })

@@ -3,7 +3,7 @@ package de.htwg.zeta.server.model.modelValidator.validator
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.project.instance.Node
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.Rule
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNull
@@ -21,7 +21,7 @@ import play.api.libs.json.Writes
  * @param valid        Element is valid or invalid.
  * @param modelElement The modelElement.
  */
-case class ModelValidationResult(rule: Rule, valid: Boolean, modelElement: Option[Either[Node, EdgeInstance]] = None)
+case class ModelValidationResult(rule: Rule, valid: Boolean, modelElement: Option[Either[NodeInstance, EdgeInstance]] = None)
 
 object ModelValidationResult {
 
@@ -37,7 +37,7 @@ object ModelValidationResult {
   implicit val modelValidationResultWrites: Writes[ModelValidationResult] = new Writes[ModelValidationResult] {
     override def writes(o: ModelValidationResult): JsValue = {
       val element = o.modelElement match {
-        case Some(Left(node: Node)) => Json.obj(
+        case Some(Left(node: NodeInstance)) => Json.obj(
           "id" -> JsString(node.name),
           "type" -> JsString("node"),
           "typeName" -> JsString(node.className)

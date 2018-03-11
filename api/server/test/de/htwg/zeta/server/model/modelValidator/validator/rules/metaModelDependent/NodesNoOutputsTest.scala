@@ -6,14 +6,14 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class NodesNoOutputsTest extends FlatSpec with Matchers {
   val rule = new NodesNoOutputs("nodeType")
   val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
-  val emptyNode: Node = Node.empty("", mClass.name, Seq.empty, Seq.empty)
+  val emptyNode: NodeInstance = NodeInstance.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on nodes of type nodeType with no outputs" in {
     rule.isValid(emptyNode).get should be(true)

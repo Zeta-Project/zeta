@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.Double
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -28,9 +28,9 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
   override val possibleFix: String =
     s"Remove attribute values of attribute $attributeType in node $nodeType which are not of data type ${attributeDataType.asString}."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
+  override def isValid(node: NodeInstance): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = {
+  def rule(node: NodeInstance): Boolean = {
 
     def handleStrings(values: StringValue): Boolean = values.attributeType == attributeDataType
 
