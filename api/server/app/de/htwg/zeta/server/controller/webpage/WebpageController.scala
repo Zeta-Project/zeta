@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
-import de.htwg.zeta.common.models.project.concept.MetaModelShortInfo
+import de.htwg.zeta.common.models.project.concept.ProjectShortInfo
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
@@ -29,11 +29,11 @@ class WebpageController @Inject()(
     Redirect(routes.ScalaRoutes.getOverviewNoArgs())
   }
 
-  private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[MetaModelShortInfo]] = {
+  private def getMetaModels[A](request: SecuredRequest[ZetaEnv, A]): Future[Seq[ProjectShortInfo]] = {
     val repo = metaModelEntityRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.map(entity => {
-        MetaModelShortInfo(entity.id, entity.name)
+        ProjectShortInfo(entity.id, entity.name)
       }))
     }
   }
