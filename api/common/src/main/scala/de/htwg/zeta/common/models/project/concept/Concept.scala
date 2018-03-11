@@ -2,6 +2,19 @@ package de.htwg.zeta.common.models.project.concept
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept.MetaModelTraverseWrapper
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum.EnumMap
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeMap
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MClass.ClassMap
+import de.htwg.zeta.common.models.project.concept.elements.MClass.MClassTraverseWrapper
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.elements.MReference.ReferenceMap
+import de.htwg.zeta.common.models.project.concept.elements.Method
+import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
+
 
 /**
  * Immutable container for Concept (formerly named MetaModel) definitions

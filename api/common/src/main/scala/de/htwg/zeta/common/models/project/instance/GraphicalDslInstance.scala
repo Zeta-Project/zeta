@@ -11,7 +11,9 @@ import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeM
 import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance.EdgeMap
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance.NodeMap
 
 
 /** A instance of a GraphicalDsl (formerly named Model)
