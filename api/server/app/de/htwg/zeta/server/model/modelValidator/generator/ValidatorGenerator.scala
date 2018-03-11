@@ -3,8 +3,8 @@ package de.htwg.zeta.server.model.modelValidator.generator
 import scala.reflect.runtime.universe
 import scala.tools.reflect.ToolBox
 
-import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.project.GraphicalDsl
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.MetaModelDependent

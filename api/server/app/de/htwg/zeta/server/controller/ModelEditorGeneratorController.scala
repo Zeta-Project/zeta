@@ -10,7 +10,7 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.project.GraphicalDsl
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator

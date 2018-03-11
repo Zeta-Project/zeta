@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.generator
 
-import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.project.GraphicalDsl
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidator
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers

@@ -1,7 +1,8 @@
-package de.htwg.zeta.common.models.entity
+package de.htwg.zeta.common.models.project
 
 import java.util.UUID
 
+import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 
 /** Graphical-DSL (formerly named MetaModelEntity). */

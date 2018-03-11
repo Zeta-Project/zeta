@@ -2,7 +2,7 @@ package de.htwg.zeta.common.format.metaModel
 
 import java.util.UUID
 
-import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.project.GraphicalDsl
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult

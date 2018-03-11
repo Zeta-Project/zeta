@@ -5,7 +5,6 @@ import java.util.UUID
 import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
@@ -21,6 +20,7 @@ import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
 import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
+import de.htwg.zeta.common.models.project.GraphicalDsl
 
 
 object GraphicalDslFixtures {
