@@ -110,56 +110,6 @@ class StyleGenerator {
     }
 }
 
-class HighlightGenerator {
-
-    generate(style) {
-        return this.getSelected(style.selectedHighlighting) +
-            this.getMultiSelected(style.multiselectedHighlighting) +
-            this.getAllowed(style.allowedHighlighting) +
-            this.getUnallowed(style.unallowedHighlighting);
-    }
-
-    getSelected(highlighting) {
-        return highlighting === undefined ? '' : this.createSelectedCss(highlighting);
-    }
-
-    createSelectedCss(highlighting) {
-        return `.paper-container .free-transform { border: 1px dashed ${this.getHighlightingColor(highlighting)}; }`;
-    }
-
-    getHighlightingColor(highlighting) {
-        if (highlighting.color !== undefined) {
-            return highlighting.color;
-        }
-
-        return '';
-    }
-
-    getMultiSelected(highlighting) {
-        return highlighting === undefined ? '' : this.createMultiSelectedCss(highlighting);
-    }
-
-    createMultiSelectedCss(highlighting) {
-        return `.paper-container .selection-box { border: 1px solid ${this.getHighlightingColor(highlighting)}; }`;
-    }
-
-    getAllowed(highlighting) {
-        return highlighting === undefined ? '' : this.createAllowedCss(highlighting);
-    }
-
-    createAllowedCss(highlighting) {
-        return `.paper-container .linking-allowed { outline: 2px solid ${this.getHighlightingColor(highlighting)}; }`;
-    }
-
-    getUnallowed(highlighting) {
-        return highlighting === undefined ? '' : this.createUnallowedCss(highlighting);
-    }
-
-    createUnallowedCss(highlighting) {
-        return `.paper-container .linking-unallowed { outline: 2px solid ${this.getHighlightingColor(highlighting)}; }`;
-    }
-}
-
 /**
  * Generator of styles information for JointJS
  */
@@ -167,17 +117,11 @@ export default class Generator {
     constructor(styles) {
         this.styles = styles;
         this.styleGenerator = new StyleGenerator();
-        this.highlightGenerator = new HighlightGenerator();
     }
 
     getStyle(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
         return style ? this.styleGenerator.generate(style) : {};
-    }
-
-    getDiagramHighlighting(styleName) {
-        const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.highlightGenerator.generate(style) : '';
     }
 
     createCommonAttributes(styleName) {
