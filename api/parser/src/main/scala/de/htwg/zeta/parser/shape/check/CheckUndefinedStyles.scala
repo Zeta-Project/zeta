@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.shape.check
 
-import de.htwg.zeta.common.model.style.Style
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.ErrorCheck
 import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage

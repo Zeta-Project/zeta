@@ -3,12 +3,12 @@ package de.htwg.zeta.parser.shape
 import scalaz.Failure
 import scalaz.Success
 
-import de.htwg.zeta.common.model.style.Background
-import de.htwg.zeta.common.model.style.Color
-import de.htwg.zeta.common.model.style.Dashed
-import de.htwg.zeta.common.model.style.Font
-import de.htwg.zeta.common.model.style.Line
-import de.htwg.zeta.common.model.style.Style
+import de.htwg.zeta.common.models.project.gdsl.style.Background
+import de.htwg.zeta.common.models.project.gdsl.style.Color
+import de.htwg.zeta.common.models.project.gdsl.style.Dashed
+import de.htwg.zeta.common.models.project.gdsl.style.Font
+import de.htwg.zeta.common.models.project.gdsl.style.Line
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target

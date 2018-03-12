@@ -4,9 +4,9 @@ import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
-import de.htwg.zeta.common.model.diagram.Diagram
-import de.htwg.zeta.common.model.diagram.Palette
-import de.htwg.zeta.common.model.shape.Node
+import de.htwg.zeta.common.models.project.gdsl.diagram.Diagram
+import de.htwg.zeta.common.models.project.gdsl.diagram.Palette
+import de.htwg.zeta.common.models.project.gdsl.shape.Node
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.diagram.check.CheckDuplicateDiagrams
