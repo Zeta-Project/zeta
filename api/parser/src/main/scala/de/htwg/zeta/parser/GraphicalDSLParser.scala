@@ -6,7 +6,7 @@ import scalaz.Validation
 
 import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.gdsl.MetaModel
+import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
 import de.htwg.zeta.parser.diagram.DiagramParseTreeTransformer
 import de.htwg.zeta.parser.diagram.DiagramParser
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer
@@ -18,7 +18,7 @@ import de.htwg.zeta.parser.style.StyleParserImpl
 object GraphicalDSLParser {
   val styleParser: StyleParser = new StyleParserImpl
 
-  def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[List[String], MetaModel] = {
+  def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[List[String], GraphicalDsl] = {
     val styleParseTree = styleParser.parseStyles(styleInput).getOrElse(List())
     val styles = StyleParseTreeTransformer.transform(styleParseTree)
     if (styles.isSuccess) {
@@ -28,7 +28,7 @@ object GraphicalDSLParser {
         val diagramParseTree = DiagramParser.parseDiagrams(diagramInput).get
         val diagrams = DiagramParseTreeTransformer.transform(diagramParseTree, shape.getOrElse(Shape(List(), List())).nodes)
         if (diagrams.isSuccess) {
-          Success(MetaModel(
+          Success(GraphicalDsl(
             id = (diagrams.hashCode() + styles.hashCode() + shape.hashCode()).toString,
             diagrams = diagrams.getOrElse(List()),
             styles = styles.getOrElse(List()),
