@@ -5,22 +5,22 @@ import java.util.UUID
 import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.UnitType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.elements.Method
-import de.htwg.zeta.common.models.project.GdslProject
-import de.htwg.zeta.common.models.project.concept.Concept
 
 
 object GraphicalDslFixtures {

@@ -6,10 +6,7 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.common.models.project.instance.Node
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 
