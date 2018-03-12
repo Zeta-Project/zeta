@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.model
+package de.htwg.zeta.common.models.project.gdsl
 
 import de.htwg.zeta.common.model.diagram.Diagram
 import de.htwg.zeta.common.model.shape.Shape
