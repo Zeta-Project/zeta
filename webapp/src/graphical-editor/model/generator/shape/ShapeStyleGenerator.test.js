@@ -10,7 +10,7 @@ describe('getShapeStyle', () => {
     }
 
     function assertGetStyle(expectedStyle, expectedCalls = 1) {
-        const mock = style.getStyle.mock; 
+        const mock = style.getStyle.mock;
         expect(mock.calls).toHaveLength(expectedCalls);
         mock.calls.forEach(call => {
             expect(call).toHaveLength(1);
@@ -37,18 +37,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with line element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'LINE',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'line',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
-                    ],
-                } 
+                    ]
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -57,18 +61,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with rounded rectangle element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'ROUNDED_RECTANGLE',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'roundedRectangle',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -77,18 +85,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with rectangle element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'RECTANGLE',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'rectangle',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -97,18 +109,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with ellipse element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'ELLIPSE',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'ellipse',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -117,18 +133,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with text element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'TEXT',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'statictext',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -138,18 +158,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with polygon element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'POLYGON',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'polygon',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -158,18 +182,22 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with poly-line element', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'POLY_LINE',
-                            style: 'default-style',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'polyline',
+                                    style: 'default-style',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
@@ -178,17 +206,21 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with element has no style', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique',
-                            type: 'LINE',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique',
+                                    type: 'line',
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         expect(getShapeStyle('Shape')).toEqual({});
@@ -196,30 +228,29 @@ describe('getShapeStyle', () => {
     });
 
     test('shape with nested ellipse elements', () => {
-        const getShapeStyle = create({ 
-            shapes: [ 
-                { 
-                    name: 'Shape',
-                    elements: [
+        const getShapeStyle = create({
+            shapes: [
+                {
+                    nodes: [
                         {
-                            id: 'unique1',
-                            type: 'ELLIPSE',
-                            style: 'default-style',
-                            parent: 'unique2',
-                        },
-                        {
-                            id: 'unique2',
-                            type: 'ELLIPSE',
-                            style: 'default-style',
-                            children: ['unique1'],
-                        },
-                        {
-                            id: 'unique3',
-                            type: 'ELLIPSE',
-                            parent: 'unique2',
+                            name: 'Shape',
+                            geoElements: [
+                                {
+                                    id: 'unique2',
+                                    type: 'ellipse',
+                                    style: 'default-style',
+                                    childGeoElements: [
+                                        {
+                                            id: 'unique1',
+                                            type: 'ellipse',
+                                            style: 'default-style',
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ],
-                } 
+                }
             ],
         }, style);
         expect(getShapeStyle('Shape')).toEqual({
