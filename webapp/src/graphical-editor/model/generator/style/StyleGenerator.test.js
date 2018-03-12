@@ -22,11 +22,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal'
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -46,11 +45,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'helvetica',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal'
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -70,21 +68,20 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '20',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal'
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
 
-    test('with font-color `#ffffff`', () => {
+    test('with font-color `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             font: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             }
         };
         
@@ -94,11 +91,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#ffffff',
+                'fill': 'rgba(255,255,255,1.0)',
                 'font-weight': 'normal'
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -118,11 +114,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'bold'
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -142,11 +137,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal'
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -166,12 +160,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
                 'font-style': 'italic',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -191,21 +184,20 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
 
-    test('with background color `#ffffff`', () => {
+    test('with background color `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             background: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             },
         };
 
@@ -215,12 +207,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill': '#ffffff',
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'fill': 'rgba(255,255,255,1.0)',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -240,15 +231,14 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -270,15 +260,14 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -292,11 +281,11 @@ describe('getStyle', () => {
                     area: [
                         {
                             offset: 0,
-                            color: '#000000'
+                            color: 'rgba(0,0,0,1.0)'
                         },
                         {
                             offset: 100,
-                            color: '#ffffff'
+                            color: 'rgba(255,255,255,1.0)'
                         }
                     ],
                 },
@@ -309,7 +298,7 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
             'fill': {
@@ -317,16 +306,15 @@ describe('getStyle', () => {
                 'stops': [
                     {
                         'offset': 0,
-                        'color': '#000000'
+                        'color': 'rgba(0,0,0,1.0)'
                     },
                     {
                         'offset': 100,
-                        'color': '#ffffff'
+                        'color': 'rgba(255,255,255,1.0)'
                     }
                 ],
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -348,15 +336,14 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -378,7 +365,7 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
             'fill': {
@@ -386,17 +373,18 @@ describe('getStyle', () => {
                 'stops': [],
                 'attrs': { x1: '0%', y1: '0%', x2: '0%', y2: '100%' },
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
 
-    test('with transparency `0.5`', () => {
+    test('with text-color-transparency `0.5`', () => {
         const style = {
             name: 'DefaultStyle',
-            transparency: 0.5,
+            font:{
+                color: 'rgba(0,0,0,0.5)'
+            }
         };
 
         const getStyle = create([style]);
@@ -405,11 +393,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,0.5)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 0.5,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -419,7 +406,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                transparent: true,
+                color:  'rgba(0,0,0,0.5)'
             }
         };
 
@@ -429,19 +416,18 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke-opacity': 0,
+            'stroke': 'rgba(0,0,0,0.5)'
         });
     });
 
-    test('with line-color `#ffffff`', () => {
+    test('with line-color `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             }
         };
 
@@ -451,11 +437,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
         });
     });
 
@@ -463,7 +448,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
                 width: 5,
             },
         };
@@ -474,11 +459,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
             'stroke-width': 5,
         });
     });
@@ -497,11 +481,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#000000',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -511,7 +494,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
                 style: 'dash',
             },
         };
@@ -522,11 +505,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
             'stroke-dasharray': '10,10',
         });
     });
@@ -535,7 +517,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
                 style: 'dot',                
             },
         };
@@ -546,11 +528,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
             'stroke-dasharray': '5,5',
         });
     });
@@ -559,7 +540,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
                 style: 'dashdot',
             },
         };
@@ -570,11 +551,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
             'stroke-dasharray': '10,5,5,5',
         });
     });
@@ -583,7 +563,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
                 style: 'dashdotdot',
             },
         };
@@ -594,11 +574,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
             'stroke-dasharray': '10,5,5,5,5,5',
         });
     });
@@ -607,7 +586,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
                 style: 'unkown-style',
             },
         };
@@ -618,11 +597,10 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': '#000000',
+                'fill': 'rgba(0,0,0,1.0)',
                 'font-weight': 'normal',
             },
-            'fill-opacity': 1.0,
-            'stroke': '#ffffff',
+            'stroke': 'rgba(255,255,255,1.0)',
             'stroke-dasharray': '0',
         });
     });
@@ -630,37 +608,35 @@ describe('getStyle', () => {
     test('with all attributes', () => {
         const style = {
             background: {
-                color: '#ff00ff',
+                color: 'rgba(255,0,255,1.0)',
             },
             font: {
                 bold: true,
-                color: '#00ffff',
+                color: 'rgba(0,255,255,1.0)',
                 italic: true,
                 name: 'helvetica',
                 size: 20,
             },
             line: {
-                color: '#ffff00',
+                color: 'rgba(255,255,0,1.0)',
                 style: 'dash',
                 width: 5,
             },
-            name: 'DefaultStyle',
-            transparency: 0.3,
+            name: 'DefaultStyle'
         };
 
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
-                'fill': '#00ffff',
+                'fill': 'rgba(0,255,255,1.0)',
                 'font-family': 'helvetica',
                 'font-size': '20',
                 'font-style': 'italic',
                 'font-weight': 'bold'
             },
-            'fill': '#ff00ff',
-            'fill-opacity': 0.3,
-            'stroke': '#ffff00',
+            'fill': 'rgba(255,0,255,1.0)',
+            'stroke': 'rgba(255,255,0,1.0)',
             'stroke-dasharray': '10,10',
             'stroke-width': 5,
         });
@@ -687,16 +663,16 @@ describe('getDiagramHighlighting', () => {
         expect(getDiagramHighlighting('DefaultStyle')).toEqual('');
     });
 
-    test('with selectedHighlighting `#ffffff`', () => {
+    test('with selectedHighlighting `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             selectedHighlighting: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             }
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed  #ffffff; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed rgba(255,255,255,1.0); }');
     });
 
     test('with transparent selectedHighlighting', () => {
@@ -708,7 +684,7 @@ describe('getDiagramHighlighting', () => {
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed  transparent; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed ; }');
     });
 
     test('with selectedHighlighting as gradient', () => {
@@ -720,19 +696,19 @@ describe('getDiagramHighlighting', () => {
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed  ; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed ; }');
     });
 
-    test('with multiselectedHighlighting `#ffffff`', () => {
+    test('with multiselectedHighlighting `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             multiselectedHighlighting: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             }
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid #ffffff; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid rgba(255,255,255,1.0); }');
     });
 
     test('with transparent multiselectedHighlighting', () => {
@@ -744,7 +720,7 @@ describe('getDiagramHighlighting', () => {
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid transparent; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid ; }');
     });
 
     test('with multiselectedHighlighting as gradient', () => {
@@ -759,16 +735,16 @@ describe('getDiagramHighlighting', () => {
         expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid ; }');
     });
 
-    test('with allowedHighlighting `#ffffff`', () => {
+    test('with allowedHighlighting `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             allowedHighlighting: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             }
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid #ffffff; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid rgba(255,255,255,1.0); }');
     });
 
     test('with transparent allowedHighlighting', () => {
@@ -780,7 +756,7 @@ describe('getDiagramHighlighting', () => {
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid transparent; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid ; }');
     });
 
     test('with allowedHighlighting as gradient', () => {
@@ -795,16 +771,16 @@ describe('getDiagramHighlighting', () => {
         expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid ; }');
     });
 
-    test('with unallowedHighlighting `#ffffff`', () => {
+    test('with unallowedHighlighting `rgba(255,255,255,1.0)`', () => {
         const style = {
             name: 'DefaultStyle',
             unallowedHighlighting: {
-                color: '#ffffff',
+                color: 'rgba(255,255,255,1.0)',
             }
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid #ffffff; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid rgba(255,255,255,1.0); }');
     });
 
     test('with transparent unallowedHighlighting', () => {
@@ -816,7 +792,7 @@ describe('getDiagramHighlighting', () => {
         };
 
         const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid transparent; }');
+        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid ; }');
     });
 
     test('with unallowedHighlighting as gradient', () => {
@@ -838,10 +814,10 @@ describe('getDiagramHighlighting', () => {
                 transparent: true,
             },
             multiselectedHighlighting: {
-                color: '#00ffff',
+                color: 'rgba(0,255,255,1.0)',
             },
             selectedHighlighting: {
-                color: '#ffff00',
+                color: 'rgba(255,255,0,1.0)',
             },
             unallowedHighlighting: {
                 gradient: {},
@@ -850,9 +826,9 @@ describe('getDiagramHighlighting', () => {
 
         const getDiagramHighlighting = create([style]);
         expect(getDiagramHighlighting('DefaultStyle')).toEqual(
-            '.paper-container .free-transform { border: 1px dashed  #ffff00; }' + 
-            '.paper-container .selection-box { border: 1px solid #00ffff; }' + 
-            '.paper-container .linking-allowed { outline: 2px solid transparent; }' + 
+            '.paper-container .free-transform { border: 1px dashed rgba(255,255,0,1.0); }' +
+            '.paper-container .selection-box { border: 1px solid rgba(0,255,255,1.0); }' +
+            '.paper-container .linking-allowed { outline: 2px solid ; }' +
             '.paper-container .linking-unallowed { outline: 2px solid ; }'
         );
     });
@@ -877,13 +853,15 @@ describe('createCommonAttributes', () => {
     test('with transparency `0.5`', () => {
         const style = {
             name: 'DefaultStyle',
-            transparency: 0.5,
+            background: {
+                color: 'rgba(0,0,0,0.5)'
+            }
         };
 
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
-            'fill-opacity': 0.5,
-            'stroke': '#000000',
+            'fill': 'rgba(0,0,0,0.5)',
+            'stroke': 'rgba(0,0,0,1.0)',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
