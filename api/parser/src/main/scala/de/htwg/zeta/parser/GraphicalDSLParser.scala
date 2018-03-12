@@ -4,7 +4,7 @@ import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
-import de.htwg.zeta.common.model.shape.Shape
+import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.gdsl.MetaModel
 import de.htwg.zeta.parser.diagram.DiagramParseTreeTransformer

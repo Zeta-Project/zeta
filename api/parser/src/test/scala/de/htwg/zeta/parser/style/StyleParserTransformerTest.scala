@@ -2,8 +2,8 @@ package de.htwg.zeta.parser.style
 
 import javafx.scene.paint
 
-import de.htwg.zeta.common.model.style.Color
-import de.htwg.zeta.common.model.style.Dashed
+import de.htwg.zeta.common.models.project.gdsl.style.Color
+import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 

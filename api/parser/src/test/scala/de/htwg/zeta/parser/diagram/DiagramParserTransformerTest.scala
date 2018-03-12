@@ -1,16 +1,16 @@
 package de.htwg.zeta.parser.diagram
 
-import de.htwg.zeta.common.model.shape.Edge
-import de.htwg.zeta.common.model.shape.Node
-import de.htwg.zeta.common.model.shape.Resizing
-import de.htwg.zeta.common.model.shape.Size
-import de.htwg.zeta.common.model.shape.geomodel.GeoModel
-import de.htwg.zeta.common.model.style.Background
-import de.htwg.zeta.common.model.style.Color
-import de.htwg.zeta.common.model.style.Dashed
-import de.htwg.zeta.common.model.style.Font
-import de.htwg.zeta.common.model.style.Line
-import de.htwg.zeta.common.model.style.Style
+import de.htwg.zeta.common.models.project.gdsl.shape.Edge
+import de.htwg.zeta.common.models.project.gdsl.shape.Node
+import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
+import de.htwg.zeta.common.models.project.gdsl.shape.Size
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
+import de.htwg.zeta.common.models.project.gdsl.style.Background
+import de.htwg.zeta.common.models.project.gdsl.style.Color
+import de.htwg.zeta.common.models.project.gdsl.style.Dashed
+import de.htwg.zeta.common.models.project.gdsl.style.Font
+import de.htwg.zeta.common.models.project.gdsl.style.Line
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import org.scalatest.FreeSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
