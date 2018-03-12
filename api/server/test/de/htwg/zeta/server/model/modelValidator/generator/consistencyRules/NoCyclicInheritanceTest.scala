@@ -2,7 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.Concept
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers

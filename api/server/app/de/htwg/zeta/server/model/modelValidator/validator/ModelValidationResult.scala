@@ -1,15 +1,13 @@
 package de.htwg.zeta.server.model.modelValidator.validator
 
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
-import de.htwg.zeta.common.models.project.instance.Node
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.Rule
 import play.api.libs.json.JsBoolean
 import play.api.libs.json.JsNull
-import play.api.libs.json.Json
 import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.libs.json.Writes
 
 /**

@@ -9,10 +9,7 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntVal
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.common.models.project.instance.Node
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec

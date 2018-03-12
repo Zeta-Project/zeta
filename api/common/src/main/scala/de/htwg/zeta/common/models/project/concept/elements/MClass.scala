@@ -3,7 +3,7 @@ package de.htwg.zeta.common.models.project.concept.elements
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept.MetaModelTraverseWrapper
+import de.htwg.zeta.common.models.project.concept.Concept.MetaModelTraverseWrapper
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute.AttributeMap
 import de.htwg.zeta.common.models.project.concept.elements.Method.MethodMap
 
