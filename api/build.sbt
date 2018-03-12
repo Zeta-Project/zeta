@@ -10,6 +10,9 @@ val switchToServer: State => State =
 // Move into project server on startup
 onLoad in Global := (onLoad in Global).value.andThen(switchToServer)
 
+// run in project api will now run project server
+run := (run in server in Compile).evaluated
+
 
 lazy val common = ZetaBuild.common
 lazy val generatorControl = ZetaBuild.generatorControl
