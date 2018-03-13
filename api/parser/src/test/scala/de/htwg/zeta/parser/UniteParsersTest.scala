@@ -1,6 +1,5 @@
 package de.htwg.zeta.parser
 
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 

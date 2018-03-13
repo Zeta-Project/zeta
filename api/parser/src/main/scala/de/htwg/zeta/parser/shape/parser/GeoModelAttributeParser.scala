@@ -1,8 +1,9 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.{EnumParser, UniteParsers}
+import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
+import de.htwg.zeta.parser.EnumParser
+import de.htwg.zeta.parser.UniteParsers
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 

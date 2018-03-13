@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.style
 
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
+import de.htwg.zeta.parser.CommonParserMethods
 import grizzled.slf4j.Logging
 
 /**

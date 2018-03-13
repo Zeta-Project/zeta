@@ -1,9 +1,11 @@
 package de.htwg.zeta.parser.shape.parser
 
+import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
-import de.htwg.zeta.parser.{Collector, UniteParsers, UnorderedParser}
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
+import de.htwg.zeta.parser.Collector
+import de.htwg.zeta.parser.UniteParsers
+import de.htwg.zeta.parser.UnorderedParser
 
 object NodeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
