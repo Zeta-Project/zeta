@@ -16,7 +16,7 @@ import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
 import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.ConceptFormat
 import de.htwg.zeta.common.format.metaModel.EnumFormat
-import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
+import de.htwg.zeta.common.format.metaModel.GdslProjectFormat
 import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.metaModel.MethodFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
@@ -79,8 +79,8 @@ class JsonFormatModule extends ScalaModule {
   @Singleton
   def provideMetaModelEntityFormat(
       metaModelFormat: ConceptFormat
-  ): GraphicalDslFormat = {
-    new GraphicalDslFormat(metaModelFormat)
+  ): GdslProjectFormat = {
+    new GdslProjectFormat(metaModelFormat)
   }
 
   @Provides
