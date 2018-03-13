@@ -16,7 +16,7 @@ import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterRepository

@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "node dev.js",
     "install": "polymer install",
-    "test": "polymer test",
     "watch": "gulp watch",
-    "build": "NODE_ENV=production webpack"
+    "build": "NODE_ENV=production webpack",
+    "test": "npm run test:js",
+    "test:js": "jest",
+    "test:polymer": "polymer test"
   },
   "dependencies": {
     "ace-grammar": "github:foo123/ace-grammar#1.0.3",
@@ -17,8 +19,8 @@
     "brace": "0.5.0",
     "css-loader": "0",
     "ionicons": "github:ionic-team/ionicons#1.5.2",
-    "jointjs": "0.9.5",
-    "jquery": "2.1.4",
+    "jointjs": "2.0.1",
+    "jquery": "3.3.1",
     "jquery-ui": "1.12.1",
     "jquery-ui-themes": "1.12.0",
     "keyboardjs": "0.4.1",
@@ -40,6 +42,7 @@
     "file-loader": "1",
     "gulp": "^3.9.1",
     "imports-loader": "0",
+    "jest": "21",
     "less": "2",
     "less-loader": "4",
     "string-replace-loader": "1",
@@ -48,5 +51,8 @@
     "url-loader": "0",
     "webpack": "3",
     "webpack-dev-server": "2"
+  },
+  "jest": {
+    "cacheDirectory": "./node_modules/.cache/jest"
   }
 }
