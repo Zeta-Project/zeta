@@ -1,7 +1,7 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -16,9 +16,9 @@ class NodesNoAttributes(val nodeType: String) extends SingleNodeRule with DslRul
   override val description: String = s"Nodes of type $nodeType must not have attributes."
   override val possibleFix: String = s"Remote all attributes from nodes of type $nodeType."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
+  override def isValid(node: NodeInstance): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = node.attributeValues.values.isEmpty
+  def rule(node: NodeInstance): Boolean = node.attributeValues.values.isEmpty
 
   override val dslStatement: String = s"""Nodes ofType "$nodeType" haveNoAttributes ()"""
 }

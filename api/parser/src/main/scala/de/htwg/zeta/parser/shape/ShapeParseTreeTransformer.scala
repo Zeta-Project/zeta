@@ -4,29 +4,30 @@ import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
-import de.htwg.zeta.common.model.shape
-import de.htwg.zeta.common.model.shape.Edge
-import de.htwg.zeta.common.model.shape.Node
-import de.htwg.zeta.common.model.shape.Resizing
-import de.htwg.zeta.common.model.shape.Size
-import de.htwg.zeta.common.model.shape.geomodel
-import de.htwg.zeta.common.model.shape.geomodel.Align
-import de.htwg.zeta.common.model.shape.geomodel.Ellipse
-import de.htwg.zeta.common.model.shape.geomodel.GeoModel
-import de.htwg.zeta.common.model.shape.geomodel.HorizontalLayout
-import de.htwg.zeta.common.model.shape.geomodel.Line
-import de.htwg.zeta.common.model.shape.geomodel.Point
-import de.htwg.zeta.common.model.shape.geomodel.Polygon
-import de.htwg.zeta.common.model.shape.geomodel.Polyline
-import de.htwg.zeta.common.model.shape.geomodel.Position
-import de.htwg.zeta.common.model.shape.geomodel.Rectangle
-import de.htwg.zeta.common.model.shape.geomodel.RepeatingBox
-import de.htwg.zeta.common.model.shape.geomodel.RoundedRectangle
-import de.htwg.zeta.common.model.shape.geomodel.StaticText
-import de.htwg.zeta.common.model.shape.geomodel.TextField
-import de.htwg.zeta.common.model.shape.geomodel.VerticalLayout
-import de.htwg.zeta.common.model.style.Style
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.project.gdsl.shape
+import de.htwg.zeta.common.models.project.gdsl.shape.Edge
+import de.htwg.zeta.common.models.project.gdsl.shape.Node
+import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
+import de.htwg.zeta.common.models.project.gdsl.shape.Shape
+import de.htwg.zeta.common.models.project.gdsl.shape.Size
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Line
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Rectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
+import de.htwg.zeta.common.models.project.gdsl.style.Style
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.shape.check.CheckDuplicateShapes
@@ -55,14 +56,12 @@ import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
 object ShapeParseTreeTransformer {
 
-  case class NodesAndEdges(nodes: List[Node], edges: List[Edge])
-
-  def transform(shapeParseTrees: List[ShapeParseTree], styles: List[Style], concept: Concept): Validation[List[String], NodesAndEdges] = {
+  def transform(shapeParseTrees: List[ShapeParseTree], styles: List[Style], concept: Concept): Validation[List[String], Shape] = {
     val referencedStyles = ReferenceCollector[Style](styles, _.name)
     checkForErrors(shapeParseTrees, referencedStyles, concept) match {
       case Nil =>
         val (nodes, edges) = transformShapes(shapeParseTrees, referencedStyles, concept)
-        Success(NodesAndEdges(nodes, edges))
+        Success(Shape(nodes, edges))
       case errors: List[String] =>
         Failure(errors)
     }

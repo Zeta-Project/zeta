@@ -9,13 +9,13 @@ import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
-import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.ConceptFormat
-import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
-import de.htwg.zeta.common.format.metaModel.ReferenceFormat
-import de.htwg.zeta.common.models.entity.GraphicalDsl
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
+import de.htwg.zeta.common.format.ProjectShortInfo
+import de.htwg.zeta.common.format.project.ClassFormat
+import de.htwg.zeta.common.format.project.ConceptFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
+import de.htwg.zeta.common.format.project.ReferenceFormat
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
@@ -35,7 +35,7 @@ import play.api.mvc.Result
 class GraphicalDslRestApi @Inject()(
     graphicalDslRepo: AccessRestrictedGraphicalDslRepository,
     conceptFormat: ConceptFormat,
-    graphicalDslFormat: GraphicalDslFormat,
+    graphicalDslFormat: GdslProjectFormat,
     classFormat: ClassFormat,
     referenceFormat: ReferenceFormat
 ) extends Controller with Logging {
@@ -49,9 +49,9 @@ class GraphicalDslRestApi @Inject()(
     val repo = graphicalDslRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap(ids => {
       Future.sequence(ids.map(repo.read)).map(_.map { mm =>
-        MetaModelShortInfo(id = mm.id, name = mm.name)
+        ProjectShortInfo(id = mm.id, name = mm.name)
       })
-    }).map((set: Set[MetaModelShortInfo]) => Ok(JsArray(set.toList.map(MetaModelShortInfo.writes.writes)))).recover {
+    }).map((set: Set[ProjectShortInfo]) => Ok(JsArray(set.toList.map(ProjectShortInfo.writes.writes)))).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
@@ -177,7 +177,7 @@ class GraphicalDslRestApi @Inject()(
   }
 
   /** A helper method for less verbose reads from the database */
-  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDsl => Result): Future[Result] = {
+  private def protectedRead[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GdslProject => Result): Future[Result] = {
     graphicalDslRepo.restrictedTo(request.identity.id).read(id).map { graphicalDsl =>
       trans(graphicalDsl)
     }.recover {
@@ -303,7 +303,7 @@ class GraphicalDslRestApi @Inject()(
    * @return The validator.
    */
   def getValidator(id: UUID, generateOpt: Option[Boolean], get: Boolean)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, (metaModelEntity: GraphicalDsl) => {
+    protectedRead(id, request, (metaModelEntity: GdslProject) => {
 
       val generate = generateOpt.getOrElse(false)
 
