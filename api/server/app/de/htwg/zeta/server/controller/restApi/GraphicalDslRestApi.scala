@@ -10,10 +10,10 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
 import de.htwg.zeta.common.format.ProjectShortInfo
-import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.ConceptFormat
-import de.htwg.zeta.common.format.metaModel.GdslProjectFormat
-import de.htwg.zeta.common.format.metaModel.ReferenceFormat
+import de.htwg.zeta.common.format.project.ClassFormat
+import de.htwg.zeta.common.format.project.ConceptFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
+import de.htwg.zeta.common.format.project.ReferenceFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository

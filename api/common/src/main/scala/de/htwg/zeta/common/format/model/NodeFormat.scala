@@ -1,8 +1,8 @@
 package de.htwg.zeta.common.format.model
 
-import de.htwg.zeta.common.format.metaModel.AttributeFormat
-import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
-import de.htwg.zeta.common.format.metaModel.MethodFormat
+import de.htwg.zeta.common.format.project.AttributeFormat
+import de.htwg.zeta.common.format.project.AttributeValueFormat
+import de.htwg.zeta.common.format.project.MethodFormat
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
