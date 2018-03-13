@@ -2,7 +2,7 @@ package de.htwg.zeta.common.models.entity
 
 import java.util.UUID
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.project.concept.Concept
 
 case class GraphicalDslRelease(
     id: UUID,

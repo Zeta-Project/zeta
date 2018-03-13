@@ -9,10 +9,10 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.GraphicalDsl
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.generator.template.Error
 import de.htwg.zeta.generator.template.Result
 import de.htwg.zeta.generator.template.Settings
@@ -111,7 +111,7 @@ object Main extends Template[CreateOptions, String] {
   private def compiledGenerator(file: File): Future[Transformer] = {
     val content = s"""
       |import scala.concurrent.Future
-      |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
+      |import de.htwg.zeta.common.models.project.instance.elements.{Node, Edge}
       |import de.htwg.zeta.common.models.entity.ModelEntity
       |import de.htwg.zeta.common.models.entity.{Repository => Documents}
       |import de.htwg.zeta.common.models.file.{Repository => Files}
@@ -141,7 +141,7 @@ object Main extends Template[CreateOptions, String] {
     } yield Success()
   }
 
-  private def createFile(metaModel: GraphicalDsl): Future[File] = {
+  private def createFile(metaModel: GdslProject): Future[File] = {
     val mClassList = metaModel.concept.classMap.values
     val mReferenceList = metaModel.concept.referenceMap.values
     val content = createFileContent(mClassList, mReferenceList)

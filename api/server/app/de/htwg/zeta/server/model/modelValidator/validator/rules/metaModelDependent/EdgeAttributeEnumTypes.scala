@@ -1,9 +1,9 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
@@ -16,9 +16,9 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
   override val description: String = s"Attributes of type $attributeType in edges of type $edgeType must be of type enum $enumName."
   override val possibleFix: String = s"Remove attribute values of attribute $attributeType in edge $edgeType which are not of type enum $enumName."
 
-  override def isValid(edge: Edge): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
+  override def isValid(edge: EdgeInstance): Option[Boolean] = if (edge.referenceName == edgeType) Some(rule(edge)) else None
 
-  def rule(edge: Edge): Boolean = edge.attributeValues.get(attributeType) match {
+  def rule(edge: EdgeInstance): Boolean = edge.attributeValues.get(attributeType) match {
     case None => true
     case Some(attribute) => attribute match {
       case enumValue: EnumValue => enumValue.enumName == enumName

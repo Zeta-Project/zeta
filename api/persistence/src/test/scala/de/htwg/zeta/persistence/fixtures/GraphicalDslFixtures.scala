@@ -5,22 +5,22 @@ import java.util.UUID
 import scala.collection.immutable.ListMap
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.entity.GraphicalDsl
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.UnitType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.UnitType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.elements.Method
 
 
 object GraphicalDslFixtures {
@@ -183,7 +183,7 @@ object GraphicalDslFixtures {
     methods = Seq.empty
   )
 
-  val entity1 = GraphicalDsl(
+  val entity1 = GdslProject(
     id = UUID.randomUUID,
     name = "name1",
     concept = concept1,
@@ -193,7 +193,7 @@ object GraphicalDslFixtures {
     validator = Some("validator1")
   )
 
-  val entity2 = GraphicalDsl(
+  val entity2 = GdslProject(
     id = UUID.randomUUID,
     name = "name2",
     concept = concept2,
@@ -203,9 +203,9 @@ object GraphicalDslFixtures {
     validator = Some("validator2")
   )
 
-  val entity2Updated: GraphicalDsl = entity2.copy(diagram = "diagramUpdated")
+  val entity2Updated: GdslProject = entity2.copy(diagram = "diagramUpdated")
 
-  val entity3 = GraphicalDsl(
+  val entity3 = GdslProject(
     id = UUID.randomUUID,
     name = "name3",
     concept = concept2,

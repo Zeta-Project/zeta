@@ -2,13 +2,13 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -21,12 +21,12 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   "check" should "return success validation results on correct attributes" in {
 
     val attribute1: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value1"))
-    val node1 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
+    val node1 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
 
     val attribute2: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value2"))
-    val node2 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
+    val node2 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
     val attribute3: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value3"))
-    val node3 = Node.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
+    val node3 = NodeInstance.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
 
@@ -36,11 +36,11 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   it should "return failure validation results on invalid attributes" in {
     val attribute1: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
-    val node1 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
+    val node1 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
     val attribute2: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
-    val node2 = Node.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
+    val node2 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
     val attribute3: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
-    val node3 = Node.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
+    val node3 = NodeInstance.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
 

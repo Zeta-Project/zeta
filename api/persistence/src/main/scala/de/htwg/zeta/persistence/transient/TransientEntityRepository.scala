@@ -15,13 +15,13 @@ import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.FilterImage
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-import de.htwg.zeta.common.models.entity.GraphicalDsl
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.common.models.entity.Log
 import de.htwg.zeta.common.models.entity.Settings
 import de.htwg.zeta.common.models.entity.TimedTask
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.persistence.general.EntityRepository
@@ -129,7 +129,7 @@ class TransientLogRepository
 
 @Singleton
 class TransientGraphicalDslRepository
-  extends TransientEntityRepository[GraphicalDsl]
+  extends TransientEntityRepository[GdslProject]
     with GraphicalDslRepository
 
 @Singleton

@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
+import de.htwg.zeta.common.models.project.concept.Concept
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
