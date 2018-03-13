@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.diagram
 
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
+import de.htwg.zeta.parser.CommonParserMethods
 
 object DiagramParser extends CommonParserMethods {
 
