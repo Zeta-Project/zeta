@@ -2,17 +2,17 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -28,9 +28,9 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
   override val possibleFix: String =
     s"Remove attribute values of attribute $attributeType in node $nodeType which are not of data type ${attributeDataType.asString}."
 
-  override def isValid(node: Node): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
+  override def isValid(node: NodeInstance): Option[Boolean] = if (node.className == nodeType) Some(rule(node)) else None
 
-  def rule(node: Node): Boolean = {
+  def rule(node: NodeInstance): Boolean = {
 
     def handleStrings(values: StringValue): Boolean = values.attributeType == attributeDataType
 

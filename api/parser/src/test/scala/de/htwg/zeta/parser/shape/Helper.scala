@@ -2,14 +2,14 @@ package de.htwg.zeta.parser.shape
 
 import scala.collection.immutable.ListMap
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.Method
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Editable
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier

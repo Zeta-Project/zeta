@@ -1,9 +1,9 @@
 package de.htwg.zeta.common.format.model
 
-import de.htwg.zeta.common.format.metaModel.AttributeFormat
-import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
-import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.format.project.AttributeFormat
+import de.htwg.zeta.common.format.project.AttributeValueFormat
+import de.htwg.zeta.common.format.project.MethodFormat
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.JsResult
@@ -24,9 +24,9 @@ class NodeFormat(
     sAttributes: String = "attributes",
     sAttributeValues: String = "attributeValues",
     sMethods: String = "methods"
-) extends OFormat[Node] {
+) extends OFormat[NodeInstance] {
 
-  override def writes(node: Node): JsObject = Json.obj(
+  override def writes(node: NodeInstance): JsObject = Json.obj(
     sName -> node.name,
     sClassName -> node.className,
     sOutputEdgeNames -> node.outputEdgeNames,
@@ -36,7 +36,7 @@ class NodeFormat(
     sMethods -> Writes.seq(methodFormat).writes(node.methods)
   )
 
-  override def reads(json: JsValue): JsResult[Node] = for {
+  override def reads(json: JsValue): JsResult[NodeInstance] = for {
     name <- (json \ sName).validate[String]
     className <- (json \ sClassName).validate[String]
     outputs <- (json \ sOutputEdgeNames).validate(Reads.list[String])
@@ -45,7 +45,7 @@ class NodeFormat(
     attributeValues <- (json \ sAttributeValues).validate(Reads.map(attributeValueFormat))
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
   } yield {
-    Node(
+    NodeInstance(
       name = name,
       className = className,
       outputEdgeNames = outputs,

@@ -4,8 +4,8 @@ import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.SingleEdgeRule
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 
 /**
  * This file was created by Tobias Droth as part of his master thesis at HTWG Konstanz (03/2017 - 09/2017).
@@ -15,7 +15,7 @@ class Edges(val edgeTypes: Seq[String]) extends SingleEdgeRule with DslRule {
   override val description: String = s"Model is only allowed to contain edges of types ${edgeTypes.mkString("{", ", ", "}")}."
   override val possibleFix: String = s"Remove edges which are not of types ${edgeTypes.mkString("{", ", ", "}")}."
 
-  override def isValid(edge: Edge): Option[Boolean] = Some(edgeTypes.contains(edge.referenceName))
+  override def isValid(edge: EdgeInstance): Option[Boolean] = Some(edgeTypes.contains(edge.referenceName))
 
   override val dslStatement: String = s"""Edges areOfTypes ${Util.stringSeqToSeqString(edgeTypes)}"""
 }

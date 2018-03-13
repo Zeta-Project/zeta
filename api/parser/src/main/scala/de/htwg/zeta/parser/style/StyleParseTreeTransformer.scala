@@ -4,16 +4,16 @@ import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
-import de.htwg.zeta.common.model.style
-import de.htwg.zeta.common.model.style.Background
-import de.htwg.zeta.common.model.style.Color
-import de.htwg.zeta.common.model.style.Dashed
-import de.htwg.zeta.common.model.style.Dotted
-import de.htwg.zeta.common.model.style.DoubleLine
-import de.htwg.zeta.common.model.style.Font
-import de.htwg.zeta.common.model.style.Line
-import de.htwg.zeta.common.model.style.Solid
-import de.htwg.zeta.common.model.style.Style
+import de.htwg.zeta.common.models.project.gdsl.style
+import de.htwg.zeta.common.models.project.gdsl.style.Background
+import de.htwg.zeta.common.models.project.gdsl.style.Color
+import de.htwg.zeta.common.models.project.gdsl.style.Dashed
+import de.htwg.zeta.common.models.project.gdsl.style.Dotted
+import de.htwg.zeta.common.models.project.gdsl.style.DoubleLine
+import de.htwg.zeta.common.models.project.gdsl.style.Font
+import de.htwg.zeta.common.models.project.gdsl.style.Line
+import de.htwg.zeta.common.models.project.gdsl.style.Solid
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import de.htwg.zeta.parser.Collector
 import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.style.check.CheckDuplicateStyles

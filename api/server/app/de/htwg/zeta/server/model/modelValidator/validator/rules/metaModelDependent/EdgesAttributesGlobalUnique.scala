@@ -1,13 +1,13 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.Concept
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.EdgesRule
@@ -21,7 +21,7 @@ class EdgesAttributesGlobalUnique(val edgeType: String, val attributeType: Strin
   override val description: String = s"Every value of attribute $attributeType in edges of type $edgeType must be globally unique."
   override val possibleFix: String = s"Remove duplicated values of attribute $attributeType in edges of type $edgeType."
 
-  override def check(elements: Seq[Edge]): Seq[ModelValidationResult] = {
+  override def check(elements: Seq[EdgeInstance]): Seq[ModelValidationResult] = {
 
     def handleStrings(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: StringValue => v }.map(_.value)
     def handleBooleans(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: BoolValue => v }.map(_.value.toString)
@@ -46,7 +46,7 @@ class EdgesAttributesGlobalUnique(val edgeType: String, val attributeType: Strin
     val attributesGrouped: Map[String, Seq[String]] = attributeValuesStrings.groupBy(identity)
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
-    def checkEdgeDuplicateValues(acc: Seq[ModelValidationResult], currentEdge: Edge): Seq[ModelValidationResult] = {
+    def checkEdgeDuplicateValues(acc: Seq[ModelValidationResult], currentEdge: EdgeInstance): Seq[ModelValidationResult] = {
       val attributeValues = currentEdge.attributeValues.values.toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {

@@ -4,7 +4,7 @@ import scala.collection.immutable.Seq
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.ListBuffer
 
-import de.htwg.zeta.common.models.modelDefinitions.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.server.generator.model.diagram.Diagram
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.diagram.node.Node
