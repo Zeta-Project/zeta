@@ -10,8 +10,6 @@ import de.htwg.zeta.server.routing.WebControllerContainer
 import play.api.mvc.Action
 import play.api.mvc.AnyContent
 
-// scalastyle:off number.of.methods
-
 /**
  * All routes are managed in this class
  */

@@ -7,11 +7,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.ConceptFormat
-import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
-import de.htwg.zeta.common.format.metaModel.ReferenceFormat
-import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.format.project.ClassFormat
+import de.htwg.zeta.common.format.project.ConceptFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
+import de.htwg.zeta.common.format.project.ReferenceFormat
+import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
@@ -22,13 +22,13 @@ import play.api.mvc.Result
 class GraphicalDslRestApi @Inject()(
     graphicalDslRepo: AccessRestrictedGraphicalDslRepository,
     conceptFormat: ConceptFormat,
-    graphicalDslFormat: GraphicalDslFormat,
+    gdslProjectFormat: GdslProjectFormat,
     classFormat: ClassFormat,
     referenceFormat: ReferenceFormat
 ) extends Controller with Logging {
 
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.style))
+    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.styles))
   }
 
   /** returns shape definition */
@@ -38,7 +38,7 @@ class GraphicalDslRestApi @Inject()(
 
   /** returns diagram definition */
   def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.diagram))
+    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.diagrams))
   }
 
   /** A helper method for less verbose reads from the database */
