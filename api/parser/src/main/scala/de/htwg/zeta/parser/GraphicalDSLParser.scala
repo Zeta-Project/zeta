@@ -15,7 +15,7 @@ import de.htwg.zeta.parser.style.StyleParseTreeTransformer
 import de.htwg.zeta.parser.style.StyleParser
 import de.htwg.zeta.parser.style.StyleParserImpl
 
-object GraphicalDSLParser {
+class GraphicalDSLParser {
   val styleParser: StyleParser = new StyleParserImpl
 
   def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[List[String], GraphicalDsl] = {
