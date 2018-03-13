@@ -49,7 +49,7 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
         ),
         nodes = Seq(
           NodeInstance.empty(id2, mClass.name, Seq(), Seq()),
-          NodeInstance .empty(id2, mClass.name, Seq(), Seq())
+          NodeInstance.empty(id2, mClass.name, Seq(), Seq())
         )
       )
     val results = rule.check(elements)

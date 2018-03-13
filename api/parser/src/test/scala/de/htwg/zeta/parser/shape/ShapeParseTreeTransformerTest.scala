@@ -10,7 +10,7 @@ import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
 import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer.NodesAndEdges
+import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes
@@ -62,7 +62,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val styles = List(StyleFactory("myStyle"))
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
-        result shouldBe Success(NodesAndEdges(nodes = Nil, edges = Nil))
+        result shouldBe Success(Shape(nodes = Nil, edges = Nil))
       }
 
       "a valid shape definition" in {
@@ -87,8 +87,8 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result.isSuccess shouldBe true
-        val resultNodes = result.getOrElse(NodesAndEdges(Nil, Nil)).nodes
-        val resultEdges = result.getOrElse(NodesAndEdges(Nil, Nil)).edges
+        val resultNodes = result.getOrElse(Shape(Nil, Nil)).nodes
+        val resultEdges = result.getOrElse(Shape(Nil, Nil)).edges
         resultNodes.size shouldBe 1
         resultEdges.size shouldBe 1
         // TODO: check success tuple
