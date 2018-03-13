@@ -11,7 +11,7 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 
 @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
-class GraphicalDslFormat(
+class GdslProjectFormat(
     conceptFormat: ConceptFormat,
     sId: String = "id",
     sName: String = "name",
@@ -44,10 +44,8 @@ class GraphicalDslFormat(
     GdslProject(id, name, concept, diagram, shape, style, validator)
   }
 
-  def empty: Reads[GdslProject] = new Reads[GdslProject] {
-    override def reads(json: JsValue): JsResult[GdslProject] = {
-      (json \ sName).validate[String].map(GdslProject.empty)
-    }
+  def empty: Reads[GdslProject] = (json: JsValue) => {
+    (json \ sName).validate[String].map(GdslProject.empty)
   }
 
 }

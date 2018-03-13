@@ -12,7 +12,7 @@ import controllers.routes
 import de.htwg.zeta.common.format.ProjectShortInfo
 import de.htwg.zeta.common.format.metaModel.ClassFormat
 import de.htwg.zeta.common.format.metaModel.ConceptFormat
-import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
+import de.htwg.zeta.common.format.metaModel.GdslProjectFormat
 import de.htwg.zeta.common.format.metaModel.ReferenceFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.concept.elements.MReference
@@ -35,7 +35,7 @@ import play.api.mvc.Result
 class GraphicalDslRestApi @Inject()(
     graphicalDslRepo: AccessRestrictedGraphicalDslRepository,
     conceptFormat: ConceptFormat,
-    graphicalDslFormat: GraphicalDslFormat,
+    graphicalDslFormat: GdslProjectFormat,
     classFormat: ClassFormat,
     referenceFormat: ReferenceFormat
 ) extends Controller with Logging {
