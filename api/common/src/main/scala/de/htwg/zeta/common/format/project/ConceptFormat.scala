@@ -1,4 +1,4 @@
-package de.htwg.zeta.common.format.metaModel
+package de.htwg.zeta.common.format.project
 
 import de.htwg.zeta.common.models.project.concept
 import de.htwg.zeta.common.models.project.concept.Concept
