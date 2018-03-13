@@ -14,7 +14,7 @@ import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
@@ -33,7 +33,7 @@ import play.api.mvc.Results
  */
 class ModelRestApi @Inject()(
     modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
-    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
+    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat

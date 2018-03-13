@@ -126,7 +126,7 @@ trait GeneratorImageRepository extends EntityRepository[GeneratorImage]
 
 trait LogRepository extends EntityRepository[Log]
 
-trait GraphicalDslRepository extends EntityRepository[GdslProject]
+trait GdslProjectRepository extends EntityRepository[GdslProject]
 
 trait GraphicalDslReleaseRepository extends EntityRepository[GraphicalDslRelease]
 

@@ -14,7 +14,7 @@ import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.LogRepository
 
 /** Persistence-Layer to restrict the access to the entity-persistence.
@@ -78,9 +78,9 @@ private[persistence] sealed abstract class AccessRestrictedEntityPersistence[E <
 }
 
 @Singleton
-class AccessRestrictedGraphicalDslRepository @Inject()(
+class AccessRestrictedGdslProjectRepository @Inject()(
     accessAuthorisation: AccessAuthorisationRepository,
-    underlying: GraphicalDslRepository
+    underlying: GdslProjectRepository
 ) extends AccessRestrictedEntityPersistence(accessAuthorisation, underlying)
 
 @Singleton

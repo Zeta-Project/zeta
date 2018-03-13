@@ -16,7 +16,7 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
@@ -33,7 +33,7 @@ import play.api.mvc.Result
  * REST-ful API for GraphicalDsl definitions
  */
 class GraphicalDslRestApi @Inject()(
-    graphicalDslRepo: AccessRestrictedGraphicalDslRepository,
+    graphicalDslRepo: AccessRestrictedGdslProjectRepository,
     conceptFormat: ConceptFormat,
     graphicalDslFormat: GdslProjectFormat,
     classFormat: ClassFormat,
