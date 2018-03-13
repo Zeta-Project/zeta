@@ -12,7 +12,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.server.generator.generators.diagram.DiagramGenerator
 import de.htwg.zeta.server.generator.generators.shape.ShapeGenerator
 import de.htwg.zeta.server.generator.generators.style.StyleGenerator
@@ -30,7 +30,7 @@ import play.api.mvc.Result
 
 class ModelEditorGeneratorController @Inject()(
     silhouette: Silhouette[ZetaEnv],
-    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
+    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     filePersistence: AccessRestrictedFilePersistence
 ) extends Controller {
 

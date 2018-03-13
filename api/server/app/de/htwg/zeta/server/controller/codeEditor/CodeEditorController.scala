@@ -7,8 +7,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
@@ -16,8 +16,8 @@ import play.api.mvc.Result
 
 
 class CodeEditorController @Inject()(
-    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
-    fullAccessMetaModelEntityRepo: GraphicalDslRepository
+    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
+    fullAccessMetaModelEntityRepo: GdslProjectRepository
 ) extends Controller {
 
   def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
