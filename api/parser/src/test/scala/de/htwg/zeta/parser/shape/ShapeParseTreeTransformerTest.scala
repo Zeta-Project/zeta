@@ -3,14 +3,14 @@ package de.htwg.zeta.parser.shape
 import scalaz.Failure
 import scalaz.Success
 
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes
@@ -30,9 +30,9 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
     def apply(name: String): Style = Style(
       name,
       "TestDescription",
-      Background(Color(0, 0, 0)),
-      Font("TestFont", bold = false, Color(0, 0, 0), italic = false, 0),
-      Line(Color(0, 0, 0), Dashed(), 1),
+      Background(Color(0, 0, 0, 1)),
+      Font("TestFont", bold = false, Color(0, 0, 0, 1), italic = false, 0),
+      Line(Color(0, 0, 0, 1), Dashed(), 1),
       1.0
     )
   }
