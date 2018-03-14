@@ -38,13 +38,13 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         val style = styles.head
         style.name shouldBe "Y"
         style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
-        style.background.color shouldBe Color(255, 255, 255)
+        style.background.color shouldBe Color(255, 255, 255, 1)
         style.font.name shouldBe "Helvetica"
         style.font.bold shouldBe true
-        style.font.color shouldBe Color(0, 0, 0)
+        style.font.color shouldBe Color(0, 0, 0, 1)
         style.font.italic shouldBe true
         style.font.size shouldBe 20
-        style.line.color shouldBe Color(0, 0, 0)
+        style.line.color shouldBe Color(0, 0, 0, 1)
         style.line.style shouldBe Dashed()
         style.line.width shouldBe 1
         style.transparency shouldBe 1.0
@@ -64,9 +64,9 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         val styles = result.toOption.get
         styles.size shouldBe 1
         val style = styles.head
-        style.background.color shouldBe Color(255, 165, 0)
-        style.line.color shouldBe Color(128, 128, 128)
-        style.font.color shouldBe Color(0, 128, 0)
+        style.background.color shouldBe Color(255, 165, 0, 1)
+        style.line.color shouldBe Color(128, 128, 128, 1)
+        style.font.color shouldBe Color(0, 128, 0, 1)
       }
     }
     "find errors when" - {
