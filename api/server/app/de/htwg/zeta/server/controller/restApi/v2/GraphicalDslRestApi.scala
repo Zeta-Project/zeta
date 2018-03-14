@@ -9,10 +9,6 @@ import scalaz.Validation
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.ValidationErrorFormat
-import de.htwg.zeta.common.format.project.ClassFormat
-import de.htwg.zeta.common.format.project.ConceptFormat
-import de.htwg.zeta.common.format.project.GdslProjectFormat
-import de.htwg.zeta.common.format.project.ReferenceFormat
 import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
@@ -25,14 +21,10 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 
 class GraphicalDslRestApi @Inject()(
-    validationErrorFormat: ValidationErrorFormat,
     gdslProjectRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslParser: GraphicalDSLParser,
-    stylesFormat: StylesFormat,
-    conceptFormat: ConceptFormat,
-    gdslProjectFormat: GdslProjectFormat,
-    classFormat: ClassFormat,
-    referenceFormat: ReferenceFormat
+    validationErrorFormat: ValidationErrorFormat,
+    stylesFormat: StylesFormat
 ) extends Controller with Logging {
 
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
