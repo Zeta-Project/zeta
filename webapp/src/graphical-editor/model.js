@@ -10,8 +10,8 @@ import linkTypeSelector from './model/ext/linkTypeSelector';
 import modelExporter from './model/ext/exportModel';
 import sizeManager from './model/ext/sizeManager';
 import compartmentManager from './model/ext/compartmentManager';
-import Stencil from './model/generator/editor/StencilGenerator';
-import {InspectorDefs} from './model/generator/editor/InspectorGenerator';
+import Stencil from './model/generator/temporary/old/stencil'
+import {InspectorDefs} from './model/generator/temporary/old/inspector';
 
 export default Backbone.Router.extend({
 
@@ -73,8 +73,7 @@ export default Backbone.Router.extend({
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
     initializePaper: function() {
-
-        this.graph = new joint.dia.Graph;
+        this.graph = new joint.dia.Graph();
 
         this.paperScroller = new joint.ui.PaperScroller({ autoResizePaper: true });
         this.paper = new joint.dia.Paper({
@@ -226,7 +225,9 @@ export default Backbone.Router.extend({
                 this.inspector.remove();
             }
 
-            var inspectorDefs = InspectorDefs[cellView.model.get('type')];
+            const inspectorDefs = global.generatorFactory.state.inspectorGenerator.InspectorDefs[cellView.model.get('type')];
+            //const inspectorDefs = InspectorDefs[cellView.model.get('type')];
+
 
             this.inspector = new joint.ui.Inspector({
                 inputs: inspectorDefs ? inspectorDefs.inputs : CommonInspectorInputs,
@@ -234,9 +235,11 @@ export default Backbone.Router.extend({
                 cell: cellView.model
             });
 
+
             this.initializeInspectorTooltips();
 
             this.inspector.render();
+
             $('.inspector-container').html(this.inspector.el);
 
             if (this.inspectorClosedGroups[cellView.model.id]) {
@@ -248,6 +251,7 @@ export default Backbone.Router.extend({
             } else {
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
+
         }
     },
 
