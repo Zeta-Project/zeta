@@ -1,31 +1,41 @@
 package de.htwg.zeta.common.format.project.gdsl.style
 
+import scala.util.parsing.combinator.JavaTokenParsers
+
 import de.htwg.zeta.common.models.project.gdsl.style.Color
-import play.api.libs.json.JsObject
+import play.api.libs.json.JsError
 import play.api.libs.json.JsResult
+import play.api.libs.json.JsSuccess
 import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.libs.json.OFormat
+import play.api.libs.json.Reads
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
-class ColorFormat(
-    sR: String = "r",
-    sG: String = "g",
-    sB: String = "b"
-) extends OFormat[Color] {
+class ColorFormat() extends Reads[Color] {
 
-  override def writes(clazz: Color): JsObject = Json.obj(
-    sR -> clazz.r,
-    sG -> clazz.g,
-    sB -> clazz.b
-  )
+  def writes(clazz: Color): String = s"rgba(${clazz.r},${clazz.g},${clazz.b})"
 
-  override def reads(json: JsValue): JsResult[Color] = for {
-    r <- (json \ sR).validate[Int]
-    g <- (json \ sG).validate[Int]
-    b <- (json \ sB).validate[Int]
-  } yield {
-    Color(r, g, b)
+  def reads(json: JsValue): JsResult[Color] = {
+    val parseResult = ColorParser.parseColor(json.toString)
+    if (parseResult.successful) {
+      JsSuccess(parseResult.getOrElse(Color.defaultColor))
+    } else {
+      JsError()
+    }
+  }
+
+  private object ColorParser extends JavaTokenParsers {
+    def parseColor(input: String): ParseResult[Color] = parseAll(parser, input.trim)
+
+    def parser: Parser[Color] = {
+      val comma = ","
+
+      def natural_number: Parser[Int] = "\\d+".r ^^ {
+        _.toInt
+      }
+
+      ("rgba(" ~> natural_number) ~ (comma ~> natural_number) ~ (comma ~> natural_number <~ ")") ^^ {
+        case r ~ g ~ b => Color(r, g, b)
+      }
+    }
   }
 
 }
