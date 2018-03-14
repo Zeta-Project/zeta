@@ -1,6 +1,7 @@
 import {linkhelper} from '../generator/editor/LinkHelperGenerator'
 import {validator} from '../generator/editor/ValidatorGenerator'
-import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
+import '../generator/temporary/old/connectionstyle';
+
 //import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
 
 var contextMenu = {
@@ -14,10 +15,19 @@ var contextMenu = {
      graph: null,
      linkID: null,
      edgeData: null,
+     connectionStyleGenerator: null,
+    linkhelperGenerator: null,
+    validatorGenerator: null,
 
      init: function(graph){
         this.log("init contextMenu");
         this.graph = graph;
+        this.connectionStyleGenerator = global.generatorFactory.state.connectionDefinitionGenerator;
+        this.linkhelperGenerator = global.generatorFactory.state.linkhelperGenerator;
+        this.validatorGenerator = global.generatorFactory.state.validatorGenerator;
+
+        console.log("ValidatorGenerator:");
+        console.log(this.validatorGenerator);
         this.createMenu(['']);
      },
 
@@ -67,17 +77,21 @@ var contextMenu = {
         this.log("Clicked Element:", el);
 
         // getEdgeData and remeber for enhancing Link
-        this.edgeData = validator.getEdgeData(this.elements[el]);
+        this.edgeData = this.validatorGenerator.getEdgeData(this.elements[el]);
+         this.edgeData = validator.getEdgeData(this.elements[el]);
 
         // set Link Style
         var styleName = this.edgeData.style;
         var link = this.graph.getCell(this.linkID);
-        link.attributes.attrs = getConnectionStyle(styleName);
-        link.attributes.placings = getPlacings(styleName);
+        link.attributes.attrs = this.connectionStyleGenerator.getConnectionStyle(styleName);
+        link.attributes.placings = this.connectionStyleGenerator.getPlacings(styleName);
         link.attributes.ecoreName = this.edgeData.type;
         link.attributes.styleSet = true;
-         _.each(getLabels(styleName), function(label, idx){
+         _.each(this.connectionStyleGenerator.getLabels(styleName), function(label, idx){
              label.attrs.text.text = linkhelper.getLabelText(this.elements[el], label.id);
+             //label.attrs.text.textxx = this.linkhelperGenerator.getLabelText(this.elements[el], label.id);
+             //console.log(label.attrs.text.text);
+             //console.log(label.attrs.text.textxx);
              link.label(idx, label);
          }, this);
         this.hideMenu();
