@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import joint from 'jointjs';
-import {validator} from '../generator/editor/ValidatorGenerator'
-import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
+//TODO import {validator} from '../generator/editor/ValidatorGenerator'
+import {validator} from '../generator/temporary/old/validator'
+import {getConnectionStyle,getLabels,getPlacings} from "../generator/temporary/old/connectionstyle";
 
 /**
  * linkTypeSelector provides functions for creating and managing the context menu to choose a link type from.
@@ -11,26 +12,27 @@ import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/conne
 export default (function linkTypeSelector () {
     'use strict';
 
-    var _menu = null;
-    var _focusedElement = null;
-    var _graph = null;
-    var _paper = null;
-    var _linkID = null;
-    var _canSetLink = false;
+    let _menu = null;
+    let _focusedElement = null;
+    let _graph = null;
+    let _paper = null;
+    let _linkID = null;
+    let _canSetLink = false;
 
-    var init;
-    var createMenu;
-    var itemMouseUp;
-    var destroyMenu;
-    var showMenu;
-    var focusElement;
-    var lostFocus;
-    var canSetLink;
-    var replaceLink;
-    var registerListeners;
-    var handleAddedCell;
-    var handleRemovedCell
-    var getConnectionCount;
+    let init;
+    let createMenu;
+    let itemMouseUp;
+    let destroyMenu;
+    let showMenu;
+    let focusElement;
+    let lostFocus;
+    let canSetLink;
+    let replaceLink;
+    let registerListeners;
+    let handleAddedCell;
+    let handleRemovedCell;
+    let getConnectionCount;
+    let connectionDefinitionGenerator;
 
     /**
      * Has to be called once before using the other methods!
@@ -40,6 +42,7 @@ export default (function linkTypeSelector () {
     init = function init (graph, paper) {
         _graph = graph;
         _paper = paper;
+        connectionDefinitionGenerator = global.generatorFactory.getConnectionDefinitionGenerator();
         registerListeners();
     };
 
@@ -54,7 +57,7 @@ export default (function linkTypeSelector () {
             destroyMenu();
         }
 
-        var menu = '';
+        let menu = '';
         elements = elements || [];
 
         menu += '<ul id="contextMenu" class="list-group">';
@@ -85,7 +88,7 @@ export default (function linkTypeSelector () {
 
         // set handler
         elements.forEach(function (name, index) {
-            var item = $('#menuItem' + index);
+            let item = $('#menuItem' + index);
 
             item.mouseup(function () {
                 itemMouseUp(name);
@@ -121,7 +124,7 @@ export default (function linkTypeSelector () {
      * @param linkName
      */
     itemMouseUp = function itemMouseUp (linkName) {
-        var link = _graph.getCell(_linkID);
+        let link = _graph.getCell(_linkID);
         link.attributes.subtype = linkName;
         destroyMenu();
     };
@@ -135,10 +138,10 @@ export default (function linkTypeSelector () {
      * @param {int} y - Y-coordinate of the mouse.
      */
     focusElement = function focusElement (linkID, eventTargetModel, x, y) {
-        var link;
-        var eventSourceID;
-        var eventSourceType;
-        var menuList;
+        let link;
+        let eventSourceID;
+        let eventSourceType;
+        let menuList;
 
         if (!eventTargetModel || _focusedElement) {
             return;
@@ -163,9 +166,11 @@ export default (function linkTypeSelector () {
 
         }
 
-        var eventTarget = eventTargetModel.attributes.nodeName;
+        let eventTarget = eventTargetModel.attributes.nodeName;
 
+        // menuList = global.generatorFactory.state.validatorGenerator.getValidEdges(eventSourceType, eventTarget);
         menuList = validator.getValidEdges(eventSourceType, eventTarget);
+
 
         createMenu(menuList);
         showMenu(x, y);
@@ -177,7 +182,7 @@ export default (function linkTypeSelector () {
      * @param newFocusedElement
      */
     lostFocus = function lostFocus (newFocusedElement) {
-        var element = $(newFocusedElement);
+        let element = $(newFocusedElement);
 
         if (element.hasClass('contextItem') || element.hasClass('menuItem') || element.hasClass('menuTable')) {
             return;
@@ -237,28 +242,47 @@ export default (function linkTypeSelector () {
      */
 
     replaceLink = function replaceLink (link) {
-        var cell = _graph.getCell(_linkID);
-        var edgeData = validator.getEdgeData(link.attributes.subtype);
-        var edgeType = edgeData.type;
-        var targetId = link.attributes.target.id;
-        var sourceId = link.attributes.source.id;
-        var maxInputs = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
-        var maxOutputs = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
-        var minInputs = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
-        var minOutputs = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
-        var targetMaxReached = false;
-        var sourceMaxReached = false;
+        let cell = _graph.getCell(_linkID);
 
-        link.prop('placings', getPlacings(edgeData.style));
+        let edgeData = validator.getEdgeData(link.attributes.subtype);
+        let edgeDataXX = global.generatorFactory.state.validatorGenerator.getEdgeData(link.attributes.subtype);
+
+        let edgeType = edgeData.type;
+        let targetId = link.attributes.target.id;
+        let sourceId = link.attributes.source.id;
+
+        let maxInputs = null;
+        let maxOutputs = null;
+        let minInputs = null;
+        let minOutputs = null;
+        try {
+            let maxInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[edgeData.to][edgeData.type].upperBound;
+            let maxOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[edgeData.from][edgeData.type].upperBound;
+            let minInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
+            let minOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
+        } catch (e){
+            maxInputs = Number.MAX_SAFE_INTEGER;
+            maxOutputs = Number.MAX_SAFE_INTEGER;
+            minInputs = 0;
+            minOutputs = 0;
+        }
+
+        let targetMaxReached = false;
+        let sourceMaxReached = false;
+
+        link.prop('placings', connectionDefinitionGenerator.getPlacings(edgeData.style));
+        // link.prop('placings', getPlacings(edgeData.style));
         link.prop('sourceAttribute', edgeData.from);
         link.prop('targetAttribute', edgeData.to);
         // edge type needs to be set before getting connection count
         // otherwise current link is ignored
         link.prop('mReference', edgeType);
-        link.prop('labels', getLabels(edgeData.style));
+        // link.prop('labels', getLabels(edgeData.style));
+        link.prop('labels', connectionDefinitionGenerator.getLabels(edgeData.style));
 
-        var ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
-        var outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
+
+        let ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
+        let outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
 
         if(maxInputs != -1 && ingoingTargetCount > maxInputs) {
             targetMaxReached = true;
@@ -274,8 +298,12 @@ export default (function linkTypeSelector () {
         if(minOutputs != 0 && minOutputs <= outgoingSourceCount && !sourceMaxReached) {
             joint.V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
         }
-        var clone = link.clone();
+        let clone = link.clone();
+        clone.attributes.attrsxx = connectionDefinitionGenerator.getConnectionStyle(edgeData.style);
         clone.attributes.attrs = getConnectionStyle(edgeData.style);
+
+        console.log(clone.attributes.attrs);
+        console.log(clone.attributes.attrsxx);
         clone.prop('styleSet', true);
         link.remove();
         _graph.addCell(clone);
@@ -297,13 +325,15 @@ export default (function linkTypeSelector () {
      */
     handleAddedCell = function(cell) {
         if(cell.isLink()) return;
-        var inputs = [];
-        var outputs = [];
-        var inputMatrix = validator.inputMatrix[cell.attributes.mClass];
-        var outputMatrix = validator.outputMatrix[cell.attributes.mClass];
+        let inputs = [];
+        let outputs = [];
+        // let inputMatrix = global.generatorFactory.state.validatorGenerator.inputMatrix[cell.attributes.mClass];
+        // let outputMatrix = global.generatorFactory.state.validatorGenerator.outputMatrix[cell.attributes.mClass];
+        let inputMatrix = validator.inputMatrix[cell.attributes.mClass];
+        let outputMatrix = validator.outputMatrix[cell.attributes.mClass];
 
 
-        for(var inEdge in inputMatrix) {
+        for(let inEdge in inputMatrix) {
             if (Object.prototype.hasOwnProperty.call(inputMatrix, inEdge)) {
                 if (inputMatrix[inEdge].lowerBound > 0) {
                     inputs.push({'mReferenceName': inEdge, 'lowerBound': inputMatrix[inEdge].lowerBound });
@@ -311,7 +341,7 @@ export default (function linkTypeSelector () {
             }
         }
 
-        for(var outEdge in outputMatrix) {
+        for(let outEdge in outputMatrix) {
             if (Object.prototype.hasOwnProperty.call(outputMatrix, outEdge)) {
                 if (outputMatrix[outEdge].lowerBound > 0) {
                     outputs.push({'mReferenceName': outEdge, 'lowerBound': outputMatrix[outEdge].lowerBound });
@@ -333,17 +363,35 @@ export default (function linkTypeSelector () {
         // check if style is set, otherwise the removed dummy link will influence the counters
         // this also ignores all Elements
         if(!link.attributes.styleSet) return;
-        var edgeType = validator.getEdgeData(link.attributes.subtype).type;
-        var sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
-        var targetMClass = _graph.getCell(link.attributes.target.id).attributes.mClass;
-        var minInputs = validator.inputMatrix[targetMClass][edgeType].lowerBound;
-        var minOutputs = validator.outputMatrix[sourceMClass][edgeType].lowerBound;
-        var maxInputs = validator.inputMatrix[targetMClass][edgeType].upperBound;
-        var maxOutputs = validator.outputMatrix[sourceMClass][edgeType].upperBound;
-        var ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
-        var outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
-        var minInUnderstepped = false;
-        var minOutUnderstepped = false;
+        // let edgeType = validator.getEdgeData(link.attributes.subtype).type;
+        let edgeType = global.generatorFactory.state.validatorGenerator.getEdgeData(link.attributes.subtype).type;
+
+        let sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
+        let targetMClass = _graph.getCell(link.attributes.target.id).attributes.mClass;
+        let minInputs = null;
+        let minOutputs = null;
+        let maxInputs = null;
+        let maxOutputs = null;
+        try {
+            minInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[targetMClass][edgeType].lowerBound;
+            minOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[sourceMClass][edgeType].lowerBound;
+            maxInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[targetMClass][edgeType].upperBound;
+            maxOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[sourceMClass][edgeType].upperBound;
+        } catch (e) {
+            minInputs = 0;
+            minOutputs = 0;
+            maxInputs = Number.MAX_SAFE_INTEGER;
+            maxOutputs = Number.MAX_SAFE_INTEGER;
+        }
+
+        // let minInputs = validator.inputMatrix[targetMClass][edgeType].lowerBound;
+        // let minOutputs = validator.outputMatrix[sourceMClass][edgeType].lowerBound;
+        // let maxInputs = validator.inputMatrix[targetMClass][edgeType].upperBound;
+        // let maxOutputs = validator.outputMatrix[sourceMClass][edgeType].upperBound;
+        let ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
+        let outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
+        let minInUnderstepped = false;
+        let minOutUnderstepped = false;
 
         if(minInputs > ingoingTargetCount) {
             minInUnderstepped = true;
@@ -372,8 +420,8 @@ export default (function linkTypeSelector () {
      * @returns {number} the connection count
      */
     getConnectionCount = function(cellId, edgeType, opt) {
-        var links = _graph.getConnectedLinks(_graph.getCell(cellId), opt);
-        var count = 0;
+        let links = _graph.getConnectedLinks(_graph.getCell(cellId), opt);
+        let count = 0;
         links.forEach(function(l) {
             if(l.attributes.mReference === edgeType) {
                 count += 1;
