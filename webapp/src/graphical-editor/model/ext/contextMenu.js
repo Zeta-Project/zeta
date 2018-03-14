@@ -1,6 +1,7 @@
 import {linkhelper} from '../generator/editor/LinkHelperGenerator'
 import {validator} from '../generator/editor/ValidatorGenerator'
 import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
+//import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
 
 var contextMenu = {
      DEBUG: false,
@@ -95,6 +96,7 @@ var contextMenu = {
         }
         // build up menu for source and target element
         if(!this.focusedElement){
+            //var menuList = this.validatorGenerator.getValidEdges(sourceEcoreName, targetEcoreName);
             var menuList = validator.getValidEdges(sourceEcoreName, targetEcoreName);
             this.createMenu(menuList);
             this.focusedElement = targetElement;
@@ -185,7 +187,7 @@ var contextMenu = {
                               $(item).css("background-color","#F0F0F0");
                          });
              });
-        }else{  // nodes are not linkable
+        } els {  // nodes are not linkable
             menu += '<tr><td class="menuItem"><div class="ContextItem">';
             menu += "These elements are not linkable!";
             menu += '</div></td></tr>';
