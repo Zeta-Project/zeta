@@ -41,7 +41,14 @@ class DslRestApi @Inject()() extends Controller with Logging {
     Future(Ok(allDslV1()))
   }
 
-
+  private def allDslV1(): JsValue = {
+    Json.obj(
+      "diagram" -> diagramDslV1(),
+      "style" -> styleDslV1(),
+      "shape" -> shapeDslV1(),
+      "concept" -> getConcept()
+    )
+  }
 
   private def diagramDslV1(): JsValue = {
     Json.parse(
@@ -133,7 +140,7 @@ class DslRestApi @Inject()() extends Controller with Logging {
        |  "styles": [
        |    {
        |      "background": {
-       |        "color": "#FFFFFF"
+       |        "color": "#ffffff"
        |      },
        |      "font": {
        |        "size":20
@@ -149,7 +156,7 @@ class DslRestApi @Inject()() extends Controller with Logging {
        |    },
        |    {
        |      "background": {
-       |        "color": "#FFFFFF"
+       |        "color": "#ffffff"
        |      },
        |      "font": {
        |        "size":10
@@ -165,7 +172,7 @@ class DslRestApi @Inject()() extends Controller with Logging {
        |    },
        |    {
        |      "background": {
-       |        "color": "#FFFFFF"
+       |        "color": "#ffffff"
        |      },
        |      "font": {
        |        "size":20
@@ -502,7 +509,7 @@ class DslRestApi @Inject()() extends Controller with Logging {
        |            ],
        |            "style": {
        |              "background": {
-       |                "color": "#FFFFFF"
+       |                "color": "#ffffff"
        |              }
        |            }
        |          }
@@ -1037,11 +1044,135 @@ class DslRestApi @Inject()() extends Controller with Logging {
     )
   }
 
-  private def allDslV1(): JsValue = {
-    Json.obj(
-      "diagram" -> diagramDslV1(),
-      "style" -> styleDslV1(),
-      "shape" -> shapeDslV1()
-    )
+  private def getConcept(): JsValue = {
+    Json.parse(
+      """
+        |{
+    |        "enums": [],
+    |        "classes": [
+    |            {
+    |                "name": "InterfaceKlasse",
+    |                "description": "",
+    |                "abstractness": false,
+    |                "superTypeNames": [],
+    |                "inputReferenceNames": [
+    |                    "BaseClassRealization",
+    |                    "Realization"
+    |                ],
+    |                "outputReferenceNames": [],
+    |                "attributes": [],
+    |                "methods": []
+    |            },
+    |            {
+    |                "name": "Klasse",
+    |                "description": "",
+    |                "abstractness": false,
+    |                "superTypeNames": [],
+    |                "inputReferenceNames": [],
+    |                "outputReferenceNames": [
+    |                    "Inheritance",
+    |                    "BaseClassRealization"
+    |                ],
+    |                "attributes": [],
+    |                "methods": []
+    |            },
+    |            {
+    |                "name": "AbstractKlasse",
+    |                "description": "",
+    |                "abstractness": false,
+    |                "superTypeNames": [],
+    |                "inputReferenceNames": [
+    |                    "Inheritance"
+    |                ],
+    |                "outputReferenceNames": [
+    |                    "Realization"
+    |                ],
+    |                "attributes": [],
+    |                "methods": []
+    |            }
+    |        ],
+    |        "references": [
+    |            {
+    |                "name": "Inheritance",
+    |                "description": "",
+    |                "sourceDeletionDeletesTarget": false,
+    |                "targetDeletionDeletesSource": false,
+    |                "sourceClassName": "Klasse",
+    |                "targetClassName": "AbstractKlasse",
+    |                "attributes": [],
+    |                "methods": []
+    |            },
+    |            {
+    |                "name": "BaseClassRealization",
+    |                "description": "",
+    |                "sourceDeletionDeletesTarget": false,
+    |                "targetDeletionDeletesSource": false,
+    |                "sourceClassName": "Klasse",
+    |                "targetClassName": "InterfaceKlasse",
+    |                "attributes": [],
+    |                "methods": []
+    |            },
+    |            {
+    |                "name": "Realization",
+    |                "description": "",
+    |                "sourceDeletionDeletesTarget": false,
+    |                "targetDeletionDeletesSource": false,
+    |                "sourceClassName": "AbstractKlasse",
+    |                "targetClassName": "InterfaceKlasse",
+    |                "attributes": [],
+    |                "methods": []
+    |            }
+    |        ],
+    |        "attributes": [
+    |            {
+    |                "name": "",
+    |                "globalUnique": false,
+    |                "localUnique": false,
+    |                "type": "string",
+    |                "default": {
+    |                    "type": "string",
+    |                    "value": ""
+    |                },
+    |                "constant": false,
+    |                "singleAssignment": false,
+    |                "expression": "",
+    |                "ordered": false,
+    |                "transient": false
+    |            },
+    |            {
+    |                "name": "",
+    |                "globalUnique": false,
+    |                "localUnique": false,
+    |                "type": "string",
+    |                "default": {
+    |                    "type": "string",
+    |                    "value": ""
+    |                },
+    |                "constant": false,
+    |                "singleAssignment": false,
+    |                "expression": "",
+    |                "ordered": false,
+    |                "transient": false
+    |            },
+    |            {
+    |                "name": "",
+    |                "globalUnique": false,
+    |                "localUnique": false,
+    |                "type": "string",
+    |                "default": {
+    |                    "type": "string",
+    |                    "value": ""
+    |                },
+    |                "constant": false,
+    |                "singleAssignment": false,
+    |                "expression": "",
+    |                "ordered": false,
+    |                "transient": false
+    |            }
+    |        ],
+    |        "methods": [],
+    |        "uiState": "{\"cells\":[{\"position\":{\"x\":0,\"y\":0},\"size\":{\"width\":0,\"height\":0},\"angle\":0,\"id\":\"menum_container\",\"type\":\"mcore.Enum\",\"markup\":\"<g />\",\"name\":\"mEnumContainer\",\"m_enum\":[],\"z\":1,\"m_attributes\":[{\"name\":\"\",\"upperBound\":-1,\"lowerBound\":0,\"default\":\"\",\"typ\":\"String\",\"expression\":\"\",\"localUnique\":false,\"globalUnique\":false,\"constant\":false,\"ordered\":false,\"transient\":false,\"singleAssignment\":false},{\"name\":\"\",\"upperBound\":-1,\"lowerBound\":0,\"default\":\"\",\"typ\":\"String\",\"expression\":\"\",\"localUnique\":false,\"globalUnique\":false,\"constant\":false,\"ordered\":false,\"transient\":false,\"singleAssignment\":false},{\"name\":\"\",\"upperBound\":-1,\"lowerBound\":0,\"default\":\"\",\"typ\":\"String\",\"expression\":\"\",\"localUnique\":false,\"globalUnique\":false,\"constant\":false,\"ordered\":false,\"transient\":false,\"singleAssignment\":false}],\"m_methods\":[],\"attrs\":{}},{\"position\":{\"x\":0,\"y\":0},\"size\":{\"width\":0,\"height\":0},\"angle\":0,\"id\":\"mattribute_container\",\"type\":\"mcore.Attribute\",\"markup\":\"<g />\",\"name\":\"mAttributeContainer\",\"m_Attribute\":[],\"z\":2,\"attrs\":{}},{\"type\":\"uml.Class\",\"name\":\"InterfaceKlasse\",\"m_attributes\":[],\"position\":{\"x\":30,\"y\":50},\"size\":{\"width\":120,\"height\":70},\"angle\":0,\"id\":\"1a94c26d-0b4d-43a7-a052-cb1f38c63996\",\"z\":3,\"description\":\"\",\"m_methods\":[],\"linkdef_input\":[],\"linkdef_output\":[],\"attrs\":{\".uml-class-name-rect\":{\"height\":40,\"transform\":\"translate(0,0)\"},\".uml-class-attrs-rect\":{\"height\":20,\"transform\":\"translate(0,40)\"},\".uml-class-name-text\":{\"font-size\":9,\"text\":\"InterfaceKlasse\"},\".uml-class-attrs-text\":{\"font-size\":9,\"text\":\"\"},\".uml-class-methods-text\":{\"font-size\":9}}},{\"type\":\"uml.Class\",\"name\":\"Klasse\",\"m_attributes\":[],\"position\":{\"x\":130,\"y\":420},\"size\":{\"width\":130,\"height\":70},\"angle\":0,\"id\":\"cfc1c745-6dc0-4b8f-a80c-cfbbd10ca902\",\"z\":4,\"description\":\"\",\"m_methods\":[],\"linkdef_input\":[],\"linkdef_output\":[],\"attrs\":{\".uml-class-name-rect\":{\"height\":40,\"transform\":\"translate(0,0)\"},\".uml-class-attrs-rect\":{\"height\":20,\"transform\":\"translate(0,40)\"},\".uml-class-name-text\":{\"font-size\":9,\"text\":\"Klasse\"},\".uml-class-attrs-text\":{\"font-size\":9,\"text\":\"\"},\".uml-class-methods-text\":{\"font-size\":9}}},{\"type\":\"uml.Class\",\"name\":\"AbstractKlasse\",\"m_attributes\":[],\"position\":{\"x\":430,\"y\":50},\"size\":{\"width\":150,\"height\":60},\"angle\":0,\"id\":\"136868ee-9cf1-4c29-9950-61b8ac85c656\",\"z\":6,\"description\":\"\",\"m_methods\":[],\"linkdef_input\":[],\"linkdef_output\":[],\"attrs\":{\".uml-class-name-rect\":{\"height\":40,\"transform\":\"translate(0,0)\"},\".uml-class-attrs-rect\":{\"height\":20,\"transform\":\"translate(0,40)\"},\".uml-class-name-text\":{\"font-size\":9,\"text\":\"AbstractKlasse\"},\".uml-class-attrs-text\":{\"font-size\":9,\"text\":\"\"},\".uml-class-methods-text\":{\"font-size\":9}}},{\"type\":\"uml.Association\",\"name\":\"Inheritance\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":{\"id\":\"cfc1c745-6dc0-4b8f-a80c-cfbbd10ca902\"},\"target\":{\"id\":\"136868ee-9cf1-4c29-9950-61b8ac85c656\"},\"id\":\"73dbe443-068b-4889-9003-581f155b4b57\",\"subtype\":\"Association\",\"z\":7,\"labels\":[{\"position\":0.5,\"attrs\":{\"text\":{\"text\":\"Inheritance\"}}}],\"vertices\":[],\"m_attributes\":[],\"m_methods\":[],\"linkdef_source\":[],\"linkdef_target\":[],\"attrs\":{}},{\"type\":\"uml.Association\",\"name\":\"BaseClassRealization\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":{\"id\":\"cfc1c745-6dc0-4b8f-a80c-cfbbd10ca902\"},\"target\":{\"id\":\"1a94c26d-0b4d-43a7-a052-cb1f38c63996\"},\"id\":\"b2afa12d-2f3e-4b73-bd44-d4f4821b2279\",\"subtype\":\"Association\",\"z\":8,\"labels\":[{\"position\":0.5,\"attrs\":{\"text\":{\"text\":\"BaseClassRealization\"}}}],\"m_attributes\":[],\"m_methods\":[],\"linkdef_source\":[],\"linkdef_target\":[],\"attrs\":{}},{\"type\":\"uml.Association\",\"name\":\"Realization\",\"sourceDeletionDeletesTarget\":false,\"targetDeletionDeletesSource\":false,\"source\":{\"id\":\"136868ee-9cf1-4c29-9950-61b8ac85c656\"},\"target\":{\"id\":\"1a94c26d-0b4d-43a7-a052-cb1f38c63996\"},\"id\":\"27ec6821-aad9-4849-b435-697a19915a3a\",\"subtype\":\"Association\",\"z\":9,\"labels\":[{\"position\":0.5,\"attrs\":{\"text\":{\"text\":\"Realization\"}}}],\"m_attributes\":[],\"m_methods\":[],\"linkdef_source\":[],\"linkdef_target\":[],\"attrs\":{}}]}"
+    |    }
+      """.stripMargin)
   }
 }
