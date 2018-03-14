@@ -358,7 +358,7 @@ export default class {
         return this.calculator.calculateHeight(elements);
     }
 
-    calculateWidth() {
+    calculateWidth(shape) {
         const elements = shape.elements ? shape.elements : [];
         return this.calculator.calculateWidth(elements);
     }
