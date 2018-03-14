@@ -5,12 +5,15 @@ import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scalaz.Validation
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import de.htwg.zeta.common.format.ValidationErrorFormat
 import de.htwg.zeta.common.format.project.ClassFormat
 import de.htwg.zeta.common.format.project.ConceptFormat
 import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
+import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
 import de.htwg.zeta.parser.GraphicalDSLParser
@@ -22,8 +25,10 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 
 class GraphicalDslRestApi @Inject()(
+    validationErrorFormat: ValidationErrorFormat,
     gdslProjectRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslParser: GraphicalDSLParser,
+    stylesFormat: StylesFormat,
     conceptFormat: ConceptFormat,
     gdslProjectFormat: GdslProjectFormat,
     classFormat: ClassFormat,
@@ -31,7 +36,24 @@ class GraphicalDslRestApi @Inject()(
 ) extends Controller with Logging {
 
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.style))
+    protectedRead(id, request, graphicalDsl => {
+      val result: Validation[List[String], GraphicalDsl] =
+        graphicalDslParser.parse(
+          graphicalDsl.concept,
+          graphicalDsl.style,
+          graphicalDsl.shape,
+          graphicalDsl.diagram
+        )
+      if (!result.isSuccess) {
+        InternalServerError(
+          validationErrorFormat.writes(
+            result.toEither.left.getOrElse(List())
+          )
+        )
+      } else {
+        Ok(stylesFormat.writes(result.toEither.right.get.styles))
+      }
+    })
   }
 
   /** returns shape definition */
