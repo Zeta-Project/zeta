@@ -11,9 +11,9 @@ import play.api.libs.json.Reads
 
 class ColorFormat() extends Reads[Color] {
 
-  def writes(clazz: Color): String = s"rgba(${clazz.r},${clazz.g},${clazz.b})"
+  def writes(clazz: Color): String = s"rgba(${clazz.r},${clazz.g},${clazz.b},${clazz.alpha})"
 
-  def reads(json: JsValue): JsResult[Color] = {
+  override def reads(json: JsValue): JsResult[Color] = {
     val parseResult = ColorParser.parseColor(json.toString)
     if (parseResult.successful) {
       JsSuccess(parseResult.getOrElse(Color.defaultColor))
@@ -32,8 +32,13 @@ class ColorFormat() extends Reads[Color] {
         _.toInt
       }
 
-      ("rgba(" ~> natural_number) ~ (comma ~> natural_number) ~ (comma ~> natural_number <~ ")") ^^ {
-        case r ~ g ~ b => Color(r, g, b)
+      def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ {
+        _.toDouble
+      }
+
+      ("rgba(" ~> natural_number) ~ (comma ~> natural_number) ~
+        (comma ~> natural_number) ~ (comma ~> argument_double <~ ")") ^^ {
+        case r ~ g ~ b ~ alpha => Color(r, g, b, alpha)
       }
     }
   }
