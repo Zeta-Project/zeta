@@ -11,6 +11,7 @@ import play.api.libs.json.OFormat
 @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class PlacingFormat(
     styleFormat: StyleFormat,
+    positionFormat: PositionFormat,
     sStyle: String = "style",
     sPosition: String = "position",
     sGeoModel: String = "geoModel"
@@ -18,13 +19,13 @@ class PlacingFormat(
 
   override def writes(clazz: Placing): JsObject = Json.obj(
     sStyle -> styleFormat.writes(clazz.style),
-    sPosition -> ???,
+    sPosition -> positionFormat.writes(clazz.position),
     sGeoModel -> ???
   )
 
   override def reads(json: JsValue): JsResult[Placing] = for {
     name <- (json \ sStyle).validate(styleFormat)
-    position <- (json \ sPosition).validate(???)
+    position <- (json \ sPosition).validate(positionFormat)
     geoModel <- (json \ sGeoModel).validate(???)
   } yield {
     Placing(name, position, geoModel)

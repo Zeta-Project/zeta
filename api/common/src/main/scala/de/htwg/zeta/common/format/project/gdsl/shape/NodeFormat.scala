@@ -14,6 +14,8 @@ import play.api.libs.json.Writes
 class NodeFormat(
     styleFormat: StyleFormat,
     edgeFormat: EdgeFormat,
+    sizeFormat: SizeFormat,
+    resizingFormat: ResizingFormat,
     sName: String = "name",
     sConceptElement: String = "conceptElement",
     sEdges: String = "edges",
@@ -27,9 +29,9 @@ class NodeFormat(
     sName -> clazz.name,
     sConceptElement -> clazz.conceptElement,
     sEdges -> Writes.list(edgeFormat).writes(clazz.edges),
-    sSize -> ???,
+    sSize -> sizeFormat.writes(clazz.size),
     sStyle -> styleFormat.writes(clazz.style),
-    sResizing -> ???,
+    sResizing -> resizingFormat.writes(clazz.resizing),
     sGeoModels -> ???
   )
 
@@ -37,9 +39,9 @@ class NodeFormat(
     name <- (json \ sName).validate[String]
     conceptElement <- (json \ sConceptElement).validate[String]
     edges <- (json \ sEdges).validate(Reads.list(edgeFormat))
-    size <- (json \ sSize).validate(???)
+    size <- (json \ sSize).validate(sizeFormat)
     style <- (json \ sStyle).validate(styleFormat)
-    resizing <- (json \ sResizing).validate(???)
+    resizing <- (json \ sResizing).validate(resizingFormat)
     geoModels <- (json \ sGeoModels).validate(Reads.list(???))
   } yield {
     Node(
