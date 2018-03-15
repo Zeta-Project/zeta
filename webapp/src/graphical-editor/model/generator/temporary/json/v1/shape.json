@@ -219,7 +219,7 @@
     },
     {
       "name": "realization",
-      "style": "X",
+      "style": "Y",
       "placings": [
         {
           "positionOffset": 1.0,
@@ -239,11 +239,7 @@
                 "y": -10
               }
             ],
-            "style": {
-              "line": {
-                "style": "SOLID"
-              }
-            }
+            "style": "realization"
           }
         }
       ]
@@ -274,11 +270,7 @@
                 "y": -10
               }
             ],
-            "style": {
-              "background": {
-                "color": "#000000"
-              }
-            }
+            "style": "component"
           }
         }
       ]
@@ -309,11 +301,7 @@
                 "y": -10
               }
             ],
-            "style": {
-              "background": {
-                "color": "#FFFFFF"
-              }
-            }
+            "style": "aggregation"
           }
         }
       ]

@@ -4,7 +4,8 @@ import StyleGenerator from '../../style/StyleGenerator'
 function create(connections) {
   const defaultStyle = [
     {
-      name: 'DefaultStyle',
+      name
+          : 'DefaultStyle',
     }
   ];
 

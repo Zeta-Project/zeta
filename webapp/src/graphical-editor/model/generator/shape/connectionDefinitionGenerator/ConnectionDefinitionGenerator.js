@@ -62,7 +62,7 @@ class ConnectionDefinitionGenerator {
             const fontAttributes = this.styleGenerator.createFontAttributes(placing.shape.style);
             return Object.assign(
                 commonAttributes,
-                {text: fontAttributes}
+                    {text: fontAttributes}
             );
         }
         return {};

@@ -86,7 +86,7 @@ class StyleGenerator {
     createDefaultLineAttributes() {
         return {
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0",
         };
     }

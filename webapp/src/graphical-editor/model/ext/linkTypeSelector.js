@@ -299,8 +299,8 @@ export default (function linkTypeSelector () {
             joint.V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
         }
         let clone = link.clone();
-        clone.attributes.attrsxx = connectionDefinitionGenerator.getConnectionStyle(edgeData.style);
-        clone.attributes.attrs = getConnectionStyle(edgeData.style);
+        clone.attributes.attrs = connectionDefinitionGenerator.getConnectionStyle(edgeData.style);
+        // clone.attributes.attrs = getConnectionStyle(edgeData.style);
 
         console.log(clone.attributes.attrs);
         console.log(clone.attributes.attrsxx);
