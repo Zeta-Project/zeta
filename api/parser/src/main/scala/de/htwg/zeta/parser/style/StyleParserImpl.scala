@@ -23,34 +23,34 @@ class StyleParserImpl extends StyleParser {
 
   private def name = literal("style") ~> ident
 
-  private def description = literal("description") ~ eq ~> argument_string
+  private def description = literal("description") ~ eq ~> argumentString
 
-  private def lineColor = literal("line-color") ~ eq ~> argument_color ^^ (arg => LineColor(arg))
+  private def lineColor = literal("line-color") ~ eq ~> argumentColor ^^ (arg => LineColor(arg))
 
   private def lineStyle = literal("line-style") ~ eq ~> argument ^^ (arg => LineStyle(arg))
 
-  private def lineWidth = literal("line-width") ~ eq ~> argument_int ^^ (arg => LineWidth(arg))
+  private def lineWidth = literal("line-width") ~ eq ~> argumentInt ^^ (arg => LineWidth(arg))
 
-  private def transparency = literal("transparency") ~ eq ~> argument_double ^^ (arg => Transparency(arg))
+  private def transparency = literal("transparency") ~ eq ~> argumentDouble ^^ (arg => Transparency(arg))
 
-  private def backgroundColor = literal("background-color") ~ eq ~> argument_color ^^ (arg => BackgroundColor(arg))
+  private def backgroundColor = literal("background-color") ~ eq ~> argumentColor ^^ (arg => BackgroundColor(arg))
 
-  private def fontColor = literal("font-color") ~ eq ~> argument_color ^^ (arg => FontColor(arg))
+  private def fontColor = literal("font-color") ~ eq ~> argumentColor ^^ (arg => FontColor(arg))
 
   private def fontName = literal("font-name") ~ eq ~> argument ^^ (arg => FontName(arg))
 
-  private def fontSize = literal("font-size") ~ eq ~> argument_int ^^ (arg => FontSize(arg))
+  private def fontSize = literal("font-size") ~ eq ~> argumentInt ^^ (arg => FontSize(arg))
 
-  private def fontBold = literal("font-bold") ~ eq ~> argument_boolean ^^ (arg => FontBold(arg))
+  private def fontBold = literal("font-bold") ~ eq ~> argumentBoolean ^^ (arg => FontBold(arg))
 
-  private def fontItalic = literal("font-italic") ~ eq ~> argument_boolean ^^ (arg => FontItalic(arg))
+  private def fontItalic = literal("font-italic") ~ eq ~> argumentBoolean ^^ (arg => FontItalic(arg))
 
   private def gradientOrientation =
     literal("gradient-orientation") ~ eq ~> (GradientOrientation.vertical | GradientOrientation.horizontal) ^^ (arg => GradientOrientation(arg))
 
-  private def gradientAreaColor = literal("gradient-area-color") ~ eq ~> argument_color ^^ (arg => GradientAreaColor(arg))
+  private def gradientAreaColor = literal("gradient-area-color") ~ eq ~> argumentColor ^^ (arg => GradientAreaColor(arg))
 
-  private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argument_double ^^ (arg => GradientAreaOffset(arg))
+  private def gradientAreaOffset = literal("gradient-area-offset") ~ eq ~> argumentDouble ^^ (arg => GradientAreaOffset(arg))
 
   private def parentStyles = literal("extends") ~> ident ~ rep(comma ~> ident) ^^ (parents => parents._1 :: parents._2)
 }
