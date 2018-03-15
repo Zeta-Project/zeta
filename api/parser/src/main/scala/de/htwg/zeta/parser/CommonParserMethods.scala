@@ -45,9 +45,7 @@ trait CommonParserMethods extends JavaTokenParsers {
   def argument_color: Parser[Color] = "(.+)".r.flatMap(parseColor)
 
   def argument_string: Parser[String] =
-    "\".*\"".r ^^ {
-      _.toString
-    }
+    stringLiteral ^^ { s => if (s.isEmpty) "" else s.substring(1, s.length - 1) }
 
   private def parseColor(colorString: String): Parser[Color] = {
     Parser { in =>
