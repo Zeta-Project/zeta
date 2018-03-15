@@ -3,7 +3,10 @@ package de.htwg.zeta.server.module
 import javax.inject.Singleton
 
 import com.google.inject.Provides
+import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
 import de.htwg.zeta.common.format.project.gdsl.StylesFormat
+import de.htwg.zeta.common.format.project.gdsl.diagram.DiagramFormat
+import de.htwg.zeta.common.format.project.gdsl.diagram.PaletteFormat
 import de.htwg.zeta.common.format.project.gdsl.style.BackgroundFormat
 import de.htwg.zeta.common.format.project.gdsl.style.ColorFormat
 import de.htwg.zeta.common.format.project.gdsl.style.FontFormat
@@ -11,10 +14,27 @@ import de.htwg.zeta.common.format.project.gdsl.style.LineFormat
 import de.htwg.zeta.common.format.project.gdsl.style.StyleFormat
 import net.codingwell.scalaguice.ScalaModule
 
-class StyleFormatModule extends ScalaModule {
+class GdslFormatModule extends ScalaModule {
 
   override def configure(): Unit = {
     bind[ColorFormat].toInstance(new ColorFormat)
+    bind[PaletteFormat].toInstance(new PaletteFormat)
+  }
+
+  @Provides
+  @Singleton
+  def provideDiagramsFormat(
+      diagramFormat: DiagramFormat
+  ): DiagramsFormat = {
+    new DiagramsFormat(diagramFormat)
+  }
+
+  @Provides
+  @Singleton
+  def provideDiagramFormat(
+      paletteFormat: PaletteFormat
+  ): DiagramFormat = {
+    new DiagramFormat(paletteFormat)
   }
 
   @Provides
