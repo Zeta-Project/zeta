@@ -17,7 +17,7 @@ class StylesFormat(
 ) extends OFormat[List[Style]] {
 
   override def writes(clazz: List[Style]): JsObject = Json.obj(
-    sStyles -> Writes.seq(styleFormat).writes(clazz)
+    sStyles -> Writes.list(styleFormat).writes(clazz)
   )
 
   override def reads(json: JsValue): JsResult[List[Style]] =

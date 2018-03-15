@@ -9,6 +9,7 @@ import scalaz.Validation
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.ValidationErrorFormat
+import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
 import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
@@ -16,6 +17,7 @@ import de.htwg.zeta.parser.GraphicalDSLParser
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
+import play.api.libs.json.JsObject
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -24,10 +26,25 @@ class GraphicalDslRestApi @Inject()(
     gdslProjectRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslParser: GraphicalDSLParser,
     validationErrorFormat: ValidationErrorFormat,
-    stylesFormat: StylesFormat
+    stylesFormat: StylesFormat,
+    diagramsFormat: DiagramsFormat
 ) extends Controller with Logging {
 
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    parse(id, request, g => stylesFormat.writes(g.styles))
+  }
+
+  /** returns shape definition */
+  def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.shape))
+  }
+
+  /** returns diagram definition */
+  def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    parse(id, request, g => diagramsFormat.writes(g.diagrams))
+  }
+
+  private def parse[A](id: UUID, request: SecuredRequest[ZetaEnv, A], serialize: GraphicalDsl => JsObject): Future[Result] = {
     protectedRead(id, request, graphicalDsl => {
       val result: Validation[List[String], GraphicalDsl] =
         graphicalDslParser.parse(
@@ -43,19 +60,9 @@ class GraphicalDslRestApi @Inject()(
           )
         )
       } else {
-        Ok(stylesFormat.writes(result.toEither.right.get.styles))
+        Ok(serialize(result.toEither.right.get))
       }
     })
-  }
-
-  /** returns shape definition */
-  def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.shape))
-  }
-
-  /** returns diagram definition */
-  def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.diagram))
   }
 
   /** A helper method for less verbose reads from the database */
