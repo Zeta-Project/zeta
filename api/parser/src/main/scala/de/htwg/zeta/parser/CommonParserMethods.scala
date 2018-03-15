@@ -23,11 +23,11 @@ trait CommonParserMethods extends JavaTokenParsers {
     _.toString
   }
 
-  def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
+  def argumentDouble: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
 
-  def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
+  def argumentInt: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
 
-  def natural_number: Parser[Int] = "\\d+".r ^^ {
+  def naturalNumber: Parser[Int] = "\\d+".r ^^ {
     _.toInt
   }
 
@@ -36,15 +36,15 @@ trait CommonParserMethods extends JavaTokenParsers {
       _.toString
     }
 
-  def argument_boolean: Parser[Boolean] = argument_boolean_true | argument_boolean_false ^^ (bool => bool)
+  def argumentBoolean: Parser[Boolean] = argumentBooleanTrue | argumentBooleanFalse ^^ (bool => bool)
 
-  private def argument_boolean_true: Parser[Boolean] = "(false|no|n)".r ^^ (_ => false)
+  private def argumentBooleanTrue: Parser[Boolean] = "(false|no|n)".r ^^ (_ => false)
 
-  private def argument_boolean_false: Parser[Boolean] = "(true|yes|y)".r ^^ (_ => true)
+  private def argumentBooleanFalse: Parser[Boolean] = "(true|yes|y)".r ^^ (_ => true)
 
-  def argument_color: Parser[Color] = "(.+)".r.flatMap(parseColor)
+  def argumentColor: Parser[Color] = "(.+)".r.flatMap(parseColor)
 
-  def argument_string: Parser[String] =
+  def argumentString: Parser[String] =
     stringLiteral ^^ { s => if (s.isEmpty) "" else s.substring(1, s.length - 1) }
 
   private def parseColor(colorString: String): Parser[Color] = {
