@@ -55,7 +55,7 @@ object Main extends Template[CreateOptions, String] {
         |class MyTransformer() extends Transformer {
         |  private val logger = LoggerFactory.getLogger(getClass)
         |
-        |  def transform(entity: ModelEntity) : Future[Transformer] = {
+        |  def transform(entity: GraphicalDslInstance) : Future[Transformer] = {
         |    logger.info(s"Model : $${entity.id}")
         |    entity.model.nodes.foreach { node =>
         |      logger.info(node.name)
@@ -82,7 +82,7 @@ object Main extends Template[CreateOptions, String] {
       s"""
         |import scala.concurrent.Future
         |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
-        |import de.htwg.zeta.common.models.entity.ModelEntity
+        |import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
         |import de.htwg.zeta.generator.template.Error
         |import de.htwg.zeta.generator.template.Result
         |import de.htwg.zeta.generator.template.Success
@@ -111,7 +111,7 @@ object Main extends Template[CreateOptions, String] {
    * Initialize the generator
    *
    * @param file      The file which was loaded for the generator
-   * @param model     the modelEntity
+   * @param model     the GraphicalDslInstance
    * @return A Generator
    */
   override def getTransformer(file: File, model: GraphicalDslInstance): Future[Transformer] = {
