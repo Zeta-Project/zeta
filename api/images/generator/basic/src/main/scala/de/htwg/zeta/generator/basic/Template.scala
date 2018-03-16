@@ -1,4 +1,4 @@
-package de.htwg.zeta.generator.template
+package de.htwg.zeta.generator.basic
 
 import java.io.FileNotFoundException
 import java.util.UUID
