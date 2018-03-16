@@ -1,4 +1,4 @@
-package de.htwg.zeta.generator.basic
+package de.htwg.zeta.generator
 
 import java.util.UUID
 
@@ -17,7 +17,7 @@ import de.htwg.zeta.common.models.remote.RemoteGenerator
 import org.slf4j.LoggerFactory
 
 /**
- * Main class of basic generator
+ * Main class of generator
  */
 object Main extends Template[CreateOptions, RemoteOptions] {
 
@@ -84,11 +84,11 @@ object Main extends Template[CreateOptions, RemoteOptions] {
         |import scala.concurrent.Future
         |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
         |import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-        |import de.htwg.zeta.generator.basic.Error
-        |import de.htwg.zeta.generator.basic.Result
-        |import de.htwg.zeta.generator.basic.Success
-        |import de.htwg.zeta.generator.basic.Transformer
-        |import de.htwg.zeta.generator.basic.Warning
+        |import de.htwg.zeta.generator.Error
+        |import de.htwg.zeta.generator.Result
+        |import de.htwg.zeta.generator.Success
+        |import de.htwg.zeta.generator.Transformer
+        |import de.htwg.zeta.generator.Warning
         |import org.slf4j.LoggerFactory
         |
         |${file.content}
