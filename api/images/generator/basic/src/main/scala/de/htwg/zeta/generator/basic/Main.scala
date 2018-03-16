@@ -4,23 +4,30 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.Promise
 
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.remote.Remote
+import de.htwg.zeta.common.models.remote.RemoteGenerator
 import de.htwg.zeta.generator.template.Error
 import de.htwg.zeta.generator.template.Result
 import de.htwg.zeta.generator.template.Settings
 import de.htwg.zeta.generator.template.Success
 import de.htwg.zeta.generator.template.Template
 import de.htwg.zeta.generator.template.Transformer
+import org.slf4j.LoggerFactory
 
 /**
  * Main class of basic generator
  */
-object Main extends Template[CreateOptions, String] {
+object Main extends Template[CreateOptions, RemoteOptions] {
+
+  private val logger = LoggerFactory.getLogger(getClass)
 
   /**
    * Create assets for the model transformer
@@ -57,10 +64,10 @@ object Main extends Template[CreateOptions, String] {
         |
         |  def transform(entity: GraphicalDslInstance) : Future[Transformer] = {
         |    logger.info(s"Model : $${entity.id}")
-        |    entity.model.nodes.foreach { node =>
+        |    entity.nodes.foreach { node =>
         |      logger.info(node.name)
         |    }
-        |    entity.model.edges.foreach { edge =>
+        |    entity.edges.foreach { edge =>
         |      logger.info(edge.name)
         |    }
         |    Future.successful(this)
@@ -124,7 +131,21 @@ object Main extends Template[CreateOptions, String] {
    * @param options   the options for the generator
    * @return A Generator
    */
-  override def runGeneratorWithOptions(options: String): Future[Result] = {
-    Future.successful(Error(s"Call a generator from a generator is not supported in this example"))
+  override def runGeneratorWithOptions(options: RemoteOptions): Future[Result] = {
+    logger.info(s"called with options $options")
+    val remote: Remote = RemoteGenerator(cmd.session.getOrElse(""), cmd.work.getOrElse(""), cmd.parent.toOption, cmd.key.toOption)
+    remote.emit[File](File(UUID.randomUUID, options.nodeType, "Started and sleep now"))
+    Thread.sleep(10000)
+    val p = Promise[Result]
+
+    modelEntityPersistence.read(options.modelId).map { entity =>
+      entity.nodeMap.values.foreach { node: Node =>
+        if (node.className == options.nodeType) {
+          remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))
+        }
+      }
+      p.success(Success())
+    }
+    p.future
   }
 }
