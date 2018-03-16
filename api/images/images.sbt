@@ -4,6 +4,7 @@ def image(name: String, d: sbt.File) = {
     ZetaBuild.scalaOptions,
     ZetaBuild.scalaVersion,
     dockerRepository := Some("modigen"),
+    dockerBaseImage := "openjdk:8u151-jre-stretch",
     fork := true,
     libraryDependencies ++= Seq(
       "org.clapper" %% "grizzled-slf4j" % "1.2.0",
