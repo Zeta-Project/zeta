@@ -33,24 +33,6 @@ lazy val basicGenerator = image("basicGenerator", file("./generator/basic")).set
   packageName in Docker := "generator/basic"
 ).dependsOn(scalaGeneratorTemplate)
 
-lazy val fileGenerator = image("fileGenerator", file("./generator/file")).settings(
-  name := "generator/file",
-  version := "0.1",
-  packageName in Docker := "generator/file"
-).dependsOn(scalaGeneratorTemplate)
-
-lazy val remoteGenerator = image("remoteGenerator", file("./generator/remote")).settings(
-  name := "generator/remote",
-  version := "0.1",
-  packageName in Docker := "generator/remote"
-).dependsOn(scalaGeneratorTemplate)
-
-lazy val specificGenerator = image("specificGenerator", file("./generator/specific")).settings(
-  name := "generator/specific",
-  version := "0.1",
-  packageName in Docker := "generator/specific"
-).dependsOn(scalaGeneratorTemplate)
-
 lazy val metaModelRelease = image("metaModelRelease", file("./metamodel/release")).settings(
   name := "metamodel/release",
   version := "0.1",

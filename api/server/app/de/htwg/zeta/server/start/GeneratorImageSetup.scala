@@ -29,9 +29,6 @@ class GeneratorImageSetup(generatorImageRepo: GeneratorImageRepository) extends 
 
   private def addEntries(persistence: GeneratorImageRepository) = {
     persistence.create(createBasicImage())
-    persistence.create(createSpecificImage())
-    persistence.create(createRemoteImage())
-    persistence.create(createFileImage())
   }
 
   private def createBasicImage(): GeneratorImage = {
@@ -40,36 +37,6 @@ class GeneratorImageSetup(generatorImageRepo: GeneratorImageRepository) extends 
       name = "Basic Generator",
       description = "Basic scala generator.",
       dockerImage = "modigen/generator/basic:0.1",
-      options = createOptions(createNameProperty())
-    )
-  }
-
-  private def createSpecificImage(): GeneratorImage = {
-    GeneratorImage(
-      id = UUID.randomUUID,
-      name = "Specific Generator",
-      description = "Scala generator for a specific meta model.",
-      dockerImage = "modigen/generator/specific:0.1",
-      options = createOptions(createNameProperty(), createMetaModelReleaseProperty())
-    )
-  }
-
-  private def createRemoteImage(): GeneratorImage = {
-    GeneratorImage(
-      id = UUID.randomUUID,
-      name = "Remote Demo",
-      description = "Scala generator which demonstrate the remote generator invocation.",
-      dockerImage = "modigen/generator/remote:0.1",
-      options = createOptions(createNameProperty())
-    )
-  }
-
-  private def createFileImage(): GeneratorImage = {
-    GeneratorImage(
-      id = UUID.randomUUID,
-      name = "File Demo",
-      description = "Scala generator which demonstrate save to a file.",
-      dockerImage = "modigen/generator/file:0.1",
       options = createOptions(createNameProperty())
     )
   }
@@ -88,12 +55,6 @@ class GeneratorImageSetup(generatorImageRepo: GeneratorImageRepository) extends 
       title = "Name",
       propertyType = "string",
       required = true
-    ))
-  }
-
-  private def createMetaModelReleaseProperty(): Option[GeneratorMetaModelReleaseProperty] = {
-    Some(GeneratorMetaModelReleaseProperty(
-      ref = "#/definitions/MetaModelRelease"
     ))
   }
 }
