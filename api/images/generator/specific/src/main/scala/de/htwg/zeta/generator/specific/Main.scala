@@ -81,7 +81,7 @@ object Main extends Template[CreateOptions, String] {
   private def createFileContent(mClassList: Iterable[MClass], mReferenceList: Iterable[MReference]): String = {
     s"""
       |class MyTransformer() extends Transformer {
-      | def transform(entity: ModelEntity)(implicit entitys: Documents, files: Files, remote: Remote) : Future[Transformer] = {
+      | def transform(entity: GraphicalDslInstance)(implicit entitys: Documents, files: Files, remote: Remote) : Future[Transformer] = {
       |   val transformed = entity.model.elements.values.map { element => element match {
       |     case node: Node => transformNode(node)
       |     case edge: Edge => transformEdge(edge)
@@ -112,7 +112,7 @@ object Main extends Template[CreateOptions, String] {
     val content = s"""
       |import scala.concurrent.Future
       |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
-      |import de.htwg.zeta.common.models.entity.ModelEntity
+      |import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
       |import de.htwg.zeta.common.models.entity.{Repository => Documents}
       |import de.htwg.zeta.common.models.file.{Repository => Files}
       |import de.htwg.zeta.common.models.remote.Remote

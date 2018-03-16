@@ -149,7 +149,7 @@ class FilterRestApi @Inject()(
   private def fileTemplate(): String = {
     s"""
       |class Filter() extends BaseFilter {
-      |  def filter(entity: ModelEntity): Boolean = {
+      |  def filter(entity: GraphicalDslInstance): Boolean = {
       |    true
       |  }
       |}

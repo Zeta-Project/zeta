@@ -85,7 +85,7 @@ object Main extends App {
     logger.info("compile filter")
 
     val content = s"""
-      import de.htwg.zeta.common.models.entity.{ModelEntity, MetaModelRelease}
+      import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
       import filter.BaseFilter
 
       ${file.content}
