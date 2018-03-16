@@ -14,12 +14,6 @@ import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
-import de.htwg.zeta.generator.template.Error
-import de.htwg.zeta.generator.template.Result
-import de.htwg.zeta.generator.template.Settings
-import de.htwg.zeta.generator.template.Success
-import de.htwg.zeta.generator.template.Template
-import de.htwg.zeta.generator.template.Transformer
 import org.slf4j.LoggerFactory
 
 /**
@@ -90,11 +84,11 @@ object Main extends Template[CreateOptions, RemoteOptions] {
         |import scala.concurrent.Future
         |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
         |import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-        |import de.htwg.zeta.generator.template.Error
-        |import de.htwg.zeta.generator.template.Result
-        |import de.htwg.zeta.generator.template.Success
-        |import de.htwg.zeta.generator.template.Transformer
-        |import de.htwg.zeta.generator.template.Warning
+        |import de.htwg.zeta.generator.basic.Error
+        |import de.htwg.zeta.generator.basic.Result
+        |import de.htwg.zeta.generator.basic.Success
+        |import de.htwg.zeta.generator.basic.Transformer
+        |import de.htwg.zeta.generator.basic.Warning
         |import org.slf4j.LoggerFactory
         |
         |${file.content}
@@ -126,7 +120,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
   }
 
   /**
-   * Initialize the generator
+   * Call the generator (called by another generator) to run with options
    *
    * @param options   the options for the generator
    * @return A Generator

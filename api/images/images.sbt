@@ -24,14 +24,11 @@ lazy val scalaFilter = image("scalaFilter", file("./filter/scala")).settings(
   packageName in Docker := "filter/scala"
 )
 
-lazy val scalaGeneratorTemplate = image("template", file("./generator/template")).settings()
-
-
 lazy val basicGenerator = image("basicGenerator", file("./generator/basic")).settings(
   name := "generator/basic",
   version := "0.1",
   packageName in Docker := "generator/basic"
-).dependsOn(scalaGeneratorTemplate)
+)
 
 lazy val metaModelRelease = image("metaModelRelease", file("./metamodel/release")).settings(
   name := "metamodel/release",

@@ -1,4 +1,4 @@
-package de.htwg.zeta.generator.template
+package de.htwg.zeta.generator.basic
 
 /**
  * Settings for creation/execution of the generator
