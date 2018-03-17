@@ -1,3 +1,5 @@
+package de.htwg.zeta.metamodelrelease
+
 import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -7,8 +9,8 @@ import akka.stream.ActorMaterializer
 import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.GraphicalDslRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory

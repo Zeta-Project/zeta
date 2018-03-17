@@ -1,3 +1,5 @@
+package de.htwg.zeta.filter
+
 import java.io.FileNotFoundException
 import java.util.UUID
 
@@ -17,7 +19,6 @@ import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
-import filter.BaseFilter
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
 import org.slf4j.LoggerFactory
@@ -86,7 +87,7 @@ object Main extends App {
 
     val content = s"""
       import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-      import filter.BaseFilter
+      import de.htwg.zeta.filter.BaseFilter
 
       ${file.content}
 

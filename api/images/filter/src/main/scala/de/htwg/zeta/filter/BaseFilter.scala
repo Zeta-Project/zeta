@@ -1,4 +1,4 @@
-package filter
+package de.htwg.zeta.filter
 
 import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
 

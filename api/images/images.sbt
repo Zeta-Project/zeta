@@ -19,7 +19,7 @@ def image(name: String, d: sbt.File) = {
 }
 
 
-lazy val scalaFilter = image("scalaFilter", file("./filter/scala")).settings(
+lazy val scalaFilter = image("scalaFilter", file("./filter")).settings(
   name := "filter/scala",
   version := "0.1",
   packageName in Docker := "filter/scala"
