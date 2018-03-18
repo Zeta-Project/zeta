@@ -1,9 +1,9 @@
 package de.htwg.zeta.parser.shape.parser
 
 import de.htwg.zeta.parser.CommonParserMethods
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 import de.htwg.zeta.parser.EnumParser
 import de.htwg.zeta.parser.UniteParsers
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
 
 object NodeAttributeParser extends CommonParserMethods with UniteParsers {
 
