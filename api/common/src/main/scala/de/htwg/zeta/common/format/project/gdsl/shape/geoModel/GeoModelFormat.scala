@@ -1,6 +1,5 @@
 package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
-import de.htwg.zeta.common.format.project.gdsl.style.StyleFormat
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
 import play.api.libs.json.JsObject
@@ -25,7 +24,7 @@ class GeoModelFormat(
 }
 object GeoModelFormat {
   val geoModelFormat: GeoModelFormat = new GeoModelFormat(
-    EllipseFormat(StyleFormat(), geoModelFormatProvider),
+    EllipseFormat(geoModelFormatProvider),
     "type"
   )
 
