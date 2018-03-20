@@ -73,7 +73,7 @@ class ConnectionDefinitionGenerator {
     }
 
     createSpecificStyleMarkerTarget(placing) {
-        return Object.assign(this.svgDataPathGenerator.generateMirroredMarker(placing), this.generateMarkerSourceCorrection());
+        return Object.assign(this.svgDataPathGenerator.generateMirroredMarker(placing), this.generatePlacingStyle(placing), this.generateMarkerSourceCorrection());
     }
 
     generateMarkerSourceCorrection() {
