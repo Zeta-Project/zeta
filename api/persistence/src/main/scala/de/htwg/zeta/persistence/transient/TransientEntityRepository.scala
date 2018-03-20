@@ -32,7 +32,7 @@ import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
@@ -130,7 +130,7 @@ class TransientLogRepository
 @Singleton
 class TransientGraphicalDslRepository
   extends TransientEntityRepository[GdslProject]
-    with GraphicalDslRepository
+    with GdslProjectRepository
 
 @Singleton
 class TransientGraphicalDslReleaseRepository

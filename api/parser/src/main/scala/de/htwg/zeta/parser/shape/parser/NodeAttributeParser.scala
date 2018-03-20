@@ -1,8 +1,9 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.{EnumParser, UniteParsers}
+import de.htwg.zeta.parser.CommonParserMethods
+import de.htwg.zeta.parser.EnumParser
+import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object NodeAttributeParser extends CommonParserMethods with UniteParsers {
 
@@ -14,25 +15,25 @@ object NodeAttributeParser extends CommonParserMethods with UniteParsers {
   }
 
   def sizeMax: Parser[SizeMax] = {
-    ("sizeMax" ~> leftParenthesis ~> "width" ~> colon ~> natural_number <~ comma) ~
-      ("height" ~> colon ~> natural_number <~ rightParenthesis) ^^ { parseResult =>
+    ("sizeMax" ~> leftParenthesis ~> "width" ~> colon ~> naturalNumber <~ comma) ~
+      ("height" ~> colon ~> naturalNumber <~ rightParenthesis) ^^ { parseResult =>
       val width ~ height = parseResult
       SizeMax(width, height)
     }
   }
 
   def sizeMin: Parser[SizeMin] = {
-    ("sizeMin" ~> leftParenthesis ~> "width" ~> colon ~> natural_number <~ comma) ~
-      ("height" ~> colon ~> natural_number <~ rightParenthesis) ^^ { parseResult =>
+    ("sizeMin" ~> leftParenthesis ~> "width" ~> colon ~> naturalNumber <~ comma) ~
+      ("height" ~> colon ~> naturalNumber <~ rightParenthesis) ^^ { parseResult =>
       val width ~ height = parseResult
       SizeMin(width, height)
     }
   }
 
   def resizing: Parser[Resizing] = {
-    ("resizing" ~> leftParenthesis ~> "horizontal" ~> colon ~> argument_boolean <~ comma) ~
-      ("vertical" ~> colon ~> argument_boolean <~ comma) ~
-      ("proportional" ~> colon ~> argument_boolean <~ rightParenthesis) ^^ { parseResult =>
+    ("resizing" ~> leftParenthesis ~> "horizontal" ~> colon ~> argumentBoolean <~ comma) ~
+      ("vertical" ~> colon ~> argumentBoolean <~ comma) ~
+      ("proportional" ~> colon ~> argumentBoolean <~ rightParenthesis) ^^ { parseResult =>
       val horizontal ~ vertical ~ proportional = parseResult
       Resizing(horizontal, vertical, proportional)
     }
@@ -47,16 +48,16 @@ object NodeAttributeParser extends CommonParserMethods with UniteParsers {
   }
 
   def relativeAnchor: Parser[RelativeAnchor] = {
-    ("xoffset" ~> colon ~> natural_number <~ comma) ~
-      ("yoffset" ~> colon ~> natural_number) ^^ { parseResult =>
+    ("xoffset" ~> colon ~> naturalNumber <~ comma) ~
+      ("yoffset" ~> colon ~> naturalNumber) ^^ { parseResult =>
       val xOffset ~ yOffset = parseResult
       RelativeAnchor(xOffset, yOffset)
     }
   }
 
   def absoluteAnchor: Parser[AbsoluteAnchor] = {
-    ("x" ~> colon ~> natural_number <~ comma) ~
-      ("y" ~> colon ~> natural_number) ^^ { parseResult =>
+    ("x" ~> colon ~> naturalNumber <~ comma) ~
+      ("y" ~> colon ~> naturalNumber) ^^ { parseResult =>
       val x ~ y = parseResult
       AbsoluteAnchor(x, y)
     }

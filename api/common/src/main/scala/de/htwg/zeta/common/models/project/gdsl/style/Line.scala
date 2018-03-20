@@ -6,7 +6,7 @@ case class Line(
     width: Int
 )
 object Line {
-  val defaultColor: Color = Color(0, 0, 0)
+  val defaultColor: Color = Color.defaultColor
   val defaultStyle: LineStyle = Solid()
   val defaultWidth: Int = 1
 

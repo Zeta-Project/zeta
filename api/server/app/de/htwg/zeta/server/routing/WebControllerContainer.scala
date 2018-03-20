@@ -23,10 +23,11 @@ import de.htwg.zeta.server.controller.restApi.FileRestApi
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
-import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.GraphicalDslRestApi
+import de.htwg.zeta.server.controller.restApi.MetaModelReleaseRestApi
 import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
+import de.htwg.zeta.server.controller.restApi.v2
 import de.htwg.zeta.server.controller.webpage.WebpageController
 import org.webjars.play.WebJarAssets
 
@@ -49,6 +50,7 @@ class WebControllerContainer @Inject() private(
     val webJarAssets: Provider[WebJarAssets],
     val dynamicFileController: Provider[DynamicFileController],
     val metaModelRestApi: Provider[GraphicalDslRestApi],
+    val metaModelRestApiV2: Provider[v2.GraphicalDslRestApi],
     val modelRestApi: Provider[ModelRestApi],
     val webApp: Provider[WebAppController],
     val generatorImageRestApi: Provider[GeneratorImageRestApi],
