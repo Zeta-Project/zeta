@@ -10,7 +10,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.format.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.common.format.ProjectShortInfo
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.ws.WSClient
@@ -20,7 +20,7 @@ import play.api.mvc.Result
 
 class WebpageController @Inject()(
     modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
-    metaModelEntityRepo: AccessRestrictedGraphicalDslRepository,
+    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     ws: WSClient
 ) extends Controller {
 

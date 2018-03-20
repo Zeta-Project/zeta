@@ -9,7 +9,7 @@ case class Font(
 )
 object Font {
   val defaultBold: Boolean = false
-  val defaultColor: Color = Color(0, 0, 0)
+  val defaultColor: Color = Color.defaultColor
   val defaultItalic: Boolean = false
   val defaultName: String = "Arial"
   val defaultSize: Int = 10

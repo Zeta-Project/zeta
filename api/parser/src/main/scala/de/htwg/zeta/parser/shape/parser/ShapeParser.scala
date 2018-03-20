@@ -1,14 +1,12 @@
 package de.htwg.zeta.parser.shape.parser
 
+import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object ShapeParser extends CommonParserMethods with UniteParsers {
 
-  def parseShapes(input: String): ParseResult[List[ShapeParseTree]] = {
-    parseAll(shapes, input)
-  }
+  def parseShapes(input: String): ParseResult[List[ShapeParseTree]] = parseAll(shapes, trimRight(input))
 
   private def shapes = rep(node | edge)
 

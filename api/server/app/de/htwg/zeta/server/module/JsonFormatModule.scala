@@ -10,6 +10,9 @@ import de.htwg.zeta.common.format.entity.FilterFormat
 import de.htwg.zeta.common.format.entity.GeneratorFormat
 import de.htwg.zeta.common.format.entity.GeneratorImageFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
+import de.htwg.zeta.common.format.model.EdgeFormat
+import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
+import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.format.project.AttributeFormat
 import de.htwg.zeta.common.format.project.AttributeTypeFormat
 import de.htwg.zeta.common.format.project.AttributeValueFormat
@@ -20,9 +23,6 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.project.MethodFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
-import de.htwg.zeta.common.format.model.EdgeFormat
-import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
-import de.htwg.zeta.common.format.model.NodeFormat
 import net.codingwell.scalaguice.ScalaModule
 
 class JsonFormatModule extends ScalaModule {

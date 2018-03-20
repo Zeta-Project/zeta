@@ -38,7 +38,7 @@ import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
@@ -60,7 +60,7 @@ trait RepositoryBehavior extends EntityRepositoryBehavior with FilePersistenceBe
       generatorPersistence: GeneratorRepository,
       generatorImagePersistence: GeneratorImageRepository,
       logPersistence: LogRepository,
-      metaModelEntityPersistence: GraphicalDslRepository,
+      metaModelEntityPersistence: GdslProjectRepository,
       metaModelReleasePersistence: GraphicalDslReleaseRepository,
       modelEntityPersistence: GraphicalDslInstanceRepository,
       settingsPersistence: SettingsRepository,

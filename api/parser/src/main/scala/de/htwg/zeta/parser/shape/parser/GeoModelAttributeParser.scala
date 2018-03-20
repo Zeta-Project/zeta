@@ -1,8 +1,9 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.{EnumParser, UniteParsers}
+import de.htwg.zeta.parser.CommonParserMethods
+import de.htwg.zeta.parser.EnumParser
+import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.server.generator.parser.CommonParserMethods
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
@@ -23,7 +24,7 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
   }
 
   def multiline: Parser[Multiline] = {
-    "multiline" ~> colon ~> argument_boolean ^^ {
+    "multiline" ~> colon ~> argumentBoolean ^^ {
       Multiline
     }
   }
@@ -43,15 +44,15 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
   def curve: Parser[Curve] = parseNaturalNumberTuple("curve", "width", "height").map(Curve.tupled)
 
   private def parseNaturalNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
-    (name ~> leftParenthesis ~> arg1 ~> colon ~> natural_number <~ comma) ~
-      (arg2 ~> colon ~> natural_number <~ rightParenthesis) ^^ { tuple =>
+    (name ~> leftParenthesis ~> arg1 ~> colon ~> naturalNumber <~ comma) ~
+      (arg2 ~> colon ~> naturalNumber <~ rightParenthesis) ^^ { tuple =>
       val first ~ second = tuple
       (first, second)
     }
   }
 
   def editable: Parser[Editable] = {
-    "editable" ~> colon ~> argument_boolean ^^ {
+    "editable" ~> colon ~> argumentBoolean ^^ {
       Editable
     }
   }

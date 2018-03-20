@@ -1,14 +1,13 @@
 package de.htwg.zeta.parser.style
 
 import javafx.scene.paint.Color
+
 import org.scalatest.FlatSpec
-import org.scalatest.Matchers
 import org.scalatest.Inside
+import org.scalatest.Matchers
 
 
-class StyleParserImplTest extends FlatSpec with Matchers with Inside {
-
-  val parserToTest: StyleParserImpl = new StyleParserImpl
+class StyleParserTest extends FlatSpec with Matchers with Inside {
 
   val styleToTestSuccess: String =
     """
@@ -143,19 +142,19 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
 
   val styleWithInvalidGradientOrientation: String =
     """
-      |style StyleWithInvalidGradientOrientation {
-      |  description = "allowed values: horizontal or vertical"
-      |  gradient-orientation = abc
-      |}
+     |style StyleWithInvalidGradientOrientation {
+     |  description = "allowed values: horizontal or vertical"
+     |  gradient-orientation = abc
+     |}
     """.stripMargin
 
   "A StyleParser" should "succeed" in {
-    val styleParser = parserToTest.parseStyles(styleToTestSuccess)
+    val styleParser = StyleParser.parseStyles(styleToTestSuccess)
 
     inside(styleParser) {
-      case parserToTest.Success(List(style: StyleParseTree), _) =>
+      case StyleParser.Success(List(style: StyleParseTree), _) =>
         style.name shouldBe "Y"
-        style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
+        style.description shouldBe "Style for a connection between an interface and its implementing class"
 
         style.attributes should contain(Transparency(1.0))
         style.attributes should contain(BackgroundColor(Color.WHITE))
@@ -174,18 +173,18 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
   }
 
   "A StyleParser" should "succeed if a style has a single parent style" in {
-    val parseResult = parserToTest.parseStyles(styleWithSingleParentStyle)
+    val parseResult = StyleParser.parseStyles(styleWithSingleParentStyle)
     inside(parseResult) {
-      case parserToTest.Success((List(parentStyle: StyleParseTree, childStyle: StyleParseTree)), _) =>
+      case StyleParser.Success((List(parentStyle: StyleParseTree, childStyle: StyleParseTree)), _) =>
         parentStyle.parentStyles shouldBe empty
         childStyle.parentStyles should contain("ParentStyle")
     }
   }
 
   "A StyleParser" should "succeed if a style has multiple parent styles" in {
-    val parseResult = parserToTest.parseStyles(styleWithMultipleParentStyles)
+    val parseResult = StyleParser.parseStyles(styleWithMultipleParentStyles)
     inside(parseResult) {
-      case parserToTest.Success((styles: List[StyleParseTree]), _) =>
+      case StyleParser.Success((styles: List[StyleParseTree]), _) =>
         styles should have size 4
         inside(styles.find(s => s.name == "MyStyle")) {
           case Some(childStyle: StyleParseTree) =>
@@ -197,27 +196,27 @@ class StyleParserImplTest extends FlatSpec with Matchers with Inside {
   }
 
   "A StyleParser" should "fail without a description" in {
-    val styleParser = parserToTest.parseStyles(styleWithoutDescription)
+    val styleParser = StyleParser.parseStyles(styleWithoutDescription)
     styleParser.successful shouldBe false
   }
 
   "A StyleParser" should "fail without braces" in {
-    val styleParser = parserToTest.parseStyles(styleWithoutBraces)
+    val styleParser = StyleParser.parseStyles(styleWithoutBraces)
     styleParser.successful shouldBe false
   }
 
   "A StyleParser" should "succeed if colors defined as gradients" in {
-    val styleParser = parserToTest.parseStyles(styleWithGradientColors)
+    val styleParser = StyleParser.parseStyles(styleWithGradientColors)
     styleParser.successful shouldBe true
   }
 
   "A StyleParser" should "fail if an invalid color is specified" in {
-    val styleParser = parserToTest.parseStyles(styleWithInvalidColor)
+    val styleParser = StyleParser.parseStyles(styleWithInvalidColor)
     styleParser.successful shouldBe false
   }
 
   "A StyleParser" should "fail if an invalid gradient orientation is specified" in {
-    val styleParser = parserToTest.parseStyles(styleWithInvalidGradientOrientation)
+    val styleParser = StyleParser.parseStyles(styleWithInvalidGradientOrientation)
     styleParser.successful shouldBe false
   }
 }

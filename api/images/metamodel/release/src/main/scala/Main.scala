@@ -7,7 +7,7 @@ import akka.stream.ActorMaterializer
 import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.PersistenceModule
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
@@ -38,7 +38,7 @@ object Main extends App {
   implicit val client = AhcWSClient()
 
   private val injector = Guice.createInjector(new PersistenceModule)
-  private val metaModelEntityPersistence = injector.getInstance(classOf[GraphicalDslRepository])
+  private val metaModelEntityPersistence = injector.getInstance(classOf[GdslProjectRepository])
   private val metaModelReleasePersistence = injector.getInstance(classOf[GraphicalDslReleaseRepository])
 
   cmd.id.foreach({ id =>
