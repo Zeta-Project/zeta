@@ -334,7 +334,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'RECTANGLE',
+                                type: 'rectangle',
                                 position: {
                                     x: 1,
                                     y: 2,
@@ -395,7 +395,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'ELLIPSE',
+                                type: 'ellipse',
                                 position: {
                                     x: 1,
                                     y: 2,
@@ -456,7 +456,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'LINE',
+                                type: 'line',
                                 startPoint: {
                                     x: 1,
                                     y: 2,
@@ -519,7 +519,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'ROUNDED_RECTANGLE',
+                                type: 'roundedRectangle',
                                 curveHeight: 1,
                                 curveWidth: 2,
                                 position: {
@@ -584,7 +584,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'POLYGON',
+                                type: 'polygon',
                                 points: [
                                     {
                                         x: 1,
@@ -654,7 +654,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'POLY_LINE',
+                                type: 'polyline',
                                 points: [
                                     {
                                         x: 1,
@@ -716,7 +716,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique',
-                                type: 'TEXT',
+                                type: 'text',
                                 position: {
                                     x: 1,
                                     y: 2,
@@ -780,7 +780,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique1',
-                                type: 'POLYGON',
+                                type: 'polygon',
                                 points: [
                                     {
                                         x: 1,
@@ -790,7 +790,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique2',
-                                type: 'POLYGON',
+                                type: 'polygon',
                                 points: [
                                     {
                                         x: 16,
@@ -800,7 +800,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique3',
-                                type: 'POLYGON',
+                                type: 'polygon',
                                 points: [
                                     {
                                         x: 4,
@@ -866,7 +866,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique1',
-                                type: 'RECTANGLE',
+                                type: 'rectangle',
                                 position: {
                                     x: 1,
                                     y: 2,
@@ -877,7 +877,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique2',
-                                type: 'RECTANGLE',
+                                type: 'rectangle',
                                 position: {
                                     x: 16,
                                     y: 32,
@@ -946,7 +946,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique1',
-                                type: 'ELLIPSE',
+                                type: 'ellipse',
                                 position: {
                                     x: 1,
                                     y: 2,
@@ -957,7 +957,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique2',
-                                type: 'ELLIPSE',
+                                type: 'ellipse',
                                 position: {
                                     x: 16,
                                     y: 32,
@@ -1026,7 +1026,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique1',
-                                type: 'POLYGON',
+                                type: 'polygon',
                                 points: [
                                     {
                                         x: 1,
@@ -1041,7 +1041,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique2',
-                                type: 'POLYGON',
+                                type: 'polygon',
                                 points: [
                                     {
                                         x: 4,
@@ -1116,7 +1116,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique1',
-                                type: 'ROUNDED_RECTANGLE',
+                                type: 'roundedRectangle',
                                 curveHeight: 1,
                                 curveWidth: 2,
                                 position: {
@@ -1129,7 +1129,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique2',
-                                type: 'ROUNDED_RECTANGLE',
+                                type: 'roundedRectangle',
                                 curveHeight: 64,
                                 curveWidth: 128,
                                 position: {
@@ -1204,7 +1204,7 @@ describe('joint.shapes.zeta', () => {
                         elements: [
                             {
                                 id: 'unique1',
-                                type: 'TEXT',
+                                type: 'text',
                                 position: {
                                     x: 1,
                                     y: 2,
@@ -1216,7 +1216,7 @@ describe('joint.shapes.zeta', () => {
                             },
                             {
                                 id: 'unique2',
-                                type: 'RECTANGLE',
+                                type: 'rectangle',
                                 position: {
                                     x: 16,
                                     y: 32,
