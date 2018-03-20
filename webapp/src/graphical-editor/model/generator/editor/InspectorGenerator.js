@@ -148,7 +148,7 @@ class ElementGenerator {
     }
 
     selector(tag, element) {
-        return element.style ? `${tag}.${element.id}` : tag;
+        return `${tag}.${element.id}`;
     }
 }
 
