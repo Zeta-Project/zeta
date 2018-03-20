@@ -11,6 +11,7 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.ValidationErrorFormat
 import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
 import de.htwg.zeta.common.format.project.gdsl.StylesFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.ShapeFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
 import de.htwg.zeta.parser.GraphicalDSLParser
@@ -27,7 +28,8 @@ class GraphicalDslRestApi @Inject()(
     graphicalDslParser: GraphicalDSLParser,
     validationErrorFormat: ValidationErrorFormat,
     stylesFormat: StylesFormat,
-    diagramsFormat: DiagramsFormat
+    diagramsFormat: DiagramsFormat,
+    shapeFormat: ShapeFormat
 ) extends Controller with Logging {
 
   def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
@@ -36,7 +38,7 @@ class GraphicalDslRestApi @Inject()(
 
   /** returns shape definition */
   def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => Ok(graphicalDsl.shape))
+    parse(id, request, g => shapeFormat.writes(g.shape))
   }
 
   /** returns diagram definition */

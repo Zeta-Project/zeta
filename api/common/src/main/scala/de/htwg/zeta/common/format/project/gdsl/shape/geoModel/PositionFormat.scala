@@ -7,7 +7,6 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class PositionFormat(
     sX: String = "x",
     sY: String = "y"
@@ -25,4 +24,7 @@ class PositionFormat(
     Position(x = x, y = y)
   }
 
+}
+object PositionFormat {
+  def apply(): PositionFormat = new PositionFormat("x", "y")
 }

@@ -36,3 +36,9 @@ class FontFormat(
   }
 
 }
+object FontFormat {
+  def apply(): FontFormat = new FontFormat(
+    ColorFormat(),
+    "name", "bold", "color", "italic", "size"
+  )
+}

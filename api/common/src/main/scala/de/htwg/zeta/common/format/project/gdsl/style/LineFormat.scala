@@ -56,3 +56,9 @@ class LineFormat(
   }
 
 }
+object LineFormat {
+  def apply(): LineFormat = new LineFormat(
+    ColorFormat(),
+    "color", "style", "width"
+  )
+}

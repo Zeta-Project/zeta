@@ -44,3 +44,6 @@ class ColorFormat() extends Reads[Color] {
   }
 
 }
+object ColorFormat {
+  def apply(): ColorFormat = new ColorFormat()
+}

@@ -48,3 +48,8 @@ class StyleFormat(
   }
 
 }
+object StyleFormat {
+  def apply(): StyleFormat = new StyleFormat(
+    BackgroundFormat(), FontFormat(), LineFormat(), "name", "description", "background", "font", "line", "transparency"
+  )
+}
