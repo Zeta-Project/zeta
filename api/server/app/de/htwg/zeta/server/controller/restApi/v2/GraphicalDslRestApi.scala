@@ -7,11 +7,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.common.format.ValidationErrorFormat
+import de.htwg.zeta.common.format.project.TaskResultFormat
 import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
 import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import de.htwg.zeta.common.format.project.gdsl.shape.ShapeFormat
 import de.htwg.zeta.common.models.project.GdslProject
+import de.htwg.zeta.common.models.project.TaskResult
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
 import de.htwg.zeta.parser.GraphicalDSLParser
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
@@ -25,7 +26,7 @@ import play.api.mvc.Result
 class GraphicalDslRestApi @Inject()(
     gdslProjectRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslParser: GraphicalDSLParser,
-    validationErrorFormat: ValidationErrorFormat,
+    taskResultFormat: TaskResultFormat,
     stylesFormat: StylesFormat,
     diagramsFormat: DiagramsFormat,
     shapeFormat: ShapeFormat
@@ -39,8 +40,8 @@ class GraphicalDslRestApi @Inject()(
         graphicalDsl.shape,
         graphicalDsl.diagram
       ).fold[Result](
-        errors => Ok(validationErrorFormat.writes(errors)),
-        _ => Ok(validationErrorFormat.writes(List()))
+        errors => Ok(taskResultFormat.writes(TaskResult.error(errors))),
+        _ => Ok(taskResultFormat.writes(TaskResult.success()))
       )
     })
 
@@ -64,7 +65,7 @@ class GraphicalDslRestApi @Inject()(
         graphicalDsl.shape,
         graphicalDsl.diagram
       ).fold[Result](
-        errors => InternalServerError(validationErrorFormat.writes(errors)),
+        errors => InternalServerError(taskResultFormat.writes(TaskResult.error(errors))),
         successResult => Ok(serialize(successResult))
       )
     })
