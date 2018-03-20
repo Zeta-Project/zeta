@@ -1,7 +1,7 @@
 package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
 import de.htwg.zeta.common.format.project.gdsl.style.StyleFormat
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
@@ -10,53 +10,55 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-class EllipseFormat(
+class RepeatingBoxFormat(
     geoModelFormatProvider: () => GeoModelFormat,
-    sizeFormat: SizeFormat,
-    positionFormat: PositionFormat,
     styleFormat: StyleFormat,
     sType: String,
-    sSize: String,
-    sPosition: String,
+    sEditable: String,
+    sForEach: String,
+    sForAs: String,
     sChildGeoModels: String,
     sStyle: String
-) extends OFormat[Ellipse] {
+) extends OFormat[RepeatingBox] {
 
-  val vType: String = "ellipse"
+  val vType: String = "repeatingBox"
 
-  override def writes(clazz: Ellipse): JsObject = Json.obj(
+  override def writes(clazz: RepeatingBox): JsObject = Json.obj(
     sType -> vType,
-    sSize -> sizeFormat.writes(clazz.size),
-    sPosition -> positionFormat.writes(clazz.position),
+    sEditable -> clazz.editable,
+    sForEach -> clazz.forEach,
+    sForAs -> clazz.forAs,
     sChildGeoModels -> Writes.list(geoModelFormatProvider()).writes(clazz.childGeoModels),
     sStyle -> styleFormat.writes(clazz.style)
   )
 
-  override def reads(json: JsValue): JsResult[Ellipse] = for {
-    size <- (json \ sSize).validate(sizeFormat)
-    position <- (json \ sPosition).validate(positionFormat)
+  override def reads(json: JsValue): JsResult[RepeatingBox] = for {
+    editable <- (json \ sEditable).validate[Boolean]
+    forEach <- (json \ sForEach).validate[String]
+    forAs <- (json \ sForAs).validate[String]
     childGeoModels <- (json \ sChildGeoModels).validate(Reads.list(geoModelFormatProvider()))
     style <- (json \ sStyle).validate(styleFormat)
   } yield {
-    Ellipse(
-      size,
-      position,
+    RepeatingBox(
+      editable,
+      forEach,
+      forAs,
       childGeoModels,
       style
     )
   }
 
 }
-object EllipseFormat {
-  def apply(geoModelFormat: () => GeoModelFormat): EllipseFormat = new EllipseFormat(
+object RepeatingBoxFormat {
+  def apply(geoModelFormat: () => GeoModelFormat): RepeatingBoxFormat = new RepeatingBoxFormat(
     geoModelFormat,
-    SizeFormat(),
-    PositionFormat(),
     StyleFormat(),
     "type",
-    "size",
-    "position",
+    "editable",
+    "forEach",
+    "forAs",
     "childGeoElements",
     "style"
   )
 }
+
