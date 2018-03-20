@@ -5,7 +5,6 @@ import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scalaz.Validation
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import de.htwg.zeta.common.format.ValidationErrorFormat
@@ -32,38 +31,42 @@ class GraphicalDslRestApi @Inject()(
     shapeFormat: ShapeFormat
 ) extends Controller with Logging {
 
-  def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    parse(id, request, g => stylesFormat.writes(g.styles))
-  }
-
-  /** returns shape definition */
-  def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    parse(id, request, g => shapeFormat.writes(g.shape))
-  }
-
-  /** returns diagram definition */
-  def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    parse(id, request, g => diagramsFormat.writes(g.diagrams))
-  }
-
-  private def parse[A](id: UUID, request: SecuredRequest[ZetaEnv, A], serialize: GraphicalDsl => JsObject): Future[Result] = {
+  def triggerParse(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] =
     protectedRead(id, request, graphicalDsl => {
-      val result: Validation[List[String], GraphicalDsl] =
-        graphicalDslParser.parse(
-          graphicalDsl.concept,
-          graphicalDsl.style,
-          graphicalDsl.shape,
-          graphicalDsl.diagram
-        )
-      if (!result.isSuccess) {
-        InternalServerError(
-          validationErrorFormat.writes(
-            result.toEither.left.getOrElse(List())
-          )
-        )
-      } else {
-        Ok(serialize(result.toEither.right.get))
-      }
+      graphicalDslParser.parse(
+        graphicalDsl.concept,
+        graphicalDsl.style,
+        graphicalDsl.shape,
+        graphicalDsl.diagram
+      ).fold[Result](
+        errors => Ok(validationErrorFormat.writes(errors)),
+        _ => Ok(validationErrorFormat.writes(List()))
+      )
+    })
+
+  def getStyle(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    parseAndSerialize(id, request, g => stylesFormat.writes(g.styles))
+  }
+
+  def getShape(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    parseAndSerialize(id, request, g => shapeFormat.writes(g.shape))
+  }
+
+  def getDiagram(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    parseAndSerialize(id, request, g => diagramsFormat.writes(g.diagrams))
+  }
+
+  private def parseAndSerialize[A](id: UUID, request: SecuredRequest[ZetaEnv, A], serialize: GraphicalDsl => JsObject): Future[Result] = {
+    protectedRead(id, request, graphicalDsl => {
+      graphicalDslParser.parse(
+        graphicalDsl.concept,
+        graphicalDsl.style,
+        graphicalDsl.shape,
+        graphicalDsl.diagram
+      ).fold[Result](
+        errors => InternalServerError(validationErrorFormat.writes(errors)),
+        successResult => Ok(serialize(successResult))
+      )
     })
   }
 
