@@ -7,6 +7,14 @@ import de.htwg.zeta.common.format.project.gdsl.DiagramsFormat
 import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import de.htwg.zeta.common.format.project.gdsl.diagram.DiagramFormat
 import de.htwg.zeta.common.format.project.gdsl.diagram.PaletteFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.EdgeFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.NodeFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.PlacingFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.PositionFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.ResizingFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.ShapeFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.SizeFormat
+import de.htwg.zeta.common.format.project.gdsl.shape.geoModel.GeoModelFormat
 import de.htwg.zeta.common.format.project.gdsl.style.BackgroundFormat
 import de.htwg.zeta.common.format.project.gdsl.style.ColorFormat
 import de.htwg.zeta.common.format.project.gdsl.style.FontFormat
@@ -19,6 +27,59 @@ class GdslFormatModule extends ScalaModule {
   override def configure(): Unit = {
     bind[ColorFormat].toInstance(new ColorFormat)
     bind[PaletteFormat].toInstance(new PaletteFormat)
+    bind[PositionFormat].toInstance(new PositionFormat)
+    bind[SizeFormat].toInstance(new SizeFormat)
+    bind[ResizingFormat].toInstance(new ResizingFormat)
+  }
+
+  @Provides
+  @Singleton
+  def provideShapeFormat(
+      edgeFormat: EdgeFormat,
+      nodeFormat: NodeFormat
+  ): ShapeFormat = {
+    new ShapeFormat(nodeFormat, edgeFormat)
+  }
+
+  @Provides
+  @Singleton
+  def provideNodeFormat(
+      styleFormat: StyleFormat,
+      edgeFormat: EdgeFormat,
+      sizeFormat: SizeFormat,
+      resizingFormat: ResizingFormat,
+      geoModelFormat: GeoModelFormat
+  ): NodeFormat = {
+    new NodeFormat(
+      styleFormat,
+      edgeFormat,
+      sizeFormat,
+      resizingFormat,
+      geoModelFormat
+    )
+  }
+
+  @Provides
+  @Singleton
+  def provideGeoModelFormat(): GeoModelFormat = {
+    GeoModelFormat()
+  }
+
+  @Provides
+  @Singleton
+  def provideEdgeFormat(
+      placingFormat: PlacingFormat
+  ): EdgeFormat = {
+    new EdgeFormat(placingFormat)
+  }
+
+  @Provides
+  @Singleton
+  def providePlacingFormat(
+      styleFormat: StyleFormat,
+      positionFormat: PositionFormat
+  ): PlacingFormat = {
+    new PlacingFormat(styleFormat, positionFormat)
   }
 
   @Provides

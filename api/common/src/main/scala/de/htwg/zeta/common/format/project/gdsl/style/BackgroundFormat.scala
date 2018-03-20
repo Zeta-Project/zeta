@@ -24,3 +24,6 @@ class BackgroundFormat(
   }
 
 }
+object BackgroundFormat {
+  def apply(): BackgroundFormat = new BackgroundFormat(ColorFormat(), "color")
+}

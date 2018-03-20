@@ -1,5 +1,6 @@
 package de.htwg.zeta.common.format.project.gdsl.shape
 
+import de.htwg.zeta.common.format.project.gdsl.shape.geoModel.GeoModelFormat
 import de.htwg.zeta.common.format.project.gdsl.style.StyleFormat
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
 import play.api.libs.json.JsObject
@@ -16,6 +17,7 @@ class NodeFormat(
     edgeFormat: EdgeFormat,
     sizeFormat: SizeFormat,
     resizingFormat: ResizingFormat,
+    geoModelFormat: GeoModelFormat,
     sName: String = "name",
     sConceptElement: String = "conceptElement",
     sEdges: String = "edges",
@@ -32,7 +34,7 @@ class NodeFormat(
     sSize -> sizeFormat.writes(clazz.size),
     sStyle -> styleFormat.writes(clazz.style),
     sResizing -> resizingFormat.writes(clazz.resizing),
-    sGeoModels -> ???
+    sGeoModels -> Writes.list(geoModelFormat).writes(clazz.geoModels)
   )
 
   override def reads(json: JsValue): JsResult[Node] = for {
@@ -42,7 +44,7 @@ class NodeFormat(
     size <- (json \ sSize).validate(sizeFormat)
     style <- (json \ sStyle).validate(styleFormat)
     resizing <- (json \ sResizing).validate(resizingFormat)
-    geoModels <- (json \ sGeoModels).validate(Reads.list(???))
+    geoModels <- (json \ sGeoModels).validate(Reads.list(geoModelFormat))
   } yield {
     Node(
       name,

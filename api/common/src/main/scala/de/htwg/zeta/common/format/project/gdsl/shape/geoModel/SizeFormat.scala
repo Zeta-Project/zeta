@@ -7,10 +7,9 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class SizeFormat(
-    sWidth: String = "width",
-    sHeight: String = "height"
+    sWidth: String,
+    sHeight: String
 ) extends OFormat[Size] {
 
   override def writes(clazz: Size): JsObject = Json.obj(
@@ -25,4 +24,7 @@ class SizeFormat(
     Size(width = width, height = height)
   }
 
+}
+object SizeFormat {
+  def apply(): SizeFormat = new SizeFormat("width", "height")
 }
