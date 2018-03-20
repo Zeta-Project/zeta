@@ -42,6 +42,24 @@
         "width": 1
       },
       "name": "X"
+    },
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "name": "realization"
+    },
+    {
+      "background": {
+        "color": "rgba(0, 0, 0, 1)"
+      },
+      "name": "component"
+    },
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "name": "aggregation"
     }
   ]
 }
