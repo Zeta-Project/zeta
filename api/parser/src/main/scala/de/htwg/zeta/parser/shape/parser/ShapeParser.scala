@@ -6,9 +6,7 @@ import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
 object ShapeParser extends CommonParserMethods with UniteParsers {
 
-  def parseShapes(input: String): ParseResult[List[ShapeParseTree]] = {
-    parseAll(shapes, input)
-  }
+  def parseShapes(input: String): ParseResult[List[ShapeParseTree]] = parseAll(shapes, trimRight(input))
 
   private def shapes = rep(node | edge)
 

@@ -19,6 +19,17 @@ trait CommonParserMethods extends JavaTokenParsers {
   val comma = ","
   val eq = "="
 
+  /**
+   * Remove comments and trim whitespaces from input string. This method should be called
+   * before a parsing process.
+   * A comment is written with double slash:
+   * <code>// comment</code>
+   *
+   * @param s raw input string which should be parsed
+   * @return trimmed string without comments
+   */
+  def trimRight(s: String): String = s.replaceAll("\\/\\/.+", "").split("\n").map(s => s.trim + "\n").mkString
+
   def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ {
     _.toString
   }
