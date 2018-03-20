@@ -19,7 +19,7 @@ class GraphicalDSLParser {
   def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[List[String], GraphicalDsl] = {
     val styleParseTree = StyleParser.parseStyles(styleInput)
     if (!styleParseTree.successful) {
-      return Failure(List(styleParseTree.toString))
+      return Failure(List("Failed to parse style: " + styleParseTree.toString))
     }
     val styles = StyleParseTreeTransformer.transform(styleParseTree.getOrElse(List()))
     if (!styles.isSuccess) {
@@ -27,7 +27,7 @@ class GraphicalDSLParser {
     }
     val shapeParseTree = ShapeParser.parseShapes(shapeInput)
     if (!shapeParseTree.successful) {
-      return Failure(List(shapeParseTree.toString))
+      return Failure(List("Failed to parse shape: " + shapeParseTree.toString))
     }
     val shape = ShapeParseTreeTransformer.transform(shapeParseTree.getOrElse(List()), styles.getOrElse(List()), concept)
     if (!shape.isSuccess) {
@@ -35,7 +35,7 @@ class GraphicalDSLParser {
     }
     val diagramParseTree = DiagramParser.parseDiagrams(diagramInput)
     if (!diagramParseTree.successful) {
-      return Failure(List(diagramParseTree.toString))
+      return Failure(List("Failed to parse diagram: " + diagramParseTree.toString))
     }
     val diagrams = DiagramParseTreeTransformer.transform(diagramParseTree.getOrElse(List()), shape.getOrElse(Shape(List(), List())).nodes)
     if (!diagrams.isSuccess) {
