@@ -10,17 +10,16 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class EllipseFormat(
-    geoModelFormat: () => GeoModelFormat,
+    geoModelFormatProvider: () => GeoModelFormat,
     sizeFormat: SizeFormat,
     positionFormat: PositionFormat,
     styleFormat: StyleFormat,
-    sType: String = "type",
-    sSize: String = "size",
-    sPosition: String = "position",
-    sChildGeoModels: String = "childGeoModels",
-    sStyle: String = "style"
+    sType: String,
+    sSize: String,
+    sPosition: String,
+    sChildGeoModels: String,
+    sStyle: String
 ) extends OFormat[Ellipse] {
 
   val vType: String = "ellipse"
@@ -29,14 +28,14 @@ class EllipseFormat(
     sType -> vType,
     sSize -> sizeFormat.writes(clazz.size),
     sPosition -> positionFormat.writes(clazz.position),
-    sChildGeoModels -> Writes.list(geoModelFormat()).writes(clazz.childGeoModels),
+    sChildGeoModels -> Writes.list(geoModelFormatProvider()).writes(clazz.childGeoModels),
     sStyle -> styleFormat.writes(clazz.style)
   )
 
   override def reads(json: JsValue): JsResult[Ellipse] = for {
     size <- (json \ sSize).validate(sizeFormat)
     position <- (json \ sPosition).validate(positionFormat)
-    childGeoModels <- (json \ sChildGeoModels).validate(Reads.list(geoModelFormat()))
+    childGeoModels <- (json \ sChildGeoModels).validate(Reads.list(geoModelFormatProvider()))
     style <- (json \ sStyle).validate(styleFormat)
   } yield {
     Ellipse(

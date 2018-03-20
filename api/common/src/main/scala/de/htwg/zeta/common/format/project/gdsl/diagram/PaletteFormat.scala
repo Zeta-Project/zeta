@@ -8,10 +8,9 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class PaletteFormat(
-    sName: String = "name",
-    sNodes: String = "nodes"
+    sName: String,
+    sNodes: String
 ) extends OFormat[Palette] {
 
   override def writes(clazz: Palette): JsObject = Json.obj(
@@ -26,5 +25,8 @@ class PaletteFormat(
     Palette(name, nodes)
   }
 
+}
+object PaletteFormat {
+  def apply(): PaletteFormat = new PaletteFormat("name", "nodes")
 }
 

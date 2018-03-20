@@ -10,10 +10,9 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class DiagramsFormat(
     diagramFormat: DiagramFormat,
-    sDiagrams: String = "diagrams"
+    sDiagrams: String
 ) extends OFormat[List[Diagram]] {
 
   override def writes(clazz: List[Diagram]): JsObject = Json.obj(
@@ -23,4 +22,7 @@ class DiagramsFormat(
   override def reads(json: JsValue): JsResult[List[Diagram]] =
     (json \ sDiagrams).validate(Reads.list(diagramFormat))
 
+}
+object DiagramsFormat {
+  def apply(): DiagramsFormat = new DiagramsFormat(DiagramFormat(), "diagrams")
 }

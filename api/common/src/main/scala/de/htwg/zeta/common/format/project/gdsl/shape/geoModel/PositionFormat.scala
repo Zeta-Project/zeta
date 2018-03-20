@@ -8,8 +8,8 @@ import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
 class PositionFormat(
-    sX: String = "x",
-    sY: String = "y"
+    sX: String,
+    sY: String
 ) extends OFormat[Position] {
 
   override def writes(clazz: Position): JsObject = Json.obj(

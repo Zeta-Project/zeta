@@ -7,14 +7,13 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class FontFormat(
     colorFormat: ColorFormat,
-    sName: String = "name",
-    sBold: String = "bold",
-    sColor: String = "color",
-    sItalic: String = "italic",
-    sSize: String = "size"
+    sName: String,
+    sBold: String,
+    sColor: String,
+    sItalic: String,
+    sSize: String
 ) extends OFormat[Font] {
 
   override def writes(clazz: Font): JsObject = Json.obj(

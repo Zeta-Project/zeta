@@ -7,17 +7,16 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class StyleFormat(
     backgroundFormat: BackgroundFormat,
     fontFormat: FontFormat,
     lineFormat: LineFormat,
-    sName: String = "name",
-    sDescription: String = "description",
-    sBackground: String = "background",
-    sFont: String = "font",
-    sLine: String = "line",
-    sTransparency: String = "transparency"
+    sName: String,
+    sDescription: String,
+    sBackground: String,
+    sFont: String,
+    sLine: String,
+    sTransparency: String
 ) extends OFormat[Style] {
 
   override def writes(clazz: Style): JsObject = Json.obj(
@@ -50,6 +49,7 @@ class StyleFormat(
 }
 object StyleFormat {
   def apply(): StyleFormat = new StyleFormat(
-    BackgroundFormat(), FontFormat(), LineFormat(), "name", "description", "background", "font", "line", "transparency"
+    BackgroundFormat(), FontFormat(), LineFormat(),
+    "name", "description", "background", "font", "line", "transparency"
   )
 }
