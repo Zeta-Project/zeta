@@ -2,13 +2,13 @@ import joint from 'jointjs';
 
 const STENCIL_SIZE = 80;
 const GEOMETRIC_MODEL = {
-    RECTANGLE: 'RECTANGLE',
-    ELLIPSE: 'ELLIPSE',
-    LINE: 'LINE',
-    ROUND_RECT: 'ROUNDED_RECTANGLE',
-    POLYGON: 'POLYGON',
-    POLY_LINE: 'POLY_LINE',
-    TEXT: 'TEXT',
+    RECTANGLE: 'rectangle',
+    ELLIPSE: 'ellipse',
+    LINE: 'line',
+    ROUND_RECT: 'roundedRectangle',
+    POLYGON: 'polygon',
+    POLY_LINE: 'polyline',
+    TEXT: 'text',
 };
 
 function findTop(elements) {
