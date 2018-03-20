@@ -7,11 +7,10 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class ResizingFormat(
-    sHorizontal: String = "horizontal",
-    sVertical: String = "vertical",
-    sProportional: String = "proportional"
+    sHorizontal: String,
+    sVertical: String,
+    sProportional: String
 ) extends OFormat[Resizing] {
 
   override def writes(clazz: Resizing): JsObject = Json.obj(
@@ -32,4 +31,11 @@ class ResizingFormat(
     )
   }
 
+}
+object ResizingFormat {
+  def apply(): ResizingFormat = new ResizingFormat(
+    "horizontal",
+    "vertical",
+    "proportional"
+  )
 }

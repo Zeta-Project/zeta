@@ -9,13 +9,12 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class EdgeFormat(
     placingFormat: PlacingFormat,
-    sName: String = "name",
-    sConceptElement: String = "conceptElement",
-    sTarget: String = "target",
-    sPlacings: String = "placings"
+    sName: String,
+    sConceptElement: String,
+    sTarget: String,
+    sPlacings: String
 ) extends OFormat[Edge] {
 
   override def writes(clazz: Edge): JsObject = Json.obj(
@@ -34,4 +33,13 @@ class EdgeFormat(
     Edge(name, conceptElement, target, placings)
   }
 
+}
+object EdgeFormat {
+  def apply(): EdgeFormat = new EdgeFormat(
+    PlacingFormat(),
+    "name",
+    "conceptElement",
+    "target",
+    "placings"
+  )
 }

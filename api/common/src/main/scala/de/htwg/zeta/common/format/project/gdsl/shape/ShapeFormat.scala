@@ -9,12 +9,11 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class ShapeFormat(
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
-    sNodes: String = "nodes",
-    sEdges: String = "edges"
+    sNodes: String,
+    sEdges: String
 ) extends OFormat[Shape] {
 
   override def writes(clazz: Shape): JsObject = Json.obj(
@@ -28,4 +27,12 @@ class ShapeFormat(
   } yield {
     Shape(nodes, edges)
   }
+}
+object ShapeFormat {
+  def apply(): ShapeFormat = new ShapeFormat(
+    NodeFormat(),
+    EdgeFormat(),
+    "nodes",
+    "edges"
+  )
 }

@@ -10,10 +10,9 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class StylesFormat(
     styleFormat: StyleFormat,
-    sStyles: String = "styles"
+    sStyles: String
 ) extends OFormat[List[Style]] {
 
   override def writes(clazz: List[Style]): JsObject = Json.obj(
@@ -23,4 +22,7 @@ class StylesFormat(
   override def reads(json: JsValue): JsResult[List[Style]] =
     (json \ sStyles).validate(Reads.list(styleFormat))
 
+}
+object StylesFormat {
+  def apply(): StylesFormat = new StylesFormat(StyleFormat(), "styles")
 }

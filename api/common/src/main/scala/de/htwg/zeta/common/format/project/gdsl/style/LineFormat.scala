@@ -14,12 +14,11 @@ import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class LineFormat(
     colorFormat: ColorFormat,
-    sColor: String = "color",
-    sStyle: String = "style",
-    sWidth: String = "width"
+    sColor: String,
+    sStyle: String,
+    sWidth: String
 ) extends OFormat[Line] {
 
   override def writes(clazz: Line): JsObject = Json.obj(

@@ -11,20 +11,19 @@ import play.api.libs.json.OFormat
 import play.api.libs.json.Reads
 import play.api.libs.json.Writes
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class NodeFormat(
     styleFormat: StyleFormat,
     edgeFormat: EdgeFormat,
     sizeFormat: SizeFormat,
     resizingFormat: ResizingFormat,
     geoModelFormat: GeoModelFormat,
-    sName: String = "name",
-    sConceptElement: String = "conceptElement",
-    sEdges: String = "edges",
-    sSize: String = "size",
-    sStyle: String = "style",
-    sResizing: String = "resizing",
-    sGeoModels: String = "geoModels"
+    sName: String,
+    sConceptElement: String,
+    sEdges: String,
+    sSize: String,
+    sStyle: String,
+    sResizing: String,
+    sGeoModels: String
 ) extends OFormat[Node] {
 
   override def writes(clazz: Node): JsObject = Json.obj(
@@ -57,4 +56,20 @@ class NodeFormat(
     )
   }
 
+}
+object NodeFormat {
+  def apply(): NodeFormat = new NodeFormat(
+    StyleFormat(),
+    EdgeFormat(),
+    SizeFormat(),
+    ResizingFormat(),
+    GeoModelFormat(),
+    "name",
+    "conceptElement",
+    "edges",
+    "size",
+    "style",
+    "resizing",
+    "geoModels"
+  )
 }

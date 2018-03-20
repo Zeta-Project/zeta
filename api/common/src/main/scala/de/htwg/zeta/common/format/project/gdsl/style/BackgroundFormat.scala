@@ -7,10 +7,9 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class BackgroundFormat(
     colorFormat: ColorFormat,
-    sColor: String = "color"
+    sColor: String
 ) extends OFormat[Background] {
 
   override def writes(clazz: Background): JsObject = Json.obj(

@@ -7,10 +7,9 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
-@SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class PositionFormat(
-    sDistance: String = "distance",
-    sOffset: String = "offset"
+    sDistance: String,
+    sOffset: String
 ) extends OFormat[Position] {
 
   override def writes(clazz: Position): JsObject = Json.obj(
@@ -25,4 +24,10 @@ class PositionFormat(
     Position(distance, offset)
   }
 
+}
+object PositionFormat {
+  def apply(): PositionFormat = new PositionFormat(
+    "distance",
+    "offset"
+  )
 }
