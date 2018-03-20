@@ -286,11 +286,7 @@
             "geoElement": {
               "type": "polygon",
               "id":"py2",
-              "style": {
-                "line": {
-                  "style": "SOLID"
-                }
-              },
+              "style": "realization",
               "points": [
                 {
                   "x": -10,
@@ -322,9 +318,7 @@
             "geoElement": {
               "type": "polygon",
               "id":"py3",
-              "style": {
-                "background-color": "rgba(0, 0, 0, 1)"
-              },
+              "style":"component",
               "points": [
                 {
                   "x": 0,
@@ -360,9 +354,7 @@
             "geoElement": {
               "type": "polygon",
               "id":"py4",
-              "style": {
-                "background-color": "rgba(255, 255, 255, 1)"
-              },
+              "style": "aggregation",
               "points": [
                 {
                   "x": 0,
@@ -398,11 +390,7 @@
             "geoElement": {
               "type": "polygon",
               "id":"py5",
-              "style": {
-                "line": {
-                  "style": "SOLID"
-                }
-              },
+              "style": "realization",
               "points": [
                 {
                   "x": -10,
