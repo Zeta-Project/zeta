@@ -4,9 +4,7 @@ import de.htwg.zeta.parser.CommonParserMethods
 
 object DiagramParser extends CommonParserMethods {
 
-  def parseDiagrams(input: String): ParseResult[List[DiagramParseTree]] = {
-    parseAll(diagrams, input)
-  }
+  def parseDiagrams(input: String): ParseResult[List[DiagramParseTree]] = parseAll(diagrams, trimRight(input))
 
   private def diagrams: Parser[List[DiagramParseTree]] = rep(diagram)
 
@@ -28,7 +26,7 @@ object DiagramParser extends CommonParserMethods {
 
   private def nodes: Parser[List[NodeParseTree]] = rep(node)
 
-  private def node: Parser[NodeParseTree] = ident ^^  NodeParseTree
+  private def node: Parser[NodeParseTree] = ident ^^ NodeParseTree
 
   private def diagramName: Parser[String] = literal("diagram") ~> ident
 

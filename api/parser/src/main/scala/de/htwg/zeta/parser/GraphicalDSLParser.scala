@@ -13,13 +13,11 @@ import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer
 import de.htwg.zeta.parser.shape.parser.ShapeParser
 import de.htwg.zeta.parser.style.StyleParseTreeTransformer
 import de.htwg.zeta.parser.style.StyleParser
-import de.htwg.zeta.parser.style.StyleParserImpl
 
 class GraphicalDSLParser {
-  val styleParser: StyleParser = new StyleParserImpl
 
   def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[List[String], GraphicalDsl] = {
-    val styleParseTree = styleParser.parseStyles(styleInput)
+    val styleParseTree = StyleParser.parseStyles(styleInput)
     if (!styleParseTree.successful) {
       return Failure(List(styleParseTree.toString))
     }
