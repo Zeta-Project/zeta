@@ -8,9 +8,13 @@ import de.htwg.zeta.common.format.project.gdsl.StylesFormat
 import de.htwg.zeta.common.format.project.gdsl.shape.ShapeFormat
 import net.codingwell.scalaguice.ScalaModule
 
-class GdslFormatModule extends ScalaModule {
+class GdslModule extends ScalaModule {
 
   override def configure(): Unit = {}
+
+  @Provides
+  @Singleton
+  def provideShapeFormat(): ShapeFormat = ShapeFormat()
 
   @Provides
   @Singleton
