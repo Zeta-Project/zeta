@@ -71,6 +71,7 @@ HEAD          /metamodels/:metaModelId/validator                                
 
 ### REST API V2
 
+GET           /rest/v2/meta-models/:metaModelId/triggerParse                                      controllers.ScalaRoutesApiV2.triggerParse(metaModelId: java.util.UUID)
 GET           /rest/v2/meta-models/:metaModelId/shape                                             controllers.ScalaRoutesApiV2.getMetaModelShape(metaModelId: java.util.UUID)
 GET           /rest/v2/meta-models/:metaModelId/style                                             controllers.ScalaRoutesApiV2.getMetaModelStyle(metaModelId: java.util.UUID)
 GET           /rest/v2/meta-models/:metaModelId/diagram                                           controllers.ScalaRoutesApiV2.getMetaModelDiagram(metaModelId: java.util.UUID)

@@ -18,10 +18,6 @@ class GdslModule extends ScalaModule {
 
   @Provides
   @Singleton
-  def provideShapeFormat(): ShapeFormat = ShapeFormat()
-
-  @Provides
-  @Singleton
   def provideDiagramsFormat(): DiagramsFormat = DiagramsFormat()
 
   @Provides
