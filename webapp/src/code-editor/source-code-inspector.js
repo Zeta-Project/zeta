@@ -48,7 +48,9 @@ export class SourceCodeInspector {
   }
 
   showHintFailureInCurrentDsl(errorMessages) {
-    const errorMessage = errorMessages.join();
+    const errorMessage = errorMessages
+      .map(errorMessage => `- ${errorMessage}`)
+      .join('\n');
     this.inspection.text(errorMessage);
     this.inspection.css('border-color', 'red');
     this.inspection.css('background-color', 'salmon');

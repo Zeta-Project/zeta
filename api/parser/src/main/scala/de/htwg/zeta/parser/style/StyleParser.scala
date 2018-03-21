@@ -7,7 +7,7 @@ object StyleParser extends CommonParserMethods with UniteParsers {
 
   def parseStyles(input: String): ParseResult[List[StyleParseTree]] = parseAll(styles, trimRight(input))
 
-  private def styles: Parser[List[StyleParseTree]] = rep1(style)
+  private def styles: Parser[List[StyleParseTree]] = rep(style)
 
   private def style: Parser[StyleParseTree] = {
     name ~ opt(parentStyles) ~ leftBrace ~ description ~ attributes ~ rightBrace ^^ { parseSeq =>
