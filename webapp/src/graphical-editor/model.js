@@ -10,8 +10,6 @@ import linkTypeSelector from './model/ext/linkTypeSelector';
 import modelExporter from './model/ext/exportModel';
 import sizeManager from './model/ext/sizeManager';
 import compartmentManager from './model/ext/compartmentManager';
-import Stencil from './model/generator/temporary/old/stencil'
-import {InspectorDefs} from './model/generator/temporary/old/inspector';
 
 export default Backbone.Router.extend({
 
@@ -125,12 +123,12 @@ export default Backbone.Router.extend({
     // Create and popoulate stencil.
     initializeStencil: function() {
 
-        this.stencil = new joint.ui.Stencil({ graph: this.graph, paper: this.paper, width: 240, groups: Stencil.groups });
+        this.stencil = new joint.ui.Stencil({ graph: this.graph, paper: this.paper, width: 240, groups: global.Stencil.groups });
         $('.stencil-container').append(this.stencil.render().el);
 
-        _.each(Stencil.groups, function(group, name) {
+        _.each(global.Stencil.groups, function(group, name) {
 
-            this.stencil.load(Stencil.shapes[name], name);
+            this.stencil.load(global.Stencil.shapes[name], name);
             joint.layout.GridLayout.layout(this.stencil.getGraph(name), {
                 columnWidth: this.stencil.options.width / 2 - 10,
                 columns: 2,
