@@ -109,4 +109,5 @@
     border: 3px solid red;
     vertical-align: middle;
     text-align: center;
+    white-space: pre;
 }
