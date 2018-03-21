@@ -100,3 +100,13 @@
 .code-editor-container{
     font-family: Helvetica;
 }
+
+.source-code-inspection{
+    opacity: 0;
+    padding: 10px 10px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    border: 3px solid red;
+    vertical-align: middle;
+    text-align: center;
+}
