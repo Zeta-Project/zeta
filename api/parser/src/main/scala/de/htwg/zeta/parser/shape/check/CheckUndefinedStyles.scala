@@ -2,6 +2,7 @@ package de.htwg.zeta.parser.shape.check
 
 import de.htwg.zeta.common.models.project.gdsl.style.Style
 import de.htwg.zeta.parser.ReferenceCollector
+import de.htwg.zeta.parser.check.Check.Id
 import de.htwg.zeta.parser.check.ErrorCheck
 import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
@@ -18,8 +19,10 @@ case class CheckUndefinedStyles(shapeParseTrees: List[ShapeParseTree], styles: R
       case edge: EdgeParseTree =>
         edge.placings.map(_.geoModel).flatMap(_.style).map(_.name)
     }.flatten.toSet
-    referencedStyles.diff(styles.identifiers().toSet)
-      .map(id => s"The following styles are referenced but not defined: $id").toList
+    referencedStyles.diff(styles.identifiers().toSet).toList match {
+      case Nil => Nil
+      case undefinedStyles: List[Id] => List(s"The following styles are referenced but not defined: ${undefinedStyles.mkString(", ")}")
+    }
   }
 
 }
