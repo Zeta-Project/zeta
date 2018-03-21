@@ -40,7 +40,7 @@ class GraphicalDslRestApi @Inject()(
         graphicalDsl.shape,
         graphicalDsl.diagram
       ).fold[Result](
-        errors => Ok(taskResultFormat.writes(TaskResult.error(errors))),
+        errors => Ok(taskResultFormat.writes(TaskResult.error(errors.errorDsl, List(errors.error)))),
         _ => Ok(taskResultFormat.writes(TaskResult.success()))
       )
     })
@@ -65,7 +65,7 @@ class GraphicalDslRestApi @Inject()(
         graphicalDsl.shape,
         graphicalDsl.diagram
       ).fold[Result](
-        errors => InternalServerError(taskResultFormat.writes(TaskResult.error(errors))),
+        errorResult => InternalServerError(taskResultFormat.writes(TaskResult.error(errorResult.errorDsl, List(errorResult.error)))),
         successResult => Ok(serialize(successResult))
       )
     })
