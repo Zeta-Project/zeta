@@ -5,7 +5,7 @@ import de.htwg.zeta.parser.UniteParsers
 
 object StyleParser extends CommonParserMethods with UniteParsers {
 
-  def parseStyles(input: String): ParseResult[List[StyleParseTree]] = parse(styles, trimRight(input))
+  def parseStyles(input: String): ParseResult[List[StyleParseTree]] = parseAll(styles, trimRight(input))
 
   private def styles: Parser[List[StyleParseTree]] = rep1(style)
 
