@@ -201,7 +201,7 @@ var contextMenu = {
                               $(item).css("background-color","#F0F0F0");
                          });
              });
-        } els {  // nodes are not linkable
+        } else {  // nodes are not linkable
             menu += '<tr><td class="menuItem"><div class="ContextItem">';
             menu += "These elements are not linkable!";
             menu += '</div></td></tr>';
