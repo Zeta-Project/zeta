@@ -27,7 +27,7 @@ export class SourceCodeInspector {
           if (response.errorDsl === this.dslType) {
             this.showHintFailureInCurrentDsl(response.messages)
           } else {
-            this.showHintFailureInOtherDsl(response.errorDsl);
+            this.showHintFailureInOtherDsl(response.errorDsl, response.messages);
           }
         }
         this.sourceCodeOk = response.success;
@@ -58,17 +58,13 @@ export class SourceCodeInspector {
     this.removeClickListener();
   }
 
-  showHintFailureInOtherDsl(otherDsl) {
-    const errorMessage = `${SourceCodeInspector.capitalize(otherDsl)} contains one or more errors!`;
+  showHintFailureInOtherDsl(otherDsl, errors) {
+    const errorMessage = `${SourceCodeInspector.capitalize(otherDsl)} contains ${errors.length} ${SourceCodeInspector.pluralize('error', errors.length)}!`;
     this.inspection.text(errorMessage);
     this.inspection.css('border-color', 'red');
     this.inspection.css('background-color', 'lightsalmon');
     this.fadeIn();
     this.installClickListener(otherDsl);
-  }
-
-  static capitalize(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   removeClickListener() {
@@ -89,6 +85,19 @@ export class SourceCodeInspector {
 
   fadeInFadeOut() {
     this.inspection.stop(true, true).fadeIn(400).delay(3000).animate({opacity: 0});
+  }
+
+  // static helpers
+
+  static pluralize(string, x) {
+    if (x === 1) {
+      return string;
+    }
+    return `${string}s`;
+  }
+
+  static capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
 }
