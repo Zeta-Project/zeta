@@ -20,13 +20,16 @@ class GeneratorFormat(
     sDeleted: String = "deleted"
 ) extends OFormat[Generator] {
 
-  override def writes(o: Generator): JsObject = Json.obj(
-    sId -> o.id,
-    sName -> o.name,
-    sImageId -> o.imageId,
-    sFiles -> Writes.map[String].writes(o.files.map(e => (e._2.toString, e._2))),
-    sDeleted -> o.deleted
-  )
+  override def writes(o: Generator): JsObject = {
+    val files = o.files.map { case (uuid, name) => (uuid.toString, name) }
+    Json.obj(
+      sId -> o.id,
+      sName -> o.name,
+      sImageId -> o.imageId,
+      sFiles -> Writes.map[String].writes(files),
+      sDeleted -> o.deleted
+    )
+  }
 
   override def reads(json: JsValue): JsResult[Generator] = for {
     id <- (json \ sId).validate[UUID]
@@ -35,7 +38,8 @@ class GeneratorFormat(
     files <- (json \ sFiles).validate(Reads.map[String])
     deleted <- (json \ sDeleted).validateOpt[Boolean]
   } yield {
-    Generator(id, name, imageId, files.map(e => (UUID.fromString(e._1), e._2)), deleted.getOrElse(false))
+    val filesMap = files.map { case (uuid, name) => (UUID.fromString(uuid), name) }
+    Generator(id, name, imageId, filesMap, deleted.getOrElse(false))
   }
 
 }
