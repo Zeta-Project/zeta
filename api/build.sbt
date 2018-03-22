@@ -16,6 +16,7 @@ run := (run in server in Compile).evaluated
 
 lazy val common = ZetaBuild.common
 lazy val generatorControl = ZetaBuild.generatorControl
+lazy val parser = ZetaBuild.parser
 lazy val persistence = ZetaBuild.persistence
 lazy val server = ZetaBuild.server
 

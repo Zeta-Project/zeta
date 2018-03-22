@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
+import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.models.entity.GraphicalDslRelease
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv

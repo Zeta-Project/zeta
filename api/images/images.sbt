@@ -4,9 +4,11 @@ def image(name: String, d: sbt.File) = {
     ZetaBuild.scalaOptions,
     ZetaBuild.scalaVersion,
     dockerRepository := Some("modigen"),
+    dockerBaseImage := "openjdk:8u151-jre-stretch",
     fork := true,
     libraryDependencies ++= Seq(
       "org.clapper" %% "grizzled-slf4j" % "1.2.0",
+      "org.slf4j" % "slf4j-simple" % "1.7.9",
       "org.rogach" %% "scallop" % "3.1.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
       "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
       "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
@@ -17,38 +19,17 @@ def image(name: String, d: sbt.File) = {
 }
 
 
-lazy val scalaFilter = image("scalaFilter", file("./filter/scala")).settings(
+lazy val scalaFilter = image("scalaFilter", file("./filter")).settings(
   name := "filter/scala",
   version := "0.1",
   packageName in Docker := "filter/scala"
 )
 
-lazy val scalaGeneratorTemplate = image("template", file("./generator/template")).settings()
-
-
-lazy val basicGenerator = image("basicGenerator", file("./generator/basic")).settings(
-  name := "generator/basic",
+lazy val generator = image("generator", file("./generator")).settings(
+  name := "generator",
   version := "0.1",
-  packageName in Docker := "generator/basic"
-).dependsOn(scalaGeneratorTemplate)
-
-lazy val fileGenerator = image("fileGenerator", file("./generator/file")).settings(
-  name := "generator/file",
-  version := "0.1",
-  packageName in Docker := "generator/file"
-).dependsOn(scalaGeneratorTemplate)
-
-lazy val remoteGenerator = image("remoteGenerator", file("./generator/remote")).settings(
-  name := "generator/remote",
-  version := "0.1",
-  packageName in Docker := "generator/remote"
-).dependsOn(scalaGeneratorTemplate)
-
-lazy val specificGenerator = image("specificGenerator", file("./generator/specific")).settings(
-  name := "generator/specific",
-  version := "0.1",
-  packageName in Docker := "generator/specific"
-).dependsOn(scalaGeneratorTemplate)
+  packageName in Docker := "generator"
+)
 
 lazy val metaModelRelease = image("metaModelRelease", file("./metamodel/release")).settings(
   name := "metamodel/release",
