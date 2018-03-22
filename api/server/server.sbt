@@ -48,5 +48,6 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
 ).enablePlugins(PlayScala).dependsOn(
   ZetaBuild.common,
   ZetaBuild.generatorControl,
-  ZetaBuild.persistence
+  ZetaBuild.persistence,
+  ZetaBuild.parser
 )

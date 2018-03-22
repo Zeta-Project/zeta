@@ -2,15 +2,15 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.mutable.ListBuffer
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.EnumValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.Util
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
@@ -33,7 +33,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
   def handleDoubles(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: DoubleValue => v }.map(_.value.toString)
   def handleEnums(values: Seq[AttributeValue]): Seq[String] = values.collect { case v: EnumValue => v }.map(_.toString)
 
-  override def check(elements: Seq[Node]): Seq[ModelValidationResult] = {
+  override def check(elements: Seq[NodeInstance]): Seq[ModelValidationResult] = {
 
     val nodes = elements.filter(node => nodeTypes.contains(node.className))
 
@@ -54,7 +54,7 @@ class NodeAttributesGlobalUnique(val nodeTypes: Seq[String], val attributeType: 
     val attributesGrouped: Map[String, Seq[String]] = attributeValuesStrings.groupBy(identity)
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
-    def checkNodeDuplicateValues(acc: Seq[ModelValidationResult], currentNode: Node): Seq[ModelValidationResult] = {
+    def checkNodeDuplicateValues(acc: Seq[ModelValidationResult], currentNode: NodeInstance): Seq[ModelValidationResult] = {
       val attributeValues = currentNode.attributeValues.values.toSeq
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {

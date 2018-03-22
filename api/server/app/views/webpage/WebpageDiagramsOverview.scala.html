@@ -1,9 +1,8 @@
-@import de.htwg.zeta.common.models.entity.GraphicalDsl
+@import de.htwg.zeta.common.format.GraphicalDslInstanceShortInfo
+@import de.htwg.zeta.common.format.ProjectShortInfo
 @import de.htwg.zeta.common.models.entity.User
-@import de.htwg.zeta.common.models.modelDefinitions.metaModel.MetaModelShortInfo
-@import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstanceShortInfo
-
-@(user: Option[User], metaModels: Seq[MetaModelShortInfo], metaModel: Option[GraphicalDsl], modelInstances: Seq[GraphicalDslInstanceShortInfo])
+@import de.htwg.zeta.common.models.project.GdslProject
+@(user: Option[User], metaModels: Seq[ProjectShortInfo], metaModel: Option[GdslProject], modelInstances: Seq[GraphicalDslInstanceShortInfo])
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.css")">

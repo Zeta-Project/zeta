@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 
 /**
  * Result of a generator

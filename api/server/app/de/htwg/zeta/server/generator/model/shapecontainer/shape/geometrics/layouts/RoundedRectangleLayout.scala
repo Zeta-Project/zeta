@@ -15,6 +15,12 @@ trait RoundedRectangleLayout extends CommonLayout {
 }
 
 object RoundedRectangleLayoutParser extends CommonParserMethods {
+
+  def curve: Parser[Option[(Int, Int)]] = "[Cc]urve\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
+    case width ~ height => Some((width.toInt, height.toInt))
+    case _ => None
+  }
+
   def apply(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache) = parse(geoModel, parentStyle, hierarchyContainer)
   def parse(geoModel: GeoModel, parentStyle: Option[Style], hierarchyContainer: Cache): Option[RoundedRectangleLayout] = {
     val attributes = geoModel.attributes
