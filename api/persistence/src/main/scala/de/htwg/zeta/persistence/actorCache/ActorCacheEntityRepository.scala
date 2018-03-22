@@ -30,7 +30,7 @@ import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
@@ -182,13 +182,13 @@ class ActorCacheLogRepository @Inject()(
 
 @Singleton
 class ActorCacheGraphicalDslRepository @Inject()(
-    underlying: GraphicalDslRepository,
+    underlying: GdslProjectRepository,
     system: ActorSystem,
     numberActorsPerEntityType: Int,
     cacheDuration: FiniteDuration,
     timeout: Timeout
 ) extends ActorCacheEntityRepository(underlying, system, numberActorsPerEntityType, cacheDuration, timeout)
-  with GraphicalDslRepository
+  with GdslProjectRepository
 
 
 @Singleton

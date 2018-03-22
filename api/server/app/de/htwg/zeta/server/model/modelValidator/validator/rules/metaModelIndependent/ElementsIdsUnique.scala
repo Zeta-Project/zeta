@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelIndependent
 
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.ModelRule
 
 /**

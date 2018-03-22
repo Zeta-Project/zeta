@@ -3,7 +3,7 @@ package de.htwg.zeta.server.model.modelValidator.generator.consistencyRules
 import scala.collection.breakOut
 import scala.collection.mutable
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
+import de.htwg.zeta.common.models.project.concept.Concept
 
 class NoCyclicInheritance extends ConceptRule {
 

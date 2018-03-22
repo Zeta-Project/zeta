@@ -2,16 +2,16 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -28,7 +28,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     Seq.empty
   )
 
-  val emptyEdge: Edge = Edge.empty("", mReference.name, "", "")
+  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
 
   val rule = new EdgeAttributes("reference", Seq("stringAttribute", "boolAttribute"))
 
@@ -49,7 +49,7 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
       "invalidAttribute" -> DoubleValue(1.0)
     )
 
-    val edge = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributes)
+    val edge = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributes)
 
     rule.isValid(edge).get should be(false)
   }

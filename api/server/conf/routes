@@ -69,6 +69,13 @@ PUT           /rest/vl/meta-models/:metaModelId/referenceMethod/:methodName/:ref
 PUT           /rest/vl/meta-models/:metaModelId/commonMethod/:methodName                          controllers.ScalaRoutes.putMetaModelsMainMethod(metaModelId: java.util.UUID, methodName: String)
 HEAD          /metamodels/:metaModelId/validator                                                  controllers.ScalaRoutes.headMetaModelsValidator(metaModelId: java.util.UUID, generate: Option[Boolean])
 
+### REST API V2
+
+GET           /rest/v2/meta-models/:metaModelId/triggerParse                                      controllers.ScalaRoutesApiV2.triggerParse(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/shape                                             controllers.ScalaRoutesApiV2.getMetaModelShape(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/style                                             controllers.ScalaRoutesApiV2.getMetaModelStyle(metaModelId: java.util.UUID)
+GET           /rest/v2/meta-models/:metaModelId/diagram                                           controllers.ScalaRoutesApiV2.getMetaModelDiagram(metaModelId: java.util.UUID)
+
 ### Model REST API
 GET           /rest/v1/models                                                                     controllers.ScalaRoutes.getModelsNoArgs
 POST          /rest/v1/models                                                                     controllers.ScalaRoutes.postModels

@@ -2,16 +2,16 @@ package de.htwg.zeta.server.model.modelValidator
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -41,14 +41,14 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
   val modelNodes = Seq(
-    Node.empty("node1", mClass.name, Seq.empty, Seq.empty),
-    Node.empty("node2", mClass.name, Seq.empty, Seq.empty),
-    Node.empty("node3", mClass.name, Seq.empty, Seq.empty)
+    NodeInstance.empty("node1", mClass.name, Seq.empty, Seq.empty),
+    NodeInstance.empty("node2", mClass.name, Seq.empty, Seq.empty),
+    NodeInstance.empty("node3", mClass.name, Seq.empty, Seq.empty)
   )
 
   val modelEdges = Seq(
-    Edge.empty("edge1", mReference.name, "", ""),
-    Edge.empty("edge2", mReference.name, "", "")
+    EdgeInstance.empty("edge1", mReference.name, "", ""),
+    EdgeInstance.empty("edge2", mReference.name, "", "")
   )
 
   val mObjects = Seq(
