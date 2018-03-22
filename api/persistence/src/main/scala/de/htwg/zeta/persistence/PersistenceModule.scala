@@ -12,7 +12,7 @@ import com.google.inject.Provides
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheAccessAuthorisationRepository
 import de.htwg.zeta.persistence.actorCache.ActorCacheBondedTaskRepository
@@ -41,7 +41,7 @@ import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.LoginInfoRepository
 import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
@@ -84,7 +84,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   def configure(): Unit = {
     bind[TokenCache].to[TransientTokenCache]
     bind[AccessRestrictedFilePersistence]
-    bind[AccessRestrictedGraphicalDslRepository]
+    bind[AccessRestrictedGdslProjectRepository]
     bind[AccessRestrictedGraphicalDslInstanceRepository]
     bind[AccessRestrictedLogRepository]
   }
@@ -195,7 +195,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   }
 
   @Provides @Singleton
-  def provideGraphicalDslRepo(connection: Future[DefaultDB]): GraphicalDslRepository = {
+  def provideGraphicalDslRepo(connection: Future[DefaultDB]): GdslProjectRepository = {
     new ActorCacheGraphicalDslRepository(
       new MongoGraphicalDslRepository(connection),
       system, numberActorsPerType, cacheDuration, timeout

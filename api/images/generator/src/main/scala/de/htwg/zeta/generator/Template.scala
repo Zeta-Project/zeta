@@ -16,13 +16,13 @@ import com.google.inject.Guice
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.FileRepository
 import de.htwg.zeta.persistence.general.FilterRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import org.rogach.scallop.ScallopConf
 import org.rogach.scallop.ScallopOption
@@ -77,7 +77,7 @@ abstract class Template[S, T]()(implicit createOptions: Reads[S], callOptions: R
   val filePersistence = injector.getInstance(classOf[FileRepository])
   val generatorPersistence = injector.getInstance(classOf[GeneratorRepository])
   val filterPersistence = injector.getInstance(classOf[FilterRepository])
-  val metaModelEntityPersistence = injector.getInstance(classOf[GraphicalDslRepository])
+  val metaModelEntityPersistence = injector.getInstance(classOf[GdslProjectRepository])
   val generatorImagePersistence = injector.getInstance(classOf[GeneratorImageRepository])
 
   val user: UUID = cmd.session.toOption.fold(UUID.randomUUID)(UUID.fromString)

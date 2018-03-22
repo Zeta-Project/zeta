@@ -4,11 +4,11 @@ import java.util.UUID
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 
 object GraphicalDslInstanceFixtures {
 
@@ -18,7 +18,7 @@ object GraphicalDslInstanceFixtures {
   val edgeName1: String = "edgeName1"
   val edgeName2: String = "edgeName2"
 
-  val node1 = Node(
+  val node1 = NodeInstance(
     name = "node1",
     className = GraphicalDslFixtures.class1.name,
     outputEdgeNames = Seq(edgeName1, edgeName2),
@@ -28,7 +28,7 @@ object GraphicalDslInstanceFixtures {
     methods = Seq.empty
   )
 
-  val node2 = Node(
+  val node2 = NodeInstance(
     name = "node2",
     className = GraphicalDslFixtures.class2.name,
     outputEdgeNames = Seq.empty,
@@ -38,7 +38,7 @@ object GraphicalDslInstanceFixtures {
     methods = Seq.empty
   )
 
-  val edge1 = Edge(
+  val edge1 = EdgeInstance(
     name = "edge1",
     referenceName = GraphicalDslFixtures.reference1.name,
     sourceNodeName = nodeName1,
@@ -48,7 +48,7 @@ object GraphicalDslInstanceFixtures {
     methods = Seq.empty
   )
 
-  val edge2 = Edge(
+  val edge2 = EdgeInstance(
     name = "edge2",
     referenceName = GraphicalDslFixtures.reference2.name,
     sourceNodeName = nodeName2,

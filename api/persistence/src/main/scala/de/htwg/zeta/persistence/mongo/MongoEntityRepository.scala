@@ -18,16 +18,16 @@ import de.htwg.zeta.common.format.entity.LogFormat
 import de.htwg.zeta.common.format.entity.SettingsFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
 import de.htwg.zeta.common.format.entity.UserFormat
-import de.htwg.zeta.common.format.metaModel.AttributeFormat
-import de.htwg.zeta.common.format.metaModel.AttributeTypeFormat
-import de.htwg.zeta.common.format.metaModel.AttributeValueFormat
-import de.htwg.zeta.common.format.metaModel.ClassFormat
-import de.htwg.zeta.common.format.metaModel.ConceptFormat
-import de.htwg.zeta.common.format.metaModel.EnumFormat
-import de.htwg.zeta.common.format.metaModel.GraphicalDslFormat
-import de.htwg.zeta.common.format.metaModel.GraphicalDslReleaseFormat
-import de.htwg.zeta.common.format.metaModel.MethodFormat
-import de.htwg.zeta.common.format.metaModel.ReferenceFormat
+import de.htwg.zeta.common.format.project.AttributeFormat
+import de.htwg.zeta.common.format.project.AttributeTypeFormat
+import de.htwg.zeta.common.format.project.AttributeValueFormat
+import de.htwg.zeta.common.format.project.ClassFormat
+import de.htwg.zeta.common.format.project.ConceptFormat
+import de.htwg.zeta.common.format.project.EnumFormat
+import de.htwg.zeta.common.format.project.GdslProjectFormat
+import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
+import de.htwg.zeta.common.format.project.MethodFormat
+import de.htwg.zeta.common.format.project.ReferenceFormat
 import de.htwg.zeta.common.format.model.EdgeFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
@@ -42,7 +42,7 @@ import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
-import de.htwg.zeta.persistence.general.GraphicalDslRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
@@ -232,8 +232,8 @@ class MongoLogRepository @Inject()(
 @Singleton
 class MongoGraphicalDslRepository @Inject()(
     database: Future[DefaultDB]
-) extends MongoEntityRepository(database, new GraphicalDslFormat(conceptFormat, sId = sMongoId))
-  with GraphicalDslRepository
+) extends MongoEntityRepository(database, new GdslProjectFormat(conceptFormat, sId = sMongoId))
+  with GdslProjectRepository
 
 @Singleton
 class MongoGraphicalDslReleaseRepository @Inject()(

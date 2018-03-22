@@ -2,10 +2,10 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MClass
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MClass
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -18,15 +18,15 @@ class NodesTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on valid edges" in {
 
-    val node1 = Node.empty("", mClass1.name, Seq(), Seq())
+    val node1 = NodeInstance.empty("", mClass1.name, Seq(), Seq())
     rule.isValid(node1).get should be(true)
 
-    val node2 = Node.empty("", mClass2.name, Seq(), Seq())
+    val node2 = NodeInstance.empty("", mClass2.name, Seq(), Seq())
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on invalid edges" in {
-    val node3 = Node.empty("", mClass3.name, Seq(), Seq())
+    val node3 = NodeInstance.empty("", mClass3.name, Seq(), Seq())
     rule.isValid(node3).get should be(false)
   }
 
