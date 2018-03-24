@@ -3,6 +3,7 @@ package de.htwg.zeta.parser.shape
 import de.htwg.zeta.parser.shape.parser.{EdgeParser, GeoModelParser}
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.{Placing, Target}
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Offset
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.{Point, Position}
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
 import org.scalatest.{FreeSpec, Inside, Matchers}
@@ -44,7 +45,7 @@ class EdgeParserTest extends FreeSpec with Matchers with Inside {
           List(
             Placing(
               style = None,
-              Position(1, 5),
+              Offset(1.0),
               geoModel = LineParseTree(
                 style = None,
                 Point(1, 2),
