@@ -1,6 +1,7 @@
 import {linkhelper} from '../generator/editor/LinkHelperGenerator'
 import {validator} from '../generator/editor/ValidatorGenerator'
 import '../generator/temporary/old/connectionstyle';
+import GeneratorFactory from "../generator/GeneratorFactory";
 
 //import {getConnectionStyle,getLabels,getPlacings} from "../generator/shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator";
 
@@ -22,9 +23,9 @@ var contextMenu = {
      init: function(graph){
         this.log("init contextMenu");
         this.graph = graph;
-        this.connectionStyleGenerator = global.generatorFactory.state.connectionDefinitionGenerator;
-        this.linkhelperGenerator = global.generatorFactory.state.linkhelperGenerator;
-        this.validatorGenerator = global.generatorFactory.state.validatorGenerator;
+        this.connectionStyleGenerator = GeneratorFactory.connectionDefinition;
+        this.linkhelperGenerator = GeneratorFactory.linkHelper;
+        this.validatorGenerator = GeneratorFactory.validator;
 
         console.log("ValidatorGenerator:");
         console.log(this.validatorGenerator);

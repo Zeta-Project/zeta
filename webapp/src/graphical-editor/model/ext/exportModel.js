@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import {linkhelper} from '../generator/temporary/old/linkhelper'
+import GeneratorFactory from "../generator/GeneratorFactory";
 
 //TODO import {linkhelper} from '../generator/editor/LinkHelperGenerator'
 
@@ -115,7 +116,7 @@ export default (function modelExporter () {
 
             // add attributes
             link.attributes.labels.forEach(function(label) {
-                let attributeName = global.generatorFactory.state.linkHelperGenerator.mapping[link.attributes.mReference][label.id];
+                let attributeName = GeneratorFactory.linkHelper.mapping[link.attributes.mReference][label.id];
                 element.attributes[attributeName] = [label.attrs.text.text];
             });
 
