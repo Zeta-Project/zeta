@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import joint from 'jointjs';
+import GeneratorFactory from "../generator/GeneratorFactory";
 // DEBUG
 // import {validator} from '../generator/temporary/old/validator'
 
@@ -41,7 +42,7 @@ export default (function linkTypeSelector() {
     init = function init(graph, paper) {
         _graph = graph;
         _paper = paper;
-        connectionDefinitionGenerator = global.generatorFactory.getConnectionDefinitionGenerator();
+        connectionDefinitionGenerator = GeneratorFactory.connectionDefinition;
         registerListeners();
     };
 
@@ -167,7 +168,7 @@ export default (function linkTypeSelector() {
 
         let eventTarget = eventTargetModel.attributes.nodeName;
 
-        menuList = global.generatorFactory.state.validatorGenerator.getValidEdges(eventSourceType, eventTarget);
+        menuList = GeneratorFactory.validator.getValidEdges(eventSourceType, eventTarget);
 
         //DEBUG
         // let menuList_OLD = validator.getValidEdges(eventSourceType, eventTarget);
@@ -248,7 +249,7 @@ export default (function linkTypeSelector() {
         //DEBUG
         // let edgeData_OLD = validator.getEdgeData(link.attributes.subtype);
 
-        let edgeData = global.generatorFactory.state.validatorGenerator.getEdgeData(link.attributes.subtype);
+        let edgeData = GeneratorFactory.validator.getEdgeData(link.attributes.subtype);
 
         let edgeType = edgeData.type;
         let targetId = link.attributes.target.id;
@@ -266,10 +267,10 @@ export default (function linkTypeSelector() {
             // let minInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
             // let minOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
 
-            maxInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[edgeData.to][edgeData.type].upperBound;
-            maxOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[edgeData.from][edgeData.type].upperBound;
-            minInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
-            minOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
+            maxInputs = GeneratorFactory.validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
+            maxOutputs = GeneratorFactory.validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
+            minInputs = GeneratorFactory.validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
+            minOutputs = GeneratorFactory.validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
 
         } catch (e) {
             maxInputs = Number.MAX_SAFE_INTEGER;
@@ -338,8 +339,8 @@ export default (function linkTypeSelector() {
         if (cell.isLink()) return;
         let inputs = [];
         let outputs = [];
-        let inputMatrix = global.generatorFactory.state.validatorGenerator.inputMatrix[cell.attributes.mClass];
-        let outputMatrix = global.generatorFactory.state.validatorGenerator.outputMatrix[cell.attributes.mClass];
+        let inputMatrix = GeneratorFactory.validator.inputMatrix[cell.attributes.mClass];
+        let outputMatrix = GeneratorFactory.validator.outputMatrix[cell.attributes.mClass];
 
         //DEBUG
         // let inputMatrix_OLD = validator.inputMatrix[cell.attributes.mClass];
@@ -380,7 +381,7 @@ export default (function linkTypeSelector() {
         //DEBUG
         // let edgeType_OLD = validator.getEdgeData(link.attributes.subtype).type;
 
-        let edgeType = global.generatorFactory.state.validatorGenerator.getEdgeData(link.attributes.subtype).type;
+        let edgeType = GeneratorFactory.validator.getEdgeData(link.attributes.subtype).type;
 
         let sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
         let targetMClass = _graph.getCell(link.attributes.target.id).attributes.mClass;
@@ -396,10 +397,10 @@ export default (function linkTypeSelector() {
             // let maxInputs_OLD = validator.inputMatrix[targetMClass][edgeType].upperBound;
             // let maxOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].upperBound;
 
-            minInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[targetMClass][edgeType].lowerBound;
-            minOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[sourceMClass][edgeType].lowerBound;
-            maxInputs = global.generatorFactory.state.validatorGenerator.inputMatrix[targetMClass][edgeType].upperBound;
-            maxOutputs = global.generatorFactory.state.validatorGenerator.outputMatrix[sourceMClass][edgeType].upperBound;
+            minInputs = GeneratorFactory.validator.inputMatrix[targetMClass][edgeType].lowerBound;
+            minOutputs = GeneratorFactory.validator.outputMatrix[sourceMClass][edgeType].lowerBound;
+            maxInputs = GeneratorFactory.validator.inputMatrix[targetMClass][edgeType].upperBound;
+            maxOutputs = GeneratorFactory.validator.outputMatrix[sourceMClass][edgeType].upperBound;
 
         } catch (e) {
             minInputs = 0;

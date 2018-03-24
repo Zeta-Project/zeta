@@ -1,5 +1,3 @@
-
-
 import StyleGenerator from './style/StyleGenerator'
 import DiagramGenerator from './diagram/DiagramGenerator'
 
@@ -12,69 +10,104 @@ import ShapeDefinitionGenerator from './shape/ShapeDefinitionGenerator'
 import ShapeStyleGenerator from './shape/ShapeStyleGenerator'
 import ConnectionDefinitionGenerator from './shape/connectionDefinitionGenerator/ConnectionDefinitionGenerator'
 
+let generators = null;
 
-export default class GeneratorFactory {
-
-    constructor(callback) {
-        this.callback = callback;
-        this.state = {
-            styleGenerator : null,
-            diagramGenerator : null,
-            shapeDefinitionGenerator : null,
-            shapeStyleGenerator : null,
-            connectionDefinitionGenerator : null,
-            inspectorGenerator : null,
-            linkHelperGenerator : null,
-            stencilGenerator : null,
-            validatorGenerator : null
-        };
-        this.getAllRestJson();
-    }
-
-    getAllRestJson() {
-
-        let protocol = location.protocol;
-        let slashes = '//';
-        let slash = '/';
-        let host = window.location.hostname;
-        let port = ':'.concat(window.location.port);
-        let restV1call = '/rest/v1/totalDsl/';
-        let modelId = window._global_graph_type;
-
-        let url = protocol.concat(slashes).concat(host).concat(port).concat(restV1call).concat(modelId);
-
-        fetch(url, {
-            credentials: 'same-origin'
-        }).then(function (response) {
-            return response.json()
-        }).then(data => {
-            this.createGenerator(data["diagram"], data["style"]["styles"], data["shape"], data["concept"]);
-        }).catch(function (error) {
-            console.log('Error fetching Rest-API');
-            console.log('Error-Msg: ' + error);
-        });
-    }
-
-    createGenerator(diagram, style, shape, concept) {
-        this.state.styleGenerator = new StyleGenerator(style);
-        //this.state.diagramGenerator = new DiagramGenerator(diagram);
-
-        this.state.shapeDefinitionGenerator = new ShapeDefinitionGenerator(shape);
-        this.state.shapeStyleGenerator = new ShapeStyleGenerator(shape, this.state.styleGenerator);
-        this.state.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(shape, this.state.styleGenerator);
-
-        this.state.inspectorGenerator = new InspectorGenerator(shape, this.state.shapeDefinitionGenerator);
-        this.state.linkHelperGenerator = new LinkHelperGenerator(diagram);
-        this.state.stencilGenerator = new StencilGenerator(diagram, concept, this.state.shapeStyleGenerator, this.state.styleGenerator);
-        this.state.validatorGenerator = new ValidatorGenerator(concept, diagram);
-
-        this.callback();
-    }
-
-    getConnectionDefinitionGenerator() {
-        return this.state.connectionDefinitionGenerator;
+function checkInitialized() {
+    if (generators === null) {
+        alert("The GeneratorFactory needs to be initialized before getting any generator")
     }
 }
 
+function createGenerators(diagramData, styleData, shapeData, conceptData) {
 
+    const style = new StyleGenerator(styleData);
+    // const diagram = new DiagramGenerator(diagram), // TODO the diagramGenerator is currently not implemented
+    const shapeDefinition = new ShapeStyleGenerator(shapeData, style);
+    const shapeStyle = new ShapeStyleGenerator(shapeData, style);
+    const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);
 
+    const inspector = new InspectorGenerator(shapeData, shapeDefinition);
+    const linkHelper = new LinkHelperGenerator(diagramData);
+    const stencil = new StencilGenerator(diagramData, conceptData, shapeStyle, style);
+    const validator = new ValidatorGenerator(conceptData, diagramData);
+
+    generators = {
+        style,
+        // diagram, // TODO the diagramGenerator is currently not implemented
+        shapeDefinition,
+        shapeStyle,
+        connectionDefinition,
+
+        inspector,
+        linkHelper,
+        stencil,
+        validator
+    };
+}
+
+export default class GeneratorFactory {
+
+    static initialize() {
+        return new Promise((resolve, reject) => {
+            fetch('/rest/v1/totalDsl/' + window._global_graph_type, {
+                credentials: 'same-origin'
+            }).then(response => {
+                return response.json()
+            }).then(data => {
+                createGenerators(data["diagram"], data["style"]["styles"], data["shape"], data["concept"]);
+                resolve();
+            }).catch(error => {
+                console.log('Error fetching Rest-API');
+                console.log('Error-Msg: ' + error);
+                reject(error);
+            });
+        });
+    }
+
+    static get style() {
+        checkInitialized();
+        return generators.style;
+    }
+
+    /* TODO the diagramGenerator is currently not implemented
+    static get diagram() {
+        checkInitialized();
+        return generators.diagram;
+    }*/
+
+    static get shapeDefinition() {
+        checkInitialized();
+        return generators.shapeDefinition;
+    }
+
+    static get shapeStyle() {
+        checkInitialized();
+        return generators.shapeStyle;
+    }
+
+    static get connectionDefinition() {
+        checkInitialized();
+        return generators.connectionDefinition;
+    }
+
+    static get inspector() {
+        checkInitialized();
+        return generators.inspector;
+    }
+
+    static get linkHelper() {
+        checkInitialized();
+        return generators.linkHelper;
+    }
+
+    static get stencil() {
+        checkInitialized();
+        return generators.stencil;
+    }
+
+    static get validator() {
+        checkInitialized();
+        return generators.validator;
+    }
+
+}
