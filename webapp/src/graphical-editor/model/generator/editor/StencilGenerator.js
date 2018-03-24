@@ -107,9 +107,9 @@ class ShapesGenerator {
  * 
  */
 export default class StencilGenerator {
-    constructor(diagram, metaModel, shapeStyleGenerator, styleGenerator) {
+    constructor(diagram, concept, shapeStyleGenerator, styleGenerator) {
         this.diagram = diagram;
-        this.metaModel = metaModel;
+        this.concept = concept;
         this.nodes = diagram.model && diagram.model.nodes ? diagram.model.nodes : [];
         this.shapesGenerator = new ShapesGenerator(shapeStyleGenerator);
         this.styleGenerator = styleGenerator;
@@ -124,7 +124,7 @@ export default class StencilGenerator {
     }
 
     get shapes() {
-        const classes = this.metaModel && this.metaModel.classes ? this.metaModel.classes : [];
+        const classes = this.concept && this.concept.classes ? this.concept.classes : [];
         return this.shapesGenerator.create(this.nodes, classes);
     }
 

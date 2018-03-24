@@ -14,14 +14,14 @@ let generators = null;
 
 function checkInitialized() {
     if (generators === null) {
-        alert("The GeneratorFactory needs to be initialized before getting any generator")
+        console.error("The GeneratorFactory needs to be initialized before getting any generator");
     }
 }
 
-function createGenerators(diagramData, styleData, shapeData, conceptData) {
+function createGenerators(styleData, diagramData, shapeData, conceptData) {
 
     const style = new StyleGenerator(styleData);
-    // const diagram = new DiagramGenerator(diagram), // TODO the diagramGenerator is currently not implemented
+    // const diagram = new DiagramGenerator(diagramData), // TODO the diagramGenerator is currently not implemented
     const shapeDefinition = new ShapeStyleGenerator(shapeData, style);
     const shapeStyle = new ShapeStyleGenerator(shapeData, style);
     const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);
@@ -43,12 +43,33 @@ function createGenerators(diagramData, styleData, shapeData, conceptData) {
         stencil,
         validator
     };
+
 }
 
 export default class GeneratorFactory {
 
     static initialize() {
         return new Promise((resolve, reject) => {
+
+            const metaModelId = window._global_graph_type;
+            const credentials = {credentials: 'same-origin'};
+
+            Promise.all([
+                fetch(`/rest/v2/meta-models/${metaModelId}/style`, credentials).then(r => r.json()),
+                fetch(`/rest/v2/meta-models/${metaModelId}/diagram`, credentials).then(r => r.json()),
+                fetch(`/rest/v2/meta-models/${metaModelId}/shape`, credentials).then(r => r.json()),
+                fetch(`/rest/v1/meta-models/${metaModelId}`, credentials).then(r => r.json()),
+                fetch('/rest/v1/totalDsl/' + window._global_graph_type, credentials).then(r => r.json())
+            ]).then(([style, diagram, shape, concept, old]) => {
+                console.log(JSON.stringify({style, diagram, shape, concept, old}));
+                createGenerators(style['styles'], diagram, shape, concept['concept']);
+                resolve();
+            }).catch(error => {
+                console.error(`Error fetching Rest-API: ${error}`);
+                reject(error);
+            });
+
+            /*  Old v1-Version, for comparison, can be removed when v2 is fully working
             fetch('/rest/v1/totalDsl/' + window._global_graph_type, {
                 credentials: 'same-origin'
             }).then(response => {
@@ -60,7 +81,8 @@ export default class GeneratorFactory {
                 console.log('Error fetching Rest-API');
                 console.log('Error-Msg: ' + error);
                 reject(error);
-            });
+            }); */
+
         });
     }
 
