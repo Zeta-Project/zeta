@@ -220,7 +220,7 @@ describe('getConnectionStyle', () => {
           "stroke-width": 0,
           "dominant-baseline": "text-before-edge",
           "fill": "#000000",
-          "font-family": "DefaultStyle",
+          "font-family": "sans-serif",
           "font-size": "11",
           "font-weight": "normal"
         },
@@ -282,7 +282,7 @@ describe('getConnectionStyle', () => {
           "text": {
             "dominant-baseline": "text-before-edge",
             "fill": "#000000",
-            "font-family":"DefaultStyle",
+            "font-family":"sans-serif",
             "font-size": "11",
             "font-weight":"normal"
           },
@@ -332,7 +332,7 @@ describe('getConnectionStyle', () => {
           "text": {
             "dominant-baseline": "text-before-edge",
             "fill": "#000000",
-            "font-family":"DefaultStyle",
+            "font-family":"sans-serif",
             "font-size": "11",
             "font-weight":"normal"
           },
