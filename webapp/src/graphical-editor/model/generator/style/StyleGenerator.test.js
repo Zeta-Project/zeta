@@ -22,10 +22,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal'
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -38,22 +39,23 @@ describe('getStyle', () => {
                 name: 'helvetica',
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'helvetica',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal'
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
-    
+
     test('with font-size `20`', () => {
         const style = {
             name: 'DefaultStyle',
@@ -61,45 +63,47 @@ describe('getStyle', () => {
                 size: 20,
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '20',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal'
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
 
-    test('with font-color `rgba(255,255,255,1.0)`', () => {
+    test('with font-color `#ffffff`', () => {
         const style = {
             name: 'DefaultStyle',
             font: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(255,255,255,1.0)',
+                'fill': '#ffffff',
                 'font-weight': 'normal'
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
-    
+
     test('with font-bold `true`', () => {
         const style = {
             name: 'DefaultStyle',
@@ -107,17 +111,18 @@ describe('getStyle', () => {
                 bold: true,
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'bold'
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -130,17 +135,18 @@ describe('getStyle', () => {
                 bold: false,
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal'
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -160,11 +166,12 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
                 'font-style': 'italic',
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -184,20 +191,21 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
 
-    test('with background color `rgba(255,255,255,1.0)`', () => {
+    test('with background color `#ffffff`', () => {
         const style = {
             name: 'DefaultStyle',
             background: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
             },
         };
 
@@ -207,16 +215,17 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'fill': 'rgba(255,255,255,1.0)',
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill': '#ffffff',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
-    
+
     test('with background gradient', () => {
         const style = {
             name: 'DefaultStyle',
@@ -231,14 +240,15 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -260,14 +270,15 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -281,11 +292,11 @@ describe('getStyle', () => {
                     area: [
                         {
                             offset: 0,
-                            color: 'rgba(0,0,0,1.0)'
+                            color: '#000000'
                         },
                         {
                             offset: 100,
-                            color: 'rgba(255,255,255,1.0)'
+                            color: '#ffffff'
                         }
                     ],
                 },
@@ -298,7 +309,7 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': {
@@ -306,15 +317,16 @@ describe('getStyle', () => {
                 'stops': [
                     {
                         'offset': 0,
-                        'color': 'rgba(0,0,0,1.0)'
+                        'color': '#000000'
                     },
                     {
                         'offset': 100,
-                        'color': 'rgba(255,255,255,1.0)'
+                        'color': '#ffffff'
                     }
                 ],
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -336,14 +348,15 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -365,7 +378,7 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': {
@@ -373,18 +386,17 @@ describe('getStyle', () => {
                 'stops': [],
                 'attrs': { x1: '0%', y1: '0%', x2: '0%', y2: '100%' },
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
     });
 
-    test('with text-color-transparency `0.5`', () => {
+    test('with transparency `0.5`', () => {
         const style = {
             name: 'DefaultStyle',
-            font:{
-                color: 'rgba(0,0,0,0.5)'
-            }
+            transparency: 0.5,
         };
 
         const getStyle = create([style]);
@@ -393,10 +405,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,0.5)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 0.5,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -406,7 +419,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color:  'rgba(0,0,0,0.5)'
+                transparent: true,
             }
         };
 
@@ -416,18 +429,19 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(0,0,0,0.5)'
+            'fill-opacity': 1.0,
+            'stroke-opacity': 0,
         });
     });
 
-    test('with line-color `rgba(255,255,255,1.0)`', () => {
+    test('with line-color `#ffffff`', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
             }
         };
 
@@ -437,10 +451,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
         });
     });
 
@@ -448,7 +463,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
                 width: 5,
             },
         };
@@ -459,10 +474,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
             'stroke-width': 5,
         });
     });
@@ -481,10 +497,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
@@ -494,7 +511,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
                 style: 'dash',
             },
         };
@@ -505,10 +522,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
             'stroke-dasharray': '10,10',
         });
     });
@@ -517,8 +535,8 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
-                style: 'dot',                
+                color: '#ffffff',
+                style: 'dot',
             },
         };
 
@@ -528,10 +546,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
             'stroke-dasharray': '5,5',
         });
     });
@@ -540,7 +559,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
                 style: 'dashdot',
             },
         };
@@ -551,10 +570,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
             'stroke-dasharray': '10,5,5,5',
         });
     });
@@ -563,7 +583,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
                 style: 'dashdotdot',
             },
         };
@@ -574,10 +594,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
             'stroke-dasharray': '10,5,5,5,5,5',
         });
     });
@@ -586,7 +607,7 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: 'rgba(255,255,255,1.0)',
+                color: '#ffffff',
                 style: 'unkown-style',
             },
         };
@@ -597,10 +618,11 @@ describe('getStyle', () => {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
                 'font-size': '11',
-                'fill': 'rgba(0,0,0,1.0)',
+                'fill': '#000000',
                 'font-weight': 'normal',
             },
-            'stroke': 'rgba(255,255,255,1.0)',
+            'fill-opacity': 1.0,
+            'stroke': '#ffffff',
             'stroke-dasharray': '0',
         });
     });
@@ -608,35 +630,37 @@ describe('getStyle', () => {
     test('with all attributes', () => {
         const style = {
             background: {
-                color: 'rgba(255,0,255,1.0)',
+                color: '#ff00ff',
             },
             font: {
                 bold: true,
-                color: 'rgba(0,255,255,1.0)',
+                color: '#00ffff',
                 italic: true,
                 name: 'helvetica',
                 size: 20,
             },
             line: {
-                color: 'rgba(255,255,0,1.0)',
+                color: '#ffff00',
                 style: 'dash',
                 width: 5,
             },
-            name: 'DefaultStyle'
+            name: 'DefaultStyle',
+            transparency: 0.3,
         };
 
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
-                'fill': 'rgba(0,255,255,1.0)',
+                'fill': '#00ffff',
                 'font-family': 'helvetica',
                 'font-size': '20',
                 'font-style': 'italic',
                 'font-weight': 'bold'
             },
-            'fill': 'rgba(255,0,255,1.0)',
-            'stroke': 'rgba(255,255,0,1.0)',
+            'fill': '#ff00ff',
+            'fill-opacity': 0.3,
+            'stroke': '#ffff00',
             'stroke-dasharray': '10,10',
             'stroke-width': 5,
         });
@@ -662,15 +686,13 @@ describe('createCommonAttributes', () => {
     test('with transparency `0.5`', () => {
         const style = {
             name: 'DefaultStyle',
-            background: {
-                color: 'rgba(0,0,0,0.5)'
-            }
+            transparency: 0.5,
         };
 
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
-            'fill': 'rgba(0,0,0,0.5)',
-            'stroke': 'rgba(0,0,0,1.0)',
+            'fill-opacity': 0.5,
+            'stroke': '#000000',
             'stroke-width': 0,
             'stroke-dasharray': "0"
         });
