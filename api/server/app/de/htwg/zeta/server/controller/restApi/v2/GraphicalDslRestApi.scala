@@ -19,6 +19,7 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepo
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsObject
+import play.api.libs.json.Json
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
@@ -58,7 +59,7 @@ class GraphicalDslRestApi @Inject()(
   }
 
   private def parseAndSerialize[A](id: UUID, request: SecuredRequest[ZetaEnv, A], serialize: GraphicalDsl => JsObject): Future[Result] = {
-    protectedRead(id, request, graphicalDsl => {
+    protectedRead(id, request, (graphicalDsl: GdslProject) => {
       graphicalDslParser.parse(
         graphicalDsl.concept,
         graphicalDsl.style,
@@ -66,7 +67,7 @@ class GraphicalDslRestApi @Inject()(
         graphicalDsl.diagram
       ).fold[Result](
         errorResult => InternalServerError(taskResultFormat.writes(TaskResult.error(errorResult.errorDsl, errorResult.errors))),
-        successResult => Ok(serialize(successResult))
+        successResult => Ok(Json.prettyPrint(serialize(successResult)))
       )
     })
   }
@@ -76,7 +77,9 @@ class GraphicalDslRestApi @Inject()(
     gdslProjectRepo.restrictedTo(request.identity.id).read(id).map { graphicalDsl =>
       trans(graphicalDsl)
     }.recover {
-      case e: Exception => BadRequest(e.getMessage)
+      case e: Exception =>
+        error("Failure during Json formatting:", e)
+        BadRequest("Failure: Could not parse model")
     }
   }
 

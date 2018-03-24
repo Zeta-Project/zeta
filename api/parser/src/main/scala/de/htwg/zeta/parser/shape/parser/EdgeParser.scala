@@ -33,7 +33,7 @@ object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedPa
   }.named("target")
 
   private def placing: Parser[Placing] = {
-    val attributes = unordered(optional(style), once(position), once(geoModel), once(offset))
+    val attributes = unordered(optional(style), once(geoModel), once(offset))
     "placing" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
       val attrs = Collector(parseResult)
       Placing(
