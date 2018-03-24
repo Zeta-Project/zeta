@@ -35,9 +35,9 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
     }
   }
 
-  def position: Parser[Position] = parseNaturalNumberTuple("position", "x", "y").map(Position.tupled)
+  def position: Parser[Position] = parseWholeNumberTuple("position", "x", "y").map(Position.tupled)
 
-  def point: Parser[Point] = parseNaturalNumberTuple("point", "x", "y").map(Point.tupled)
+  def point: Parser[Point] = parseWholeNumberTuple("point", "x", "y").map(Point.tupled)
 
   def size: Parser[Size] = parseNaturalNumberTuple("size", "width", "height").map(Size.tupled)
 
@@ -46,6 +46,14 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
   private def parseNaturalNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
     (name ~> leftParenthesis ~> arg1 ~> colon ~> naturalNumber <~ comma) ~
       (arg2 ~> colon ~> naturalNumber <~ rightParenthesis) ^^ { tuple =>
+      val first ~ second = tuple
+      (first, second)
+    }
+  }
+
+  private def parseWholeNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
+    (name ~> leftParenthesis ~> arg1 ~> colon ~> argumentInt <~ comma) ~
+      (arg2 ~> colon ~> argumentInt <~ rightParenthesis) ^^ { tuple =>
       val first ~ second = tuple
       (first, second)
     }
