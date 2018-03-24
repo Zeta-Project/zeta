@@ -35,15 +35,15 @@ object NodeParser extends CommonParserMethods with UniteParsers with UnorderedPa
     }
   }
 
-  private def resizing = include(NodeAttributeParser.resizing)
+  private def resizing = include(NodeAttributeParser.resizing).named("resizing")
 
-  private def style = include(NodeAttributeParser.style)
+  private def style = include(NodeAttributeParser.style).named("style")
 
-  private def sizeMin = include(NodeAttributeParser.sizeMin)
+  private def sizeMin = include(NodeAttributeParser.sizeMin).named("sizeMin")
 
-  private def sizeMax = include(NodeAttributeParser.sizeMax)
+  private def sizeMax = include(NodeAttributeParser.sizeMax).named("sizeMax")
 
-  private def anchor = include(NodeAttributeParser.anchor)
+  private def anchor = include(NodeAttributeParser.anchor).named("anchor")
 
   private def geoModels = include(GeoModelParser.geoModels)
 

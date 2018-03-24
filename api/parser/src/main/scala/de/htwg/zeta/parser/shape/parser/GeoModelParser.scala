@@ -15,8 +15,8 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     rectangle | horizontalLayout | verticalLayout | statictext | roundedRectangle
 
   private def parseGeoModel(name: String, attributes: List[ParseConf[GeoModelAttribute]]): Parser[(Collector, List[GeoModelParseTree])] = {
-    (name ~> leftBrace ~> unordered(attributes: _*) ~ geoModels <~ rightBrace).map {
-      case attrs ~ geoModels => (Collector(attrs), geoModels)
+    (name ~! leftBrace ~ unordered(attributes: _*) ~ geoModels ~ rightBrace).map {
+      case _ ~ _ ~ attrs ~ geoModels ~ _ => (Collector(attrs), geoModels)
     }
   }
 
@@ -46,7 +46,7 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   }
 
   private def textfield: Parser[TextfieldParseTree] = {
-    val attributes = List(optional(style), once(identifier), optional(multiline), once(position), once(size), optional(align))
+    val attributes = List(optional(style), once(identifier), optional(multiline), once(position), once(size), optional(align), optional(editable))
     parseGeoModel("textfield", attributes).map {
       case (attrs, geoModels) => TextfieldParseTree(
         attrs.?[Style],
@@ -159,25 +159,25 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     }
   }
 
-  private def text = include(GeoModelAttributeParser.text)
+  private def text = include(GeoModelAttributeParser.text).named("text")
 
-  private def style = include(GeoModelAttributeParser.style)
+  private def style = include(GeoModelAttributeParser.style).named("style")
 
-  private def position = include(GeoModelAttributeParser.position)
+  private def position = include(GeoModelAttributeParser.position).named("position")
 
-  private def point = include(GeoModelAttributeParser.point)
+  private def point = include(GeoModelAttributeParser.point).named("point")
 
-  private def size = include(GeoModelAttributeParser.size)
+  private def size = include(GeoModelAttributeParser.size).named("size")
 
-  private def align = include(GeoModelAttributeParser.align)
+  private def align = include(GeoModelAttributeParser.align).named("align")
 
-  private def identifier = include(GeoModelAttributeParser.identifier)
+  private def identifier = include(GeoModelAttributeParser.identifier).named("identifier")
 
-  private def multiline = include(GeoModelAttributeParser.multiline)
+  private def multiline = include(GeoModelAttributeParser.multiline).named("multiline")
 
-  private def editable = include(GeoModelAttributeParser.editable)
+  private def editable = include(GeoModelAttributeParser.editable).named("editable")
 
-  private def foreach = include(GeoModelAttributeParser.foreach)
+  private def foreach = include(GeoModelAttributeParser.foreach).named("foreach")
 
-  private def curve = include(GeoModelAttributeParser.curve)
+  private def curve = include(GeoModelAttributeParser.curve).named("curve")
 }

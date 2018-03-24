@@ -9,7 +9,12 @@ object EdgeAttributes {
 
   case class Target(target: String) extends EdgeAttribute
 
-  case class Placing(style: Option[Style],
-                     position: Position,
-                     geoModel: GeoModelParseTree) extends EdgeAttribute
+  case class Placing(
+      style: Option[Style],
+      offset: Offset,
+      geoModel: GeoModelParseTree,
+  ) extends EdgeAttribute
+
+  case class Offset(offset: Double) extends EdgeAttribute
+
 }
