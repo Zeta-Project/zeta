@@ -1,3 +1,5 @@
+import {StyleConfigurator} from './StyleConfigurator';
+
 const lineStyleToStrokeDasharrayMapper = {
     'dash': '10,10',
     'dot': '5,5',
@@ -178,13 +180,22 @@ class HighlightGenerator {
 export default class Generator {
     constructor(styles) {
         this.styles = styles;
-        this.styleGenerator = new StyleGenerator();
         this.highlightGenerator = new HighlightGenerator();
     }
 
     getStyle(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.styleGenerator.generate(style) : {};
+        return style ? StyleConfigurator.configure(style) : {};
+    }
+
+    createCommonAttributes(styleName) {
+        const style = this.styles.find((s) => s.name === styleName);
+        return style ? StyleConfigurator.configureCommonAttributes(style) : {};
+    }
+
+    createFontAttributes(styleName) {
+        const style = this.styles.find((s) => s.name === styleName);
+        return style ? StyleConfigurator.configureTextAttributes(style) : {};
     }
 
     getDiagramHighlighting(styleName) {
@@ -192,13 +203,4 @@ export default class Generator {
         return style ? this.highlightGenerator.generate(style) : '';
     }
 
-    createCommonAttributes(styleName) {
-        const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.styleGenerator.createCommonAttributes(style) : {};
-    }
-
-    createFontAttributes(styleName) {
-        const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.styleGenerator.createTextAttributes(style) : {};
-    }
 }
