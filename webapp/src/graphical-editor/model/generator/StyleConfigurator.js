@@ -68,11 +68,11 @@ export class StyleConfigurator {
     }
 
     static getFillOpacity(style) {
-        return style.transparency || 1.0;
+        return style?.transparency || 1.0;
     }
 
     static getFill(style) {
-        if (style.background?.gradient) {
+        if (style?.background?.gradient) {
             const gradient = style.background.gradient;
 
             const createGradientStops = () => {
@@ -99,39 +99,39 @@ export class StyleConfigurator {
                 'attrs': createGradientAttrs()
             };
         }
-        return style.background?.color;
+        return style?.background?.color;
     }
 
     static getStroke(style) {
         if (this.useDefaultLineAttributes(style)) {
             return '#000000';
         }
-        return style.line.color;
+        return style?.line?.color;
     }
 
     static getStrokeWidth(style) {
         if (this.useDefaultLineAttributes(style)) {
             return 0;
         }
-        if (style.line.transparent) return undefined;
-        return style.line.width;
+        if (style?.line?.transparent) return undefined;
+        return style?.line?.width;
     }
 
     static getStrokeDashArray(style) {
         if (StyleConfigurator.useDefaultLineAttributes(style)) {
             return '0';
         }
-        if (!style.line?.style) return undefined;
+        if (!style?.line?.style) return undefined;
         return lineStyleToStrokeDasharrayMapper[style.line.style] || '0';
     }
 
     static getStrokeOpacity(style) {
-        return style.line?.transparent ? 0 : undefined;
+        return style?.line?.transparent ? 0 : undefined;
     }
 
     static useDefaultLineAttributes(style) {
         // we have neither a color nor a transparency => use default line attributes
-        return style.line?.color === undefined && style.line?.transparent === undefined;
+        return style?.line?.color === undefined && style.line?.transparent === undefined;
     }
 
     static removeUndefinedValues(jsonObject) {
