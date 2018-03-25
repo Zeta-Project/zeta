@@ -22,14 +22,14 @@ function createGenerators(styleData, diagramData, shapeData, conceptData) {
 
     const style = new StyleGenerator(styleData);
     // const diagram = new DiagramGenerator(diagramData), // TODO the diagramGenerator is currently not implemented
-    const shapeDefinition = new ShapeStyleGenerator(shapeData, style);
-    const shapeStyle = new ShapeStyleGenerator(shapeData, style);
-    const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);
+    const shapeDefinition = new ShapeDefinitionGenerator(shapeData, style); // TODO update ShapeDefinitionGenerator to V2
+    const shapeStyle = new ShapeStyleGenerator(shapeData, style); // TODO update ShapeStyleGenerator to V2
+    const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);  // TODO update ConnectionDefinitionGenerator to V2
 
-    const inspector = new InspectorGenerator(shapeData, shapeDefinition);
-    const linkHelper = new LinkHelperGenerator(diagramData);
-    const stencil = new StencilGenerator(diagramData, conceptData, shapeStyle, style);
-    const validator = new ValidatorGenerator(conceptData, diagramData);
+    const inspector = new InspectorGenerator(shapeData, shapeDefinition); // TODO update InspectorGenerator to V2
+    const linkHelper = new LinkHelperGenerator(diagramData); // TODO update LinkHelperGenerator to V2
+    const stencil = new StencilGenerator(diagramData, conceptData, shapeStyle, style); // TODO update StencilGenerator to V2
+    const validator = new ValidatorGenerator(conceptData, diagramData); // TODO update ValidatorGenerator to V2
 
     generators = {
         style,
@@ -59,9 +59,9 @@ export default class GeneratorFactory {
                 fetch(`/rest/v2/meta-models/${metaModelId}/diagram`, credentials).then(r => r.json()),
                 fetch(`/rest/v2/meta-models/${metaModelId}/shape`, credentials).then(r => r.json()),
                 fetch(`/rest/v1/meta-models/${metaModelId}`, credentials).then(r => r.json()),
-                fetch('/rest/v1/totalDsl/' + window._global_graph_type, credentials).then(r => r.json())
-            ]).then(([style, diagram, shape, concept, old]) => {
-                console.log(JSON.stringify({style, diagram, shape, concept, old}));
+                fetch(`/rest/v1/totalDsl/${metaModelId}`, credentials).then(r => r.json()) // TODO remove when v2 is working
+            ]).then(([style, diagram, shape, concept, old /* TODO remove when v2 is working */]) => {
+                console.log(JSON.stringify({style, diagram, shape, concept, old})); // TODO remove when v2 is working
                 createGenerators(style['styles'], diagram, shape, concept['concept']);
                 resolve();
             }).catch(error => {
@@ -69,7 +69,7 @@ export default class GeneratorFactory {
                 reject(error);
             });
 
-            /*  Old v1-Version, for comparison, can be removed when v2 is fully working
+            /*  TODO Old v1-Version, for comparison, can be removed when v2 is fully working
             fetch('/rest/v1/totalDsl/' + window._global_graph_type, {
                 credentials: 'same-origin'
             }).then(response => {
