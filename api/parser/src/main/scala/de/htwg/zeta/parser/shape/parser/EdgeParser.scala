@@ -1,16 +1,15 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
-import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
-import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.Collector
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.UnorderedParser
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Offset
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
+import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 
 object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
@@ -39,7 +38,7 @@ object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedPa
       Placing(
         attrs.?[Style],
         attrs.![Offset],
-        attrs.![GeoModelParseTree],
+        attrs.![GeoModelParseTree]
       )
     }
   }.named("placing")

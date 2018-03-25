@@ -1,11 +1,15 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.CommonParserMethods
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
-import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.Collector
+import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.UnorderedParser
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.Anchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.Resizing
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
+import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 
 object NodeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
