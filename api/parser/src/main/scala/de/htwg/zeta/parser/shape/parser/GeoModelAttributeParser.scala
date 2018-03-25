@@ -3,7 +3,19 @@ package de.htwg.zeta.parser.shape.parser
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.EnumParser
 import de.htwg.zeta.parser.UniteParsers
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Align
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Curve
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Editable
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.HorizontalAlignment
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Multiline
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Point
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.VerticalAlignment
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
