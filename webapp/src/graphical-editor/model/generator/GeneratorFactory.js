@@ -22,7 +22,7 @@ function createGenerators(styleData, diagramData, shapeData, conceptData) {
 
     const style = new StyleGenerator(styleData);
     // const diagram = new DiagramGenerator(diagramData), // TODO the diagramGenerator is currently not implemented
-    const shapeDefinition = new ShapeDefinitionGenerator(shapeData, style); // TODO update ShapeDefinitionGenerator to V2
+    const shapeDefinition = new ShapeDefinitionGenerator(shapeData, style);
     const shapeStyle = new ShapeStyleGenerator(shapeData, style); // TODO update ShapeStyleGenerator to V2
     const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);  // TODO update ConnectionDefinitionGenerator to V2
 
@@ -60,8 +60,7 @@ export default class GeneratorFactory {
                 fetch(`/rest/v2/meta-models/${metaModelId}/shape`, credentials).then(r => r.json()),
                 fetch(`/rest/v1/meta-models/${metaModelId}`, credentials).then(r => r.json()),
                 fetch(`/rest/v1/totalDsl/${metaModelId}`, credentials).then(r => r.json()) // TODO remove when v2 is working
-            ]).then(([style, diagram, shape, concept, old /* TODO remove when v2 is working */]) => {
-                console.log(JSON.stringify({style, diagram, shape, concept, old})); // TODO remove when v2 is working
+            ]).then(([style, diagram, shape, concept, old /* TODO remove old when v2 is working */]) => {
                 createGenerators(style['styles'], diagram, shape, concept['concept']);
                 resolve();
             }).catch(error => {
