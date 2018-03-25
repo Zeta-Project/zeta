@@ -23,8 +23,8 @@ function createGenerators(styleData, diagramData, shapeData, conceptData) {
     const style = new StyleGenerator(styleData);
     // const diagram = new DiagramGenerator(diagramData), // TODO the diagramGenerator is currently not implemented
     const shapeDefinition = new ShapeDefinitionGenerator(shapeData, style);
-    const shapeStyle = new ShapeStyleGenerator(shapeData, style); // TODO update ShapeStyleGenerator to V2
-    const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);  // TODO update ConnectionDefinitionGenerator to V2
+    const shapeStyle = new ShapeStyleGenerator(shapeData, style); // TODO ShapeStyleGenerator is only partially updated to V2
+    const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);
 
     const inspector = new InspectorGenerator(shapeData, shapeDefinition); // TODO update InspectorGenerator to V2
     const linkHelper = new LinkHelperGenerator(diagramData); // TODO update LinkHelperGenerator to V2
