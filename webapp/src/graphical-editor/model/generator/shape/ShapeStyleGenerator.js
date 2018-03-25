@@ -115,13 +115,13 @@ class Generator {
     default
     class {
     constructor(shape, styleGenerator) {
-        this.shapes = shape.shapes ? shape.shapes : [];
+        this.nodes = shape.nodes ? shape.nodes : [];
         this.generator = new Generator(styleGenerator);
     }
 
     getShapeByName(shapeName) {
-        if (this.shapes.nodes) {
-            return this.shapes.nodes.find(e => e.name === shapeName);
+        if (this.nodes) {
+            return this.nodes.find(e => e.name === shapeName);
         } else {
             return [];
         }
