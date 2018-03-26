@@ -1,3 +1,5 @@
+import {StyleConfigurator} from './StyleConfigurator';
+
 const lineStyleToStrokeDasharrayMapper = {
     'dash': '10,10',
     'dot': '5,5',
@@ -116,21 +118,20 @@ class StyleGenerator {
 export default class Generator {
     constructor(styles) {
         this.styles = styles;
-        this.styleGenerator = new StyleGenerator();
     }
 
     getStyle(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.styleGenerator.generate(style) : {};
+        return style ? StyleConfigurator.configure(style) : {};
     }
 
     createCommonAttributes(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.styleGenerator.createCommonAttributes(style) : {};
+        return style ? StyleConfigurator.configureCommonAttributes(style) : {};
     }
 
     createFontAttributes(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
-        return style ? this.styleGenerator.createTextAttributes(style) : {};
+        return style ? StyleConfigurator.configureTextAttributes(style) : {};
     }
 }
