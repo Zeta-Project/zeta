@@ -6,8 +6,11 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.gdsl.diagram.Diagram
-import de.htwg.zeta.common.models.project.gdsl.diagram.Palette
+import de.htwg.zeta.common.models.project.gdsl.shape.Edge
+import de.htwg.zeta.common.models.project.gdsl.shape.Placing
+import de.htwg.zeta.common.models.project.gdsl.shape.Position
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
@@ -363,6 +366,113 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     transparency = 1
   )
 
+  private val realizationEdge = Edge(
+    name = "realization",
+    conceptElement = "Klasse.Realization",
+    target = "InterfaceKlasse",
+    placings = List(
+      Placing(
+        style = yStyle,
+        position = Position(1, 1.0),
+        geoModel = Polygon(
+          points = List(
+            Point(-10, 10),
+            Point(0, 0),
+            Point(-10, -10)
+          ),
+          childGeoModels = List(),
+          style = realizationStyle
+        )
+      )
+    )
+  )
+
+  private val inheritanceEdge = Edge(
+    name = "inheritance",
+    conceptElement = "Klasse.Inheritance",
+    target = "AbstractKlasse",
+    placings = List(
+      Placing(
+        style = xStyle,
+        position = Position(1, 1.0),
+        geoModel = Polygon(
+          points = List(
+            Point(-10, 10),
+            Point(0, 0),
+            Point(-10, -10)
+          ),
+          childGeoModels = List(),
+          style = Style.defaultStyle
+        )
+      )
+    )
+  )
+
+  private val aggregationEdge = Edge(
+    name = "aggregation",
+    conceptElement = "Klasse.Aggregation",
+    target = "Klasse",
+    placings = List(
+      Placing(
+        style = xStyle,
+        position = Position(1, 1.0),
+        geoModel = Polygon(
+          points = List(
+            Point(0, 0),
+            Point(-20, 10),
+            Point(-40, 0),
+            Point(-20, -10)
+          ),
+          childGeoModels = List(),
+          style = aggregationStyle
+        )
+      )
+    )
+  )
+
+  private val componentEdge = Edge(
+    name = "component",
+    conceptElement = "Klasse.Component",
+    target = "Klasse",
+    placings = List(
+      Placing(
+        style = xStyle,
+        position = Position(1, 1.0),
+        geoModel = Polygon(
+          points = List(
+            Point(0, 0),
+            Point(20, 0),
+            Point(40, 0),
+            Point(20, -10)
+          ),
+          childGeoModels = List(),
+          style = componentStyle
+        )
+      )
+    )
+  )
+
+  private val baseClassRealizationEdge = Edge(
+    name = "BaseClassRealization",
+    conceptElement = "Klasse.BaseClassRealization",
+    target = "InterfaceKlasse",
+    placings = List(
+      Placing(
+        style = yStyle,
+        position = Position(1, 1.0),
+        geoModel = Polygon(
+          points = List(
+            Point(-10, 10),
+            Point(0, 0),
+            Point(-10, -10)
+          ),
+          childGeoModels = List(),
+          style = realizationStyle
+        )
+      )
+    )
+  )
+
   "A Graphical DSL parser should success" - {
     "for an example input" in {
       val result = parser.parse(concept, style, shape, diagram)
@@ -378,6 +488,12 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
       parsed.styles should contain(realizationStyle)
       parsed.styles should contain(aggregationStyle)
       parsed.styles should contain(componentStyle)
+
+      parsed.shape.edges should contain(realizationEdge)
+      parsed.shape.edges should contain(inheritanceEdge)
+      parsed.shape.edges should contain(aggregationEdge)
+      parsed.shape.edges should contain(componentEdge)
+      parsed.shape.edges should contain(baseClassRealizationEdge)
     }
   }
 
