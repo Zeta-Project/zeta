@@ -10,9 +10,7 @@ import linkTypeSelector from './model/ext/linkTypeSelector';
 import modelExporter from './model/ext/exportModel';
 import sizeManager from './model/ext/sizeManager';
 import compartmentManager from './model/ext/compartmentManager';
-
-import { CommonInspectorInputs, CommonInspectorGroups } from './model/inspector';
-import Stencil from './model/stencil';
+import GeneratorFactory from "./model/generator/GeneratorFactory";
 
 export default Backbone.Router.extend({
 
@@ -20,21 +18,21 @@ export default Backbone.Router.extend({
         '*path': 'home'
     },
 
-    initialize: function(options) {
+    initialize: function (options) {
 
         this.options = options || {};
     },
 
-    home: function() {
+    home: function () {
 
         this.initializeEditor();
     },
 
     toSVG: function () {
-    	return this.paper.toSVG();
+        return this.paper.toSVG();
     },
 
-    initializeEditor: function() {
+    initializeEditor: function () {
 
         this.inspectorClosedGroups = {};
         this.initializePaper();
@@ -62,22 +60,21 @@ export default Backbone.Router.extend({
         window.globalGraph = this.graph;
 
         // Custom code
-        $("#metamodel-name").text("Model name: "+window._global_model_name);
+        $("#metamodel-name").text("Model name: " + window._global_model_name);
         linkTypeSelector.init(this.graph, this.paper);
     },
 
-    initializeGraph: function() {
+    initializeGraph: function () {
         if (window._global_loadOnStart === true) {
             this.graph.fromJSON(_.extend({}, window._global_graph));
         }
     },
 
     // Create a graph, paper and wrap the paper in a PaperScroller.
-    initializePaper: function() {
+    initializePaper: function () {
+        this.graph = new joint.dia.Graph();
 
-        this.graph = new joint.dia.Graph;
-
-        this.paperScroller = new joint.ui.PaperScroller({ autoResizePaper: true });
+        this.paperScroller = new joint.ui.PaperScroller({autoResizePaper: true});
         this.paper = new joint.dia.Paper({
             el: this.paperScroller.el,
             width: 5000,
@@ -109,7 +106,7 @@ export default Backbone.Router.extend({
         this.distanceLines = new Distancelines({graph: this.graph, paper: this.paper});
     },
 
-    initializeLinkTooltips: function(cell) {
+    initializeLinkTooltips: function (cell) {
 
         if (cell instanceof joint.dia.Link) {
 
@@ -125,14 +122,19 @@ export default Backbone.Router.extend({
     },
 
     // Create and popoulate stencil.
-    initializeStencil: function() {
+    initializeStencil: function () {
 
-        this.stencil = new joint.ui.Stencil({ graph: this.graph, paper: this.paper, width: 240, groups: Stencil.groups });
+        this.stencil = new joint.ui.Stencil({
+            graph: this.graph,
+            paper: this.paper,
+            width: 240,
+            groups: GeneratorFactory.stencil.groups
+        });
         $('.stencil-container').append(this.stencil.render().el);
 
-        _.each(Stencil.groups, function(group, name) {
+        _.each(GeneratorFactory.stencil.groups, function (group, name) {
 
-            this.stencil.load(Stencil.shapes[name], name);
+            this.stencil.load(GeneratorFactory.stencil.shapes[name], name);
             joint.layout.GridLayout.layout(this.stencil.getGraph(name), {
                 columnWidth: this.stencil.options.width / 2 - 10,
                 columns: 2,
@@ -151,12 +153,12 @@ export default Backbone.Router.extend({
         this.initializeStencilTooltips();
     },
 
-    initializeStencilTooltips: function() {
+    initializeStencilTooltips: function () {
 
         // Create tooltips for all the shapes in stencil.
-        _.each(this.stencil.graphs, function(graph) {
+        _.each(this.stencil.graphs, function (graph) {
 
-            graph.get('cells').each(function(cell) {
+            graph.get('cells').each(function (cell) {
 
                 new joint.ui.Tooltip({
                     target: '.stencil [model-id="' + cell.id + '"]',
@@ -168,14 +170,14 @@ export default Backbone.Router.extend({
         });
     },
 
-    initializeSelection: function() {
+    initializeSelection: function () {
 
         this.selection = new Backbone.Collection;
-        this.selectionView = new joint.ui.SelectionView({ paper: this.paper, graph: this.graph, model: this.selection });
+        this.selectionView = new joint.ui.SelectionView({paper: this.paper, graph: this.graph, model: this.selection});
 
         // Initiate selecting when the user grabs the blank area of the paper while the Shift key is pressed.
         // Otherwise, initiate paper pan.
-        this.paper.on('blank:pointerdown', function(evt, x, y) {
+        this.paper.on('blank:pointerdown', function (evt, x, y) {
 
             if (_.contains(KeyboardJS.activeKeys(), 'shift')) {
                 this.selectionView.startSelecting(evt, x, y);
@@ -184,7 +186,7 @@ export default Backbone.Router.extend({
             }
         }, this);
 
-        this.paper.on('cell:pointerdown', function(cellView, evt) {
+        this.paper.on('cell:pointerdown', function (cellView, evt) {
             // Select an element if CTRL/Meta key is pressed while the element is clicked.
             if ((evt.ctrlKey || evt.metaKey) && !(cellView.model instanceof joint.dia.Link)) {
                 this.selectionView.createSelectionBox(cellView);
@@ -192,7 +194,7 @@ export default Backbone.Router.extend({
             }
         }, this);
 
-        this.selectionView.on('selection-box:pointerdown', function(evt) {
+        this.selectionView.on('selection-box:pointerdown', function (evt) {
             // Unselect an element if the CTRL/Meta key is pressed while a selected element is clicked.
             if (evt.ctrlKey || evt.metaKey) {
                 var cell = this.selection.get($(evt.target).data('model'));
@@ -203,9 +205,11 @@ export default Backbone.Router.extend({
 
         // Disable context menu inside the paper.
         // This prevents from context menu being shown when selecting individual elements with Ctrl in OS X.
-        this.paper.el.oncontextmenu = function(evt) { evt.preventDefault(); };
+        this.paper.el.oncontextmenu = function (evt) {
+            evt.preventDefault();
+        };
 
-        KeyboardJS.on('delete, backspace', _.bind(function() {
+        KeyboardJS.on('delete, backspace', _.bind(function () {
 
             this.commandManager.initBatchCommand();
             this.selection.invoke('remove');
@@ -214,20 +218,23 @@ export default Backbone.Router.extend({
         }, this));
     },
 
-    createInspector: function(cellView) {
+    createInspector: function (cellView) {
 
         // No need to re-render inspector if the cellView didn't change.
         if (!this.inspector || this.inspector.options.cell !== cellView.model) {
 
             if (this.inspector) {
 
-                this.inspectorClosedGroups[this.inspector.options.cell.id] = _.map(this.inspector.$('.group.closed'), function(g) { return $(g).index() });
+                this.inspectorClosedGroups[this.inspector.options.cell.id] = _.map(this.inspector.$('.group.closed'), function (g) {
+                    return $(g).index()
+                });
 
                 // Clean up the old inspector if there was one.
                 this.inspector.remove();
             }
 
-            var inspectorDefs = InspectorDefs[cellView.model.get('type')];
+            const inspectorDefs = GeneratorFactory.inspector.InspectorDefs[cellView.model.get('type')];
+            // TODO delete const inspectorDefs_OLD = InspectorDefs[cellView.model.get('type')];
 
             this.inspector = new joint.ui.Inspector({
                 inputs: inspectorDefs ? inspectorDefs.inputs : CommonInspectorInputs,
@@ -235,13 +242,15 @@ export default Backbone.Router.extend({
                 cell: cellView.model
             });
 
+
             this.initializeInspectorTooltips();
 
             this.inspector.render();
+
             $('.inspector-container').html(this.inspector.el);
 
             if (this.inspectorClosedGroups[cellView.model.id]) {
-                _.each(this.inspector.$('.group'), function(g, i) {
+                _.each(this.inspector.$('.group'), function (g, i) {
                     if (_.contains(this.inspectorClosedGroups[cellView.model.id], $(g).index())) {
                         $(g).addClass('closed');
                     }
@@ -249,14 +258,15 @@ export default Backbone.Router.extend({
             } else {
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
+
         }
     },
 
-    initializeInspectorTooltips: function() {
+    initializeInspectorTooltips: function () {
 
-        this.inspector.on('render', function() {
+        this.inspector.on('render', function () {
 
-            this.inspector.$('[data-tooltip]').each(function() {
+            this.inspector.$('[data-tooltip]').each(function () {
 
                 var $label = $(this);
                 new joint.ui.Tooltip({
@@ -270,17 +280,21 @@ export default Backbone.Router.extend({
         }, this);
     },
 
-    initializeHaloAndInspector: function() {
+    initializeHaloAndInspector: function () {
 
-        this.paper.on('cell:pointerup', function(cellView, evt) {
+        this.paper.on('cell:pointerup', function (cellView, evt) {
 
             if (cellView.model instanceof joint.dia.Link || this.selection.contains(cellView.model)) return;
 
             // In order to display halo link magnets on top of the freetransform div we have to create the
             // freetransform first. This is necessary for IE9+ where pointer-events don't work and we wouldn't
             // be able to access magnets hidden behind the div.
-            var freetransform = new joint.ui.FreeTransform({ graph: this.graph, paper: this.paper, cell: cellView.model });
-            this.halo = new joint.ui.Halo({ graph: this.graph, paper: this.paper, cellView: cellView });
+            var freetransform = new joint.ui.FreeTransform({
+                graph: this.graph,
+                paper: this.paper,
+                cell: cellView.model
+            });
+            this.halo = new joint.ui.Halo({graph: this.graph, paper: this.paper, cellView: cellView});
 
             freetransform.render();
             this.halo.render();
@@ -293,12 +307,12 @@ export default Backbone.Router.extend({
 
         }, this);
 
-        this.paper.on('link:options', function(cellView, evt, x, y) {
+        this.paper.on('link:options', function (cellView, evt, x, y) {
             this.createInspector(cellView);
         }, this);
     },
 
-    initializeHaloTooltips: function(halo) {
+    initializeHaloTooltips: function (halo) {
 
         new joint.ui.Tooltip({
             className: 'tooltip small',
@@ -350,26 +364,29 @@ export default Backbone.Router.extend({
         });
     },
 
-    initializeClipboard: function() {
+    initializeClipboard: function () {
 
         this.clipboard = new joint.ui.Clipboard;
 
-        KeyboardJS.on('ctrl + c', _.bind(function() {
+        KeyboardJS.on('ctrl + c', _.bind(function () {
             // Copy all selected elements and their associated links.
-            this.clipboard.copyElements(this.selection, this.graph, { translate: { dx: 20, dy: 20 }, useLocalStorage: true });
+            this.clipboard.copyElements(this.selection, this.graph, {
+                translate: {dx: 20, dy: 20},
+                useLocalStorage: true
+            });
         }, this));
 
-        KeyboardJS.on('ctrl + v', _.bind(function() {
+        KeyboardJS.on('ctrl + v', _.bind(function () {
             this.clipboard.pasteCells(this.graph);
             this.selectionView.cancelSelection();
 
-            this.clipboard.pasteCells(this.graph, { link: { z: -1 }, useLocalStorage: true });
+            this.clipboard.pasteCells(this.graph, {link: {z: -1}, useLocalStorage: true});
 
             // Make sure pasted elements get selected immediately. This makes the UX better as
             // the user can immediately manipulate the pasted elements.
             var selectionTmp = [];
 
-            this.clipboard.each(function(cell) {
+            this.clipboard.each(function (cell) {
 
                 if (cell.get('type') === 'link') return;
 
@@ -383,9 +400,9 @@ export default Backbone.Router.extend({
             this.selection.reset(selectionTmp);
         }, this));
 
-        KeyboardJS.on('ctrl + x', _.bind(function() {
+        KeyboardJS.on('ctrl + x', _.bind(function () {
 
-            var originalCells = this.clipboard.copyElements(this.selection, this.graph, { useLocalStorage: true });
+            var originalCells = this.clipboard.copyElements(this.selection, this.graph, {useLocalStorage: true});
             this.commandManager.initBatchCommand();
             _.invoke(originalCells, 'remove');
             this.commandManager.storeBatchCommand();
@@ -393,51 +410,51 @@ export default Backbone.Router.extend({
         }, this));
     },
 
-    initializeCommandManager: function() {
+    initializeCommandManager: function () {
 
-        this.commandManager = new joint.dia.CommandManager({ graph: this.graph });
+        this.commandManager = new joint.dia.CommandManager({graph: this.graph});
 
-        KeyboardJS.on('ctrl + z', _.bind(function() {
+        KeyboardJS.on('ctrl + z', _.bind(function () {
 
             this.commandManager.undo();
             this.selectionView.cancelSelection();
         }, this));
 
-        KeyboardJS.on('ctrl + y', _.bind(function() {
+        KeyboardJS.on('ctrl + y', _.bind(function () {
 
             this.commandManager.redo();
             this.selectionView.cancelSelection();
         }, this));
     },
 
-    initializeValidator: function() {
+    initializeValidator: function () {
 
         // This is just for demo purposes. Every application has its own validation rules or no validation
         // rules at all.
 
-        this.validator = new joint.dia.Validator({ commandManager: this.commandManager });
+        this.validator = new joint.dia.Validator({commandManager: this.commandManager});
 
-        this.validator.validate('change:position change:size add', _.bind(function(err, command, next) {
+        this.validator.validate('change:position change:size add', _.bind(function (err, command, next) {
 
             if (command.action === 'add' && command.batch) return next();
 
             var cell = command.data.attributes || this.graph.getCell(command.data.id).toJSON();
             var area = joint.g.rect(cell.position.x, cell.position.y, cell.size.width, cell.size.height);
 
-            if (_.find(this.graph.getElements(), function(e) {
+            if (_.find(this.graph.getElements(), function (e) {
 
-	        var position = e.get('position');
-                var size = e.get('size');
-	        return (e.id !== cell.id && area.intersect(g.rect(position.x, position.y, size.width, size.height)));
+                    var position = e.get('position');
+                    var size = e.get('size');
+                    return (e.id !== cell.id && area.intersect(g.rect(position.x, position.y, size.width, size.height)));
 
-            })) return next("Another cell in the way!");
+                })) return next("Another cell in the way!");
         }, this));
 
-        this.validator.on('invalid',function(message) {
+        this.validator.on('invalid', function (message) {
 
             $('.statusbar-container').text(message).addClass('error');
 
-            _.delay(function() {
+            _.delay(function () {
 
                 $('.statusbar-container').text('').removeClass('error');
 
@@ -445,15 +462,15 @@ export default Backbone.Router.extend({
         });
     },
 
-    initializeToolbar: function() {
+    initializeToolbar: function () {
         var self = this;
         this.initializeToolbarTooltips();
 
-        $('#btn-export-model').on('click', _.bind(function() {
+        $('#btn-export-model').on('click', _.bind(function () {
             modelExporter.exportModel(this.graph);
             var msg = {
-              action: 'SavedModel',
-              model: window._global_uuid
+                action: 'SavedModel',
+                model: window._global_uuid
             };
             connection.send(JSON.stringify(msg));
         }, this));
@@ -480,7 +497,7 @@ export default Backbone.Router.extend({
 
         $('#btn-layout').on('click', _.bind(this.layoutDirectedGraph, this));
 
-        $('#input-gridsize').on('change', _.bind(function(evt) {
+        $('#input-gridsize').on('change', _.bind(function (evt) {
             var gridSize = parseInt(evt.target.value, 10);
             $('#output-gridsize').text(gridSize);
             this.setGrid(gridSize);
@@ -529,83 +546,83 @@ export default Backbone.Router.extend({
         var connection = new WebSocket('ws://' + window.location.host + '/socket/user/' + window._global_uuid)
 
         connection.onopen = function () {
-          console.log('is open');
+            console.log('is open');
         };
 
         // Log errors
         connection.onerror = function (error) {
-          console.log('WebSocket Error ' + error);
+            console.log('WebSocket Error ' + error);
         };
 
         // Log messages from the server
         connection.onmessage = function (e) {
-          var obj = JSON.parse(e.data);
-          if (obj.type === "BondedTaskList") {
-            $('#generators').html("");
-            for (var i = 0; i < obj.tasks.length; i++) {
-              var item = obj.tasks[i];
-              addGenerator(item);
-            }
-          } else if (obj.type === 'BondedTaskStarted') {
-            self.showSuccess("Started generator. Note that execution may take several minutes.");
-          } else if (obj.type === 'BondedTaskCompleted') {
-            if (obj.status === 0) {
-              self.showSuccess("Successfully executed generator!");
+            var obj = JSON.parse(e.data);
+            if (obj.type === "BondedTaskList") {
+                $('#generators').html("");
+                for (var i = 0; i < obj.tasks.length; i++) {
+                    var item = obj.tasks[i];
+                    addGenerator(item);
+                }
+            } else if (obj.type === 'BondedTaskStarted') {
+                self.showSuccess("Started generator. Note that execution may take several minutes.");
+            } else if (obj.type === 'BondedTaskCompleted') {
+                if (obj.status === 0) {
+                    self.showSuccess("Successfully executed generator!");
+                } else {
+                    self.showError("Generator execution failed!");
+                }
             } else {
-              self.showError("Generator execution failed!");
+                console.log("unhandled message!");
+                console.log(obj);
             }
-          } else {
-            console.log("unhandled message!");
-            console.log(obj);
-          }
         };
 
         function addGenerator(obj) {
-          var element = document.createElement("li");
+            var element = document.createElement("li");
 
-          element.innerHTML = '<a href="javascript:void(0)">' + obj.item + '</a>';
-          element.addEventListener("click", function() {
-            var msg = {
-              action: 'ExecuteBondedTask',
-              model: window._global_uuid,
-              task: obj.task
-            };
-            connection.send(JSON.stringify(msg));
-          });
+            element.innerHTML = '<a href="javascript:void(0)">' + obj.item + '</a>';
+            element.addEventListener("click", function () {
+                var msg = {
+                    action: 'ExecuteBondedTask',
+                    model: window._global_uuid,
+                    task: obj.task
+                };
+                connection.send(JSON.stringify(msg));
+            });
 
-          $('#generators').append(element);
+            $('#generators').append(element);
         }
     },
 
-    showSuccess: function(message){
-       $("#success-panel").fadeOut('slow', function() {
-            $("#error-panel").fadeOut('slow', function() {
+    showSuccess: function (message) {
+        $("#success-panel").fadeOut('slow', function () {
+            $("#error-panel").fadeOut('slow', function () {
                 $("#success-panel").show();
                 $("#success-panel").find("div").text(message);
                 $("#success-panel").fadeIn('slow');
-                setTimeout(function(){
+                setTimeout(function () {
                     $("#success-panel").fadeOut('slow');
                 }, 10000);
             });
         });
     },
 
-    showError: function(message){
-     $("#success-panel").fadeOut('slow', function() {
-            $("#error-panel").fadeOut('slow', function() {
+    showError: function (message) {
+        $("#success-panel").fadeOut('slow', function () {
+            $("#error-panel").fadeOut('slow', function () {
                 $("#error-panel").show();
                 $("#error-panel").find("div").text(message);
                 $("#error-panel").fadeIn('slow');
-                setTimeout(function(){
+                setTimeout(function () {
                     $("#success-panel").fadeOut('slow');
                 }, 10000);
             });
         });
     },
 
-    initializeToolbarTooltips: function() {
+    initializeToolbarTooltips: function () {
 
-        $('.toolbar-container [data-tooltip]').each(function() {
+        $('.toolbar-container [data-tooltip]').each(function () {
 
             new joint.ui.Tooltip({
                 target: $(this),
@@ -616,37 +633,43 @@ export default Backbone.Router.extend({
         });
     },
 
-    openAsPNG: function() {
+    openAsPNG: function () {
 
         var windowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes';
         var windowName = _.uniqueId('png_output');
         var imageWindow = window.open('', windowName, windowFeatures);
 
-        this.paper.toPNG(function(dataURL) {
-	    imageWindow.document.write('<img src="' + dataURL + '"/>');
-        }, { padding: 10 });
+        this.paper.toPNG(function (dataURL) {
+            imageWindow.document.write('<img src="' + dataURL + '"/>');
+        }, {padding: 10});
     },
 
-    zoom: function(newZoomLevel, ox, oy) {
+    zoom: function (newZoomLevel, ox, oy) {
 
-        if (_.isUndefined(this.zoomLevel)) { this.zoomLevel = 1; }
+        if (_.isUndefined(this.zoomLevel)) {
+            this.zoomLevel = 1;
+        }
 
         if (newZoomLevel > 0.2 && newZoomLevel < 20) {
 
-	        ox = ox || (this.paper.el.scrollLeft + this.paper.el.clientWidth / 2) / this.zoomLevel;
-	        oy = oy || (this.paper.el.scrollTop + this.paper.el.clientHeight / 2) / this.zoomLevel;
+            ox = ox || (this.paper.el.scrollLeft + this.paper.el.clientWidth / 2) / this.zoomLevel;
+            oy = oy || (this.paper.el.scrollTop + this.paper.el.clientHeight / 2) / this.zoomLevel;
 
-	        this.paper.scale(newZoomLevel, newZoomLevel);
+            this.paper.scale(newZoomLevel, newZoomLevel);
             this.paperScroller.center(ox, oy);
 
             this.zoomLevel = newZoomLevel;
         }
     },
 
-    zoomOut: function() { this.zoom((this.zoomLevel || 1) - 0.2); },
-    zoomIn: function() { this.zoom((this.zoomLevel || 1) + 0.2); },
+    zoomOut: function () {
+        this.zoom((this.zoomLevel || 1) - 0.2);
+    },
+    zoomIn: function () {
+        this.zoom((this.zoomLevel || 1) + 0.2);
+    },
 
-    toggleFullscreen: function() {
+    toggleFullscreen: function () {
 
         var el = document.body;
 
@@ -682,21 +705,21 @@ export default Backbone.Router.extend({
             type: 'GET',
             url: '/db/' + window._global_uuid,
             success: function (data, textStatus, jqXHR) {
-              for (var file in data._attachments) {
-                if (data._attachments.hasOwnProperty(file)) {
-                  var element = document.createElement("li");
-                  element.innerHTML = '<a href="/db/' + window._global_uuid + '/' + file + '" download>' + file + '</a>';
-                  $('#downloads').append(element);
+                for (var file in data._attachments) {
+                    if (data._attachments.hasOwnProperty(file)) {
+                        var element = document.createElement("li");
+                        element.innerHTML = '<a href="/db/' + window._global_uuid + '/' + file + '" download>' + file + '</a>';
+                        $('#downloads').append(element);
+                    }
                 }
-              }
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              self.showError(jqXHR.responseText)
+                self.showError(jqXHR.responseText)
             }
         });
     },
 
-    setGrid: function(gridSize) {
+    setGrid: function (gridSize) {
 
         this.paper.options.gridSize = gridSize;
 
@@ -704,9 +727,9 @@ export default Backbone.Router.extend({
         $(this.paper.svg).css('background-image', 'url("' + backgroundImage + '")');
     },
 
-    getGridBackgroundImage: function(gridSize, color) {
+    getGridBackgroundImage: function (gridSize, color) {
 
-        var canvas = $('<canvas/>', { width: gridSize, height: gridSize });
+        var canvas = $('<canvas/>', {width: gridSize, height: gridSize});
 
         canvas[0].width = gridSize;
         canvas[0].height = gridSize;
@@ -720,11 +743,11 @@ export default Backbone.Router.extend({
         return canvas[0].toDataURL('image/png');
     },
 
-    layoutDirectedGraph: function() {
+    layoutDirectedGraph: function () {
 
         this.commandManager.initBatchCommand();
 
-        _.each(this.graph.getLinks(), function(link) {
+        _.each(this.graph.getLinks(), function (link) {
 
             // Reset vertices.
             link.set('vertices', []);
@@ -735,7 +758,7 @@ export default Backbone.Router.extend({
             }
         });
 
-        joint.layout.DirectedGraph.layout(this.graph, { setLinkVertices: false, rankDir: 'LR', rankDir: 'TB' });
+        joint.layout.DirectedGraph.layout(this.graph, {setLinkVertices: false, rankDir: 'LR', rankDir: 'TB'});
 
         // Scroll to the top-left corner as this is the initial position for the DirectedGraph layout.
         this.paperScroller.el.scrollLeft = 0;
@@ -744,7 +767,7 @@ export default Backbone.Router.extend({
         this.commandManager.storeBatchCommand();
     },
 
-    initializeChannel: function(url) {
+    initializeChannel: function (url) {
         // Example usage of the Channel plugin. Note that this assumes the `node channelHub` is running.
         // See the channelHub.js file for furhter instructions.
 
@@ -754,21 +777,25 @@ export default Backbone.Router.extend({
             this.navigate('#' + room);
         }
 
-        var channel = this.channel = new joint.com.Channel({ graph: this.graph, url: url || 'ws://localhost:4141', query: { room: room } });
+        var channel = this.channel = new joint.com.Channel({
+            graph: this.graph,
+            url: url || 'ws://localhost:4141',
+            query: {room: room}
+        });
         console.log('room', room, 'channel', channel.id);
 
         var roomUrl = location.href.replace(location.hash, '') + '#' + room;
         $('.statusbar-container .rt-colab').html('Send this link to a friend to <b>collaborate in real-time</b>: <a href="' + roomUrl + '" target="_blank">' + roomUrl + '</a>');
     },
 
-    initializeToggleSidePanels: function() {
-        $(".stencil-toggle-icon-wrapper").on("click", function() {
+    initializeToggleSidePanels: function () {
+        $(".stencil-toggle-icon-wrapper").on("click", function () {
             $(".stencil-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
             $(".paper-container").toggleClass("paper-container-stencil-hidden");
             $(".stencil-container").toggleClass("stencil-container-hidden");
             $(".stencil-toggle-container").toggleClass("toggle-container-hidden");
         });
-        $(".inspector-toggle-icon-wrapper").on("click", function() {
+        $(".inspector-toggle-icon-wrapper").on("click", function () {
             $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-right");
             $(".inspector-toggle-icon-wrapper").toggleClass("glyphicon-menu-left");
             $(".paper-container").toggleClass("paper-container-inspector-hidden");

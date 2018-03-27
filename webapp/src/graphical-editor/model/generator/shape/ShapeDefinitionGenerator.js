@@ -2,13 +2,13 @@ import joint from 'jointjs';
 
 const STENCIL_SIZE = 80;
 const GEOMETRIC_MODEL = {
-    RECTANGLE: 'RECTANGLE',
-    ELLIPSE: 'ELLIPSE',
-    LINE: 'LINE',
-    ROUND_RECT: 'ROUNDED_RECTANGLE',
-    POLYGON: 'POLYGON',
-    POLY_LINE: 'POLY_LINE',
-    TEXT: 'TEXT',
+    RECTANGLE: 'rectangle',
+    ELLIPSE: 'ellipse',
+    LINE: 'line',
+    ROUND_RECT: 'roundedRectangle',
+    POLYGON: 'polygon',
+    POLY_LINE: 'polyline',
+    TEXT: 'text',
 };
 
 function findTop(elements) {
@@ -16,7 +16,7 @@ function findTop(elements) {
 }
 
 function getInteger(value) {
-    return value === undefined ? 0 : new Number(value).valueOf();
+    return value === undefined ? 0 : Number(value);
 }
 
 function addition(value1, value2) {
@@ -44,7 +44,7 @@ class SvgBuilder {
             [GEOMETRIC_MODEL.ROUND_RECT]: (e, a) => `<rect class="${e.id}" />` + this.createChild(e, a),
             [GEOMETRIC_MODEL.POLYGON]: (e, a) => `<polygon class="${e.id}" />` + this.createChild(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: e => `<polyline class="${e.id}" />`,
-            [GEOMETRIC_MODEL.TEXT]: e => `<text class="${e.id} ${e.id}" > </text>`,
+            [GEOMETRIC_MODEL.TEXT]: e => `<text class="${e.id} ${e.id}" ></text>`,
         };
     }
 
@@ -56,7 +56,7 @@ class SvgBuilder {
     }
 
     processElement(element, elements) {
-        return this.mapper[element.type] ? this.mapper[element.type](element, elements) : ''; 
+        return this.mapper[element.type] ? this.mapper[element.type](element, elements) : '';
     }
 
     createChild(element, elements) {
@@ -116,7 +116,7 @@ class Calculator {
         return (actual > related) ? STENCIL_SIZE : this.scaleSizeValue(actual, related, STENCIL_SIZE);
     }
 
-    scaleSizeValue(value1, value2, max) {
+    static scaleSizeValue(value1, value2, max) {
         const result1 = Math.round(value1 / (value2 / max));
         const result2 = Math.round(value2 / (value1 / max));
         return Math.min(result1, result2);
@@ -197,7 +197,7 @@ class AttrBuilder {
         };
     }
 
-    createLine(element) {
+    static createLine(element) {
         return {
             x1: element.startPoint.x,
             y1: element.startPoint.y,
@@ -244,7 +244,7 @@ class AttrBuilder {
     }
 
     getParentPositionY(element, elements) {
-        return this.getParentPosition(element, elements, this.yMapper);;
+        return this.getParentPosition(element, elements, this.yMapper);
     }
 
     getParentPosition(element, elements, mapper) {
@@ -316,24 +316,24 @@ class ShapeGenerator {
         }
     }
 
-    getBoolean(value) {
-        return value === undefined ? true : new Boolean(value);
+    static getBoolean(value) {
+        return value === undefined ? true : Boolean(value);
     }
 
-    createOptionalSizeMaxAttribute(model) {
+    static createOptionalSizeMaxAttribute(model) {
         return model.sizeHeightMax && model.sizeWidthMax ? {
             'size-max': {
-                height: new Number(model.sizeHeightMax).valueOf(),
-                width: new Number(model.sizeWidthMax).valueOf(),
+                height: Number(model.sizeHeightMax),
+                width: Number(model.sizeWidthMax),
             }
         } : {};
     }
 
-    createOptionalSizeMinAttribute(model) {
+    static createOptionalSizeMinAttribute(model) {
         return model.sizeHeightMin && model.sizeWidthMin ? {
             'size-min': {
-                height: new Number(model.sizeHeightMin).valueOf(),
-                width: new Number(model.sizeWidthMin).valueOf(),
+                height: Number(model.sizeHeightMin),
+                width: Number(model.sizeWidthMin),
             }
         } : {};
     }
@@ -341,13 +341,13 @@ class ShapeGenerator {
 
 export default class {
     constructor(shape) {
-        this.shapes = shape.shapes ? shape.shapes : [];
+        this.nodes = shape.nodes ? shape.nodes : [];
         this.generator = new ShapeGenerator();
         this.calculator = new Calculator();
     }
 
     get zeta() {
-        return this.shapes.reduce((result, shape) => {
+        return this.nodes.reduce((result, shape) => {
             result[shape.name] = this.generator.create(shape);
             return result;
         }, {});
@@ -358,7 +358,7 @@ export default class {
         return this.calculator.calculateHeight(elements);
     }
 
-    calculateWidth() {
+    calculateWidth(shape) {
         const elements = shape.elements ? shape.elements : [];
         return this.calculator.calculateWidth(elements);
     }
