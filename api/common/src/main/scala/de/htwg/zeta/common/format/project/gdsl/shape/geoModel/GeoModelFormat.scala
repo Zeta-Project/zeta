@@ -40,21 +40,35 @@ class GeoModelFormat(
 
   override def writes(clazz: GeoModel): JsObject = {
     val json = clazz match {
-      case p:Line => Json.obj(lineFormat.vType -> lineFormat.writes(p))
-      case p:Polyline => Json.obj(polylineFormat.vType -> polylineFormat.writes(p))
-      case p:Polygon => Json.obj(polygonFormat.vType -> polygonFormat.writes(p))
-      case p:Rectangle => Json.obj(rectangleFormat.vType -> rectangleFormat.writes(p))
-      case p:RoundedRectangle => Json.obj(roundedRectangleFormat.vType -> roundedRectangleFormat.writes(p))
-      case p:Ellipse => Json.obj(ellipseFormat.vType -> ellipseFormat.writes(p))
-      case p:StaticText => Json.obj(staticTextFormat.vType -> staticTextFormat.writes(p))
-      case p:TextField => Json.obj(textFieldFormat.vType -> textFieldFormat.writes(p))
-      case p:Compartement => Json.obj(compartementFormat.vType -> compartementFormat.writes(p))
-      case p:RepeatingBox => Json.obj(repeatingBoxFormat.vType -> repeatingBoxFormat.writes(p))
-      case p:HorizontalLayout => Json.obj(horizontalLayoutFormat.vType -> horizontalLayoutFormat.writes(p))
-      case p:VerticalLayout => Json.obj(verticalLayoutFormat.vType -> verticalLayoutFormat.writes(p))
+      case p: Line => Json.obj(lineFormat.vType -> lineFormat.writes(p))
+      case p: Polyline => Json.obj(polylineFormat.vType -> polylineFormat.writes(p))
+      case p: Polygon => Json.obj(polygonFormat.vType -> polygonFormat.writes(p))
+      case p: Rectangle => Json.obj(rectangleFormat.vType -> rectangleFormat.writes(p))
+      case p: RoundedRectangle => Json.obj(roundedRectangleFormat.vType -> roundedRectangleFormat.writes(p))
+      case p: Ellipse => Json.obj(ellipseFormat.vType -> ellipseFormat.writes(p))
+      case p: StaticText => Json.obj(staticTextFormat.vType -> staticTextFormat.writes(p))
+      case p: TextField => Json.obj(textFieldFormat.vType -> textFieldFormat.writes(p))
+      case p: Compartement => Json.obj(compartementFormat.vType -> compartementFormat.writes(p))
+      case p: RepeatingBox => Json.obj(repeatingBoxFormat.vType -> repeatingBoxFormat.writes(p))
+      case p: HorizontalLayout => Json.obj(horizontalLayoutFormat.vType -> horizontalLayoutFormat.writes(p))
+      case p: VerticalLayout => Json.obj(verticalLayoutFormat.vType -> verticalLayoutFormat.writes(p))
     }
+    val jsonWithId = addId(json, clazz)
+    jsonWithId
+  }
 
-    json + ("id" -> JsString(calculateId(clazz)))
+  private def addId(json: JsObject, geoModel: GeoModel): JsObject = {
+    // the json object contains a single key (name of the geo-element)
+    // we have to add the id to the "inner" json value (-> deep merge)
+    val key = json.keys.toList.head
+    val id = calculateId(geoModel)
+    json.deepMerge(
+      Json.obj(
+        key -> Json.obj(
+          "id" -> id
+        )
+      )
+    )
   }
 
   //noinspection ScalaStyle
