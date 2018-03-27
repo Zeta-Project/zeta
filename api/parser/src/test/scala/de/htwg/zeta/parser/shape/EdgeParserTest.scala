@@ -1,12 +1,15 @@
 package de.htwg.zeta.parser.shape
 
-import de.htwg.zeta.parser.shape.parser.{EdgeParser, GeoModelParser}
-import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.{Placing, Target}
-import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
+import de.htwg.zeta.parser.shape.parser.EdgeParser
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Offset
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.{Point, Position}
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
+import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Point
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
-import org.scalatest.{FreeSpec, Inside, Matchers}
+import org.scalatest.FreeSpec
+import org.scalatest.Inside
+import org.scalatest.Matchers
 
 //noinspection ScalaStyle
 class EdgeParserTest extends FreeSpec with Matchers with Inside {
@@ -20,7 +23,7 @@ class EdgeParserTest extends FreeSpec with Matchers with Inside {
        | edge $name for $conceptConnection {
        |   target: $target
        |   placing {
-       |     position(x: 1, y: 5)
+       |     offset: 0.5
        |     line {
        |       point(x: 1, y: 2)
        |       point(x: 3, y: 4)
@@ -45,7 +48,7 @@ class EdgeParserTest extends FreeSpec with Matchers with Inside {
           List(
             Placing(
               style = None,
-              Offset(1.0),
+              Offset(0.5),
               geoModel = LineParseTree(
                 style = None,
                 Point(1, 2),
