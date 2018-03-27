@@ -1,9 +1,12 @@
 package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
+import java.util.UUID
+
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
+import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
 
@@ -23,8 +26,25 @@ class GeoModelFormat(
     sType: String
 ) extends OFormat[GeoModel] {
 
-  override def writes(clazz: GeoModel): JsObject = clazz match {
-    case p: Ellipse => ellipseFormat.writes(p)
+  override def writes(clazz: GeoModel): JsObject = {
+    val json = clazz match {
+      case p: Ellipse => ellipseFormat.writes(p)
+    }
+
+    json + ("id" -> JsString(calculateId(clazz)))
+  }
+
+  //noinspection ScalaStyle
+  private def calculateId(geoModel: GeoModel): String = {
+    val hexString = geoModel.hashCode().toHexString
+    val uuidWithoutDashes = hexString.reverse.padTo(32, "0").reverse.mkString
+    val uuidWithDashes = new StringBuilder(uuidWithoutDashes)
+    uuidWithDashes.insert(8, "-")
+    uuidWithDashes.insert(13, "-")
+    uuidWithDashes.insert(18, "-")
+    uuidWithDashes.insert(23, "-")
+    val uuid = UUID.fromString(uuidWithDashes.toString())
+    uuid.toString
   }
 
   override def reads(json: JsValue): JsResult[GeoModel] =
