@@ -4,11 +4,23 @@ import java.util.UUID
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.GeoModel
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Compartement
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Rectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Line
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsString
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
+import play.api.libs.json.Json
 
 class GeoModelFormat(
     lineFormat: LineFormat,
@@ -28,7 +40,18 @@ class GeoModelFormat(
 
   override def writes(clazz: GeoModel): JsObject = {
     val json = clazz match {
-      case p: Ellipse => ellipseFormat.writes(p)
+      case p:Line => Json.obj(lineFormat.vType -> lineFormat.writes(p))
+      case p:Polyline => Json.obj(polylineFormat.vType -> polylineFormat.writes(p))
+      case p:Polygon => Json.obj(polygonFormat.vType -> polygonFormat.writes(p))
+      case p:Rectangle => Json.obj(rectangleFormat.vType -> rectangleFormat.writes(p))
+      case p:RoundedRectangle => Json.obj(roundedRectangleFormat.vType -> roundedRectangleFormat.writes(p))
+      case p:Ellipse => Json.obj(ellipseFormat.vType -> ellipseFormat.writes(p))
+      case p:StaticText => Json.obj(staticTextFormat.vType -> staticTextFormat.writes(p))
+      case p:TextField => Json.obj(textFieldFormat.vType -> textFieldFormat.writes(p))
+      case p:Compartement => Json.obj(compartementFormat.vType -> compartementFormat.writes(p))
+      case p:RepeatingBox => Json.obj(repeatingBoxFormat.vType -> repeatingBoxFormat.writes(p))
+      case p:HorizontalLayout => Json.obj(horizontalLayoutFormat.vType -> horizontalLayoutFormat.writes(p))
+      case p:VerticalLayout => Json.obj(verticalLayoutFormat.vType -> verticalLayoutFormat.writes(p))
     }
 
     json + ("id" -> JsString(calculateId(clazz)))

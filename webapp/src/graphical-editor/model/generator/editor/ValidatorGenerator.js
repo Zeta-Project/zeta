@@ -40,8 +40,8 @@ class EdgeGenerator {
 }
 
 export default class {
-    constructor(metaModel, diagram) {
-        this.classes = metaModel.classes ? metaModel.classes : [];
+    constructor(concept, diagram) {
+        this.classes = concept.classes ? concept.classes : [];
         this.edges = diagram.model && diagram.model.edges ? diagram.model.edges : [];
         this.nodes = diagram.model && diagram.model.nodes ? diagram.model.nodes : [];
         this.matrix = new MatrixGenerator();

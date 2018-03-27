@@ -18,6 +18,7 @@ import de.htwg.zeta.server.controller.WebAppController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.BondedTaskRestApi
+import de.htwg.zeta.server.controller.restApi.DslRestApi
 import de.htwg.zeta.server.controller.restApi.EventDrivenTaskRestApi
 import de.htwg.zeta.server.controller.restApi.FileRestApi
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
@@ -60,4 +61,5 @@ class WebControllerContainer @Inject() private(
     val bondedTaskRestApi: Provider[BondedTaskRestApi],
     val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi],
     val timedTaskRestApi: Provider[TimedTaskRestApi],
-    val fileRestApi: Provider[FileRestApi])
+    val fileRestApi: Provider[FileRestApi],
+    val dslRestApi: Provider[DslRestApi])

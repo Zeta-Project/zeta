@@ -61,13 +61,13 @@ class ShapeGenerator {
     constructor(shapeDefinitionGenerator) {
         this.definitionGenerator = shapeDefinitionGenerator;
         this.mapper = {
-            'ELLIPSE': new EllipseGenerator(),
-            'RECTANGLE': new RectangleGenerator(),
-            'TEXT': new TextGenerator(),
-            'LINE': new LineGenerator(),
-            'POLYGON': new PolygonGenerator(),
-            'POLY_LINE': new PolyLineGenerator(),
-            'ROUNDED_RECTANGLE': new RoundedRectangleGenerator(),
+            'ellipse': new EllipseGenerator(),
+            'rectangle': new RectangleGenerator(),
+            'text': new TextGenerator(),
+            'line': new LineGenerator(),
+            'polygon': new PolygonGenerator(),
+            'polyline': new PolyLineGenerator(),
+            'roundedRectangle': new RoundedRectangleGenerator(),
         };
     }
 
@@ -81,6 +81,7 @@ class ShapeGenerator {
     }
 
     processElements(shape) {
+
         const elements = shape.elements ? shape.elements : [];
         const maxHeight = this.definitionGenerator.calculateHeight(shape);
         const maxWidth = this.definitionGenerator.calculateWidth(shape);
@@ -94,7 +95,9 @@ class ShapeGenerator {
         if (this.mapper[element.type]) {
             const generator = this.mapper[element.type];
             return generator.create(element, maxHeight, maxWidth);
-         }
+        } else {
+            console.log("Error: not defined in Mapper: " + element.type);
+        }
     }
 }
 
@@ -145,7 +148,7 @@ class ElementGenerator {
     }
 
     selector(tag, element) {
-        return element.style ? `${tag}.${element.id}` : tag;
+        return `${tag}.${element.id}`;
     }
 }
 
@@ -355,6 +358,6 @@ export default class {
         return this.shapes.reduce((result, shape) => {
             result[`zeta.${shape.name}`] = this.generator.create(shape);
             return result;
-        }, { 'zeta.MLink': createMLink() });
+        }, { 'zeta.MLink': createMLink()});
     }
 }
