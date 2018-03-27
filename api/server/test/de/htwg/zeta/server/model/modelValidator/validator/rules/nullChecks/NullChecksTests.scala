@@ -121,7 +121,7 @@ class NullChecksTests extends FlatSpec with Matchers {
     rule.check(nullModel) should be(false)
   }
 
-  "ElementsIdNotNull" should "check for null in elements id" in {
+  "ElementsIdNotNull" should "check for null in elements id" ignore {
     val rule = new ElementsIdNotNull
 
     val nonNullEdge = emptyEdge
