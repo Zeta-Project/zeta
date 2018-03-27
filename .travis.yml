@@ -3,4 +3,6 @@ scala:
   - 2.12.4
 env:
   - BUILD_DIR=api
-script: cd $BUILD_DIR && sbt compile
+script: cd $BUILD_DIR && sbt compile && sbt coverage test coverageReport
+after_success:
+  - sbt coverageReport coveralls
