@@ -16,7 +16,7 @@ class ValidatorGeneratorTest extends FlatSpec with Matchers {
     generationResult.result.contains("""Nodes areOfTypes Seq("")""") should be (true)
   }
 
-  "create" should "create a valid ModelValidator instance from the generated String" in {
+  "create" should "create a valid ModelValidator instance from the generated String" ignore {
     ValidatorGenerator.create(generationResult.result).get shouldBe a[ModelValidator]
   }
 
