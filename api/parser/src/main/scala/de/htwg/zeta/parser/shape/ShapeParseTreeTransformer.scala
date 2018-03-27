@@ -99,7 +99,7 @@ object ShapeParseTreeTransformer {
       Node(
         n.identifier,
         n.conceptClass,
-        List(),
+        edges.filter(e => n.edges.contains(e.name)),
         Size(0, 0, n.sizeMax.width, n.sizeMin.width, n.sizeMax.height, n.sizeMin.height), // TODO
         n.style.fold(Style.defaultStyle)(s => styles.!(s.name)),
         Resizing(
