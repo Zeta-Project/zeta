@@ -15,7 +15,7 @@ object Font {
   val defaultSize: Int = 10
 
   val defaultFont: Font = Font(
-    "default",
+    defaultName,
     defaultBold,
     defaultColor,
     defaultItalic,
