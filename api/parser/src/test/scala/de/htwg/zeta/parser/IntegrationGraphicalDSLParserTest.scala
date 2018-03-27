@@ -6,11 +6,18 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.gdsl
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
+import de.htwg.zeta.common.models.project.gdsl.shape.Node
 import de.htwg.zeta.common.models.project.gdsl.shape.Placing
 import de.htwg.zeta.common.models.project.gdsl.shape.Position
+import de.htwg.zeta.common.models.project.gdsl.shape.Size
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Rectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
@@ -112,12 +119,12 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
            rectangle {
              size(width: 200, height: 100)
              position(x: 0, y: 50)
-                 textfield   {
+             textfield   {
                  position(x: 0, y: 0)
-                     identifier: text2
-                     size(width: 10, height: 40)
-                     editable: true
-                 }
+                 identifier: text2
+                 size(width: 10, height: 40)
+                 editable: true
+             }
            }
            rectangle {
              size(width: 200, height: 100)
@@ -473,6 +480,73 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     )
   )
 
+  private val classNode = Node(
+    name = "classNode",
+    conceptElement = "Klasse",
+    edges = List(
+      inheritanceEdge,
+      baseClassRealizationEdge,
+      componentEdge,
+      aggregationEdge
+    ),
+    size = Size(0, 0, 200, 200, 400, 400),
+    style = xStyle,
+    resizing = gdsl.shape.Resizing(horizontal = false, vertical = false, proportional = true),
+    geoModels = List(
+      Rectangle(
+        size = geomodel.Size(200, 50),
+        position = geomodel.Position(0, 50),
+        childGeoModels = List(
+          new TextField(
+            identifier = "text1",
+            size = geomodel.Size(10, 40),
+            position = geomodel.Position(0, 0),
+            editable = true,
+            multiline = false,
+            align = Align.default,
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        ),
+        style = Style.defaultStyle
+      ),
+      Rectangle(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(0, 50),
+        childGeoModels = List(
+          new TextField(
+            identifier = "text2",
+            size = geomodel.Size(10, 40),
+            position = geomodel.Position(0, 0),
+            editable = true,
+            multiline = false,
+            align = Align.default,
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        ),
+        style = Style.defaultStyle
+      ),
+      Rectangle(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(0, 150),
+        childGeoModels = List(
+          new TextField(
+            identifier = "text3",
+            size = geomodel.Size(10, 40),
+            position = geomodel.Position(0, 0),
+            editable = true,
+            multiline = false,
+            align = Align.default,
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        ),
+        style = Style.defaultStyle
+      )
+    )
+  )
+
   "A Graphical DSL parser should success" - {
     "for an example input" in {
       val result = parser.parse(concept, style, shape, diagram)
@@ -494,6 +568,8 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
       parsed.shape.edges should contain(aggregationEdge)
       parsed.shape.edges should contain(componentEdge)
       parsed.shape.edges should contain(baseClassRealizationEdge)
+
+      parsed.shape.nodes should contain(classNode)
     }
   }
 
