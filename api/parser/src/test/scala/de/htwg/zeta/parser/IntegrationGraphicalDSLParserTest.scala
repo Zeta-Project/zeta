@@ -6,6 +6,8 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.gdsl.diagram.Diagram
+import de.htwg.zeta.common.models.project.gdsl.diagram.Palette
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
@@ -14,8 +16,6 @@ import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Solid
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import de.htwg.zeta.parser.style.LineStyle
-import de.htwg.zeta.parser.style.LineWidth
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
@@ -23,11 +23,8 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
 
   private val parser = new GraphicalDSLParser()
 
-  "A Graphical DSL parser should success" - {
-    "for an example input" in {
-
-      val style =
-        """style Y {
+  private val style =
+    """style Y {
            description = "Style for a connection between an interface and its implementing class"
            line-color = black
            line-style = dotted
@@ -40,7 +37,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
            font-italic = true
            transparency = 0.9
          }
-         
+
          style ClassText {
            description = "Style for text in a class"
            line-color = black
@@ -49,7 +46,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
            background-color = white
            font-size = 10
          }
-         
+
          style X {
            description = "The default style"
            line-color = black
@@ -58,24 +55,24 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
            background-color = white
            font-size = 20
          }
-         
+
          style realization {
            description = "Style for realization"
            background-color = white
          }
-         
+
          style aggregation {
            description = "Style for aggregation"
            background-color = white
          }
-         
+
          style component {
            description = "Style for component"
            background-color = black
          }"""
 
-      val diagram =
-        """diagram klassendiagramm1 {
+  private val diagram =
+    """diagram klassendiagramm1 {
            palette Class {
              classNode
            }
@@ -87,9 +84,9 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
            }
          }"""
 
-      val shape =
-        """node classNode for Klasse {
-           edges { 
+  private val shape =
+    """node classNode for Klasse {
+           edges {
                inheritance
                BaseClassRealization
                component
@@ -273,99 +270,114 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
              }
          }"""
 
-      val concept = new Concept(
-        classes = List(
-          cClass("AbstractKlasse", List(cAttribute("text11"), cAttribute("text21"), cAttribute("text31"))),
-          cClass("InterfaceKlasse", List(cAttribute("text113"), cAttribute("text213"), cAttribute("text313"))),
-          cClass("Klasse", List(cAttribute("text1"), cAttribute("text2"), cAttribute("text3")))
-        ),
-        references = List(
-          cReference("BaseClassRealization", "Klasse", "InterfaceKlasse"),
-          cReference("Realization", "InterfaceKlasse", "AbstractKlasse"),
-          cReference("Inheritance", "Klasse", "AbstractKlasse")
-        ),
-        enums = List(),
-        attributes = List(
-          cAttribute("text11"),
-          cAttribute("text21"),
-          cAttribute("text31"),
-          cAttribute("text113"),
-          cAttribute("text213"),
-          cAttribute("text313"),
-          cAttribute("text1"),
-          cAttribute("text2"),
-          cAttribute("text3")
-        ),
-        methods = List(),
-        uiState = ""
-      )
+  private val concept = new Concept(
+    classes = List(
+      cClass("AbstractKlasse", List(cAttribute("text11"), cAttribute("text21"), cAttribute("text31"))),
+      cClass("InterfaceKlasse", List(cAttribute("text113"), cAttribute("text213"), cAttribute("text313"))),
+      cClass("Klasse", List(cAttribute("text1"), cAttribute("text2"), cAttribute("text3")))
+    ),
+    references = List(
+      cReference("BaseClassRealization", "Klasse", "InterfaceKlasse"),
+      cReference("Realization", "InterfaceKlasse", "AbstractKlasse"),
+      cReference("Inheritance", "Klasse", "AbstractKlasse")
+    ),
+    enums = List(),
+    attributes = List(
+      cAttribute("text11"),
+      cAttribute("text21"),
+      cAttribute("text31"),
+      cAttribute("text113"),
+      cAttribute("text213"),
+      cAttribute("text313"),
+      cAttribute("text1"),
+      cAttribute("text2"),
+      cAttribute("text3")
+    ),
+    methods = List(),
+    uiState = ""
+  )
 
+  private val yStyle = new Style(
+    name = "Y",
+    description = "Style for a connection between an interface and its implementing class",
+    line = new Line(
+      color = Color(0, 0, 0, 1),
+      style = Dotted(),
+      width = 1
+    ),
+    background = new Background(Color(255, 255, 255, 1)),
+    font = new Font("Arial", bold = true, Color(0, 0, 0, 1), italic = true, 20),
+    transparency = 0.9
+  )
+
+  private val classTextStyle = new Style(
+    name = "ClassText",
+    description = "Style for text in a class",
+    line = new Line(
+      color = Color(0, 0, 0, 1),
+      style = Dashed(),
+      width = 1
+    ),
+    background = new Background(Color(255, 255, 255, 1)),
+    font = new Font("Arial", bold = false, Color(0, 0, 0, 1), italic = false, 10),
+    transparency = 1
+  )
+
+  private val xStyle = new Style(
+    name = "X",
+    description = "The default style",
+    line = new Line(
+      color = Color(0, 0, 0, 1),
+      style = Solid(),
+      width = 1
+    ),
+    background = new Background(Color(255, 255, 255, 1)),
+    font = new Font("Arial", bold = false, Color(0, 0, 0, 1), italic = false, 20),
+    transparency = 1
+  )
+
+  private val realizationStyle = new Style(
+    name = "realization",
+    description = "Style for realization",
+    line = Line.defaultLine,
+    background = new Background(Color(255, 255, 255, 1)),
+    font = Font.defaultFont,
+    transparency = 1
+  )
+
+  private val componentStyle = new Style(
+    name = "component",
+    description = "Style for component",
+    line = Line.defaultLine,
+    background = new Background(Color(0, 0, 0, 1)),
+    font = Font.defaultFont,
+    transparency = 1
+  )
+
+  private val aggregationStyle = new Style(
+    name = "aggregation",
+    description = "Style for aggregation",
+    line = Line.defaultLine,
+    background = new Background(Color(255, 255, 255, 1)),
+    font = Font.defaultFont,
+    transparency = 1
+  )
+
+  "A Graphical DSL parser should success" - {
+    "for an example input" in {
       val result = parser.parse(concept, style, shape, diagram)
 
       result.isSuccess shouldBe true
       val parsed = result.toEither.right.get
 
       parsed.styles.size shouldBe 6
-      parsed.styles should contain(new Style(
-        name = "Y",
-        description = "Style for a connection between an interface and its implementing class",
-        line = new Line(
-          color = Color(0, 0, 0, 1),
-          style = Dotted(),
-          width = 1
-        ),
-        background = new Background(Color(255, 255, 255, 1)),
-        font = new Font("Arial", bold = true, Color(0, 0, 0, 1), italic = true, 20),
-        transparency = 0.9
-      ))
-      parsed.styles should contain(new Style(
-        name = "ClassText",
-        description = "Style for text in a class",
-        line = new Line(
-          color = Color(0, 0, 0, 1),
-          style = Dashed(),
-          width = 1
-        ),
-        background = new Background(Color(255, 255, 255, 1)),
-        font = new Font("Arial", bold = false, Color(0, 0, 0, 1), italic = false, 10),
-        transparency = 1
-      ))
-      parsed.styles should contain(new Style(
-        name = "X",
-        description = "The default style",
-        line = new Line(
-          color = Color(0, 0, 0, 1),
-          style = Solid(),
-          width = 1
-        ),
-        background = new Background(Color(255, 255, 255, 1)),
-        font = new Font("Arial", bold = false, Color(0, 0, 0, 1), italic = false, 20),
-        transparency = 1
-      ))
-      parsed.styles should contain(new Style(
-        name = "realization",
-        description = "Style for realization",
-        line = Line.defaultLine,
-        background = new Background(Color(255, 255, 255, 1)),
-        font = Font.defaultFont,
-        transparency = 1
-      ))
-      parsed.styles should contain(new Style(
-        name = "aggregation",
-        description = "Style for aggregation",
-        line = Line.defaultLine,
-        background = new Background(Color(255, 255, 255, 1)),
-        font = Font.defaultFont,
-        transparency = 1
-      ))
-      parsed.styles should contain(new Style(
-        name = "component",
-        description = "Style for component",
-        line = Line.defaultLine,
-        background = new Background(Color(0, 0, 0, 1)),
-        font = Font.defaultFont,
-        transparency = 1
-      ))
+
+      parsed.styles should contain(yStyle)
+      parsed.styles should contain(classTextStyle)
+      parsed.styles should contain(xStyle)
+      parsed.styles should contain(realizationStyle)
+      parsed.styles should contain(aggregationStyle)
+      parsed.styles should contain(componentStyle)
     }
   }
 
