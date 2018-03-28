@@ -12,131 +12,128 @@ class Generator {
         };
     }
 
-
-    createShapeStyle(shape) {
-        if (shape.geoElements.length > 0) {
-            const geoElements = shape.geoElements;
-            if ('style' in geoElements[0]) {
-                var testo = this.createElement(geoElements[0]);
-                return testo;
-            }
-            else
-                return {};
-
-
-        }
-
-        return [];
-    }
-
-    findTop(elements) {
-        return elements.filter(e => e.parent === undefined || e.parent === null);
-    }
-
-    checkForChildGeoElements(geoElement) {
-        var liste = [];
-        if ('childGeoElements' in geoElement) {
-            geoElement.childGeoElements.forEach(function (child) {
-                var m = child.type + "." + child.id;
-                liste.push(Object.assign({[m]: 'style-definition'}));
-            });
-            return liste;
+    createElement(element) {
+        const style = this.styleGenerator.getStyle(element.style);
+        if (this.mapper[element.type] && element.style) {
+            return this.mapper[element.type](element, style);
+        } else {
+            return this.mapper[element.type](element, 'default-style');
         }
     }
 
-        processElement(result, element, elements)
-        {
-            var m = element.geoElements[0].type + "." + element.geoElements[0].id;
-            var object = this.checkForChildGeoElements(element.geoElements[0]);
-            // here function create object with single or multiple geomodels
-            return Object.assign({[m]: 'style-definition'});
-        }
-
-        createElement(element)
-        {
-            const style = this.styleGenerator.getStyle(element.style);
-            if (this.mapper[element.type] && element.style) {
-                return this.mapper[element.type](element, style);
-            } else {
-                return this.mapper[element.type](element, 'default-style');
-            }
-        }
-
-        processChildren(parent, elements)
-        {
-            return this.findChildren(parent, elements).reduce((result, element) => {
-                return this.processElement(result, element, elements);
-            }, {});
-        }
-
-        findChildren(parent, elements)
-        {
-            const children = parent.children ? parent.children : [];
-            return children.map(id => {
-                return elements.find(e => e.id === id);
-            });
-        }
-
-        createLine(element, style)
-        {
-            return {[`line.${element.id}`]: style};
-        }
-
-        createRectangle(element, style)
-        {
-            return {[`rect.${element.id}`]: style};
-        }
-
-        createEllipse(element, style)
-        {
-            return {[`ellipse.${element.id}`]: style};
-        }
-
-        createStaticText(element, style)
-        {
-            return {
-                [`text.${element.id}`]: style,
-                [`.${element.id}`]: style,
-            };
-        }
-
-        createPolygon(element, style)
-        {
-            return {[`polygon.${element.id}`]: style};
-        }
-
-        createPolyLine(element, style)
-        {
-            return {[`polyline.${element.id}`]: style};
-        }
+    createLine(element, style) {
+        return {[`line.${element.id}`]: style};
     }
 
-    export
-    default
-    class {
+    createRectangle(element, style) {
+        return {[`rect.${element.id}`]: style};
+    }
+
+    createEllipse(element, style) {
+        return {[`ellipse.${element.id}`]: style};
+    }
+
+    createStaticText(element, style) {
+        return {
+            [`text.${element.id}`]: style,
+            [`.${element.id}`]: style,
+        };
+    }
+
+    createPolygon(element, style) {
+        return {[`polygon.${element.id}`]: style};
+    }
+
+    createPolyLine(element, style) {
+        return {[`polyline.${element.id}`]: style};
+    }
+}
+
+export default class {
+
     constructor(shape, styleGenerator) {
-        this.nodes = shape.nodes ? shape.nodes : [];
+        this.shapes = shape.shapes ? shape.shapes : [];
         this.generator = new Generator(styleGenerator);
     }
 
     getShapeByName(shapeName) {
-        if (this.nodes) {
-            return this.nodes.find(e => e.name === shapeName);
+        if (this.shapes.nodes) {
+            return this.shapes.nodes.find(e => e.name === shapeName);
         } else {
             return [];
         }
+    }
+
+    getElementsFromShape(shape) {
+        return ('geoElements' in shape) ? shape.geoElements : {};
+    }
+
+    checkForStyle(geoElements) {
+        //todo refactor
+        var error = false;
+        var self = this;
+        var obj = {}
+
+        if (Array.isArray(geoElements)) {
+
+            geoElements.forEach(element => {
+                if (!('style' in element)) {
+                    error = true;
+                }
+            });
+
+            geoElements.forEach(element => {
+                var tmp;
+                var key;
+                var value;
+
+
+                if (element.childGeoElements) {
+                    element.childGeoElements.forEach(e => {
+                        tmp = self.generator.createElement(e);
+                        key = Object.keys(tmp)[0];
+                        value = Object.values(tmp)[0];
+                        obj[key] = value;
+                    })
+                }
+
+                if (!("style" in element))
+                    return {};
+                tmp = self.generator.createElement(element);
+
+                for (var i = 0; i < Object.keys(tmp).length; i++) {
+                    key = Object.keys(tmp)[i];
+                    value = Object.values(tmp)[i];
+                    obj[key] = value;
+                }
+            });
+
+            if (error)
+                return {};
+
+            return obj;
+        }
+
+        return {};
 
     }
 
     getShapeStyle(shapeName) {
-        //todo: checker functions nostyle, no geoelements etc
+        //todo: refactor
         const shape = this.getShapeByName(shapeName);
-        if ('geoElements' in shape) {
-            //if ('style' in shape.geoElements[0]) {
-            return shape ? this.generator.createShapeStyle(shape) : {};
-            //}
-        } else
-            return {};
+        const geoElements = this.getElementsFromShape(shape);
 
+        //todo: refactor
+        if(!(Object.keys(geoElements).length === 0)){
+            const objects = this.checkForStyle(geoElements);
+            return objects;
+        }
+
+        //todo: refactor
+        if (geoElements)
+            return geoElements;
+
+
+        return {};
     }
 }
