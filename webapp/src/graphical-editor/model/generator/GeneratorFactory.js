@@ -1,6 +1,4 @@
 import StyleGenerator from './style/StyleGenerator'
-import DiagramGenerator from './diagram/DiagramGenerator'
-
 import InspectorGenerator from './editor/InspectorGenerator'
 import LinkHelperGenerator from './editor/LinkHelperGenerator'
 import StencilGenerator from './editor/StencilGenerator'
@@ -21,7 +19,6 @@ function checkInitialized() {
 function createGenerators(styleData, diagramData, shapeData, conceptData) {
 
     const style = new StyleGenerator(styleData);
-    // const diagram = new DiagramGenerator(diagramData), // TODO the diagramGenerator is currently not implemented
     const shapeDefinition = new ShapeDefinitionGenerator(shapeData, style);
     const shapeStyle = new ShapeStyleGenerator(shapeData, style); // TODO ShapeStyleGenerator is only partially updated to V2
     const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);
@@ -33,7 +30,6 @@ function createGenerators(styleData, diagramData, shapeData, conceptData) {
 
     generators = {
         style,
-        // diagram, // TODO the diagramGenerator is currently not implemented
         shapeDefinition,
         shapeStyle,
         connectionDefinition,
@@ -89,12 +85,6 @@ export default class GeneratorFactory {
         checkInitialized();
         return generators.style;
     }
-
-    /* TODO the diagramGenerator is currently not implemented
-    static get diagram() {
-        checkInitialized();
-        return generators.diagram;
-    }*/
 
     static get shapeDefinition() {
         checkInitialized();
