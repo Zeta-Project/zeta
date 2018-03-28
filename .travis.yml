@@ -5,4 +5,4 @@ env:
   - BUILD_DIR=api
 script: cd $BUILD_DIR && sbt compile && sbt clean coverage test coverageReport && sbt coverageAggregate
 after_success:
-  - cd $BUILD_DIR && bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
