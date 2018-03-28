@@ -52,22 +52,12 @@ class GeoModelFormat(
       case p: HorizontalLayout => horizontalLayoutFormat.writes(p)
       case p: VerticalLayout => verticalLayoutFormat.writes(p)
     }
-    val jsonWithId = addId(json, clazz)
-    jsonWithId
+   addId(json, clazz)
   }
 
   private def addId(json: JsObject, geoModel: GeoModel): JsObject = {
-    // the json object contains a single key (name of the geo-element)
-    // we have to add the id to the "inner" json value (-> deep merge)
-    val key = json.keys.toList.head
     val id = calculateId(geoModel)
-    json.deepMerge(
-      Json.obj(
-        key -> Json.obj(
-          "id" -> id
-        )
-      )
-    )
+    json + ("id" -> Json.toJson(id))
   }
 
   //noinspection ScalaStyle
