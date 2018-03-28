@@ -3,6 +3,7 @@ package de.htwg.zeta.common.format.project.gdsl.style
 import scala.util.parsing.combinator.JavaTokenParsers
 
 import de.htwg.zeta.common.models.project.gdsl.style.Color
+import de.htwg.zeta.common.models.project.gdsl.style.Color
 import play.api.libs.json.JsError
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
@@ -14,7 +15,7 @@ import play.api.libs.json.Reads
 class ColorFormat() extends Reads[Color] {
 
   def writes(color: Color): JsObject = {
-    val (r, g, b, a) = Color.unapply(color).get
+    val Color(r, g, b, a) = color
     Json.obj(
       "r" -> r,
       "g" -> g,
