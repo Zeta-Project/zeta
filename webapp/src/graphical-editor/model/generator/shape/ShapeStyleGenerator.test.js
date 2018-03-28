@@ -38,8 +38,6 @@ describe('getShapeStyle', () => {
 
     test('shape with line element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -52,7 +50,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ]
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'line.unique': 'style-definition',
@@ -61,8 +58,6 @@ describe('getShapeStyle', () => {
 
     test('shape with rounded rectangle element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -75,7 +70,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'rect.unique': 'style-definition',
@@ -84,8 +78,6 @@ describe('getShapeStyle', () => {
 
     test('shape with rectangle element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -98,7 +90,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'rect.unique': 'style-definition',
@@ -107,8 +98,6 @@ describe('getShapeStyle', () => {
 
     test('shape with ellipse element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -121,7 +110,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'ellipse.unique': 'style-definition',
@@ -130,8 +118,6 @@ describe('getShapeStyle', () => {
 
     test('shape with text element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -144,7 +130,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'text.unique': 'style-definition',
@@ -154,8 +139,6 @@ describe('getShapeStyle', () => {
 
     test('shape with polygon element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -168,7 +151,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'polygon.unique': 'style-definition',
@@ -177,8 +159,6 @@ describe('getShapeStyle', () => {
 
     test('shape with poly-line element', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -191,7 +171,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         assertElement(getShapeStyle('Shape'), 'default-style', {
             'polyline.unique': 'style-definition',
@@ -200,8 +179,6 @@ describe('getShapeStyle', () => {
 
     test('shape with element has no style', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -213,7 +190,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         expect(getShapeStyle('Shape')).toEqual({});
         assertGetStyle('default-style', 0);
@@ -221,8 +197,6 @@ describe('getShapeStyle', () => {
 
     test('shape with nested ellipse elements', () => {
         const getShapeStyle = create({
-            shapes:
-                {
                     nodes: [
                         {
                             name: 'Shape',
@@ -242,7 +216,6 @@ describe('getShapeStyle', () => {
                             ]
                         }
                     ],
-                }
         }, style);
         expect(getShapeStyle('Shape')).toEqual({
             'ellipse.unique2': 'style-definition',
