@@ -1,9 +1,6 @@
-import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsGitRepoLocation
 organization := "de.htwg"
 name := "zeta-api"
 version := "1.0.0"
-
-coverallsGitRepoLocation := Some("../.git")
 
 val switchToServer: State => State =
   (state: State) =>
