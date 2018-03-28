@@ -1,6 +1,9 @@
+import org.scoverage.coveralls.Imports.CoverallsKeys.coverallsGitRepoLocation
 organization := "de.htwg"
 name := "zeta-api"
 version := "1.0.0"
+
+coverallsGitRepoLocation := Some("../.git")
 
 val switchToServer: State => State =
   (state: State) =>
@@ -12,7 +15,6 @@ onLoad in Global := (onLoad in Global).value.andThen(switchToServer)
 
 // run in project api will now run project server
 run := (run in server in Compile).evaluated
-
 
 lazy val common = ZetaBuild.common
 lazy val generatorControl = ZetaBuild.generatorControl
