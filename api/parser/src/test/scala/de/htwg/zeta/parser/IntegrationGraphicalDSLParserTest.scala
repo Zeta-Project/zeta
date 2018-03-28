@@ -550,7 +550,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
   private val abClassNode = Node(
     name = "abClassNode",
     conceptElement = "AbstractKlasse",
-    edges = List(      realizationEdge),
+    edges = List(realizationEdge),
     size = Size(0, 0, 200, 200, 400, 400),
     style = xStyle,
     resizing = gdsl.shape.Resizing(horizontal = false, vertical = false, proportional = true),
@@ -609,6 +609,68 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     )
   )
 
+  private val inClassNode = Node(
+    name = "inClassNode",
+    conceptElement = "InterfaceKlasse",
+    edges = List(),
+    size = Size(0, 0, 200, 200, 400, 400),
+    style = xStyle,
+    resizing = gdsl.shape.Resizing(horizontal = false, vertical = false, proportional = true),
+    geoModels = List(
+      Rectangle(
+        size = geomodel.Size(200, 50),
+        position = geomodel.Position(10, 0),
+        childGeoModels = List(
+          new TextField(
+            identifier = "text113",
+            size = geomodel.Size(10, 40),
+            position = geomodel.Position(0, 0),
+            editable = true,
+            multiline = false,
+            align = Align.default,
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        ),
+        style = Style.defaultStyle
+      ),
+      Rectangle(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(10, 50),
+        childGeoModels = List(
+          new TextField(
+            identifier = "text213",
+            size = geomodel.Size(10, 40),
+            position = geomodel.Position(0, 0),
+            editable = true,
+            multiline = false,
+            align = Align.default,
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        ),
+        style = Style.defaultStyle
+      ),
+      Rectangle(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(10, 150),
+        childGeoModels = List(
+          new TextField(
+            identifier = "text313",
+            size = geomodel.Size(10, 40),
+            position = geomodel.Position(0, 0),
+            editable = true,
+            multiline = false,
+            align = Align.default,
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        ),
+        style = Style.defaultStyle
+      )
+    )
+  )
+
   "A Graphical DSL parser should success" - {
     "for an example input" in {
       val result = parser.parse(concept, style, shape, diagram)
@@ -633,6 +695,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
 
       parsed.shape.nodes should contain(classNode)
       parsed.shape.nodes should contain(abClassNode)
+      parsed.shape.nodes should contain(inClassNode)
     }
   }
 
