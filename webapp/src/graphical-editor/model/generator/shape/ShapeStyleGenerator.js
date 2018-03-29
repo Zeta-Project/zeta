@@ -7,6 +7,7 @@ class Generator {
             'rectangle': (element, style) => this.createRectangle(element, style),
             'ellipse': (element, style) => this.createEllipse(element, style),
             'statictext': (element, style) => this.createStaticText(element, style),
+            'textfield': (element, style) => this.createTextField(element, style),
             'polygon': (element, style) => this.createPolygon(element, style),
             'polyline': (element, style) => this.createPolyLine(element, style),
         };
@@ -34,6 +35,12 @@ class Generator {
     }
 
     createStaticText(element, style) {
+        return {
+            [`text.${element.id}`]: style
+        };
+    }
+
+    createTextField(element, style){
         return {
             [`text.${element.id}`]: style
         };
@@ -81,7 +88,7 @@ export default class {
         //todo refactor
         var error = false;
         var self = this;
-        var obj = {}
+        var obj = {};
 
         if (Array.isArray(geoElements)) {
 
