@@ -56,16 +56,26 @@ export default class {
         this.generator = new Generator(styleGenerator);
     }
 
-    getShapeByName(shapeName) {
-        if (this.shapes) {
-            return this.shapes.find(e => e.name === shapeName);
-        } else {
-            return [];
+    checkIfShapeExist() {
+        if(Object.keys(this.shapes).length === 0) {
+            return false;
         }
+        return true
+    }
+
+    checkForGeoElements(geoElements) {
+        if(!(Object.keys(geoElements).length === 0)){
+            const objects = this.checkForStyle(geoElements);
+            return objects;
+        }
+        return {};
     }
 
     getElementsFromShape(shape) {
-        return ('geoElements' in shape) ? shape.geoElements : {};
+        if(('geoElements' in shape)){
+            return this.checkForGeoElements(shape.geoElements);
+        }
+        return {};
     }
 
     checkForStyle(geoElements) {
@@ -86,7 +96,6 @@ export default class {
                 var tmp;
                 var key;
                 var value;
-
 
                 if (element.childGeoElements) {
                     element.childGeoElements.forEach(e => {
@@ -119,25 +128,11 @@ export default class {
     }
 
     getShapeStyle(shapeName) {
-
-        if(Object.keys(this.shapes).length === 0)
+        if(this.checkIfShapeExist()){
+            let shape = this.shapes.find(e => e.name === shapeName);
+            return this.getElementsFromShape(shape);
+        } else {
             return {};
-
-        //todo: refactor
-        const shape = this.getShapeByName(shapeName);
-        const geoElements = this.getElementsFromShape(shape);
-
-        //todo: refactor
-        if(!(Object.keys(geoElements).length === 0)){
-            const objects = this.checkForStyle(geoElements);
-            return objects;
         }
-
-        //todo: refactor
-        if (geoElements)
-            return geoElements;
-
-
-        return {};
     }
 }
