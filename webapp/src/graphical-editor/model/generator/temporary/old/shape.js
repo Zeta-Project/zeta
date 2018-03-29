@@ -27,10 +27,6 @@ joint.shapes.zeta.rootShape = joint.shapes.basic.Generic.extend({
         size: {
             width: 0, height: 0
         },
-
-
-
-
         resize:{
             horizontal: true,
             vertical: true,
@@ -57,10 +53,6 @@ joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
         size: {
             width: 64, height: 80
         },
-
-
-
-
         resize:{
             horizontal: true,
             vertical: true,
@@ -73,43 +65,29 @@ joint.shapes.zeta.klasse = joint.shapes.basic.Generic.extend({
             },
 
             '.0b800d24-7d92-4fad-89df-3203d277fe4f':{
-
-
                 x: 0,
                 y: 0,
-
                 width: 200,
                 height: 50
-
             }
             ,
             'text.e477df6c-e8da-462e-9dc3-2f88d830547f':{
-
-
                 x: 0,
                 y: 0,
-
                 'id' : 'text1',
                 'width': 10,
                 'height': 40,
                 text: ["Klasse"] // Is overwritten in stencil, but needed here for scaling
-
             }
             ,
             '.d62b0c84-6348-4cd3-b308-508d25012db9':{
-
-
                 x: 0,
                 y: 50,
-
                 width: 200,
                 height: 100
-
             }
             ,
             'text.ade81ec0-d7d0-44e0-ab85-0e6253c45bc1':{
-
-
                 x: 0,
                 y: 50,
 
@@ -262,9 +240,6 @@ joint.shapes.zeta.interface = joint.shapes.basic.Generic.extend({
             width: 67, height: 80
         },
 
-
-
-
         resize:{
             horizontal: true,
             vertical: true,
@@ -277,77 +252,52 @@ joint.shapes.zeta.interface = joint.shapes.basic.Generic.extend({
             },
 
             '.9461a54c-fbb2-49a2-94ac-77848fbc1f88':{
-
-
                 x: 10,
                 y: 0,
-
                 width: 200,
                 height: 50
-
             }
             ,
             'text.418aa18b-d386-4d43-b74e-9b0701ef2dee':{
-
-
                 x: 10,
                 y: 0,
-
                 'id' : 'text113',
                 'width': 10,
                 'height': 40,
                 text: ["<<Interface>>"] // Is overwritten in stencil, but needed here for scaling
-
             }
             ,
             '.73e17224-4508-463a-a388-c299a5adde76':{
-
-
                 x: 10,
                 y: 50,
-
                 width: 200,
                 height: 100
-
             }
             ,
             'text.5215ddbc-bcb1-414d-878c-4cea63c06ff5':{
-
-
                 x: 10,
                 y: 50,
-
                 'id' : 'text213',
                 'width': 10,
                 'height': 40,
                 text: ["Attribute"] // Is overwritten in stencil, but needed here for scaling
-
             }
             ,
             '.75f2205e-9a60-45e9-9d33-98e84de80d66':{
-
-
                 x: 10,
                 y: 150,
-
                 width: 200,
                 height: 100
-
             }
             ,
             'text.2636f960-1374-46ab-b6a0-fc8e2cb3d80d':{
-
-
                 x: 10,
                 y: 150,
-
                 'id' : 'text313',
                 'width': 10,
                 'height': 40,
                 text: ["Methoden"] // Is overwritten in stencil, but needed here for scaling
-
             }
-
         },
         compartments: []
     }, joint.dia.Element.prototype.defaults)

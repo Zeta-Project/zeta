@@ -125,9 +125,7 @@ export default Backbone.Router.extend({
 
         this.stencil = new joint.ui.Stencil({ graph: this.graph, paper: this.paper, width: 240, groups: global.Stencil.groups });
         $('.stencil-container').append(this.stencil.render().el);
-
-        _.each(global.Stencil.groups, function(group, name) {
-
+        _.each(global.Stencil.groups, (group, name) => {
             this.stencil.load(global.Stencil.shapes[name], name);
             joint.layout.GridLayout.layout(this.stencil.getGraph(name), {
                 columnWidth: this.stencil.options.width / 2 - 10,
@@ -231,7 +229,6 @@ export default Backbone.Router.extend({
                 groups: inspectorDefs ? inspectorDefs.groups : CommonInspectorGroups,
                 cell: cellView.model
             });
-
 
             this.initializeInspectorTooltips();
 

@@ -138,7 +138,9 @@ class Calculator {
 }
 
 class AttrBuilder {
-    constructor() {
+    constructor(shapeStyleGenerator, shape) {
+        this.shapeStyleGenerator = shapeStyleGenerator;
+        this.shape = shape;
         this.calculator = new Calculator();
         this.createMapper = {
             [GEOMETRIC_MODEL.RECTANGLE]: (e, a) => this.createRectangle(e, a),
@@ -165,10 +167,14 @@ class AttrBuilder {
 
     create(elements) {
         return elements.reduce((result, e) => {
-            result[e.id] = this.processElement(e, elements);
+            result[`.${e.id}`] = this.processElement(e, elements);
             return result;
         }, this.createDefaultAttr(elements));
     }
+
+    /*getShapeStyleAttrs(modelName) {
+        return this.shapeStyleGenerator.getShapeStyle(modelName);
+    }*/
 
     processElement(element, elements) {
         if (this.createMapper[element.type]) {
@@ -244,7 +250,7 @@ class AttrBuilder {
     }
 
     getParentPositionY(element, elements) {
-        return this.getParentPosition(element, elements, this.yMapper);;
+        return this.getParentPosition(element, elements, this.yMapper);
     }
 
     getParentPosition(element, elements, mapper) {
@@ -266,10 +272,10 @@ class AttrBuilder {
 }
 
 class ShapeGenerator {
-    constructor() {
+    constructor(shapeStyleGenerator, shape) {
         this.svg = new SvgBuilder();
         this.calculator = new Calculator();
-        this.attr = new AttrBuilder();
+        this.attrs = new AttrBuilder(shapeStyleGenerator, shape);
     }
 
     create(model) {
@@ -311,7 +317,7 @@ class ShapeGenerator {
                 vertical: this.getBoolean(model.stretchingVertical),
                 proportional: this.getBoolean(model.proportional),
             },
-            attr: this.attr.create(elements),
+            attrs: this.attrs.create(elements),
             compartments: [],
         }
     }
@@ -340,9 +346,10 @@ class ShapeGenerator {
 }
 
 export default class {
-    constructor(shape) {
+    constructor(shape, shapeStyleGenerator) {
+        //this.shapeStyleGenerator = shapeStyleGenerator;
         this.shapes = shape.shapes ? shape.shapes : [];
-        this.generator = new ShapeGenerator();
+        this.generator = new ShapeGenerator(shapeStyleGenerator, shape);
         this.calculator = new Calculator();
     }
 

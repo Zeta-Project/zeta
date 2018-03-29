@@ -19,7 +19,7 @@ const stringToTypeMapper = {
     'Int': 'IntType',
     'Double': 'DoubleType',
     'Unit': 'UnitType',
-}
+};
 
 class ShapesGenerator {
 
@@ -43,7 +43,7 @@ class ShapesGenerator {
         const shapeName = node.shape.name.replace(new RegExp("\\W", "g"), '');
         const attributes = this.createShapeAttributes(node, classes);
         const shape = new joint.shapes.zeta[shapeName](attributes);
-        this.setShapeAttributes(shape, shapeName, node);
+        this.setShapeAttributes(shape, shapeName);
         return shape;
     }
 
@@ -94,12 +94,26 @@ class ShapesGenerator {
         };
     }
 
-    setShapeAttributes(shape, shapeName, node) {
-        shape.attr(this.shapeStyleGenerator.getShapeStyle(shapeName));
-        const vals = node.shape.vals ? node.shape.vals : [];
-        vals.map(v => {
-            shape.attr({ [v.key]: { text: v.value } });
+    setShapeAttributes(shape, shapeName) {
+        let shapeAttributes = this.shapeStyleGenerator.getShapeStyle(shapeName);
+        const filteredText = Object.keys(shapeAttributes).filter((shapeId) => shapeId.includes("text")).reduce((obj, key) => {
+            obj[key] = shapeAttributes[key];
+            return obj;
+        }, {});
+
+        Object.keys(filteredText).forEach((id) => {
+            let typelesId = `.${id.split(".")[1]}`;
+
+            let helper = Object.assign({}, shapeAttributes[id].text);
+            shape.attributes.attrs[typelesId].text = [shape.attributes.attrs[typelesId].text];
+            shapeAttributes[id] = Object.assign(
+                shapeAttributes[id].text,
+                shape.attributes.attrs[typelesId]
+            );
+            shape.attributes.attrs[typelesId] = helper;
         });
+
+        Object.assign(shape.attributes.attrs, shapeAttributes);
     }
 }
 
