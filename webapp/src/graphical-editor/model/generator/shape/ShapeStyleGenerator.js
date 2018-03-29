@@ -2,13 +2,13 @@ class Generator{
     constructor(styleGenerator) {
         this.styleGenerator = styleGenerator;
         this.mapper = {
-            'LINE': (element, style) => this.createLine(element, style),
-            'ROUNDED_RECTANGLE': (element, style) => this.createRectangle(element, style),
-            'RECTANGLE': (element, style) => this.createRectangle(element, style),
-            'ELLIPSE': (element, style) => this.createEllipse(element, style),
-            'TEXT': (element, style) => this.createText(element, style),
-            'POLYGON': (element, style) => this.createPolygon(element, style),
-            'POLY_LINE': (element, style) => this.createPolyLine(element, style),
+            'line': (element, style) => this.createLine(element, style),
+            'roundedRectangle': (element, style) => this.createRectangle(element, style),
+            'rectangle': (element, style) => this.createRectangle(element, style),
+            'ellipse': (element, style) => this.createEllipse(element, style),
+            'text': (element, style) => this.createText(element, style),
+            'polygon': (element, style) => this.createPolygon(element, style),
+            'polyLine': (element, style) => this.createPolyLine(element, style),
         };
     }
 
@@ -61,8 +61,8 @@ class Generator{
 
     createText(element, style) {
         return { 
-            [`text.${element.id}`]:  style,
-            [`.${element.id}`]:  style,
+            [`text.${element.id}`]:  style
+            //[`.${element.id}`]:  style,
         };
     }
 

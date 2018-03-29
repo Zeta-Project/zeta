@@ -1,4 +1,4 @@
-
+import joint from 'jointjs';
 
 import StyleGenerator from './style/StyleGenerator'
 import DiagramGenerator from './diagram/DiagramGenerator'
@@ -59,9 +59,11 @@ export default class GeneratorFactory {
         this.state.styleGenerator = new StyleGenerator(style);
         //this.state.diagramGenerator = new DiagramGenerator(diagram);
 
-        this.state.shapeDefinitionGenerator = new ShapeDefinitionGenerator(shape);
         this.state.shapeStyleGenerator = new ShapeStyleGenerator(shape, this.state.styleGenerator);
+        this.state.shapeDefinitionGenerator = new ShapeDefinitionGenerator(shape, this.state.shapeStyleGenerator);
         this.state.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(shape, this.state.styleGenerator);
+
+        Object.assign(joint.shapes.zeta, this.state.shapeDefinitionGenerator.zeta);
 
         this.state.inspectorGenerator = new InspectorGenerator(shape, this.state.shapeDefinitionGenerator);
         this.state.linkHelperGenerator = new LinkHelperGenerator(diagram);

@@ -223,58 +223,76 @@ class DslRestApi @Inject()() extends Controller with Logging {
         |        {
         |          "type": "rectangle",
         |          "id": "0b800d24-7d92-4fad-89df-3203d277fe4f",
+        |          "style": "X",
         |          "sizeHeight": 50,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 0,
         |            "y": 0
         |          },
-        |          "children": "e477df6c-e8da-462e-9dc3-2f88d830547f"
+        |          "children": ["e477df6c-e8da-462e-9dc3-2f88d830547f"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "e477df6c-e8da-462e-9dc3-2f88d830547f",
+        |          "style": "X",
         |          "textBody": "Klasse",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "0b800d24-7d92-4fad-89df-3203d277fe4f"
         |        },
         |        {
         |          "type": "rectangle",
         |          "id": "d62b0c84-6348-4cd3-b308-508d25012db9",
+        |          "style": "X",
         |          "sizeHeight": 100,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 0,
         |            "y": 50
         |          },
-        |          "children": "ade81ec0-d7d0-44e0-ab85-0e6253c45bc1"
+        |          "children": ["ade81ec0-d7d0-44e0-ab85-0e6253c45bc1"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "ade81ec0-d7d0-44e0-ab85-0e6253c45bc1",
+        |          "style": "X",
         |          "textBody": "Attribute",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "d62b0c84-6348-4cd3-b308-508d25012db9"
         |        },
         |        {
         |          "type": "rectangle",
         |          "id": "cc40a695-e82d-4ea7-b5e6-86ac2ae249bd",
+        |          "style": "X",
         |          "sizeHeight": 100,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 0,
         |            "y": 150
         |          },
-        |          "children": "90a7d93a-5efd-4c40-a90f-e74a9f76bfe3"
+        |          "children": ["90a7d93a-5efd-4c40-a90f-e74a9f76bfe3"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "90a7d93a-5efd-4c40-a90f-e74a9f76bfe3",
+        |          "style": "X",
         |          "textBody": "Methoden",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "cc40a695-e82d-4ea7-b5e6-86ac2ae249bd"
         |        }
         |      ]
@@ -286,58 +304,76 @@ class DslRestApi @Inject()() extends Controller with Logging {
         |        {
         |          "type": "rectangle",
         |          "id": "f4a773b8-fa32-4c6e-a5e3-30d742ff5cbb",
+        |          "style": "X",
         |          "sizeHeight": 50,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 10,
         |            "y": 0
         |          },
-        |          "children": "b5762097-dfcf-41a9-8b11-2190c618e6e9"
+        |          "children": ["b5762097-dfcf-41a9-8b11-2190c618e6e9"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "b5762097-dfcf-41a9-8b11-2190c618e6e9",
+        |          "style": "X",
         |          "textBody": "<<AbstractClass>>",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "f4a773b8-fa32-4c6e-a5e3-30d742ff5cbb"
         |        },
         |        {
         |          "type": "rectangle",
         |          "id": "bd0fa679-b080-4d84-9eeb-fe7ae99a42cd",
+        |          "style": "X",
         |          "sizeHeight": 100,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 10,
         |            "y": 50
         |          },
-        |          "children": "0685d1f3-9273-42f9-b15f-34ea4a6be378"
+        |          "children": ["0685d1f3-9273-42f9-b15f-34ea4a6be378"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "0685d1f3-9273-42f9-b15f-34ea4a6be378",
+        |          "style": "X",
         |          "textBody": "Attribute",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "bd0fa679-b080-4d84-9eeb-fe7ae99a42cd"
         |        },
         |        {
         |          "type": "rectangle",
         |          "id": "8586b658-768a-4273-b366-d4f1597c561e",
+        |          "style": "X",
         |          "sizeHeight": 100,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 10,
         |            "y": 150
         |          },
-        |          "children": "60cee325-f76b-4d41-b08f-e51427aadf66"
+        |          "children": ["60cee325-f76b-4d41-b08f-e51427aadf66"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "60cee325-f76b-4d41-b08f-e51427aadf66",
+        |          "style": "X",
         |          "textBody": "Methoden",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "8586b658-768a-4273-b366-d4f1597c561e"
         |        }
         |      ]
@@ -349,58 +385,76 @@ class DslRestApi @Inject()() extends Controller with Logging {
         |        {
         |          "type": "rectangle",
         |          "id": "9461a54c-fbb2-49a2-94ac-77848fbc1f88",
+        |          "style": "X",
         |          "sizeHeight": 50,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 10,
         |            "y": 0
         |          },
-        |          "children": "418aa18b-d386-4d43-b74e-9b0701ef2dee"
+        |          "children": ["418aa18b-d386-4d43-b74e-9b0701ef2dee"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "418aa18b-d386-4d43-b74e-9b0701ef2dee",
+        |          "style": "X",
         |          "textBody": "<<Interface>>",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "9461a54c-fbb2-49a2-94ac-77848fbc1f88"
         |        },
         |        {
         |          "type": "rectangle",
         |          "id": "73e17224-4508-463a-a388-c299a5adde76",
+        |          "style": "X",
         |          "sizeHeight": 100,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 10,
         |            "y": 50
         |          },
-        |          "children": "5215ddbc-bcb1-414d-878c-4cea63c06ff5"
+        |          "children": ["5215ddbc-bcb1-414d-878c-4cea63c06ff5"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "5215ddbc-bcb1-414d-878c-4cea63c06ff5",
+        |          "style": "X",
         |          "textBody": "Attribute",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "73e17224-4508-463a-a388-c299a5adde76"
         |        },
         |        {
         |          "type": "rectangle",
         |          "id": "75f2205e-9a60-45e9-9d33-98e84de80d66",
+        |          "style": "X",
         |          "sizeHeight": 100,
         |          "sizeWidth": 200,
         |          "position": {
         |            "x": 10,
         |            "y": 150
         |          },
-        |          "children": "2636f960-1374-46ab-b6a0-fc8e2cb3d80d"
+        |          "children": ["2636f960-1374-46ab-b6a0-fc8e2cb3d80d"]
         |        },
         |        {
         |          "type": "text",
         |          "id": "2636f960-1374-46ab-b6a0-fc8e2cb3d80d",
+        |          "style": "X",
         |          "textBody": "Methoden",
         |          "sizeHeight": 40,
         |          "sizeWidth": 10,
+        |          "position": {
+        |            "x": 10,
+        |            "y": 0
+        |          },
         |          "parent": "75f2205e-9a60-45e9-9d33-98e84de80d66"
         |        }
         |      ]
@@ -526,7 +580,8 @@ class DslRestApi @Inject()() extends Controller with Logging {
         |}
         |
         |
-      """.stripMargin
+      """
+      .stripMargin
     )
   }
 

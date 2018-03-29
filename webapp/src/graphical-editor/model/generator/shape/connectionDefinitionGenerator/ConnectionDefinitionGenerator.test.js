@@ -289,7 +289,7 @@ describe('getConnectionStyle', () => {
           "transform": "scale(1,1)"}
       }
     )
-  })
+  });
 
   test('a Connection with a default Style and an example Placing (Line)', () => {
     
