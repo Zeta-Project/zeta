@@ -239,9 +239,9 @@ class AttrBuilder {
             align:{
                 horizontal: geoElement?.align?.horizontal ? geoElement?.align?.horizontal : 'middle',
                 vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
-            }
+            },
             // todo:DefaultText forTextFields
-            // text: geoElement.textBody,
+            text: '',
         };
     }
 
@@ -365,7 +365,7 @@ class ShapeGenerator {
 export default class {
     constructor(shape, shapeStyleGenerator) {
         this.nodes = shape.nodes ? shape.nodes : [];
-        this.generator = new ShapeGenerator(shapeStyleGenerator, nodes);
+        this.generator = new ShapeGenerator(shapeStyleGenerator, this.nodes);
         this.calculator = new Calculator();
     }
 
