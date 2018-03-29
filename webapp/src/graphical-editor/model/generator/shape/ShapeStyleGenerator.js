@@ -52,13 +52,13 @@ class Generator {
 export default class {
 
     constructor(shape, styleGenerator) {
-        this.shapes = shape.shapes ? shape.shapes : [];
+        this.shapes = shape.nodes ? shape.nodes : {};
         this.generator = new Generator(styleGenerator);
     }
 
     getShapeByName(shapeName) {
-        if (this.shapes.nodes) {
-            return this.shapes.nodes.find(e => e.name === shapeName);
+        if (this.shapes) {
+            return this.shapes.find(e => e.name === shapeName);
         } else {
             return [];
         }
@@ -119,6 +119,10 @@ export default class {
     }
 
     getShapeStyle(shapeName) {
+
+        if(Object.keys(this.shapes).length === 0)
+            return {};
+
         //todo: refactor
         const shape = this.getShapeByName(shapeName);
         const geoElements = this.getElementsFromShape(shape);
