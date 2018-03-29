@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules
 
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 
 /**
@@ -11,7 +11,7 @@ import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
  */
 trait SingleNodeRule extends NodesRule {
 
-  override def check(elements: Seq[Node]): Seq[ModelValidationResult] = elements.flatMap(node => check(node))
+  override def check(elements: Seq[NodeInstance]): Seq[ModelValidationResult] = elements.flatMap(node => check(node))
 
   /**
    * Checks one node against the overridden isValid method returning a result
@@ -20,7 +20,7 @@ trait SingleNodeRule extends NodesRule {
    * @param node The node to validate.
    * @return A model validation result or None if the rule is not applicable to this node.
    */
-  def check(node: Node): Option[ModelValidationResult] = isValid(node) match {
+  def check(node: NodeInstance): Option[ModelValidationResult] = isValid(node) match {
     case Some(result) => Some(ModelValidationResult(this, result, Some(Left(node))))
     case None => None
   }
@@ -32,6 +32,6 @@ trait SingleNodeRule extends NodesRule {
    * @param node The node.
    * @return Boolean indicating if the node is valid in respect to this rule.
    */
-  def isValid(node: Node): Option[Boolean]
+  def isValid(node: NodeInstance): Option[Boolean]
 
 }

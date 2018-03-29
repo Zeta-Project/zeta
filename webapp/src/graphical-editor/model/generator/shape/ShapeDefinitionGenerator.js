@@ -8,15 +8,15 @@ const GEOMETRIC_MODEL = {
     ROUND_RECT: 'roundedRectangle',
     POLYGON: 'polygon',
     POLY_LINE: 'polyline',
-    TEXT: 'text',
+    TEXTFIELD: 'textfield',
 };
 
-function findTop(elements) {
-    return elements.filter(e => e.parent === undefined || e.parent === null)
+function findTop(geoElements) {
+    return geoElements.filter(e => e.parent === undefined || e.parent === null)
 }
 
 function getInteger(value) {
-    return value === undefined ? 0 : new Number(value).valueOf();
+    return value === undefined ? 0 : Number(value);
 }
 
 function addition(value1, value2) {
@@ -38,73 +38,70 @@ function min(array, access = e => e) {
 class SvgBuilder {
     constructor() {
         this.mapper = {
-            [GEOMETRIC_MODEL.RECTANGLE]: (e, a) => `<rect class="${e.id}" />` + this.createChild(e, a),
-            [GEOMETRIC_MODEL.ELLIPSE]: (e, a) => `<ellipse class="${e.id}" />` + this.createChild(e, a),
+            [GEOMETRIC_MODEL.RECTANGLE]: (e, a) => `<rect class="${e.id}" />` + this.createChildGeoElement(e, a),
+            [GEOMETRIC_MODEL.ELLIPSE]: (e, a) => `<ellipse class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.LINE]: e => `<line class="${e.id}" />`,
-            [GEOMETRIC_MODEL.ROUND_RECT]: (e, a) => `<rect class="${e.id}" />` + this.createChild(e, a),
-            [GEOMETRIC_MODEL.POLYGON]: (e, a) => `<polygon class="${e.id}" />` + this.createChild(e, a),
+            [GEOMETRIC_MODEL.ROUND_RECT]: (e, a) => `<rect class="${e.id}" />` + this.createChildGeoElement(e, a),
+            [GEOMETRIC_MODEL.POLYGON]: (e, a) => `<polygon class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: e => `<polyline class="${e.id}" />`,
-            [GEOMETRIC_MODEL.TEXT]: e => `<text class="${e.id} ${e.id}" > </text>`,
+            [GEOMETRIC_MODEL.TEXTFIELD]: e => `<textfield class="${e.id} ${e.id}" ></textfield>`,
         };
     }
 
-    create(elements) {
-        const markup = findTop(elements).reduce((r, e) => {
-            return r + this.processElement(e, elements);
+    create(geoElements) {
+        const markup = findTop(geoElements).reduce((r, e) => {
+            return r + this.processElement(e, geoElements);
         }, '');
         return `<g class="rotatable"><g class="scalable"><rect class="bounding-box" />${markup}</g></g>`;
     }
 
-    processElement(element, elements) {
-        return this.mapper[element.type] ? this.mapper[element.type](element, elements) : ''; 
+    processElement(geoElement, geoElements) {
+        return this.mapper[geoElement.type] ? this.mapper[geoElement.type](geoElement, geoElements) : '';
     }
 
-    createChild(element, elements) {
-        const children = this.findChild(element, elements);
+    createChildGeoElement(element, elements) {
+        const children = this.findGeoElement(element, elements);
         return children.reduce((result, e) => {
             return result + this.processElement(e, elements);
         }, '');
     }
 
-    findChild(parent, elements) {
-        const children = parent.children ? parent.children : [];
-        return children.map(id => {
-            return elements.find(e => e.id === id);
-        });
+    findGeoElement(parent, elements) {
+        return parent.childGeoElements ? parent.childGeoElements : [];
     }
 }
 
 class Calculator {
     constructor() {
         this.height = {
-            [GEOMETRIC_MODEL.RECTANGLE]: e => addition(e.position.y, e.sizeHeight),
-            [GEOMETRIC_MODEL.ELLIPSE]: e => addition(e.position.y, e.sizeHeight),
+            [GEOMETRIC_MODEL.RECTANGLE]: e => addition(e.position.y, e.size.height),
+            [GEOMETRIC_MODEL.ELLIPSE]: e => addition(e.position.y, e.size.height),
             [GEOMETRIC_MODEL.LINE]: e => max([e.startPoint.y, e.endPoint.y]),
-            [GEOMETRIC_MODEL.ROUND_RECT]: e => addition(e.position.y, e.sizeHeight),
+            [GEOMETRIC_MODEL.ROUND_RECT]: e => addition(e.position.y, e.size.height),
             [GEOMETRIC_MODEL.POLYGON]: e => max(e.points, point => point.y),
             [GEOMETRIC_MODEL.POLY_LINE]: e => max(e.points, point => point.y),
-            [GEOMETRIC_MODEL.TEXT]: e => addition(e.position.y, e.sizeHeight),
+            [GEOMETRIC_MODEL.TEXTFIELD]: e => addition(e.position.y, e.size.height),
         };
         this.width = {
-            [GEOMETRIC_MODEL.RECTANGLE]: e => addition(e.position.x, e.sizeWidth),
-            [GEOMETRIC_MODEL.ELLIPSE]: e => addition(e.position.x, e.sizeWidth),
+            [GEOMETRIC_MODEL.RECTANGLE]: e => addition(e.position.x, e.size.width),
+            [GEOMETRIC_MODEL.ELLIPSE]: e => addition(e.position.x, e.size.width),
             [GEOMETRIC_MODEL.LINE]: e => max([e.startPoint.x, e.endPoint.x]),
-            [GEOMETRIC_MODEL.ROUND_RECT]: e => addition(e.position.x, e.sizeWidth),
+            [GEOMETRIC_MODEL.ROUND_RECT]: e => addition(e.position.x, e.size.width),
             [GEOMETRIC_MODEL.POLYGON]: e => max(e.points, point => point.x),
             [GEOMETRIC_MODEL.POLY_LINE]: e => max(e.points, point => point.x),
-            [GEOMETRIC_MODEL.TEXT]: e => addition(e.position.x, e.sizeWidth),
+            [GEOMETRIC_MODEL.TEXTFIELD]: e => addition(e.position.x, e.size.width),
         };
     }
 
-    calculateSizeHeight(elements) {
-        const height = this.calculateHeight(elements);
-        const width = this.calculateWidth(elements);
+    calculateSizeHeight(geoElements) {
+        const height = this.calculateHeight(geoElements);
+        const width = this.calculateWidth(geoElements);
         return this.calculateSize(height, width);
     }
 
-    calculateSizeWidth(elements) {
-        const height = this.calculateHeight(elements);
-        const width = this.calculateWidth(elements);
+    calculateSizeWidth(geoElements) {
+        const height = this.calculateHeight(geoElements);
+        const width = this.calculateWidth(geoElements);
         return this.calculateSize(width, height);
     }
 
@@ -122,15 +119,15 @@ class Calculator {
         return Math.min(result1, result2);
     }
 
-    calculateHeight(elements) {
-        return findTop(elements).reduce((max, e) => {
+    calculateHeight(geoElements) {
+        return findTop(geoElements).reduce((max, e) => {
             const value = this.height[e.type] ? this.height[e.type](e) : 0;
             return Math.max(max, value);
         }, 0);
     }
 
-    calculateWidth(elements) {
-        return findTop(elements).reduce((r, e) => {
+    calculateWidth(geoElements) {
+        return findTop(geoElements).reduce((r, e) => {
             const value = this.width[e.type] ? this.width[e.type](e) : 0;
             return Math.max(r, value);
         }, 0);
@@ -149,7 +146,7 @@ class AttrBuilder {
             [GEOMETRIC_MODEL.ROUND_RECT]: (e, a) => this.createRoundRect(e, a),
             [GEOMETRIC_MODEL.POLYGON]: (e, a) => this.createPolygon(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: (e, a) => this.createPolygon(e, a),
-            [GEOMETRIC_MODEL.TEXT]: (e, a) => this.createText(e, a),
+            [GEOMETRIC_MODEL.TEXTFIELD]: (e, a) => this.createTextField(e, a),
         };
         this.xMapper = {
             [GEOMETRIC_MODEL.RECTANGLE]: e => e.position.x,
@@ -165,107 +162,110 @@ class AttrBuilder {
         };
     }
 
-    create(elements) {
-        return elements.reduce((result, e) => {
-            result[`.${e.id}`] = this.processElement(e, elements);
+    create(geoElements) {
+        return geoElements.reduce((result, e) => {
+            result[`.${e.id}`] = this.processElement(e, geoElements);
             return result;
-        }, this.createDefaultAttr(elements));
+        }, this.createDefaultAttr(geoElements));
     }
 
-    /*getShapeStyleAttrs(modelName) {
-        return this.shapeStyleGenerator.getShapeStyle(modelName);
-    }*/
-
-    processElement(element, elements) {
-        if (this.createMapper[element.type]) {
-            return this.createMapper[element.type](element, elements);
+    processElement(geoElement, geoElements) {
+        if (this.createMapper[geoElement.type]) {
+            return this.createMapper[geoElement.type](geoElement, geoElements);
         }
-        throw new Error(`Unknown geometric model: ${element.type}`);
+        throw new Error(`Unknown geometric model: ${geoElement.type}`);
     }
 
-    createRectangle(element, elements) {
+    createRectangle(geoElement, geoElements) {
         return {
-            x: element.position.x + this.getParentPositionX(element, elements),
-            y: element.position.y + this.getParentPositionY(element, elements),
-            width: element.sizeWidth,
-            height: element.sizeHeight,
+            x: geoElement.position.x + this.getParentPositionX(geoElement, geoElements),
+            y: geoElement.position.y + this.getParentPositionY(geoElement, geoElements),
+            width: geoElement.size.width,
+            height: geoElement.size.height,
         };
     }
 
-    createEllipse(element, elements) {
-        const rx = element.sizeWidth / 2;
-        const ry = element.sizeHeight / 2;
+    createEllipse(geoElement, geoElements) {
+        const rx = geoElement.size.width / 2;
+        const ry = geoElement.size.height / 2;
         return {
-            cx: rx + element.position.x + this.getParentPositionX(element, elements),
-            cy: ry + element.position.y + this.getParentPositionY(element, elements),
+            cx: rx + geoElement.position.x + this.getParentPositionX(geoElement, geoElements),
+            cy: ry + geoElement.position.y + this.getParentPositionY(geoElement, geoElements),
             rx, // horizontal-radius
             ry, // vertical-radius
         };
     }
 
-    createLine(element) {
+    createLine(geoElement) {
         return {
-            x1: element.startPoint.x,
-            y1: element.startPoint.y,
-            x2: element.endPoint.x,
-            y2: element.endPoint.y,
+            x1: geoElement.startPoint.x,
+            y1: geoElement.startPoint.y,
+            x2: geoElement.endPoint.x,
+            y2: geoElement.endPoint.y,
         };
     }
 
-    createRoundRect(element, elements) {
+    createRoundRect(geoElement, geoElements) {
         return {
-            x: element.position.x + this.getParentPositionX(element, elements),
-            y: element.position.y + this.getParentPositionY(element, elements),
-            width: element.sizeWidth,
-            height: element.sizeHeight,
-            rx: element.curveWidth,
-            ry: element.curveHeight,
+            x: geoElement.position.x + this.getParentPositionX(geoElement, geoElements),
+            y: geoElement.position.y + this.getParentPositionY(geoElement, geoElements),
+            width: geoElement.size.width,
+            height: geoElement.size.height,
+            rx: geoElement.curveWidth,
+            ry: geoElement.curveHeight,
         };
     }
 
-    createPolygon(element, elements) {
-        const parentX = this.getParentPositionX(element, elements);
-        const parentY = this.getParentPositionY(element, elements);
+    createPolygon(geoElement, geoElements) {
+        const parentX = this.getParentPositionX(geoElement, geoElements);
+        const parentY = this.getParentPositionY(geoElement, geoElements);
         return {
-            points: element.points.reduce((string, point) => {
+            points: geoElement.points.reduce((string, point) => {
                 const content = `${point.x + parentX},${point.y + parentY} `;
                 return string + content;
             }, ''),
         };
     }
 
-    createText(element, elements) {
+    createTextField(geoElement, geoElements) {
         return {
-            x: element.position.x + this.getParentPositionX(element, elements),
-            y: element.position.y + this.getParentPositionY(element, elements),
-            id: element.id,
-            width: element.sizeWidth,
-            height: element.sizeHeight,
-            text: element.textBody,
+            x: geoElement.position.x + this.getParentPositionX(geoElement, geoElements),
+            y: geoElement.position.y + this.getParentPositionY(geoElement, geoElements),
+            id: geoElement.id,
+            width: geoElement.size.width,
+            height: geoElement.size.height,
+            editable: geoElement?.editable ? geoElement?.editable : false,
+            multiline: geoElement?.multiline ? geoElement?.multiline : false,
+            align:{
+                horizontal: geoElement?.align?.horizontal ? geoElement?.align?.horizontal : 'middle',
+                vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
+            }
+            // todo:DefaultText forTextFields
+            // text: geoElement.textBody,
         };
     }
 
-    getParentPositionX(element, elements) {
-        return this.getParentPosition(element, elements, this.xMapper);
+    getParentPositionX(geoElement, geoElements) {
+        return this.getParentPosition(geoElement, geoElements, this.xMapper);
     }
 
-    getParentPositionY(element, elements) {
-        return this.getParentPosition(element, elements, this.yMapper);
+    getParentPositionY(geoElement, geoElements) {
+        return this.getParentPosition(geoElement, geoElements, this.yMapper);
     }
 
-    getParentPosition(element, elements, mapper) {
-        const parent = elements.find(e => e.id === element.parent);
+    getParentPosition(geoElement, geoElements, mapper) {
+        const parent = geoElements.find(e => e.id === geoElement.parent);
         if (parent && mapper[parent.type]) {
-            return mapper[parent.type](parent) + this.getParentPositionX(parent, elements);
+            return mapper[parent.type](parent) + this.getParentPositionX(parent, geoElements);
         }
         return 0;
     }
 
-    createDefaultAttr(elements) {
+    createDefaultAttr(geoElements) {
         return {
             'rect.bounding-box': {
-                height: this.calculator.calculateHeight(elements),
-                width: this.calculator.calculateWidth(elements),
+                height: this.calculator.calculateHeight(geoElements),
+                width: this.calculator.calculateWidth(geoElements),
             },
         };
     }
@@ -284,62 +284,79 @@ class ShapeGenerator {
     }
 
     createAttributes(model) {
-        const elements = model.elements ? model.elements : [];
-        const defaultsAttribute = this.buildDefaults(model, elements);
+        const geoElements = model?.geoElements ? model?.geoElements : [];
+        const flatGeoElements = this.flattenGeoElement(geoElements);
+        const defaultsAttribute = this.buildDefaults(model, flatGeoElements);
         const elementDefaults = joint.dia.Element.prototype.defaults;
         return {
-            markup: this.svg.create(elements),
+            markup: this.svg.create(flatGeoElements),
             defaults: joint.util.deepSupplement(defaultsAttribute, elementDefaults),
         }
     }
 
-    buildDefaults(model, elements) {
+    buildDefaults(model, geoElements) {
         return Object.assign(
-            this.createMandatoryDefaults(model, elements),
+            this.createMandatoryDefaults(model, geoElements),
             this.createOptionalSizeMaxAttribute(model),
             this.createOptionalSizeMinAttribute(model)
         );
     }
 
-    createMandatoryDefaults(model, elements) {
+    createMandatoryDefaults(model, geoElements) {
         return {
-            type: `zeta.${model.name}`,
+            type: `zeta.${model?.name}`,
             'init-size': {
-                height: this.calculator.calculateHeight(elements),
-                width: this.calculator.calculateWidth(elements),
+                height: this.calculator.calculateHeight(geoElements),
+                width: this.calculator.calculateWidth(geoElements),
             },
             size: {
-                height: this.calculator.calculateSizeHeight(elements),
-                width: this.calculator.calculateSizeWidth(elements),
+                height: this.calculator.calculateSizeHeight(geoElements),
+                width: this.calculator.calculateSizeWidth(geoElements),
             },
             resize: {
-                horizontal: this.getBoolean(model.stretchingHorizontal),
-                vertical: this.getBoolean(model.stretchingVertical),
-                proportional: this.getBoolean(model.proportional),
+                horizontal: this.getBoolean(model?.resizing?.horizontal),
+                vertical: this.getBoolean(model?.resizing?.vertical),
+                proportional: this.getBoolean(model?.resizing?.proportional),
             },
-            attrs: this.attrs.create(elements),
+            attrs: this.attrs.create(geoElements),
             compartments: [],
         }
     }
 
+    flattenGeoElement(geoElements) {
+        const results = [];
+
+        const flatten = function (elem, results) {
+            results.push(elem);
+            (elem.childGeoElements || []).forEach(e => {
+                e.parent = elem.id;
+                flatten(e, results);
+            })
+        };
+
+        geoElements.forEach(e => flatten(e, results));
+        return results;
+    }
+
+
     getBoolean(value) {
-        return value === undefined ? true : new Boolean(value);
+        return value === undefined ? true : Boolean(value);
     }
 
     createOptionalSizeMaxAttribute(model) {
-        return model.sizeHeightMax && model.sizeWidthMax ? {
+        return model?.size?.heightMax && model?.size?.widthMax ? {
             'size-max': {
-                height: new Number(model.sizeHeightMax).valueOf(),
-                width: new Number(model.sizeWidthMax).valueOf(),
+                height: Number(model.size.heightMax),
+                width: Number(model.size.widthMax),
             }
         } : {};
     }
 
     createOptionalSizeMinAttribute(model) {
-        return model.sizeHeightMin && model.sizeWidthMin ? {
+        return model?.size?.heightMin && model?.size?.widthMin ? {
             'size-min': {
-                height: new Number(model.sizeHeightMin).valueOf(),
-                width: new Number(model.sizeWidthMin).valueOf(),
+                height: Number(model.size.heightMin),
+                width: Number(model.size.widthMin),
             }
         } : {};
     }
@@ -347,26 +364,25 @@ class ShapeGenerator {
 
 export default class {
     constructor(shape, shapeStyleGenerator) {
-        //this.shapeStyleGenerator = shapeStyleGenerator;
-        this.shapes = shape.shapes ? shape.shapes : [];
-        this.generator = new ShapeGenerator(shapeStyleGenerator, shape);
+        this.nodes = shape.nodes ? shape.nodes : [];
+        this.generator = new ShapeGenerator(shapeStyleGenerator, nodes);
         this.calculator = new Calculator();
     }
 
     get zeta() {
-        return this.shapes.reduce((result, shape) => {
+        return this.nodes.reduce((result, shape) => {
             result[shape.name] = this.generator.create(shape);
             return result;
         }, {});
     }
 
     calculateHeight(shape) {
-        const elements = shape.elements ? shape.elements : [];
-        return this.calculator.calculateHeight(elements);
+        const geoElements = shape.geoElements ? shape.geoElements : [];
+        return this.calculator.calculateHeight(geoElements);
     }
 
     calculateWidth(shape) {
-        const elements = shape.elements ? shape.elements : [];
-        return this.calculator.calculateWidth(elements);
+        const geoElements = shape.geoElements ? shape.geoElements : [];
+        return this.calculator.calculateWidth(geoElements);
     }
 }

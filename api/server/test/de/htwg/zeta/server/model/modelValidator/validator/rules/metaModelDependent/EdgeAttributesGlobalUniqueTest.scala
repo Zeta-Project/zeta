@@ -2,13 +2,13 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.Concept
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeValue.StringValue
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MAttribute
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.MReference
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Edge
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.MAttribute
+import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
@@ -29,10 +29,10 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   "check" should "return success validation results on correct attributes" in {
 
     val attributeOne: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
-    val edgeOne = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeOne)
+    val edgeOne = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeOne)
 
     val attributeTwo: Map[String, AttributeValue] = Map("attributeType" -> StringValue("differentValue"))
-    val edgeTwo = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeTwo)
+    val edgeTwo = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeTwo)
 
     val results = rule.check(Seq(edgeOne, edgeTwo))
 
@@ -40,7 +40,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     results.forall(_.valid) should be(true)
 
     val attributeThree: Map[String, AttributeValue] = Map("attributeType" -> StringValue("anotherValue"))
-    val edgeThree = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeThree)
+    val edgeThree = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeThree)
 
     val secondResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree))
 
@@ -51,10 +51,10 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   it should "return failure validation results on invalid attributes" in {
     val attributeOne: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
-    val edgeOne = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeOne)
+    val edgeOne = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeOne)
 
     val attributeTwo: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
-    val edgeTwo = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeTwo)
+    val edgeTwo = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeTwo)
 
     val results = rule.check(Seq(edgeOne, edgeTwo))
 
@@ -63,7 +63,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     results.last.valid should be(false)
 
     val attributeThree: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
-    val edgeThree = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeThree)
+    val edgeThree = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeThree)
 
     val secondResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree))
 
@@ -71,7 +71,7 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     secondResults.forall(!_.valid) should be(true)
 
     val attributeFour: Map[String, AttributeValue] = Map("attributeType" -> StringValue("differentValue"))
-    val edgeFour = Edge.empty("", mReference.name, "", "").copy(attributeValues = attributeFour)
+    val edgeFour = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributeFour)
 
     val thirdResults = rule.check(Seq(edgeOne, edgeTwo, edgeThree, edgeFour))
 

@@ -1,26 +1,59 @@
 package de.htwg.zeta.server.generator.parser
 
+import javafx.scene.paint.Color
+
+import scala.util.Try
+import scala.util.{Success => TrySuccess}
+import scala.util.{Failure => TryFailure}
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
- * Created by julian on 03.11.15.
  * commonly used parsing methods
  */
 trait CommonParserMethods extends JavaTokenParsers {
+
+  // language independent
+  val leftBrace = "{"
+  val rightBrace = "}"
+  val colon = ":"
+  val leftParenthesis = "("
+  val rightParenthesis = ")"
+  val comma = ","
+  val eq = "="
+
   // basic stuff
+  // scalastyle:off non.ascii.character.disallowed
+
   def attribute: Parser[(String, String)] = variable ~ argument <~ ",?".r ^^ { case v ~ a => (v.toString, a.toString) }
-  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
+  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ { _.toString }
   def argument_double: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
   def argument_int: Parser[Int] = "[+-]?\\d+".r ^^ { dou => dou.toInt }
+  def natural_number: Parser[Int] = "\\d+".r ^^ { _.toInt }
   def argument: Parser[String] =
-    "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
+    "((([a-züäöA-ZÜÄÖ]|[0-9])+(\\.([a-züäöA-ZÜÄÖ]|[0-9])+)*)|(\".*\")|([+-]?\\d+(\\.\\d+)?))".r ^^ { _.toString }
+
+  def argument_boolean: Parser[Boolean] = argument_boolean_true | argument_boolean_false ^^ (bool => bool)
+  private def argument_boolean_true: Parser[Boolean] = "(false|no|n)".r ^^ (bool => false)
+  private def argument_boolean_false: Parser[Boolean] = "(true|yes|y)".r ^^ (bool => true)
+
+  def argument_color: Parser[Color] = "(.+)".r.flatMap(parseColor)
+
+  private def parseColor(colorString: String): Parser[Color] = {
+    Parser { in =>
+      Try(Color.valueOf(colorString)) match {
+        case TrySuccess(color) => Success(color, in)
+        case TryFailure(_) => Failure(s"Cannot parse color: $colorString", in)
+      }
+    }
+  }
+
   def argument_string: Parser[String] =
     "\".*\"".r ^^ { _.toString }
   def argument_classic: Parser[String] = """\s*\=\s*""".r ~> argument ^^ { _.toString }
   def argument_advanced_explicit: Parser[String] =
-    """(?s)\((\w+([-_]\w+)*\s*=\s*([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?[\s\n]*)+\)""".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
+    """(?s)\((\w+([-_]\w+)*\s*=\s*([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?[\s\n]*)+\)""".r ^^ { _.toString }
   def argument_advanced_implicit: Parser[String] =
-    """(?s)\((([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?\s*)+\)""".r ^^ { _.toString } // scalastyle:ignore non.ascii.character.disallowed
+    """(?s)\((([a-zA-ZüäöÜÄÖ]+|(\".*\")|([+-]?\d+(\.\d+)?)),?\s*)+\)""".r ^^ { _.toString }
   def argument_wrapped: Parser[String] = "\\{[^\\{\\}]*\\}".r ^^ { _.toString }
   def arguments: Parser[String] =
     argument_classic | argument_advanced_explicit | argument_advanced_implicit | argument_wrapped
@@ -49,18 +82,7 @@ trait CommonParserMethods extends JavaTokenParsers {
    * Some explicit usages
    */
   def split_compartment = "compartment\\s*[\\{]".r ~> rep(compartmentinfo_attribute) <~ "[\\}]".r ^^ { list => list }
-  def position: Parser[Option[(Int, Int)]] = "[Pp]osition\\s*\\(\\s*(x=)?".r ~> argument ~ ((",\\s*(y=)?".r ~> argument) <~ ")") ^^ {
-    case xarg ~ yarg => Some((xarg.toInt, yarg.toInt))
-    case _ => None
-  }
-  def size: Parser[Option[(Int, Int)]] = "[Ss]ize\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
-  }
-  def curve: Parser[Option[(Int, Int)]] = "[Cc]urve\\s*\\(\\s*(width=)?".r ~> argument ~ (",\\s*(height=)?".r ~> argument) <~ ")" ^^ {
-    case width ~ height => Some((width.toInt, height.toInt))
-    case _ => None
-  }
+
   def idAsString: Parser[String] = "(id|ID)\\s*=?\\s*".r ~> argument ^^ { arg => arg }
   /**
    * takes a String and parses a boolean value out of it -> if string is yes|true|y

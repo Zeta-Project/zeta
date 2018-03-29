@@ -76,7 +76,7 @@ class ConnectionDefinitionGenerator {
         return Object.assign(this.svgDataPathGenerator.generateMirroredMarker(placing), this.generatePlacingStyle(placing), this.generateMarkerSourceCorrection());
     }
 
-    generateMarkerSourceCorrection() {
+    static generateMarkerSourceCorrection() {
         return {
             transform: 'scale(1,1)'
         };
@@ -87,7 +87,7 @@ class ConnectionDefinitionGenerator {
 export default class Generator{
 
     constructor(shape, styleGenerator) {
-        this.connections = 'connections' in shape ? shape.connections : [];
+        this.connections = shape.edges ? shape.edges : [];
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);
     }
