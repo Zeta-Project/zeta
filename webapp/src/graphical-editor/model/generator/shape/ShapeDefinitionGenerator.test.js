@@ -1248,7 +1248,7 @@ describe('joint.shapes.zeta', () => {
     test('shape with text element as child', () => {
         const result = assertShape(
             {
-                node: [
+                nodes: [
                     {
                         name: 'Shape',
                         geoElements: [
@@ -1288,7 +1288,7 @@ describe('joint.shapes.zeta', () => {
             '<g class="scalable">' +
             '<rect class="bounding-box" />' +
             '<rect class="unique2" />' +
-            '<text class="unique1 unique1" ></text>' +
+            '<textfield class="unique1 unique1" ></textfield>' +
             '</g>' +
             '</g>'
         );
@@ -1324,7 +1324,12 @@ describe('joint.shapes.zeta', () => {
                     'id': 'unique1',
                     'width': 4,
                     'height': 8,
-                    'text': 'example',
+                    'editable': false,
+                    'multiline': false,
+                    'align': {
+                        'horizontal': 'middle',
+                        'vertical': 'middle'
+                    }
                 },
             },
             'compartments': [],
