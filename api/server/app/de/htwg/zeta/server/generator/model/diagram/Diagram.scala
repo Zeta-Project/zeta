@@ -1,6 +1,6 @@
 package de.htwg.zeta.server.generator.model.diagram
 
-import de.htwg.zeta.common.models.entity.GraphicalDsl
+import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.server.generator.model.diagram.action.ActionGroup
 import de.htwg.zeta.server.generator.model.diagram.edge.Edge
 import de.htwg.zeta.server.generator.model.diagram.node.Node
@@ -18,7 +18,7 @@ sealed class Diagram private (
     val nodes: List[Node],
     val edges: List[Edge],
     override val style: Option[Style],
-    val metamodel: GraphicalDsl)
+    val metamodel: GdslProject)
   extends HasStyle
 
 object Diagram {
@@ -28,7 +28,7 @@ object Diagram {
     nodes: List[Node],
     edges: List[Edge],
     style: Option[Style],
-    metamodel: GraphicalDsl,
+    metamodel: GdslProject,
     cache: Cache): Diagram = {
 
     new Diagram(name, globActGrps, nodes, edges, style, metamodel)

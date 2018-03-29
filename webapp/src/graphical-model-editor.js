@@ -19,12 +19,10 @@ import GeneratorFactory from './graphical-editor/model/generator/GeneratorFactor
 $(document).ready(function() {
     joint.shapes.zeta.MLink = MLink;
     joint.shapes.zeta.MLinkView = MLinkView;
-    global.generatorFactory = new GeneratorFactory(() => {
-        global.Stencil = global.generatorFactory.state.stencilGenerator;
+    GeneratorFactory.initialize().then(() => {
         new Main();
         Backbone.history.start();
-    });
-
+    })
 });
 
 global.joint = joint;

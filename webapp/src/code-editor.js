@@ -8,6 +8,7 @@ import 'brace/ext/language_tools';
 import 'brace/theme/xcode';
 import 'brace/mode/scala';
 import { styleLanguage, testLanguage } from './code-editor/ace-grammar';
+import { SourceCodeInspector } from "./code-editor/source-code-inspector";
 
 $(document).ready(() => {
   $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
@@ -27,6 +28,8 @@ class CodeEditor {
     this.editor = this.initAceEditor(element.querySelector('.editor'));
     this.loadSourceCode();
     this.$element.on('click', '.js-save', () => this.saveSourceCode(this.editor.getValue()));
+    this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType);
+    this.sourceCodeInspector.runInspection();
   }
 
   initAceEditor(element) {
@@ -65,7 +68,10 @@ class CodeEditor {
       credentials: 'same-origin',
       body: JSON.stringify(code)
     })
-    .then(() => this.toggleSaveNotifications('.js-save-successful'))
+    .then(() => {
+      this.toggleSaveNotifications('.js-save-successful');
+      this.sourceCodeInspector.runInspection();
+    })
     .catch(err => {
       this.toggleSaveNotifications('.js-save-failed');
       console.error(`Save failed`, err);
@@ -75,4 +81,5 @@ class CodeEditor {
   toggleSaveNotifications(element) {
     this.$element.find(element).stop(true, true).fadeIn(400).delay(3000).fadeOut(400);
   }
+
 }

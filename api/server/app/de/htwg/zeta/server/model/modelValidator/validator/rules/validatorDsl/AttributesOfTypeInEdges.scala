@@ -1,9 +1,9 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.validatorDsl
 
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.BoolType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.DoubleType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.IntType
-import de.htwg.zeta.common.models.modelDefinitions.metaModel.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgeAttributeEnumTypes
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgeAttributeScalarTypes
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.EdgesAttributesGlobalUnique

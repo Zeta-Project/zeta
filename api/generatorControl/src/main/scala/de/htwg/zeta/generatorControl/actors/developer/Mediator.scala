@@ -65,8 +65,13 @@ object Mediator {
 
   val numberOfShards = 10
 
+  private def uuidToShardID(id: UUID): String = {
+    (id.hashCode % numberOfShards).toString
+  }
+
   val extractShardId: ShardRegion.ExtractShardId = {
-    case MessageEnvelope(id, _) => (id.hashCode % numberOfShards).toString
+    case MessageEnvelope(id, _) => uuidToShardID(id)
+    case ShardRegion.StartEntity(id) => uuidToShardID(UUID.fromString(id))
   }
 
   def props(): Props = Props(new Mediator())

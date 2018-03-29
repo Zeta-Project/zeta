@@ -12,7 +12,7 @@ import de.htwg.zeta.common.models.document.Changed
 import de.htwg.zeta.common.models.document.Created
 import de.htwg.zeta.common.models.document.Deleted
 import de.htwg.zeta.common.models.document.Updated
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.worker.RerunFilterJob
 import de.htwg.zeta.persistence.general.FilterRepository
 
