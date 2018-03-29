@@ -1,11 +1,8 @@
 import joint from 'jointjs';
 
-function getPalettes(nodes) {
-    const palettes = nodes.reduce((result, node) => {
-        result[node.palette] = true;
-        return result;
-    }, {});
-    return Object.keys(palettes);
+function getPalettes(diagrams) {
+    //ToDo: multiDiagram impl. not yet.
+    return diagrams[0].palettes.map( palette => palette.name);
 }
 
 function getVarName(string) {
@@ -27,22 +24,28 @@ class ShapesGenerator {
         this.shapeStyleGenerator = shapeStyleGenerator;
     }
 
-    create(nodes, classes) {
-        return getPalettes(nodes).reduce((result, palette) => {
-            result[getVarName(palette)] = this.createShapeList(palette, nodes, classes);
+    create(nodes, classes, diagrams) {
+        return getPalettes(diagrams).reduce((result, palette) => {
+            result[getVarName(palette)] = this.createShapeList(palette, nodes, classes, diagrams);
             return result;
         }, {});
     }
 
-    createShapeList(palette, nodes, classes) {
+    createShapeList(palette, nodes, classes, diagrams) {
+        const paletteNodes = diagrams[0].palettes.find(p => p.name === palette).nodes;
+        const shapeNodes = nodes.filter( n => paletteNodes.includes(n.name));
+        shapeNodes.map(node => this.createShapeEntry(node, classes));
+        /*this.createShapeEntry()
+
         return nodes.filter(n => n.palette === palette)
-            .map(node => this.createShapeEntry(node, classes));
+            .map(node => this.createShapeEntry(node, classes));*/
     }
 
     createShapeEntry(node, classes) {
-        const shapeName = node.shape.name.replace(new RegExp("\\W", "g"), '');
+        const shapeName = node.name.replace(new RegExp("\\W", "g"), '');
         const attributes = this.createShapeAttributes(node, classes);
         const shape = new joint.shapes.zeta[shapeName](attributes);
+        console.log(shape);
         this.setShapeAttributes(shape, shapeName);
         return shape;
     }
@@ -121,16 +124,17 @@ class ShapesGenerator {
  * 
  */
 export default class StencilGenerator {
-    constructor(diagram, concept, shapeStyleGenerator, styleGenerator) {
-        this.diagram = diagram;
+    constructor(diagram, shape, concept, shapeStyleGenerator, styleGenerator) {
+        this.diagrams = diagram.diagrams;
+        this.shape = shape;
         this.concept = concept;
-        this.nodes = diagram.model && diagram.model.nodes ? diagram.model.nodes : [];
+        this.nodes = shape?.nodes || [];
         this.shapesGenerator = new ShapesGenerator(shapeStyleGenerator);
         this.styleGenerator = styleGenerator;
     }
 
     get groups() {
-        return getPalettes(this.nodes).reduce((result, palette, i) => {
+        return getPalettes(this.diagrams).reduce((result, palette, i) => {
             const key = getVarName(palette);
             result[key] = { index: i + 1, label: palette };
             return result;
@@ -139,16 +143,6 @@ export default class StencilGenerator {
 
     get shapes() {
         const classes = this.concept && this.concept.classes ? this.concept.classes : [];
-        return this.shapesGenerator.create(this.nodes, classes);
-    }
-
-    addStyleElementToDocument() {
-        if (this.diagram.model && this.diagram.model.style) {
-            const style = document.createElement('style');
-            style.id = 'highlighting-style';
-            style.type = 'text/css';
-            style.innerHTML = this.styleGenerator.getDiagramHighlighting("${style.name}");
-            document.getElementsByTagName('head')[0].appendChild(style);
-        }
+        return this.shapesGenerator.create(this.nodes, classes, this.diagrams);
     }
 }
