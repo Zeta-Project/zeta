@@ -38,11 +38,11 @@ function min(array, access = e => e) {
 class SvgBuilder {
     constructor() {
         this.mapper = {
-            [GEOMETRIC_MODEL.RECTANGLE]: (e) => `<rect class="${e.id}" />` + this.createChildGeoElement(e),
-            [GEOMETRIC_MODEL.ELLIPSE]: (e) => `<ellipse class="${e.id}" />` + this.createChildGeoElement(e),
+            [GEOMETRIC_MODEL.RECTANGLE]: (e, a) => `<rect class="${e.id}" />` + this.createChildGeoElement(e, a),
+            [GEOMETRIC_MODEL.ELLIPSE]: (e, a) => `<ellipse class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.LINE]: e => `<line class="${e.id}" />`,
-            [GEOMETRIC_MODEL.ROUND_RECT]: (e) => `<rect class="${e.id}" />` + this.createChildGeoElement(e),
-            [GEOMETRIC_MODEL.POLYGON]: (e) => `<polygon class="${e.id}" />` + this.createChildGeoElement(e),
+            [GEOMETRIC_MODEL.ROUND_RECT]: (e, a) => `<rect class="${e.id}" />` + this.createChildGeoElement(e, a),
+            [GEOMETRIC_MODEL.POLYGON]: (e, a) => `<polygon class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: e => `<polyline class="${e.id}" />`,
             [GEOMETRIC_MODEL.TEXTFIELD]: e => `<textfield class="${e.id} ${e.id}" ></textfield>`,
         };
@@ -67,10 +67,7 @@ class SvgBuilder {
     }
 
     findGeoElement(parent, elements) {
-        const children = parent.children ? parent.children : [];
-        return children.map(id => {
-            return elements.find(e => e.id === id);
-        });
+        return parent.childGeoElements ? parent.childGeoElements : [];
     }
 }
 
@@ -286,10 +283,11 @@ class ShapeGenerator {
 
     createAttributes(model) {
         const geoElements = model?.geoElements ? model?.geoElements : [];
-        const defaultsAttribute = this.buildDefaults(model, geoElements);
+        const flatGeoElements = this.flattenGeoElement(geoElements);
+        const defaultsAttribute = this.buildDefaults(model, flatGeoElements);
         const elementDefaults = joint.dia.Element.prototype.defaults;
         return {
-            markup: this.svg.create(geoElements),
+            markup: this.svg.create(flatGeoElements),
             defaults: joint.util.deepSupplement(defaultsAttribute, elementDefaults),
         }
     }
@@ -322,6 +320,22 @@ class ShapeGenerator {
             compartments: [],
         }
     }
+
+    flattenGeoElement(geoElements) {
+        const results = [];
+
+        const flatten = function (elem, results) {
+            results.push(elem);
+            (elem.childGeoElements || []).forEach(e => {
+                e.parent = elem.id;
+                flatten(e, results);
+            })
+        };
+
+        geoElements.forEach(e => flatten(e, results));
+        return results;
+    }
+
 
     getBoolean(value) {
         return value === undefined ? true : Boolean(value);
