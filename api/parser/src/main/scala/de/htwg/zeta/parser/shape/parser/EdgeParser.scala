@@ -51,8 +51,6 @@ object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedPa
 
   private def style = include(GeoModelAttributeParser.style).named("style")
 
-  private def position = include(GeoModelAttributeParser.position).named("position")
-
   private def geoModel = include(GeoModelParser.geoModel).named("geoModel")
 
   // Concept connections can be addressed with java / scala object syntax
