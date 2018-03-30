@@ -1,11 +1,5 @@
 package de.htwg.zeta.parser
 
-import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.concept.elements.AttributeType
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.project.concept.elements.MAttribute
-import de.htwg.zeta.common.models.project.concept.elements.MClass
-import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.gdsl
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
@@ -281,33 +275,6 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  }
              }
          }"""
-
-  private val concept = new Concept(
-    classes = List(
-      cClass("AbstractKlasse", List(cAttribute("text11"), cAttribute("text21"), cAttribute("text31"))),
-      cClass("InterfaceKlasse", List(cAttribute("text113"), cAttribute("text213"), cAttribute("text313"))),
-      cClass("Klasse", List(cAttribute("text1"), cAttribute("text2"), cAttribute("text3")))
-    ),
-    references = List(
-      cReference("BaseClassRealization", "Klasse", "InterfaceKlasse"),
-      cReference("Realization", "InterfaceKlasse", "AbstractKlasse"),
-      cReference("Inheritance", "Klasse", "AbstractKlasse")
-    ),
-    enums = List(),
-    attributes = List(
-      cAttribute("text11"),
-      cAttribute("text21"),
-      cAttribute("text31"),
-      cAttribute("text113"),
-      cAttribute("text213"),
-      cAttribute("text313"),
-      cAttribute("text1"),
-      cAttribute("text2"),
-      cAttribute("text3")
-    ),
-    methods = List(),
-    uiState = ""
-  )
 
   private val yStyle = new Style(
     name = "Y",
@@ -675,7 +642,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
 
   "A Graphical DSL parser should success" - {
     "for an example input" in {
-      val result = parser.parse(concept, style, shape, diagram)
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, shape, diagram)
 
       result.isSuccess shouldBe true
       val parsed = result.toEither.right.get
@@ -700,40 +667,5 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
       parsed.shape.nodes should contain(inClassNode)
     }
   }
-
-  def cReference(name: String, source: String, target: String): MReference = new MReference(
-    name = name,
-    description = "",
-    sourceDeletionDeletesTarget = true,
-    targetDeletionDeletesSource = true,
-    sourceClassName = source,
-    targetClassName = target,
-    attributes = List(),
-    methods = List()
-  )
-
-  def cClass(name: String, attributes: List[MAttribute]): MClass = new MClass(
-    name = name,
-    description = "",
-    abstractness = true,
-    superTypeNames = List(),
-    inputReferenceNames = List(),
-    outputReferenceNames = List(),
-    attributes = attributes,
-    methods = List()
-  )
-
-  def cAttribute(name: String): MAttribute = new MAttribute(
-    name = name,
-    globalUnique = true,
-    localUnique = true,
-    typ = AttributeType.StringType,
-    default = AttributeValue.StringValue(""),
-    constant = false,
-    singleAssignment = false,
-    expression = "",
-    ordered = true,
-    transient = false
-  )
 
 }
