@@ -6,7 +6,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
 
-
+//noinspection ScalaStyle
 class StyleParserTest extends FlatSpec with Matchers with Inside {
 
   val styleToTestSuccess: String =

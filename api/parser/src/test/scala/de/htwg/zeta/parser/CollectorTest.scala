@@ -1,6 +1,7 @@
 package de.htwg.zeta.parser
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.FreeSpec
+import org.scalatest.Matchers
 
 //noinspection ScalaStyle
 class CollectorTest extends FreeSpec with Matchers {

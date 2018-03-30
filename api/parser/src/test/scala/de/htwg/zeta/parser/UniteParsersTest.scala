@@ -3,6 +3,7 @@ package de.htwg.zeta.parser
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class UniteParsersTest extends FreeSpec with Matchers {
 
   "Multiple Parsers extending 'UniteParsers'" - {
