@@ -20,11 +20,13 @@ import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository
 import de.htwg.zeta.persistence.mongo.MongoSettingsRepository
 import de.htwg.zeta.persistence.mongo.MongoTimedTaskRepository
 import de.htwg.zeta.persistence.mongo.MongoUserRepository
+import org.scalatest.Ignore
 import reactivemongo.api.MongoDriver
 
 /**
  * MongoRepositorySpec.
  */
+@Ignore
 class MongoRepositorySpec extends RepositoryBehavior {
 
   private val connection = Future.fromTry(MongoDriver().connection("localhost")).flatMap(_.database("zeta-test"))
