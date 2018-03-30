@@ -219,6 +219,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  identifier: text113
                  size(width: 10, height: 40)
                  editable: true
+                 align(horizontal: left, vertical: top)
                }
            }
            rectangle {
@@ -229,6 +230,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                      identifier: text213
                      size(width: 10, height: 40)
                      editable: true
+                     align(horizontal: middle, vertical: middle)
                  }
            }
            rectangle {
@@ -239,6 +241,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                      identifier: text313
                      size(width: 10, height: 40)
                      editable: true
+                     align(horizontal: right, vertical: bottom)
                  }
            }
          }
@@ -668,7 +671,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             position = geomodel.Position(0, 0),
             editable = true,
             multiline = false,
-            align = Align.default,
+            align = Align(
+              vertical = Align.Vertical.top,
+              horizontal = Align.Horizontal.left
+            ),
             childGeoModels = List(),
             style = Style.defaultStyle
           )
@@ -685,7 +691,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             position = geomodel.Position(0, 0),
             editable = true,
             multiline = false,
-            align = Align.default,
+            align = Align(
+              vertical = Align.Vertical.middle,
+              horizontal = Align.Horizontal.middle
+            ),
             childGeoModels = List(),
             style = Style.defaultStyle
           )
@@ -702,7 +711,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             position = geomodel.Position(0, 0),
             editable = true,
             multiline = false,
-            align = Align.default,
+            align = Align(
+              vertical = Align.Vertical.bottom,
+              horizontal = Align.Horizontal.right
+            ),
             childGeoModels = List(),
             style = Style.defaultStyle
           )

@@ -22,9 +22,9 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
   def align: Parser[Align] = {
     val horizontal = include(EnumParser.parseEnum(HorizontalAlignment))
     val vertical = include(EnumParser.parseEnum(VerticalAlignment))
-    ("align" ~> leftParenthesis ~> "horizontal" ~> colon ~> horizontal <~ comma) ~
-      ("vertical" ~> colon ~> vertical <~ rightParenthesis) ^^ { result =>
-      val horizontal ~ vertical = result
+    "align" ~! leftParenthesis ~ "horizontal" ~ colon ~ horizontal ~ comma ~
+      "vertical" ~ colon ~ vertical ~ rightParenthesis ^^ { result =>
+      val _ ~ _ ~ horizontal ~ _ ~ _ ~ _ ~ vertical ~ _ = result
       Align(horizontal, vertical)
     }
   }
