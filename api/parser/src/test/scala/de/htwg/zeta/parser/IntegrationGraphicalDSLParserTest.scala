@@ -69,6 +69,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
          style realization {
            description = "Style for realization"
            background-color = white
+           line-style = wrongLineStyle
          }
 
          style aggregation {
