@@ -17,6 +17,7 @@ import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlC
 import de.htwg.zeta.server.controller.restApi.BondedTaskRestApi
 import de.htwg.zeta.server.controller.restApi.EventDrivenTaskRestApi
 import de.htwg.zeta.server.controller.restApi.FileRestApi
+import de.htwg.zeta.server.controller.restApi.DslRestApi
 import de.htwg.zeta.server.controller.restApi.FilterRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorImageRestApi
 import de.htwg.zeta.server.controller.restApi.GeneratorRestApi
@@ -56,6 +57,7 @@ trait WebController {
   protected lazy val GeneratorImageRestApi: GeneratorImageRestApi = webCont.generatorImageRestApi.get()
   protected lazy val GeneratorRestApi: GeneratorRestApi = webCont.generatorRestApi.get()
   protected lazy val FilterRestApi: FilterRestApi = webCont.filterRestApi.get()
+  protected lazy val DslRestApi: DslRestApi = webCont.dslRestApi.get()
   protected lazy val MetaModelReleaseRestApi: MetaModelReleaseRestApi = webCont.metaModelReleaseRestApi.get()
   protected lazy val BondedTaskRestApi: BondedTaskRestApi = webCont.bondedTaskRestApi.get()
   protected lazy val EventDrivenTaskRestApi: EventDrivenTaskRestApi = webCont.eventDrivenTaskRestApi.get()

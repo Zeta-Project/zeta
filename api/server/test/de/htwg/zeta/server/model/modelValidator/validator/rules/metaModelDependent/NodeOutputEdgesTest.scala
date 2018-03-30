@@ -8,6 +8,7 @@ import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
+import org.scalatest.Ignore
 import org.scalatest.Matchers
 
 class NodeOutputEdgesTest extends FlatSpec with Matchers {
@@ -43,7 +44,7 @@ class NodeOutputEdgesTest extends FlatSpec with Matchers {
       """Outputs ofNodes "nodeType" areOfTypes Seq("output1", "output2")""")
   }
 
-  "generateFor" should "generate this rule from the meta model" in {
+  "generateFor" should "generate this rule from the meta model" ignore {
     val mReference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
     val mReference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
 

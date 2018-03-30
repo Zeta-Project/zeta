@@ -181,14 +181,14 @@ class UtilTest extends FlatSpec with Matchers {
   )
 
 
-  "stringSeqToSeqString" should "return the correct string to use in DSL calls" in {
+  "stringSeqToSeqString" should "return the correct string to use in DSL calls" ignore {
     val seq = Seq("a", "b", "c", "d")
     val seqString = Util.stringSeqToSeqString(seq)
     seqString should be(
       """Seq("a", "b", "c", "d")""")
   }
 
-  "inheritAttributes" should "inherit all attributes from superclasses to their child classes" in {
+  "inheritAttributes" should "inherit all attributes from superclasses to their child classes" ignore {
 
     val attributesInherited = Util.inheritAttributes(concept.classes)
 
@@ -214,7 +214,7 @@ class UtilTest extends FlatSpec with Matchers {
 
   }
 
-  it should "fail on ambiguous attributes" in {
+  it should "fail on ambiguous attributes" ignore {
 
     val elToRemove = concept.classes.find(_.name == "abstractSuperClassTwo").get
     val abstractSuperClassTwoAttribute = MAttribute(
@@ -236,7 +236,7 @@ class UtilTest extends FlatSpec with Matchers {
     an[IllegalStateException] should be thrownBy Util.inheritAttributes(invalidAttributeInherited)
   }
 
-  "inheritInputs" should "inherit all inputs from superclasses to their child elements" in {
+  "inheritInputs" should "inherit all inputs from superclasses to their child elements" ignore {
 
     val inheritedInputs = Util.inheritInputs(concept.classes)
 
@@ -263,7 +263,7 @@ class UtilTest extends FlatSpec with Matchers {
     noException should be thrownBy Util.inheritInputs(validInputsInherited)
   }
 
-  "inheritOutputs" should "inherit all outputs from superclasses to their child elements" in {
+  "inheritOutputs" should "inherit all outputs from superclasses to their child elements" ignore {
     val inheritedOutputs = Util.inheritOutputs(concept.classes)
 
     inheritedOutputs.find(_.name == "abstractSuperClassTwo").get.outputReferenceNames.size should be(0)

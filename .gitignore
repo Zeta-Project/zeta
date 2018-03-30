@@ -21,3 +21,5 @@ tmp
 /mongodb/
 /sbt/
 docker-compose\.override\.yml
+
+webapp/coverage/

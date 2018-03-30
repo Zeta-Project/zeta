@@ -1,5 +1,5 @@
 import PlacingDefinitionGenerator from './PlacingDefinitionGenerator';
-import StyleGenerator from '../StyleGenerator';
+import StyleGenerator from '../../style/StyleGenerator';
 
 describe('createPlacing', () => {
   function create() {

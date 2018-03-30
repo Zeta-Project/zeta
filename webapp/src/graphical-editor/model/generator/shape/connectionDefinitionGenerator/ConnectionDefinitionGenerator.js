@@ -1,6 +1,6 @@
-import PlacingDefinitionGenerator from './connectionDefinitionGenerator/PlacingDefinitionGenerator'
-import createLabelList from './connectionDefinitionGenerator/LabelDefinitionGenerator'
-import SvgDataPathGenerator from './connectionDefinitionGenerator/SvgDataPathGenerator'
+import PlacingDefinitionGenerator from './PlacingDefinitionGenerator'
+import createLabelList from './LabelDefinitionGenerator'
+import SvgDataPathGenerator from './SvgDataPathGenerator'
 
 class ConnectionDefinitionGenerator { 
 
@@ -62,21 +62,25 @@ class ConnectionDefinitionGenerator {
             const fontAttributes = this.styleGenerator.createFontAttributes(placing.shape.style);
             return Object.assign(
                 commonAttributes,
-                {text: fontAttributes}
+                    {text: fontAttributes}
             );
         }
         return {};
     }
 
     createStyleMarkerSource(placing) {
-        return Object.assign(this.svgDataPathGenerator.generateMarker(placing), this.generateMarkerSourceCorrection());
+        return Object.assign(this.svgDataPathGenerator.generateMarker(placing), ConnectionDefinitionGenerator.generateMarkerSourceCorrection());
     }
 
     createSpecificStyleMarkerTarget(placing) {
-        return Object.assign(this.svgDataPathGenerator.generateMirroredMarker(placing), this.generateMarkerSourceCorrection());
+        return Object.assign(
+            this.svgDataPathGenerator.generateMirroredMarker(placing),
+            this.generatePlacingStyle(placing),
+            ConnectionDefinitionGenerator.generateMarkerSourceCorrection()
+        );
     }
 
-    generateMarkerSourceCorrection() {
+    static generateMarkerSourceCorrection() {
         return {
             transform: 'scale(1,1)'
         };
@@ -87,7 +91,7 @@ class ConnectionDefinitionGenerator {
 export default class Generator{
 
     constructor(shape, styleGenerator) {
-        this.connections = 'connections' in shape ? shape.connections : [];
+        this.connections = shape.edges ? shape.edges : [];
         this.connectionDefinitionGenerator = new ConnectionDefinitionGenerator(styleGenerator);
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);
     }
