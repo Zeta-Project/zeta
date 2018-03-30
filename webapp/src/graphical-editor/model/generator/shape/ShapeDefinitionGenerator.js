@@ -365,7 +365,7 @@ class ShapeGenerator {
 export default class {
     constructor(shape, shapeStyleGenerator) {
         this.nodes = shape.nodes ? shape.nodes : [];
-        this.generator = new ShapeGenerator(shapeStyleGenerator, nodes);
+        this.generator = new ShapeGenerator(shapeStyleGenerator, this.nodes);
         this.calculator = new Calculator();
     }
 
