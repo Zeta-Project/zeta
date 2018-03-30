@@ -9,6 +9,7 @@ import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
@@ -17,6 +18,7 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
@@ -150,14 +152,18 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
            repeatingBox {
              editable: false
              for(each: Inheritance, as: i)
-             line {
+             verticalLayout {
+               line {
+                 point(x: 1, y: 51)
+                 point(x: 2, y: 52)
+               }
+             }
+           }
+           horizontalLayout {
+             polyline {
                point(x: 1, y: 51)
                point(x: 2, y: 52)
              }
-           }
-           polyline {
-             point(x: 1, y: 51)
-             point(x: 2, y: 52)
            }
          }
          node abClassNode for AbstractKlasse {
@@ -560,18 +566,24 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         editable = false,
         style = Style.defaultStyle,
         childGeoModels = List(
-          geomodel.Line(
-            startPoint = geomodel.Point(1, 51),
-            endPoint = geomodel.Point(2, 52),
-            childGeoModels = List(),
-            style = Style.defaultStyle
+          VerticalLayout(
+            style = Style.defaultStyle,
+            childGeoModels = List(geomodel.Line(
+              startPoint = geomodel.Point(1, 51),
+              endPoint = geomodel.Point(2, 52),
+              childGeoModels = List(),
+              style = Style.defaultStyle
+            ))
           )
         )
       ),
-      Polyline(
-        points = List(geomodel.Point(1, 51), geomodel.Point(2, 52)),
-        childGeoModels = List(),
-        style = Style.defaultStyle
+      HorizontalLayout(
+        style = Style.defaultStyle,
+        childGeoModels = List(Polyline(
+          points = List(geomodel.Point(1, 51), geomodel.Point(2, 52)),
+          childGeoModels = List(),
+          style = Style.defaultStyle
+        ))
       )
     )
   )
