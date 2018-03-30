@@ -8,9 +8,13 @@ import de.htwg.zeta.common.models.project.gdsl.shape.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Rectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
@@ -122,8 +126,9 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  editable: true
              }
            }
-           rectangle {
+           roundedRectangle {
              size(width: 200, height: 100)
+             curve(width: 10, height: 10)
              position(x: 0, y: 150)
                  textfield   {
                      position(x: 0, y: 0)
@@ -131,6 +136,23 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                      size(width: 10, height: 40)
                      editable: true
                  }
+           }
+           ellipse {
+             size(width: 200, height: 100)
+             position(x: 0, y: 150)
+           }
+           statictext {
+             size(width: 200, height: 100)
+             position(x: 0, y: 150)
+             text: "test"
+           }
+           line {
+             point(x: 1, y: 51)
+             point(x: 2, y: 52)
+           }
+           polyline {
+             point(x: 1, y: 51)
+             point(x: 2, y: 52)
            }
          }
          node abClassNode for AbstractKlasse {
@@ -496,9 +518,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         ),
         style = Style.defaultStyle
       ),
-      Rectangle(
+      RoundedRectangle(
         size = geomodel.Size(200, 100),
         position = geomodel.Position(0, 150),
+        curve = geomodel.Size(10,10),
         childGeoModels = List(
           new TextField(
             identifier = "text3",
@@ -511,6 +534,30 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             style = Style.defaultStyle
           )
         ),
+        style = Style.defaultStyle
+      ),
+      Ellipse(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(0, 150),
+        childGeoModels = List(),
+        style = Style.defaultStyle
+      ),
+      StaticText(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(0, 150),
+        childGeoModels = List(),
+        style = Style.defaultStyle,
+        text = "test"
+      ),
+      geomodel.Line(
+        startPoint = geomodel.Point(1, 51),
+        endPoint = geomodel.Point(2, 52),
+        childGeoModels = List(),
+        style = Style.defaultStyle
+      ),
+      Polyline(
+        points = List(geomodel.Point(1, 51), geomodel.Point(2, 52)),
+        childGeoModels = List(),
         style = Style.defaultStyle
       )
     )
