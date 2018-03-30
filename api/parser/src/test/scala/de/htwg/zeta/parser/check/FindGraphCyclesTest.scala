@@ -1,9 +1,11 @@
 package de.htwg.zeta.parser.check
 
 import de.htwg.zeta.parser.check.Check.Id
-import org.scalatest.{FreeSpec, Inside, Matchers}
+import org.scalatest.FreeSpec
+import org.scalatest.Inside
+import org.scalatest.Matchers
 
-
+//noinspection ScalaStyle
 class FindGraphCyclesTest extends FreeSpec with Matchers with Inside {
 
   private def findGraphCycles(elements: List[Element]): List[Id] = {
