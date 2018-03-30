@@ -13,6 +13,7 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Rectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
@@ -146,9 +147,13 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
              position(x: 0, y: 150)
              text: "test"
            }
-           line {
-             point(x: 1, y: 51)
-             point(x: 2, y: 52)
+           repeatingBox {
+             editable: false
+             for(each: Inheritance, as: i)
+             line {
+               point(x: 1, y: 51)
+               point(x: 2, y: 52)
+             }
            }
            polyline {
              point(x: 1, y: 51)
@@ -521,7 +526,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
       RoundedRectangle(
         size = geomodel.Size(200, 100),
         position = geomodel.Position(0, 150),
-        curve = geomodel.Size(10,10),
+        curve = geomodel.Size(10, 10),
         childGeoModels = List(
           new TextField(
             identifier = "text3",
@@ -549,11 +554,19 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         style = Style.defaultStyle,
         text = "test"
       ),
-      geomodel.Line(
-        startPoint = geomodel.Point(1, 51),
-        endPoint = geomodel.Point(2, 52),
-        childGeoModels = List(),
-        style = Style.defaultStyle
+      RepeatingBox(
+        forEach = "Inheritance",
+        forAs = "i",
+        editable = false,
+        style = Style.defaultStyle,
+        childGeoModels = List(
+          geomodel.Line(
+            startPoint = geomodel.Point(1, 51),
+            endPoint = geomodel.Point(2, 52),
+            childGeoModels = List(),
+            style = Style.defaultStyle
+          )
+        )
       ),
       Polyline(
         points = List(geomodel.Point(1, 51), geomodel.Point(2, 52)),
