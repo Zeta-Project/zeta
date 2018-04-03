@@ -234,14 +234,14 @@ class AttrBuilder {
             id: geoElement.id,
             width: geoElement.size.width,
             height: geoElement.size.height,
-            editable: geoElement?.editable ? geoElement?.editable : false,
-            multiline: geoElement?.multiline ? geoElement?.multiline : false,
-            align:{
-                horizontal: geoElement?.align?.horizontal ? geoElement?.align?.horizontal : 'middle',
-                vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
-            },
+            // editable: geoElement?.editable ? geoElement?.editable : false,
+            // multiline: geoElement?.multiline ? geoElement?.multiline : false,
+            // align:{
+            //     horizontal: geoElement?.align?.horizontal ? geoElement?.align?.horizontal : 'middle',
+            //     vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
+            // },
             // todo:DefaultText forTextFields
-            text: '',
+            text: 'SCHINKEN',
         };
     }
 
