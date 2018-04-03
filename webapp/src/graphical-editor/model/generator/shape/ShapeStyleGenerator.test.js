@@ -116,7 +116,7 @@ describe('getShapeStyle', () => {
         });
     });
 
-    test('shape with text element', () => {
+    test('shape with textfield element', () => {
         const getShapeStyle = create({
                     nodes: [
                         {
@@ -124,7 +124,7 @@ describe('getShapeStyle', () => {
                             geoElements: [
                                 {
                                     id: 'unique',
-                                    type: 'statictext',
+                                    type: 'textfield',
                                     style: 'default-style',
                                 }
                             ]
@@ -165,7 +165,7 @@ describe('getShapeStyle', () => {
                             geoElements: [
                                 {
                                     id: 'unique',
-                                    type: 'polyline',
+                                    type: 'polyLine',
                                     style: 'default-style',
                                 }
                             ]
