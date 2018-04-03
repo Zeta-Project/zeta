@@ -1,11 +1,5 @@
 package de.htwg.zeta.parser
 
-import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.concept.elements.AttributeType
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
-import de.htwg.zeta.common.models.project.concept.elements.MAttribute
-import de.htwg.zeta.common.models.project.concept.elements.MClass
-import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.gdsl
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
@@ -14,10 +8,17 @@ import de.htwg.zeta.common.models.project.gdsl.shape.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.HorizontalLayout
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polyline
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Rectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
+import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
@@ -29,6 +30,7 @@ import de.htwg.zeta.common.models.project.gdsl.style.Style
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
 
   private val parser = new GraphicalDSLParser()
@@ -69,6 +71,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
          style realization {
            description = "Style for realization"
            background-color = white
+           line-style = wrongLineStyle
          }
 
          style aggregation {
@@ -126,8 +129,9 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  editable: true
              }
            }
-           rectangle {
+           roundedRectangle {
              size(width: 200, height: 100)
+             curve(width: 10, height: 10)
              position(x: 0, y: 150)
                  textfield   {
                      position(x: 0, y: 0)
@@ -135,6 +139,31 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                      size(width: 10, height: 40)
                      editable: true
                  }
+           }
+           ellipse {
+             size(width: 200, height: 100)
+             position(x: 0, y: 150)
+           }
+           statictext {
+             size(width: 200, height: 100)
+             position(x: 0, y: 150)
+             text: "test"
+           }
+           repeatingBox {
+             editable: false
+             for(each: Inheritance, as: i)
+             verticalLayout {
+               line {
+                 point(x: 1, y: 51)
+                 point(x: 2, y: 52)
+               }
+             }
+           }
+           horizontalLayout {
+             polyline {
+               point(x: 1, y: 51)
+               point(x: 2, y: 52)
+             }
            }
          }
          node abClassNode for AbstractKlasse {
@@ -190,6 +219,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  identifier: text113
                  size(width: 10, height: 40)
                  editable: true
+                 align(horizontal: left, vertical: top)
                }
            }
            rectangle {
@@ -200,6 +230,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                      identifier: text213
                      size(width: 10, height: 40)
                      editable: true
+                     align(horizontal: middle, vertical: middle)
                  }
            }
            rectangle {
@@ -210,6 +241,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                      identifier: text313
                      size(width: 10, height: 40)
                      editable: true
+                     align(horizontal: right, vertical: bottom)
                  }
            }
          }
@@ -279,33 +311,6 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
                  }
              }
          }"""
-
-  private val concept = new Concept(
-    classes = List(
-      cClass("AbstractKlasse", List(cAttribute("text11"), cAttribute("text21"), cAttribute("text31"))),
-      cClass("InterfaceKlasse", List(cAttribute("text113"), cAttribute("text213"), cAttribute("text313"))),
-      cClass("Klasse", List(cAttribute("text1"), cAttribute("text2"), cAttribute("text3")))
-    ),
-    references = List(
-      cReference("BaseClassRealization", "Klasse", "InterfaceKlasse"),
-      cReference("Realization", "InterfaceKlasse", "AbstractKlasse"),
-      cReference("Inheritance", "Klasse", "AbstractKlasse")
-    ),
-    enums = List(),
-    attributes = List(
-      cAttribute("text11"),
-      cAttribute("text21"),
-      cAttribute("text31"),
-      cAttribute("text113"),
-      cAttribute("text213"),
-      cAttribute("text313"),
-      cAttribute("text1"),
-      cAttribute("text2"),
-      cAttribute("text3")
-    ),
-    methods = List(),
-    uiState = ""
-  )
 
   private val yStyle = new Style(
     name = "Y",
@@ -527,9 +532,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         ),
         style = Style.defaultStyle
       ),
-      Rectangle(
+      RoundedRectangle(
         size = geomodel.Size(200, 100),
         position = geomodel.Position(0, 150),
+        curve = geomodel.Size(10, 10),
         childGeoModels = List(
           new TextField(
             identifier = "text3",
@@ -543,6 +549,44 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
           )
         ),
         style = Style.defaultStyle
+      ),
+      Ellipse(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(0, 150),
+        childGeoModels = List(),
+        style = Style.defaultStyle
+      ),
+      StaticText(
+        size = geomodel.Size(200, 100),
+        position = geomodel.Position(0, 150),
+        childGeoModels = List(),
+        style = Style.defaultStyle,
+        text = "test"
+      ),
+      RepeatingBox(
+        forEach = "Inheritance",
+        forAs = "i",
+        editable = false,
+        style = Style.defaultStyle,
+        childGeoModels = List(
+          VerticalLayout(
+            style = Style.defaultStyle,
+            childGeoModels = List(geomodel.Line(
+              startPoint = geomodel.Point(1, 51),
+              endPoint = geomodel.Point(2, 52),
+              childGeoModels = List(),
+              style = Style.defaultStyle
+            ))
+          )
+        )
+      ),
+      HorizontalLayout(
+        style = Style.defaultStyle,
+        childGeoModels = List(Polyline(
+          points = List(geomodel.Point(1, 51), geomodel.Point(2, 52)),
+          childGeoModels = List(),
+          style = Style.defaultStyle
+        ))
       )
     )
   )
@@ -627,7 +671,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             position = geomodel.Position(0, 0),
             editable = true,
             multiline = false,
-            align = Align.default,
+            align = Align(
+              vertical = Align.Vertical.top,
+              horizontal = Align.Horizontal.left
+            ),
             childGeoModels = List(),
             style = Style.defaultStyle
           )
@@ -644,7 +691,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             position = geomodel.Position(0, 0),
             editable = true,
             multiline = false,
-            align = Align.default,
+            align = Align(
+              vertical = Align.Vertical.middle,
+              horizontal = Align.Horizontal.middle
+            ),
             childGeoModels = List(),
             style = Style.defaultStyle
           )
@@ -661,7 +711,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             position = geomodel.Position(0, 0),
             editable = true,
             multiline = false,
-            align = Align.default,
+            align = Align(
+              vertical = Align.Vertical.bottom,
+              horizontal = Align.Horizontal.right
+            ),
             childGeoModels = List(),
             style = Style.defaultStyle
           )
@@ -673,7 +726,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
 
   "A Graphical DSL parser should success" - {
     "for an example input" in {
-      val result = parser.parse(concept, style, shape, diagram)
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, shape, diagram)
 
       result.isSuccess shouldBe true
       val parsed = result.toEither.right.get
@@ -698,40 +751,5 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
       parsed.shape.nodes should contain(inClassNode)
     }
   }
-
-  def cReference(name: String, source: String, target: String): MReference = new MReference(
-    name = name,
-    description = "",
-    sourceDeletionDeletesTarget = true,
-    targetDeletionDeletesSource = true,
-    sourceClassName = source,
-    targetClassName = target,
-    attributes = List(),
-    methods = List()
-  )
-
-  def cClass(name: String, attributes: List[MAttribute]): MClass = new MClass(
-    name = name,
-    description = "",
-    abstractness = true,
-    superTypeNames = List(),
-    inputReferenceNames = List(),
-    outputReferenceNames = List(),
-    attributes = attributes,
-    methods = List()
-  )
-
-  def cAttribute(name: String): MAttribute = new MAttribute(
-    name = name,
-    globalUnique = true,
-    localUnique = true,
-    typ = AttributeType.StringType,
-    default = AttributeValue.StringValue(""),
-    constant = false,
-    singleAssignment = false,
-    expression = "",
-    ordered = true,
-    transient = false
-  )
 
 }

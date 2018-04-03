@@ -69,11 +69,15 @@ class ConnectionDefinitionGenerator {
     }
 
     createStyleMarkerSource(placing) {
-        return Object.assign(this.svgDataPathGenerator.generateMarker(placing), this.generateMarkerSourceCorrection());
+        return Object.assign(this.svgDataPathGenerator.generateMarker(placing), ConnectionDefinitionGenerator.generateMarkerSourceCorrection());
     }
 
     createSpecificStyleMarkerTarget(placing) {
-        return Object.assign(this.svgDataPathGenerator.generateMirroredMarker(placing), this.generatePlacingStyle(placing), this.generateMarkerSourceCorrection());
+        return Object.assign(
+            this.svgDataPathGenerator.generateMirroredMarker(placing),
+            this.generatePlacingStyle(placing),
+            ConnectionDefinitionGenerator.generateMarkerSourceCorrection()
+        );
     }
 
     static generateMarkerSourceCorrection() {

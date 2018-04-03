@@ -1,11 +1,31 @@
 package de.htwg.zeta.parser.shape
 
 import de.htwg.zeta.parser.shape.parser.NodeParser
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.{EllipseParseTree, HorizontalLayoutParseTree, LineParseTree, TextfieldParseTree}
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Align
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.HorizontalAlignment
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Multiline
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Point
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.VerticalAlignment
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.AbsoluteAnchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.AnchorPosition
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.PredefinedAnchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.RelativeAnchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.Resizing
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
-import org.scalatest.{FreeSpec, Inside, Matchers}
+import org.scalatest.FreeSpec
+import org.scalatest.Inside
+import org.scalatest.Matchers
 
 //noinspection ScalaStyle
 class NodeParserTest extends FreeSpec with Matchers with Inside {
