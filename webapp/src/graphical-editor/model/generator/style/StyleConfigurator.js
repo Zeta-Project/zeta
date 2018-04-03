@@ -52,7 +52,7 @@ export class StyleConfigurator {
     }
 
     static getFontColor(style) {
-        return style?.font?.color || '#000000';
+        return style?.font?.color?.hex || '#000000';
     }
 
     static getFontSize(style) {
@@ -78,7 +78,7 @@ export class StyleConfigurator {
             const createGradientStops = () => {
                 const areas = gradient.area?.map(area => ({
                     'offset': area.offset,
-                    'color': area.color
+                    'color': area.color?.hex || '#000000'
                 }));
                 return areas || [];
             };
@@ -99,14 +99,14 @@ export class StyleConfigurator {
                 'attrs': createGradientAttrs()
             };
         }
-        return style?.background?.color;
+        return style?.background?.color?.hex || '#000000';
     }
 
     static getStroke(style) {
         if (this.useDefaultLineAttributes(style)) {
             return '#000000';
         }
-        return style?.line?.color;
+        return style?.line?.color?.hex || '#000000';
     }
 
     static getStrokeWidth(style) {
@@ -131,7 +131,7 @@ export class StyleConfigurator {
 
     static useDefaultLineAttributes(style) {
         // we have neither a color nor a transparency => use default line attributes
-        return style?.line?.color === undefined && style.line?.transparent === undefined;
+        return style?.line?.color?.hex === undefined && style.line?.transparent === undefined;
     }
 
     static removeUndefinedValues(jsonObject) {
