@@ -1,7 +1,9 @@
 package de.htwg.zeta.parser
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.FreeSpec
+import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class EnumParserTest extends FreeSpec with Matchers {
 
   object MyEnum extends Enumeration {

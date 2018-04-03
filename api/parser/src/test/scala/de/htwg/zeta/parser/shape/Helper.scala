@@ -8,7 +8,6 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringT
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
-import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.concept.elements.Method
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Editable
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
@@ -28,7 +27,6 @@ import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
  * Helper provides little helpers to create geo models with default values.
  */
 //noinspection ScalaStyle
-
 object Helper {
 
   def createTextfield(style: Option[Style] = None, identifier: String, children: List[GeoModelParseTree] = Nil): TextfieldParseTree = {

@@ -2,7 +2,6 @@ package de.htwg.zeta.common.format.project.gdsl.style
 
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Dotted
-import de.htwg.zeta.common.models.project.gdsl.style.DoubleLine
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.LineStyle
 import de.htwg.zeta.common.models.project.gdsl.style.Solid
@@ -36,18 +35,16 @@ class LineFormat(
   }
 
   private def writeLineStyle(lineStyle: LineStyle): String = lineStyle match {
-    case _: Dotted => "dotted"
+    case _: Dotted => "dot"
     case _: Solid => "solid"
-    case _: DoubleLine => "double"
-    case _: Dashed => "dashed"
+    case _: Dashed => "dash"
   }
 
   protected class LineStyleRead extends Reads[LineStyle] {
     override def reads(lineStyle: JsValue): JsResult[LineStyle] = lineStyle.toString match {
-      case "dotted" => JsSuccess(Dotted())
+      case "dot" => JsSuccess(Dotted())
       case "solid" => JsSuccess(Solid())
-      case "double" => JsSuccess(DoubleLine())
-      case "dashed" => JsSuccess(Dashed())
+      case "dash" => JsSuccess(Dashed())
     }
   }
   protected object LineStyleRead {

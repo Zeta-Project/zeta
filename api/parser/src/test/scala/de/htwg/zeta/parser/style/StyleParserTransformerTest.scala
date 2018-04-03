@@ -7,6 +7,7 @@ import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class StyleParserTransformerTest extends FreeSpec with Matchers {
 
   "A style transformer will" - {
