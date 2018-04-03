@@ -34,7 +34,7 @@ class ShapesGenerator {
     createShapeList(palette, nodes, classes, diagrams) {
         const paletteNodes = diagrams[0].palettes.find(p => p.name === palette).nodes;
         const shapeNodes = nodes.filter( n => paletteNodes.includes(n.name));
-        shapeNodes.map(node => this.createShapeEntry(node, classes));
+        return shapeNodes.map(node => this.createShapeEntry(node, classes));
         /*this.createShapeEntry()
 
         return nodes.filter(n => n.palette === palette)
@@ -116,7 +116,14 @@ class ShapesGenerator {
             shape.attributes.attrs[typelesId] = helper;
         });
 
-        Object.assign(shape.attributes.attrs, shapeAttributes);
+        const regex = new RegExp('\\w+\\.(\\w+|\\-)+', 'g');
+
+        const typeAttrs = Object.keys(shapeAttributes).filter((shapeId) => shapeId.match(regex)).reduce((obj, key) => {
+            obj[key] = shapeAttributes[key];
+            return obj;
+        }, {});
+
+        Object.assign(shape.attributes.attrs, typeAttrs);
     }
 }
 
