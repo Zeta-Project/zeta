@@ -47,5 +47,7 @@ object GeoModelAttributes {
 
   case class Text(text: String) extends GeoModelAttribute
 
+  case class TextBody(text: String) extends GeoModelAttribute
+
 }
 

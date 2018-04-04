@@ -38,6 +38,31 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
         )
       }
 
+      "a textfield" in {
+        val textfield =
+          """
+           |textfield {
+           |  identifier: i123
+           |  textBody: "default text"
+           |  position(x: 0, y: 0)
+           |  size(width: 100, height: 20)
+           |}
+          """.stripMargin
+        val result = parseGeoModel(textfield)
+        result.successful shouldBe true
+        result.get shouldBe TextfieldParseTree(
+          style = None,
+          Identifier("i123"),
+          Some(TextBody("default text")),
+          Position(0, 0),
+          Size(100, 20),
+          multiline = None,
+          align = None,
+          editable = None,
+          children = Nil
+        )
+      }
+
       "a statictext" in {
         val statictext =
           """
