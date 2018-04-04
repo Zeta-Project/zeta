@@ -78,7 +78,7 @@ export class StyleConfigurator {
             const createGradientStops = () => {
                 const areas = gradient.area?.map(area => ({
                     'offset': area.offset,
-                    'color': area.color?.hex || '#000000'
+                    'color': area.color?.hex || '#FFFFFF'
                 }));
                 return areas || [];
             };
@@ -99,7 +99,7 @@ export class StyleConfigurator {
                 'attrs': createGradientAttrs()
             };
         }
-        return style?.background?.color?.hex || '#000000';
+        return style?.background?.color?.hex || '#FFFFFF';
     }
 
     static getStroke(style) {
@@ -111,7 +111,7 @@ export class StyleConfigurator {
 
     static getStrokeWidth(style) {
         if (this.useDefaultLineAttributes(style)) {
-            return 0;
+            return 1;
         }
         if (style?.line?.transparent) return undefined;
         return style?.line?.width;
@@ -131,7 +131,7 @@ export class StyleConfigurator {
 
     static useDefaultLineAttributes(style) {
         // we have neither a color nor a transparency => use default line attributes
-        return style?.line?.color?.hex === undefined && style.line?.transparent === undefined;
+        return style?.line?.color?.hex === undefined && style?.line?.transparent === undefined;
     }
 
     static removeUndefinedValues(jsonObject) {

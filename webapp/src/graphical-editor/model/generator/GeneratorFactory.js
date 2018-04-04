@@ -1,6 +1,6 @@
-import StyleGenerator from './style/StyleGenerator'
 import joint from 'jointjs';
 
+import StyleGenerator from './style/StyleGenerator'
 import InspectorGenerator from './editor/InspectorGenerator'
 import LinkHelperGenerator from './editor/LinkHelperGenerator'
 import StencilGenerator from './editor/StencilGenerator'
@@ -21,15 +21,15 @@ function checkInitialized() {
 function createGenerators(styleData, diagramData, shapeData, conceptData) {
 
     const style = new StyleGenerator(styleData);
-    const shapeDefinition = new ShapeDefinitionGenerator(shapeData, style);
     const shapeStyle = new ShapeStyleGenerator(shapeData, style); // TODO ShapeStyleGenerator is only partially updated to V2
+    const shapeDefinition = new ShapeDefinitionGenerator(shapeData, shapeStyle);
     const connectionDefinition = new ConnectionDefinitionGenerator(shapeData, style);
 
     Object.assign(joint.shapes.zeta, shapeDefinition.zeta);
 
+    const stencil = new StencilGenerator(diagramData, shapeData, conceptData, shapeStyle, style); // TODO update StencilGenerator to V2
     const inspector = new InspectorGenerator(shapeData, shapeDefinition); // TODO update InspectorGenerator to V2
     const linkHelper = new LinkHelperGenerator(diagramData); // TODO update LinkHelperGenerator to V2
-    const stencil = new StencilGenerator(diagramData, conceptData, shapeStyle, style); // TODO update StencilGenerator to V2
     const validator = new ValidatorGenerator(conceptData, diagramData); // TODO update ValidatorGenerator to V2
 
     generators = {
