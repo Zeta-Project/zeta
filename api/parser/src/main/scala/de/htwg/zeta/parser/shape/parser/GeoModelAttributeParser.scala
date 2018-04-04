@@ -16,6 +16,7 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.VerticalAlignment
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
@@ -91,4 +92,12 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
       Text(string.drop(1).dropRight(1))
     }
   }
+
+  def textBody: Parser[TextBody] = {
+    "textBody" ~> colon ~> stringLiteral ^^ { string =>
+      // string starts and ends with quotation marks -> drop them
+      TextBody(string.drop(1).dropRight(1))
+    }
+  }
+
 }

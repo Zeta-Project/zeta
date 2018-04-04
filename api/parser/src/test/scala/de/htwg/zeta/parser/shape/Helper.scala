@@ -33,6 +33,7 @@ object Helper {
     TextfieldParseTree(
       style,
       Identifier(identifier),
+      textBody = None,
       Position(100, 100),
       Size(100, 100),
       multiline = None,

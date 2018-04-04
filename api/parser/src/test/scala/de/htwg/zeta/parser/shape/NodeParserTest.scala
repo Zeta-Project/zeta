@@ -201,6 +201,7 @@ class NodeParserTest extends FreeSpec with Matchers with Inside {
                     TextfieldParseTree(
                       style = None,
                       Identifier("ueberschrift"),
+                      textBody = None,
                       Position(3, 4),
                       Size(10, 15),
                       multiline = Some(Multiline(false)),
