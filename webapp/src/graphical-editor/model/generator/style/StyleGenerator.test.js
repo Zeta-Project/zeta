@@ -8,14 +8,29 @@ describe('getStyle', () => {
 
     test('with style not found', () => {
         const getStyle = create([]);
-        expect(getStyle('DefaultStyle')).toEqual({});
+        expect(getStyle('DefaultStyle')).toEqual(
+            {
+                "fill": "#FFFFFF",
+                "fill-opacity": 1,
+                "stroke": "#000000",
+                "stroke-dasharray": "0",
+                "stroke-width": 1,
+                "text": {
+                    "dominant-baseline": "text-before-edge",
+                    "fill": "#000000",
+                    "font-family": "sans-serif",
+                    "font-size": "11",
+                    "font-weight": "normal"
+                }
+            }
+        );
     });
 
     test('with empty style', () => {
         const style = {
             name: 'DefaultStyle',
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
@@ -25,9 +40,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -49,9 +65,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1.0,
             'stroke-dasharray': "0"
         });
     });
@@ -73,9 +90,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -84,7 +102,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             font: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
             }
         };
 
@@ -97,9 +117,10 @@ describe('getStyle', () => {
                 'fill': '#ffffff',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -121,9 +142,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'bold'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -145,9 +167,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -170,9 +193,10 @@ describe('getStyle', () => {
                 'font-weight': 'normal',
                 'font-style': 'italic',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -194,9 +218,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -205,7 +230,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             background: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
             },
         };
 
@@ -221,7 +248,7 @@ describe('getStyle', () => {
             'fill': '#ffffff',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -249,7 +276,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -279,7 +306,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -292,11 +319,15 @@ describe('getStyle', () => {
                     area: [
                         {
                             offset: 0,
-                            color: '#000000'
+                            color: {
+                                hex: '#000000',
+                            }
                         },
                         {
                             offset: 100,
-                            color: '#ffffff'
+                            color: {
+                                hex: '#ffffff',
+                            }
                         }
                     ],
                 },
@@ -327,7 +358,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -357,7 +388,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -384,11 +415,11 @@ describe('getStyle', () => {
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
-                'attrs': { x1: '0%', y1: '0%', x2: '0%', y2: '100%' },
+                'attrs': {x1: '0%', y1: '0%', x2: '0%', y2: '100%'},
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -408,32 +439,11 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 0.5,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
-        });
-    });
-
-    test('with transparent line', () => {
-        const style = {
-            name: 'DefaultStyle',
-            line: {
-                transparent: true,
-            }
-        };
-
-        const getStyle = create([style]);
-        expect(getStyle('DefaultStyle')).toEqual({
-            'text': {
-                'dominant-baseline': "text-before-edge",
-                'font-family': 'sans-serif',
-                'font-size': '11',
-                'fill': '#000000',
-                'font-weight': 'normal',
-            },
-            'fill-opacity': 1.0,
-            'stroke-opacity': 0,
         });
     });
 
@@ -441,7 +451,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
             }
         };
 
@@ -454,6 +466,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
         });
@@ -463,7 +476,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 width: 5,
             },
         };
@@ -477,6 +492,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-width': 5,
@@ -500,9 +516,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -511,7 +528,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dash',
             },
         };
@@ -525,6 +544,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '10,10',
@@ -535,7 +555,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dot',
             },
         };
@@ -549,6 +571,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '5,5',
@@ -559,7 +582,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dashdot',
             },
         };
@@ -573,6 +598,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '10,5,5,5',
@@ -583,7 +609,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dashdotdot',
             },
         };
@@ -597,6 +625,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '10,5,5,5,5,5',
@@ -607,7 +636,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'unkown-style',
             },
         };
@@ -621,6 +652,7 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '0',
@@ -630,17 +662,23 @@ describe('getStyle', () => {
     test('with all attributes', () => {
         const style = {
             background: {
-                color: '#ff00ff',
+                color: {
+                    hex: '#ff00ff'
+                },
             },
             font: {
                 bold: true,
-                color: '#00ffff',
+                color: {
+                    hex: '#00ffff'
+                },
                 italic: true,
                 name: 'helvetica',
                 size: 20,
             },
             line: {
-                color: '#ffff00',
+                color: {
+                    hex: '#ffff00'
+                },
                 style: 'dash',
                 width: 5,
             },
@@ -693,7 +731,7 @@ describe('createCommonAttributes', () => {
         expect(getStyle('DefaultStyle')).toEqual({
             'fill-opacity': 0.5,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
