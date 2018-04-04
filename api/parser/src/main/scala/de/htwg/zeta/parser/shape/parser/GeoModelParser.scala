@@ -16,6 +16,7 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
@@ -68,11 +69,14 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   }
 
   private def textfield: Parser[TextfieldParseTree] = {
-    val attributes = List(optional(style), once(identifier), optional(multiline), once(position), once(size), optional(align), optional(editable))
+    val attributes = List(
+      optional(style), once(identifier), optional(textBody), optional(multiline), once(position), once(size), optional(align), optional(editable)
+    )
     parseGeoModel("textfield", attributes).map {
       case (attrs, geoModels) => TextfieldParseTree(
         attrs.?[Style],
         attrs.![Identifier],
+        attrs.?[TextBody],
         attrs.![Position],
         attrs.![Size],
         attrs.?[Multiline],
@@ -182,6 +186,8 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   }
 
   private def text = include(GeoModelAttributeParser.text).named("text")
+
+  private def textBody = include(GeoModelAttributeParser.textBody).named("textBody")
 
   private def style = include(GeoModelAttributeParser.style).named("style")
 

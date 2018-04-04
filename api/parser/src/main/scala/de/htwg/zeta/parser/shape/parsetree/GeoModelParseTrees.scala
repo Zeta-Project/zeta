@@ -11,6 +11,7 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
 
 
 object GeoModelParseTrees {
@@ -33,6 +34,7 @@ object GeoModelParseTrees {
   case class TextfieldParseTree(
       style: Option[Style],
       identifier: Identifier,
+      textBody: Option[TextBody],
       position: Position,
       size: Size,
       multiline: Option[Multiline],
