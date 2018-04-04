@@ -240,8 +240,7 @@ class AttrBuilder {
                 horizontal: geoElement?.align?.horizontal ? geoElement?.align?.horizontal : 'middle',
                 vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
             },
-            // todo:DefaultText forTextFields
-            text: 'Default-Text',
+            text: geoElement.textBody
         };
     }
 
