@@ -91,7 +91,7 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 0,
                     'width': 0
@@ -141,7 +141,7 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 0,
                     'width': 0
@@ -191,7 +191,7 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 0,
                     'width': 0
@@ -238,7 +238,7 @@ describe('joint.shapes.zeta', () => {
                 'vertical': false,
                 'proportional': false,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 0,
                     'width': 0
@@ -285,7 +285,7 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': false,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 0,
                     'width': 0
@@ -332,7 +332,7 @@ describe('joint.shapes.zeta', () => {
                 'vertical': false,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 0,
                     'width': 0
@@ -389,12 +389,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 6,
                     'width': 9,
                 },
-                'unique': {
+                '.unique': {
                     'x': 1,
                     'y': 2,
                     'width': 8,
@@ -452,12 +452,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 6,
                     'width': 9,
                 },
-                'unique': {
+                '.unique': {
                     'cx': 5,
                     'cy': 4,
                     'rx': 4,
@@ -515,12 +515,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 8,
                     'width': 4,
                 },
-                'unique': {
+                '.unique': {
                     'x1': 1,
                     'y1': 2,
                     'x2': 4,
@@ -580,12 +580,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 24,
                     'width': 36,
                 },
-                'unique': {
+                '.unique': {
                     'x': 4,
                     'y': 8,
                     'width': 32,
@@ -655,12 +655,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 128,
                     'width': 64,
                 },
-                'unique': {
+                '.unique': {
                     'points': '1,2 64,128 16,32 4,8 ',
                 },
             },
@@ -717,12 +717,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 8,
                     'width': 4,
                 },
-                'unique': {
+                '.unique': {
                     'points': '1,2 4,8 ',
                 },
             },
@@ -765,7 +765,7 @@ describe('joint.shapes.zeta', () => {
             '<g class="rotatable">' +
             '<g class="scalable">' +
             '<rect class="bounding-box" />' +
-            '<textfield class="unique unique" ></textfield>' +
+            '<text class="unique unique" ></text>' +
             '</g>' +
             '</g>'
         );
@@ -784,12 +784,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 10,
                     'width': 5,
                 },
-                'unique': {
+                '.unique': {
                     'x': 1,
                     'y': 2,
                     'id': 'unique',
@@ -797,6 +797,7 @@ describe('joint.shapes.zeta', () => {
                     'height': 8,
                     'editable': true,
                     'multiline': false,
+                    'text': "Default-Text",
                     'align': {
                         'horizontal': 'left',
                         'vertical': 'middle'
@@ -876,18 +877,18 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 32,
                     'width': 16,
                 },
-                'unique1': {
+                '.unique1': {
                     'points': '1,2 ',
                 },
-                'unique2': {
+                '.unique2': {
                     'points': '16,32 ',
                 },
-                'unique3': {
+                '.unique3': {
                     'points': '4,8 ',
                 },
             },
@@ -957,18 +958,18 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 96,
                     'width': 144,
                 },
-                'unique2': {
+                '.unique2': {
                     'x': 16,
                     'y': 32,
                     'width': 128,
                     'height': 64,
                 },
-                'unique1': {
+                '.unique1': {
                     'x': 17,
                     'y': 34,
                     'width': 8,
@@ -1041,18 +1042,18 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 96,
                     'width': 144,
                 },
-                'unique2': {
+                '.unique2': {
                     'cx': 80,
                     'cy': 64,
                     'rx': 64,
                     'ry': 32,
                 },
-                'unique1': {
+                '.unique1': {
                     'cx': 21,
                     'cy': 36,
                     'rx': 4,
@@ -1137,15 +1138,15 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 512,
                     'width': 256,
                 },
-                'unique2': {
+                '.unique2': {
                     'points': '4,8 256,512 16,32 64,128 ',
                 },
-                'unique1': {
+                '.unique1': {
                     'points': '5,10 1028,2056 ',
                 },
             },
@@ -1219,12 +1220,12 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 1536,
                     'width': 2304,
                 },
-                'unique2': {
+                '.unique2': {
                     'x': 256,
                     'y': 512,
                     'width': 2048,
@@ -1232,7 +1233,7 @@ describe('joint.shapes.zeta', () => {
                     'rx': 128,
                     'ry': 64,
                 },
-                'unique1': {
+                '.unique1': {
                     'x': 260,
                     'y': 520,
                     'width': 32,
@@ -1288,7 +1289,7 @@ describe('joint.shapes.zeta', () => {
             '<g class="scalable">' +
             '<rect class="bounding-box" />' +
             '<rect class="unique2" />' +
-            '<textfield class="unique1 unique1" ></textfield>' +
+            '<text class="unique1 unique1" ></text>' +
             '</g>' +
             '</g>'
         );
@@ -1307,18 +1308,18 @@ describe('joint.shapes.zeta', () => {
                 'vertical': true,
                 'proportional': true,
             },
-            'attr': {
+            'attrs': {
                 'rect.bounding-box': {
                     'height': 96,
                     'width': 144,
                 },
-                'unique2': {
+                '.unique2': {
                     'x': 16,
                     'y': 32,
                     'width': 128,
                     'height': 64,
                 },
-                'unique1': {
+                '.unique1': {
                     'x': 17,
                     'y': 34,
                     'id': 'unique1',
@@ -1326,6 +1327,7 @@ describe('joint.shapes.zeta', () => {
                     'height': 8,
                     'editable': false,
                     'multiline': false,
+                    'text': 'Default-Text',
                     'align': {
                         'horizontal': 'middle',
                         'vertical': 'middle'
