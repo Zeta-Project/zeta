@@ -13,10 +13,33 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
     checkEdgesForUndefinedConceptElements(edges, concept)
   }
 
-
   // check if there are edges which reference undefined concept elements
-  def checkEdgesForUndefinedConceptElements(nodeParseTrees: List[EdgeParseTree], concept: Concept): List[String] = {
-    Nil // TODO
+  private def checkEdgesForUndefinedConceptElements(edges: List[EdgeParseTree], concept: Concept): List[ErrorMessage] = {
+    edges.flatMap(edge => checkEdgeForUndefinedConceptElements(edge, concept))
+  }
+
+  private def checkEdgeForUndefinedConceptElements(edge: EdgeParseTree, concept: Concept): List[ErrorMessage] = {
+    val conn = edge.conceptConnection
+    val List(conceptClass, conceptConnection) = conn.split("\\.").toList
+
+    lazy val maybeConceptClassDoesNotExist: Option[ErrorMessage] = concept.classes.find(_.name == conceptClass) match {
+      case Some(_) => None // the concept class referenced by the edge exists
+      case None => Some(s"Concept class '$conceptClass' for edge '${edge.identifier}' does not exist!")
+    }
+
+    lazy val maybeConceptConnectionDoesNotExist: Option[ErrorMessage] = concept.references.find(_.name == conceptConnection) match {
+      case Some(_) => None // the concept connection referenced by the edge exists
+      case None => Some(s"Concept connection '$conceptConnection' (in class '$conceptClass') for edge '${edge.identifier}' does not exist!")
+    }
+
+    val maybeTargetClassDoesNotExist: Option[ErrorMessage] = concept.classes.find(_.name == edge.conceptTarget.target) match {
+      case Some(_) => None // the concept target referenced by the edge exists
+      case None => Some(s"Target '${edge.conceptTarget.target}' for edge '${edge.identifier}' is not a concept class!")
+    }
+
+    (maybeTargetClassDoesNotExist ++: List(maybeConceptClassDoesNotExist, maybeConceptConnectionDoesNotExist).collectFirst {
+      case Some(error) => error
+    }).toList
   }
 
 }
