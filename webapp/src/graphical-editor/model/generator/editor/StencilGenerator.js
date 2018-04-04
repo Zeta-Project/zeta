@@ -45,8 +45,8 @@ class ShapesGenerator {
         const shapeName = node.name.replace(new RegExp("\\W", "g"), '');
         const attributes = this.createShapeAttributes(node, classes);
         const shape = new joint.shapes.zeta[shapeName](attributes);
-        console.log(shape);
         this.setShapeAttributes(shape, shapeName);
+        console.log(shape);
         return shape;
     }
 
@@ -108,7 +108,8 @@ class ShapesGenerator {
             let typelesId = `.${id.split(".")[1]}`;
 
             let helper = Object.assign({}, shapeAttributes[id].text);
-            shape.attributes.attrs[typelesId].text = [shape.attributes.attrs[typelesId].text];
+            // ToDo possible bug in Inspector
+            // shape.attributes.attrs[typelesId].text = [shape.attributes.attrs[typelesId].text];
             shapeAttributes[id] = Object.assign(
                 shapeAttributes[id].text,
                 shape.attributes.attrs[typelesId]
