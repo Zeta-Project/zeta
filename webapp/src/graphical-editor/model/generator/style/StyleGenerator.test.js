@@ -729,6 +729,7 @@ describe('createCommonAttributes', () => {
 
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
+            'fill': '#FFFFFF',
             'fill-opacity': 0.5,
             'stroke': '#000000',
             'stroke-width': 1,
