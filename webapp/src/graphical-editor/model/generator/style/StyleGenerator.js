@@ -122,7 +122,7 @@ export default class Generator {
 
     getStyle(styleName) {
         const style = this.styles.find((s) => s.name === styleName);
-        return style ? StyleConfigurator.configure(style) : {};
+        return StyleConfigurator.configure(style);
     }
 
     createCommonAttributes(styleName) {
