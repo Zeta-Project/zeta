@@ -98,6 +98,7 @@ class CheckNodesForUndefinedConceptElementsTest extends FreeSpec with Matchers w
       TextfieldParseTree(
         style = None,
         identifier = Identifier(textfieldIdentifier),
+        textBody = None,
         position = Position(0,0),
         size = Size(0,0),
         multiline = None,
@@ -130,6 +131,7 @@ class CheckNodesForUndefinedConceptElementsTest extends FreeSpec with Matchers w
           TextfieldParseTree(
             style = None,
             identifier = Identifier(textfieldIdentifier),
+            textBody = None,
             position = Position(0,0),
             size = Size(0,0),
             multiline = None,

@@ -180,6 +180,7 @@ object ShapeParseTreeTransformer {
 
   private def transformGeoModel(geoModel: TextfieldParseTree, styles: ReferenceCollector[Style]): TextField = TextField(
     identifier = geoModel.identifier.name,
+    textBody = geoModel.textBody.fold(TextField.default.textBody)(_.text),
     size = transformGeoModelSize(geoModel.size),
     position = transformGeoModelPosition(geoModel.position),
     editable = geoModel.editable.fold(TextField.default.editable)(_.editable),

@@ -504,6 +504,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text1",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -521,6 +522,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text2",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -539,6 +541,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text3",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -605,6 +608,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text11",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -622,6 +626,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text21",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -639,6 +644,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text31",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -667,6 +673,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text113",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -687,6 +694,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text213",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
@@ -707,6 +715,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
         childGeoModels = List(
           new TextField(
             identifier = "text313",
+            textBody = "",
             size = geomodel.Size(10, 40),
             position = geomodel.Position(0, 0),
             editable = true,
