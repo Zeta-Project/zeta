@@ -44,7 +44,7 @@ class SvgBuilder {
             [GEOMETRIC_MODEL.ROUND_RECT]: (e, a) => `<rect class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.POLYGON]: (e, a) => `<polygon class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: e => `<polyline class="${e.id}" />`,
-            [GEOMETRIC_MODEL.TEXTFIELD]: e => `<textfield class="${e.id} ${e.id}" ></textfield>`,
+            [GEOMETRIC_MODEL.TEXTFIELD]: e => `<text class="${e.id} ${e.id}" ></text>`,
         };
     }
 
@@ -241,7 +241,7 @@ class AttrBuilder {
             //     vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
             // },
             // todo:DefaultText forTextFields
-            text: 'SCHINKEN',
+            text: 'Default-Text',
         };
     }
 
