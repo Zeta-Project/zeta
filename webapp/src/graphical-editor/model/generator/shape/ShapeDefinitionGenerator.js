@@ -240,7 +240,7 @@ class AttrBuilder {
                 horizontal: geoElement?.align?.horizontal ? geoElement?.align?.horizontal : 'middle',
                 vertical: geoElement?.align?.vertical ? geoElement?.align?.vertical : 'middle',
             },
-            text: geoElement.textBody
+            text: [geoElement.textBody]
         };
     }
 
