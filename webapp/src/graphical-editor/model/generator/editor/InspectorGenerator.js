@@ -63,7 +63,7 @@ class ShapeGenerator {
         this.mapper = {
             'ellipse': new EllipseGenerator(),
             'rectangle': new RectangleGenerator(),
-            'text': new TextGenerator(),
+            'textfield': new TextGenerator(),
             'line': new LineGenerator(),
             'polygon': new PolygonGenerator(),
             'polyline': new PolyLineGenerator(),
@@ -82,13 +82,29 @@ class ShapeGenerator {
 
     processElements(shape) {
 
-        const elements = shape.elements ? shape.elements : [];
+        const elements = shape?.geoElements || [];
+        const flatGeoElements = this.flattenGeoElement(elements);
         const maxHeight = this.definitionGenerator.calculateHeight(shape);
         const maxWidth = this.definitionGenerator.calculateWidth(shape);
-        return elements.reduce((result, element) => {
-            const entry = this.processElement(element, elements, maxHeight, maxWidth);
+        return flatGeoElements.reduce((result, element) => {
+            const entry = this.processElement(element, flatGeoElements, maxHeight, maxWidth);
             return Object.assign(result, entry);
         }, {});
+    }
+
+    flattenGeoElement(geoElements) {
+        const results = [];
+
+        const flatten = function (elem, results) {
+            results.push(elem);
+            (elem.childGeoElements || []).forEach(e => {
+                e.parent = elem.id;
+                flatten(e, results);
+            })
+        };
+
+        geoElements.forEach(e => flatten(e, results));
+        return results;
     }
 
     processElement(element, elements, maxHeight, maxWidth) {
@@ -350,7 +366,7 @@ class RoundedRectangleGenerator extends ElementGenerator {
 
 export default class {
     constructor(shape, shapeDefinitionGenerator) {
-        this.shapes = shape.shapes ? shape.shapes : [];
+        this.shapes = shape?.nodes || [];
         this.generator = new ShapeGenerator(shapeDefinitionGenerator);
     }
 
