@@ -256,7 +256,7 @@ class TextGenerator extends ElementGenerator {
                 index: 1,
                 type: 'list',
                 item: { type: 'text' },
-                group: `Text ${element.id}`,
+                group: `Text ${this.counter}`,
             },
             x: this.createX(1, group, 'x Position Text', element, maxWidth),
             y: this.createY(2, group, 'y Position Text', element, maxHeight),
