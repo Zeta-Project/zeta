@@ -20,7 +20,6 @@ class Generator{
         }, {});
     }
 
-
     flattenGeoElement(geoElements) {
         const results = [];
 
@@ -47,7 +46,7 @@ class Generator{
     }
 
     createElement(element) {
-        const style = this.styleGenerator.getStyle(element.style);
+        const style = this.styleGenerator.getStyle(element.style.name);
         return this.mapper[element.type] ? this.mapper[element.type](element, style) : {};
     }
 

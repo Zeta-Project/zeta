@@ -56,7 +56,7 @@ export class StyleConfigurator {
     }
 
     static getFontSize(style) {
-        return style?.font?.size?.toString() || '11';
+        return style?.font?.size?.toString() || '20';
     }
 
     static getFontFamily(style) {
