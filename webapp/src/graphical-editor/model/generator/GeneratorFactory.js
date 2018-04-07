@@ -30,7 +30,7 @@ function createGenerators(styleData, diagramData, shapeData, conceptData) {
     const stencil = new StencilGenerator(diagramData, shapeData, conceptData, shapeStyle, style); // TODO update StencilGenerator to V2
     const inspector = new InspectorGenerator(shapeData, shapeDefinition); // TODO update InspectorGenerator to V2
     const linkHelper = new LinkHelperGenerator(diagramData); // TODO update LinkHelperGenerator to V2
-    const validator = new ValidatorGenerator(conceptData, diagramData); // TODO update ValidatorGenerator to V2
+    const validator = new ValidatorGenerator(shapeData, conceptData); // TODO update ValidatorGenerator to V2
 
     generators = {
         style,
@@ -59,28 +59,13 @@ export default class GeneratorFactory {
                 fetch(`/rest/v2/meta-models/${metaModelId}/diagram`, credentials).then(r => r.json()),
                 fetch(`/rest/v2/meta-models/${metaModelId}/shape`, credentials).then(r => r.json()),
                 fetch(`/rest/v1/meta-models/${metaModelId}`, credentials).then(r => r.json()),
-                fetch(`/rest/v1/totalDsl/${metaModelId}`, credentials).then(r => r.json()) // TODO remove when v2 is working
-            ]).then(([style, diagram, shape, concept, old /* TODO remove old when v2 is working */]) => {
+            ]).then(([style, diagram, shape, concept]) => {
                 createGenerators(style['styles'], diagram, shape, concept['concept']);
                 resolve();
             }).catch(error => {
                 console.error(`Error fetching Rest-API: ${error}`);
                 reject(error);
             });
-
-            /*  TODO Old v1-Version, for comparison, can be removed when v2 is fully working
-            fetch('/rest/v1/totalDsl/' + window._global_graph_type, {
-                credentials: 'same-origin'
-            }).then(response => {
-                return response.json()
-            }).then(data => {
-                createGenerators(data["diagram"], data["style"]["styles"], data["shape"], data["concept"]);
-                resolve();
-            }).catch(error => {
-                console.log('Error fetching Rest-API');
-                console.log('Error-Msg: ' + error);
-                reject(error);
-            }); */
 
         });
     }
