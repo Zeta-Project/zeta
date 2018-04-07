@@ -30,7 +30,7 @@ function createGenerators(styleData, diagramData, shapeData, conceptData) {
     const stencil = new StencilGenerator(diagramData, shapeData, conceptData, shapeStyle, style); // TODO update StencilGenerator to V2
     const inspector = new InspectorGenerator(shapeData, shapeDefinition); // TODO update InspectorGenerator to V2
     const linkHelper = new LinkHelperGenerator(diagramData); // TODO update LinkHelperGenerator to V2
-    const validator = new ValidatorGenerator(conceptData, shapeData); // TODO update ValidatorGenerator to V2
+    const validator = new ValidatorGenerator(shapeData, conceptData); // TODO update ValidatorGenerator to V2
 
     generators = {
         style,
