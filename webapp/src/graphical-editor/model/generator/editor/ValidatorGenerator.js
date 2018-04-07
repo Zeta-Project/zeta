@@ -53,15 +53,15 @@ export default class {
     }
 
     get inputMatrix() {
-        return this.nodes.reduce((result, node) => {
-            result[node.name] = node.inputs ? this.matrix.create(node.inputs) : {};
+        return this.classes.reduce((result, clas) => {
+            result[clas.name] = clas.inputs ? this.matrix.create(clas.inputs) : {};
             return result;
         }, {});
     }
 
     get outputMatrix() {
-        return this.nodes.reduce((result, node) => {
-            result[node.name] = node.outputs ? this.matrix.create(node.outputs) : {};
+        return this.classes.reduce((result, clas) => {
+            result[clas.name] = clas.outputs ? this.matrix.create(clas.outputs) : {};
             return result;
         }, {});
     }
