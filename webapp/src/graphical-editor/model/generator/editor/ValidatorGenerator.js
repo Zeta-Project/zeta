@@ -40,10 +40,10 @@ class EdgeGenerator {
 }
 
 export default class {
-    constructor(concept, diagram) {
-        this.classes = concept.classes ? concept.classes : [];
-        this.edges = diagram.model && diagram.model.edges ? diagram.model.edges : [];
-        this.nodes = diagram.model && diagram.model.nodes ? diagram.model.nodes : [];
+    constructor(concept, shape) {
+        this.classes = concept?.classes || [];
+        this.edges = shape?.edges || [];
+        this.nodes = shape?.nodes || [];
         this.matrix = new MatrixGenerator();
         this.validEdges = new EdgeGenerator(this.edges, this.classes);
     }
