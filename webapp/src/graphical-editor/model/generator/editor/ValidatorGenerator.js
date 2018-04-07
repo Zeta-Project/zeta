@@ -6,10 +6,11 @@ class MatrixGenerator {
         }, {});
     }
 
-    createBounds({lowerBound, upperBound }) {
-        return { lowerBound, upperBound };
+    createBounds({lowerBound, upperBound}) {
+        return {lowerBound, upperBound};
     }
 }
+
 
 class EdgeGenerator {
     constructor(edges, classes) {
@@ -25,12 +26,12 @@ class EdgeGenerator {
 
     filterSourceEdges(node) {
         const superTypes = this.getSuperTypes(node);
-        return this.edges.filter(e => e.from === node.mClass || superTypes.includes(e.from));
+        return this.edges.filter(e => e.sourceClassName === node.conceptElement || superTypes.includes(e.sourceClassName));
     }
 
     filterTargetEdges(node) {
         const superTypes = this.getSuperTypes(node);
-        return this.edges.filter(e => e.to === node.mClass || superTypes.includes(e.to));
+        return this.edges.filter(e => e.targetClassName === node.conceptElement || superTypes.includes(e.targetClassName));
     }
 
     getSuperTypes(node) {
@@ -39,37 +40,41 @@ class EdgeGenerator {
     }
 }
 
+
 export default class {
-    constructor(concept, shape) {
-        this.classes = concept?.classes || [];
-        this.edges = shape?.edges || [];
-        this.nodes = shape?.nodes || [];
+
+    constructor(shape, concept) {
+        this.nodes = shape.nodes || [];
+        this.edges = shape.edges || [];
+        this.classes = concept.classes || [];
+        this.references = concept.references || [];
         this.matrix = new MatrixGenerator();
-        this.validEdges = new EdgeGenerator(this.edges, this.classes);
+        this.validEdges = new EdgeGenerator(this.references, this.classes);
     }
 
     get inputMatrix() {
-        return this.classes.reduce((result, node) => {
+        return this.nodes.reduce((result, node) => {
             result[node.name] = node.inputs ? this.matrix.create(node.inputs) : {};
             return result;
         }, {});
     }
 
     get outputMatrix() {
-        return this.classes.reduce((result, node) => {
+        return this.nodes.reduce((result, node) => {
             result[node.name] = node.outputs ? this.matrix.create(node.outputs) : {};
             return result;
         }, {});
     }
 
     getEdgeData(edgeName) {
-        const edge = this.edges.find(e => e.name === edgeName);
-        if (edge) {
+        const reference = this.references.find(e => e.name === edgeName);
+        const edge = this.edges.find(e => e.name === edgeName); // TODO, it's currently undefined
+        if (/*edge &&*/ reference) {
             return {
-                type: edge.mReference,
-                from: edge.from,
-                to: edge.to,
-                style: edge.connection.name,
+                type: edgeName, // TODO check if this is correct
+                from: reference.sourceClassName,
+                to: reference.targetClassName,
+                style: edgeName // TODO find correct variable
             };
         }
     }
@@ -79,4 +84,5 @@ export default class {
         const target = this.nodes.find(n => n.name === targetName);
         return source && target ? this.validEdges.getValid(source, target) : [];
     }
+
 }
