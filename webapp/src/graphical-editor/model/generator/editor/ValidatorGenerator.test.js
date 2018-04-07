@@ -7,7 +7,7 @@ describe('validator.inputMatrix', () => {
     });
 
     test('metaModel has class and class has input', () => {
-        const validator = new ValidatorGenerator({
+        const validator = new ValidatorGenerator({},{
             classes: [
                 {
                     name: 'Class',
@@ -20,7 +20,7 @@ describe('validator.inputMatrix', () => {
                     ],
                 }
             ],
-        }, {});
+        });
         expect(validator.inputMatrix).toEqual({
             'Class': {
                 'Reference': {
@@ -39,7 +39,7 @@ describe('validator.outputMatrix', () => {
     });
 
     test('metaModel has class and class has input', () => {
-        const validator = new ValidatorGenerator({
+        const validator = new ValidatorGenerator({},{
             classes: [
                 {
                     name: 'Class',
@@ -52,7 +52,7 @@ describe('validator.outputMatrix', () => {
                     ],
                 }
             ],
-        }, {});
+        });
         expect(validator.outputMatrix).toEqual({
             'Class': {
                 'Reference': {
@@ -71,8 +71,7 @@ describe('validator.getEdgeData', () => {
     });
 
     test('diagram has edge', () => {
-        const validator = new ValidatorGenerator({}, {
-            model: {
+        const validator = new ValidatorGenerator({
                 edges: [
                     {
                         name: 'Edge',
@@ -84,8 +83,7 @@ describe('validator.getEdgeData', () => {
                         }
                     }
                 ]
-            }
-        });
+        }, {});
         expect(validator.getEdgeData('Edge')).toEqual({
             'type': 'Reference',
             'from': 'SourceMClass',
