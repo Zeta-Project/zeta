@@ -28,10 +28,10 @@ class PlacingDefinitionGenerator {
 
     createPlacingShape(placing) {
 
-        const placingType = placing.shape.type;
+        const placingType = placing.geoElement.type;
         if (placingType in this.placingShape) {
-            let placingShape = this.placingShape[placingType](placing.shape, placing.positionDistance);
-            placingShape.attrs = placingType !== 'text' && 'style' in placing.shape ? Object.assign(placingShape.attrs, this.getCommonAttributesStyle(placing)): placingShape.attrs;
+            let placingShape = this.placingShape[placingType](placing.geoElement, placing.position.distance);
+            placingShape.attrs = placingType !== 'text' && 'style' in placing.geoElement ? Object.assign(placingShape.attrs, this.getCommonAttributesStyle(placing)): placingShape.attrs;
     
             return placingShape;
         }
@@ -39,7 +39,7 @@ class PlacingDefinitionGenerator {
     }
 
     getCommonAttributesStyle(placing) {
-        return this.styleGenerator.createCommonAttributes(placing.shape.style);
+        return this.styleGenerator.createCommonAttributes(placing.geoElement.style);
     }
 
     generateLineShape(line) {

@@ -68,13 +68,13 @@ export default class {
 
     getEdgeData(edgeName) {
         const reference = this.references.find(e => e.name === edgeName);
-        const edge = this.edges.find(e => e.name === edgeName); // TODO, it's currently undefined
-        if (/*edge &&*/ reference) {
+        const edge = this.edges.find(e => e.conceptElement.split('.')[1] === edgeName);
+        if (reference) {
             return {
-                type: edgeName, // TODO check if this is correct
+                type: edgeName,
                 from: reference.sourceClassName,
                 to: reference.targetClassName,
-                style: edgeName // TODO find correct variable
+                style: edge?.name || ""
             };
         }
     }
