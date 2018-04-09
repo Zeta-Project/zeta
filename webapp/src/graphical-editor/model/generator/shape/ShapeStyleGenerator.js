@@ -63,58 +63,44 @@ class Generator{
         });
     }
 
-    createLine(element, style) {
+    static createLine(element, style) {
         return { [`line.${element.id}`]: style };
     }
 
-    createRectangle(element, style) {
+    static createRectangle(element, style) {
         return { [`rect.${element.id}`]: style };
     }
 
-    createEllipse(element, style) {
+    static createEllipse(element, style) {
         return { [`ellipse.${element.id}`]: style };
     }
 
-    createTextField(element, style) {
+    static createTextField(element, style) {
         return {
             [`text.${element.id}`]:  style,
             [`.${element.id}`]:  style
         };
     }
 
-    createPolygon(element, style) {
+    static createPolygon(element, style) {
         return { [`polygon.${element.id}`]: style };
     }
 
-    createPolyLine(element, style) {
+    static createPolyLine(element, style) {
         return { [`polyline.${element.id}`]: style };
     }
 }
 
 export default class {
+
     constructor(shape, styleGenerator) {
-        this.nodes = shape.nodes ? shape.nodes : [];
+        this.nodes = shape.nodes || [];
         this.generator = new Generator(styleGenerator);
-    }
-
-    getShapeByName(shapeName) {
-        if (this.nodes) {
-            return this.nodes.find(e => e.name === shapeName);
-        } else {
-            return [];
-        }
-
     }
 
     getShapeStyle(shapeName) {
         //todo: checker functions nostyle, no geoelements etc
-        const shape = this.getShapeByName(shapeName);
-        if (shape?.geoElements) {
-            //if ('style' in shape.geoElements[0]) {
-            return shape ? this.generator.createShapeStyle(shape) : {};
-            //}
-        } else
-            return {};
-
+        const shape = this.nodes.find(node => node.name === shapeName);
+        return shape ? this.generator.createShapeStyle(shape) : {};
     }
 }
