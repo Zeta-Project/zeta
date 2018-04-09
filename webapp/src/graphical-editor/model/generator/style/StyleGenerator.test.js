@@ -2,7 +2,7 @@ import StyleGenerator from './StyleGenerator';
 
 describe('getStyle', () => {
     function create(styles) {
-        const generator = new StyleGenerator(styles)
+        const generator = new StyleGenerator(styles);
         return (styleName) => generator.getStyle(styleName);
     }
 
@@ -19,7 +19,7 @@ describe('getStyle', () => {
                     "dominant-baseline": "text-before-edge",
                     "fill": "#000000",
                     "font-family": "sans-serif",
-                    "font-size": "11",
+                    "font-size": "20",
                     "font-weight": "normal"
                 }
             }
@@ -36,7 +36,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
@@ -61,7 +61,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'helvetica',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
@@ -113,7 +113,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#ffffff',
                 'font-weight': 'normal'
             },
@@ -138,7 +138,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'bold'
             },
@@ -163,7 +163,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
@@ -188,7 +188,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
                 'font-style': 'italic',
@@ -214,7 +214,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -241,7 +241,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -266,7 +266,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -296,7 +296,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -339,7 +339,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -378,7 +378,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -408,7 +408,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -435,7 +435,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -462,7 +462,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -488,7 +488,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -512,7 +512,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -540,7 +540,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -567,7 +567,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -594,7 +594,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -621,7 +621,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -648,7 +648,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -707,7 +707,7 @@ describe('getStyle', () => {
 
 describe('createCommonAttributes', () => {
     function create(styles) {
-        const generator = new StyleGenerator(styles)
+        const generator = new StyleGenerator(styles);
         return (styleName) => generator.createCommonAttributes(styleName);
     }
 
@@ -740,7 +740,7 @@ describe('createCommonAttributes', () => {
 
 describe('createFontAttributes', () => {
     function create(styles) {
-        const generator = new StyleGenerator(styles)
+        const generator = new StyleGenerator(styles);
         return (styleName) => generator.createFontAttributes(styleName);
     }
 
