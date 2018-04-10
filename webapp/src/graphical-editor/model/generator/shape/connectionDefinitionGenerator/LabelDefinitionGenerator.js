@@ -10,10 +10,10 @@ function generateLabel(placing) {
         attrs: {
             rect: {fill: 'transparent'},
             text: {
-                y: 'positionDistance' in placing ? placing.position.distance : 0,
-                text: placing.shape.textBody
+                y: placing.position?.distance || 0,
+                text: placing.geoElement.textBody
             }
         },
-        id: placing.shape.id
+        id: placing.geoElement.id
     };
 }
