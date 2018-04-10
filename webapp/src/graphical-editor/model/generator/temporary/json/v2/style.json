@@ -1,0 +1,65 @@
+{
+  "styles": [
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "font": {
+        "size":20
+      },
+      "line": {
+        "color": "rgba(0, 0, 0, 1)",
+        "style": "DASH",
+        "width": 1
+      },
+      "name": "Y"
+    },
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "font": {
+        "size":10
+      },
+      "line": {
+        "color": "rgba(0, 0, 0, 1)",
+        "style": "DASH",
+        "width": 1
+      },
+      "name": "ClassText",
+      "transparency": 1.0
+    },
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "font": {
+        "size":20
+      },
+      "line": {
+        "color": "rgba(0, 0, 0, 1)",
+        "style": "SOLID",
+        "width": 1
+      },
+      "name": "X"
+    },
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "name": "realization"
+    },
+    {
+      "background": {
+        "color": "rgba(0, 0, 0, 1)"
+      },
+      "name": "component"
+    },
+    {
+      "background": {
+        "color": "rgba(255, 255, 255, 1)"
+      },
+      "name": "aggregation"
+    }
+  ]
+}

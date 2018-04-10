@@ -95,7 +95,7 @@ class EdgeTargetNodesTest extends FlatSpec with Matchers {
       """Targets ofEdges "edgeType" areOfTypes Seq("target1", "target2")""")
   }
 
-  "generateFor" should "generate this rule from the meta model" in {
+  "generateFor" should "generate this rule from the meta model" ignore {
     val class1 = MClass("class1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val class2 = MClass("class2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
     val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, class1.name, class2.name,

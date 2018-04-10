@@ -21,3 +21,6 @@ tmp
 /mongodb/
 /sbt/
 docker-compose\.override\.yml
+/webapp/yarn.lock
+
+webapp/coverage/

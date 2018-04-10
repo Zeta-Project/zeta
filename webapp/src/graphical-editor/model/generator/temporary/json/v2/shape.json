@@ -1,0 +1,414 @@
+{
+  "shapes": {
+    "nodes": [
+      {
+        "name": "classNode",
+        "conceptElement": "Klasse",
+        "style": "X",
+        "edges": [
+          "inheritance",
+          "BaseClassRealization",
+          "component",
+          "aggregation"
+        ],
+        "geoElements": [
+          {
+            "type": "rectangle",
+            "id":"rt1",
+            "size": {
+              "width": 200,
+              "height": 50
+            },
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st1",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Klasse"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "id":"rt2",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 0,
+              "y": 50
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st2",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Attribute"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "id":"rt3",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 0,
+              "y": 150
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st3",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Methoden"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "abClassNode",
+        "conceptElement": "AbstractKlasse",
+        "style": "X",
+        "edges": [
+          "realization"
+        ],
+        "geoElements": [
+          {
+            "type": "rectangle",
+            "id":"rt4",
+            "size": {
+              "width": 200,
+              "height": 50
+            },
+            "position": {
+              "x": 10,
+              "y": 0
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st4",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "<<AbstractClass>>"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "id":"rt5",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 50
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st5",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Attribute"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "id":"rt6",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 150
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st6",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Methoden"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "inClassNode",
+        "conceptElement": "InterfaceKlasse",
+        "style": "X",
+        "edges": [
+        ],
+        "geoElements": [
+          {
+            "type": "rectangle",
+            "id":"rt7",
+            "size": {
+              "width": 200,
+              "height": 50
+            },
+            "position": {
+              "x": 10,
+              "y": 0
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st7",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "<<Interface>>"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "id":"rt8",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 50
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st8",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Attribute"
+              }
+            ]
+          },
+          {
+            "type": "rectangle",
+            "id":"rt9",
+            "size": {
+              "width": 200,
+              "height": 100
+            },
+            "position": {
+              "x": 10,
+              "y": 150
+            },
+            "childGeoElements": [
+              {
+                "type": "statictext",
+                "id":"st9",
+                "size": {
+                  "width": 10,
+                  "height": 40
+                },
+                "text": "Methoden"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "name": "inheritance",
+        "style": "X",
+        "conceptElement": "Inheritance",
+        "target": "AbstractKlasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoElement": {
+              "type": "polygon",
+              "id":"py1",
+              "points": [
+                {
+                  "x": -10,
+                  "y": 10
+                },
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -10,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "realization",
+        "style": "Y",
+        "conceptElement": "Realization",
+        "target": "InterfaceKlasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoElement": {
+              "type": "polygon",
+              "id":"py2",
+              "style": "realization",
+              "points": [
+                {
+                  "x": -10,
+                  "y": 10
+                },
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -10,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "component",
+        "style": "X",
+        "conceptElement": "Component",
+        "target": "Klasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoElement": {
+              "type": "polygon",
+              "id":"py3",
+              "style":"component",
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": 20,
+                  "y": 10
+                },
+                {
+                  "x": 40,
+                  "y": 0
+                },
+                {
+                  "x": 20,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "aggregation",
+        "style": "X",
+        "conceptElement": "Aggregation",
+        "target": "Klasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoElement": {
+              "type": "polygon",
+              "id":"py4",
+              "style": "aggregation",
+              "points": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -20,
+                  "y": 10
+                },
+                {
+                  "x": -40,
+                  "y": 0
+                },
+                {
+                  "x": -20,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "BaseClassRealization",
+        "style": "Y",
+        "conceptElement": "BaseClassRealization",
+        "target": "InterfaceKlasse",
+        "placings": [
+          {
+            "position": {
+              "offset": 1.0
+            },
+            "geoElement": {
+              "type": "polygon",
+              "id":"py5",
+              "style": "realization",
+              "points": [
+                {
+                  "x": -10,
+                  "y": 10
+                },
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": -10,
+                  "y": -10
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -18,6 +18,7 @@ class TextFieldFormat(
     styleFormat: StyleFormat,
     sType: String,
     sIdentifier: String,
+    sTextBody: String,
     sSize: String,
     sPosition: String,
     sEditable: String,
@@ -32,6 +33,7 @@ class TextFieldFormat(
   override def writes(clazz: TextField): JsObject = Json.obj(
     sType -> vType,
     sIdentifier -> clazz.identifier,
+    sTextBody -> clazz.textBody,
     sSize -> sizeFormat.writes(clazz.size),
     sPosition -> positionFormat.writes(clazz.position),
     sEditable -> clazz.editable,
@@ -43,6 +45,7 @@ class TextFieldFormat(
 
   override def reads(json: JsValue): JsResult[TextField] = for {
     identifier <- (json \ sIdentifier).validate[String]
+    textBody <- (json \ sTextBody).validate[String]
     size <- (json \ sSize).validate(sizeFormat)
     position <- (json \ sPosition).validate(positionFormat)
     editable <- (json \ sEditable).validate[Boolean]
@@ -53,6 +56,7 @@ class TextFieldFormat(
   } yield {
     TextField(
       identifier,
+      textBody,
       size,
       position,
       editable,
@@ -73,6 +77,7 @@ object TextFieldFormat {
     StyleFormat(),
     "type",
     "identifier",
+    "textBody",
     "size",
     "position",
     "editable",
