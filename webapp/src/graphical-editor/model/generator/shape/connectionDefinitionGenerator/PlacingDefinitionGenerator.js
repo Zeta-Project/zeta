@@ -15,13 +15,13 @@ class PlacingDefinitionGenerator {
     }
     
     generatePlacingList(connection) {
-        const placings = connection.placings.filter((p) => p.positionOffset !== 0.0 && p.positionOffset !== 1.0);
+        const placings = connection.placings.filter((p) => p.position.offset !== 0.0 && p.position.offset !== 1.0);
         return placings.map(this.generatePlacing, this);
     }
 
     generatePlacing(placing) {
         const generatedPlacing = {
-            position: placing.positionOffset
+            position: placing.position.offset
         };
         return Object.assign(generatedPlacing, this.createPlacingShape(placing));
     }

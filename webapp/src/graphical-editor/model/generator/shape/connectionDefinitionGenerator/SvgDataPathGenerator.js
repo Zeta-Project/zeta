@@ -77,21 +77,21 @@ export default class Generator {
     }
 
     generateMarker(placing) {
-        const placingType = placing.shape.type;
+        const placingType = placing.geoElement.type;
         if (placingType in this.svgDataPathGenerator.generateSvgPathData) {
-            return {d: this.svgDataPathGenerator.generateSvgPathData[placing.shape.type](placing.shape)};
+            return {d: this.svgDataPathGenerator.generateSvgPathData[placing.geoElement.type](placing.geoElement)};
         }
         throw new Error(`Unknown placing: ${placingType}`);        
     }
 
     generateMirroredMarker(placing) {
-        const type = placing.shape.type;
+        const type = placing.geoElement.type;
 
         let marker;
         if (type === 'polygon') {
-            marker = {d: this.svgDataPathGenerator.generateMirroredPolygon(placing.shape)};
+            marker = {d: this.svgDataPathGenerator.generateMirroredPolygon(placing.geoElement)};
         } else if (type === 'polyline') {
-            marker = {d: this.svgDataPathGenerator.generateMirroredPolyLine(placing.shape)};
+            marker = {d: this.svgDataPathGenerator.generateMirroredPolyLine(placing.geoElement)};
         } else {
             marker = this.generateMarker(placing);
         }
