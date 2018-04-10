@@ -2,32 +2,48 @@ import StyleGenerator from './StyleGenerator';
 
 describe('getStyle', () => {
     function create(styles) {
-        const generator = new StyleGenerator(styles)
+        const generator = new StyleGenerator(styles);
         return (styleName) => generator.getStyle(styleName);
     }
 
     test('with style not found', () => {
         const getStyle = create([]);
-        expect(getStyle('DefaultStyle')).toEqual({});
+        expect(getStyle('DefaultStyle')).toEqual(
+            {
+                "fill": "#FFFFFF",
+                "fill-opacity": 1,
+                "stroke": "#000000",
+                "stroke-dasharray": "0",
+                "stroke-width": 1,
+                "text": {
+                    "dominant-baseline": "text-before-edge",
+                    "fill": "#000000",
+                    "font-family": "sans-serif",
+                    "font-size": "20",
+                    "font-weight": "normal"
+                }
+            }
+        );
     });
 
     test('with empty style', () => {
         const style = {
             name: 'DefaultStyle',
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -39,23 +55,24 @@ describe('getStyle', () => {
                 name: 'helvetica',
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'helvetica',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1.0,
             'stroke-dasharray': "0"
         });
     });
-    
+
     test('with font-size `20`', () => {
         const style = {
             name: 'DefaultStyle',
@@ -63,7 +80,7 @@ describe('getStyle', () => {
                 size: 20,
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
@@ -73,9 +90,10 @@ describe('getStyle', () => {
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -84,26 +102,29 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             font: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#ffffff',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
-    
+
     test('with font-bold `true`', () => {
         const style = {
             name: 'DefaultStyle',
@@ -111,19 +132,20 @@ describe('getStyle', () => {
                 bold: true,
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'bold'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -135,19 +157,20 @@ describe('getStyle', () => {
                 bold: false,
             }
         };
-        
+
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal'
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -165,14 +188,15 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
                 'font-style': 'italic',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -190,13 +214,14 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -205,7 +230,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             background: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
             },
         };
 
@@ -214,18 +241,18 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': '#ffffff',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
-    
+
     test('with background gradient', () => {
         const style = {
             name: 'DefaultStyle',
@@ -239,7 +266,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -249,7 +276,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -269,7 +296,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -279,7 +306,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -292,11 +319,15 @@ describe('getStyle', () => {
                     area: [
                         {
                             offset: 0,
-                            color: '#000000'
+                            color: {
+                                hex: '#000000',
+                            }
                         },
                         {
                             offset: 100,
-                            color: '#ffffff'
+                            color: {
+                                hex: '#ffffff',
+                            }
                         }
                     ],
                 },
@@ -308,7 +339,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -327,7 +358,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -347,7 +378,7 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
@@ -357,7 +388,7 @@ describe('getStyle', () => {
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -377,18 +408,18 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
             'fill': {
                 'type': 'linearGradient',
                 'stops': [],
-                'attrs': { x1: '0%', y1: '0%', x2: '0%', y2: '100%' },
+                'attrs': {x1: '0%', y1: '0%', x2: '0%', y2: '100%'},
             },
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -404,36 +435,15 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 0.5,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
-        });
-    });
-
-    test('with transparent line', () => {
-        const style = {
-            name: 'DefaultStyle',
-            line: {
-                transparent: true,
-            }
-        };
-
-        const getStyle = create([style]);
-        expect(getStyle('DefaultStyle')).toEqual({
-            'text': {
-                'dominant-baseline': "text-before-edge",
-                'font-family': 'sans-serif',
-                'font-size': '11',
-                'fill': '#000000',
-                'font-weight': 'normal',
-            },
-            'fill-opacity': 1.0,
-            'stroke-opacity': 0,
         });
     });
 
@@ -441,7 +451,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
             }
         };
 
@@ -450,10 +462,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
         });
@@ -463,7 +476,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 width: 5,
             },
         };
@@ -473,10 +488,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-width': 5,
@@ -496,13 +512,14 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -511,7 +528,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dash',
             },
         };
@@ -521,10 +540,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '10,10',
@@ -535,8 +555,10 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
-                style: 'dot',                
+                color: {
+                    hex: '#ffffff'
+                },
+                style: 'dot',
             },
         };
 
@@ -545,10 +567,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '5,5',
@@ -559,7 +582,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dashdot',
             },
         };
@@ -569,10 +594,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '10,5,5,5',
@@ -583,7 +609,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'dashdotdot',
             },
         };
@@ -593,10 +621,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '10,5,5,5,5,5',
@@ -607,7 +636,9 @@ describe('getStyle', () => {
         const style = {
             name: 'DefaultStyle',
             line: {
-                color: '#ffffff',
+                color: {
+                    hex: '#ffffff'
+                },
                 style: 'unkown-style',
             },
         };
@@ -617,10 +648,11 @@ describe('getStyle', () => {
             'text': {
                 'dominant-baseline': "text-before-edge",
                 'font-family': 'sans-serif',
-                'font-size': '11',
+                'font-size': '20',
                 'fill': '#000000',
                 'font-weight': 'normal',
             },
+            'fill': '#FFFFFF',
             'fill-opacity': 1.0,
             'stroke': '#ffffff',
             'stroke-dasharray': '0',
@@ -630,17 +662,23 @@ describe('getStyle', () => {
     test('with all attributes', () => {
         const style = {
             background: {
-                color: '#ff00ff',
+                color: {
+                    hex: '#ff00ff'
+                },
             },
             font: {
                 bold: true,
-                color: '#00ffff',
+                color: {
+                    hex: '#00ffff'
+                },
                 italic: true,
                 name: 'helvetica',
                 size: 20,
             },
             line: {
-                color: '#ffff00',
+                color: {
+                    hex: '#ffff00'
+                },
                 style: 'dash',
                 width: 5,
             },
@@ -667,200 +705,9 @@ describe('getStyle', () => {
     });
 });
 
-describe('getDiagramHighlighting', () => {
-    function create(styles) {
-        const generator = new StyleGenerator(styles)
-        return (styleName) => generator.getDiagramHighlighting(styleName);
-    }
-
-    test('with style not found', () => {
-        const getDiagramHighlighting = create([]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('');
-    });
-
-    test('with empty style', () => {
-        const style = {
-            name: 'DefaultStyle',
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('');
-    });
-
-    test('with selectedHighlighting `#ffffff`', () => {
-        const style = {
-            name: 'DefaultStyle',
-            selectedHighlighting: {
-                color: '#ffffff',
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed  #ffffff; }');
-    });
-
-    test('with transparent selectedHighlighting', () => {
-        const style = {
-            name: 'DefaultStyle',
-            selectedHighlighting: {
-                transparent: true,
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed  transparent; }');
-    });
-
-    test('with selectedHighlighting as gradient', () => {
-        const style = {
-            name: 'DefaultStyle',
-            selectedHighlighting: {
-                gradient: {},
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .free-transform { border: 1px dashed  ; }');
-    });
-
-    test('with multiselectedHighlighting `#ffffff`', () => {
-        const style = {
-            name: 'DefaultStyle',
-            multiselectedHighlighting: {
-                color: '#ffffff',
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid #ffffff; }');
-    });
-
-    test('with transparent multiselectedHighlighting', () => {
-        const style = {
-            name: 'DefaultStyle',
-            multiselectedHighlighting: {
-                transparent: true,
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid transparent; }');
-    });
-
-    test('with multiselectedHighlighting as gradient', () => {
-        const style = {
-            name: 'DefaultStyle',
-            multiselectedHighlighting: {
-                gradient: {},
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .selection-box { border: 1px solid ; }');
-    });
-
-    test('with allowedHighlighting `#ffffff`', () => {
-        const style = {
-            name: 'DefaultStyle',
-            allowedHighlighting: {
-                color: '#ffffff',
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid #ffffff; }');
-    });
-
-    test('with transparent allowedHighlighting', () => {
-        const style = {
-            name: 'DefaultStyle',
-            allowedHighlighting: {
-                transparent: true,
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid transparent; }');
-    });
-
-    test('with allowedHighlighting as gradient', () => {
-        const style = {
-            name: 'DefaultStyle',
-            allowedHighlighting: {
-                gradient: {},
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-allowed { outline: 2px solid ; }');
-    });
-
-    test('with unallowedHighlighting `#ffffff`', () => {
-        const style = {
-            name: 'DefaultStyle',
-            unallowedHighlighting: {
-                color: '#ffffff',
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid #ffffff; }');
-    });
-
-    test('with transparent unallowedHighlighting', () => {
-        const style = {
-            name: 'DefaultStyle',
-            unallowedHighlighting: {
-                transparent: true,
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid transparent; }');
-    });
-
-    test('with unallowedHighlighting as gradient', () => {
-        const style = {
-            name: 'DefaultStyle',
-            unallowedHighlighting: {
-                gradient: {},
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual('.paper-container .linking-unallowed { outline: 2px solid ; }');
-    });
-
-    test('with all highlightings', () => {
-        const style = {
-            name: 'DefaultStyle',
-            allowedHighlighting: {
-                transparent: true,
-            },
-            multiselectedHighlighting: {
-                color: '#00ffff',
-            },
-            selectedHighlighting: {
-                color: '#ffff00',
-            },
-            unallowedHighlighting: {
-                gradient: {},
-            }
-        };
-
-        const getDiagramHighlighting = create([style]);
-        expect(getDiagramHighlighting('DefaultStyle')).toEqual(
-            '.paper-container .free-transform { border: 1px dashed  #ffff00; }' + 
-            '.paper-container .selection-box { border: 1px solid #00ffff; }' + 
-            '.paper-container .linking-allowed { outline: 2px solid transparent; }' + 
-            '.paper-container .linking-unallowed { outline: 2px solid ; }'
-        );
-    });
-});
-
 describe('createCommonAttributes', () => {
     function create(styles) {
-        const generator = new StyleGenerator(styles)
+        const generator = new StyleGenerator(styles);
         return (styleName) => generator.createCommonAttributes(styleName);
     }
 
@@ -882,9 +729,10 @@ describe('createCommonAttributes', () => {
 
         const getStyle = create([style]);
         expect(getStyle('DefaultStyle')).toEqual({
+            'fill': '#FFFFFF',
             'fill-opacity': 0.5,
             'stroke': '#000000',
-            'stroke-width': 0,
+            'stroke-width': 1,
             'stroke-dasharray': "0"
         });
     });
@@ -892,7 +740,7 @@ describe('createCommonAttributes', () => {
 
 describe('createFontAttributes', () => {
     function create(styles) {
-        const generator = new StyleGenerator(styles)
+        const generator = new StyleGenerator(styles);
         return (styleName) => generator.createFontAttributes(styleName);
     }
 

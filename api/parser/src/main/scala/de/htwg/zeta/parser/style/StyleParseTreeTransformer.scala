@@ -9,7 +9,6 @@ import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Dotted
-import de.htwg.zeta.common.models.project.gdsl.style.DoubleLine
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Solid
@@ -24,7 +23,11 @@ object StyleParseTreeTransformer {
 
   def transform(styleTrees: List[StyleParseTree]): Validation[List[String], List[Style]] = {
     checkForErrors(styleTrees) match {
-      case Nil => Success(styleTrees.map(transformStyle))
+      case Nil =>
+        val styles = styleTrees.map(transformStyle)
+        // for correct handling of a default style in frontend, we have to append
+        // the default style always to the list of all styles
+        Success(Style.defaultStyle :: styles)
       case errors: List[String] => Failure(errors)
     }
   }
@@ -40,7 +43,6 @@ object StyleParseTreeTransformer {
     def transformLineStyle(string: String): style.LineStyle = string match {
       case "dotted" => Dotted()
       case "solid" => Solid()
-      case "double" => DoubleLine()
       case "dash" => Dashed()
       case _ => Line.defaultStyle
     }

@@ -1,9 +1,11 @@
 package de.htwg.zeta.parser
 
-import java.util.NoSuchElementException
-import org.scalatest.{FreeSpec, Matchers}
 import scala.util.parsing.combinator.JavaTokenParsers
 
+import org.scalatest.FreeSpec
+import org.scalatest.Matchers
+
+//noinspection ScalaStyle
 class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser with JavaTokenParsers {
 
   val pointLiteral = "point"

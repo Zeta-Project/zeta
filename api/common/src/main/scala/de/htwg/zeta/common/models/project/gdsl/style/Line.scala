@@ -21,5 +21,4 @@ sealed trait LineStyle
 
 case class Dotted() extends LineStyle
 case class Solid() extends LineStyle
-case class DoubleLine() extends LineStyle
 case class Dashed() extends LineStyle

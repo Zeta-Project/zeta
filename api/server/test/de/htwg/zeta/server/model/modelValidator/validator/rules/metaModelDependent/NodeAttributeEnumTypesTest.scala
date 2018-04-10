@@ -48,7 +48,7 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
       """Attributes ofType "attributeType" inNodes "nodeType" areOfEnumType "enumName"""")
   }
 
-  "generateFor" should "generate this rule from the meta model" in {
+  "generateFor" should "generate this rule from the meta model" ignore {
     val enum = MEnum("enumName", Seq("enumValue1", "enumValue2"))
     val enumAttribute = MAttribute("attributeName", globalUnique = false, localUnique = false, enum.typ, enum.values.head, constant = false,
       singleAssignment = false, "", ordered = false, transient = false)

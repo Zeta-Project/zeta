@@ -3,7 +3,15 @@ package de.htwg.zeta.parser.shape.parser
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.EnumParser
 import de.htwg.zeta.parser.UniteParsers
-import de.htwg.zeta.parser.shape.parsetree.NodeAttributes._
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.AbsoluteAnchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.Anchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.AnchorPosition
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.NodeStyle
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.PredefinedAnchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.RelativeAnchor
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.Resizing
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
+import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 
 object NodeAttributeParser extends CommonParserMethods with UniteParsers {
 

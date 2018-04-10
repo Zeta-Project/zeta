@@ -6,10 +6,11 @@ class MatrixGenerator {
         }, {});
     }
 
-    createBounds({lowerBound, upperBound }) {
-        return { lowerBound, upperBound };
+    createBounds({lowerBound, upperBound}) {
+        return {lowerBound, upperBound};
     }
 }
+
 
 class EdgeGenerator {
     constructor(edges, classes) {
@@ -25,12 +26,12 @@ class EdgeGenerator {
 
     filterSourceEdges(node) {
         const superTypes = this.getSuperTypes(node);
-        return this.edges.filter(e => e.from === node.mClass || superTypes.includes(e.from));
+        return this.edges.filter(e => e.sourceClassName === node.conceptElement || superTypes.includes(e.sourceClassName));
     }
 
     filterTargetEdges(node) {
         const superTypes = this.getSuperTypes(node);
-        return this.edges.filter(e => e.to === node.mClass || superTypes.includes(e.to));
+        return this.edges.filter(e => e.targetClassName === node.conceptElement || superTypes.includes(e.targetClassName));
     }
 
     getSuperTypes(node) {
@@ -39,37 +40,41 @@ class EdgeGenerator {
     }
 }
 
+
 export default class {
-    constructor(metaModel, diagram) {
-        this.classes = metaModel.classes ? metaModel.classes : [];
-        this.edges = diagram.model && diagram.model.edges ? diagram.model.edges : [];
-        this.nodes = diagram.model && diagram.model.nodes ? diagram.model.nodes : [];
+
+    constructor(shape, concept) {
+        this.nodes = shape.nodes || [];
+        this.edges = shape.edges || [];
+        this.classes = concept.classes || [];
+        this.references = concept.references || [];
         this.matrix = new MatrixGenerator();
-        this.validEdges = new EdgeGenerator(this.edges, this.classes);
+        this.validEdges = new EdgeGenerator(this.references, this.classes);
     }
 
     get inputMatrix() {
-        return this.classes.reduce((result, node) => {
-            result[node.name] = node.inputs ? this.matrix.create(node.inputs) : {};
+        return this.classes.reduce((result, clas) => {
+            result[clas.name] = clas.inputs ? this.matrix.create(clas.inputs) : {};
             return result;
         }, {});
     }
 
     get outputMatrix() {
-        return this.classes.reduce((result, node) => {
-            result[node.name] = node.outputs ? this.matrix.create(node.outputs) : {};
+        return this.classes.reduce((result, clas) => {
+            result[clas.name] = clas.outputs ? this.matrix.create(clas.outputs) : {};
             return result;
         }, {});
     }
 
     getEdgeData(edgeName) {
-        const edge = this.edges.find(e => e.name === edgeName);
-        if (edge) {
+        const reference = this.references.find(e => e.name === edgeName);
+        const edge = this.edges.find(e => e.conceptElement.split('.')[1] === edgeName);
+        if (reference) {
             return {
-                type: edge.mReference,
-                from: edge.from,
-                to: edge.to,
-                style: edge.connection.name,
+                type: edgeName,
+                from: reference.sourceClassName,
+                to: reference.targetClassName,
+                style: edge?.name || ""
             };
         }
     }
@@ -79,4 +84,5 @@ export default class {
         const target = this.nodes.find(n => n.name === targetName);
         return source && target ? this.validEdges.getValid(source, target) : [];
     }
+
 }
