@@ -752,9 +752,8 @@ describe('joint.shapes.zeta', () => {
                                 multiline: false,
                                 align: {
                                     horizontal: 'left'
-                                }
-                                // todo:DefaultText forTextFields
-                                // textBody: 'example'
+                                },
+                                textBody: 'example'
                             },
                         ]
                     }
@@ -797,13 +796,11 @@ describe('joint.shapes.zeta', () => {
                     'height': 8,
                     'editable': true,
                     'multiline': false,
-                    'text': "Default-Text",
                     'align': {
                         'horizontal': 'left',
                         'vertical': 'middle'
-                    }
-                    // todo:DefaultText forTextFields
-                    // 'text': 'example',
+                    },
+                    'text': ['example'],
                 },
             },
             'compartments': [],
@@ -1275,7 +1272,8 @@ describe('joint.shapes.zeta', () => {
                                         size: {
                                             height: 8,
                                             width: 4
-                                        }
+                                        },
+                                        textBody: 'example'
                                     }
                                 ]
                             },
@@ -1327,7 +1325,7 @@ describe('joint.shapes.zeta', () => {
                     'height': 8,
                     'editable': false,
                     'multiline': false,
-                    'text': 'Default-Text',
+                    'text': ['example'],
                     'align': {
                         'horizontal': 'middle',
                         'vertical': 'middle'
