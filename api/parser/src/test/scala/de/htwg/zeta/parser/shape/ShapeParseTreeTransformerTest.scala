@@ -11,6 +11,7 @@ import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
+import de.htwg.zeta.parser.ConceptCreatorHelper
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes
@@ -37,22 +38,6 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
     )
   }
 
-  private val myConcept = Concept(
-    classes = List(
-      Helper.createConceptClass(
-        "MyConceptClass",
-        attributes = List(
-          Helper.createConceptAttribute("myAttribute")
-        )
-      )
-    ),
-    references = Nil,
-    enums = Nil,
-    attributes = Nil,
-    methods = Nil,
-    uiState = ""
-  )
-
   "A ShapeParseTreeTransformer should" - {
 
     "succeed in transforming" - {
@@ -60,7 +45,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
       "an empty list of shape trees" in {
         val shapeParseTrees = Nil
         val styles = List(StyleFactory("myStyle"))
-        val concept = myConcept
+        val concept = ConceptCreatorHelper.exampleConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result shouldBe Success(Shape(nodes = Nil, edges = Nil))
       }
@@ -69,7 +54,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val shapeParseTrees = List(
           NodeParseTree(
             identifier = "node1",
-            conceptClass = "MyConceptClass",
+            conceptClass = "Klasse",
             edges = List("edge1"),
             sizeMin = SizeMin(2, 1),
             sizeMax = SizeMax(2, 1),
@@ -79,12 +64,12 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             geoModels = List()
           ), EdgeParseTree(
             identifier = "edge1",
-            conceptConnection = "myAttribute",
-            conceptTarget = Target("myAttribute"),
+            conceptConnection = "Klasse.Inheritance",
+            conceptTarget = Target("Klasse"),
             placings = List()
           ))
         val styles = List(StyleFactory("myStyle"))
-        val concept = myConcept
+        val concept = ConceptCreatorHelper.exampleConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result.isSuccess shouldBe true
         val resultNodes = result.getOrElse(Shape(Nil, Nil)).nodes
@@ -169,7 +154,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val shapeParseTrees = List(
           NodeParseTree(
             identifier = "node1",
-            conceptClass = "MyConceptClass",
+            conceptClass = "Klasse",
             edges = List("edge1"),
             sizeMin = SizeMin(2, 1),
             sizeMax = SizeMax(2, 1),
@@ -179,7 +164,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             geoModels = List()
           ))
         val styles = List(StyleFactory("myStyle"))
-        val concept = myConcept
+        val concept = ConceptCreatorHelper.exampleConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result shouldBe Failure(
           List("The following edges are referenced but not defined: edge1")
@@ -190,7 +175,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val shapeParseTrees = List(
           NodeParseTree(
             identifier = "node1",
-            conceptClass = "MyConceptClass",
+            conceptClass = "Klasse",
             edges = List("edge1"),
             sizeMin = SizeMin(2, 1),
             sizeMax = SizeMax(2, 1),
@@ -200,15 +185,17 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             geoModels = List()
           ), EdgeParseTree(
             identifier = "edge1",
-            conceptConnection = "myAttribute",
-            conceptTarget = Target("myAttribute"),
+            conceptConnection = "Klasse.Inheritance",
+            conceptTarget = Target("Klasse"),
             placings = List()
           ))
         val styles = Nil
-        val concept = myConcept
+        val concept = ConceptCreatorHelper.exampleConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result shouldBe Failure(
-          List("The following styles are referenced but not defined: myStyle")
+          List(
+            "The following styles are referenced but not defined: myStyle"
+          )
         )
       }
 
@@ -226,7 +213,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             geoModels = List()
           ), EdgeParseTree(
             identifier = "edge1",
-            conceptConnection = "myAttribute",
+            conceptConnection = "MyConceptClass.myAttribute",
             conceptTarget = Target("myAttribute"),
             placings = List()
           ))
@@ -234,11 +221,15 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val concept = Concept.empty
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result shouldBe Failure(
-          List("Concept class 'MyConceptClass' for node 'node1' not found!")
+          List(
+            "Concept class 'MyConceptClass' for node 'node1' not found!",
+            "Target 'myAttribute' for edge 'edge1' is not a concept class!",
+            "Concept class 'MyConceptClass' for edge 'edge1' does not exist!"
+          )
         )
       }
 
-      "when undefined concept class attribute is referenced" in {
+      "when undefined concept class attribute is referenced" ignore {
         /*val textfieldWithInvalidIdentifier = myTextfield.copy(identifier = Identifier("noSuchAttribute"))
         val shapeParseTrees = List(myEdge, myNode.copy(geoModels = List(textfieldWithInvalidIdentifier)))
         val styles = List(myStyle)
