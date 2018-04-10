@@ -33,6 +33,14 @@ export default (function linkTypeSelector() {
     let handleRemovedCell;
     let getConnectionCount;
     let connectionDefinitionGenerator;
+    
+    const removeFocus = () => {
+        if (_focusedElement) {
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+            _focusedElement = null;
+        }
+    };
 
     /**
      * Has to be called once before using the other methods!
@@ -111,8 +119,7 @@ export default (function linkTypeSelector() {
         });
 
         $('body').mouseup(function () {
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+            removeFocus();
             destroyMenu();
         });
 
@@ -142,8 +149,9 @@ export default (function linkTypeSelector() {
         let eventSourceID;
         let eventSourceType;
         let menuList;
-
-        if (!eventTargetModel || _focusedElement) {
+        
+        removeFocus();
+        if (!eventTargetModel) {
             return;
         }
 
