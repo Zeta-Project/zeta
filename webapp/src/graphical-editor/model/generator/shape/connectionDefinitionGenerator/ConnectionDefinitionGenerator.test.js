@@ -33,12 +33,14 @@ describe('createLabel', () => {
                     "name": "TestConnection",
                     "placings": [
                         {
-                            "positionDistance": 1,
-                            "positionOffset": 1.0,
-                            "shape": {
+                            "position": {
+                                "distance": 1,
+                                "offset": 1.0
+                            },
+                            "geoElement": {
                                 "textBody": "ExampleText",
                                 "id": 1234,
-                                "type": "text",
+                                "type": "textfield",
                             }
                         }
                     ]
@@ -86,10 +88,13 @@ describe('createPlacing', () => {
             edges: [
                 {
                     "name": "TestConnection",
-                    placings: [
+                    "placings": [
                         {
-                            "positionOffset": 0.5,
-                            "shape": {
+                            "position": {
+                                "distance": 1,
+                                "offset": 0.5
+                            },
+                            "geoElement": {
                                 "endPoint": {
                                     "x": 0,
                                     "y": 0,
@@ -119,10 +124,11 @@ describe('createPlacing', () => {
                         y1: 0,
                         x2: 0,
                         y2: 0,
+                        "fill": "#FFFFFF",
                         "fill-opacity": 1,
                         "stroke": "#000000",
                         "stroke-dasharray": "0",
-                        "stroke-width": 0
+                        "stroke-width": 1
                     }
                 }
             ])
@@ -150,8 +156,11 @@ describe('getConnectionStyle', () => {
                     "name": "TestConnection",
                     "placings": [
                         {
-                            "positionOffset": 0.0,
-                            "shape": {
+                            "position": {
+                                "distance": 0,
+                                "offset": 0.0
+                            },
+                            "geoElement": {
                                 "endPoint": {
                                     "x": 1,
                                     "y": 1,
@@ -246,8 +255,11 @@ describe('getConnectionStyle', () => {
                     "name": "TestConnection",
                     "placings": [
                         {
-                            "positionOffset": 1.0,
-                            "shape": {
+                            "position": {
+                                "distance": 1,
+                                "offset": 1.0
+                            },
+                            "geoElement": {
                                 "endPoint": {
                                     "x": 1,
                                     "y": 1,
@@ -297,8 +309,11 @@ describe('getConnectionStyle', () => {
                     "name": "TestConnection",
                     "placings": [
                         {
-                            "positionOffset": 0.0,
-                            "shape": {
+                            "position": {
+                                "distance": 0,
+                                "offset": 0.0
+                            },
+                            "geoElement": {
                                 "endPoint": {
                                     "x": 1,
                                     "y": 1,

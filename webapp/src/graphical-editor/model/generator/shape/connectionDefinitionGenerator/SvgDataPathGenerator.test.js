@@ -7,8 +7,10 @@ describe('generateMarker', () => {
 
     test('with a Line Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "endPoint": {
                     "x": 1,
                     "y": 1,
@@ -27,8 +29,10 @@ describe('generateMarker', () => {
    
     test('with a Polyline Placing with one point', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "points": [
                     {
                       "x": 0,
@@ -45,8 +49,10 @@ describe('generateMarker', () => {
      
     test('with a Polyline Placing with multiple point', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "points": [
                     {
                         "x": 0,
@@ -71,8 +77,10 @@ describe('generateMarker', () => {
     
     test('with a Polygon Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "points": [
                     {
                         "x": 0,
@@ -96,8 +104,10 @@ describe('generateMarker', () => {
     
     test('with a Rectangle Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "textBody": "positionOffset1",
                 "sizeHeight": 2,
                 "sizeWidth": 3,
@@ -115,8 +125,10 @@ describe('generateMarker', () => {
     
     test('with a RoundedRectangle Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "curveWidth": 4,
                 "curveHeight": 4,
                 "position": {
@@ -137,8 +149,10 @@ describe('generateMarker', () => {
     
     test('with a Ellipse Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "sizeHeight": 4,
                 "sizeWidth": 4,
                 "position": {
@@ -157,8 +171,10 @@ describe('generateMarker', () => {
     
     test('with a Placing with an unknown type', () => {
         const placing = {
-            "positionOffset": 0.5,            
-            "shape": {
+            "position": {
+                "offset": 0.5
+            },
+            "geoElement": {
                 "type": "unknownType"
             }
         }
@@ -176,8 +192,10 @@ describe('generateMirroredMarker', () => {
 
     test('with a Polyline Placing with one mirrored point', () => {
         const placing = {
-            "positionOffset": 1.0,            
-            "shape": {
+            "position": {
+                "offset": 1.0
+            },
+            "geoElement": {
                 "points": [
                 {
                     "x": 1,
@@ -195,8 +213,10 @@ describe('generateMirroredMarker', () => {
  
     test('with a Polyline Placing with multiple, mirrored points', () => {
         const placing = {
-            "positionOffset": 1.0,            
-            "shape": {
+            "position": {
+                "offset": 1.0
+            },
+            "geoElement": {
                 "points": [
                     {
                         "x": 1,
@@ -222,8 +242,10 @@ describe('generateMirroredMarker', () => {
     
     test('with a mirrored Polygon Placing', () => {
         const placing ={
-            "positionOffset": 1.0,            
-            "shape": {
+            "position": {
+                "offset": 1.0
+            },
+            "geoElement": {
                 "points": [
                     {
                         "x": 0,
@@ -249,8 +271,10 @@ describe('generateMirroredMarker', () => {
 
     test('with a Line Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "endPoint": {
                     "x": 1,
                     "y": 1,
@@ -269,8 +293,10 @@ describe('generateMirroredMarker', () => {
 
     test('with a Rectangle Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "textBody": "positionOffset1",
                 "sizeHeight": 2,
                 "sizeWidth": 3,
@@ -288,8 +314,10 @@ describe('generateMirroredMarker', () => {
     
     test('with a RoundedRectangle Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "curveWidth": 4,
                 "curveHeight": 4,
                 "position": {
@@ -310,8 +338,10 @@ describe('generateMirroredMarker', () => {
     
     test('with a Ellipse Placing', () => {
         const placing = {
-            "positionOffset": 0.0,            
-            "shape": {
+            "position": {
+                "offset": 0.0
+            },
+            "geoElement": {
                 "sizeHeight": 4,
                 "sizeWidth": 4,
                 "position": {
