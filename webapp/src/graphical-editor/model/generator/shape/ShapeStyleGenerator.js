@@ -63,30 +63,30 @@ class Generator{
         });
     }
 
-    static createLine(element, style) {
+    createLine(element, style) {
         return { [`line.${element.id}`]: style };
     }
 
-    static createRectangle(element, style) {
+    createRectangle(element, style) {
         return { [`rect.${element.id}`]: style };
     }
 
-    static createEllipse(element, style) {
+    createEllipse(element, style) {
         return { [`ellipse.${element.id}`]: style };
     }
 
-    static createTextField(element, style) {
+    createTextField(element, style) {
         return {
             [`text.${element.id}`]:  style,
             [`.${element.id}`]:  style
         };
     }
 
-    static createPolygon(element, style) {
+    createPolygon(element, style) {
         return { [`polygon.${element.id}`]: style };
     }
 
-    static createPolyLine(element, style) {
+    createPolyLine(element, style) {
         return { [`polyline.${element.id}`]: style };
     }
 }
@@ -96,6 +96,15 @@ export default class {
     constructor(shape, styleGenerator) {
         this.nodes = shape.nodes || [];
         this.generator = new Generator(styleGenerator);
+    }
+
+    getShapeByName(shapeName) {
+        if (this.nodes) {
+            return this.nodes.find(e => e.name === shapeName);
+        } else {
+            return [];
+        }
+
     }
 
     getShapeStyle(shapeName) {
