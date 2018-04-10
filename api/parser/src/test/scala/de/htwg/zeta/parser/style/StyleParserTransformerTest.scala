@@ -4,6 +4,7 @@ import javafx.scene.paint
 
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
@@ -35,8 +36,10 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         result.isSuccess shouldBe true
 
         val styles = result.toOption.get
-        styles.size shouldBe 1
-        val style = styles.head
+        styles.size shouldBe 2
+        val defaultStyle = styles.head
+        defaultStyle shouldBe Style.defaultStyle
+        val style = styles(1)
         style.name shouldBe "Y"
         style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
         style.background.color shouldBe Color(255, 255, 255, 1)
@@ -63,8 +66,10 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         result.isSuccess shouldBe true
 
         val styles = result.toOption.get
-        styles.size shouldBe 1
-        val style = styles.head
+        styles.size shouldBe 2
+        val defaultStyle = styles.head
+        defaultStyle shouldBe Style.defaultStyle
+        val style = styles(1)
         style.background.color shouldBe Color(255, 165, 0, 1)
         style.line.color shouldBe Color(128, 128, 128, 1)
         style.font.color shouldBe Color(0, 128, 0, 1)
