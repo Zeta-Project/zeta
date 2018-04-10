@@ -6,11 +6,11 @@ export default function generateLabelList(connection) {
 
 function generateLabel(placing) {
     return {
-        position: placing.positionOffset,
+        position: placing.position.offset,
         attrs: {
             rect: {fill: 'transparent'},
             text: {
-                y: 'positionDistance' in placing ? placing.positionDistance : 0,
+                y: 'positionDistance' in placing ? placing.position.distance : 0,
                 text: placing.shape.textBody
             }
         },

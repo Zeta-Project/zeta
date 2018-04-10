@@ -38,8 +38,8 @@ class ConnectionDefinitionGenerator {
         let placingStyle = {'.marker-target': {d: 'M 0 0'}};
 
         if ('placings' in connection) {
-            const commonMarker = connection.placings.find((p) => p.positionOffset === 0.0 && p.shape.type !== 'text');  
-            const mirroredMarker = connection.placings.find((p) => p.positionOffset === 1.0 && p.shape.type !== 'text');
+            const commonMarker = connection.placings.find((p) => p.position.offset === 0.0 && p.geoElement.type !== 'text');
+            const mirroredMarker = connection.placings.find((p) => p.position.offset === 1.0 && p.geoElement.type !== 'text');
             
             if (commonMarker) {
                 const styleMarker = this.createStyleMarkerSource(commonMarker);
@@ -57,9 +57,9 @@ class ConnectionDefinitionGenerator {
     }
 
     generatePlacingStyle(placing) {
-        if ('style' in placing.shape) {
-            const commonAttributes = this.styleGenerator.createCommonAttributes(placing.shape.style);
-            const fontAttributes = this.styleGenerator.createFontAttributes(placing.shape.style);
+        if ('style' in placing.geoElement) {
+            const commonAttributes = this.styleGenerator.createCommonAttributes(placing.geoElement.style);
+            const fontAttributes = this.styleGenerator.createFontAttributes(placing.geoElement.style);
             return Object.assign(
                 commonAttributes,
                     {text: fontAttributes}
@@ -96,18 +96,18 @@ export default class Generator{
         this.placingDefinitionGenerator = new PlacingDefinitionGenerator(styleGenerator);
     }
 
-    getConnectionStyle(styleName) {
-        const connection = this.connections.find(c => c.name === styleName);
+    getConnectionStyle(connectionName) {
+        const connection = this.connections.find(c => c.name === connectionName);
         return connection ? this.connectionDefinitionGenerator.createConnectionStyle(connection): {};
     }
 
-    getPlacings(styleName) {
-        const connection = this.connections.find(c => c.name === styleName);
+    getPlacings(connectionName) {
+        const connection = this.connections.find(c => c.name === connectionName);
         return connection ? this.placingDefinitionGenerator.createPlacingList(connection) : [];
     }
 
-    getLabels(styleName) {
-        const connection = this.connections.find(c => c.name === styleName);
+    getLabels(connectionName) {
+        const connection = this.connections.find(c => c.name === connectionName);
         return connection ? createLabelList(connection) : [];
     }
 }
