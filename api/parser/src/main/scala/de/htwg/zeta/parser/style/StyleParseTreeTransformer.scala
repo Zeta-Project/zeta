@@ -23,7 +23,11 @@ object StyleParseTreeTransformer {
 
   def transform(styleTrees: List[StyleParseTree]): Validation[List[String], List[Style]] = {
     checkForErrors(styleTrees) match {
-      case Nil => Success(styleTrees.map(transformStyle))
+      case Nil =>
+        val styles = styleTrees.map(transformStyle)
+        // for correct handling of a default style in frontend, we have to append
+        // the default style always to the list of all styles
+        Success(Style.defaultStyle :: styles)
       case errors: List[String] => Failure(errors)
     }
   }

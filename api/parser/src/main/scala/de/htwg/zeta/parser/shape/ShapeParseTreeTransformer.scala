@@ -4,6 +4,7 @@ import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.gdsl.shape
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
@@ -27,7 +28,6 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.parser.ReferenceCollector
 import de.htwg.zeta.parser.check.ErrorChecker
 import de.htwg.zeta.parser.shape.check.CheckDuplicateShapes
@@ -96,35 +96,36 @@ object ShapeParseTreeTransformer {
 
   private def transformNodes(nodeParseTrees: List[NodeParseTree], edges: List[Edge], styles: ReferenceCollector[Style], concept: Concept): List[Node] = {
     nodeParseTrees.map(n => {
+      val style = n.style.fold(Style.defaultStyle)(s => styles.!(s.name))
       Node(
         n.identifier,
         n.conceptClass,
         edges.filter(e => n.edges.contains(e.name)),
         Size(0, 0, n.sizeMax.width, n.sizeMin.width, n.sizeMax.height, n.sizeMin.height), // TODO
-        n.style.fold(Style.defaultStyle)(s => styles.!(s.name)),
+        style,
         Resizing(
           n.resizing.map(_.horizontal).getOrElse(Resizing.defaultHorizontal),
           n.resizing.map(_.vertical).getOrElse(Resizing.defaultVertical),
           n.resizing.map(_.proportional).getOrElse(Resizing.defaultProportional)
         ),
-        n.geoModels.map(transformGeoModel(_, styles))
+        n.geoModels.map(transformGeoModel(_, style, styles))
       )
     })
   }
 
-  private def transformGeoModel(geoModel: GeoModelParseTree, styles: ReferenceCollector[Style]): GeoModel = {
+  private def transformGeoModel(geoModel: GeoModelParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): GeoModel = {
     geoModel match {
-      case m: EllipseParseTree => transformGeoModel(m, styles)
-      case m: TextfieldParseTree => transformGeoModel(m, styles)
-      case m: StatictextParseTree => transformGeoModel(m, styles)
-      case m: RepeatingBoxParseTree => transformGeoModel(m, styles)
-      case m: LineParseTree => transformGeoModel(m, styles)
-      case m: PolylineParseTree => transformGeoModel(m, styles)
-      case m: PolygonParseTree => transformGeoModel(m, styles)
-      case m: RectangleParseTree => transformGeoModel(m, styles)
-      case m: RoundedRectangleParseTree => transformGeoModel(m, styles)
-      case m: HorizontalLayoutParseTree => transformGeoModel(m, styles)
-      case m: VerticalLayoutParseTree => transformGeoModel(m, styles)
+      case m: EllipseParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: TextfieldParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: StatictextParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: RepeatingBoxParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: LineParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: PolylineParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: PolygonParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: RectangleParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: RoundedRectangleParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: HorizontalLayoutParseTree => transformGeoModel(m, parentStyle, styles)
+      case m: VerticalLayoutParseTree => transformGeoModel(m, parentStyle, styles)
     }
   }
 
@@ -148,15 +149,18 @@ object ShapeParseTreeTransformer {
     y = point.y
   )
 
-  private def transformGeoModelPlacing(placing: Placing, styles: ReferenceCollector[Style]): shape.Placing = shape.Placing(
-    style = placing.style.fold(Style.defaultStyle)(s => styles.!(s.name)),
-    position = shape.Position(
-      // TODO thats not correct
-      distance = 1,
-      offset = 1.0
-    ),
-    geoModel = transformGeoModel(placing.geoModel, styles)
-  )
+  private def transformGeoModelPlacing(placing: Placing, styles: ReferenceCollector[Style]): shape.Placing = {
+    val style = placing.style.fold(Style.defaultStyle)(s => styles.!(s.name))
+    shape.Placing(
+      style = style,
+      position = shape.Position(
+        // TODO thats not correct
+        distance = 1,
+        offset = 1.0
+      ),
+      geoModel = transformGeoModel(placing.geoModel, style, styles)
+    )
+  }
 
   private def transformGeoModelAlign(align: GeoModelAttributes.Align) = Align(
     vertical = align.vertical match {
@@ -171,83 +175,116 @@ object ShapeParseTreeTransformer {
     }
   )
 
-  private def transformGeoModel(geoModel: EllipseParseTree, styles: ReferenceCollector[Style]): Ellipse = Ellipse(
-    size = transformGeoModelSize(geoModel.size),
-    position = transformGeoModelPosition(geoModel.position),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: EllipseParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Ellipse = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Ellipse(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: TextfieldParseTree, styles: ReferenceCollector[Style]): TextField = TextField(
-    identifier = geoModel.identifier.name,
-    textBody = geoModel.textBody.fold(TextField.default.textBody)(_.text),
-    size = transformGeoModelSize(geoModel.size),
-    position = transformGeoModelPosition(geoModel.position),
-    editable = geoModel.editable.fold(TextField.default.editable)(_.editable),
-    multiline = geoModel.multiline.fold(TextField.default.multiline)(_.multiline),
-    align = geoModel.align.fold(TextField.default.align)(transformGeoModelAlign),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: TextfieldParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): TextField = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    TextField(
+      identifier = geoModel.identifier.name,
+      textBody = geoModel.textBody.fold(TextField.default.textBody)(_.text),
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      editable = geoModel.editable.fold(TextField.default.editable)(_.editable),
+      multiline = geoModel.multiline.fold(TextField.default.multiline)(_.multiline),
+      align = geoModel.align.fold(TextField.default.align)(transformGeoModelAlign),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: StatictextParseTree, styles: ReferenceCollector[Style]): StaticText = StaticText(
-    text = geoModel.text.text,
-    size = transformGeoModelSize(geoModel.size),
-    position = transformGeoModelPosition(geoModel.position),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: StatictextParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): StaticText = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    StaticText(
+      text = geoModel.text.text,
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: RepeatingBoxParseTree, styles: ReferenceCollector[Style]): RepeatingBox = RepeatingBox(
-    editable = geoModel.editable.editable,
-    forEach = geoModel.foreach.each.name,
-    forAs = geoModel.foreach.as,
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: RepeatingBoxParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): RepeatingBox = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    RepeatingBox(
+      editable = geoModel.editable.editable,
+      forEach = geoModel.foreach.each.name,
+      forAs = geoModel.foreach.as,
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: LineParseTree, styles: ReferenceCollector[Style]): Line = Line(
-    startPoint = transformGeoModelPoint(geoModel.startPoint),
-    endPoint = transformGeoModelPoint(geoModel.endPoint),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: LineParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Line = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Line(
+      startPoint = transformGeoModelPoint(geoModel.startPoint),
+      endPoint = transformGeoModelPoint(geoModel.endPoint),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: PolylineParseTree, styles: ReferenceCollector[Style]): Polyline = Polyline(
-    points = geoModel.points.map(transformGeoModelPoint),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: PolylineParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Polyline = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Polyline(
+      points = geoModel.points.map(transformGeoModelPoint),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: PolygonParseTree, styles: ReferenceCollector[Style]): Polygon = Polygon(
-    points = geoModel.points.map(transformGeoModelPoint),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: PolygonParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Polygon = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Polygon(
+      points = geoModel.points.map(transformGeoModelPoint),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: RectangleParseTree, styles: ReferenceCollector[Style]): Rectangle = Rectangle(
-    size = transformGeoModelSize(geoModel.size),
-    position = transformGeoModelPosition(geoModel.position),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: RectangleParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): Rectangle = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    Rectangle(
+      size = transformGeoModelSize(geoModel.size),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: RoundedRectangleParseTree, styles: ReferenceCollector[Style]): RoundedRectangle = RoundedRectangle(
-    size = transformGeoModelSize(geoModel.size),
-    curve = transformGeoModelCurve(geoModel.curve),
-    position = transformGeoModelPosition(geoModel.position),
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: RoundedRectangleParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): RoundedRectangle = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    RoundedRectangle(
+      size = transformGeoModelSize(geoModel.size),
+      curve = transformGeoModelCurve(geoModel.curve),
+      position = transformGeoModelPosition(geoModel.position),
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: HorizontalLayoutParseTree, styles: ReferenceCollector[Style]): HorizontalLayout = HorizontalLayout(
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: HorizontalLayoutParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): HorizontalLayout = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    HorizontalLayout(
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
-  private def transformGeoModel(geoModel: VerticalLayoutParseTree, styles: ReferenceCollector[Style]): VerticalLayout = VerticalLayout(
-    childGeoModels = geoModel.children.map(transformGeoModel(_, styles)),
-    style = geoModel.style.fold(Style.defaultStyle)(s => styles.!(s.name))
-  )
+  private def transformGeoModel(geoModel: VerticalLayoutParseTree, parentStyle: Style, styles: ReferenceCollector[Style]): VerticalLayout = {
+    val style = geoModel.style.fold(parentStyle)(s => styles.!(s.name))
+    VerticalLayout(
+      childGeoModels = geoModel.children.map(transformGeoModel(_, style, styles)),
+      style = style
+    )
+  }
 
 }
