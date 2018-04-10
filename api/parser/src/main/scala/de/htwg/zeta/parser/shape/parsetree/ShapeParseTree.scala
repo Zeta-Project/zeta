@@ -39,5 +39,3 @@ case class EdgeParseTree(
     conceptConnection: String,
     conceptTarget: Target,
     placings: List[Placing]) extends ShapeParseTree
-
-
