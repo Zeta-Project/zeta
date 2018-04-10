@@ -414,7 +414,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             Point(-10, -10)
           ),
           childGeoModels = List(),
-          style = Style.defaultStyle
+          style = xStyle
         )
       )
     )
@@ -511,10 +511,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             multiline = false,
             align = Align.default,
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       Rectangle(
         size = geomodel.Size(200, 100),
@@ -529,10 +529,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             multiline = false,
             align = Align.default,
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       RoundedRectangle(
         size = geomodel.Size(200, 100),
@@ -548,47 +548,47 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             multiline = false,
             align = Align.default,
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       Ellipse(
         size = geomodel.Size(200, 100),
         position = geomodel.Position(0, 150),
         childGeoModels = List(),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       StaticText(
         size = geomodel.Size(200, 100),
         position = geomodel.Position(0, 150),
         childGeoModels = List(),
-        style = Style.defaultStyle,
+        style =xStyle,
         text = "test"
       ),
       RepeatingBox(
         forEach = "Inheritance",
         forAs = "i",
         editable = false,
-        style = Style.defaultStyle,
+        style = xStyle,
         childGeoModels = List(
           VerticalLayout(
-            style = Style.defaultStyle,
+            style = xStyle,
             childGeoModels = List(geomodel.Line(
               startPoint = geomodel.Point(1, 51),
               endPoint = geomodel.Point(2, 52),
               childGeoModels = List(),
-              style = Style.defaultStyle
+              style = xStyle
             ))
           )
         )
       ),
       HorizontalLayout(
-        style = Style.defaultStyle,
+        style = xStyle,
         childGeoModels = List(Polyline(
           points = List(geomodel.Point(1, 51), geomodel.Point(2, 52)),
           childGeoModels = List(),
-          style = Style.defaultStyle
+          style = xStyle
         ))
       )
     )
@@ -615,10 +615,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             multiline = false,
             align = Align.default,
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       Rectangle(
         size = geomodel.Size(200, 100),
@@ -633,10 +633,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             multiline = false,
             align = Align.default,
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       Rectangle(
         size = geomodel.Size(200, 100),
@@ -651,10 +651,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
             multiline = false,
             align = Align.default,
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       )
     )
   )
@@ -683,10 +683,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
               horizontal = Align.Horizontal.left
             ),
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       Rectangle(
         size = geomodel.Size(200, 100),
@@ -704,10 +704,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
               horizontal = Align.Horizontal.middle
             ),
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       ),
       Rectangle(
         size = geomodel.Size(200, 100),
@@ -725,10 +725,10 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
               horizontal = Align.Horizontal.right
             ),
             childGeoModels = List(),
-            style = Style.defaultStyle
+            style = xStyle
           )
         ),
-        style = Style.defaultStyle
+        style = xStyle
       )
     )
   )
@@ -740,24 +740,28 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
       result.isSuccess shouldBe true
       val parsed = result.toEither.right.get
 
-      parsed.styles.size shouldBe 6
+      parsed.styles.size shouldBe 7
 
-      parsed.styles should contain(yStyle)
-      parsed.styles should contain(classTextStyle)
-      parsed.styles should contain(xStyle)
-      parsed.styles should contain(realizationStyle)
-      parsed.styles should contain(aggregationStyle)
-      parsed.styles should contain(componentStyle)
+      // NOTE: we do not test with "should contain()" here, but use direct checks
+      // for every list index cause of better, faster and easier comparison
+      // in case of a failure
+      parsed.styles.head shouldBe Style.defaultStyle
+      parsed.styles(1) shouldBe yStyle
+      parsed.styles(2) shouldBe classTextStyle
+      parsed.styles(3) shouldBe xStyle
+      parsed.styles(4) shouldBe realizationStyle
+      parsed.styles(5) shouldBe aggregationStyle
+      parsed.styles(6) shouldBe componentStyle
 
-      parsed.shape.edges should contain(realizationEdge)
-      parsed.shape.edges should contain(inheritanceEdge)
-      parsed.shape.edges should contain(aggregationEdge)
-      parsed.shape.edges should contain(componentEdge)
-      parsed.shape.edges should contain(baseClassRealizationEdge)
+      parsed.shape.edges.head shouldBe inheritanceEdge
+      parsed.shape.edges(1) shouldBe realizationEdge
+      parsed.shape.edges(2) shouldBe baseClassRealizationEdge
+      parsed.shape.edges(3) shouldBe componentEdge
+      parsed.shape.edges(4) shouldBe aggregationEdge
 
-      parsed.shape.nodes should contain(classNode)
-      parsed.shape.nodes should contain(abClassNode)
-      parsed.shape.nodes should contain(inClassNode)
+      parsed.shape.nodes.head shouldBe classNode
+      parsed.shape.nodes(1) shouldBe abClassNode
+      parsed.shape.nodes(2) shouldBe inClassNode
     }
   }
 
