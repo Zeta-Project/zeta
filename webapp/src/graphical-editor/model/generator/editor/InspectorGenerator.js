@@ -151,10 +151,10 @@ class ElementGenerator {
         return { index, group, label, max };
     }
     createX(index, group, label, element, maxWidth) {
-        return { index, group, label, max: (maxWidth - element.sizeWidth) };
+        return { index, group, label, max: (maxWidth - element.size.width) };
     }
     createY(index, group, label, element, maxHeight) {
-        return { index, group, label, max: (maxHeight - element.sizeHeight) };
+        return { index, group, label, max: (maxHeight - element.size.height) };
     }
     createHeight(index, group, label, max) {
         return { index, group, max, label };

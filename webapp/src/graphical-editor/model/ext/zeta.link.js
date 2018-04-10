@@ -117,7 +117,7 @@ joint.shapes.zeta.MLinkView = joint.dia.LinkView.extend({
         var connectionLength = connectionElement.getTotalLength();
 
         _.each(placings, function (placing, idx) {
-            var positionX = placing.position || connectionLength / 2; // FIXME placing.position is undefined, connectionLength / 2 is just a temporary workaround
+            var positionX = placing.position;
             positionX = (positionX > connectionLength) ? connectionLength : positionX; // sanity check
             positionX = (positionX < 0) ? connectionLength + positionX : positionX;
             positionX = positionX > 1 ? positionX : connectionLength * positionX;

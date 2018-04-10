@@ -234,7 +234,6 @@ export default Backbone.Router.extend({
             }
 
             const inspectorDefs = GeneratorFactory.inspector.InspectorDefs[cellView.model.get('type')];
-            // TODO delete const inspectorDefs_OLD = InspectorDefs[cellView.model.get('type')];
 
             this.inspector = new joint.ui.Inspector({
                 inputs: inspectorDefs ? inspectorDefs.inputs : CommonInspectorInputs,
@@ -257,7 +256,6 @@ export default Backbone.Router.extend({
             } else {
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
-
         }
     },
 
