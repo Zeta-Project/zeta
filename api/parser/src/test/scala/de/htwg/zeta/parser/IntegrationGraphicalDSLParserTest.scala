@@ -259,6 +259,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
          }
          edge realization for Klasse.Realization {
              target: InterfaceKlasse
+             style: Y
              placing {
                  style : Y
                  offset: 1.0
@@ -272,6 +273,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
          }
          edge BaseClassRealization for Klasse.BaseClassRealization {
              target: InterfaceKlasse
+             style: X
              placing {
                  style : Y
                  offset: 1.0
@@ -285,8 +287,8 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
          }
          edge component for Klasse.Component {
              target: Klasse
+             style: X
              placing {
-                 style : X
                  offset: 1.0
                  polygon {
                      style : component
@@ -299,6 +301,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
          }
          edge aggregation for Klasse.Aggregation {
              target: Klasse
+             style: X
              placing {
                  style : X
                  offset: 1.0
@@ -382,6 +385,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     name = "realization",
     conceptElement = "Klasse.Realization",
     target = "InterfaceKlasse",
+    style = yStyle,
     placings = List(
       Placing(
         style = yStyle,
@@ -403,6 +407,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     name = "inheritance",
     conceptElement = "Klasse.Inheritance",
     target = "AbstractKlasse",
+    style = Style.defaultStyle,
     placings = List(
       Placing(
         style = xStyle,
@@ -424,6 +429,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     name = "aggregation",
     conceptElement = "Klasse.Aggregation",
     target = "Klasse",
+    style = xStyle,
     placings = List(
       Placing(
         style = xStyle,
@@ -446,6 +452,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     name = "component",
     conceptElement = "Klasse.Component",
     target = "Klasse",
+    style = xStyle,
     placings = List(
       Placing(
         style = xStyle,
@@ -468,6 +475,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     name = "BaseClassRealization",
     conceptElement = "Klasse.BaseClassRealization",
     target = "InterfaceKlasse",
+    style = xStyle,
     placings = List(
       Placing(
         style = yStyle,
