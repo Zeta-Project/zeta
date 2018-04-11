@@ -11,6 +11,7 @@ import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.EdgeStyle
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes
@@ -81,6 +82,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
+            None,
             placings = List()
           ))
         val styles = List(StyleFactory("myStyle"))
@@ -202,6 +204,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
+            None,
             placings = List()
           ))
         val styles = Nil
@@ -228,6 +231,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
+            None,
             placings = List()
           ))
         val styles = List(StyleFactory("myStyle"))
