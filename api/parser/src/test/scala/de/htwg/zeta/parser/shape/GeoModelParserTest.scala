@@ -3,9 +3,11 @@ package de.htwg.zeta.parser.shape
 import de.htwg.zeta.parser.shape.parser.GeoModelParser
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees._
-import de.htwg.zeta.parser.shape.parsetree._
-import org.scalatest.{FreeSpec, Inside, Matchers}
+import org.scalatest.FreeSpec
+import org.scalatest.Inside
+import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class GeoModelParserTest extends FreeSpec with Matchers with Inside {
 
   private def parseGeoModel(input: String) = {
@@ -32,6 +34,31 @@ class GeoModelParserTest extends FreeSpec with Matchers with Inside {
           Position(0, 0),
           Size(100, 20),
           Curve(10, 1),
+          children = Nil
+        )
+      }
+
+      "a textfield" in {
+        val textfield =
+          """
+           |textfield {
+           |  identifier: i123
+           |  textBody: "default text"
+           |  position(x: 0, y: 0)
+           |  size(width: 100, height: 20)
+           |}
+          """.stripMargin
+        val result = parseGeoModel(textfield)
+        result.successful shouldBe true
+        result.get shouldBe TextfieldParseTree(
+          style = None,
+          Identifier("i123"),
+          Some(TextBody("default text")),
+          Position(0, 0),
+          Size(100, 20),
+          multiline = None,
+          align = None,
+          editable = None,
           children = Nil
         )
       }

@@ -38,7 +38,7 @@ object PlacingFormat {
     GeoModelFormat(),
     StyleFormat(),
     PositionFormat(),
-    "style", "position", "geoModel"
+    "style", "position", "geoElement"
   )
 }
 

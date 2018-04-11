@@ -26,7 +26,7 @@ class NodesNoInputsTest extends FlatSpec with Matchers {
     rule.isValid(node).get should be(false)
   }
 
-  it should "return true on nodes of type nodeType with empty input list" in {
+  it should "return true on nodes of type nodeType with empty input list" ignore {
     val input = MReference("", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
     val node = emptyNode.copy(inputEdgeNames = Seq(input.name))
     rule.isValid(node).get should be(true)

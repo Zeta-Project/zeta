@@ -61,13 +61,13 @@ class ShapeGenerator {
     constructor(shapeDefinitionGenerator) {
         this.definitionGenerator = shapeDefinitionGenerator;
         this.mapper = {
-            'ELLIPSE': new EllipseGenerator(),
-            'RECTANGLE': new RectangleGenerator(),
-            'TEXT': new TextGenerator(),
-            'LINE': new LineGenerator(),
-            'POLYGON': new PolygonGenerator(),
-            'POLY_LINE': new PolyLineGenerator(),
-            'ROUNDED_RECTANGLE': new RoundedRectangleGenerator(),
+            'ellipse': new EllipseGenerator(),
+            'rectangle': new RectangleGenerator(),
+            'textfield': new TextGenerator(),
+            'line': new LineGenerator(),
+            'polygon': new PolygonGenerator(),
+            'polyline': new PolyLineGenerator(),
+            'roundedRectangle': new RoundedRectangleGenerator(),
         };
     }
 
@@ -81,20 +81,39 @@ class ShapeGenerator {
     }
 
     processElements(shape) {
-        const elements = shape.elements ? shape.elements : [];
+
+        const elements = shape?.geoElements || [];
+        const flatGeoElements = this.flattenGeoElement(elements);
         const maxHeight = this.definitionGenerator.calculateHeight(shape);
         const maxWidth = this.definitionGenerator.calculateWidth(shape);
-        return elements.reduce((result, element) => {
-            const entry = this.processElement(element, elements, maxHeight, maxWidth);
+        return flatGeoElements.reduce((result, element) => {
+            const entry = this.processElement(element, flatGeoElements, maxHeight, maxWidth);
             return Object.assign(result, entry);
         }, {});
+    }
+
+    flattenGeoElement(geoElements) {
+        const results = [];
+
+        const flatten = function (elem, results) {
+            results.push(elem);
+            (elem.childGeoElements || []).forEach(e => {
+                e.parent = elem.id;
+                flatten(e, results);
+            })
+        };
+
+        geoElements.forEach(e => flatten(e, results));
+        return results;
     }
 
     processElement(element, elements, maxHeight, maxWidth) {
         if (this.mapper[element.type]) {
             const generator = this.mapper[element.type];
             return generator.create(element, maxHeight, maxWidth);
-         }
+        } else {
+            console.log("Error: not defined in Mapper: " + element.type);
+        }
     }
 }
 
@@ -132,10 +151,10 @@ class ElementGenerator {
         return { index, group, label, max };
     }
     createX(index, group, label, element, maxWidth) {
-        return { index, group, label, max: (maxWidth - element.sizeWidth) };
+        return { index, group, label, max: (maxWidth - element.size.width) };
     }
     createY(index, group, label, element, maxHeight) {
-        return { index, group, label, max: (maxHeight - element.sizeHeight) };
+        return { index, group, label, max: (maxHeight - element.size.height) };
     }
     createHeight(index, group, label, max) {
         return { index, group, max, label };
@@ -145,7 +164,7 @@ class ElementGenerator {
     }
 
     selector(tag, element) {
-        return element.style ? `${tag}.${element.id}` : tag;
+        return `${tag}.${element.id}`;
     }
 }
 
@@ -237,7 +256,7 @@ class TextGenerator extends ElementGenerator {
                 index: 1,
                 type: 'list',
                 item: { type: 'text' },
-                group: `Text ${element.id}`,
+                group: `Text ${this.counter}`,
             },
             x: this.createX(1, group, 'x Position Text', element, maxWidth),
             y: this.createY(2, group, 'y Position Text', element, maxHeight),
@@ -347,7 +366,7 @@ class RoundedRectangleGenerator extends ElementGenerator {
 
 export default class {
     constructor(shape, shapeDefinitionGenerator) {
-        this.shapes = shape.shapes ? shape.shapes : [];
+        this.shapes = shape?.nodes || [];
         this.generator = new ShapeGenerator(shapeDefinitionGenerator);
     }
 
@@ -355,6 +374,6 @@ export default class {
         return this.shapes.reduce((result, shape) => {
             result[`zeta.${shape.name}`] = this.generator.create(shape);
             return result;
-        }, { 'zeta.MLink': createMLink() });
+        }, { 'zeta.MLink': createMLink()});
     }
 }
