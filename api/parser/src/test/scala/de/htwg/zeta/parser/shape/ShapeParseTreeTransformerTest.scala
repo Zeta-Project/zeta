@@ -82,10 +82,10 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
-            None,
+            Some(EdgeStyle("myEdgeStyle")),
             placings = List()
           ))
-        val styles = List(StyleFactory("myStyle"))
+        val styles = List(StyleFactory("myStyle"), StyleFactory("myEdgeStyle"))
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result.isSuccess shouldBe true
@@ -93,7 +93,9 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val resultEdges = result.getOrElse(Shape(Nil, Nil)).edges
         resultNodes.size shouldBe 1
         resultEdges.size shouldBe 1
-        // TODO: check success tuple
+        val resultEdge = resultEdges.head
+        resultEdge.style shouldBe StyleFactory("myEdgeStyle")
+        // TODO check all success values
       }
 
       "nested repeating boxes" in {
