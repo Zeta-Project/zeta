@@ -85,11 +85,13 @@ object ShapeParseTreeTransformer {
 
   private def transformEdges(edgeParseTrees: List[EdgeParseTree], styles: ReferenceCollector[Style], concept: Concept): List[Edge] = {
     edgeParseTrees.map(n => {
+      val style = n.style.fold(Style.defaultStyle)(s => styles.!(s.name))
       Edge(
         n.identifier,
         n.conceptConnection,
         n.conceptTarget.target,
-        n.placings.map(transformGeoModelPlacing(_, styles))
+        style,
+        n.placings.map(transformGeoModelPlacing(_, style, styles))
       )
     })
   }
@@ -149,8 +151,8 @@ object ShapeParseTreeTransformer {
     y = point.y
   )
 
-  private def transformGeoModelPlacing(placing: Placing, styles: ReferenceCollector[Style]): shape.Placing = {
-    val style = placing.style.fold(Style.defaultStyle)(s => styles.!(s.name))
+  private def transformGeoModelPlacing(placing: Placing, parentStyle: Style, styles: ReferenceCollector[Style]): shape.Placing = {
+    val style = placing.style.fold(parentStyle)(s => styles.!(s.name))
     shape.Placing(
       style = style,
       position = shape.Position(

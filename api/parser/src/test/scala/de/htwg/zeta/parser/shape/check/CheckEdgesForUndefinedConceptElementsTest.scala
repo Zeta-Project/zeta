@@ -3,6 +3,7 @@ package de.htwg.zeta.parser.shape.check
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.EdgeStyle
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
@@ -148,6 +149,7 @@ class CheckEdgesForUndefinedConceptElementsTest extends FreeSpec with Matchers w
     identifier = "myEdge",
     conceptConnection = connection,
     conceptTarget = Target(target),
+    style = None,
     placings = Nil
   )
 

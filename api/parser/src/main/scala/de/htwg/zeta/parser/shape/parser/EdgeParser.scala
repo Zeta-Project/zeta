@@ -4,6 +4,7 @@ import de.htwg.zeta.parser.Collector
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.UnorderedParser
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.EdgeStyle
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Offset
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
@@ -14,26 +15,38 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
 object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
   def edge: Parser[EdgeParseTree] = {
-    val attributes = unordered(once(target), min(1, placing))
+    val attributes = unordered(once(target), optional(edgeStyle), min(1, placing))
     ("edge" ~> ident) ~ ("for" ~> conceptConnection) ~ (leftBrace ~> attributes <~ rightBrace) ^^ { parseResult =>
       val edge ~ conceptConnection ~ attributes = parseResult
       val attrs = Collector(attributes)
       EdgeParseTree(edge,
         conceptConnection,
         attrs.![Target],
+        attrs.?[EdgeStyle],
         attrs.*[Placing])
     }
   }
 
+  private val styleLiteral = "style"
+  private val targetLiteral = "target"
+  private val placingLiteral = "placing"
+  private val offsetLiteral = "offset"
+
+  private def edgeStyle: Parser[EdgeStyle] = {
+    styleLiteral ~! colon ~ ident ^^ {
+      case _ ~ _ ~ name => EdgeStyle(name)
+    }
+  }.named(styleLiteral)
+
   private def target: Parser[Target] = {
-    "target" ~! colon ~ ident ^^ {
+    targetLiteral ~! colon ~ ident ^^ {
       case _ ~ _ ~ name => Target(name)
     }
-  }.named("target")
+  }.named(targetLiteral)
 
   private def placing: Parser[Placing] = {
     val attributes = unordered(optional(style), once(geoModel), once(offset))
-    "placing" ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
+    placingLiteral ~> leftBrace ~> attributes <~ rightBrace ^^ { parseResult =>
       val attrs = Collector(parseResult)
       Placing(
         attrs.?[Style],
@@ -41,15 +54,15 @@ object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedPa
         attrs.![GeoModelParseTree]
       )
     }
-  }.named("placing")
+  }.named(placingLiteral)
 
   private def offset: Parser[Offset] = {
-    literal("offset") ~! colon ~ argumentDouble ^^ {
+    literal(offsetLiteral) ~! colon ~ argumentDouble ^^ {
       case _ ~ _ ~ offset => Offset(offset)
     }
-  }.named("offset")
+  }.named(offsetLiteral)
 
-  private def style = include(GeoModelAttributeParser.style).named("style")
+  private def style = include(GeoModelAttributeParser.style).named(styleLiteral)
 
   private def geoModel = include(GeoModelParser.geoModel).named("geoModel")
 

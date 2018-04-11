@@ -1,5 +1,6 @@
 package de.htwg.zeta.parser.shape.parsetree
 
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.EdgeStyle
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
@@ -38,4 +39,5 @@ case class EdgeParseTree(
     identifier: String,
     conceptConnection: String,
     conceptTarget: Target,
+    style: Option[EdgeStyle],
     placings: List[Placing]) extends ShapeParseTree
