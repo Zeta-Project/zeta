@@ -1,5 +1,6 @@
 package de.htwg.zeta.common.format.project.gdsl.shape
 
+import de.htwg.zeta.common.format.project.gdsl.style.StyleFormat
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
@@ -11,9 +12,11 @@ import play.api.libs.json.Writes
 
 class EdgeFormat(
     placingFormat: PlacingFormat,
+    styleFormat: StyleFormat,
     sName: String,
     sConceptElement: String,
     sTarget: String,
+    sStyle: String,
     sPlacings: String
 ) extends OFormat[Edge] {
 
@@ -21,6 +24,7 @@ class EdgeFormat(
     sName -> clazz.name,
     sConceptElement -> clazz.conceptElement,
     sTarget -> clazz.target,
+    sStyle -> styleFormat.writes(clazz.style),
     sPlacings -> Writes.list(placingFormat).writes(clazz.placings)
   )
 
@@ -28,18 +32,21 @@ class EdgeFormat(
     name <- (json \ sName).validate[String]
     conceptElement <- (json \ sConceptElement).validate[String]
     target <- (json \ sTarget).validate[String]
+    style <- (json \ sStyle).validate(styleFormat)
     placings <- (json \ sPlacings).validate(Reads.list(placingFormat))
   } yield {
-    Edge(name, conceptElement, target, placings)
+    Edge(name, conceptElement, target, style, placings)
   }
 
 }
 object EdgeFormat {
   def apply(): EdgeFormat = new EdgeFormat(
     PlacingFormat(),
+    StyleFormat(),
     "name",
     "conceptElement",
     "target",
+    "style",
     "placings"
   )
 }

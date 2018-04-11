@@ -58,8 +58,8 @@ class ConnectionDefinitionGenerator {
 
     generatePlacingStyle(placing) {
         if ('style' in placing.geoElement) {
-            const commonAttributes = this.styleGenerator.createCommonAttributes(placing.geoElement.style);
-            const fontAttributes = this.styleGenerator.createFontAttributes(placing.geoElement.style);
+            const commonAttributes = this.styleGenerator.createCommonAttributes(placing.geoElement.style.name);
+            const fontAttributes = this.styleGenerator.createFontAttributes(placing.geoElement.style.name);
             return Object.assign(
                 commonAttributes,
                     {text: fontAttributes}
