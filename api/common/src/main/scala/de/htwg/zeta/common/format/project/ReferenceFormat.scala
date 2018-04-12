@@ -51,10 +51,10 @@ class ReferenceFormat(
     targetDeletionDeletesSource <- (json \ sTargetDeletionDeletesSource).validate[Boolean]
     sourceClassName <- (json \ sSourceClassName).validate[String]
     targetClassName <- (json \ sTargetClassName).validate[String]
-    sourceLowerBounds <- (json \ sSourceLowerBounds).validateOpt[Int]
-    sourceUpperBounds <- (json \ sSourceUpperBounds).validateOpt[Int]
-    targetLowerBounds <- (json \ sTargetLowerBounds).validateOpt[Int]
-    targetUpperBounds <- (json \ sTargetUpperBounds).validateOpt[Int]
+    sourceLowerBounds <- (json \ sSourceLowerBounds).validate[Int]
+    sourceUpperBounds <- (json \ sSourceUpperBounds).validate[Int]
+    targetLowerBounds <- (json \ sTargetLowerBounds).validate[Int]
+    targetUpperBounds <- (json \ sTargetUpperBounds).validate[Int]
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
   } yield {
@@ -65,10 +65,10 @@ class ReferenceFormat(
       targetDeletionDeletesSource = targetDeletionDeletesSource,
       sourceClassName = sourceClassName,
       targetClassName = targetClassName,
-      sourceLowerBounds = sourceLowerBounds.getOrElse(0),
-      sourceUpperBounds = sourceUpperBounds.getOrElse(-1),
-      targetLowerBounds = targetLowerBounds.getOrElse(0),
-      targetUpperBounds = targetUpperBounds.getOrElse(-1),
+      sourceLowerBounds = sourceLowerBounds,
+      sourceUpperBounds = sourceUpperBounds,
+      targetLowerBounds = targetLowerBounds,
+      targetUpperBounds = targetUpperBounds,
       attributes = attributes,
       methods = methods
     )
