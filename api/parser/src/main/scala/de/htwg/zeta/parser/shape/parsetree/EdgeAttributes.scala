@@ -9,6 +9,8 @@ object EdgeAttributes {
 
   case class Target(target: String) extends EdgeAttribute
 
+  case class EdgeStyle(name: String) extends EdgeAttribute
+
   case class Placing(
       style: Option[Style],
       offset: Offset,
