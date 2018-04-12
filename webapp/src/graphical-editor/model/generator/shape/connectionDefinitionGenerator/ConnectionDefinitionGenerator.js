@@ -18,19 +18,19 @@ class ConnectionDefinitionGenerator {
 
     createBasicConnectionStyle(connection) {
         let basicStyle = {'.connection': {stroke: 'black'}};
-        let connectionStyle = {};
+        let connectionStyle;
 
         if ('style' in connection) {
-            basicStyle = this.styleGenerator.getStyle(connection.style);
-            connectionStyle = this.generateConnectionStyle(connection.style);
+            basicStyle = this.styleGenerator.getStyle(connection.style.name);
+            connectionStyle = this.generateConnectionStyle(connection.style.name);
         }
         return Object.assign(basicStyle, connectionStyle);
     }
 
-    generateConnectionStyle(style) {
+    generateConnectionStyle(styleName) {
 
-        const commonAttributes = this.styleGenerator.createCommonAttributes(style);
-        const fontAttributes = this.styleGenerator.createFontAttributes(style);
+        const commonAttributes = this.styleGenerator.createCommonAttributes(styleName);
+        const fontAttributes = this.styleGenerator.createFontAttributes(styleName);
         return {'.connection, .marker-target, .marker-source': Object.assign(commonAttributes, fontAttributes)};
     }
 
