@@ -11,6 +11,7 @@ import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.EdgeStyle
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes
@@ -81,9 +82,10 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
+            Some(EdgeStyle("myEdgeStyle")),
             placings = List()
           ))
-        val styles = List(StyleFactory("myStyle"))
+        val styles = List(StyleFactory("myStyle"), StyleFactory("myEdgeStyle"))
         val concept = myConcept
         val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
         result.isSuccess shouldBe true
@@ -91,7 +93,9 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         val resultEdges = result.getOrElse(Shape(Nil, Nil)).edges
         resultNodes.size shouldBe 1
         resultEdges.size shouldBe 1
-        // TODO: check success tuple
+        val resultEdge = resultEdges.head
+        resultEdge.style shouldBe StyleFactory("myEdgeStyle")
+        // TODO check all success values
       }
 
       "nested repeating boxes" in {
@@ -202,6 +206,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
+            None,
             placings = List()
           ))
         val styles = Nil
@@ -228,6 +233,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
             identifier = "edge1",
             conceptConnection = "myAttribute",
             conceptTarget = Target("myAttribute"),
+            None,
             placings = List()
           ))
         val styles = List(StyleFactory("myStyle"))

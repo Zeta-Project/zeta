@@ -1,6 +1,7 @@
 package de.htwg.zeta.parser.shape
 
 import de.htwg.zeta.parser.shape.parser.EdgeParser
+import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.EdgeStyle
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Offset
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Placing
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
@@ -22,6 +23,7 @@ class EdgeParserTest extends FreeSpec with Matchers with Inside {
     s"""
        | edge $name for $conceptConnection {
        |   target: $target
+       |   style: Style
        |   placing {
        |     offset: 0.5
        |     line {
@@ -45,6 +47,7 @@ class EdgeParserTest extends FreeSpec with Matchers with Inside {
           "MyEdge",
           "MyConceptConnection",
           Target("MyTarget"),
+          Some(EdgeStyle("Style")),
           List(
             Placing(
               style = None,
