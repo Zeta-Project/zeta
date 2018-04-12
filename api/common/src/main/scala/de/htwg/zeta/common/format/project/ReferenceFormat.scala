@@ -12,16 +12,22 @@ import play.api.libs.json.Writes
 @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class ReferenceFormat(
     attributeFormat: AttributeFormat,
-    methodFormat: MethodFormat,
-    sName: String = "name",
-    sDescription: String = "description",
-    sSourceDeletionDeletesTarget: String = "sourceDeletionDeletesTarget",
-    sTargetDeletionDeletesSource: String = "targetDeletionDeletesSource",
-    sSourceClassName: String = "sourceClassName",
-    sTargetClassName: String = "targetClassName",
-    sAttributes: String = "attributes",
-    sMethods: String = "methods"
+    methodFormat: MethodFormat
 ) extends OFormat[MReference] {
+
+  val sName: String = "name"
+  val sDescription: String = "description"
+  val sSourceDeletionDeletesTarget: String = "sourceDeletionDeletesTarget"
+  val sTargetDeletionDeletesSource: String = "targetDeletionDeletesSource"
+  val sSourceClassName: String = "sourceClassName"
+  val sTargetClassName: String = "targetClassName"
+  val sSourceLowerBounds: String = "sourceLowerBounds"
+  val sSourceUpperBounds: String = "sourceUpperBounds"
+  val sTargetLowerBounds: String = "targetLowerBounds"
+  val sTargetUpperBounds: String = "targetUpperBounds"
+  val sAttributes: String = "attributes"
+  val sMethods: String = "methods"
+
 
   override def writes(reference: MReference): JsObject = Json.obj(
     sName -> reference.name,
@@ -30,6 +36,10 @@ class ReferenceFormat(
     sTargetDeletionDeletesSource -> reference.targetDeletionDeletesSource,
     sSourceClassName -> reference.sourceClassName,
     sTargetClassName -> reference.targetClassName,
+    sSourceLowerBounds -> reference.sourceLowerBounds,
+    sSourceUpperBounds -> reference.sourceUpperBounds,
+    sTargetLowerBounds -> reference.targetLowerBounds,
+    sTargetUpperBounds -> reference.targetUpperBounds,
     sAttributes -> Writes.seq(attributeFormat).writes(reference.attributes),
     sMethods -> Writes.seq(methodFormat).writes(reference.methods)
   )
@@ -41,6 +51,10 @@ class ReferenceFormat(
     targetDeletionDeletesSource <- (json \ sTargetDeletionDeletesSource).validate[Boolean]
     sourceClassName <- (json \ sSourceClassName).validate[String]
     targetClassName <- (json \ sTargetClassName).validate[String]
+    sourceLowerBounds <- (json \ sSourceLowerBounds).validateOpt[Int]
+    sourceUpperBounds <- (json \ sSourceUpperBounds).validateOpt[Int]
+    targetLowerBounds <- (json \ sTargetLowerBounds).validateOpt[Int]
+    targetUpperBounds <- (json \ sTargetUpperBounds).validateOpt[Int]
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
   } yield {
@@ -51,6 +65,10 @@ class ReferenceFormat(
       targetDeletionDeletesSource = targetDeletionDeletesSource,
       sourceClassName = sourceClassName,
       targetClassName = targetClassName,
+      sourceLowerBounds = sourceLowerBounds.getOrElse(0),
+      sourceUpperBounds = sourceUpperBounds.getOrElse(-1),
+      targetLowerBounds = targetLowerBounds.getOrElse(0),
+      targetUpperBounds = targetUpperBounds.getOrElse(-1),
       attributes = attributes,
       methods = methods
     )

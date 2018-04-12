@@ -54,6 +54,10 @@ object ConceptCreatorHelper {
     targetDeletionDeletesSource = true,
     sourceClassName = source,
     targetClassName = target,
+    sourceLowerBounds = 0,
+    sourceUpperBounds = -1,
+    targetLowerBounds = 0,
+    targetUpperBounds = -1,
     attributes = List(),
     methods = List()
   )
