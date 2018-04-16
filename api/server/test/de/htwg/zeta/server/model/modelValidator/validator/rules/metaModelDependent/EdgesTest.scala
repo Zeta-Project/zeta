@@ -2,9 +2,9 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,6 +18,10 @@ class EdgesTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     "",
     "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -28,6 +32,10 @@ class EdgesTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     "",
     "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -38,6 +46,10 @@ class EdgesTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     "",
     "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -62,17 +74,41 @@ class EdgesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "",
-      Seq[MAttribute](), Seq.empty)
-    val reference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "",
-      Seq[MAttribute](), Seq.empty)
+    val reference1 = MReference(
+      "reference1",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq[MAttribute](),
+      Seq.empty
+    )
+    val reference2 = MReference(
+      "reference2",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq[MAttribute](),
+      Seq.empty
+    )
     val metaModel = Concept.empty.copy(references = Seq(reference1, reference2))
     val result = Edges.generateFor(metaModel)
 
-    result.size should be (1)
+    result.size should be(1)
     result.head match {
       case rule: Edges =>
-        rule.edgeTypes should be (Seq("reference1", "reference2"))
+        rule.edgeTypes should be(Seq("reference1", "reference2"))
       case _ => fail
     }
   }

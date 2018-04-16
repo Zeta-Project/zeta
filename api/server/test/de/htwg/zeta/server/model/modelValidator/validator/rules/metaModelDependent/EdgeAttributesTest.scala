@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
@@ -10,7 +11,6 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntVal
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -24,6 +24,10 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     "",
     "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -72,12 +76,44 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val attribute = MAttribute("attributeName", globalUnique = false, localUnique = false, StringType, StringValue(""), constant = false, singleAssignment = false,
-      "", ordered = false, transient = false)
-    val attribute2 = MAttribute("attributeName2", globalUnique = false, localUnique = false, StringType, IntValue(0), constant = false, singleAssignment = false,
-      "", ordered = false, transient = false)
-    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq[MAttribute]
-      (attribute, attribute2), Seq.empty)
+    val attribute = MAttribute(
+      "attributeName",
+      globalUnique = false,
+      localUnique = false,
+      StringType,
+      StringValue(""),
+      constant = false,
+      singleAssignment = false,
+      "",
+      ordered = false,
+      transient = false
+    )
+    val attribute2 = MAttribute(
+      "attributeName2",
+      globalUnique = false,
+      localUnique = false,
+      StringType,
+      IntValue(0),
+      constant = false,
+      singleAssignment = false,
+      "",
+      ordered = false,
+      transient = false
+    )
+    val reference = MReference(
+      "reference",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq[MAttribute](attribute, attribute2),
+      Seq.empty
+    )
     val metaModel = Concept.empty.copy(references = Seq(reference))
     val result = EdgeAttributes.generateFor(metaModel)
 

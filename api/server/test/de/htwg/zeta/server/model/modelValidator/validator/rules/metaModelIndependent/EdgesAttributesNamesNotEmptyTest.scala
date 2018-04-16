@@ -12,20 +12,34 @@ import org.scalatest.Matchers
 class EdgesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
 
   val rule = new EdgesAttributesNamesNotEmpty
-  val mReference = MReference("edgeType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq.empty,
-    Seq.empty)
-  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
+  private val emptyString = ""
+
+  val mReference = MReference(
+    "edgeType",
+    emptyString,
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    emptyString,
+    emptyString,
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
+    Seq.empty,
+    Seq.empty
+  )
+  val emptyEdge: EdgeInstance = EdgeInstance.empty(emptyString, mReference.name, emptyString, emptyString)
 
   "isValid" should "return true on non-empty attribute names" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeName1" -> StringValue(""))
+    val attribute: Map[String, AttributeValue] = Map("attributeName1" -> StringValue(emptyString))
     val edge = emptyEdge.copy(attributeValues = attribute)
-    rule.isValid(edge).get should be (true)
+    rule.isValid(edge).get should be(true)
   }
 
   it should "return false on empty attribute names" in {
-    val attribute: Map[String, AttributeValue] = Map("" -> StringValue(""))
+    val attribute: Map[String, AttributeValue] = Map(emptyString -> StringValue(emptyString))
     val edge = emptyEdge.copy(attributeValues = attribute)
-    rule.isValid(edge).get should be (false)
+    rule.isValid(edge).get should be(false)
   }
 
 }
