@@ -36,6 +36,10 @@ class UtilTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     sourceClassName = "",
     targetClassName = "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     attributes = Seq.empty,
     methods = Seq.empty
   )
@@ -59,6 +63,10 @@ class UtilTest extends FlatSpec with Matchers {
       targetDeletionDeletesSource = false,
       sourceClassName = "",
       targetClassName = "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       attributes = Seq.empty,
       methods = Seq.empty
     ),
@@ -69,6 +77,10 @@ class UtilTest extends FlatSpec with Matchers {
       targetDeletionDeletesSource = false,
       sourceClassName = "",
       targetClassName = "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       attributes = Seq.empty,
       methods = Seq.empty
     ),
@@ -89,6 +101,10 @@ class UtilTest extends FlatSpec with Matchers {
       targetDeletionDeletesSource = false,
       sourceClassName = "",
       targetClassName = "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       attributes = Seq.empty,
       methods = Seq.empty
     ),
@@ -126,6 +142,10 @@ class UtilTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     sourceClassName = "",
     targetClassName = "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     attributes = Seq.empty,
     methods = Seq.empty
   )
