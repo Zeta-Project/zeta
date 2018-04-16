@@ -197,11 +197,7 @@ export default (function linkTypeSelector() {
         if (element.hasClass('contextItem') || element.hasClass('menuItem') || element.hasClass('menuTable')) {
             return;
         }
-        if (_focusedElement) {
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
-        }
-        _focusedElement = null;
+        removeFocus();
         destroyMenu();
     };
 

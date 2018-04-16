@@ -267,16 +267,16 @@ export default (function() {
   /*
     Returns all source classes of the reference.
    */
-  Graph.prototype.getSources = function(reference) {
-    const source = [this.graph.getCell(reference.attributes.source.id)][0];
+  Graph.prototype.getSourceName = function(reference) {
+    const source = this.graph.getCell(reference.attributes.source.id);
     return source.attributes.name;
   };
 
   /*
     Returns all target classes of the reference.
    */
-  Graph.prototype.getTargets = function(reference) {
-    const target = [this.graph.getCell(reference.attributes.target.id)][0];
+  Graph.prototype.getTargetName = function(reference) {
+    const target = this.graph.getCell(reference.attributes.target.id);
     return target.attributes.name;
   };
 
