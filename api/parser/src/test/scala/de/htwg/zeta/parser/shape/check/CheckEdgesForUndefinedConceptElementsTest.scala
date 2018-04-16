@@ -130,6 +130,10 @@ class CheckEdgesForUndefinedConceptElementsTest extends FreeSpec with Matchers w
     targetDeletionDeletesSource = false,
     sourceClassName = from,
     targetClassName = to,
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     attributes = Nil,
     methods = Nil
   )
