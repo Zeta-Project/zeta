@@ -21,6 +21,10 @@ case class MReference(
     targetDeletionDeletesSource: Boolean,
     sourceClassName: String,
     targetClassName: String,
+    sourceLowerBounds: Int,
+    sourceUpperBounds: Int,
+    targetLowerBounds: Int,
+    targetUpperBounds: Int,
     attributes: Seq[MAttribute],
     methods: Seq[Method]
 ) extends AttributeMap with MethodMap
@@ -35,6 +39,10 @@ object MReference {
       targetDeletionDeletesSource = false,
       sourceClassName = source,
       targetClassName = target,
+      sourceLowerBounds = 0,
+      sourceUpperBounds = -1,
+      targetLowerBounds = 0,
+      targetUpperBounds = -1,
       attributes = Seq.empty,
       methods = Seq.empty
     )

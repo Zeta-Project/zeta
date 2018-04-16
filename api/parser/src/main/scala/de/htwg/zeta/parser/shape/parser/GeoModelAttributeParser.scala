@@ -31,8 +31,16 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
   }
 
   def identifier: Parser[Identifier] = {
-    "identifier" ~> colon ~> ident ^^ {
-      Identifier
+    val identifierOnly = ident ^^ { identifier =>
+      Identifier(identifier)
+    }
+    val contextWithIdentifier = ident ~ "." ~ ident ^^ { res =>
+      val context ~ _ ~ identifier = res
+      Identifier(s"$context.$identifier")
+    }
+    "identifier" ~ colon ~ (contextWithIdentifier | identifierOnly) ^^ { res =>
+      val _ ~ _ ~ identifier = res
+      identifier
     }
   }
 
