@@ -263,7 +263,7 @@ export default (function linkTypeSelector() {
         let maxOutputs = null;
         let minInputs = null;
         let minOutputs = null;
-        try {
+
 
             //DEBUG
             // let maxInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
@@ -271,17 +271,12 @@ export default (function linkTypeSelector() {
             // let minInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
             // let minOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
 
-            maxInputs = GeneratorFactory.validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
-            maxOutputs = GeneratorFactory.validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
-            minInputs = GeneratorFactory.validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
-            minOutputs = GeneratorFactory.validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
-
-        } catch (e) {
-            maxInputs = Number.MAX_SAFE_INTEGER;
-            maxOutputs = Number.MAX_SAFE_INTEGER;
-            minInputs = 0;
-            minOutputs = 0;
-        }
+            let result = GeneratorFactory.validator.inputMatrix;
+            console.log(result);
+            maxInputs = result[link.attributes.subtype].targetUpperBounds;
+            maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
+            minInputs = result[link.attributes.subtype].targetLowerBounds;
+            minOutputs = result[link.attributes.subtype].sourceLowerBounds;
 
         let targetMaxReached = false;
         let sourceMaxReached = false;
@@ -343,28 +338,26 @@ export default (function linkTypeSelector() {
         if (cell.isLink()) return;
         let inputs = [];
         let outputs = [];
-        let inputMatrix = GeneratorFactory.validator.inputMatrix[cell.attributes.mClass];
-        let outputMatrix = GeneratorFactory.validator.outputMatrix[cell.attributes.mClass];
+        let inoutMatrix = GeneratorFactory.validator.inputMatrix;
 
         //DEBUG
         // let inputMatrix_OLD = validator.inputMatrix[cell.attributes.mClass];
         // let outputMatrix_OLD = validator.outputMatrix[cell.attributes.mClass];
 
-
-        for (let inEdge in inputMatrix) {
-            if (Object.prototype.hasOwnProperty.call(inputMatrix, inEdge)) {
-                if (inputMatrix[inEdge].lowerBound > 0) {
-                    inputs.push({'mReferenceName': inEdge, 'lowerBound': inputMatrix[inEdge].lowerBound});
+        for (let inEdge in inoutMatrix) {
+            if (Object.prototype.hasOwnProperty.call(inoutMatrix, inEdge)) {
+                if (inoutMatrix[inEdge].sourceLowerBounds > 0) {
+                    inputs.push({'mReferenceName': inEdge, 'lowerBound': inoutMatrix[inEdge].sourceLowerBounds});
                 }
             }
         }
 
-        for (let outEdge in outputMatrix) {
-            if (Object.prototype.hasOwnProperty.call(outputMatrix, outEdge)) {
-                if (outputMatrix[outEdge].lowerBound > 0) {
-                    outputs.push({'mReferenceName': outEdge, 'lowerBound': outputMatrix[outEdge].lowerBound});
+        for (let outEdge in inoutMatrix) {
+            if (Object.prototype.hasOwnProperty.call(inoutMatrix, outEdge)) {
+                if (inoutMatrix[outEdge].targetLowerBounds > 0) {
+                    outputs.push
+                }({'mReferenceName': outEdge, 'lowerBound': inoutMatrix[outEdge].targetLowerBounds});
                 }
-            }
         }
 
         if (inputs.length != 0 || outputs.length != 0) {
@@ -393,25 +386,19 @@ export default (function linkTypeSelector() {
         let minOutputs = null;
         let maxInputs = null;
         let maxOutputs = null;
-        try {
+
 
             //DEBUG
             // let minInputs_OLD = validator.inputMatrix[targetMClass][edgeType].lowerBound;
             // let minOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].lowerBound;
-            // let maxInputs_OLD = validator.inputMatrix[targetMClass][edgeType].upperBound;
+            // let maxInputs_OLD = validator.inOutMatrix[targetMClass][edgeType].upperBound;
             // let maxOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].upperBound;
 
-            minInputs = GeneratorFactory.validator.inputMatrix[targetMClass][edgeType].lowerBound;
-            minOutputs = GeneratorFactory.validator.outputMatrix[sourceMClass][edgeType].lowerBound;
-            maxInputs = GeneratorFactory.validator.inputMatrix[targetMClass][edgeType].upperBound;
-            maxOutputs = GeneratorFactory.validator.outputMatrix[sourceMClass][edgeType].upperBound;
-
-        } catch (e) {
-            minInputs = 0;
-            minOutputs = 0;
-            maxInputs = Number.MAX_SAFE_INTEGER;
-            maxOutputs = Number.MAX_SAFE_INTEGER;
-        }
+            let result = GeneratorFactory.validator.inputMatrix;
+            maxInputs = result[link.attributes.subtype].targetUpperBounds;
+            maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
+            minInputs = result[link.attributes.subtype].targetLowerBounds;
+            minOutputs = result[link.attributes.subtype].sourceLowerBounds;
 
 
         let ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});

@@ -1,13 +1,13 @@
 class MatrixGenerator {
     create(references) {
         return references.reduce((result, reference) => {
-            result[reference.type] = this.createBounds(reference);
+            result[reference.name] = this.createBounds(reference);
             return result;
         }, {});
     }
 
-    createBounds({lowerBound, upperBound}) {
-        return {lowerBound, upperBound};
+    createBounds({sourceLowerBounds, sourceUpperBounds, targetLowerBounds, targetUpperBounds}) {
+        return {sourceLowerBounds, sourceUpperBounds, targetLowerBounds, targetUpperBounds};
     }
 }
 
@@ -35,6 +35,7 @@ class EdgeGenerator {
     }
 
     getSuperTypes(node) {
+        // const nodeClass = this.classes.find(c => c.name === node.conceptElement);
         const nodeClass = this.classes.find(c => c.name === node.mClass);
         return nodeClass && nodeClass.superTypeNames ? nodeClass.superTypeNames : [];
     }
@@ -53,15 +54,12 @@ export default class {
     }
 
     get inputMatrix() {
-        return this.classes.reduce((result, clas) => {
-            result[clas.name] = clas.inputs ? this.matrix.create(clas.inputs) : {};
-            return result;
-        }, {});
+        return this.references ? this.matrix.create(this.references) : {};
     }
 
     get outputMatrix() {
         return this.classes.reduce((result, clas) => {
-            result[clas.name] = clas.outputs ? this.matrix.create(clas.outputs) : {};
+            result[clas.name] = clas.outputReferenceNames ? this.matrix.create(this.references) : {};
             return result;
         }, {});
     }
