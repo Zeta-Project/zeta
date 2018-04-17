@@ -2,12 +2,12 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -21,6 +21,10 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     "",
     "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -119,6 +123,10 @@ class EdgeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
       targetDeletionDeletesSource = false,
       "",
       "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       Seq[MAttribute](globalUniqueAttribute, nonGlobalUniqueAttribute),
       Seq.empty
     )
