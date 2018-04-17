@@ -16,16 +16,30 @@ import org.scalatest.Matchers
 class ElementsIdUniqueTest extends FlatSpec with Matchers {
 
   val rule = new ElementsIdsUnique
-  val mReference = MReference("edgeType", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq.empty,
-    Seq.empty)
-  val mClass = MClass("nodeType", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
+  private val emptyString = ""
+
+  val mReference = MReference(
+    "edgeType",
+    emptyString,
+    sourceDeletionDeletesTarget = false,
+    targetDeletionDeletesSource = false,
+    emptyString,
+    emptyString,
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
+    Seq.empty,
+    Seq.empty
+  )
+  val mClass = MClass("nodeType", emptyString, abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
 
   "check" should "return true on elements with unique ids" in {
-    val elements = GraphicalDslInstance.empty("", UUID.randomUUID())
+    val elements = GraphicalDslInstance.empty(emptyString, UUID.randomUUID())
       .copy(
         edges = Seq(
-          EdgeInstance.empty("id1", mReference.name, "", ""),
-          EdgeInstance.empty("id3", mReference.name, "", "")
+          EdgeInstance.empty("id1", mReference.name, emptyString, emptyString),
+          EdgeInstance.empty("id3", mReference.name, emptyString, emptyString)
         ),
         nodes = Seq(
           NodeInstance.empty("id2", mClass.name, Seq(), Seq()),
@@ -41,11 +55,11 @@ class ElementsIdUniqueTest extends FlatSpec with Matchers {
   it should "return false on elements with duplicate ids" ignore {
     val id1 = "name1"
     val id2 = "name2"
-    val elements = GraphicalDslInstance.empty("", UUID.randomUUID())
+    val elements = GraphicalDslInstance.empty(emptyString, UUID.randomUUID())
       .copy(
         edges = Seq(
-          EdgeInstance.empty(id1, mReference.name, "", ""),
-          EdgeInstance.empty(id1, mReference.name, "", "")
+          EdgeInstance.empty(id1, mReference.name, emptyString, emptyString),
+          EdgeInstance.empty(id1, mReference.name, emptyString, emptyString)
         ),
         nodes = Seq(
           NodeInstance.empty(id2, mClass.name, Seq(), Seq()),

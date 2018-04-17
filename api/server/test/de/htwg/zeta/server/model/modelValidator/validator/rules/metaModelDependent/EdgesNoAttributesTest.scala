@@ -2,11 +2,11 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -19,6 +19,10 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
     targetDeletionDeletesSource = false,
     "",
     "",
+    sourceLowerBounds = 0,
+    sourceUpperBounds = 0,
+    targetLowerBounds = 0,
+    targetUpperBounds = 0,
     Seq[MAttribute](),
     Seq.empty
   )
@@ -50,6 +54,10 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
       targetDeletionDeletesSource = false,
       "",
       "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       Seq[MAttribute](),
       Seq.empty
     )
@@ -63,8 +71,20 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val reference = MReference("reference", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "",
-      Seq[MAttribute](), Seq.empty)
+    val reference = MReference(
+      "reference",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq[MAttribute](),
+      Seq.empty
+    )
     val metaModel = Concept.empty.copy(references = Seq(reference))
     val result = EdgesNoAttributes.generateFor(metaModel)
 

@@ -25,60 +25,62 @@ import org.scalatest.Matchers
 
 class DslTest extends FlatSpec with Matchers {
 
-  "Attributes" should "return the correct instances" in {
+  private val emptyString = ""
 
-    Attributes inEdges "" areOfTypes Seq() shouldBe a[EdgeAttributes]
-    Attributes inNodes "" areOfTypes Seq() shouldBe a[NodeAttributes]
+  "Attributes" should "return the correct attribute instances" in {
 
-    Attributes ofType "" inEdges "" areGlobalUnique() shouldBe a[EdgesAttributesGlobalUnique]
-    Attributes ofType "" inEdges "" areOfScalarType "String" shouldBe a[EdgeAttributeScalarTypes]
-    Attributes ofType "" inEdges "" areOfEnumType "" shouldBe a[EdgeAttributeEnumTypes]
+    Attributes inEdges emptyString areOfTypes Seq() shouldBe a[EdgeAttributes]
+    Attributes inNodes emptyString areOfTypes Seq() shouldBe a[NodeAttributes]
 
-    Attributes ofType "" inNodes "" areOfScalarType "Bool" shouldBe a[NodeAttributeScalarTypes]
-    Attributes ofType "" inNodes "" areOfEnumType "" shouldBe a[NodeAttributeEnumTypes]
+    Attributes ofType emptyString inEdges emptyString areGlobalUnique() shouldBe a[EdgesAttributesGlobalUnique]
+    Attributes ofType emptyString inEdges emptyString areOfScalarType "String" shouldBe a[EdgeAttributeScalarTypes]
+    Attributes ofType emptyString inEdges emptyString areOfEnumType emptyString shouldBe a[EdgeAttributeEnumTypes]
 
-    Attributes ofType "" inNodes Seq() areGlobalUnique() shouldBe a[NodeAttributesGlobalUnique]
+    Attributes ofType emptyString inNodes emptyString areOfScalarType "Bool" shouldBe a[NodeAttributeScalarTypes]
+    Attributes ofType emptyString inNodes emptyString areOfEnumType emptyString shouldBe a[NodeAttributeEnumTypes]
+
+    Attributes ofType emptyString inNodes Seq() areGlobalUnique() shouldBe a[NodeAttributesGlobalUnique]
   }
 
-  "Edges" should "return the correct instances" in {
+  "Edges" should "return the correct edge instances" in {
 
     Edges areOfTypes Seq() shouldBe a[Edges]
 
-    Edges ofType "" haveNoAttributes() shouldBe a[EdgesNoAttributes]
-    Edges ofType "" haveNoSources() shouldBe a[EdgesNoSources]
-    Edges ofType "" haveNoTargets() shouldBe a[EdgesNoTargets]
+    Edges ofType emptyString haveNoAttributes() shouldBe a[EdgesNoAttributes]
+    Edges ofType emptyString haveNoSources() shouldBe a[EdgesNoSources]
+    Edges ofType emptyString haveNoTargets() shouldBe a[EdgesNoTargets]
   }
 
-  "Nodes" should "return the correct instances" in {
+  "Nodes" should "return the correct node instances" in {
 
     Nodes areOfTypes Seq() shouldBe a[Nodes]
 
-    Nodes ofType "" haveNoAttributes() shouldBe a[NodesNoAttributes]
-    Nodes ofType "" haveNoInputs() shouldBe a[NodesNoInputs]
-    Nodes ofType "" haveNoOutputs() shouldBe a[NodesNoOutputs]
+    Nodes ofType emptyString haveNoAttributes() shouldBe a[NodesNoAttributes]
+    Nodes ofType emptyString haveNoInputs() shouldBe a[NodesNoInputs]
+    Nodes ofType emptyString haveNoOutputs() shouldBe a[NodesNoOutputs]
   }
 
-  "Sources" should "return the correct instances" in {
+  "Sources" should "return the correct source instances" in {
 
-    Sources ofEdges "" areOfTypes Seq() shouldBe a[EdgeSourceNodes]
-
-  }
-
-  "Targets" should "return the correct instances" in {
-
-    Targets ofEdges "" areOfTypes Seq() shouldBe a[EdgeTargetNodes]
+    Sources ofEdges emptyString areOfTypes Seq() shouldBe a[EdgeSourceNodes]
 
   }
 
-  "Inputs" should "return the correct instances" in {
+  "Targets" should "return the correct target instances" in {
 
-    Inputs ofNodes "" areOfTypes Seq() shouldBe a[NodeInputEdges]
+    Targets ofEdges emptyString areOfTypes Seq() shouldBe a[EdgeTargetNodes]
 
   }
 
-  "Outputs" should "return the correct instances" in {
+  "Inputs" should "return the correct input instances" in {
 
-    Outputs ofNodes "" areOfTypes Seq() shouldBe a[NodeOutputEdges]
+    Inputs ofNodes emptyString areOfTypes Seq() shouldBe a[NodeInputEdges]
+
+  }
+
+  "Outputs" should "return the correct output instances" in {
+
+    Outputs ofNodes emptyString areOfTypes Seq() shouldBe a[NodeOutputEdges]
 
   }
 

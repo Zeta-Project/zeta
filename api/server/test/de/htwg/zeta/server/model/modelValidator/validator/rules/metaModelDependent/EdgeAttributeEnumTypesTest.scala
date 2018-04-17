@@ -2,6 +2,7 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
@@ -9,15 +10,15 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumVa
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
-  val mReference: MReference = MReference.empty("reference", "", "")
-  val emptyEdge: EdgeInstance = EdgeInstance.empty("", mReference.name, "", "")
+  private val emptyString = ""
+  val mReference: MReference = MReference.empty("reference", emptyString, emptyString)
+  val emptyEdge: EdgeInstance = EdgeInstance.empty(emptyString, mReference.name, emptyString, emptyString)
   val rule = new EdgeAttributeEnumTypes("reference", "attributeType", "enumName")
 
 
@@ -32,15 +33,19 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "return None for non-matching edge" in {
     val differentMReference = MReference(
       "differentMReference",
-      "",
+      emptyString,
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      "",
-      "",
+      emptyString,
+      emptyString,
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = EdgeInstance.empty("", differentMReference.name, "", "")
+    val edge = EdgeInstance.empty(emptyString, differentMReference.name, emptyString, emptyString)
 
     rule.isValid(edge) should be(None)
   }
@@ -48,7 +53,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
     val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("differentEnumName", differentEnum.name))
-    val edge = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attribute)
+    val edge = EdgeInstance.empty(emptyString, mReference.name, emptyString, emptyString).copy(attributeValues = attribute)
 
     rule.isValid(edge).get should be(false)
   }
@@ -56,15 +61,19 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
   it should "be None for non-matching edges" in {
     val differentReference = MReference(
       "differentRef",
-      "",
+      emptyString,
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      "",
-      "",
+      emptyString,
+      emptyString,
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       Seq[MAttribute](),
       Seq.empty
     )
-    val edge = EdgeInstance.empty("", differentReference.name, "", "")
+    val edge = EdgeInstance.empty(emptyString, differentReference.name, emptyString, emptyString)
     rule.isValid(edge) should be(None)
   }
 
@@ -83,7 +92,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       enum.values.head,
       constant = false,
       singleAssignment = false,
-      "",
+      emptyString,
       ordered = false,
       transient = false
     )
@@ -92,20 +101,24 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
       globalUnique = false,
       localUnique = false,
       StringType,
-      StringValue(""),
+      StringValue(emptyString),
       constant = false,
       singleAssignment = false,
-      "",
+      emptyString,
       ordered = false,
       transient = false
     )
     val reference = MReference(
       "reference",
-      "",
+      emptyString,
       sourceDeletionDeletesTarget = false,
       targetDeletionDeletesSource = false,
-      "",
-      "",
+      emptyString,
+      emptyString,
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
       Seq[MAttribute](enumAttribute, scalarAttribute),
       Seq.empty
     )

@@ -16,19 +16,23 @@ object ConceptCreatorHelper {
   private val baseClassRealization: MReference = cReference("BaseClassRealization", "Klasse", "InterfaceKlasse")
   private val realizationReference: MReference = cReference("Realization", "InterfaceKlasse", "AbstractKlasse")
   private val inheritanceReference: MReference = cReference("Inheritance", "Klasse", "AbstractKlasse")
+  private val componentReference: MReference = cReference("Component", "Klasse", "Klasse")
+  private val aggregationReference: MReference = cReference("Aggregation", "Klasse", "Klasse")
   val exampleConcept = new Concept(
     classes = List(
       cClass("AbstractKlasse", List(cAttribute("text11"), cAttribute("text21"), cAttribute("text31"))),
       cClass("InterfaceKlasse", List(cAttribute("text113"), cAttribute("text213"), cAttribute("text313"))),
       cClass("Klasse", List(cAttribute("text1"), cAttribute("text2"), cAttribute("text3")),
         List(cMethod("methodUnit", AttributeType.UnitType), cMethod("methodString", AttributeType.StringType)),
-        List(baseClassRealization.name, inheritanceReference.name)
+        List(baseClassRealization.name, inheritanceReference.name, componentReference.name, aggregationReference.name)
       )
     ),
     references = List(
       baseClassRealization,
       realizationReference,
-      inheritanceReference
+      inheritanceReference,
+      componentReference,
+      aggregationReference
     ),
     enums = List(),
     attributes = List(
