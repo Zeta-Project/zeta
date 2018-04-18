@@ -7,6 +7,7 @@ class Generator{
             'rectangle': (element, style) => this.createRectangle(element, style),
             'ellipse': (element, style) => this.createEllipse(element, style),
             'textfield': (element, style) => this.createTextField(element, style),
+            'statictext': (element, style) => this.createStaticText(element, style),
             'polygon': (element, style) => this.createPolygon(element, style),
             'polyLine': (element, style) => this.createPolyLine(element, style),
         };
@@ -76,6 +77,13 @@ class Generator{
     }
 
     createTextField(element, style) {
+        return {
+            [`text.${element.id}`]:  style,
+            [`.${element.id}`]:  style
+        };
+    }
+
+    createStaticText(element, style) {
         return {
             [`text.${element.id}`]:  style,
             [`.${element.id}`]:  style
