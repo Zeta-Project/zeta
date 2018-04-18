@@ -253,9 +253,25 @@ class RectangleGenerator extends ElementGenerator {
 class TextGenerator extends ElementGenerator {
     create(element, maxHeight, maxWidth) {
         this.counter++;
+        let textObject;
+        if (element?.editable === true) {
+            textObject = this.createFilledTextForInspector(element, maxHeight, maxWidth);
+        } else {
+            textObject = this.createEmptyTextForInspector(element);
+        }
+        return textObject;
+    }
+
+    createFilledTextForInspector(element, maxHeight, maxWidth) {
         return {
             [this.selector('text', element)]: inp(this.createSpecificAttributes(element, maxHeight, maxWidth)),
             [`.${element.id}`]: inp(this.createGeneralAttributes()),
+        };
+    }
+
+    createEmptyTextForInspector(element) {
+        return {
+            [`.${element.id}`]: {}
         };
     }
 
@@ -275,14 +291,14 @@ class TextGenerator extends ElementGenerator {
                     group: `Text ${this.counter}`,
                 },
             }
-        }else{
-         defaultTextAttributes = {
-             text: {
-                 index: 1,
-                 type: 'text',
-                 group: `Text ${this.counter}`,
-             },
-         }
+        } else {
+            defaultTextAttributes = {
+                text: {
+                    index: 1,
+                    type: 'text',
+                    group: `Text ${this.counter}`,
+                },
+            }
         }
 
         return defaultTextAttributes;
