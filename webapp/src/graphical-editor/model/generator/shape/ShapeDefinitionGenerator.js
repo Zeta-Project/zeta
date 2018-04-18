@@ -319,6 +319,7 @@ class ShapeGenerator {
 
     createMandatoryDefaults(model, geoElements) {
         return {
+            className: model.conceptElement,
             type: `zeta.${model?.name}`,
             'init-size': {
                 height: this.calculator.calculateHeight(geoElements),
