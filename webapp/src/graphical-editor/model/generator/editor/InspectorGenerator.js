@@ -64,6 +64,7 @@ class ShapeGenerator {
             'ellipse': new EllipseGenerator(),
             'rectangle': new RectangleGenerator(),
             'textfield': new TextGenerator(),
+            'statictext': new StaticTextGenerator(),
             'line': new LineGenerator(),
             'polygon': new PolygonGenerator(),
             'polyline': new PolyLineGenerator(),
@@ -246,6 +247,14 @@ class RectangleGenerator extends ElementGenerator {
             y: this.createY(2, group, 'y Position Rectangle', element, maxHeight),
             height: this.createHeight(3, group, 'Height Rectangle', maxHeight),
             width: this.createWidth(3, group, 'Width Rectangle', maxWidth),
+        };
+    }
+}
+
+class StaticTextGenerator extends ElementGenerator{
+    create(element) {
+        return {
+            [`.${element.id}`]: {}
         };
     }
 }
