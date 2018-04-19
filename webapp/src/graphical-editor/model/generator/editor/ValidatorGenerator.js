@@ -53,8 +53,31 @@ export default class {
         this.validEdges = new EdgeGenerator(this.references, this.classes);
     }
 
-    get inputMatrix() {
+    getAllRefBounds() {
         return this.references ? this.matrix.create(this.references) : {};
+    }
+
+    inputMatrix(type) {
+        let node = this.nodes.find(e => e.name === type);
+        return this.getEdge(node);
+    }
+
+    getEdge(node) {
+        return node.edges.reduce((result,edge) => {
+            result[edge.name.toLowerCase()] = this.getEdgeBoundss(edge.conceptElement.split(".")[1]);
+            return result;
+        }, {});
+    }
+
+    getEdgeBoundss(edgeName) {
+        var edge = this.references.find(e => e.name === edgeName);
+        let mbo = this.createBounds(edge);
+       // var obj = { [edge.name.toLowerCase()]: [mbo] };
+        return mbo;
+    }
+
+    createBounds({sourceLowerBounds, sourceUpperBounds, targetLowerBounds, targetUpperBounds}) {
+        return {sourceLowerBounds, sourceUpperBounds, targetLowerBounds, targetUpperBounds};
     }
 
     get outputMatrix() {

@@ -271,7 +271,7 @@ export default (function linkTypeSelector() {
             // let minInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
             // let minOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
 
-            let result = GeneratorFactory.validator.inputMatrix;
+            let result = GeneratorFactory.validator.getAllRefBounds();
             console.log(result);
             maxInputs = result[link.attributes.subtype].targetUpperBounds;
             maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
@@ -338,7 +338,7 @@ export default (function linkTypeSelector() {
         if (cell.isLink()) return;
         let inputs = [];
         let outputs = [];
-        let inoutMatrix = GeneratorFactory.validator.inputMatrix;
+        let inoutMatrix = GeneratorFactory.validator.inputMatrix(cell.attributes.nodeName);
 
         //DEBUG
         // let inputMatrix_OLD = validator.inputMatrix[cell.attributes.mClass];
@@ -352,12 +352,14 @@ export default (function linkTypeSelector() {
             }
         }
 
+
+
         for (let outEdge in inoutMatrix) {
             if (Object.prototype.hasOwnProperty.call(inoutMatrix, outEdge)) {
                 if (inoutMatrix[outEdge].targetLowerBounds > 0) {
-                    outputs.push
-                }({'mReferenceName': outEdge, 'lowerBound': inoutMatrix[outEdge].targetLowerBounds});
+                    outputs.push({'mReferenceName': outEdge, 'lowerBound': inoutMatrix[outEdge].targetLowerBounds});
                 }
+            }
         }
 
         if (inputs.length != 0 || outputs.length != 0) {
@@ -378,6 +380,7 @@ export default (function linkTypeSelector() {
         //DEBUG
         // let edgeType_OLD = validator.getEdgeData(link.attributes.subtype).type;
 
+        let result = GeneratorFactory.validator.getAllRefBounds();
         let edgeType = GeneratorFactory.validator.getEdgeData(link.attributes.subtype).type;
 
         let sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
@@ -394,7 +397,7 @@ export default (function linkTypeSelector() {
             // let maxInputs_OLD = validator.inOutMatrix[targetMClass][edgeType].upperBound;
             // let maxOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].upperBound;
 
-            let result = GeneratorFactory.validator.inputMatrix;
+
             maxInputs = result[link.attributes.subtype].targetUpperBounds;
             maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
             minInputs = result[link.attributes.subtype].targetLowerBounds;
