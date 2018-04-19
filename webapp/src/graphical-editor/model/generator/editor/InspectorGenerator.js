@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { CommonInspectorInputs, CommonInspectorGroups, inp } from '../../inspector';
+import {CommonInspectorGroups, CommonInspectorInputs, inp} from '../../inspector';
 
 function createMLink() {
     return {
@@ -50,7 +50,7 @@ function createMLink() {
         },
         groups: {
             labels: {
-            label: 'Labels',
+                label: 'Labels',
                 index: 1
             }
         },
@@ -64,6 +64,7 @@ class ShapeGenerator {
             'ellipse': new EllipseGenerator(),
             'rectangle': new RectangleGenerator(),
             'textfield': new TextGenerator(),
+            'statictext': new StaticTextGenerator(),
             'line': new LineGenerator(),
             'polygon': new PolygonGenerator(),
             'polyline': new PolyLineGenerator(),
@@ -123,14 +124,17 @@ class ElementGenerator {
     }
 
     createFill(index, group, label) {
-        return { index, group, label };
+        return {index, group, label};
     }
+
     createFillOpacity(index, group, label) {
-        return { index, group, label };
+        return {index, group, label};
     }
+
     createStroke(index, group, label) {
-        return { index, group, label };
+        return {index, group, label};
     }
+
     createStrokeWidth(index, group, label) {
         return {
             group,
@@ -141,26 +145,33 @@ class ElementGenerator {
             defaultValue: 1,
         };
     }
+
     createStrokeDasharray(index, group, label) {
-        return { index, group, label };
+        return {index, group, label};
     }
+
     createRx(index, group, label, max) {
-        return { index, group, label, max };
+        return {index, group, label, max};
     }
+
     createRy(index, group, label, max) {
-        return { index, group, label, max };
+        return {index, group, label, max};
     }
+
     createX(index, group, label, element, maxWidth) {
-        return { index, group, label, max: (maxWidth - element.size.width) };
+        return {index, group, label, max: (maxWidth - element.size.width)};
     }
+
     createY(index, group, label, element, maxHeight) {
-        return { index, group, label, max: (maxHeight - element.size.height) };
+        return {index, group, label, max: (maxHeight - element.size.height)};
     }
+
     createHeight(index, group, label, max) {
-        return { index, group, max, label };
+        return {index, group, max, label};
     }
+
     createWidth(index, group, label, max) {
-        return { index, group, max, label };
+        return {index, group, max, label};
     }
 
     selector(tag, element) {
@@ -213,7 +224,7 @@ class RectangleGenerator extends ElementGenerator {
     create(element, maxHeight, maxWidth) {
         this.counter++;
         return {
-            [this.selector('rect',element)]: inp(this.createSpecificAttributes()),
+            [this.selector('rect', element)]: inp(this.createSpecificAttributes()),
             [`.${element.id}`]: inp(this.createGeneralAttributes(element, maxHeight, maxWidth)),
         };
     }
@@ -240,35 +251,82 @@ class RectangleGenerator extends ElementGenerator {
     }
 }
 
+class StaticTextGenerator extends ElementGenerator{
+    create(element) {
+        return {
+            [`.${element.id}`]: {}
+        };
+    }
+}
+
 class TextGenerator extends ElementGenerator {
     create(element, maxHeight, maxWidth) {
         this.counter++;
+        let textObject;
+        if (element?.editable === true) {
+            textObject = this.createFilledTextForInspector(element, maxHeight, maxWidth);
+        } else {
+            textObject = this.createEmptyTextForInspector(element);
+        }
+        return textObject;
+    }
+
+    createFilledTextForInspector(element, maxHeight, maxWidth) {
         return {
             [this.selector('text', element)]: inp(this.createSpecificAttributes(element, maxHeight, maxWidth)),
             [`.${element.id}`]: inp(this.createGeneralAttributes()),
         };
     }
 
+    createEmptyTextForInspector(element) {
+        return {
+            [`.${element.id}`]: {}
+        };
+    }
+
     createSpecificAttributes(element, maxHeight, maxWidth) {
         const group = `Text Geometry ${this.counter}`;
+        return Object.assign(this.createSpecificDefaultTextAttributes(element), this.createSpecificTextPositionAttributes(element, group, maxHeight, maxWidth));
+    }
+
+    createSpecificDefaultTextAttributes(element) {
+        let defaultTextAttributes;
+        if (element?.multiline === true) {
+            defaultTextAttributes = {
+                text: {
+                    index: 1,
+                    type: 'list',
+                    item: {type: 'text'},
+                    group: `Text ${this.counter}`,
+                },
+            }
+        } else {
+            defaultTextAttributes = {
+                text: {
+                    index: 1,
+                    type: 'text',
+                    group: `Text ${this.counter}`,
+                },
+            }
+        }
+
+        return defaultTextAttributes;
+
+    }
+
+    createSpecificTextPositionAttributes(element, group, maxHeight, maxWidth) {
         return {
-            text: {
-                index: 1,
-                type: 'list',
-                item: { type: 'text' },
-                group: `Text ${this.counter}`,
-            },
             x: this.createX(1, group, 'x Position Text', element, maxWidth),
             y: this.createY(2, group, 'y Position Text', element, maxHeight),
-        };
+        }
     }
 
     createGeneralAttributes() {
         const group = `Text Style ${this.counter}`;
         return {
-            'font-size': { index: 2, group },
-            'font-family': { index: 3, group },
-            'font-weight': { index: 4, group },
+            'font-size': {index: 2, group},
+            'font-family': {index: 3, group},
+            'font-weight': {index: 4, group},
             fill: this.createFill(6, group, 'Text Color'),
         };
     }
@@ -374,6 +432,6 @@ export default class {
         return this.shapes.reduce((result, shape) => {
             result[`zeta.${shape.name}`] = this.generator.create(shape);
             return result;
-        }, { 'zeta.MLink': createMLink()});
+        }, {'zeta.MLink': createMLink()});
     }
 }

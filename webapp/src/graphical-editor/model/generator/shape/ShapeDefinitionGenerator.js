@@ -9,6 +9,7 @@ const GEOMETRIC_MODEL = {
     POLYGON: 'polygon',
     POLY_LINE: 'polyline',
     TEXTFIELD: 'textfield',
+    STATICTEXT: 'statictext',
 };
 
 function findTop(geoElements) {
@@ -45,6 +46,7 @@ class SvgBuilder {
             [GEOMETRIC_MODEL.POLYGON]: (e, a) => `<polygon class="${e.id}" />` + this.createChildGeoElement(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: e => `<polyline class="${e.id}" />`,
             [GEOMETRIC_MODEL.TEXTFIELD]: e => `<text class="${e.id} ${e.id}" ></text>`,
+            [GEOMETRIC_MODEL.STATICTEXT]: e => `<text class="${e.id} ${e.id}" ></text>`,
         };
     }
 
@@ -81,6 +83,7 @@ class Calculator {
             [GEOMETRIC_MODEL.POLYGON]: e => max(e.points, point => point.y),
             [GEOMETRIC_MODEL.POLY_LINE]: e => max(e.points, point => point.y),
             [GEOMETRIC_MODEL.TEXTFIELD]: e => addition(e.position.y, e.size.height),
+            [GEOMETRIC_MODEL.STATICTEXT]: e => addition(e.position.y, e.size.height),
         };
         this.width = {
             [GEOMETRIC_MODEL.RECTANGLE]: e => addition(e.position.x, e.size.width),
@@ -90,6 +93,7 @@ class Calculator {
             [GEOMETRIC_MODEL.POLYGON]: e => max(e.points, point => point.x),
             [GEOMETRIC_MODEL.POLY_LINE]: e => max(e.points, point => point.x),
             [GEOMETRIC_MODEL.TEXTFIELD]: e => addition(e.position.x, e.size.width),
+            [GEOMETRIC_MODEL.STATICTEXT]: e => addition(e.position.x, e.size.width),
         };
     }
 
@@ -139,7 +143,7 @@ class AttrBuilder {
         this.shapeStyleGenerator = shapeStyleGenerator;
         this.shape = shape;
         this.calculator = new Calculator();
-        this.createMapper = {
+            this.createMapper = {
             [GEOMETRIC_MODEL.RECTANGLE]: (e, a) => this.createRectangle(e, a),
             [GEOMETRIC_MODEL.ELLIPSE]: (e, a) => this.createEllipse(e, a),
             [GEOMETRIC_MODEL.LINE]: this.createLine,
@@ -147,6 +151,7 @@ class AttrBuilder {
             [GEOMETRIC_MODEL.POLYGON]: (e, a) => this.createPolygon(e, a),
             [GEOMETRIC_MODEL.POLY_LINE]: (e, a) => this.createPolygon(e, a),
             [GEOMETRIC_MODEL.TEXTFIELD]: (e, a) => this.createTextField(e, a),
+            [GEOMETRIC_MODEL.STATICTEXT]: (e, a) => this.createStaticText(e, a),
         };
         this.xMapper = {
             [GEOMETRIC_MODEL.RECTANGLE]: e => e.position.x,
@@ -227,6 +232,17 @@ class AttrBuilder {
         };
     }
 
+    createStaticText(geoElement, geoElements){
+        return {
+            x: geoElement.position.x + this.getParentPositionX(geoElement, geoElements),
+            y: geoElement.position.y + this.getParentPositionY(geoElement, geoElements),
+            id: geoElement.id,
+            width: geoElement.size.width,
+            height: geoElement.size.height,
+            text: [geoElement.text]
+        };
+    }
+
     createTextField(geoElement, geoElements) {
         return {
             x: geoElement.position.x + this.getParentPositionX(geoElement, geoElements),
@@ -303,6 +319,7 @@ class ShapeGenerator {
 
     createMandatoryDefaults(model, geoElements) {
         return {
+            className: model.conceptElement,
             type: `zeta.${model?.name}`,
             'init-size': {
                 height: this.calculator.calculateHeight(geoElements),
