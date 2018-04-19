@@ -59,7 +59,7 @@ export default (function modelExporter () {
         _graph.getElements().forEach(function(ele) {
             let element = {
                 name: ele.id,
-                className: ele.attributes.mClass,
+                className: ele.attributes.className,
                 outputEdgeNames: [],
                 inputEdgeNames: [],
                 attributes: [],
