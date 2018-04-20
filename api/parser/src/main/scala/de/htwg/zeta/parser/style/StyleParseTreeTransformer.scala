@@ -69,27 +69,39 @@ object StyleParseTreeTransformer {
       case _ => Line.defaultStyle
     }
 
+    def parentOrDefault[T](default: T, styleValue: Style => T): T = {
+      val parents = parentStyles.filter(p => styleParseTree.parentStyles.contains(p.name))
+      if(parents.isEmpty) {
+        default
+      } else {
+        // find first parent value which is different from the default value
+        parents.map(styleValue)
+          .find(_ != default)
+          .getOrElse(default)
+      }
+    }
+
     val styleAttributes = Collector(styleParseTree.attributes)
 
     Style(
       name = styleParseTree.name,
       description = styleParseTree.description,
       background = Background(
-        color = styleAttributes.?[BackgroundColor].fold(Background.defaultColor)(c => Color(c.color))
+        color = styleAttributes.?[BackgroundColor].fold(parentOrDefault(Background.defaultColor, s => s.background.color))(c => Color(c.color))
       ),
       font = Font(
-        bold = styleAttributes.?[FontBold].fold(Font.defaultBold)(_.bold),
-        color = styleAttributes.?[FontColor].fold(Font.defaultColor)(fc => Color(fc.color)),
-        italic = styleAttributes.?[FontItalic].fold(Font.defaultItalic)(_.italic),
-        name = styleAttributes.?[FontName].fold(Font.defaultName)(_.name),
-        size = styleAttributes.?[FontSize].fold(Font.defaultSize)(_.size)
+        bold = styleAttributes.?[FontBold].fold(parentOrDefault(Font.defaultBold, s => s.font.bold))(_.bold),
+        color = styleAttributes.?[FontColor].fold(parentOrDefault(Font.defaultColor, s => s.font.color))(fc => Color(fc.color)),
+        italic = styleAttributes.?[FontItalic].fold(parentOrDefault(Font.defaultItalic, s => s.font.italic))(_.italic),
+        name = styleAttributes.?[FontName].fold(parentOrDefault(Font.defaultName, s => s.font.name))(_.name),
+        size = styleAttributes.?[FontSize].fold(parentOrDefault(Font.defaultSize, s => s.font.size))(_.size)
       ),
       line = Line(
-        color = styleAttributes.?[LineColor].fold(Line.defaultColor)(lc => Color(lc.color)),
-        style = styleAttributes.?[LineStyle].fold(Line.defaultStyle)(s => transformLineStyle(s.style)),
-        width = styleAttributes.?[LineWidth].fold(Line.defaultWidth)(_.width)
+        color = styleAttributes.?[LineColor].fold(parentOrDefault(Line.defaultColor, s => s.line.color))(lc => Color(lc.color)),
+        style = styleAttributes.?[LineStyle].fold(parentOrDefault(Line.defaultStyle, s => s.line.style))(s => transformLineStyle(s.style)),
+        width = styleAttributes.?[LineWidth].fold(parentOrDefault(Line.defaultWidth, s => s.line.width))(_.width)
       ),
-      transparency = styleAttributes.?[Transparency].fold(Style.defaultTransparency)(_.transparency)
+      transparency = styleAttributes.?[Transparency].fold(parentOrDefault(Style.defaultTransparency, s => s.transparency))(_.transparency)
     )
   }
 
