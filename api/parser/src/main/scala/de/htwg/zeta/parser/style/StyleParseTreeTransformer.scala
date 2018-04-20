@@ -62,12 +62,6 @@ object StyleParseTreeTransformer {
   }
 
   private def transformStyle(possibleParentStyles: List[Style], styleParseTree: StyleParseTree): Style = {
-    def transformLineStyle(string: String): style.LineStyle = string match {
-      case "dotted" => Dotted()
-      case "solid" => Solid()
-      case "dash" => Dashed()
-      case _ => Line.defaultStyle
-    }
 
     def parentOrDefault[T](default: T, styleValue: Style => T): T = {
       val parentStyles = possibleParentStyles
@@ -88,28 +82,35 @@ object StyleParseTreeTransformer {
       }
     }
 
-    val styleAttributes = Collector(styleParseTree.attributes)
+    val attrs = Collector(styleParseTree.attributes)
 
     Style(
       name = styleParseTree.name,
       description = styleParseTree.description,
       background = Background(
-        color = styleAttributes.?[BackgroundColor].fold(parentOrDefault(Background.defaultColor, s => s.background.color))(c => Color(c.color))
+        color = attrs.?[BackgroundColor].fold(parentOrDefault(Background.defaultColor, _.background.color))(c => Color(c.color))
       ),
       font = Font(
-        bold = styleAttributes.?[FontBold].fold(parentOrDefault(Font.defaultBold, s => s.font.bold))(_.bold),
-        color = styleAttributes.?[FontColor].fold(parentOrDefault(Font.defaultColor, s => s.font.color))(fc => Color(fc.color)),
-        italic = styleAttributes.?[FontItalic].fold(parentOrDefault(Font.defaultItalic, s => s.font.italic))(_.italic),
-        name = styleAttributes.?[FontName].fold(parentOrDefault(Font.defaultName, s => s.font.name))(_.name),
-        size = styleAttributes.?[FontSize].fold(parentOrDefault(Font.defaultSize, s => s.font.size))(_.size)
+        bold = attrs.?[FontBold].fold(parentOrDefault(Font.defaultBold, _.font.bold))(_.bold),
+        color = attrs.?[FontColor].fold(parentOrDefault(Font.defaultColor, _.font.color))(fc => Color(fc.color)),
+        italic = attrs.?[FontItalic].fold(parentOrDefault(Font.defaultItalic, _.font.italic))(_.italic),
+        name = attrs.?[FontName].fold(parentOrDefault(Font.defaultName, _.font.name))(_.name),
+        size = attrs.?[FontSize].fold(parentOrDefault(Font.defaultSize, _.font.size))(_.size)
       ),
       line = Line(
-        color = styleAttributes.?[LineColor].fold(parentOrDefault(Line.defaultColor, s => s.line.color))(lc => Color(lc.color)),
-        style = styleAttributes.?[LineStyle].fold(parentOrDefault(Line.defaultStyle, s => s.line.style))(s => transformLineStyle(s.style)),
-        width = styleAttributes.?[LineWidth].fold(parentOrDefault(Line.defaultWidth, s => s.line.width))(_.width)
+        color = attrs.?[LineColor].fold(parentOrDefault(Line.defaultColor, _.line.color))(lc => Color(lc.color)),
+        style = attrs.?[LineStyle].fold(parentOrDefault(Line.defaultStyle, _.line.style))(s => transformLineStyle(s.style)),
+        width = attrs.?[LineWidth].fold(parentOrDefault(Line.defaultWidth, _.line.width))(_.width)
       ),
-      transparency = styleAttributes.?[Transparency].fold(parentOrDefault(Style.defaultTransparency, s => s.transparency))(_.transparency)
+      transparency = attrs.?[Transparency].fold(parentOrDefault(Style.defaultTransparency, _.transparency))(_.transparency)
     )
+  }
+
+  private def transformLineStyle(string: String): style.LineStyle = string match {
+    case "dotted" => Dotted()
+    case "solid" => Solid()
+    case "dash" => Dashed()
+    case _ => Line.defaultStyle
   }
 
 }
