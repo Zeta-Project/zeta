@@ -118,6 +118,27 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         errors should contain("The following styles define a graph circle with its parent styles: style1, style2, style3")
       }
     }
+    "inherit style values" - {
+      "when s single style is extended" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            BackgroundColor(paint.Color.valueOf("green")),
+            FontSize(20)
+          )),
+          StyleParseTree("B", "B", List("A"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.background.color shouldBe Color(0, 128, 0, 1)
+        styleA.font.size shouldBe 20
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(0, 128, 0, 1)
+        styleB.font.size shouldBe 20
+      }
+    }
   }
 
 }

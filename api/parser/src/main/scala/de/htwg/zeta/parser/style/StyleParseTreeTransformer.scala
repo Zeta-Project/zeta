@@ -28,7 +28,7 @@ object StyleParseTreeTransformer {
         // first order all styles to transform all parent styles before
         // their children to pass them to children transform method
         val styles = orderStyleTreesByParents(styleTrees)
-          .foldLeft(List[Style]())((styles, parseTree) => transformStyle(styles, parseTree) :: styles)
+          .foldLeft(List[Style]())((styles, parseTree) => styles :+ transformStyle(styles, parseTree))
         // for correct handling of a default style in frontend, we have to append
         // the default style always to the list of all styles
         Success(Style.defaultStyle :: styles)
