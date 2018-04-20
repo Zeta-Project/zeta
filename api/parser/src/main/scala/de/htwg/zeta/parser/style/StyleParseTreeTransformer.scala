@@ -27,7 +27,7 @@ object StyleParseTreeTransformer {
       case Nil =>
         // first order all styles to transform all parent styles before
         // their children to pass them to children transform method
-        val styles = orderStyleTreesByParents(styleTrees)
+        val styles = orderByParentsFirst(styleTrees)
           .foldLeft(List[Style]())((styles, parseTree) => styles :+ transformStyle(styles, parseTree))
         // for correct handling of a default style in frontend, we have to append
         // the default style always to the list of all styles
@@ -43,22 +43,20 @@ object StyleParseTreeTransformer {
       .add(CheckGraphCycles(styleTrees))
       .run()
 
-  private def orderStyleTreesByParents(unordered: List[StyleParseTree]): List[StyleParseTree] = {
+  private def orderByParentsFirst(unordered: List[StyleParseTree]): List[StyleParseTree] = {
     @tailrec
-    def orderStyleTrees(children: List[StyleParseTree], definedParents: List[StyleParseTree]): List[StyleParseTree] = {
-      val definedParentNames = definedParents.map(_.name)
-      val definedChildren = children.filter(p => p.parentStyles.count(s => !definedParentNames.contains(s)) == 0)
-      val notDefinedChildren = children.filter(p => p.parentStyles.count(s => !definedParentNames.contains(s)) != 0)
-      if (notDefinedChildren.isEmpty) {
-        definedParents ::: definedChildren
+    def orderStyleTrees(parents: List[StyleParseTree], children: List[StyleParseTree]): List[StyleParseTree] = {
+      val parentNames = parents.map(_.name)
+      val (nextChildren, unorderedChildren) = children.partition(p => p.parentStyles.count(s => !parentNames.contains(s)) == 0)
+      if (unorderedChildren.isEmpty) {
+        parents ::: nextChildren
       } else {
-        orderStyleTrees(notDefinedChildren, definedParents ::: definedChildren)
+        orderStyleTrees(parents ::: nextChildren, unorderedChildren)
       }
     }
 
-    val withoutParents = unordered.filter(f => f.parentStyles.isEmpty)
-    val withParents = unordered.filter(f => f.parentStyles.nonEmpty)
-    orderStyleTrees(withParents, withoutParents)
+    val (withoutParents, withParents) = unordered.partition(f => f.parentStyles.isEmpty)
+    orderStyleTrees(withoutParents, withParents)
   }
 
   private def transformStyle(possibleParentStyles: List[Style], styleParseTree: StyleParseTree): Style = {
