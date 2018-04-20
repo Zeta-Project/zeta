@@ -44,5 +44,6 @@ class FindGraphCycles[T](toId: T => Id, toElement: Id => Option[T], getParentIds
 }
 
 object FindGraphCycles {
-  def apply[T](toId: T => Id, toElement: Id => Option[T], getParentIds: T => List[Id]): FindGraphCycles[T] = new FindGraphCycles[T](toId, toElement, getParentIds)
+  def apply[T](toId: T => Id, toElement: Id => Option[T], getParentIds: T => List[Id]): FindGraphCycles[T] =
+    new FindGraphCycles[T](toId, toElement, getParentIds)
 }
