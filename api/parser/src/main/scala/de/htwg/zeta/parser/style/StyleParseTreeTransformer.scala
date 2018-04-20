@@ -61,7 +61,7 @@ object StyleParseTreeTransformer {
     orderStyleTrees(withParents, withoutParents)
   }
 
-  private def transformStyle(parentStyles: List[Style], styleParseTree: StyleParseTree): Style = {
+  private def transformStyle(possibleParentStyles: List[Style], styleParseTree: StyleParseTree): Style = {
     def transformLineStyle(string: String): style.LineStyle = string match {
       case "dotted" => Dotted()
       case "solid" => Solid()
@@ -70,12 +70,19 @@ object StyleParseTreeTransformer {
     }
 
     def parentOrDefault[T](default: T, styleValue: Style => T): T = {
-      val parents = parentStyles.filter(p => styleParseTree.parentStyles.contains(p.name))
-      if(parents.isEmpty) {
+      val parentStyles = possibleParentStyles
+        .filter(p => styleParseTree.parentStyles.contains(p.name))
+
+      if (parentStyles.isEmpty) {
         default
       } else {
-        // find first parent value which is different from the default value
-        parents.map(styleValue)
+        // first map all parent styles to input list, to achieve the correct
+        // order of parent styles (important for correct overwrite in next step)
+        val mappedParents = parentStyles.map(_.name).zip(parentStyles).toMap
+        // then find first parent value which is different from the default value
+        styleParseTree.parentStyles
+          .map(mappedParents)
+          .map(styleValue)
           .find(_ != default)
           .getOrElse(default)
       }

@@ -129,14 +129,104 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         )
         val result = StyleParseTreeTransformer.transform(styles)
         result.isSuccess shouldBe true
+
         val styleA = result.toOption.get(1)
         styleA.name shouldBe "A"
         styleA.background.color shouldBe Color(0, 128, 0, 1)
         styleA.font.size shouldBe 20
+
         val styleB = result.toOption.get(2)
         styleB.name shouldBe "B"
         styleB.background.color shouldBe Color(0, 128, 0, 1)
         styleB.font.size shouldBe 20
+      }
+      "when s single style is extended multiple steps and partially overwritten by child" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            BackgroundColor(paint.Color.valueOf("green")),
+            FontSize(20)
+          )),
+          StyleParseTree("B", "B", List("A"), List(
+            BackgroundColor(paint.Color.valueOf("red"))
+          )),
+          StyleParseTree("C", "C", List("B"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.background.color shouldBe Color(0, 128, 0, 1)
+        styleA.font.size shouldBe 20
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(255, 0, 0, 1)
+        styleB.font.size shouldBe 20
+
+        val styleC = result.toOption.get(3)
+        styleC.name shouldBe "C"
+        styleC.background.color shouldBe Color(255, 0, 0, 1)
+        styleC.font.size shouldBe 20
+      }
+      "when multiple styles are extended" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            FontSize(20)
+          )),
+          StyleParseTree("B", "B", List(), List(
+            BackgroundColor(paint.Color.valueOf("red"))
+          )),
+          StyleParseTree("C", "C", List("A", "B"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.font.size shouldBe 20
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(255, 0, 0, 1)
+
+        val styleC = result.toOption.get(3)
+        styleC.name shouldBe "C"
+        styleC.background.color shouldBe Color(255, 0, 0, 1)
+        styleC.font.size shouldBe 20
+      }
+      "when multiple styles are extended and overwrites their values (order aware)" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            BackgroundColor(paint.Color.valueOf("green"))
+          )),
+          StyleParseTree("B", "B", List(), List(
+            BackgroundColor(paint.Color.valueOf("red")),
+            FontSize(31)
+          )),
+          StyleParseTree("C", "C", List("A", "B"), List()),
+          StyleParseTree("D", "D", List("B", "A"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.background.color shouldBe Color(0, 128, 0, 1)
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(255, 0, 0, 1)
+
+        val styleC = result.toOption.get(3)
+        styleC.name shouldBe "C"
+        styleC.background.color shouldBe Color(0, 128, 0, 1) // A is first and dominant
+        styleC.font.size shouldBe 31
+
+        val styleD = result.toOption.get(4)
+        styleD.name shouldBe "D"
+        styleD.background.color shouldBe Color(255, 0, 0, 1) // B is first and dominant
+        styleD.font.size shouldBe 31
       }
     }
   }
