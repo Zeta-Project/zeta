@@ -16,10 +16,10 @@ const printHelp = () => {
 
 const checkArgs = (argv) => {
   if ((typeof argv.import === "undefined" && typeof argv.export === "undefined") || (argv.import && argv.export)) {
-    return {ok: false, msg: 'Please pass either --import or --export'};  
+    return {ok: false, msg: 'Please pass either --import or --export'};
   }
   if (typeof argv.projectName !== 'string') {
-    return {ok: false, msg: 'Please pass --projectName=...'};    
+    return {ok: false, msg: 'Please pass --projectName=...'};
   }
   return {ok: true, msg: ''};
 };
@@ -28,7 +28,7 @@ const getSettings = (argv) => {
   return {
     host: argv.host || 'localhost',
     port: argv.port || 27017,
-    database: argv.database || 'zeta',  
+    database: argv.database || 'zeta',
 
     getConnectionUrl() {
       return `mongodb://${this.host}:${this.port}/`;
@@ -49,10 +49,10 @@ const run = async (argv) => {
 
   const settings = getSettings(argv);
   const client = await MongoClient.connect(settings.getConnectionUrl());
-  const db = client.db(settings.database);  
+  const db = client.db(settings.database);
 
   try {
-    const projectName = argv.projectName;    
+    const projectName = argv.projectName;
     if (argv.import) {
       await importProject(db, projectName);
       console.log(`successfully imported project '${projectName}'`);
@@ -60,12 +60,12 @@ const run = async (argv) => {
       await exportProject(db, projectName);
       console.log(`successfully exported project '${projectName}'`);
     }
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   } finally {
-    client.close();  
+    client.close();
   }
 };
 
 run(argv)
-.catch(err => console.error(err));
+  .catch(err => console.error(err));
