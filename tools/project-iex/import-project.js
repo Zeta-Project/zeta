@@ -58,7 +58,7 @@ const updateGdslProjectAuthorizations = async (db, gdslProject) => {
 };
 
 const updateGdslInstanceAuthorizations = async (db, gdslInstances) => {
-  if (gdslInstanceIds.length >= 0) {
+  if (gdslInstances.length >= 0) {
     const gdslInstanceIds = gdslInstances.map(instance => instance._id);  
     const query = {};  
     const update = {
