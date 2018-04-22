@@ -19,14 +19,14 @@ const zipProject = ({gdslProject, gdslInstances}) => {
 const getProjectDocuments = async (db, projectName) => {
   const gdslProject = await db.collection('GdslProject').findOne({name: projectName});
   if (gdslProject === null) {
-    throw `no project named '${projectName}' found ...`;      
+    throw `no project named '${projectName}' found ...`;
   }
   const projectId = gdslProject._id;
   const gdslInstances = await db.collection('GraphicalDslInstance').find({graphicalDslId: projectId}).toArray();
-  return {gdslProject, gdslInstances};  
+  return {gdslProject, gdslInstances};
 };
 
-const exportProject = async (db, projectName) => {  
+const exportProject = async (db, projectName) => {
   const documents = await getProjectDocuments(db, projectName);
   zipProject(documents);
 };
