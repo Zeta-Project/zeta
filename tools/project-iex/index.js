@@ -1,10 +1,7 @@
 const argv = require('optimist').argv;
-const Promise = require('bluebird');
 const MongoClient = require('mongodb').MongoClient;
 const exportProject = require('./export-project');
 const importProject = require('./import-project');
-
-Promise.promisifyAll(MongoClient);
 
 const checkArgs = (argv) => {
   if ((typeof argv.import === "undefined" && typeof argv.export === "undefined") || (argv.import && argv.export)) {
