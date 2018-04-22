@@ -3,6 +3,17 @@ const MongoClient = require('mongodb').MongoClient;
 const exportProject = require('./export-project');
 const importProject = require('./import-project');
 
+const printHelp = () => {
+  console.log('Usage:');
+  console.log('  1. Export project:');
+  console.log('     This will export the project to the \'export\' folder');
+  console.log('     example: node index.js --export --projectName=nameOfTheProjectToExport');
+  console.log();
+  console.log('  2. Import project:');
+  console.log('     The project must exist as a zip file in the \'import\' folder');
+  console.log('     example: node index.js --import --projectName=nameOfTheProjectToImport');
+};
+
 const checkArgs = (argv) => {
   if ((typeof argv.import === "undefined" && typeof argv.export === "undefined") || (argv.import && argv.export)) {
     return {ok: false, msg: 'Please pass either --import or --export'};  
@@ -26,6 +37,10 @@ const getSettings = (argv) => {
 };
 
 const run = async (argv) => {
+  if (argv.h || argv.help) {
+    printHelp();
+    process.exit(0);
+  }
   const {ok, msg} = checkArgs(argv);
   if (!ok) {
     console.error(msg);
@@ -36,14 +51,14 @@ const run = async (argv) => {
   const client = await MongoClient.connect(settings.getConnectionUrl());
   const db = client.db(settings.database);  
 
-  try {        
+  try {
     const projectName = argv.projectName;    
     if (argv.import) {
       await importProject(db, projectName);
-      console.log(`imported project '${projectName}'`);
+      console.log(`successfully imported project '${projectName}'`);
     } else {
       await exportProject(db, projectName);
-      console.log(`exported project '${projectName}'`);
+      console.log(`successfully exported project '${projectName}'`);
     }
   } catch(e) {
     console.error(e);
@@ -52,4 +67,5 @@ const run = async (argv) => {
   }
 };
 
-run(argv);
+run(argv)
+.catch(err => console.error(err));
