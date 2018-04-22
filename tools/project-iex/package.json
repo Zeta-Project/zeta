@@ -1,0 +1,18 @@
+{
+  "name": "project-iex",
+  "version": "1.0.0",
+  "description": "Node tool to import/export zeta project to/from mongodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "adm-zip": "^0.4.7",
+    "bluebird": "^3.5.1",
+    "fs-extra": "^5.0.0",
+    "mongodb": "^3.0.7",
+    "optimist": "^0.6.1"
+  }
+}
