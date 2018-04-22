@@ -3,7 +3,7 @@ const AdmZip = require('adm-zip');
 
 const prettify = (json) => JSON.stringify(json, null, 2);
 
-const zipProject = (projectName, gdslProject, gdslInstances) => {
+const zipProject = ({gdslProject, gdslInstances}) => {
   const dir = 'export';
   if (!fs.exists(dir)) {
     fs.mkdirpSync(dir);
@@ -13,7 +13,7 @@ const zipProject = (projectName, gdslProject, gdslInstances) => {
   gdslInstances.forEach((gdslInstance, index) => {
     zip.addFile(`gdslInstance${index}.json`, new Buffer(prettify(gdslInstance)));
   });
-  zip.writeZip(`${dir}/${projectName}.zip`);
+  zip.writeZip(`${dir}/${gdslProject.name}.zip`);
 };
 
 const getProjectDocuments = async (db, projectName) => {
@@ -27,8 +27,8 @@ const getProjectDocuments = async (db, projectName) => {
 };
 
 const exportProject = async (db, projectName) => {  
-  const {gdslProject, gdslInstances} = await getProjectDocuments(db, projectName);
-  zipProject(projectName, gdslProject, gdslInstances);
+  const documents = await getProjectDocuments(db, projectName);
+  zipProject(documents);
 };
 
 module.exports = exportProject;
