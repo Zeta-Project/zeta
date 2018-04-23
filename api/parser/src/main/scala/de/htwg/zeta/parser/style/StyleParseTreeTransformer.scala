@@ -1,5 +1,6 @@
 package de.htwg.zeta.parser.style
 
+import scala.annotation.tailrec
 import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
@@ -24,7 +25,10 @@ object StyleParseTreeTransformer {
   def transform(styleTrees: List[StyleParseTree]): Validation[List[String], List[Style]] = {
     checkForErrors(styleTrees) match {
       case Nil =>
-        val styles = styleTrees.map(transformStyle)
+        // first order all styles to transform all parent styles before
+        // their children to pass them to children transform method
+        val styles = orderByParentsFirst(styleTrees)
+          .foldLeft(List[Style]())((styles, parseTree) => styles :+ transformStyle(styles, parseTree))
         // for correct handling of a default style in frontend, we have to append
         // the default style always to the list of all styles
         Success(Style.defaultStyle :: styles)
@@ -39,36 +43,72 @@ object StyleParseTreeTransformer {
       .add(CheckGraphCycles(styleTrees))
       .run()
 
-  private def transformStyle(styleParseTree: StyleParseTree): Style = {
-    def transformLineStyle(string: String): style.LineStyle = string match {
-      case "dotted" => Dotted()
-      case "solid" => Solid()
-      case "dash" => Dashed()
-      case _ => Line.defaultStyle
+  private def orderByParentsFirst(unordered: List[StyleParseTree]): List[StyleParseTree] = {
+    @tailrec
+    def orderStyleTrees(parents: List[StyleParseTree], children: List[StyleParseTree]): List[StyleParseTree] = {
+      val parentNames = parents.map(_.name)
+      val (nextChildren, unorderedChildren) = children.partition(p => p.parentStyles.count(s => !parentNames.contains(s)) == 0)
+      if (unorderedChildren.isEmpty) {
+        parents ::: nextChildren
+      } else {
+        orderStyleTrees(parents ::: nextChildren, unorderedChildren)
+      }
     }
 
-    val styleAttributes = Collector(styleParseTree.attributes)
+    val (withoutParents, withParents) = unordered.partition(f => f.parentStyles.isEmpty)
+    orderStyleTrees(withoutParents, withParents)
+  }
+
+  private def transformStyle(possibleParentStyles: List[Style], styleParseTree: StyleParseTree): Style = {
+
+    def parentOrDefault[T](default: T, styleValue: Style => T): T = {
+      val parentStyles = possibleParentStyles
+        .filter(p => styleParseTree.parentStyles.contains(p.name))
+
+      if (parentStyles.isEmpty) {
+        default
+      } else {
+        // first map all parent styles to input list, to achieve the correct
+        // order of parent styles (important for correct overwrite in next step)
+        val mappedParents = parentStyles.map(_.name).zip(parentStyles).toMap
+        // then find first parent value which is different from the default value
+        styleParseTree.parentStyles
+          .map(mappedParents)
+          .map(styleValue)
+          .find(_ != default)
+          .getOrElse(default)
+      }
+    }
+
+    val attrs = Collector(styleParseTree.attributes)
 
     Style(
       name = styleParseTree.name,
       description = styleParseTree.description,
       background = Background(
-        color = styleAttributes.?[BackgroundColor].fold(Background.defaultColor)(c => Color(c.color))
+        color = attrs.?[BackgroundColor].fold(parentOrDefault(Background.defaultColor, _.background.color))(c => Color(c.color))
       ),
       font = Font(
-        bold = styleAttributes.?[FontBold].fold(Font.defaultBold)(_.bold),
-        color = styleAttributes.?[FontColor].fold(Font.defaultColor)(fc => Color(fc.color)),
-        italic = styleAttributes.?[FontItalic].fold(Font.defaultItalic)(_.italic),
-        name = styleAttributes.?[FontName].fold(Font.defaultName)(_.name),
-        size = styleAttributes.?[FontSize].fold(Font.defaultSize)(_.size)
+        bold = attrs.?[FontBold].fold(parentOrDefault(Font.defaultBold, _.font.bold))(_.bold),
+        color = attrs.?[FontColor].fold(parentOrDefault(Font.defaultColor, _.font.color))(fc => Color(fc.color)),
+        italic = attrs.?[FontItalic].fold(parentOrDefault(Font.defaultItalic, _.font.italic))(_.italic),
+        name = attrs.?[FontName].fold(parentOrDefault(Font.defaultName, _.font.name))(_.name),
+        size = attrs.?[FontSize].fold(parentOrDefault(Font.defaultSize, _.font.size))(_.size)
       ),
       line = Line(
-        color = styleAttributes.?[LineColor].fold(Line.defaultColor)(lc => Color(lc.color)),
-        style = styleAttributes.?[LineStyle].fold(Line.defaultStyle)(s => transformLineStyle(s.style)),
-        width = styleAttributes.?[LineWidth].fold(Line.defaultWidth)(_.width)
+        color = attrs.?[LineColor].fold(parentOrDefault(Line.defaultColor, _.line.color))(lc => Color(lc.color)),
+        style = attrs.?[LineStyle].fold(parentOrDefault(Line.defaultStyle, _.line.style))(s => transformLineStyle(s.style)),
+        width = attrs.?[LineWidth].fold(parentOrDefault(Line.defaultWidth, _.line.width))(_.width)
       ),
-      transparency = styleAttributes.?[Transparency].fold(Style.defaultTransparency)(_.transparency)
+      transparency = attrs.?[Transparency].fold(parentOrDefault(Style.defaultTransparency, _.transparency))(_.transparency)
     )
+  }
+
+  private def transformLineStyle(string: String): style.LineStyle = string match {
+    case "dotted" => Dotted()
+    case "solid" => Solid()
+    case "dash" => Dashed()
+    case _ => Line.defaultStyle
   }
 
 }
