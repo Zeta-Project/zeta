@@ -96,7 +96,7 @@ export default (function() {
         targetClassName: this.graph.getTargetName(reference),
         sourceLowerBounds: reference.attributes.linkdef_source[0]?.lowerBound || 0,
         sourceUpperBounds: reference.attributes.linkdef_source[0]?.upperBound || -1,
-        targetLowerBounds: reference.attributes.linkdef_source[0]?.lowerBound || 0,
+        targetLowerBounds: reference.attributes.linkdef_target[0]?.lowerBound || 0,
         targetUpperBounds: reference.attributes.linkdef_target[0]?.upperBound || -1,
       });
     }
