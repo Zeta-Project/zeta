@@ -139,6 +139,10 @@ object GraphicalDslFixtures {
     targetDeletionDeletesSource = true,
     sourceClassName = className1,
     targetClassName = className2,
+    sourceLowerBounds = 0,
+    sourceUpperBounds = -1,
+    targetLowerBounds = 0,
+    targetUpperBounds = -1,
     attributes = Seq(enumAttribute, stringAttribute),
     methods = Seq(
       Method(
@@ -162,6 +166,10 @@ object GraphicalDslFixtures {
     sourceClassName = className2,
     targetClassName = className1,
     attributes = Seq(intAttribute, doubleAttribute),
+    sourceLowerBounds = 0,
+    sourceUpperBounds = -1,
+    targetLowerBounds = 0,
+    targetUpperBounds = -1,
     methods = Seq.empty
   )
 

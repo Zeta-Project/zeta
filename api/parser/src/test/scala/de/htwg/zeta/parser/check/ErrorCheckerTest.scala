@@ -4,6 +4,7 @@ import org.scalatest.FreeSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class ErrorCheckerTest extends FreeSpec with Matchers with Inside {
 
   case class ErrorCheckImpl(definedErrors: List[String]) extends ErrorCheck[String] {

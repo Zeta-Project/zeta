@@ -3,23 +3,44 @@ package de.htwg.zeta.parser.shape.parser
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.EnumParser
 import de.htwg.zeta.parser.UniteParsers
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Align
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Curve
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Editable
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.HorizontalAlignment
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Multiline
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Point
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.VerticalAlignment
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
   def align: Parser[Align] = {
     val horizontal = include(EnumParser.parseEnum(HorizontalAlignment))
     val vertical = include(EnumParser.parseEnum(VerticalAlignment))
-    ("align" ~> leftParenthesis ~> "horizontal" ~> colon ~> horizontal <~ comma) ~
-      ("vertical" ~> colon ~> vertical <~ rightParenthesis) ^^ { result =>
-      val horizontal ~ vertical = result
+    "align" ~! leftParenthesis ~ "horizontal" ~ colon ~ horizontal ~ comma ~
+      "vertical" ~ colon ~ vertical ~ rightParenthesis ^^ { result =>
+      val _ ~ _ ~ horizontal ~ _ ~ _ ~ _ ~ vertical ~ _ = result
       Align(horizontal, vertical)
     }
   }
 
   def identifier: Parser[Identifier] = {
-    "identifier" ~> colon ~> ident ^^ {
-      Identifier
+    val identifierOnly = ident ^^ { identifier =>
+      Identifier(identifier)
+    }
+    val contextWithIdentifier = ident ~ "." ~ ident ^^ { res =>
+      val context ~ _ ~ identifier = res
+      Identifier(s"$context.$identifier")
+    }
+    "identifier" ~ colon ~ (contextWithIdentifier | identifierOnly) ^^ { res =>
+      val _ ~ _ ~ identifier = res
+      identifier
     }
   }
 
@@ -35,9 +56,9 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
     }
   }
 
-  def position: Parser[Position] = parseNaturalNumberTuple("position", "x", "y").map(Position.tupled)
+  def position: Parser[Position] = parseWholeNumberTuple("position", "x", "y").map(Position.tupled)
 
-  def point: Parser[Point] = parseNaturalNumberTuple("point", "x", "y").map(Point.tupled)
+  def point: Parser[Point] = parseWholeNumberTuple("point", "x", "y").map(Point.tupled)
 
   def size: Parser[Size] = parseNaturalNumberTuple("size", "width", "height").map(Size.tupled)
 
@@ -46,6 +67,14 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
   private def parseNaturalNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
     (name ~> leftParenthesis ~> arg1 ~> colon ~> naturalNumber <~ comma) ~
       (arg2 ~> colon ~> naturalNumber <~ rightParenthesis) ^^ { tuple =>
+      val first ~ second = tuple
+      (first, second)
+    }
+  }
+
+  private def parseWholeNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
+    (name ~> leftParenthesis ~> arg1 ~> colon ~> argumentInt <~ comma) ~
+      (arg2 ~> colon ~> argumentInt <~ rightParenthesis) ^^ { tuple =>
       val first ~ second = tuple
       (first, second)
     }
@@ -71,4 +100,12 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
       Text(string.drop(1).dropRight(1))
     }
   }
+
+  def textBody: Parser[TextBody] = {
+    "textBody" ~> colon ~> stringLiteral ^^ { string =>
+      // string starts and ends with quotation marks -> drop them
+      TextBody(string.drop(1).dropRight(1))
+    }
+  }
+
 }

@@ -1,0 +1,77 @@
+{
+  "model": {
+    "edges": [
+      {
+        "connection": {
+          "name": "inheritance"
+        },
+        "from": "Klasse",
+        "mReference": "Inheritance",
+        "name": "inheritance",
+        "to": "AbstractKlasse"
+      },
+      {
+        "connection": {
+          "name": "realization"
+        },
+        "from": "AbstractKlasse",
+        "mReference": "Realization",
+        "name": "realization",
+        "to": "InterfaceKlasse"
+      },
+      {
+        "connection": {
+          "name": "realization"
+        },
+        "from": "Klasse",
+        "mReference": "BaseClassRealization",
+        "name": "BaseClassRealization",
+        "to": "InterfaceKlasse"
+      },
+      {
+        "connection": {
+          "name": "component"
+        },
+        "from": "Klasse",
+        "mReference": "Component",
+        "name": "component",
+        "to": "Klasse"
+      },
+      {
+        "connection": {
+          "name": "aggregation"
+        },
+        "from": "Klasse",
+        "mReference": "Aggregation",
+        "name": "aggregation",
+        "to": "Klasse"
+      }
+    ],
+    "nodes":[
+      {
+        "mClass": "Klasse",
+        "name": "classNode",
+        "palette": "Class",
+        "shape": {
+          "name": "klasse"
+        }
+      },
+      {
+        "mClass": "AbstractKlasse",
+        "name": "abClassNode",
+        "palette": "AbstractClass",
+        "shape": {
+          "name": "abstractKlasse"
+        }
+      },
+      {
+        "mClass": "InterfaceKlasse",
+        "name": "inClassNode",
+        "palette": "Interface",
+        "shape": {
+          "name": "interface"
+        }
+      }
+    ]
+  }
+}

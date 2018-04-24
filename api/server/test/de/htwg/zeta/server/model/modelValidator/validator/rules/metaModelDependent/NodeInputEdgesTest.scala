@@ -2,10 +2,10 @@ package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepend
 
 import scala.collection.immutable.Seq
 
+import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
-import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,18 +18,57 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
 
   "isValid" should "return true on nodes of type nodeType with valid input edges" in {
 
-    val input1 = MReference("input1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val input1 = MReference(
+      "input1",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq(),
+      Seq.empty
+    )
     val node1 = emptyNode.copy(inputEdgeNames = Seq(input1.name))
     rule.isValid(node1).get should be(true)
 
-    val input2 = MReference("input2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val input2 = MReference(
+      "input2",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq(),
+      Seq.empty
+    )
     val node2 = emptyNode.copy(inputEdgeNames = Seq(input1.name))
     rule.isValid(node2).get should be(true)
   }
 
   it should "return false on nodes of type nodeType with invalid input edges" in {
 
-    val input = MReference("invalid", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val input = MReference(
+      "invalid",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq(),
+      Seq.empty
+    )
     val node = emptyNode.copy(inputEdgeNames = Seq(input.name))
     rule.isValid(node).get should be(false)
   }
@@ -45,8 +84,34 @@ class NodeInputEdgesTest extends FlatSpec with Matchers {
   }
 
   "generateFor" should "generate this rule from the meta model" in {
-    val mReference1 = MReference("reference1", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
-    val mReference2 = MReference("reference2", "", sourceDeletionDeletesTarget = false, targetDeletionDeletesSource = false, "", "", Seq(), Seq.empty)
+    val mReference1 = MReference(
+      "reference1",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq(),
+      Seq.empty
+    )
+    val mReference2 = MReference(
+      "reference2",
+      "",
+      sourceDeletionDeletesTarget = false,
+      targetDeletionDeletesSource = false,
+      "",
+      "",
+      sourceLowerBounds = 0,
+      sourceUpperBounds = 0,
+      targetLowerBounds = 0,
+      targetUpperBounds = 0,
+      Seq(),
+      Seq.empty
+    )
 
     val mClass = MClass("class", "", abstractness = false, superTypeNames = Seq.empty, Seq(mReference1.name, mReference2.name), Seq.empty, Seq.empty, Seq.empty)
     val metaModel = Concept.empty.copy(classes = Seq(mClass))

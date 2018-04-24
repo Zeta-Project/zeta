@@ -92,8 +92,12 @@ export default (function() {
         targetDeletionDeletesSource: this.graph.getTargetDeletionDeletesSource(reference),
         attributes: this.graph.getAttributes(reference),
         methods: this.graph.getEntityMethods(reference),
-        sourceClassName: this.graph.getSources(reference),
-        targetClassName: this.graph.getTargets(reference)
+        sourceClassName: this.graph.getSourceName(reference),
+        targetClassName: this.graph.getTargetName(reference),
+        sourceLowerBounds: reference.attributes.linkdef_source[0]?.lowerBound || 0,
+        sourceUpperBounds: reference.attributes.linkdef_source[0]?.upperBound || -1,
+        targetLowerBounds: reference.attributes.linkdef_source[0]?.lowerBound || 0,
+        targetUpperBounds: reference.attributes.linkdef_target[0]?.upperBound || -1,
       });
     }
     return references;

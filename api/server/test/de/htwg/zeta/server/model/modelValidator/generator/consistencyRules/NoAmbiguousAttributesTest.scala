@@ -8,8 +8,10 @@ import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import org.scalatest.FlatSpec
+import org.scalatest.Ignore
 import org.scalatest.Matchers
 
+@Ignore
 class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
 
   val superClassAttribute = MAttribute(

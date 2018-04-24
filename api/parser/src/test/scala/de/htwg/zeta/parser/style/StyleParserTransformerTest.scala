@@ -4,9 +4,11 @@ import javafx.scene.paint
 
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
+import de.htwg.zeta.common.models.project.gdsl.style.Style
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
 
+//noinspection ScalaStyle
 class StyleParserTransformerTest extends FreeSpec with Matchers {
 
   "A style transformer will" - {
@@ -34,8 +36,10 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         result.isSuccess shouldBe true
 
         val styles = result.toOption.get
-        styles.size shouldBe 1
-        val style = styles.head
+        styles.size shouldBe 2
+        val defaultStyle = styles.head
+        defaultStyle shouldBe Style.defaultStyle
+        val style = styles(1)
         style.name shouldBe "Y"
         style.description shouldBe "\"Style for a connection between an interface and its implementing class\""
         style.background.color shouldBe Color(255, 255, 255, 1)
@@ -62,8 +66,10 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         result.isSuccess shouldBe true
 
         val styles = result.toOption.get
-        styles.size shouldBe 1
-        val style = styles.head
+        styles.size shouldBe 2
+        val defaultStyle = styles.head
+        defaultStyle shouldBe Style.defaultStyle
+        val style = styles(1)
         style.background.color shouldBe Color(255, 165, 0, 1)
         style.line.color shouldBe Color(128, 128, 128, 1)
         style.font.color shouldBe Color(0, 128, 0, 1)
@@ -109,7 +115,118 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
         errors.size shouldBe 1
-        errors should contain("The following styles defines a graph circle with its parent styles: style1, style2, style3")
+        errors should contain("The following styles define a graph circle with its parent styles: style1, style2, style3")
+      }
+    }
+    "inherit style values" - {
+      "when s single style is extended" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            BackgroundColor(paint.Color.valueOf("green")),
+            FontSize(20)
+          )),
+          StyleParseTree("B", "B", List("A"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.background.color shouldBe Color(0, 128, 0, 1)
+        styleA.font.size shouldBe 20
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(0, 128, 0, 1)
+        styleB.font.size shouldBe 20
+      }
+      "when s single style is extended multiple steps and partially overwritten by child" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            BackgroundColor(paint.Color.valueOf("green")),
+            FontSize(20)
+          )),
+          StyleParseTree("B", "B", List("A"), List(
+            BackgroundColor(paint.Color.valueOf("red"))
+          )),
+          StyleParseTree("C", "C", List("B"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.background.color shouldBe Color(0, 128, 0, 1)
+        styleA.font.size shouldBe 20
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(255, 0, 0, 1)
+        styleB.font.size shouldBe 20
+
+        val styleC = result.toOption.get(3)
+        styleC.name shouldBe "C"
+        styleC.background.color shouldBe Color(255, 0, 0, 1)
+        styleC.font.size shouldBe 20
+      }
+      "when multiple styles are extended" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            FontSize(20)
+          )),
+          StyleParseTree("B", "B", List(), List(
+            BackgroundColor(paint.Color.valueOf("red"))
+          )),
+          StyleParseTree("C", "C", List("A", "B"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.font.size shouldBe 20
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(255, 0, 0, 1)
+
+        val styleC = result.toOption.get(3)
+        styleC.name shouldBe "C"
+        styleC.background.color shouldBe Color(255, 0, 0, 1)
+        styleC.font.size shouldBe 20
+      }
+      "when multiple styles are extended and overwrites their values (order aware)" in {
+        val styles = List(
+          StyleParseTree("A", "A", List(), List(
+            BackgroundColor(paint.Color.valueOf("green"))
+          )),
+          StyleParseTree("B", "B", List(), List(
+            BackgroundColor(paint.Color.valueOf("red")),
+            FontSize(31)
+          )),
+          StyleParseTree("C", "C", List("A", "B"), List()),
+          StyleParseTree("D", "D", List("B", "A"), List())
+        )
+        val result = StyleParseTreeTransformer.transform(styles)
+        result.isSuccess shouldBe true
+
+        val styleA = result.toOption.get(1)
+        styleA.name shouldBe "A"
+        styleA.background.color shouldBe Color(0, 128, 0, 1)
+
+        val styleB = result.toOption.get(2)
+        styleB.name shouldBe "B"
+        styleB.background.color shouldBe Color(255, 0, 0, 1)
+
+        val styleC = result.toOption.get(3)
+        styleC.name shouldBe "C"
+        styleC.background.color shouldBe Color(0, 128, 0, 1) // A is first and dominant
+        styleC.font.size shouldBe 31
+
+        val styleD = result.toOption.get(4)
+        styleD.name shouldBe "D"
+        styleD.background.color shouldBe Color(255, 0, 0, 1) // B is first and dominant
+        styleD.font.size shouldBe 31
       }
     }
   }
