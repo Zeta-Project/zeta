@@ -250,36 +250,17 @@ export default (function linkTypeSelector() {
     replaceLink = function replaceLink(link) {
         let cell = _graph.getCell(_linkID);
 
-        //DEBUG
-        // let edgeData_OLD = validator.getEdgeData(link.attributes.subtype);
-
         let edgeData = GeneratorFactory.validator.getEdgeData(link.attributes.subtype);
 
         let edgeType = edgeData.type;
         let targetId = link.attributes.target.id;
         let sourceId = link.attributes.source.id;
 
-        let maxInputs = null;
-        let maxOutputs = null;
-        let minInputs = null;
-        let minOutputs = null;
+        let sourceMClass = _graph.getCell(sourceId);
+        let targetMClass = _graph.getCell(targetId);
 
-
-            //DEBUG
-            // let maxInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
-            // let maxOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
-            // let minInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
-            // let minOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
-
-            let result = GeneratorFactory.validator.getAllRefBounds();
-            console.log(result);
-            maxInputs = result[link.attributes.subtype].targetUpperBounds;
-            maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
-            minInputs = result[link.attributes.subtype].targetLowerBounds;
-            minOutputs = result[link.attributes.subtype].sourceLowerBounds;
-
-        let targetMaxReached = false;
-        let sourceMaxReached = false;
+        let sourceresult = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
+        let targetresult = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
 
         link.prop('placings', connectionDefinitionGenerator.getPlacings(edgeData.style));
         // link.prop('placings', getPlacings(edgeData.style));
@@ -292,35 +273,89 @@ export default (function linkTypeSelector() {
         link.prop('labels', connectionDefinitionGenerator.getLabels(edgeData.style));
 
 
-        let ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
-        let outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
 
-        if (maxInputs != -1 && ingoingTargetCount > maxInputs) {
-            targetMaxReached = true;
-            joint.V(_paper.findViewByModel(targetId).el).addClass('invalid-edges');
-        }
-        if (minInputs != 0 && minInputs <= ingoingTargetCount && !targetMaxReached) {
-            joint.V(_paper.findViewByModel(targetId).el).removeClass('invalid-edges');
-        }
-        if (maxOutputs != -1 && outgoingSourceCount > maxOutputs) {
-            sourceMaxReached = true;
-            joint.V(_paper.findViewByModel(sourceId).el).addClass('invalid-edges');
-        }
-        if (minOutputs != 0 && minOutputs <= outgoingSourceCount && !sourceMaxReached) {
-            joint.V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
-        }
+        let sourceTypes = Object.keys(sourceresult);
+        let targetTypes = Object.keys(targetresult);
+
+        var sourceSollWert = sourceTypes.reduce((result,type) => {
+            result[type] = sourceresult[type];
+            return result;
+        },{});
+
+
+        var sourceIstWert = sourceTypes.reduce((result,type) => {
+            result[type] = getNowConnectionCount(sourceId,type);// type in und outs IST
+            return result;
+        },{});
+
+        var targetSollWert = targetTypes.reduce((result,type) => {
+            result[type] = targetresult[type];
+            return result;
+        },{});
+
+        var targetIstWert = targetTypes.reduce((result,type) => {
+            result[type] = getNowConnectionCount(targetId,type);
+            return result;
+        },{});
+
+
+        let validSourceNode = checkValidmbo(sourceSollWert,sourceIstWert, sourceTypes);
+        let validTargetNode = checkValidmbo(targetSollWert,targetIstWert, targetTypes);
+
+        setPaperElementValidation(validSourceNode,sourceId, _paper);
+        setPaperElementValidation(validTargetNode,targetId, _paper);
+
         let clone = link.clone();
         clone.attributes.attrs = connectionDefinitionGenerator.getConnectionStyle(edgeData.style);
         // clone.attributes.attrs = getConnectionStyle(edgeData.style);
 
         console.log(clone.attributes.attrs);
-        console.log(clone.attributes.attrsxx);
         clone.prop('styleSet', true);
         link.remove();
         _graph.addCell(clone);
         destroyMenu();
         return cell;
     };
+
+    function setPaperElementValidation(validNodeResults, id, paper){
+        if(checkAllTrue(validNodeResults)) {
+            joint.V(paper.findViewByModel(id).el).removeClass('invalid-edges');
+        }
+    }
+
+    function checkAllTrue(validCheckResult) {
+       return !Object.values(validCheckResult).includes(false);
+    }
+
+    function isInfinity(num) {
+        if(num === -1){
+            return Infinity;
+        }
+        return num;
+    }
+
+    function isBetween(n, a, b) {
+        a = isInfinity(a);
+        b = isInfinity(b);
+
+        return n >= a && n <=b;
+    }
+
+    function checkValidmbo(soll, ist, types) {
+        return types.reduce((result,type) => {
+            result[type] = isBetween(ist[type].outgoing,soll[type].sourceLowerBounds,soll[type].sourceUpperBounds);
+                //&& isBetween(ist[type].ingoing,soll[type].targetLowerBounds,soll[type].targetUpperBounds);
+            return result;
+        },{});
+    }
+
+    function getNowConnectionCount(id, edgeType){
+
+    let ingoingCount = getConnectionCount(id, edgeType.charAt(0).toUpperCase()+edgeType.slice(1),  {inbound: true});
+    let outgoingCount = getConnectionCount(id, edgeType.charAt(0).toUpperCase()+edgeType.slice(1), {outbound: true});
+
+    return {[edgeType]: ""+edgeType,"outgoing": ""+outgoingCount,"ingoing":  ""+ingoingCount};
+    }
 
     /**
      * register listeners for added and removed cells
@@ -336,13 +371,13 @@ export default (function linkTypeSelector() {
      */
     handleAddedCell = function (cell) {
         if (cell.isLink()) return;
+        let inoutMatrix = GeneratorFactory.validator.inputMatrix(cell.attributes.nodeName);
+        checkTypeBounds(inoutMatrix, cell);
+    };
+
+    function checkTypeBounds(inoutMatrix, cell) {
         let inputs = [];
         let outputs = [];
-        let inoutMatrix = GeneratorFactory.validator.inputMatrix(cell.attributes.nodeName);
-
-        //DEBUG
-        // let inputMatrix_OLD = validator.inputMatrix[cell.attributes.mClass];
-        // let outputMatrix_OLD = validator.outputMatrix[cell.attributes.mClass];
 
         for (let inEdge in inoutMatrix) {
             if (Object.prototype.hasOwnProperty.call(inoutMatrix, inEdge)) {
@@ -351,8 +386,6 @@ export default (function linkTypeSelector() {
                 }
             }
         }
-
-
 
         for (let outEdge in inoutMatrix) {
             if (Object.prototype.hasOwnProperty.call(inoutMatrix, outEdge)) {
@@ -365,7 +398,7 @@ export default (function linkTypeSelector() {
         if (inputs.length != 0 || outputs.length != 0) {
             joint.V(_paper.findViewByModel(cell).el).addClass('invalid-edges');
         }
-    };
+    }
 
     /**
      * Checks if bounds are violated through a removed link,
@@ -377,34 +410,36 @@ export default (function linkTypeSelector() {
         // this also ignores all Elements
         if (!link.attributes.styleSet) return;
 
-        //DEBUG
-        // let edgeType_OLD = validator.getEdgeData(link.attributes.subtype).type;
+        let edgeData = GeneratorFactory.validator.getEdgeData(link.attributes.subtype);
+        let targetId = link.attributes.target.id;
+        let sourceId = link.attributes.source.id;
 
-        let result = GeneratorFactory.validator.getAllRefBounds();
-        let edgeType = GeneratorFactory.validator.getEdgeData(link.attributes.subtype).type;
+        let sourceMClass = _graph.getCell(link.attributes.source.id);
+        let targetMClass = _graph.getCell(link.attributes.target.id);
 
-        let sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
-        let targetMClass = _graph.getCell(link.attributes.target.id).attributes.mClass;
+        let sourceresult = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
+        let targetresult = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
+
+
+
         let minInputs = null;
         let minOutputs = null;
         let maxInputs = null;
         let maxOutputs = null;
 
+        let sourceinoutMatrix = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
+        checkTypeBounds(sourceinoutMatrix, sourceMClass);
 
-            //DEBUG
-            // let minInputs_OLD = validator.inputMatrix[targetMClass][edgeType].lowerBound;
-            // let minOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].lowerBound;
-            // let maxInputs_OLD = validator.inOutMatrix[targetMClass][edgeType].upperBound;
-            // let maxOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].upperBound;
+        let targetinoutMatrix = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
+        checkTypeBounds(targetinoutMatrix, sourceMClass);
 
-
-            maxInputs = result[link.attributes.subtype].targetUpperBounds;
-            maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
-            minInputs = result[link.attributes.subtype].targetLowerBounds;
-            minOutputs = result[link.attributes.subtype].sourceLowerBounds;
+        /*maxInputs = result[link.attributes.subtype].targetUpperBounds;
+        maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
+        minInputs = result[link.attributes.subtype].targetLowerBounds;
+        minOutputs = result[link.attributes.subtype].sourceLowerBounds;*/
 
 
-        let ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
+        /*let ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
         let outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
         let minInUnderstepped = false;
         let minOutUnderstepped = false;
@@ -424,7 +459,38 @@ export default (function linkTypeSelector() {
         }
         if (maxOutputs != -1 && maxOutputs >= outgoingSourceCount && !minOutUnderstepped) {
             joint.V(_paper.findViewByModel(link.attributes.source.id).el).removeClass('invalid-edges');
-        }
+        }*/
+
+        let sourceTypes = Object.keys(sourceresult);
+        let targetTypes = Object.keys(targetresult);
+
+        var sourceSollWert = sourceTypes.reduce((result,type) => {
+            result[type] = sourceresult[type];
+            return result;
+        },{});
+
+
+        var sourceIstWert = sourceTypes.reduce((result,type) => {
+            result[type] = getNowConnectionCount(sourceId,type);// type in und outs IST
+            return result;
+        },{});
+
+        var targetSollWert = targetTypes.reduce((result,type) => {
+            result[type] = targetresult[type];
+            return result;
+        },{});
+
+        var targetIstWert = targetTypes.reduce((result,type) => {
+            result[type] = getNowConnectionCount(targetId,type);
+            return result;
+        },{});
+
+
+        let validSourceNode = checkValidmbo(sourceSollWert,sourceIstWert, sourceTypes);
+        let validTargetNode = checkValidmbo(targetSollWert,targetIstWert, targetTypes);
+
+        setPaperElementValidation(validSourceNode,sourceId, _paper);
+        setPaperElementValidation(validTargetNode,targetId, _paper);
 
     };
 
