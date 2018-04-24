@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/Zeta-Project/zeta.svg?branch=dev)](https://travis-ci.org/Zeta-Project/zeta)
 [![Waffle.io - Columns and their card count](https://badge.waffle.io/Zeta-Project/zeta.svg?columns=all)](https://waffle.io/Zeta-Project/zeta)
-[![Codecoverage codecov.io](https://codecov.io/gh/ZetaProject/zeta/branch/dev/graph/badge.svg)](https://codecov.io/gh/Zeta-Project/zeta)
+[![Codecoverage codecov.io](https://codecov.io/gh/Zeta-Project/zeta/branch/dev/graph/badge.svg)](https://codecov.io/gh/Zeta-Project/zeta)
 # Zeta
 Model-driven generation of graphical editors. <br>
 The goal is to generate simulations from a graphical DSL.
