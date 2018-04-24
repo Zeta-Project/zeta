@@ -1,11 +1,34 @@
 package de.htwg.zeta.parser.shape.parser
 
-import de.htwg.zeta.parser.CommonParserMethods
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes._
-import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees._
 import de.htwg.zeta.parser.Collector
+import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
 import de.htwg.zeta.parser.UnorderedParser
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Align
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Curve
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Editable
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.For
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.GeoModelAttribute
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Identifier
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Multiline
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Point
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.EllipseParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.GeoModelParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.HorizontalLayoutParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.PolygonParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.PolylineParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RectangleParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RepeatingBoxParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.RoundedRectangleParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.StatictextParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
+import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.VerticalLayoutParseTree
 
 object GeoModelParser extends CommonParserMethods with UniteParsers with UnorderedParser {
 
@@ -15,8 +38,8 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     rectangle | horizontalLayout | verticalLayout | statictext | roundedRectangle
 
   private def parseGeoModel(name: String, attributes: List[ParseConf[GeoModelAttribute]]): Parser[(Collector, List[GeoModelParseTree])] = {
-    (name ~> leftBrace ~> unordered(attributes: _*) ~ geoModels <~ rightBrace).map {
-      case attrs ~ geoModels => (Collector(attrs), geoModels)
+    (name ~! leftBrace ~ unordered(attributes: _*) ~ geoModels ~ rightBrace).map {
+      case _ ~ _ ~ attrs ~ geoModels ~ _ => (Collector(attrs), geoModels)
     }
   }
 
@@ -46,11 +69,14 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
   }
 
   private def textfield: Parser[TextfieldParseTree] = {
-    val attributes = List(optional(style), once(identifier), optional(multiline), once(position), once(size), optional(align))
+    val attributes = List(
+      optional(style), once(identifier), optional(textBody), optional(multiline), once(position), once(size), optional(align), optional(editable)
+    )
     parseGeoModel("textfield", attributes).map {
       case (attrs, geoModels) => TextfieldParseTree(
         attrs.?[Style],
         attrs.![Identifier],
+        attrs.?[TextBody],
         attrs.![Position],
         attrs.![Size],
         attrs.?[Multiline],
@@ -159,25 +185,27 @@ object GeoModelParser extends CommonParserMethods with UniteParsers with Unorder
     }
   }
 
-  private def text = include(GeoModelAttributeParser.text)
+  private def text = include(GeoModelAttributeParser.text).named("text")
 
-  private def style = include(GeoModelAttributeParser.style)
+  private def textBody = include(GeoModelAttributeParser.textBody).named("textBody")
 
-  private def position = include(GeoModelAttributeParser.position)
+  private def style = include(GeoModelAttributeParser.style).named("style")
 
-  private def point = include(GeoModelAttributeParser.point)
+  private def position = include(GeoModelAttributeParser.position).named("position")
 
-  private def size = include(GeoModelAttributeParser.size)
+  private def point = include(GeoModelAttributeParser.point).named("point")
 
-  private def align = include(GeoModelAttributeParser.align)
+  private def size = include(GeoModelAttributeParser.size).named("size")
 
-  private def identifier = include(GeoModelAttributeParser.identifier)
+  private def align = include(GeoModelAttributeParser.align).named("align")
 
-  private def multiline = include(GeoModelAttributeParser.multiline)
+  private def identifier = include(GeoModelAttributeParser.identifier).named("identifier")
 
-  private def editable = include(GeoModelAttributeParser.editable)
+  private def multiline = include(GeoModelAttributeParser.multiline).named("multiline")
 
-  private def foreach = include(GeoModelAttributeParser.foreach)
+  private def editable = include(GeoModelAttributeParser.editable).named("editable")
 
-  private def curve = include(GeoModelAttributeParser.curve)
+  private def foreach = include(GeoModelAttributeParser.foreach).named("foreach")
+
+  private def curve = include(GeoModelAttributeParser.curve).named("curve")
 }

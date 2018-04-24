@@ -70,6 +70,6 @@ object NodeFormat {
     "size",
     "style",
     "resizing",
-    "geoModels"
+    "geoElements"
   )
 }

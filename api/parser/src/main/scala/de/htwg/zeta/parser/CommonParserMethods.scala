@@ -19,6 +19,9 @@ trait CommonParserMethods extends JavaTokenParsers {
   val comma = ","
   val eq = "="
 
+  val emptyString = ""
+  val lineBreak = "\n"
+
   /**
    * Remove comments and trim whitespaces from input string. This method should be called
    * before a parsing process.
@@ -28,10 +31,8 @@ trait CommonParserMethods extends JavaTokenParsers {
    * @param s raw input string which should be parsed
    * @return trimmed string without comments
    */
-  def trimRight(s: String): String = s.replaceAll("\\/\\/.+", "").split("\n").map(s => s.trim + "\n").mkString
-
-  def variable: Parser[String] = "[a-züäöA-ZÜÄÖ]+([-_][a-züäöA-ZÜÄÖ]+)*".r <~ "\\s*".r ^^ {
-    _.toString
+  def trimRight(s: String): String = {
+    s.replaceAll("\\/\\/.+", emptyString).split(lineBreak).map(s => s.trim + lineBreak).mkString
   }
 
   def argumentDouble: Parser[Double] = "[+-]?\\d+(\\.\\d+)?".r ^^ { dou => dou.toDouble }
@@ -56,7 +57,7 @@ trait CommonParserMethods extends JavaTokenParsers {
   def argumentColor: Parser[Color] = "(.+)".r.flatMap(parseColor)
 
   def argumentString: Parser[String] =
-    stringLiteral ^^ { s => if (s.isEmpty) "" else s.substring(1, s.length - 1) }
+    stringLiteral ^^ { s => if (s.isEmpty) emptyString else s.substring(1, s.length - 1) }
 
   private def parseColor(colorString: String): Parser[Color] = {
     Parser { in =>

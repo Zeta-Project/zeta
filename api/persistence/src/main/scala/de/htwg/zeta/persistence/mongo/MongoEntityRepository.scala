@@ -143,7 +143,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
       collection.flatMap { collection =>
         val updated = updateEntity(entity)
         collection.update(BSONDocument(sMongoId -> id.toString), writePlayJson(updated)).flatMap(result =>
-          if (result.nModified == 1) {
+          if (result.n == 1) {
             Future.successful(updated)
           } else {
             Future.failed(new IllegalStateException("couldn't update the document"))

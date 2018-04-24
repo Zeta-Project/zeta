@@ -1,43 +1,56 @@
 import $ from 'jquery';
 import joint from 'jointjs';
+import GeneratorFactory from "../generator/GeneratorFactory";
+// DEBUG
+// import {validator} from '../generator/temporary/old/validator'
 
 /**
  * linkTypeSelector provides functions for creating and managing the context menu to choose a link type from.
  *
  * @returns {{init: Function, focusElement: Function, lostFocus: Function, canSetLink: Function, replaceLink: Function}}
  */
-export default (function linkTypeSelector () {
+export default (function linkTypeSelector() {
     'use strict';
 
-    var _menu = null;
-    var _focusedElement = null;
-    var _graph = null;
-    var _paper = null;
-    var _linkID = null;
-    var _canSetLink = false;
+    let _menu = null;
+    let _focusedElement = null;
+    let _graph = null;
+    let _paper = null;
+    let _linkID = null;
+    let _canSetLink = false;
 
-    var init;
-    var createMenu;
-    var itemMouseUp;
-    var destroyMenu;
-    var showMenu;
-    var focusElement;
-    var lostFocus;
-    var canSetLink;
-    var replaceLink;
-    var registerListeners;
-    var handleAddedCell;
-    var handleRemovedCell
-    var getConnectionCount;
+    let init;
+    let createMenu;
+    let itemMouseUp;
+    let destroyMenu;
+    let showMenu;
+    let focusElement;
+    let lostFocus;
+    let canSetLink;
+    let replaceLink;
+    let registerListeners;
+    let handleAddedCell;
+    let handleRemovedCell;
+    let getConnectionCount;
+    let connectionDefinitionGenerator;
+    
+    const removeFocus = () => {
+        if (_focusedElement) {
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
+            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+            _focusedElement = null;
+        }
+    };
 
     /**
      * Has to be called once before using the other methods!
      *
      * @param graph
      */
-    init = function init (graph, paper) {
+    init = function init(graph, paper) {
         _graph = graph;
         _paper = paper;
+        connectionDefinitionGenerator = GeneratorFactory.connectionDefinition;
         registerListeners();
     };
 
@@ -46,13 +59,13 @@ export default (function linkTypeSelector () {
      *
      * @param {array} elements - An array of strings which will be the contents of the context menu.
      */
-    createMenu = function createMenu (elements) {
+    createMenu = function createMenu(elements) {
 
         if (_menu) {
             destroyMenu();
         }
 
-        var menu = '';
+        let menu = '';
         elements = elements || [];
 
         menu += '<ul id="contextMenu" class="list-group">';
@@ -83,7 +96,7 @@ export default (function linkTypeSelector () {
 
         // set handler
         elements.forEach(function (name, index) {
-            var item = $('#menuItem' + index);
+            let item = $('#menuItem' + index);
 
             item.mouseup(function () {
                 itemMouseUp(name);
@@ -106,8 +119,7 @@ export default (function linkTypeSelector () {
         });
 
         $('body').mouseup(function () {
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
+            removeFocus();
             destroyMenu();
         });
 
@@ -118,8 +130,8 @@ export default (function linkTypeSelector () {
      *
      * @param linkName
      */
-    itemMouseUp = function itemMouseUp (linkName) {
-        var link = _graph.getCell(_linkID);
+    itemMouseUp = function itemMouseUp(linkName) {
+        let link = _graph.getCell(_linkID);
         link.attributes.subtype = linkName;
         destroyMenu();
     };
@@ -132,13 +144,14 @@ export default (function linkTypeSelector () {
      * @param {int} x - X-coordinate of the mouse.
      * @param {int} y - Y-coordinate of the mouse.
      */
-    focusElement = function focusElement (linkID, eventTargetModel, x, y) {
-        var link;
-        var eventSourceID;
-        var eventSourceType;
-        var menuList;
-
-        if (!eventTargetModel || _focusedElement) {
+    focusElement = function focusElement(linkID, eventTargetModel, x, y) {
+        let link;
+        let eventSourceID;
+        let eventSourceType;
+        let menuList;
+        
+        removeFocus();
+        if (!eventTargetModel) {
             return;
         }
 
@@ -161,9 +174,13 @@ export default (function linkTypeSelector () {
 
         }
 
-        var eventTarget = eventTargetModel.attributes.nodeName;
+        let eventTarget = eventTargetModel.attributes.nodeName;
 
-        menuList = validator.getValidEdges(eventSourceType, eventTarget);
+        menuList = GeneratorFactory.validator.getValidEdges(eventSourceType, eventTarget);
+
+        //DEBUG
+        // let menuList_OLD = validator.getValidEdges(eventSourceType, eventTarget);
+
 
         createMenu(menuList);
         showMenu(x, y);
@@ -174,24 +191,20 @@ export default (function linkTypeSelector () {
      *
      * @param newFocusedElement
      */
-    lostFocus = function lostFocus (newFocusedElement) {
-        var element = $(newFocusedElement);
+    lostFocus = function lostFocus(newFocusedElement) {
+        let element = $(newFocusedElement);
 
         if (element.hasClass('contextItem') || element.hasClass('menuItem') || element.hasClass('menuTable')) {
             return;
         }
-        if(_focusedElement) {
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
-            joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-unallowed');
-        }
-        _focusedElement = null;
+        removeFocus();
         destroyMenu();
     };
 
     /**
      * Destroys the current context menu.
      */
-    destroyMenu = function destroyMenu () {
+    destroyMenu = function destroyMenu() {
         if (_menu) {
             _menu.remove();
             _menu = null;
@@ -204,7 +217,7 @@ export default (function linkTypeSelector () {
      * @param {int} x
      * @param {int} y
      */
-    showMenu = function showMenu (x, y) {
+    showMenu = function showMenu(x, y) {
         y -= 20;
         _menu.css('top', y + 'px');
         _menu.css('left', x + 'px');
@@ -216,7 +229,7 @@ export default (function linkTypeSelector () {
      * @param {boolean} [canSet]
      * @returns {boolean}
      */
-    canSetLink = function canSetLink (canSet) {
+    canSetLink = function canSetLink(canSet) {
         if (typeof canSet === 'boolean') {
             _canSetLink = canSet;
         }
@@ -234,46 +247,74 @@ export default (function linkTypeSelector () {
 
      */
 
-    replaceLink = function replaceLink (link) {
-        var cell = _graph.getCell(_linkID);
-        var edgeData = validator.getEdgeData(link.attributes.subtype);
-        var edgeType = edgeData.type;
-        var targetId = link.attributes.target.id;
-        var sourceId = link.attributes.source.id;
-        var maxInputs = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
-        var maxOutputs = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
-        var minInputs = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
-        var minOutputs = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
-        var targetMaxReached = false;
-        var sourceMaxReached = false;
+    replaceLink = function replaceLink(link) {
+        let cell = _graph.getCell(_linkID);
 
-        link.prop('placings', getPlacings(edgeData.style));
+        //DEBUG
+        // let edgeData_OLD = validator.getEdgeData(link.attributes.subtype);
+
+        let edgeData = GeneratorFactory.validator.getEdgeData(link.attributes.subtype);
+
+        let edgeType = edgeData.type;
+        let targetId = link.attributes.target.id;
+        let sourceId = link.attributes.source.id;
+
+        let maxInputs = null;
+        let maxOutputs = null;
+        let minInputs = null;
+        let minOutputs = null;
+
+
+            //DEBUG
+            // let maxInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].upperBound;
+            // let maxOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].upperBound;
+            // let minInputs_OLD = validator.inputMatrix[edgeData.to][edgeData.type].lowerBound;
+            // let minOutputs_OLD = validator.outputMatrix[edgeData.from][edgeData.type].lowerBound;
+
+            let result = GeneratorFactory.validator.getAllRefBounds();
+            console.log(result);
+            maxInputs = result[link.attributes.subtype].targetUpperBounds;
+            maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
+            minInputs = result[link.attributes.subtype].targetLowerBounds;
+            minOutputs = result[link.attributes.subtype].sourceLowerBounds;
+
+        let targetMaxReached = false;
+        let sourceMaxReached = false;
+
+        link.prop('placings', connectionDefinitionGenerator.getPlacings(edgeData.style));
+        // link.prop('placings', getPlacings(edgeData.style));
         link.prop('sourceAttribute', edgeData.from);
         link.prop('targetAttribute', edgeData.to);
         // edge type needs to be set before getting connection count
         // otherwise current link is ignored
         link.prop('mReference', edgeType);
-        link.prop('labels', getLabels(edgeData.style));
+        // link.prop('labels', getLabels(edgeData.style));
+        link.prop('labels', connectionDefinitionGenerator.getLabels(edgeData.style));
 
-        var ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
-        var outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
 
-        if(maxInputs != -1 && ingoingTargetCount > maxInputs) {
+        let ingoingTargetCount = getConnectionCount(targetId, edgeType, {inbound: true});
+        let outgoingSourceCount = getConnectionCount(sourceId, edgeType, {outbound: true});
+
+        if (maxInputs != -1 && ingoingTargetCount > maxInputs) {
             targetMaxReached = true;
             joint.V(_paper.findViewByModel(targetId).el).addClass('invalid-edges');
         }
-        if(minInputs != 0 && minInputs <= ingoingTargetCount && !targetMaxReached) {
+        if (minInputs != 0 && minInputs <= ingoingTargetCount && !targetMaxReached) {
             joint.V(_paper.findViewByModel(targetId).el).removeClass('invalid-edges');
         }
-        if(maxOutputs != -1 && outgoingSourceCount > maxOutputs) {
+        if (maxOutputs != -1 && outgoingSourceCount > maxOutputs) {
             sourceMaxReached = true;
             joint.V(_paper.findViewByModel(sourceId).el).addClass('invalid-edges');
         }
-        if(minOutputs != 0 && minOutputs <= outgoingSourceCount && !sourceMaxReached) {
+        if (minOutputs != 0 && minOutputs <= outgoingSourceCount && !sourceMaxReached) {
             joint.V(_paper.findViewByModel(sourceId).el).removeClass('invalid-edges');
         }
-        var clone = link.clone();
-        clone.attributes.attrs = getConnectionStyle(edgeData.style);
+        let clone = link.clone();
+        clone.attributes.attrs = connectionDefinitionGenerator.getConnectionStyle(edgeData.style);
+        // clone.attributes.attrs = getConnectionStyle(edgeData.style);
+
+        console.log(clone.attributes.attrs);
+        console.log(clone.attributes.attrsxx);
         clone.prop('styleSet', true);
         link.remove();
         _graph.addCell(clone);
@@ -284,7 +325,7 @@ export default (function linkTypeSelector () {
     /**
      * register listeners for added and removed cells
      */
-    registerListeners = function() {
+    registerListeners = function () {
         _graph.on('add', handleAddedCell);
         _graph.on('remove', handleRemovedCell);
     };
@@ -293,31 +334,35 @@ export default (function linkTypeSelector () {
      * Checks if the elements lower bounds are violated, if this is the case a highlighting is added
      * @param cell the newly added cell
      */
-    handleAddedCell = function(cell) {
-        if(cell.isLink()) return;
-        var inputs = [];
-        var outputs = [];
-        var inputMatrix = validator.inputMatrix[cell.attributes.mClass];
-        var outputMatrix = validator.outputMatrix[cell.attributes.mClass];
+    handleAddedCell = function (cell) {
+        if (cell.isLink()) return;
+        let inputs = [];
+        let outputs = [];
+        let inoutMatrix = GeneratorFactory.validator.inputMatrix(cell.attributes.nodeName);
 
+        //DEBUG
+        // let inputMatrix_OLD = validator.inputMatrix[cell.attributes.mClass];
+        // let outputMatrix_OLD = validator.outputMatrix[cell.attributes.mClass];
 
-        for(var inEdge in inputMatrix) {
-            if (Object.prototype.hasOwnProperty.call(inputMatrix, inEdge)) {
-                if (inputMatrix[inEdge].lowerBound > 0) {
-                    inputs.push({'mReferenceName': inEdge, 'lowerBound': inputMatrix[inEdge].lowerBound });
+        for (let inEdge in inoutMatrix) {
+            if (Object.prototype.hasOwnProperty.call(inoutMatrix, inEdge)) {
+                if (inoutMatrix[inEdge].sourceLowerBounds > 0) {
+                    inputs.push({'mReferenceName': inEdge, 'lowerBound': inoutMatrix[inEdge].sourceLowerBounds});
                 }
             }
         }
 
-        for(var outEdge in outputMatrix) {
-            if (Object.prototype.hasOwnProperty.call(outputMatrix, outEdge)) {
-                if (outputMatrix[outEdge].lowerBound > 0) {
-                    outputs.push({'mReferenceName': outEdge, 'lowerBound': outputMatrix[outEdge].lowerBound });
+
+
+        for (let outEdge in inoutMatrix) {
+            if (Object.prototype.hasOwnProperty.call(inoutMatrix, outEdge)) {
+                if (inoutMatrix[outEdge].targetLowerBounds > 0) {
+                    outputs.push({'mReferenceName': outEdge, 'lowerBound': inoutMatrix[outEdge].targetLowerBounds});
                 }
             }
         }
 
-        if(inputs.length != 0 || outputs.length != 0) {
+        if (inputs.length != 0 || outputs.length != 0) {
             joint.V(_paper.findViewByModel(cell).el).addClass('invalid-edges');
         }
     };
@@ -327,53 +372,74 @@ export default (function linkTypeSelector () {
      * highlighting is added if this is the case
      * @param link the removed link
      */
-    handleRemovedCell = function(link) {
+    handleRemovedCell = function (link) {
         // check if style is set, otherwise the removed dummy link will influence the counters
         // this also ignores all Elements
-        if(!link.attributes.styleSet) return;
-        var edgeType = validator.getEdgeData(link.attributes.subtype).type;
-        var sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
-        var targetMClass = _graph.getCell(link.attributes.target.id).attributes.mClass;
-        var minInputs = validator.inputMatrix[targetMClass][edgeType].lowerBound;
-        var minOutputs = validator.outputMatrix[sourceMClass][edgeType].lowerBound;
-        var maxInputs = validator.inputMatrix[targetMClass][edgeType].upperBound;
-        var maxOutputs = validator.outputMatrix[sourceMClass][edgeType].upperBound;
-        var ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
-        var outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
-        var minInUnderstepped = false;
-        var minOutUnderstepped = false;
+        if (!link.attributes.styleSet) return;
 
-        if(minInputs > ingoingTargetCount) {
+        //DEBUG
+        // let edgeType_OLD = validator.getEdgeData(link.attributes.subtype).type;
+
+        let result = GeneratorFactory.validator.getAllRefBounds();
+        let edgeType = GeneratorFactory.validator.getEdgeData(link.attributes.subtype).type;
+
+        let sourceMClass = _graph.getCell(link.attributes.source.id).attributes.mClass;
+        let targetMClass = _graph.getCell(link.attributes.target.id).attributes.mClass;
+        let minInputs = null;
+        let minOutputs = null;
+        let maxInputs = null;
+        let maxOutputs = null;
+
+
+            //DEBUG
+            // let minInputs_OLD = validator.inputMatrix[targetMClass][edgeType].lowerBound;
+            // let minOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].lowerBound;
+            // let maxInputs_OLD = validator.inOutMatrix[targetMClass][edgeType].upperBound;
+            // let maxOutputs_OLD = validator.outputMatrix[sourceMClass][edgeType].upperBound;
+
+
+            maxInputs = result[link.attributes.subtype].targetUpperBounds;
+            maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
+            minInputs = result[link.attributes.subtype].targetLowerBounds;
+            minOutputs = result[link.attributes.subtype].sourceLowerBounds;
+
+
+        let ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
+        let outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
+        let minInUnderstepped = false;
+        let minOutUnderstepped = false;
+
+        if (minInputs > ingoingTargetCount) {
             minInUnderstepped = true;
             joint.V(_paper.findViewByModel(link.attributes.target.id).el).addClass('invalid-edges');
         }
 
-        if(maxInputs != -1 && maxInputs >= ingoingTargetCount && !minInUnderstepped) {
+        if (maxInputs != -1 && maxInputs >= ingoingTargetCount && !minInUnderstepped) {
             joint.V(_paper.findViewByModel(link.attributes.target.id).el).removeClass('invalid-edges');
         }
 
-        if(minOutputs > outgoingSourceCount) {
+        if (minOutputs > outgoingSourceCount) {
             minOutUnderstepped = true;
             joint.V(_paper.findViewByModel(link.attributes.source.id).el).addClass('invalid-edges');
         }
-        if(maxOutputs != -1 && maxOutputs >= outgoingSourceCount && !minOutUnderstepped) {
+        if (maxOutputs != -1 && maxOutputs >= outgoingSourceCount && !minOutUnderstepped) {
             joint.V(_paper.findViewByModel(link.attributes.source.id).el).removeClass('invalid-edges');
         }
 
     };
 
     /**
-     * 
+     *
      * @param cellId id of a cell
      * @param edgeType type of the edge
      * @param opt indicates whether outbound or inbound links are counted
      * @returns {number} the connection count
      */
-    getConnectionCount = function(cellId, edgeType, opt) {
-        var links = _graph.getConnectedLinks(_graph.getCell(cellId), opt);
-        var count = 0;
-        links.forEach(function(l) {
-            if(l.attributes.mReference === edgeType) {
+    getConnectionCount = function (cellId, edgeType, opt) {
+        let links = _graph.getConnectedLinks(_graph.getCell(cellId), opt);
+        let count = 0;
+        links.forEach(function (l) {
+            if (l.attributes.mReference === edgeType) {
                 count += 1;
             }
         });
@@ -385,10 +451,10 @@ export default (function linkTypeSelector () {
      * Provide publicly avaliable functions und variables.
      */
     return {
-        init : init,
-        focusElement : focusElement,
-        lostFocus : lostFocus,
-        canSetLink : canSetLink,
-        replaceLink : replaceLink
+        init: init,
+        focusElement: focusElement,
+        lostFocus: lostFocus,
+        canSetLink: canSetLink,
+        replaceLink: replaceLink
     };
 })();

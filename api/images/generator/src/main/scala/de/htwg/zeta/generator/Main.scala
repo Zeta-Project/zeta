@@ -10,21 +10,11 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.entity.Filter
 import de.htwg.zeta.common.models.entity.Generator
 import de.htwg.zeta.common.models.entity.GeneratorImage
-<<<<<<< HEAD:api/images/generator/basic/src/main/scala/de/htwg/zeta/generator/basic/Main.scala
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.generator.template.Error
-import de.htwg.zeta.generator.template.Result
-import de.htwg.zeta.generator.template.Settings
-import de.htwg.zeta.generator.template.Success
-import de.htwg.zeta.generator.template.Template
-import de.htwg.zeta.generator.template.Transformer
-=======
-import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
-import de.htwg.zeta.common.models.modelDefinitions.model.elements.Node
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import de.htwg.zeta.common.models.remote.Remote
 import de.htwg.zeta.common.models.remote.RemoteGenerator
 import org.slf4j.LoggerFactory
->>>>>>> dev:api/images/generator/src/main/scala/de/htwg/zeta/generator/Main.scala
 
 /**
  * Main class of generator
@@ -92,7 +82,6 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     val content =
       s"""
         |import scala.concurrent.Future
-<<<<<<< HEAD:api/images/generator/basic/src/main/scala/de/htwg/zeta/generator/basic/Main.scala
         |import de.htwg.zeta.common.models.project.instance.elements.{Node, Edge}
         |import de.htwg.zeta.common.models.entity.ModelEntity
         |import de.htwg.zeta.generator.template.Error
@@ -100,7 +89,6 @@ object Main extends Template[CreateOptions, RemoteOptions] {
         |import de.htwg.zeta.generator.template.Success
         |import de.htwg.zeta.generator.template.Transformer
         |import de.htwg.zeta.generator.template.Warning
-=======
         |import de.htwg.zeta.common.models.modelDefinitions.model.elements.{Node, Edge}
         |import de.htwg.zeta.common.models.modelDefinitions.model.GraphicalDslInstance
         |import de.htwg.zeta.generator.Error
@@ -108,7 +96,6 @@ object Main extends Template[CreateOptions, RemoteOptions] {
         |import de.htwg.zeta.generator.Success
         |import de.htwg.zeta.generator.Transformer
         |import de.htwg.zeta.generator.Warning
->>>>>>> dev:api/images/generator/src/main/scala/de/htwg/zeta/generator/Main.scala
         |import org.slf4j.LoggerFactory
         |
         |${file.content}
@@ -153,7 +140,7 @@ object Main extends Template[CreateOptions, RemoteOptions] {
     val p = Promise[Result]
 
     modelEntityPersistence.read(options.modelId).map { entity =>
-      entity.nodeMap.values.foreach { node: Node =>
+      entity.nodeMap.values.foreach { node: NodeInstance =>
         if (node.className == options.nodeType) {
           remote.emit[File](File(UUID.randomUUID, options.nodeType, node.className))
         }

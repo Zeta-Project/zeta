@@ -17,14 +17,14 @@
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("graphical-model-editor.bundle.js")"></script>
 
     <!-- model specific files-->
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/inspector.js") "> </script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/style.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/shape.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/stencil.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/connectionstyle.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/linkhelper.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/validator.js")"></script>
-    <script src="@(s"/model_specific/${modelEntity.graphicalDslId}/elementAndInlineStyle.js")"></script>
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/inspector.js") "> </script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/style.js")"></script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/shape.js")"></script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/stencil.js")"></script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/connectionstyle.js")"></script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/linkhelper.js")"></script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/validator.js")"></script>*@
+    @*<script src="@(s"/model_specific/${modelEntity.graphicalDslId}/elementAndInlineStyle.js")"></script>*@
 
     <script type="text/javascript">
     window._global_uuid = "@(modelEntity.id.toString)";

@@ -1,15 +1,19 @@
 import $ from 'jquery';
+import {linkhelper} from '../generator/temporary/old/linkhelper'
+import GeneratorFactory from "../generator/GeneratorFactory";
+
+//TODO import {linkhelper} from '../generator/editor/LinkHelperGenerator'
 
 export default (function modelExporter () {
     'use strict';
 
-    var exportModel;
-    var _buildNodes;
-    var _buildEdges;
-    var _getAttributeValue;
-    var _graph;
-    var _showExportSuccess;
-    var _showExportFailure;
+    let exportModel;
+    let _buildNodes;
+    let _buildEdges;
+    let _getAttributeValue;
+    let _graph;
+    let _showExportSuccess;
+    let _showExportFailure;
 
     exportModel = function(graph) {
         $("[data-hide]").on("click", function(){
@@ -19,9 +23,9 @@ export default (function modelExporter () {
         _graph = graph;
         const nodes = _buildNodes();
         const edges = _buildEdges();
-        var uiState = JSON.stringify(_graph.toJSON());
+        let uiState = JSON.stringify(_graph.toJSON());
 
-        var data = JSON.stringify({
+        let data = JSON.stringify({
             name: window._global_model_name,
             graphicalDslId: window._global_graph_type,
             nodes: nodes,
@@ -31,9 +35,6 @@ export default (function modelExporter () {
             methods: [],
             uiState: uiState
         });
-
-        console.log("SaveModel - Data: ");
-        console.log(data);
 
         $.ajax({
             type: 'PUT',
@@ -54,11 +55,11 @@ export default (function modelExporter () {
 
 
     _buildNodes = function() {
-        var elements = [];
+        let elements = [];
         _graph.getElements().forEach(function(ele) {
-            var element = {
+            let element = {
                 name: ele.id,
-                className: ele.attributes.mClass,
+                className: ele.attributes.className,
                 outputEdgeNames: [],
                 inputEdgeNames: [],
                 attributes: [],
@@ -66,10 +67,10 @@ export default (function modelExporter () {
                 methods: []
             };
 
-            var attrs = ele.attributes.attrs;
-            for(var key in attrs) {
+            let attrs = ele.attributes.attrs;
+            for(let key in attrs) {
                 if(_.include(key, "text")) {
-                    var attrName = ele.attributes.mClassAttributeInfo.find(element => element.id === attrs[key].id);
+                    let attrName = ele.attributes.mClassAttributeInfo.find(element => element.id === attrs[key].id);
                     if(attrName !== undefined) {
                         element.attributes[attrName.name] = attrs[key].text;
                     }
@@ -98,9 +99,9 @@ export default (function modelExporter () {
 
 
     _buildEdges = function() {
-        var elements = [];
+        let elements = [];
         _graph.getLinks().forEach(function(link) {
-            var element = {
+            let element = {
                 name: link.id,
                 referenceName: link.attributes.mReference,
                 sourceNodeName: {},
@@ -115,7 +116,7 @@ export default (function modelExporter () {
 
             // add attributes
             link.attributes.labels.forEach(function(label) {
-                var attributeName = linkhelper.mapping[link.attributes.mReference][label.id];
+                let attributeName = GeneratorFactory.linkHelper.mapping[link.attributes.mReference][label.id];
                 element.attributes[attributeName] = [label.attrs.text.text];
             });
 
@@ -125,7 +126,7 @@ export default (function modelExporter () {
     };
 
     _getAttributeValue = function(value, type) {
-        var ret = value;
+        let ret = value;
         switch(type) {
             case 'Bool':
                 ret = value.toLowerCase() === 'true';
