@@ -16,7 +16,7 @@ const printHelp = () => {
 
 const checkArgs = (argv) => {
   if ((typeof argv.import === "undefined" && typeof argv.export === "undefined") || (argv.import && argv.export)) {
-    return {ok: false, msg: 'Please pass either --import or --export'};
+    return {ok: false, msg: 'Please pass either --import, --export or --help for more information.'};
   }
   if (typeof argv.projectName !== 'string') {
     return {ok: false, msg: 'Please pass --projectName=...'};
