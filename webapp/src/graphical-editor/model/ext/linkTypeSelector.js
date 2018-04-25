@@ -325,9 +325,9 @@ export default (function linkTypeSelector() {
         return n >= a && n <=b;
     }
 
-    function checkForValidNodes(soll, ist, types) {
+    function checkForValidNodes(desired, actual, types) {
         return types.reduce((result,type) => {
-            result[type] = isBetween(ist[type].outgoing,soll[type].sourceLowerBounds,soll[type].sourceUpperBounds);
+            result[type] = isBetween(actual[type].outgoing,desired[type].sourceLowerBounds,desired[type].sourceUpperBounds);
             return result;
         },{});
     }
@@ -444,7 +444,7 @@ export default (function linkTypeSelector() {
 
     function getActualValues(types, id) {
         return types.reduce((result,type) => {
-            result[type] = getNowConnectionCount(id,type);// type in und outs IST
+            result[type] = getNowConnectionCount(id,type);
             return result;
         },{});
     }
