@@ -33,7 +33,7 @@ export default (function linkTypeSelector() {
     let handleRemovedCell;
     let getConnectionCount;
     let connectionDefinitionGenerator;
-    
+
     const removeFocus = () => {
         if (_focusedElement) {
             joint.V(_paper.findViewByModel(_focusedElement).el).removeClass('linking-allowed');
@@ -149,7 +149,7 @@ export default (function linkTypeSelector() {
         let eventSourceID;
         let eventSourceType;
         let menuList;
-        
+
         removeFocus();
         if (!eventTargetModel) {
             return;
@@ -259,8 +259,8 @@ export default (function linkTypeSelector() {
         let sourceMClass = _graph.getCell(sourceId);
         let targetMClass = _graph.getCell(targetId);
 
-        let sourceresult = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
-        let targetresult = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
+        let sourceEdges = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
+        let targetEdges = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
 
         link.prop('placings', connectionDefinitionGenerator.getPlacings(edgeData.style));
         // link.prop('placings', getPlacings(edgeData.style));
@@ -272,35 +272,17 @@ export default (function linkTypeSelector() {
         // link.prop('labels', getLabels(edgeData.style));
         link.prop('labels', connectionDefinitionGenerator.getLabels(edgeData.style));
 
+        let sourceTypes = Object.keys(sourceEdges);
+        let targetTypes = Object.keys(targetEdges);
 
+        let sourceActualValues  = getActualValues(sourceTypes,sourceId);
+        let targetActualValues  = getActualValues(targetTypes,targetId);
 
-        let sourceTypes = Object.keys(sourceresult);
-        let targetTypes = Object.keys(targetresult);
+        let sourceDesiredValues = getDesiredValues(sourceTypes,sourceEdges);
+        let targetDesiredValues = getDesiredValues(targetTypes,targetEdges);
 
-        var sourceSollWert = sourceTypes.reduce((result,type) => {
-            result[type] = sourceresult[type];
-            return result;
-        },{});
-
-
-        var sourceIstWert = sourceTypes.reduce((result,type) => {
-            result[type] = getNowConnectionCount(sourceId,type);// type in und outs IST
-            return result;
-        },{});
-
-        var targetSollWert = targetTypes.reduce((result,type) => {
-            result[type] = targetresult[type];
-            return result;
-        },{});
-
-        var targetIstWert = targetTypes.reduce((result,type) => {
-            result[type] = getNowConnectionCount(targetId,type);
-            return result;
-        },{});
-
-
-        let validSourceNode = checkValidmbo(sourceSollWert,sourceIstWert, sourceTypes);
-        let validTargetNode = checkValidmbo(targetSollWert,targetIstWert, targetTypes);
+        let validSourceNode = checkForValidNodes(sourceDesiredValues,sourceActualValues, sourceTypes);
+        let validTargetNode = checkForValidNodes(targetDesiredValues,targetActualValues, targetTypes);
 
         setPaperElementValidation(validSourceNode,sourceId, _paper);
         setPaperElementValidation(validTargetNode,targetId, _paper);
@@ -320,11 +302,13 @@ export default (function linkTypeSelector() {
     function setPaperElementValidation(validNodeResults, id, paper){
         if(checkAllTrue(validNodeResults)) {
             joint.V(paper.findViewByModel(id).el).removeClass('invalid-edges');
+        } else {
+            joint.V(paper.findViewByModel(id).el).addClass('invalid-edges');
         }
     }
 
     function checkAllTrue(validCheckResult) {
-       return !Object.values(validCheckResult).includes(false);
+        return !Object.values(validCheckResult).includes(false);
     }
 
     function isInfinity(num) {
@@ -341,20 +325,19 @@ export default (function linkTypeSelector() {
         return n >= a && n <=b;
     }
 
-    function checkValidmbo(soll, ist, types) {
+    function checkForValidNodes(soll, ist, types) {
         return types.reduce((result,type) => {
             result[type] = isBetween(ist[type].outgoing,soll[type].sourceLowerBounds,soll[type].sourceUpperBounds);
-                //&& isBetween(ist[type].ingoing,soll[type].targetLowerBounds,soll[type].targetUpperBounds);
             return result;
         },{});
     }
 
     function getNowConnectionCount(id, edgeType){
 
-    let ingoingCount = getConnectionCount(id, edgeType.charAt(0).toUpperCase()+edgeType.slice(1),  {inbound: true});
-    let outgoingCount = getConnectionCount(id, edgeType.charAt(0).toUpperCase()+edgeType.slice(1), {outbound: true});
+        let ingoingCount = getConnectionCount(id, edgeType.charAt(0).toUpperCase()+edgeType.slice(1),  {inbound: true});
+        let outgoingCount = getConnectionCount(id, edgeType.charAt(0).toUpperCase()+edgeType.slice(1), {outbound: true});
 
-    return {[edgeType]: ""+edgeType,"outgoing": ""+outgoingCount,"ingoing":  ""+ingoingCount};
+        return {[edgeType]: ""+edgeType,"outgoing": ""+outgoingCount,"ingoing":  ""+ingoingCount};
     }
 
     /**
@@ -410,84 +393,24 @@ export default (function linkTypeSelector() {
         // this also ignores all Elements
         if (!link.attributes.styleSet) return;
 
-        let edgeData = GeneratorFactory.validator.getEdgeData(link.attributes.subtype);
         let targetId = link.attributes.target.id;
         let sourceId = link.attributes.source.id;
-
         let sourceMClass = _graph.getCell(link.attributes.source.id);
         let targetMClass = _graph.getCell(link.attributes.target.id);
+        let sourceEdges = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
+        let targetEdges = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
 
-        let sourceresult = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
-        let targetresult = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
+        let sourceTypes = Object.keys(sourceEdges);
+        let targetTypes = Object.keys(targetEdges);
 
+        let sourceActualValues  = getActualValues(sourceTypes,sourceId);
+        let targetActualValues  = getActualValues(targetTypes,targetId);
 
+        let sourceDesiredValues = getDesiredValues(sourceTypes,sourceEdges);
+        let targetDesiredValues = getDesiredValues(targetTypes,targetEdges);
 
-        let minInputs = null;
-        let minOutputs = null;
-        let maxInputs = null;
-        let maxOutputs = null;
-
-        let sourceinoutMatrix = GeneratorFactory.validator.inputMatrix(sourceMClass.attributes.nodeName);
-        checkTypeBounds(sourceinoutMatrix, sourceMClass);
-
-        let targetinoutMatrix = GeneratorFactory.validator.inputMatrix(targetMClass.attributes.nodeName);
-        checkTypeBounds(targetinoutMatrix, sourceMClass);
-
-        /*maxInputs = result[link.attributes.subtype].targetUpperBounds;
-        maxOutputs = result[link.attributes.subtype].sourceUpperBounds;
-        minInputs = result[link.attributes.subtype].targetLowerBounds;
-        minOutputs = result[link.attributes.subtype].sourceLowerBounds;*/
-
-
-        /*let ingoingTargetCount = getConnectionCount(link.attributes.target.id, edgeType, {inbound: true});
-        let outgoingSourceCount = getConnectionCount(link.attributes.source.id, edgeType, {outbound: true});
-        let minInUnderstepped = false;
-        let minOutUnderstepped = false;
-
-        if (minInputs > ingoingTargetCount) {
-            minInUnderstepped = true;
-            joint.V(_paper.findViewByModel(link.attributes.target.id).el).addClass('invalid-edges');
-        }
-
-        if (maxInputs != -1 && maxInputs >= ingoingTargetCount && !minInUnderstepped) {
-            joint.V(_paper.findViewByModel(link.attributes.target.id).el).removeClass('invalid-edges');
-        }
-
-        if (minOutputs > outgoingSourceCount) {
-            minOutUnderstepped = true;
-            joint.V(_paper.findViewByModel(link.attributes.source.id).el).addClass('invalid-edges');
-        }
-        if (maxOutputs != -1 && maxOutputs >= outgoingSourceCount && !minOutUnderstepped) {
-            joint.V(_paper.findViewByModel(link.attributes.source.id).el).removeClass('invalid-edges');
-        }*/
-
-        let sourceTypes = Object.keys(sourceresult);
-        let targetTypes = Object.keys(targetresult);
-
-        var sourceSollWert = sourceTypes.reduce((result,type) => {
-            result[type] = sourceresult[type];
-            return result;
-        },{});
-
-
-        var sourceIstWert = sourceTypes.reduce((result,type) => {
-            result[type] = getNowConnectionCount(sourceId,type);// type in und outs IST
-            return result;
-        },{});
-
-        var targetSollWert = targetTypes.reduce((result,type) => {
-            result[type] = targetresult[type];
-            return result;
-        },{});
-
-        var targetIstWert = targetTypes.reduce((result,type) => {
-            result[type] = getNowConnectionCount(targetId,type);
-            return result;
-        },{});
-
-
-        let validSourceNode = checkValidmbo(sourceSollWert,sourceIstWert, sourceTypes);
-        let validTargetNode = checkValidmbo(targetSollWert,targetIstWert, targetTypes);
+        let validSourceNode = checkForValidNodes(sourceDesiredValues,sourceActualValues, sourceTypes);
+        let validTargetNode = checkForValidNodes(targetDesiredValues,targetActualValues, targetTypes);
 
         setPaperElementValidation(validSourceNode,sourceId, _paper);
         setPaperElementValidation(validTargetNode,targetId, _paper);
@@ -511,6 +434,21 @@ export default (function linkTypeSelector() {
         });
         return count
     };
+
+    function getDesiredValues(types,edges) {
+        return types.reduce((result,type) => {
+            result[type] = edges[type];
+            return result;
+        },{});
+    }
+
+    function getActualValues(types, id) {
+        return types.reduce((result,type) => {
+            result[type] = getNowConnectionCount(id,type);// type in und outs IST
+            return result;
+        },{});
+    }
+
 
 
     /**
