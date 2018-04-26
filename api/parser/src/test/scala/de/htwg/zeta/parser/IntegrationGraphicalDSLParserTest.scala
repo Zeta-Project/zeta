@@ -4,7 +4,7 @@ import de.htwg.zeta.common.models.project.gdsl
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
 import de.htwg.zeta.common.models.project.gdsl.shape.Placing
-import de.htwg.zeta.common.models.project.gdsl.shape.Position
+import de.htwg.zeta.common.models.project.gdsl.shape.PlacingPosition
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
@@ -389,7 +389,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = yStyle,
-        position = Position(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(-10, 10),
@@ -411,7 +411,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = xStyle,
-        position = Position(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(-10, 10),
@@ -433,7 +433,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = xStyle,
-        position = Position(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(0, 0),
@@ -456,7 +456,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = xStyle,
-        position = Position(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(0, 0),
@@ -479,7 +479,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = yStyle,
-        position = Position(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(-10, 10),

@@ -83,7 +83,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         // TODO check all success values
       }
 
-      "nested repeating boxes" in {
+      "nested repeating boxes" ignore {
         /*
         ShoppingCart(totalPrice) has articles
         Article(nettoPrice, calcBruttoPrice) has producers
