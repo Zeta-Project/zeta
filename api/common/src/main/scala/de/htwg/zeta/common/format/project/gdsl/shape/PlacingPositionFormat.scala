@@ -8,26 +8,22 @@ import play.api.libs.json.Json
 import play.api.libs.json.OFormat
 
 class PlacingPositionFormat(
-    sDistance: String,
     sOffset: String
 ) extends OFormat[PlacingPosition] {
 
   override def writes(clazz: PlacingPosition): JsObject = Json.obj(
-    sDistance -> clazz.distance,
     sOffset -> clazz.offset
   )
 
   override def reads(json: JsValue): JsResult[PlacingPosition] = for {
-    distance <- (json \ sDistance).validate[Int]
     offset <- (json \ sOffset).validate[Double]
   } yield {
-    PlacingPosition(distance, offset)
+    PlacingPosition(offset)
   }
 
 }
 object PlacingPositionFormat {
   def apply(): PlacingPositionFormat = new PlacingPositionFormat(
-    "distance",
     "offset"
   )
 }

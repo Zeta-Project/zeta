@@ -389,7 +389,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = yStyle,
-        position = PlacingPosition(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(-10, 10),
@@ -411,7 +411,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = xStyle,
-        position = PlacingPosition(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(-10, 10),
@@ -433,7 +433,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = xStyle,
-        position = PlacingPosition(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(0, 0),
@@ -456,7 +456,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = xStyle,
-        position = PlacingPosition(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(0, 0),
@@ -479,7 +479,7 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     placings = List(
       Placing(
         style = yStyle,
-        position = PlacingPosition(1, 1.0),
+        position = PlacingPosition(1.0),
         geoModel = Polygon(
           points = List(
             Point(-10, 10),
