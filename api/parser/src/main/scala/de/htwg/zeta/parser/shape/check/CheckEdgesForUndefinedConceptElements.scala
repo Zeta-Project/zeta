@@ -22,8 +22,10 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
     val conn = edge.conceptConnection
     val splitConn = conn.split("\\.").toList
 
-    if(splitConn.lengthCompare(2) != 0) {
-      List(s"Edge concept reference '$conn' is not a valid identifier <class>.<connection>!")
+    val edgeReferencePartCount = 2
+    val nodeEdgeReferencePartCount = 4
+    if(splitConn.lengthCompare(edgeReferencePartCount) != 0 && splitConn.lengthCompare(nodeEdgeReferencePartCount) != 0) {
+      List(s"Edge concept reference '$conn' is not a valid identifier <class>.<connection> or <class>.<connection>.<class>.<connection>!")
     } else {
       val List(conceptClass, conceptConnection) = splitConn
 
