@@ -156,8 +156,6 @@ object ShapeParseTreeTransformer {
     shape.Placing(
       style = style,
       position = PlacingPosition(
-        // TODO thats not correct
-        distance = 1,
         offset = placing.offset.offset
       ),
       geoModel = transformGeoModel(placing.geoModel, style, styles)
