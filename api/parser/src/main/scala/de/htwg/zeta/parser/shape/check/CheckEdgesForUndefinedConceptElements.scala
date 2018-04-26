@@ -1,5 +1,7 @@
 package de.htwg.zeta.parser.shape.check
 
+import scala.annotation.tailrec
+
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.parser.check.ErrorCheck
 import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
@@ -23,7 +25,8 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
   private def checkEdgeForUndefinedConceptElements(edge: EdgeParseTree, concept: Concept): List[ErrorMessage] = {
     def checkConnReferenceParts(splitConnSeq: Seq[String]) = splitConnSeq.nonEmpty && splitConnSeq.length % 2 == 0
 
-    def checkConceptReference(referenceChain: List[String]): List[ErrorMessage] = {
+    @tailrec
+    def checkConceptReference(referenceChain: List[String], previousErrors: List[ErrorMessage]): List[ErrorMessage] = {
       val conceptClass :: conceptConnection :: conceptTarget :: _ = referenceChain
 
       lazy val maybeConceptClassDoesNotExist = errorIfEmpty(
@@ -42,7 +45,7 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
         concept.references.find(e => e.sourceClassName == conceptClass && e.name == conceptConnection && e.targetClassName == conceptTarget),
         Some(s"Reference '$conceptClass.$conceptConnection.$conceptTarget' in edge '${edge.identifier}' is not defined!"))
 
-      val errorList = List(
+      val errorList = previousErrors ::: List(
         maybeConceptClassDoesNotExist,
         maybeConceptConnectionDoesNotExist,
         maybeTargetClassDoesNotExist,
@@ -54,7 +57,7 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
       val _ :: _ :: followingChain = referenceChain
       followingChain match {
         case e: List[String] if e.size < 3 => errorList
-        case e: List[String] => errorList ::: checkConceptReference(e)
+        case e: List[String] => checkConceptReference(e, errorList)
       }
     }
 
@@ -65,7 +68,7 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
       List(s"Edge concept reference '$conn' is not a valid identifier <class>.<connection> or <class>.<connection>.<class>.<connection>!")
     } else {
       // append target as last element of reference chain
-      checkConceptReference(splitReferenceChain ::: List(edge.conceptTarget.target))
+      checkConceptReference(splitReferenceChain ::: List(edge.conceptTarget.target), List())
     }
   }
 
