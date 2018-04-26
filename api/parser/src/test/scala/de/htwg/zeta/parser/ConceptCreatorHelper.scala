@@ -14,7 +14,7 @@ import de.htwg.zeta.common.models.project.concept.elements.Method
 object ConceptCreatorHelper {
 
   private val baseClassRealization: MReference = cReference("BaseClassRealization", "Klasse", "InterfaceKlasse")
-  private val realizationReference: MReference = cReference("Realization", "InterfaceKlasse", "AbstractKlasse")
+  private val realizationReference: MReference = cReference("Realization", "Klasse", "InterfaceKlasse")
   private val inheritanceReference: MReference = cReference("Inheritance", "Klasse", "AbstractKlasse")
   private val componentReference: MReference = cReference("Component", "Klasse", "Klasse")
   private val aggregationReference: MReference = cReference("Aggregation", "Klasse", "Klasse")

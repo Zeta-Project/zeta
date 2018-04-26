@@ -66,7 +66,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
           ), EdgeParseTree(
             identifier = "edge1",
             conceptConnection = "Klasse.Inheritance",
-            conceptTarget = Target("Klasse"),
+            conceptTarget = Target("AbstractKlasse"),
             Some(EdgeStyle("myEdgeStyle")),
             placings = List()
           ))
@@ -190,7 +190,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
           ), EdgeParseTree(
             identifier = "edge1",
             conceptConnection = "Klasse.Inheritance",
-            conceptTarget = Target("Klasse"),
+            conceptTarget = Target("AbstractKlasse"),
             None,
             placings = List()
           ))
@@ -204,7 +204,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         )
       }
 
-      "when undefined concept classes are referenced" in {
+      "when undefined concept classes are referenced node" in {
         val shapeParseTrees = List(
           NodeParseTree(
             identifier = "node1",
@@ -229,8 +229,36 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         result shouldBe Failure(
           List(
             "Concept class 'MyConceptClass' for node 'node1' not found!",
-            "Target 'myAttribute' for edge 'edge1' is not a concept class!",
             "Concept class 'MyConceptClass' for edge 'edge1' does not exist!"
+          )
+        )
+      }
+
+      "when undefined concept classes are referenced in edge" in {
+        val shapeParseTrees = List(
+          NodeParseTree(
+            identifier = "node1",
+            conceptClass = "Klasse",
+            edges = List("edge1"),
+            sizeMin = SizeMin(2, 1),
+            sizeMax = SizeMax(2, 1),
+            style = Some(NodeStyle("myStyle")),
+            resizing = Some(NodeAttributes.Resizing(horizontal = true, vertical = false, proportional = true)),
+            anchors = List(AbsoluteAnchor(1, 2)),
+            geoModels = List()
+          ), EdgeParseTree(
+            identifier = "edge1",
+            conceptConnection = "Klasse.myAttribute",
+            conceptTarget = Target("myAttribute"),
+            None,
+            placings = List()
+          ))
+        val styles = List(StyleFactory("myStyle"))
+        val concept = ConceptCreatorHelper.exampleConcept
+        val result = ShapeParseTreeTransformer.transform(shapeParseTrees, styles, concept)
+        result shouldBe Failure(
+          List(
+            "Concept connection 'myAttribute' (in class 'Klasse') for edge 'edge1' does not exist!"
           )
         )
       }
