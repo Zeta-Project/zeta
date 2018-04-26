@@ -42,16 +42,20 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
         concept.references.find(e => e.sourceClassName == conceptClass && e.name == conceptConnection && e.targetClassName == conceptTarget),
         Some(s"Reference '$conceptClass.$conceptConnection.$conceptTarget' in edge '${edge.identifier}' is not defined!"))
 
-      val _ :: _ :: followingChain = referenceChain
-      List(
+      val errorList = List(
         maybeConceptClassDoesNotExist,
         maybeConceptConnectionDoesNotExist,
         maybeTargetClassDoesNotExist,
         maybeReferenceIsNotDefined
       ).collectFirst({
         case Some(error) => error
-      }).toList :::
-        (if (followingChain.size < 3) List[ErrorMessage]() else checkConceptReference(followingChain))
+      }).toList
+
+      val _ :: _ :: followingChain = referenceChain
+      followingChain match {
+        case e: List[String] if e.size < 3 => errorList
+        case e: List[String] => errorList ::: checkConceptReference(e)
+      }
     }
 
     val conn = edge.conceptConnection
