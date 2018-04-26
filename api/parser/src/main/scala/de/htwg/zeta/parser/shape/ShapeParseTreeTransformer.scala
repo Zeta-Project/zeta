@@ -1,13 +1,10 @@
 package de.htwg.zeta.parser.shape
 
-import scalaz.Failure
-import scalaz.Success
-import scalaz.Validation
-
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.gdsl.shape
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.shape.Node
+import de.htwg.zeta.common.models.project.gdsl.shape.PlacingPosition
 import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
 import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
@@ -52,6 +49,9 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.TextfieldParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.VerticalLayoutParseTree
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
+import scalaz.Failure
+import scalaz.Success
+import scalaz.Validation
 
 
 object ShapeParseTreeTransformer {
@@ -155,9 +155,7 @@ object ShapeParseTreeTransformer {
     val style = placing.style.fold(parentStyle)(s => styles.!(s.name))
     shape.Placing(
       style = style,
-      position = shape.Position(
-        // TODO thats not correct
-        distance = 1,
+      position = PlacingPosition(
         offset = placing.offset.offset
       ),
       geoModel = transformGeoModel(placing.geoModel, style, styles)
