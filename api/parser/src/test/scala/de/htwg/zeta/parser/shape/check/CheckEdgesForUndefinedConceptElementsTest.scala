@@ -110,7 +110,7 @@ class CheckEdgesForUndefinedConceptElementsTest extends FreeSpec with Matchers w
         val check = CheckEdgesForUndefinedConceptElements(shapes, concept)
         val errors = check.check()
         errors shouldBe List(
-          "Concept class 'noSuchConceptClass' for edge 'myEdge' does not exist!"
+          "No concept class 'noSuchConceptClass' for edge 'myEdge' exists!"
         )
       }
 
