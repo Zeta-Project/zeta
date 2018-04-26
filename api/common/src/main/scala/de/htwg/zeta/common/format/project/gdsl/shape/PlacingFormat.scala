@@ -12,7 +12,7 @@ import play.api.libs.json.OFormat
 class PlacingFormat(
     geoModelFormat: GeoModelFormat,
     styleFormat: StyleFormat,
-    positionFormat: PositionFormat,
+    positionFormat: PlacingPositionFormat,
     sStyle: String,
     sPosition: String,
     sGeoModel: String
@@ -37,7 +37,7 @@ object PlacingFormat {
   def apply(): PlacingFormat = new PlacingFormat(
     GeoModelFormat(),
     StyleFormat(),
-    PositionFormat(),
+    PlacingPositionFormat(),
     "style", "position", "geoElement"
   )
 }

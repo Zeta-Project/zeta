@@ -5,6 +5,6 @@ import de.htwg.zeta.common.models.project.gdsl.style.Style
 
 case class Placing(
     style: Style,
-    position: Position,
+    position: PlacingPosition,
     geoModel: GeoModel
 )
