@@ -229,7 +229,7 @@ class ShapeParseTreeTransformerTest extends FreeSpec with Matchers with Inside {
         result shouldBe Failure(
           List(
             "Concept class 'MyConceptClass' for node 'node1' not found!",
-            "Concept class 'MyConceptClass' for edge 'edge1' does not exist!"
+            "No concept class 'MyConceptClass' for edge 'edge1' exists!"
           )
         )
       }

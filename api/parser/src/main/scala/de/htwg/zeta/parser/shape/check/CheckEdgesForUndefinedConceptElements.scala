@@ -24,14 +24,11 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
     def checkConnReferenceParts(splitConnSeq: Seq[String]) = splitConnSeq.nonEmpty && splitConnSeq.length % 2 == 0
 
     def checkConceptReference(referenceChain: List[String]): List[ErrorMessage] = {
-      if (referenceChain.size < 3) return Nil
-      val conceptClass = referenceChain.head
-      val conceptConnection = referenceChain(1)
-      val conceptTarget = referenceChain(2)
+      val conceptClass :: conceptConnection :: conceptTarget :: _ = referenceChain
 
       lazy val maybeConceptClassDoesNotExist = errorIfEmpty(
         concept.classes.find(_.name == conceptClass),
-        Some(s"Concept class '$conceptClass' for edge '${edge.identifier}' does not exist!"))
+        Some(s"No concept class '$conceptClass' for edge '${edge.identifier}' exists!"))
 
       lazy val maybeConceptConnectionDoesNotExist = errorIfEmpty(
         concept.references.find(_.name == conceptConnection),
@@ -53,7 +50,8 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
         maybeReferenceIsNotDefined
       ).collectFirst({
         case Some(error) => error
-      }).toList ::: checkConceptReference(followingChain)
+      }).toList :::
+        (if (followingChain.size < 3) List[ErrorMessage]() else checkConceptReference(followingChain))
     }
 
     val conn = edge.conceptConnection
