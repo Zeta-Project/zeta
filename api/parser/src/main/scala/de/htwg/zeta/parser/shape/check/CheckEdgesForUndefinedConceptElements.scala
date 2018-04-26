@@ -6,7 +6,6 @@ import de.htwg.zeta.parser.check.ErrorCheck.ErrorMessage
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
 
-//noinspection ScalaStyle
 case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapeParseTree], concept: Concept) extends ErrorCheck[ErrorMessage] {
 
   override def check(): List[ErrorMessage] = {
@@ -19,6 +18,8 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
     edges.flatMap(edge => checkEdgeForUndefinedConceptElements(edge, concept))
   }
 
+  private def errorIfEmpty[T](o: Option[T], error: Some[ErrorMessage]): Option[ErrorMessage] = if (o.isDefined) None else error
+
   private def checkEdgeForUndefinedConceptElements(edge: EdgeParseTree, concept: Concept): List[ErrorMessage] = {
     def checkConnReferenceParts(splitConnSeq: Seq[String]) = splitConnSeq.nonEmpty && splitConnSeq.length % 2 == 0
 
@@ -28,29 +29,21 @@ case class CheckEdgesForUndefinedConceptElements(shapeParseTrees: List[ShapePars
       val conceptConnection = referenceChain(1)
       val conceptTarget = referenceChain(2)
 
-      lazy val maybeConceptClassDoesNotExist =
-        concept.classes.find(_.name == conceptClass) match {
-          case Some(_) => None
-          case None => Some(s"Concept class '$conceptClass' for edge '${edge.identifier}' does not exist!")
-        }
+      lazy val maybeConceptClassDoesNotExist = errorIfEmpty(
+        concept.classes.find(_.name == conceptClass),
+        Some(s"Concept class '$conceptClass' for edge '${edge.identifier}' does not exist!"))
 
-      lazy val maybeConceptConnectionDoesNotExist =
-        concept.references.find(_.name == conceptConnection) match {
-          case Some(_) => None
-          case None => Some(s"Concept connection '$conceptConnection' (in class '$conceptClass') for edge '${edge.identifier}' does not exist!")
-        }
+      lazy val maybeConceptConnectionDoesNotExist = errorIfEmpty(
+        concept.references.find(_.name == conceptConnection),
+        Some(s"Concept connection '$conceptConnection' (in class '$conceptClass') for edge '${edge.identifier}' does not exist!"))
 
-      lazy val maybeTargetClassDoesNotExist =
-        concept.classes.find(_.name == edge.conceptTarget.target) match {
-          case Some(_) => None
-          case None => Some(s"Target '${edge.conceptTarget.target}' for edge '${edge.identifier}' is not a concept class!")
-        }
+      lazy val maybeTargetClassDoesNotExist = errorIfEmpty(
+        concept.classes.find(_.name == conceptTarget),
+        Some(s"Target '${edge.conceptTarget.target}' for edge '${edge.identifier}' is not a concept class!"))
 
-      lazy val maybeReferenceIsNotDefined = concept.references
-        .find(e => e.sourceClassName == conceptClass && e.name == conceptConnection && e.targetClassName == conceptTarget) match {
-        case Some(_) => None
-        case None => Some(s"Reference '$conceptClass.$conceptConnection.$conceptTarget' in edge '${edge.identifier}' is not defined!")
-      }
+      lazy val maybeReferenceIsNotDefined = errorIfEmpty(
+        concept.references.find(e => e.sourceClassName == conceptClass && e.name == conceptConnection && e.targetClassName == conceptTarget),
+        Some(s"Reference '$conceptClass.$conceptConnection.$conceptTarget' in edge '${edge.identifier}' is not defined!"))
 
       val _ :: _ :: followingChain = referenceChain
       List(
