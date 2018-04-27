@@ -3,6 +3,7 @@ package de.htwg.zeta.parser.shape.check
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.elements.MReference
+import de.htwg.zeta.parser.ConceptCreatorHelper
 import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
@@ -65,6 +66,36 @@ class CheckEdgesForUndefinedConceptElementsTest extends FreeSpec with Matchers w
     }
 
     "fail" - {
+
+      "for an invalid identifer" - {
+        "which is empty" in {
+          val shapes: List[ShapeParseTree] = List(
+            createEdgeParseTree(connection = s"", target = "targetClass")
+          )
+          val check = CheckEdgesForUndefinedConceptElements(shapes, ConceptCreatorHelper.exampleConcept)
+          check.check() shouldBe List(
+            "Edge concept reference '' is not a valid identifier <class>.<connection> or <class>.<connection>.<class>.<connection>!"
+          )
+        }
+        "with wrong separator (format)" in {
+          val shapes: List[ShapeParseTree] = List(
+            createEdgeParseTree(connection = s"a/b", target = "class")
+          )
+          val check = CheckEdgesForUndefinedConceptElements(shapes, ConceptCreatorHelper.exampleConcept)
+          check.check() shouldBe List(
+            "Edge concept reference 'a/b' is not a valid identifier <class>.<connection> or <class>.<connection>.<class>.<connection>!"
+          )
+        }
+        "with to many parts" in {
+          val shapes: List[ShapeParseTree] = List(
+            createEdgeParseTree(connection = s"class.connection.invalidPart", target = "aClass")
+          )
+          val check = CheckEdgesForUndefinedConceptElements(shapes, ConceptCreatorHelper.exampleConcept)
+          check.check() shouldBe List(
+            "Edge concept reference 'class.connection.invalidPart' is not a valid identifier <class>.<connection> or <class>.<connection>.<class>.<connection>!"
+          )
+        }
+      }
 
       "for a non existing target class" in {
         val myClass1 = "MyClass1"
