@@ -40,12 +40,12 @@ class EdgeParserTest extends FreeSpec with Matchers with Inside {
     "succeed in parsing" - {
 
       "an edge" in {
-        val edge = createSampleEdge("MyEdge", "MyConceptConnection", "MyTarget")
+        val edge = createSampleEdge("MyEdge", "MyNode.MyConceptConnection", "MyTarget")
         val result = parseEdge(edge)
         result.successful shouldBe true
         result.get shouldBe EdgeParseTree(
           "MyEdge",
-          "MyConceptConnection",
+          "MyNode.MyConceptConnection",
           Target("MyTarget"),
           Some(EdgeStyle("Style")),
           List(
