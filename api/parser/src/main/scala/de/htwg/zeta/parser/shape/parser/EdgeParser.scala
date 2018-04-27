@@ -69,6 +69,6 @@ object EdgeParser extends CommonParserMethods with UniteParsers with UnorderedPa
 
   // Concept connections can be addressed with java / scala object syntax
   // e.g.: Knoten.hatKind
-  private def conceptConnection = regex("\\w+.\\w+".r)
+  private def conceptConnection = regex("\\w+\\.\\w+(\\.\\w+\\.\\w+)?".r)
 
 }
