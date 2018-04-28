@@ -35,8 +35,7 @@ class EdgeGenerator {
     }
 
     getSuperTypes(node) {
-        // const nodeClass = this.classes.find(c => c.name === node.conceptElement);
-        const nodeClass = this.classes.find(c => c.name === node.mClass);
+        const nodeClass = this.classes.find(c => c.name === node.conceptElement);
         return nodeClass && nodeClass.superTypeNames ? nodeClass.superTypeNames : [];
     }
 }
