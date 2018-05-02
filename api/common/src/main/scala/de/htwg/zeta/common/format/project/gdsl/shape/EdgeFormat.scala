@@ -13,11 +13,13 @@ import play.api.libs.json.Writes
 class EdgeFormat(
     placingFormat: PlacingFormat,
     styleFormat: StyleFormat,
+    metaFormat: MetaFormat,
     sName: String,
     sConceptElement: String,
     sTarget: String,
     sStyle: String,
-    sPlacings: String
+    sPlacings: String,
+    sMeta: String
 ) extends OFormat[Edge] {
 
   override def writes(clazz: Edge): JsObject = Json.obj(
@@ -25,7 +27,8 @@ class EdgeFormat(
     sConceptElement -> clazz.conceptElement,
     sTarget -> clazz.target,
     sStyle -> styleFormat.writes(clazz.style),
-    sPlacings -> Writes.list(placingFormat).writes(clazz.placings)
+    sPlacings -> Writes.list(placingFormat).writes(clazz.placings),
+    sMeta -> metaFormat.writes(clazz)
   )
 
   override def reads(json: JsValue): JsResult[Edge] = for {
@@ -43,10 +46,12 @@ object EdgeFormat {
   def apply(): EdgeFormat = new EdgeFormat(
     PlacingFormat(),
     StyleFormat(),
+    MetaFormat(),
     "name",
     "conceptElement",
     "target",
     "style",
-    "placings"
+    "placings",
+    "meta"
   )
 }
