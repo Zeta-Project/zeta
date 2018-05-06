@@ -46,8 +46,37 @@ export default class {
     constructor(shape, concept) {
         this.nodes = shape.nodes || [];
         this.edges = shape.edges || [];
-        this.classes = concept.classes || [];
-        this.references = concept.references || [];
+        const classes = concept.classes || [];
+        const references = concept.references || [];
+
+        // If edges contains meta, merge assigned references and remove the edge
+        this.edges.filter(edge => edge.meta).forEach(edge => {
+
+            // Use the source reference as merged reference
+            const source = references.find(ref => ref.name === edge.meta.source.mref);
+            source.name = edge.name;
+            source.sourceClassName = edge.meta.source.mclass;
+            source.targetClassName = edge.meta.target.mclass;
+
+            // Remove the target reference
+            const target = references.find(ref => ref.name === edge.meta.target.mref);
+            references.splice(references.indexOf(target), 1);
+
+            // Update the source class outputReferenceNames
+            const sourceClass = classes.find(clazz => clazz.name === edge.meta.source.mclass).outputReferenceNames;
+            const targetIndex = sourceClass.findIndex(n => n === edge.meta.target.mref);
+            sourceClass[targetIndex] = edge.name;
+
+            // Update the source class inputReferenceNames
+            const targetClass = classes.find(clazz => clazz.name === edge.meta.target.mclass).inputReferenceNames;
+            const sourceIndex = targetClass.findIndex(n => n === edge.meta.source.mref);
+            targetClass[sourceIndex] = edge.name;
+
+        });
+        this.references = references;
+        this.edges = this.edges.filter(edge => !edge.meta);
+        this.classes = classes;
+
         this.matrix = new MatrixGenerator();
         this.validEdges = new EdgeGenerator(this.references, this.classes);
     }
