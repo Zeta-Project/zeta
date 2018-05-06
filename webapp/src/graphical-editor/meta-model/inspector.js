@@ -399,14 +399,14 @@ export default (function inspector () {
 
             defs.inputs = _.cloneDeep(M_CLASS);
 
+            delete defs.inputs["linkdef_input"];
+            delete defs.inputs["linkdef_output"];
+
             _.each(links, function (link) {
                 if (mCoreUtil.isReference(link) && linkdefOptions.indexOf(link.attributes.name) === -1) {
                     linkdefOptions.push(link.attributes.name);
                 }
             });
-
-            defs.inputs.linkdef_input.item.properties.referenceName.options = linkdefOptions;
-            defs.inputs.linkdef_output.item.properties.referenceName.options = linkdefOptions;
 
         } else if (mCoreUtil.isReference(cell)) {
             defs.inputs = _.cloneDeep(M_REFERENCE);
