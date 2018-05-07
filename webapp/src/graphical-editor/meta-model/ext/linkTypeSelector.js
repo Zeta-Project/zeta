@@ -15,6 +15,8 @@ export default (function linkTypeSelector () {
     var _graph = null;
     var _linkID = null;
     var _canSetLink = false;
+    const selfreferenceGap = 40;
+    const selfreferencePortFactor = 0.7;
 
     var init;
     var createMenu;
@@ -216,7 +218,7 @@ export default (function linkTypeSelector () {
 
      */
 
-    replaceLink = function replaceLink (link) {
+    replaceLink = function replaceLink (link, target) {
         var newLink;
         var subtype;
         var sourceID;
@@ -226,6 +228,8 @@ export default (function linkTypeSelector () {
         subtype = link.attributes.subtype;
         sourceID = link.attributes.source.id;
         targetID = link.attributes.target.id;
+
+        console.log(target);
 
         link.remove();
 
@@ -239,6 +243,19 @@ export default (function linkTypeSelector () {
             source : {id : sourceID},
             target : {id : targetID}
         });
+
+        if (sourceID === targetID) {
+            const xPosition = target.attributes.position["x"];
+            const yPosition = target.attributes.position["y"];
+            const elementWidth = target.attributes.size["width"];
+            const elementHeight = target.attributes.size["height"];
+            
+            newLink.set('vertices', [
+                { x: xPosition - selfreferenceGap, y: yPosition + (elementHeight*selfreferencePortFactor)},
+                { x: xPosition - selfreferenceGap, y: yPosition - selfreferenceGap},
+                { x: xPosition + (elementWidth*selfreferencePortFactor), y: yPosition - selfreferenceGap}
+                ])
+        }
 
         newLink.attributes.subtype = subtype;
 

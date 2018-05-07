@@ -19,7 +19,7 @@ joint.dia.LinkView.prototype.isAnyParentPaperScroller = function(element){
         return true;
     }
     return this.isAnyParentPaperScroller(parent);
-}
+};
 
 joint.dia.LinkView.prototype.pointermove = function(evt, x, y) {
     // Check if element at mouse position == paperscroller
@@ -124,7 +124,7 @@ joint.dia.LinkView.prototype.pointermove = function(evt, x, y) {
                 // It holds the element when a touchstart triggered.
                 var target = (evt.type === 'mousemove')
                     ? evt.target
-                    : document.elementFromPoint(evt.clientX, evt.clientY)
+                    : document.elementFromPoint(evt.clientX, evt.clientY);
 
                 if (this._targetEvent !== target) {
                     // Unhighlight the previous view under pointer if there was
@@ -154,13 +154,10 @@ joint.dia.LinkView.prototype.pointermove = function(evt, x, y) {
 
                             this._magnetUnderPointer && this._viewUnderPointer.highlight(this._magnetUnderPointer);
 
-
                             linkTypeSelector.focusElement(this.model.id,
                                 this._viewUnderPointer.model,
                                 evt.clientX,
                                 evt.clientY);
-
-
                         } else {
                             // This type of connection is not valid. Disregard
                             // this magnet.
@@ -215,12 +212,12 @@ joint.dia.LinkView.prototype.pointerup = function(evt) {
                 // custom
                 if(linkTypeSelector.canSetLink()){
 
-                    // joint.js Code to set the lik
+                    // joint.js Code to set the link
                     linkTypeSelector.replaceLink(this.model.set(this._arrowhead, {
                         id: this._viewUnderPointer.model.id,
                         selector: this._viewUnderPointer.getSelector(this._magnetUnderPointer),
                         port: $(this._magnetUnderPointer).attr('port')
-                    }));
+                    }), this._viewUnderPointer.model);
 
                     // custom
                 } else {
@@ -252,7 +249,7 @@ joint.dia.LinkView.prototype.pointerup = function(evt) {
     }
 
     delete this._action;
-}
+};
 
 joint.dia.LinkView.prototype.updateLabelPositions = function() {
     if (!this._V.labels) return this;
