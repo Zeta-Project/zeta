@@ -4,8 +4,41 @@ import objectAssignDeep from 'object-assign-deep';
 
 class EdgeGenerator {
     create(edge, edges) {
-
+        let edgesWithTextField = edges.filter(fe => fe.placings.filter(p => p.geoElement.type === "textfield").length > 0);
+        return  Object.assign(this.getGroups(edgesWithTextField), this.getInputs(edgesWithTextField));
     }
+
+    getGroups(edges) {
+        let groupNames = edges.map(edge => edge.name);
+        let result = {};
+        for (let i = 0; i < groupNames.length; i++) {
+            result[groupNames[i]] = {
+                label: groupNames[i],
+                index: i + 1
+            }
+        }
+        return {groups: result}
+    }
+
+    getInputs(edges) {
+        let result = {};
+        let x;
+        edges.forEach((edge) => {
+            x = edge.placings.filter(p => p.geoElement.type === "textfield");
+            for (let i = 0; i < x.length; i++) {
+                result[edge.name] = {
+                    type: 'text',
+                    label: x[i].geoElement.identifier,
+                    defaultValue: x[i].geoElement.textBody,
+                    index: i + 1,
+                    group: edge.name
+                }
+            }
+        });
+
+        return {inputs: result}
+    }
+
 }
 
 class ShapeGenerator {
