@@ -10,7 +10,7 @@ class PlacingDefinitionGenerator {
             'rectangle': (shape, distance) => this.generateRectangleShape(shape, distance),
             'roundedRectangle': (shape, distance) => this.generateRoundedRectangleShape(shape, distance),
             'ellipse': (shape, distance) => this.generateEllipseShape(shape, distance),
-            'textfield': (shape) => this.generateTextShape(shape),
+            'textfield': (shape) => this.generateTextShape(),
             'statictext': (shape) => this.generateStaticTextShape(shape)
         };
     }
@@ -116,15 +116,10 @@ class PlacingDefinitionGenerator {
             }
         };
     }
-    
-    generateTextShape(text) {
-        return {
-            markup: `<text>${text.textBody}</text>`,
-            attrs:{
-                x: text.position.x,
-                y: text.position.y
-            }
-        };
+
+    generateTextShape() {
+        // textfield should not displayed in edges
+        return {};
     }
 
     generateStaticTextShape(text) {
