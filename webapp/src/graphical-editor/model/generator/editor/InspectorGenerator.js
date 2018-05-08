@@ -1,60 +1,11 @@
 import _ from 'lodash';
 import {CommonInspectorGroups, CommonInspectorInputs, inp} from '../../inspector';
+import objectAssignDeep from 'object-assign-deep';
 
-function createMLink() {
-    return {
-        inputs: {
-            labels: {
-                type: 'list',
-                group: 'labels',
-                attrs: {
-                    label: {
-                        'data-tooltip': 'Set (possibly multiple) labels for the link'
-                    }
-                },
-                item: {
-                    type: 'object',
-                    properties: {
-                        position: {
-                            type: 'range',
-                            min: 0.1,
-                            max: .9,
-                            step: .1,
-                            defaultValue: .5,
-                            label: 'position',
-                            index: 2,
-                            attrs: {
-                                label: {
-                                    'data-tooltip': 'Position the label relative to the source of the link'
-                                }
-                            }
-                        },
-                        attrs: {
-                            text: {
-                                text: {
-                                    type: 'text',
-                                    label: 'text',
-                                    defaultValue: 'label',
-                                    index: 1,
-                                    attrs: {
-                                        label: {
-                                            'data-tooltip': 'Set text of the label'
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        groups: {
-            labels: {
-                label: 'Labels',
-                index: 1
-            }
-        },
-    };
+class EdgeGenerator {
+    create(edge, edges) {
+
+    }
 }
 
 class ShapeGenerator {
@@ -110,8 +61,8 @@ class ShapeGenerator {
 
     processElement(element, elements, maxHeight, maxWidth) {
         if (this.mapper[element.type]) {
-            const generator = this.mapper[element.type];
-            return generator.create(element, maxHeight, maxWidth);
+            const shapeGenerator = this.mapper[element.type];
+            return shapeGenerator.create(element, maxHeight, maxWidth);
         } else {
             console.log("Error: not defined in Mapper: " + element.type);
         }
@@ -251,7 +202,7 @@ class RectangleGenerator extends ElementGenerator {
     }
 }
 
-class StaticTextGenerator extends ElementGenerator{
+class StaticTextGenerator extends ElementGenerator {
     create(element) {
         return {
             [`.${element.id}`]: {}
@@ -423,15 +374,35 @@ class RoundedRectangleGenerator extends ElementGenerator {
 }
 
 export default class {
-    constructor(shape, shapeDefinitionGenerator) {
+    constructor(shape, shapeDefinitionGenerator, connectionDefinitionGenerator) {
         this.shapes = shape?.nodes || [];
-        this.generator = new ShapeGenerator(shapeDefinitionGenerator);
+        this.edges = shape?.edges || [];
+        this.shapeGenerator = new ShapeGenerator(shapeDefinitionGenerator);
+        this.edgeGenerator = new EdgeGenerator(connectionDefinitionGenerator);
     }
 
     get InspectorDefs() {
-        return this.shapes.reduce((result, shape) => {
-            result[`zeta.${shape.name}`] = this.generator.create(shape);
+        return Object.assign(this.getShapeInspectorDefs(), this.getEdgeInspectorDefs());
+    }
+
+    getShapeInspectorDefs() {
+        let shapeDefs = this.shapes.reduce((result, shape) => {
+            result[`zeta.${shape.name}`] = this.shapeGenerator.create(shape);
             return result;
-        }, {'zeta.MLink': createMLink()});
+        }, {});
+        return shapeDefs;
+    }
+
+    getEdgeInspectorDefs() {
+        let mLink;
+        let mergedEdges = {};
+        let edgeDef = {};
+        let edges = this.edges;
+        edges.forEach((edge) => {
+            let edgeObject = this.edgeGenerator.create(edge, edges);
+            mergedEdges = objectAssignDeep(edgeDef, edgeObject);
+        });
+        mLink = {'zeta.MLink': mergedEdges};
+        return mLink;
     }
 }

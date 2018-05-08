@@ -30,7 +30,8 @@
     "rappid": "file:./rappid.tar.gz",
     "script-loader": "0",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
-    "zxcvbn": "4.2.0"
+    "zxcvbn": "4.2.0",
+    "object-assign-deep":"0.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.42",
@@ -57,7 +58,8 @@
     "uglifyjs-webpack-plugin": "1",
     "url-loader": "0",
     "webpack": "3",
-    "webpack-dev-server": "2"
+    "webpack-dev-server": "2",
+    "object-assign-deep":"0.4.0"
   },
   "jest": {
     "cacheDirectory": "./node_modules/.cache/jest"
