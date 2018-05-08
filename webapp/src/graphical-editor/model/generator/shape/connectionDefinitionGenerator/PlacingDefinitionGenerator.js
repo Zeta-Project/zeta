@@ -10,7 +10,8 @@ class PlacingDefinitionGenerator {
             'rectangle': (shape, distance) => this.generateRectangleShape(shape, distance),
             'roundedRectangle': (shape, distance) => this.generateRoundedRectangleShape(shape, distance),
             'ellipse': (shape, distance) => this.generateEllipseShape(shape, distance),
-            'text': (shape) => this.generateTextShape(shape)
+            'textfield': (shape) => this.generateTextShape(shape),
+            'statictext': (shape) => this.generateStaticTextShape(shape)
         };
     }
     
@@ -76,9 +77,9 @@ class PlacingDefinitionGenerator {
         return {
             markup: '<rect />',
             attrs:{
-                height: rectangle.sizeHeight,
-                width: rectangle.sizeWidth,
-                y: distance - rectangle.sizeHeight / 2
+                height: rectangle.size.height,
+                width: rectangle.size.width,
+                y: distance - rectangle.size.height / 2
             }
         };        
     }
@@ -87,11 +88,11 @@ class PlacingDefinitionGenerator {
         return {
             markup: '<rect />',
             attrs:{
-                height: roundedRectangle.sizeHeight,
-                width: roundedRectangle.sizeWidth,
-                rx: roundedRectangle.curveWidth,
-                ry: roundedRectangle.curveHeight,
-                y: distance - roundedRectangle.sizeHeight / 2,
+                height: roundedRectangle.size.height,
+                width: roundedRectangle.size.width,
+                rx: roundedRectangle.curve.width,
+                ry: roundedRectangle.curve.height,
+                y: distance - roundedRectangle.size.height / 2,
             }
         }
     }
@@ -109,8 +110,8 @@ class PlacingDefinitionGenerator {
         return {
             markup: '<ellipse />',
             attrs:{
-                rx: ellipse.sizeWidth / 2,
-                ry: ellipse.sizeHeight / 2,
+                rx: ellipse.size.width / 2,
+                ry: ellipse.size.height / 2,
                 cy: distance,
             }
         };
@@ -120,7 +121,18 @@ class PlacingDefinitionGenerator {
         return {
             markup: `<text>${text.textBody}</text>`,
             attrs:{
-                y: text.sizeHeight / 2
+                x: text.position.x,
+                y: text.position.y
+            }
+        };
+    }
+
+    generateStaticTextShape(text) {
+        return {
+            markup: `<text>${text.text}</text>`,
+            attrs:{
+                x: text.position.x,
+                y: text.position.y
             }
         };
     }
