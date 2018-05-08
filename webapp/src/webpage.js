@@ -7,6 +7,6 @@ import 'webcomponents.js';
 import 'bootstrap';
 
 import '../assets/favicon.png';
-import '../assets/modigen_logo.png';
+import '../assets/zeta_logo.png';
 import '../assets/petri_test.png';
 import './webpage.css';
