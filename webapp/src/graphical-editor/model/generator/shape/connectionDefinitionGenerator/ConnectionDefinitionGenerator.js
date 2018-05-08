@@ -38,8 +38,8 @@ class ConnectionDefinitionGenerator {
         let placingStyle = {'.marker-target': {d: 'M 0 0'}};
 
         if ('placings' in connection) {
-            const commonMarker = connection.placings.find((p) => p.position.offset === 0.0 && p.geoElement.type !== 'text');
-            const mirroredMarker = connection.placings.find((p) => p.position.offset === 1.0 && p.geoElement.type !== 'text');
+            const commonMarker = connection.placings.find((p) => p.position.offset === 0.0 && p.geoElement.type !== 'textfield');
+            const mirroredMarker = connection.placings.find((p) => p.position.offset === 1.0 && p.geoElement.type !== 'textfield');
             
             if (commonMarker) {
                 const styleMarker = this.createStyleMarkerSource(commonMarker);
