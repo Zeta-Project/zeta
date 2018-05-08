@@ -22,16 +22,27 @@ class EdgeGenerator {
 
     getInputs(edges) {
         let result = {};
-        let x;
+        let placings;
         edges.forEach((edge) => {
-            x = edge.placings.filter(p => p.geoElement.type === "textfield");
-            for (let i = 0; i < x.length; i++) {
-                result[edge.name] = {
-                    type: 'text',
-                    label: x[i].geoElement.identifier,
-                    defaultValue: x[i].geoElement.textBody,
-                    index: i + 1,
-                    group: edge.name
+            placings = edge.placings.filter(p => p.geoElement.type === "textfield");
+            for (let i = 0; i < placings.length; i++) {
+                if (placings[i].geoElement.multiline) {
+                    result[edge.name] = {
+                        type: 'list',
+                        item: {type: 'text'},
+                        label: placings[i].geoElement.identifier,
+                        defaultValue: [placings[i].geoElement.textBody],
+                        index: i + 1,
+                        group: edge.name
+                    }
+                } else {
+                    result[edge.name] = {
+                        type: 'text',
+                        label: placings[i].geoElement.identifier,
+                        defaultValue: placings[i].geoElement.textBody,
+                        index: i + 1,
+                        group: edge.name
+                    }
                 }
             }
         });
