@@ -29,9 +29,11 @@ class EdgeGenerator {
                 if (placings[i].geoElement.multiline) {
                     result[edge.name] = {
                         type: 'list',
-                        item: {type: 'text'},
+                        item: {
+                            type: 'text',
+                            defaultValue: placings[i].geoElement.textBody
+                        },
                         label: placings[i].geoElement.identifier,
-                        defaultValue: [placings[i].geoElement.textBody],
                         index: i + 1,
                         group: edge.name
                     }
