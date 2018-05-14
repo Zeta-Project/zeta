@@ -235,9 +235,26 @@ export default Backbone.Router.extend({
 
             const inspectorDefs = GeneratorFactory.inspector.InspectorDefs[cellView.model.get('type')];
 
+            let inspectorDefsInputs = inspectorDefs ? inspectorDefs.inputs : CommonInspectorInputs;
+            let inspectorDefsGroups = inspectorDefs ? inspectorDefs.groups : CommonInspectorGroups;
+
+            if (cellView.model.attributes.type === "zeta.MLink") {
+                let referenceName = cellView.model.attributes.mReference;
+                let inspectorGroupNames = Object.keys(inspectorDefs.groups);
+                let selectedGroupName = inspectorGroupNames.find(groupName => groupName.toLowerCase() === referenceName.toLowerCase());
+
+                if (selectedGroupName !== undefined) {
+                    inspectorDefsGroups = {};
+                    inspectorDefsInputs = {};
+
+                    inspectorDefsGroups[selectedGroupName] = inspectorDefs.groups[selectedGroupName];
+                    inspectorDefsInputs[selectedGroupName] = inspectorDefs.inputs[selectedGroupName];
+                }
+            }
+
             this.inspector = new joint.ui.Inspector({
-                inputs: inspectorDefs ? inspectorDefs.inputs : CommonInspectorInputs,
-                groups: inspectorDefs ? inspectorDefs.groups : CommonInspectorGroups,
+                inputs: inspectorDefsInputs,
+                groups: inspectorDefsGroups,
                 cell: cellView.model
             });
 
@@ -252,7 +269,7 @@ export default Backbone.Router.extend({
                     if (_.contains(this.inspectorClosedGroups[cellView.model.id], $(g).index())) {
                         $(g).addClass('closed');
                     }
-                }, this);
+                    }, this);
             } else {
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
