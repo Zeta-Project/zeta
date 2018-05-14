@@ -240,7 +240,7 @@ export default Backbone.Router.extend({
 
             if (cellView.model.attributes.type === "zeta.MLink") {
                 let referenceName = cellView.model.attributes.mReference;
-                let inspectorGroupNames = Object.keys(inspectorDefs.groups);
+                let inspectorGroupNames = Object.keys(inspectorDefsGroups);
                 let selectedGroupName = inspectorGroupNames.find(groupName => groupName.toLowerCase() === referenceName.toLowerCase());
 
                 if (selectedGroupName !== undefined) {
@@ -269,7 +269,7 @@ export default Backbone.Router.extend({
                     if (_.contains(this.inspectorClosedGroups[cellView.model.id], $(g).index())) {
                         $(g).addClass('closed');
                     }
-                    }, this);
+                }, this);
             } else {
                 this.inspector.$('.group:not(:first-child)').addClass('closed');
             }
