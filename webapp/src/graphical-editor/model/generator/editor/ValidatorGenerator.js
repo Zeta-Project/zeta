@@ -74,7 +74,13 @@ export default class {
 
         });
         this.references = references;
-        this.edges = this.edges.filter(edge => !edge.meta);
+        this.edges = this.edges.map(edge => {
+            if (edge.meta) {
+                edge.conceptElement = `${edge.meta.source.mclass}.${edge.name}`;
+                delete(edge.meta);
+            }
+            return edge;
+        });
         this.classes = classes;
 
         this.matrix = new MatrixGenerator();
@@ -91,7 +97,7 @@ export default class {
     }
 
     getEdge(node) {
-        return node.edges.reduce((result,edge) => {
+        return node.edges.reduce((result, edge) => {
             result[edge.name.toLowerCase()] = this.getEdgeBoundss(edge.conceptElement.split(".")[1]);
             return result;
         }, {});
@@ -100,7 +106,7 @@ export default class {
     getEdgeBoundss(edgeName) {
         var edge = this.references.find(e => e.name === edgeName);
         let mbo = this.createBounds(edge);
-       // var obj = { [edge.name.toLowerCase()]: [mbo] };
+        // var obj = { [edge.name.toLowerCase()]: [mbo] };
         return mbo;
     }
 
