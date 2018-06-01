@@ -82,9 +82,6 @@ class ScalaRoutes @Inject()(
   def getModelEditor(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(modelId) _)
 
 
-  // # temporary
-  def getGenerate(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorController.generate(metaModelId) _)
-
   /* ### MetaModel REST API
    * MMRA => MetaModelRestApi
    */
