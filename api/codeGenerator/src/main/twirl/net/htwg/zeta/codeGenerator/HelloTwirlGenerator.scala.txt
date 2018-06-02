@@ -1,5 +1,0 @@
-@()
-
-object HelloTwirlGenerator extends App {
-  println("Hello World")
-}
