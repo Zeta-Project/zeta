@@ -773,4 +773,23 @@ class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
     }
   }
 
+  "A Graphical DSL parser should fail" - {
+    "for an example with missing styles" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, "", shape, diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "shape"
+    }
+    "for an example with missing shapes" in {
+      val result = parser.parse(ConceptCreatorHelper.exampleConcept, style, "", diagram)
+
+      result.isSuccess shouldBe false
+      val parsed = result.toEither.left.get
+
+      parsed.errorDsl shouldBe "diagram"
+    }
+  }
+
 }
