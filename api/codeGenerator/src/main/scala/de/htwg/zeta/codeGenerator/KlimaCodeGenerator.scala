@@ -5,6 +5,7 @@ import de.htwg.zeta.codeGenerator.txt.LinkTemplate
 import de.htwg.zeta.codeGenerator.txt.MapLinkTemplate
 import de.htwg.zeta.codeGenerator.txt.ReferenceLinkTemplate
 import de.htwg.zeta.codeGenerator.txt.EntityTemplate
+import de.htwg.zeta.codeGenerator.txt.AnchorTemplate
 
 /**
  * For this to compile. SBT task twirlCompileTemplates needs to be executed first
@@ -18,5 +19,6 @@ object KlimaCodeGenerator{
   def generateMapLink(): String = MapLinkTemplate.toString
   def generateReferenceLink(): String = ReferenceLinkTemplate.toString
   def generateEntity(): String = EntityTemplate.toString
+  def generateAnchor(): String = AnchorTemplate.toString
 
 }
