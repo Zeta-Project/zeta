@@ -23,6 +23,9 @@ class KlimaCodeGeneratorTest extends FreeSpec {
       "a Entity as ModelClass" in {
         println(generatorToTest.generateEntity())
       }
+      "a Anchor as ModelClass" in {
+        println(generatorToTest.generateAnchor())
+      }
     }
   }
 }
