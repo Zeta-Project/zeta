@@ -25,6 +25,16 @@ class CommentParserTest extends FreeSpec with Matchers {
       val result = parser.parseAll(parser.parsedText, input)
       result.get shouldBe expectedOutput
     }
+    "fail on not closed multiline comments" in {
+      val input ="""This is some
+         |/* multiline
+         |comment which isn't closed."""
+        .stripMargin
+
+      val parser = CommentParser()
+      val result = parser.parseAll(parser.parsedText, input)
+      result.successful shouldBe false
+    }
   }
 
 }
