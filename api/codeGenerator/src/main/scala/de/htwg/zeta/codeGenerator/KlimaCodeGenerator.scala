@@ -1,24 +1,35 @@
 package de.htwg.zeta.codeGenerator
 
-import de.htwg.zeta.codeGenerator.txt.ValueTemplate
-import de.htwg.zeta.codeGenerator.txt.LinkTemplate
-import de.htwg.zeta.codeGenerator.txt.MapLinkTemplate
-import de.htwg.zeta.codeGenerator.txt.ReferenceLinkTemplate
+import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.txt.EntityTemplate
-import de.htwg.zeta.codeGenerator.txt.AnchorTemplate
 
 /**
  * For this to compile. SBT task twirlCompileTemplates needs to be executed first
  *
  */
-object KlimaCodeGenerator{
+object KlimaCodeGenerator {
+
+  private def collectAllEntities(startEntity: Entity): Map[String, Entity] = {
+    val mapBuilder = Map.newBuilder[String, Entity]
+
+    def rec(entity: Entity): Unit = {
+      mapBuilder += entity.name -> entity
+      entity.links.foreach { link =>
+        rec(link.entity)
+      }
+    }
+
+    rec(startEntity)
+    mapBuilder.result()
+  }
 
   // Model-Classes
-  def generateValue(): String = ValueTemplate.toString
-  def generateLink(): String = LinkTemplate.toString
-  def generateMapLink(): String = MapLinkTemplate.toString
-  def generateReferenceLink(): String = ReferenceLinkTemplate.toString
-  def generateEntity(): String = EntityTemplate.toString
-  def generateAnchor(): String = AnchorTemplate.toString
+  def generateEntity(entity: Entity): String = {
+    val generated = collectAllEntities(entity).map { case (_, e) =>
+      EntityTemplate(e).toString
+    }
+
+    generated.mkString("\n")
+  }
 
 }

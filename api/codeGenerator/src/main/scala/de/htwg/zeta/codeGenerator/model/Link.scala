@@ -8,5 +8,5 @@ package de.htwg.zeta.codeGenerator.model
  */
 case class Link(
     name: String,
-    entity: Entity,
+    entity: Entity
 )
