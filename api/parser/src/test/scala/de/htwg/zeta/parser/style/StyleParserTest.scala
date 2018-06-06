@@ -1,7 +1,6 @@
 package de.htwg.zeta.parser.style
 
 import javafx.scene.paint.Color
-
 import org.scalatest.FlatSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
@@ -152,7 +151,7 @@ class StyleParserTest extends FlatSpec with Matchers with Inside {
     val styleParser = StyleParser.parseStyles(styleToTestSuccess)
 
     inside(styleParser) {
-      case StyleParser.Success(List(style: StyleParseTree), _) =>
+      case Right(List(style: StyleParseTree)) =>
         style.name shouldBe "Y"
         style.description shouldBe "Style for a connection between an interface and its implementing class"
 
@@ -175,7 +174,7 @@ class StyleParserTest extends FlatSpec with Matchers with Inside {
   "A StyleParser" should "succeed if a style has a single parent style" in {
     val parseResult = StyleParser.parseStyles(styleWithSingleParentStyle)
     inside(parseResult) {
-      case StyleParser.Success((List(parentStyle: StyleParseTree, childStyle: StyleParseTree)), _) =>
+      case Right(List(parentStyle: StyleParseTree, childStyle: StyleParseTree)) =>
         parentStyle.parentStyles shouldBe empty
         childStyle.parentStyles should contain("ParentStyle")
     }
@@ -184,7 +183,7 @@ class StyleParserTest extends FlatSpec with Matchers with Inside {
   "A StyleParser" should "succeed if a style has multiple parent styles" in {
     val parseResult = StyleParser.parseStyles(styleWithMultipleParentStyles)
     inside(parseResult) {
-      case StyleParser.Success((styles: List[StyleParseTree]), _) =>
+      case Right(styles: List[StyleParseTree]) =>
         styles should have size 4
         inside(styles.find(s => s.name == "MyStyle")) {
           case Some(childStyle: StyleParseTree) =>
@@ -197,26 +196,26 @@ class StyleParserTest extends FlatSpec with Matchers with Inside {
 
   "A StyleParser" should "fail without a description" in {
     val styleParser = StyleParser.parseStyles(styleWithoutDescription)
-    styleParser.successful shouldBe false
+    styleParser.isRight shouldBe false
   }
 
   "A StyleParser" should "fail without braces" in {
     val styleParser = StyleParser.parseStyles(styleWithoutBraces)
-    styleParser.successful shouldBe false
+    styleParser.isRight shouldBe false
   }
 
   "A StyleParser" should "succeed if colors defined as gradients" in {
     val styleParser = StyleParser.parseStyles(styleWithGradientColors)
-    styleParser.successful shouldBe true
+    styleParser.isRight shouldBe true
   }
 
   "A StyleParser" should "fail if an invalid color is specified" in {
     val styleParser = StyleParser.parseStyles(styleWithInvalidColor)
-    styleParser.successful shouldBe false
+    styleParser.isRight shouldBe false
   }
 
   "A StyleParser" should "fail if an invalid gradient orientation is specified" in {
     val styleParser = StyleParser.parseStyles(styleWithInvalidGradientOrientation)
-    styleParser.successful shouldBe false
+    styleParser.isRight shouldBe false
   }
 }
