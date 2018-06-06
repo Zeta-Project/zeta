@@ -10,7 +10,6 @@ import de.htwg.zeta.server.controller.DynamicFileController
 import de.htwg.zeta.server.controller.ForgotPasswordController
 import de.htwg.zeta.server.controller.MetaModelController
 import de.htwg.zeta.server.controller.ModelController
-import de.htwg.zeta.server.controller.ModelEditorGeneratorController
 import de.htwg.zeta.server.controller.ResetPasswordController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
@@ -46,7 +45,6 @@ class WebControllerContainer @Inject() private(
     val webpageController: Provider[WebpageController],
     val metaModelController: Provider[MetaModelController],
     val modelController: Provider[ModelController],
-    val generatorController: Provider[ModelEditorGeneratorController],
     val codeEditorController: Provider[CodeEditorController],
     val webJarAssets: Provider[WebJarAssets],
     val dynamicFileController: Provider[DynamicFileController],
