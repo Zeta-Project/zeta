@@ -3,10 +3,10 @@ package de.htwg.zeta.parser
 import scalaz.Failure
 import scalaz.Success
 import scalaz.Validation
-
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.gdsl.GraphicalDsl
 import de.htwg.zeta.common.models.project.gdsl.shape.Shape
+import de.htwg.zeta.parser.common.ParseError
 import de.htwg.zeta.parser.diagram.DiagramParseTreeTransformer
 import de.htwg.zeta.parser.diagram.DiagramParser
 import de.htwg.zeta.parser.shape.ShapeParseTreeTransformer
@@ -17,32 +17,41 @@ import de.htwg.zeta.parser.style.StyleParser
 class GraphicalDSLParser {
 
   object ErrorResult {
-    def styleFailure(errors: List[String]): Failure[ErrorResult] = Failure(ErrorResult("style", errors))
-    def shapeFailure(errors: List[String]): Failure[ErrorResult] = Failure(ErrorResult("shape", errors))
-    def diagramFailure(errors: List[String]): Failure[ErrorResult] = Failure(ErrorResult("diagram", errors))
+    private val styleDSL = "style"
+    private val shapeDSL = "shape"
+    private val diagramDSL = "diagram"
+
+    def styleFailure(errors: List[String]): Failure[ErrorResult] = Failure(ErrorResult(styleDSL, errors, None))
+    def styleFailure(parseError: ParseError): Failure[ErrorResult] = Failure(ErrorResult(styleDSL, List(parseError.message), Some(parseError.position)))
+
+    def shapeFailure(errors: List[String]): Failure[ErrorResult] = Failure(ErrorResult(shapeDSL, errors, None))
+    def shapeFailure(parseError: ParseError): Failure[ErrorResult] = Failure(ErrorResult(shapeDSL, List(parseError.message), Some(parseError.position)))
+
+    def diagramFailure(errors: List[String]): Failure[ErrorResult] = Failure(ErrorResult(diagramDSL, errors, None))
+    def diagramFailure(parseError: ParseError): Failure[ErrorResult] = Failure(ErrorResult(diagramDSL, List(parseError.message), Some(parseError.position)))
   }
-  case class ErrorResult(errorDsl: String, errors: List[String])
+  case class ErrorResult(errorDsl: String, errors: List[String], position: Option[(Int, Int)])
 
   def parse(concept: Concept, styleInput: String, shapeInput: String, diagramInput: String): Validation[ErrorResult, GraphicalDsl] = {
     val styleParseTree = StyleParser.parseStyles(styleInput)
-    if (!styleParseTree.successful) {
-      return ErrorResult.styleFailure(List(styleParseTree.toString))
+    if (!styleParseTree.isRight) {
+      return ErrorResult.styleFailure(styleParseTree.left.get)
     }
     val styles = StyleParseTreeTransformer.transform(styleParseTree.getOrElse(List()))
     if (!styles.isSuccess) {
       return ErrorResult.styleFailure(styles.toEither.left.get)
     }
     val shapeParseTree = ShapeParser.parseShapes(shapeInput)
-    if (!shapeParseTree.successful) {
-      return ErrorResult.shapeFailure(List(shapeParseTree.toString))
+    if (!shapeParseTree.isRight) {
+      return ErrorResult.shapeFailure(shapeParseTree.left.get)
     }
     val shape = ShapeParseTreeTransformer.transform(shapeParseTree.getOrElse(List()), styles.getOrElse(List()), concept)
     if (!shape.isSuccess) {
       return ErrorResult.shapeFailure(shape.toEither.left.get)
     }
     val diagramParseTree = DiagramParser.parseDiagrams(diagramInput)
-    if (!diagramParseTree.successful) {
-      return ErrorResult.diagramFailure(List(diagramParseTree.toString))
+    if (!diagramParseTree.isRight) {
+      return ErrorResult.diagramFailure(diagramParseTree.left.get)
     }
     val diagrams = DiagramParseTreeTransformer.transform(diagramParseTree.getOrElse(List()), shape.getOrElse(Shape(List(), List())).nodes)
     if (!diagrams.isSuccess) {
