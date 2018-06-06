@@ -18,6 +18,7 @@ object ZetaBuild {
 
   lazy val common = project
   lazy val generatorControl = project
+  lazy val codeGenerator = project
   lazy val parser = project
   lazy val persistence = project
   lazy val server = project

@@ -1,0 +1,8 @@
+@import de.htwg.zeta.codeGenerator.model.Entity
+@(entity: Entity)
+
+case class @(entity.name)Entity(
+ @for(link <- entity.links){
+    @(link.name): @(link.entity.name)Entity,
+ }
+)
