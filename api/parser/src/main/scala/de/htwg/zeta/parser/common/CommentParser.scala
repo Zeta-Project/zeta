@@ -26,20 +26,17 @@ class CommentParser extends CommonParserMethods {
           val failureArray = strippedText.toCharArray
           val rawArray = rawInput.toCharArray
 
-          var p1 = 0
-          var p2 = 0
-          while (p2 < rawArray.length && p1 < failureArray.length && p1 < error.offset) {
+          val (_, newPointer) = rawArray.foldLeft((0, 0))((pointer, r) => {
+            val (p1, p2) = pointer
             val f = failureArray(p1)
-            val r = rawArray(p2)
-            if (r == f) {
-              p1 += 1
-              p2 += 1
+            if(p2 < rawArray.length && p1 < failureArray.length && p1 < error.offset) {
+              (p1 + (if (r == f) 1 else 0), p2 + 1)
             } else {
-              p2 += 1
+              pointer
             }
-          }
+          })
 
-          val newPosition = new CharSequenceReader(rawArray, p2)
+          val newPosition = new CharSequenceReader(rawArray, newPointer)
           error.copy(offset = newPosition.offset, position = (newPosition.pos.line, newPosition.pos.column))
         }
       )
@@ -54,9 +51,6 @@ class CommentParser extends CommonParserMethods {
 
   private def lineComment: Parser[CommentResult] =
     """//[^\v]+""".r ^^ (a => CommentResult(a))
-
-  private def stringUntilLineBreak: Parser[String] =
-    """[^\v]+""".r ^^ (_.toString)
 
   private def anyString: Parser[String] =
     """(?s)^((?!/[/\*]).)+""".r ^^ (_.toString)
