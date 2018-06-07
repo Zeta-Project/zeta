@@ -22,16 +22,17 @@
     "jest-cli": "^22.4.3",
     "jointjs": "2.0.1",
     "jquery": "3.3.1",
+    "jquery-mobile": "^1.5.0-alpha.1",
     "jquery-ui": "1.12.1",
     "jquery-ui-themes": "1.12.0",
     "keyboardjs": "0.4.1",
     "lodash": "3.10.1",
+    "object-assign-deep": "0.4.0",
     "polymer-cli": "1",
     "rappid": "file:./rappid.tar.gz",
     "script-loader": "0",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
-    "zxcvbn": "4.2.0",
-    "object-assign-deep":"0.4.0"
+    "zxcvbn": "4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.42",
@@ -52,14 +53,14 @@
     "jest": "21",
     "less": "2",
     "less-loader": "4",
+    "object-assign-deep": "0.4.0",
     "regenerator-runtime": "^0.11.1",
     "string-replace-loader": "1",
     "style-loader": "0",
     "uglifyjs-webpack-plugin": "1",
     "url-loader": "0",
     "webpack": "3",
-    "webpack-dev-server": "2",
-    "object-assign-deep":"0.4.0"
+    "webpack-dev-server": "2"
   },
   "jest": {
     "cacheDirectory": "./node_modules/.cache/jest"

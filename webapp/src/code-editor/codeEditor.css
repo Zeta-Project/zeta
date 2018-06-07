@@ -111,3 +111,22 @@
     text-align: center;
     white-space: pre;
 }
+
+
+.box {
+    float: left;
+    width: 45%;
+    margin-right: 2%;
+    padding: 20px;
+    background: #eee;
+    box-sizing: border-box;
+}
+
+.box a {
+    display: block;
+}
+
+H4 {text-decoration: underline;}
+
+/*#outline-nodes { position:relative; }*/
+/*#outline-nodes p { position: absolute; width: 100%; height: 100%; top: 0; left: 0; text-decoration: none; z-index: 10; background-color: #FFF; opacity: 0; filter: alpha(opacity=1); }*/
