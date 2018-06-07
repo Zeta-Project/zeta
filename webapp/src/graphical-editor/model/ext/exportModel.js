@@ -108,7 +108,7 @@ export default (function modelExporter () {
                 referenceName: link.attributes.mReference,
                 sourceNodeName: {},
                 targetNodeName: {},
-                attributes: {},
+                attributes: [],
                 attributeValues: {},
                 methods: []
             };
