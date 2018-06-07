@@ -73,7 +73,7 @@ export default (function modelExporter () {
                     let attrName = globalMClassAttributeInfo.find(element => element.id === attrs[key].id);
 
                     if(attrName !== undefined) {
-                        
+                        element.attributes.push(attrName);
                         element.attributeValues[attrName.name] = attrs[key].text;
                     }
                 }
