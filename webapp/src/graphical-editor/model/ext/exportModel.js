@@ -74,7 +74,7 @@ export default (function modelExporter () {
 
                     if(attrName !== undefined) {
                         element.attributes.push(attrName);
-                        element.attributeValues[attrName.name] = attrs[key].text;
+                        element.attributeValues[attrName.name] = { value: attrs[key].text[0] ||'', type: attrName.type };
                     }
                 }
             }
