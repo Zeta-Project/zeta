@@ -15,19 +15,19 @@ export class codeoutline {
             credentials: 'same-origin'
         })
             .then(() => {
-                switch(this.dslType) {
+                switch (this.dslType) {
                     case "shape":
-                        let nodes = this.findElementLineNumbers(this.editor,"node");
-                        let edges = this.findElementLineNumbers(this.editor,"edge");
+                        let nodes = this.findElementLineNumbers(this.editor, "node");
+                        let edges = this.findElementLineNumbers(this.editor, "edge");
                         this.createHeadline(nodes);
-                        this.createLinks(nodes,this.editor);
+                        this.createLinks(nodes, this.editor);
                         this.createHeadline(edges);
-                        this.createLinks(edges,this.editor);
+                        this.createLinks(edges, this.editor);
                         break;
                     case "style":
-                        let styles = this.findElementLineNumbers(this.editor,"style");
+                        let styles = this.findElementLineNumbers(this.editor, "style");
                         this.createHeadline(styles);
-                        this.createLinks(styles,this.editor);
+                        this.createLinks(styles, this.editor);
                         break;
                     default:
                         console.log(" ");
@@ -40,7 +40,7 @@ export class codeoutline {
     }
 
     createHeadline(elements) {
-            $('#outline-nodes').append("<h4>" + this.capitalizeFirstLetter(elements[0].typ) + "s</h4>");
+        $('#outline-nodes').append("<h4>" + this.capitalizeFirstLetter(elements[0].typ) + "s</h4>");
     }
 
     capitalizeFirstLetter(string) {
@@ -51,23 +51,22 @@ export class codeoutline {
         let lines = editor.session.doc.getAllLines()
         let LineNumbers = []
         for (let i = 0, l = lines.length; i < l; i++) {
-            if (lines[i].indexOf(typ) == 0){
-                let obj = Object.assign({typ: typ, name: lines[i].split(" ")[1], line: (i+1)});
+            if (lines[i].indexOf(typ) == 0) {
+                let obj = Object.assign({typ: typ, name: lines[i].split(" ")[1], line: (i + 1)});
                 LineNumbers.push(obj);
             }
         }
         return LineNumbers
     }
 
-    createLinks(elements,editor) {
+    createLinks(elements, editor) {
         for (let i = 0; i < elements.length; i++) {
             let obj = elements[i];
-            $('#outline-nodes').append("<div id=" +obj.line+ "  class=" + obj.name + ">");
-            $('#outline-nodes').append((i+1) + ". " + obj.name + " : Line " + obj.line + '</div>');
-            $('#'+obj.line).bind( "click", function() {
+            let el = $("<div>").attr("id", obj.line).addClass(obj.name).text(obj.name).bind("click", function () {
                 editor.scrollToLine(obj.line, true, true, function () {});
                 editor.gotoLine(obj.line, 10, true);
             });
+            $("#outline-nodes").append(el);
         }
     }
 }
