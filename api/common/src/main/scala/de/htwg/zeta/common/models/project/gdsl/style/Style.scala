@@ -11,9 +11,10 @@ case class Style(
 object Style {
   val defaultTransparency: Double = 1.0
 
+  private val defaultString = "default"
   val defaultStyle: Style = Style(
-    "default",
-    "default",
+    defaultString,
+    defaultString,
     Background.defaultBackground,
     Font.defaultFont,
     Line.defaultLine,

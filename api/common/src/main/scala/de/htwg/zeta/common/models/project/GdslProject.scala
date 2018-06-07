@@ -18,14 +18,17 @@ case class GdslProject(
 
 object GdslProject {
 
-  def empty(name: String): GdslProject = GdslProject(
-    id = UUID.randomUUID(),
-    name = name,
-    concept = Concept.empty,
-    diagram = "",
-    shape = "",
-    style = "",
-    validator = None
-  )
+  def empty(name: String): GdslProject = {
+    val emptyString = ""
+    GdslProject(
+      id = UUID.randomUUID(),
+      name = name,
+      concept = Concept.empty,
+      diagram = emptyString,
+      shape = emptyString,
+      style = emptyString,
+      validator = None
+    )
+  }
 
 }
