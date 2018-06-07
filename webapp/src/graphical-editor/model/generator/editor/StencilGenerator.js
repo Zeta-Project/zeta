@@ -69,18 +69,7 @@ class ShapesGenerator {
 
     createMClassAttribute(attribute, node) {
         return Object.assign(
-            {
-                name: attribute.name,
-                type: attribute.type ? attribute.type : null,
-                globalUnique: attribute.globalUnique,
-                localUnique: attribute.localUnique,
-                default: attribute.default,
-                constant: attribute.constant,
-                singleAssignment: attribute.singleAssignment,
-                expression: attribute.expression,
-                ordered: attribute.ordered,
-                transient: attribute.transient
-            },
+            attribute,
             this.createMClassAttributeText(attribute, node),
         );
     }
