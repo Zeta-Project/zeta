@@ -1,13 +1,12 @@
 package de.htwg.zeta.persistence.transient
 
-import javax.inject.Singleton
-
 import scala.collection.concurrent.TrieMap
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
+import javax.inject.Singleton
 
 /**
  * Transient implementation of the PasswordInfoPersistence.

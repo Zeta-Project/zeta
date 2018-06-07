@@ -1,8 +1,6 @@
 package de.htwg.zeta.persistence.accessRestricted
 
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -11,6 +9,8 @@ import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.FileRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** Persistence-Layer to restrict the access to the file-persistence.
  *

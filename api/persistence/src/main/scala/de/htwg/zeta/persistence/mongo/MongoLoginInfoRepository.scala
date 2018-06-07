@@ -1,11 +1,9 @@
 package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.general.LoginInfoRepository
@@ -14,6 +12,8 @@ import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.collectionName
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.keyProjection
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.sLoginInfo
 import de.htwg.zeta.persistence.mongo.MongoLoginInfoRepository.sUserId
+import javax.inject.Inject
+import javax.inject.Singleton
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection
