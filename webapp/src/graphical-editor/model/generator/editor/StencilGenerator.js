@@ -71,7 +71,7 @@ class ShapesGenerator {
         return Object.assign(
             {
                 name: attribute.name,
-                typ: attribute.type ? attribute.type : null,
+                type: attribute.type ? attribute.type : null,
                 globalUnique: attribute.globalUnique,
                 localUnique: attribute.localUnique,
                 default: attribute.default,
