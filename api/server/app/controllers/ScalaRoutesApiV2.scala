@@ -18,12 +18,12 @@ class ScalaRoutesApiV2 @Inject()(
     protected val webCont: WebControllerContainer
 ) extends RouteController with WebController {
 
-  def triggerParse(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApiV2.triggerParse(metaModelId) _)
+  def triggerParse(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.triggerParse(metaModelId) _)
 
-  def getMetaModelShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApiV2.getShape(metaModelId) _)
+  def getMetaModelShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getShape(metaModelId) _)
 
-  def getMetaModelStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApiV2.getStyle(metaModelId) _)
+  def getMetaModelStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getStyle(metaModelId) _)
 
-  def getMetaModelDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApiV2.getDiagram(metaModelId) _)
+  def getMetaModelDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getDiagram(metaModelId) _)
 
 }

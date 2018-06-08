@@ -2,8 +2,8 @@ package de.htwg.zeta.server.actor
 
 import scala.collection.mutable
 
-import akka.actor.ActorRef
 import akka.actor.Actor
+import akka.actor.ActorRef
 import akka.actor.Terminated
 
 /**
