@@ -9,7 +9,9 @@
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.js")"></script>
 }
 @views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts) {
-    <div class="container code-editor" data-meta-model-id="@id.toString" data-dsl-type="@dslType">
+
+
+    <div class="container code-editor box" data-meta-model-id="@id.toString" data-dsl-type="@dslType">
         <div class="source-code-inspection"></div>
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -27,4 +29,8 @@
             </div>
         </div>
     </div>
+
+
+
+    <div id="outline-nodes" class="container box">   </div>
 }
