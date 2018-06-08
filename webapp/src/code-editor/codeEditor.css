@@ -114,11 +114,9 @@
 
 
 .box {
-    float: left;
-    width: 45%;
-    margin-right: 2%;
+    float: right;
+    width: 50%;
     padding: 20px;
-    background: #eee;
     box-sizing: border-box;
 }
 
@@ -126,7 +124,19 @@
     display: block;
 }
 
-H4 {text-decoration: underline;}
+#outline-nodes>.outline-heading {
+    font-size: 14px;
+    font-weight: bold;
+}
+#outline-nodes>.outline-node {
+    padding: 0 0 0 20px;
+    cursor: pointer;
+    font-size: 12px;
+}
+#outline-nodes>.outline-node:hover {
+    font-weight: bold;
+}
+
 
 .lineErrorMarker {
     position:absolute;
