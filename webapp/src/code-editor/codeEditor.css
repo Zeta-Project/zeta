@@ -124,16 +124,19 @@
     display: block;
 }
 
-#outline-nodes>.outline-heading {
+#outline-nodes>.outline-container {
+    padding: 0 0 10px 0;
+}
+#outline-nodes>.outline-container>.outline-heading {
     font-size: 14px;
     font-weight: bold;
 }
-#outline-nodes>.outline-node {
+#outline-nodes>.outline-container>.outline-node {
     padding: 0 0 0 20px;
     cursor: pointer;
     font-size: 12px;
 }
-#outline-nodes>.outline-node:hover {
+#outline-nodes>.outline-container>.outline-node:hover {
     font-weight: bold;
 }
 
