@@ -40,7 +40,8 @@ export class codeoutline {
     }
 
     createHeadline(elements) {
-        $('#outline-nodes').append("<h4>" + this.capitalizeFirstLetter(elements[0].typ) + "s</h4>");
+        let el = $("<span>").text(this.capitalizeFirstLetter(elements[0].typ) + "s").addClass("outline-heading");
+        $('#outline-nodes').append(el);
     }
 
     capitalizeFirstLetter(string) {
@@ -48,8 +49,8 @@ export class codeoutline {
     }
 
     findElementLineNumbers(editor, typ) {
-        let lines = editor.session.doc.getAllLines()
-        let LineNumbers = []
+        let lines = editor.session.doc.getAllLines();
+        let LineNumbers = [];
         for (let i = 0, l = lines.length; i < l; i++) {
             if (lines[i].indexOf(typ) == 0) {
                 let obj = Object.assign({typ: typ, name: lines[i].split(" ")[1], line: (i + 1)});
@@ -62,18 +63,24 @@ export class codeoutline {
     createLinks(elements, editor) {
         for (let i = 0; i < elements.length; i++) {
             let obj = elements[i];
-            let el = $("<div>").attr("id", obj.line).addClass(obj.name).text(obj.name).bind("click", function () {
-                editor.scrollToLine(obj.line, true, true, function () {});
-                editor.gotoLine(obj.line, 10, true);
-            });
+            let el = $("<div>")
+                .attr("id", obj.line)
+                .addClass(obj.name)
+                .addClass("outline-node")
+                .text(obj.name)
+                .bind("click", function () {
+                    editor.scrollToLine(obj.line, true, true, function () {
+                    });
+                    editor.gotoLine(obj.line, 10, true);
+                });
             $("#outline-nodes").append(el);
         }
     }
 
 
-    markEditorLine(from,to,editor){
+    markEditorLine(from, to, editor) {
         var ace = require('brace');
         var Range = ace.acequire('ace/range').Range;
-        editor.session.addMarker(new Range(from, 0,to, 1), "lineErrorMarker", "fullLine");
+        editor.session.addMarker(new Range(from, 0, to, 1), "lineErrorMarker", "fullLine");
     }
 }
