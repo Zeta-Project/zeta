@@ -19,15 +19,12 @@ export class codeoutline {
                     case "shape":
                         let nodes = this.findElementLineNumbers(this.editor, "node");
                         let edges = this.findElementLineNumbers(this.editor, "edge");
-                        this.createHeadline(nodes);
-                        this.createLinks(nodes, this.editor);
-                        this.createHeadline(edges);
-                        this.createLinks(edges, this.editor);
+                        this.createOutlineLinks(nodes, this.editor);
+                        this.createOutlineLinks(edges, this.editor);
                         break;
                     case "style":
                         let styles = this.findElementLineNumbers(this.editor, "style");
-                        this.createHeadline(styles);
-                        this.createLinks(styles, this.editor);
+                        this.createOutlineLinks(styles, this.editor);
                         break;
                     default:
                         console.log(" ");
@@ -39,9 +36,18 @@ export class codeoutline {
             });
     }
 
-    createHeadline(elements) {
-        let el = $("<span>").text(this.capitalizeFirstLetter(elements[0].typ) + "s").addClass("outline-heading");
+    createOutlineLinks(elements, editor) {
+        let el = $("<div>").addClass("outline-container");
+        let heading = this.createHeadline(elements);
+        let nodes = this.createLinks(elements, editor);
+        el.append(heading);
+        for(let i = 0; i < nodes.length; i++)
+            el.append(nodes[i]);
         $('#outline-nodes').append(el);
+    }
+
+    createHeadline(elements) {
+        return $("<span>").text(this.capitalizeFirstLetter(elements[0].typ) + "s").addClass("outline-heading");
     }
 
     capitalizeFirstLetter(string) {
@@ -61,6 +67,7 @@ export class codeoutline {
     }
 
     createLinks(elements, editor) {
+        let links = [];
         for (let i = 0; i < elements.length; i++) {
             let obj = elements[i];
             let el = $("<div>")
@@ -73,8 +80,9 @@ export class codeoutline {
                     });
                     editor.gotoLine(obj.line, 10, true);
                 });
-            $("#outline-nodes").append(el);
+            links.push(el);
         }
+        return links;
     }
 
 
