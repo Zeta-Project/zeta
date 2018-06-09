@@ -37,17 +37,21 @@ export class codeoutline {
     }
 
     createOutlineLinks(elements, editor) {
-        let el = $("<div>").addClass("outline-container");
+        let el = $("<div>").addClass("panel panel-default");
         let heading = this.createHeadline(elements);
-        let nodes = this.createLinks(elements, editor);
+        let body = $("<div>").addClass("panel-body");
         el.append(heading);
+        el.append(body);
+        let nodes = this.createLinks(elements, editor);
         for(let i = 0; i < nodes.length; i++)
-            el.append(nodes[i]);
+            body.append(nodes[i]);
         $('#outline-nodes').append(el);
     }
 
     createHeadline(elements) {
-        return $("<span>").text(this.capitalizeFirstLetter(elements[0].typ) + "s").addClass("outline-heading");
+        return $("<div>").text(this.capitalizeFirstLetter(elements[0].typ) + "s")
+            .addClass("outline-heading")
+            .addClass("panel-heading");
     }
 
     capitalizeFirstLetter(string) {
@@ -70,16 +74,19 @@ export class codeoutline {
         let links = [];
         for (let i = 0; i < elements.length; i++) {
             let obj = elements[i];
+            let lineNumberEl = $("<span>").addClass("line").text(obj.line);
             let el = $("<div>")
                 .attr("id", obj.line)
                 .addClass(obj.name)
+                .addClass(obj.typ)
                 .addClass("outline-node")
                 .text(obj.name)
                 .bind("click", function () {
                     editor.scrollToLine(obj.line, true, true, function () {
                     });
                     editor.gotoLine(obj.line, 10, true);
-                });
+                })
+                .append(lineNumberEl);
             links.push(el);
         }
         return links;
