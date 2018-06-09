@@ -1,3 +1,7 @@
+.editor-container {
+    display: flex;
+}
+
 .editor{
     height:500px;
 }
@@ -112,16 +116,8 @@
     white-space: pre;
 }
 
-
-.box {
-    float: right;
-    width: 50%;
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.box a {
-    display: block;
+.side-box {
+    width: 400px;
 }
 
 #outline-nodes .outline-heading {
