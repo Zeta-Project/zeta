@@ -29,7 +29,7 @@ class CodeEditor {
     this.editor = this.initAceEditor(element.querySelector('.editor'));
     this.loadSourceCode();
     this.$element.on('click', '.js-save', () => this.saveSourceCode(this.editor.getValue()));
-    this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType);
+    this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType, this.editor);
     this.sourceCodeInspector.runInspection();
     this.codeoutline = new codeoutline(element, metaModelId, dslType, this.editor);
   }

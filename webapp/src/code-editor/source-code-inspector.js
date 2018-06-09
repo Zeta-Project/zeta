@@ -2,9 +2,11 @@ import $ from "jquery";
 
 export class SourceCodeInspector {
 
-    constructor(element, metaModelId, dslType) {
+    constructor(element, metaModelId, dslType, editor) {
         this.$element = $(element);
         this.metaModelId = metaModelId;
+        this.editor = editor;
+        this.markers = [];
         this.dslType = dslType;
         this.inspection = $('#source-code-inspection');
         this.inspectionAlert = $('<div>');
@@ -27,7 +29,7 @@ export class SourceCodeInspector {
                     }
                 } else {
                     if (response.errorDsl === this.dslType) {
-                        this.showHintFailureInCurrentDsl(response.messages)
+                        this.showHintFailureInCurrentDsl(response.messages, response.position)
                     } else {
                         this.showHintFailureInOtherDsl(response.errorDsl, response.messages);
                     }
@@ -42,20 +44,23 @@ export class SourceCodeInspector {
 
     showHintAllErrorsRemoved() {
         const errorMessage = 'All errors were removed, great!';
+        this.removeAllMarkers();
         this.inspectionAlert.text(errorMessage);
         this.inspectionAlert.removeClass().addClass('success');
         this.fadeInFadeOut();
         this.removeClickListener();
     }
 
-    showHintFailureInCurrentDsl(errorMessages) {
+    showHintFailureInCurrentDsl(errorMessages, position) {
         const errorMessage = errorMessages
             .map(errorMessage => `- ${errorMessage}`)
             .join('\n');
-        this.inspectionAlert.text(errorMessage);
+        const lineEl = $("<span>").addClass("lineNumber").text(position.line);
+        this.inspectionAlert.text(errorMessage).append(lineEl);
         this.inspectionAlert.removeClass().addClass('error');
+        this.markEditorLine(position);
         this.fadeIn();
-        this.removeClickListener();
+        this.installClickListenerScroll(position);
     }
 
     showHintFailureInOtherDsl(otherDsl, errors) {
@@ -78,21 +83,49 @@ export class SourceCodeInspector {
         this.inspection.css('cursor', 'pointer');
     }
 
+    installClickListenerScroll(position) {
+        this.inspection.click(() => {
+            this.editor.scrollToLine(position.line, true, true, function () {
+            });
+            this.editor.gotoLine(position.line, position.column - 1, true);
+        });
+        this.inspection.css('cursor', 'pointer');
+    }
+
     fadeIn() {
-        let el = this.inspection.stop(true, true);
+        const el = this.inspection.stop(true, true);
         SourceCodeInspector.animateToNewHeight(el);
     }
 
     fadeInFadeOut() {
-        let el = this.inspection.stop(true, true);
+        const el = this.inspection.stop(true, true);
         SourceCodeInspector.animateToNewHeight(el);
         setTimeout(function () {
             SourceCodeInspector.animateToZero(el);
         }, 3000);
     }
 
+    markEditorLine(position) {
+        this.removeAllMarkers();
+        const ace = require('brace');
+        const Range = ace.acequire('ace/range').Range;
+        const line = position.line - 1,
+            from = position.column - 1,
+            to = position.column;
+        const lineErrorMarkerRange = new Range(line, 0, line, 1),
+            charErrorMarkerRange = new Range(line, from, line, to);
+        this.markers.push(this.editor.session.addMarker(lineErrorMarkerRange, "lineErrorMarker", "fullLine"));
+        this.markers.push(this.editor.session.addMarker(charErrorMarkerRange, "charErrorMarker", "background"));
+    }
+
+    removeAllMarkers() {
+        for (let i = 0; i < this.markers.length; i++)
+            this.editor.session.removeMarker(this.markers[i]);
+        this.markers = [];
+    }
+
     static animateToNewHeight(el) {
-        let curHeight = el.height(),
+        const curHeight = el.height(),
             autoHeight = el.css('height', 'auto').outerHeight();
         return el.height(curHeight)
             .animate({height: autoHeight}, 400)

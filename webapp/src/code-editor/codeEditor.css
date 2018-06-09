@@ -20,6 +20,19 @@
     width: 70%;
 }
 
+.lineErrorMarker {
+    position: absolute;
+    background: #f0ad4e;
+    z-index: 20
+}
+
+.charErrorMarker {
+    position: absolute;
+    background-color: #d9534f;
+    border-color: #d43f3a;;
+    z-index: 21
+}
+
 .ace-container {
     border-radius: 5px;
     border: 1px solid gray;
@@ -110,8 +123,7 @@
     border-radius: 4px;
     vertical-align: middle;
     padding: 8px 15px;
-    text-align: center;
-    white-space: pre;
+    /*white-space: pre;*/
     margin-bottom: 20px;
     height: auto;
     border: 1px solid transparent;
@@ -133,6 +145,14 @@
 #source-code-inspection > div.warning {
     background-color: #f0ad4e;
     border-color: #eea236;
+}
+
+#source-code-inspection > div > .lineNumber {
+    display: block;
+    font-size: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    float: right;
+    line-height: 20px;
 }
 
 .side-box {
@@ -193,9 +213,4 @@
     background-color: #81941a;
 }
 
-.lineErrorMarker {
-    position: absolute;
-    background: red;
-    z-index: 20
-}
 
