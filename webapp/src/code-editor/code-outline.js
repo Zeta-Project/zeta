@@ -19,15 +19,12 @@ export class codeoutline {
                     case "shape":
                         let nodes = this.findElementLineNumbers(this.editor, "node");
                         let edges = this.findElementLineNumbers(this.editor, "edge");
-                        this.createHeadline(nodes);
-                        this.createLinks(nodes, this.editor);
-                        this.createHeadline(edges);
-                        this.createLinks(edges, this.editor);
+                        this.createOutlineLinks(nodes, this.editor);
+                        this.createOutlineLinks(edges, this.editor);
                         break;
                     case "style":
                         let styles = this.findElementLineNumbers(this.editor, "style");
-                        this.createHeadline(styles);
-                        this.createLinks(styles, this.editor);
+                        this.createOutlineLinks(styles, this.editor);
                         break;
                     default:
                         console.log(" ");
@@ -39,8 +36,22 @@ export class codeoutline {
             });
     }
 
+    createOutlineLinks(elements, editor) {
+        let el = $("<div>").addClass("panel panel-default");
+        let heading = this.createHeadline(elements);
+        let body = $("<div>").addClass("panel-body");
+        el.append(heading);
+        el.append(body);
+        let nodes = this.createLinks(elements, editor);
+        for(let i = 0; i < nodes.length; i++)
+            body.append(nodes[i]);
+        $('#outline-nodes').append(el);
+    }
+
     createHeadline(elements) {
-        $('#outline-nodes').append("<h4>" + this.capitalizeFirstLetter(elements[0].typ) + "s</h4>");
+        return $("<div>").text(this.capitalizeFirstLetter(elements[0].typ) + "s")
+            .addClass("outline-heading")
+            .addClass("panel-heading");
     }
 
     capitalizeFirstLetter(string) {
@@ -48,8 +59,8 @@ export class codeoutline {
     }
 
     findElementLineNumbers(editor, typ) {
-        let lines = editor.session.doc.getAllLines()
-        let LineNumbers = []
+        let lines = editor.session.doc.getAllLines();
+        let LineNumbers = [];
         for (let i = 0, l = lines.length; i < l; i++) {
             if (lines[i].indexOf(typ) == 0) {
                 let obj = Object.assign({typ: typ, name: lines[i].split(" ")[1], line: (i + 1)});
@@ -60,20 +71,31 @@ export class codeoutline {
     }
 
     createLinks(elements, editor) {
+        let links = [];
         for (let i = 0; i < elements.length; i++) {
             let obj = elements[i];
-            let el = $("<div>").attr("id", obj.line).addClass(obj.name).text(obj.name).bind("click", function () {
-                editor.scrollToLine(obj.line, true, true, function () {});
-                editor.gotoLine(obj.line, 10, true);
-            });
-            $("#outline-nodes").append(el);
+            let lineNumberEl = $("<span>").addClass("line").text(obj.line);
+            let el = $("<div>")
+                .attr("id", obj.line)
+                .addClass(obj.name)
+                .addClass(obj.typ)
+                .addClass("outline-node")
+                .text(obj.name)
+                .bind("click", function () {
+                    editor.scrollToLine(obj.line, true, true, function () {
+                    });
+                    editor.gotoLine(obj.line, 10, true);
+                })
+                .append(lineNumberEl);
+            links.push(el);
         }
+        return links;
     }
 
 
-    markEditorLine(from,to,editor){
+    markEditorLine(from, to, editor) {
         var ace = require('brace');
         var Range = ace.acequire('ace/range').Range;
-        editor.session.addMarker(new Range(from, 0,to, 1), "lineErrorMarker", "fullLine");
+        editor.session.addMarker(new Range(from, 0, to, 1), "lineErrorMarker", "fullLine");
     }
 }
