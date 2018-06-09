@@ -9,7 +9,7 @@ import 'brace/theme/xcode';
 import 'brace/mode/scala';
 import { styleLanguage, testLanguage } from './code-editor/ace-grammar';
 import { SourceCodeInspector } from "./code-editor/source-code-inspector";
-import {codeoutline} from "./code-editor/code-outline";
+import {CodeOutline} from "./code-editor/code-outline";
 
 $(document).ready(() => {
   $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
@@ -31,7 +31,7 @@ class CodeEditor {
     this.$element.on('click', '.js-save', () => this.saveSourceCode(this.editor.getValue()));
     this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType, this.editor);
     this.sourceCodeInspector.runInspection();
-    this.codeoutline = new codeoutline(element, metaModelId, dslType, this.editor);
+    this.codeoutline = new CodeOutline(element, metaModelId, dslType, this.editor);
   }
 
   initAceEditor(element) {
