@@ -92,10 +92,4 @@ export class codeoutline {
         return links;
     }
 
-
-    markEditorLine(from, to, editor) {
-        var ace = require('brace');
-        var Range = ace.acequire('ace/range').Range;
-        editor.session.addMarker(new Range(from, 0, to, 1), "lineErrorMarker", "fullLine");
-    }
 }
