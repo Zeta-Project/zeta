@@ -72,8 +72,7 @@ export class SourceCodeInspector {
     }
 
     removeClickListener() {
-        this.inspection.click(() => {
-        });
+        this.inspection.off("click");
         this.inspection.css('cursor', 'auto');
     }
 
