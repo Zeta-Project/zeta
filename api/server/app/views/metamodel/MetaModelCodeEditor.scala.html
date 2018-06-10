@@ -20,14 +20,14 @@
       <div class="container code-editor editor-box" data-meta-model-id="@id.toString" data-dsl-type="@dslType">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  <h3 class="panel-title editor-title">
-                      <strong>@dslType</strong>
-                      <span class="pull-right">
-                          <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
-                          <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
-                          <span class="js-save btn btn-primary glyphicon glyphicon-floppy-disk" title="Save Document"></span>
+                  <span class="editor-title">@dslType</span>
+                  <span class="editor-button">
+                      <span class="label label-success js-save-successful" style="display: none">Saving succeed</span>
+                      <span class="label label-danger js-save-failed" style="display: none">Saving failed</span>
+                      <span class="js-save btn btn-sm btn-primary" title="Save Document">
+                          Save <span class="glyphicon glyphicon-floppy-disk"></span>
                       </span>
-                  </h3>
+                  </span>
               </div>
               <div class="panel-body editor-body">
                   <div class="editor"></div>

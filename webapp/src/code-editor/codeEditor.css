@@ -3,7 +3,8 @@
 }
 
 .editor {
-    height: 500px;
+    height: 500px; /* fallback for older browsers */
+    height: calc(100vh - 140px);
 }
 
 .editor-body {
@@ -11,8 +12,16 @@
 }
 
 .editor-title {
-    height: 40px;
-    line-height: 40px;
+    text-transform: capitalize;
+    font-size: 14px;
+    font-weight: bold;
+}
+.editor-button {
+    margin: -5px -10px;
+    float: right;
+}
+.editor-button .btn>.glyphicon {
+    margin: 0 0 0 5px;
 }
 
 .ace-editor {
@@ -171,11 +180,11 @@
     font-size: 12px;
     position: relative;
     color: #333;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }
 
 #outline-nodes .outline-node > .line {
     font-size: 12px;
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     float: right;
 }
 
