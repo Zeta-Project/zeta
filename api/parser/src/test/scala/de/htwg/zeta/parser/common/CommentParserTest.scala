@@ -57,7 +57,7 @@ class CommentParserTest extends FreeSpec with Matchers {
 
           val styleResult = StyleParser.parseStyles(input)
           styleResult.isRight shouldBe false
-          styleResult.left.get.offset shouldBe 185
+          styleResult.left.get.offset shouldBe input.length - 1 // last character
         }
         "with sample 2" in {
           val input: String =
@@ -69,7 +69,7 @@ class CommentParserTest extends FreeSpec with Matchers {
 
           val styleResult = StyleParser.parseStyles(input)
           styleResult.isRight shouldBe false
-          styleResult.left.get.offset shouldBe 139
+          styleResult.left.get.offset shouldBe input.indexOf(""""S""") // in front of '"S'
         }
         "with sample 3" in {
           val input: String =
@@ -85,7 +85,7 @@ class CommentParserTest extends FreeSpec with Matchers {
 
           val styleResult = StyleParser.parseStyles(input)
           styleResult.isRight shouldBe false
-          styleResult.left.get.offset shouldBe 315
+          styleResult.left.get.offset shouldBe input.indexOf(""""a"""") // in front of '"a"'
         }
       }
     }
