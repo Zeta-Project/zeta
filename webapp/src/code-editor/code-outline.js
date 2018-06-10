@@ -11,35 +11,39 @@ export class CodeOutline {
     createCodeOutline() {
         const context = this;
         context.generateOutlineElements();
-        let updateOutline = CodeOutline.debounce(function() {
+        let updateOutline = CodeOutline.debounce(function () {
             context.generateOutlineElements();
         }, 250);
         this.editor.getSession().on('change', updateOutline);
     }
 
     generateOutlineElements() {
-        const outlineNodes = $('#outline-nodes');
         switch (this.dslType) {
             case "shape":
-                let nodes = CodeOutline.findElementLineNumbers(this.editor, "node");
-                let edges = CodeOutline.findElementLineNumbers(this.editor, "edge");
-                let nodesEl = CodeOutline.createOutlineLinks(nodes, this.editor);
-                let edgesEl = CodeOutline.createOutlineLinks(edges, this.editor);
-                outlineNodes.empty().append(nodesEl).append(edgesEl);
+                this.generateOutlineForDsl(["node", "edge"]);
                 break;
             case "style":
-                let styles = CodeOutline.findElementLineNumbers(this.editor, "style");
-                let stylesEl = CodeOutline.createOutlineLinks(styles, this.editor);
-                outlineNodes.empty().append(stylesEl);
+                this.generateOutlineForDsl(["style"]);
                 break;
             default:
                 console.error("unknown dsl type for outline generation");
         }
     }
 
-    static createOutlineLinks(elements, editor) {
+    generateOutlineForDsl(keyWords) {
+        const outlineNodes = $('#outline-nodes');
+        outlineNodes.empty();
+        for (let i = 0; i < keyWords.length; i++) {
+            const keyWord = keyWords[i],
+                nodes = CodeOutline.findElementLineNumbers(this.editor, keyWord),
+                elements = CodeOutline.createOutlineLinks(nodes, this.editor, keyWord);
+            outlineNodes.append(elements);
+        }
+    }
+
+    static createOutlineLinks(elements, editor, type) {
         let el = $("<div>").addClass("panel panel-default");
-        let heading = CodeOutline.createHeadline(elements);
+        let heading = CodeOutline.createHeadline(type);
         let body = $("<div>").addClass("panel-body");
         el.append(heading);
         el.append(body);
@@ -49,8 +53,8 @@ export class CodeOutline {
         return el;
     }
 
-    static createHeadline(elements) {
-        return $("<div>").text(CodeOutline.capitalizeFirstLetter(elements[0].typ) + "s")
+    static createHeadline(type) {
+        return $("<div>").text(CodeOutline.capitalizeFirstLetter(type + "s"))
             .addClass("outline-heading")
             .addClass("panel-heading");
     }
@@ -59,14 +63,14 @@ export class CodeOutline {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    static findElementLineNumbers(editor, typ) {
+    static findElementLineNumbers(editor, type) {
         let lines = editor.session.doc.getAllLines();
         let lineNumbers = [];
         for (let i = 0, l = lines.length; i < l; i++) {
-            if (lines[i].indexOf(typ) === 0) {
+            if (lines[i].indexOf(type) === 0) {
                 let name = lines[i].split(" ")[1];
-                if(!!name) {
-                    let obj = Object.assign({typ: typ, name: name, line: (i + 1)});
+                if (!!name) {
+                    let obj = Object.assign({typ: type, name: name, line: (i + 1)});
                     lineNumbers.push(obj);
                 }
             }
