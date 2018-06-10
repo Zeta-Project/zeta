@@ -6,48 +6,47 @@ export class CodeOutline {
         this.metaModelId = metaModelId;
         this.dslType = dslType;
         this.editor = editor;
-        this.createCodeOutline();
     }
 
     createCodeOutline() {
-        fetch(`/rest/v2/meta-models/${this.metaModelId}/${this.dslType}`, {
-            method: 'GET',
-            credentials: 'same-origin'
-        })
-            .then(() => this.generateOutlineElements())
-            .catch(err => {
-                console.error(err);
-                alert('an unexpected error occurred');
-            });
+        const context = this;
+        context.generateOutlineElements();
+        let updateOutline = CodeOutline.debounce(function() {
+            context.generateOutlineElements();
+        }, 250);
+        this.editor.getSession().on('change', updateOutline);
     }
 
     generateOutlineElements() {
+        const outlineNodes = $('#outline-nodes');
         switch (this.dslType) {
             case "shape":
                 let nodes = CodeOutline.findElementLineNumbers(this.editor, "node");
                 let edges = CodeOutline.findElementLineNumbers(this.editor, "edge");
-                this.createOutlineLinks(nodes, this.editor);
-                this.createOutlineLinks(edges, this.editor);
+                let nodesEl = CodeOutline.createOutlineLinks(nodes, this.editor);
+                let edgesEl = CodeOutline.createOutlineLinks(edges, this.editor);
+                outlineNodes.empty().append(nodesEl).append(edgesEl);
                 break;
             case "style":
                 let styles = CodeOutline.findElementLineNumbers(this.editor, "style");
-                this.createOutlineLinks(styles, this.editor);
+                let stylesEl = CodeOutline.createOutlineLinks(styles, this.editor);
+                outlineNodes.empty().append(stylesEl);
                 break;
             default:
                 console.error("unknown dsl type for outline generation");
         }
     }
 
-    createOutlineLinks(elements, editor) {
+    static createOutlineLinks(elements, editor) {
         let el = $("<div>").addClass("panel panel-default");
         let heading = CodeOutline.createHeadline(elements);
         let body = $("<div>").addClass("panel-body");
         el.append(heading);
         el.append(body);
-        let nodes = this.createLinks(elements, editor);
-        for(let i = 0; i < nodes.length; i++)
+        let nodes = CodeOutline.createLinks(elements, editor);
+        for (let i = 0; i < nodes.length; i++)
             body.append(nodes[i]);
-        $('#outline-nodes').append(el);
+        return el;
     }
 
     static createHeadline(elements) {
@@ -65,14 +64,17 @@ export class CodeOutline {
         let lineNumbers = [];
         for (let i = 0, l = lines.length; i < l; i++) {
             if (lines[i].indexOf(typ) === 0) {
-                let obj = Object.assign({typ: typ, name: lines[i].split(" ")[1], line: (i + 1)});
-                lineNumbers.push(obj);
+                let name = lines[i].split(" ")[1];
+                if(!!name) {
+                    let obj = Object.assign({typ: typ, name: name, line: (i + 1)});
+                    lineNumbers.push(obj);
+                }
             }
         }
         return lineNumbers
     }
 
-    createLinks(elements, editor) {
+    static createLinks(elements, editor) {
         let links = [];
         for (let i = 0; i < elements.length; i++) {
             let obj = elements[i];
@@ -93,5 +95,24 @@ export class CodeOutline {
         }
         return links;
     }
+
+    // Returns a function, that, as long as it continues to be invoked, will not
+    // be triggered. The function will be called after it stops being called for
+    // N milliseconds. If `immediate` is passed, trigger the function on the
+    // leading edge, instead of the trailing.
+    static debounce(func, wait, immediate) {
+        let timeout;
+        return function () {
+            let context = this, args = arguments;
+            let later = function () {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            let callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
 
 }
