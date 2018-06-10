@@ -1,8 +1,6 @@
 package de.htwg.zeta.persistence.mongo
 
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -18,6 +16,9 @@ import de.htwg.zeta.common.format.entity.LogFormat
 import de.htwg.zeta.common.format.entity.SettingsFormat
 import de.htwg.zeta.common.format.entity.TimedTaskFormat
 import de.htwg.zeta.common.format.entity.UserFormat
+import de.htwg.zeta.common.format.model.EdgeFormat
+import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
+import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.format.project.AttributeFormat
 import de.htwg.zeta.common.format.project.AttributeTypeFormat
 import de.htwg.zeta.common.format.project.AttributeValueFormat
@@ -28,9 +29,6 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.project.MethodFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
-import de.htwg.zeta.common.format.model.EdgeFormat
-import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
-import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
@@ -38,11 +36,11 @@ import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.persistence.general.FilterImageRepository
 import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
-import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
@@ -57,6 +55,8 @@ import de.htwg.zeta.persistence.mongo.MongoEntityRepository.nodeFormat
 import de.htwg.zeta.persistence.mongo.MongoEntityRepository.sMongoId
 import de.htwg.zeta.persistence.mongo.MongoPlayConversionHelper.readPlayJson
 import de.htwg.zeta.persistence.mongo.MongoPlayConversionHelper.writePlayJson
+import javax.inject.Inject
+import javax.inject.Singleton
 import play.api.libs.json.JsObject
 import play.api.libs.json.OFormat
 import reactivemongo.api.Cursor

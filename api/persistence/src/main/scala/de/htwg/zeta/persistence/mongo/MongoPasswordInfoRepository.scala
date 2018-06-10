@@ -1,10 +1,7 @@
 package de.htwg.zeta.persistence.mongo
 
-import javax.inject.Inject
-import javax.inject.Singleton
-
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
 import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
@@ -13,6 +10,8 @@ import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.collectionName
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.loginInfoProjection
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.sLoginInfo
 import de.htwg.zeta.persistence.mongo.MongoPasswordInfoRepository.sPasswordInfo
+import javax.inject.Inject
+import javax.inject.Singleton
 import reactivemongo.api.Cursor
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.collections.bson.BSONCollection

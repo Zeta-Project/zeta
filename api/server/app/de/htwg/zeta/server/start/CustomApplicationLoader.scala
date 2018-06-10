@@ -1,7 +1,6 @@
 package de.htwg.zeta.server.start
 
 import java.io.File
-import javax.inject.Singleton
 
 import scala.collection.convert.WrapAsScala
 
@@ -16,12 +15,13 @@ import de.htwg.zeta.common.cluster.HostIP
 import de.htwg.zeta.persistence.PersistenceModule
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import grizzled.slf4j.Logging
+import javax.inject.Singleton
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject.bind
-import play.api.inject.guice.GuiceableModule
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.inject.guice.GuiceApplicationLoader
+import play.api.inject.guice.GuiceableModule
 
 /**
  * Entrypoint of application. The config is loaded / generated here.

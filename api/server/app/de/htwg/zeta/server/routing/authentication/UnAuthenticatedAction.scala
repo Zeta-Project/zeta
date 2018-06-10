@@ -4,8 +4,8 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 
 import com.mohiva.play.silhouette.api.HandlerResult
-import play.api.mvc.Result
 import play.api.mvc.Request
+import play.api.mvc.Result
 
 /**
  */

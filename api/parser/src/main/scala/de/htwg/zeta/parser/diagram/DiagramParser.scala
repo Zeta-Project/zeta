@@ -1,10 +1,22 @@
 package de.htwg.zeta.parser.diagram
 
 import de.htwg.zeta.parser.CommonParserMethods
+import de.htwg.zeta.parser.common.CommentParser
+import de.htwg.zeta.parser.common.ParseError
 
 object DiagramParser extends CommonParserMethods {
 
-  def parseDiagrams(input: String): ParseResult[List[DiagramParseTree]] = parseAll(diagrams, trimRight(input))
+  def parseDiagrams(input: String): Either[ParseError, List[DiagramParseTree]] = {
+    val strippedResult = CommentParser().parseComments(input)
+    strippedResult match {
+      case Left(l) => Left(l)
+      case Right(t) =>
+        parseAll(diagrams, t.text) match {
+          case NoSuccess(msg, next) => Left(t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column))))
+          case Success(s, _) => Right(s)
+        }
+    }
+  }
 
   private def diagrams: Parser[List[DiagramParseTree]] = rep(diagram)
 
