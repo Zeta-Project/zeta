@@ -2,8 +2,8 @@ package de.htwg.zeta.persistence.general
 
 import scala.concurrent.Future
 
-import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 import de.htwg.zeta.persistence.authInfo.ZetaLoginInfo
+import de.htwg.zeta.persistence.authInfo.ZetaPasswordInfo
 
 /**
  * Persistence for the PasswordInfo.
