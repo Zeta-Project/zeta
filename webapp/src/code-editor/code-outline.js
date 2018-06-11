@@ -66,11 +66,12 @@ export class CodeOutline {
     static findElementLineNumbers(editor, type) {
         let lines = editor.session.doc.getAllLines();
         let lineNumbers = [];
+        const regex = new RegExp("\s*" + type + "\\s.+", '');
         for (let i = 0, l = lines.length; i < l; i++) {
-            if (lines[i].indexOf(type) === 0) {
-                let name = lines[i].split(" ")[1];
-                if (!!name) {
-                    let obj = Object.assign({typ: type, name: name, line: (i + 1)});
+            if (lines[i].match(regex)) {
+                let array = lines[i].trim().split(" ");
+                if (array[0] === type && !!array[1]) {
+                    let obj = Object.assign({typ: type, name: array[1], line: (i + 1)});
                     lineNumbers.push(obj);
                 }
             }
