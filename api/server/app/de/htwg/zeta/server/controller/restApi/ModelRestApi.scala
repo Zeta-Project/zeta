@@ -18,6 +18,7 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepo
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
+import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
@@ -27,6 +28,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
+
 
 /**
  * REST-ful API for model definitions
@@ -208,6 +210,16 @@ class ModelRestApi @Inject()(
       metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(graphicalDslInstance.graphicalDslId)
     } yield {
       val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.concept, graphicalDslInstance).toList
+      Ok(views.html.codeViewer.ScalaCodeViewer(files))
+    }
+  }
+
+  def getKlimaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    for {
+      graphicalDslInstance <- modelEntityRepo.restrictedTo(request.identity.id).read(modelId)
+      metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(graphicalDslInstance.graphicalDslId)
+    } yield {
+      val files = GdslInstanceToZetaModel.generate(metaModelEntity.concept, graphicalDslInstance).toList
       Ok(views.html.codeViewer.ScalaCodeViewer(files))
     }
   }
