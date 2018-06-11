@@ -9,14 +9,14 @@ import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Results => HTMLResults}
-import play.api.mvc.Request
-import play.api.mvc.AnyContent
 import play.api.mvc.Action
 import play.api.mvc.ActionBuilder
-import play.api.mvc.Result
+import play.api.mvc.AnyContent
 import play.api.mvc.BodyParser
 import play.api.mvc.BodyParsers
+import play.api.mvc.Request
+import play.api.mvc.Result
+import play.api.mvc.{Results => HTMLResults}
 
 
 /**

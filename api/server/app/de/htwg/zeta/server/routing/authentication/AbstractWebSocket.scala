@@ -1,15 +1,13 @@
 package de.htwg.zeta.server.routing.authentication
 
-import javax.inject.Inject
-
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.util.Failure
 import scala.util.Success
 
+import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
-import akka.actor.ActorRef
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 import com.mohiva.play.silhouette.api.HandlerResult
@@ -17,14 +15,15 @@ import com.mohiva.play.silhouette.api.Silhouette
 import de.htwg.zeta.server.routing.authentication
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
+import javax.inject.Inject
 import play.api.http.websocket.Message
 import play.api.libs.streams.ActorFlow
-import play.api.mvc.Controller
 import play.api.mvc.AnyContent
-import play.api.mvc.Result
-import play.api.mvc.Request
-import play.api.mvc.WebSocket
 import play.api.mvc.AnyContentAsEmpty
+import play.api.mvc.Controller
+import play.api.mvc.Request
+import play.api.mvc.Result
+import play.api.mvc.WebSocket
 import play.api.mvc.WebSocket.MessageFlowTransformer
 
 

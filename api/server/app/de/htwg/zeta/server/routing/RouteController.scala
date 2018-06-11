@@ -1,15 +1,14 @@
 package de.htwg.zeta.server.routing
 
-import javax.inject.Inject
-
-import de.htwg.zeta.server.routing.authentication.UnAuthenticatedWebSocket
-import de.htwg.zeta.server.routing.authentication.UnAuthenticatedAction
-import de.htwg.zeta.server.routing.authentication.AuthenticatedWebSocket
+import de.htwg.zeta.server.routing.authentication.AbstractAction
+import de.htwg.zeta.server.routing.authentication.AbstractWebSocket
 import de.htwg.zeta.server.routing.authentication.AuthenticatedAction
+import de.htwg.zeta.server.routing.authentication.AuthenticatedWebSocket
 import de.htwg.zeta.server.routing.authentication.BasicAction
 import de.htwg.zeta.server.routing.authentication.BasicWebSocket
-import de.htwg.zeta.server.routing.authentication.AbstractWebSocket
-import de.htwg.zeta.server.routing.authentication.AbstractAction
+import de.htwg.zeta.server.routing.authentication.UnAuthenticatedAction
+import de.htwg.zeta.server.routing.authentication.UnAuthenticatedWebSocket
+import javax.inject.Inject
 import play.api.mvc.Controller
 
 /**

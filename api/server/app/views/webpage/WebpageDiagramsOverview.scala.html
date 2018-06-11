@@ -24,9 +24,8 @@
                 <div class="panel-heading">
                     <strong>Projects</strong>
                 </div>
-                <div>
                 @if(metaModels.nonEmpty) {
-                    <div>
+                    <div class="list-group">
                     @for(metamodel <- metaModels) {
                         <a href="@routes.ScalaRoutes.getOverview(metamodel.id)" class="list-group-item list-item-container
                                     @if(metaModel.isDefined && metamodel.id == metaModel.get.id) {
@@ -39,9 +38,10 @@
                     }
                     </div>
                 } else {
-                    There are no projects.
+                    <div class="panel-body">
+                        There are no projects.
+                    </div>
                 }
-                </div>
                 <div class="panel-footer">
                     <form>
                         <div class="input-group">
@@ -152,13 +152,16 @@
                         <div class="panel-body">
                             There are no model instances.
                         </div>
-                    }
-                    @for(model <- modelInstances) {
-                        <a href="@controllers.routes.ScalaRoutes.getModelEditor(model.id)" class="list-group-item list-item-container">
-                            @model.name
-                        <div data-model-id="@model.id" class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete model instance"></div>
-                        <div data-model-id="@model.id" class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up" data-toggle="tooltip" title="Validate model instance against its meta model"></div>
-                        </a>
+                    } else {
+                        <div class="list-group">
+                        @for(model <- modelInstances) {
+                            <a href="@controllers.routes.ScalaRoutes.getModelEditor(model.id)" class="list-group-item list-item-container">
+                                @model.name
+                            <div data-model-id="@model.id" class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete model instance"></div>
+                            <div data-model-id="@model.id" class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up" data-toggle="tooltip" title="Validate model instance against its meta model"></div>
+                            </a>
+                        }
+                        </div>
                     }
                     <div class="panel-footer">
                         <form>

@@ -37,7 +37,7 @@ sealed trait Job {
    * The id of the parent work object.
    *
    * E.g. if a generator was called by another generator we pass the parent id. If the parent stop
-   * it's execution we need to stop the childs as well
+   * it's execution we need to stop the children as well
    *
    */
   val parent: Option[String] = None
