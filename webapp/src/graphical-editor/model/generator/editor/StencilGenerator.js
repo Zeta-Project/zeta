@@ -46,7 +46,6 @@ class ShapesGenerator {
         const attributes = this.createShapeAttributes(node, classes);
         const shape = new joint.shapes.zeta[shapeName](attributes);
         this.setShapeAttributes(shape, shapeName);
-        console.log(shape);
         return shape;
     }
 
@@ -62,24 +61,39 @@ class ShapesGenerator {
     }
 
     createMClassAttributeInfo(node, classes) {
-        const mClass = classes.find(c => c.name === node.mClass);
-        return mClass && mClass.attributes ? mClass.attributes.map(a => this.createMClassAttribute(a, node)) : [];
+        const mClass = classes.find(c => c.name === node.conceptElement);
+        const attributeInfo =  mClass && mClass.attributes ? mClass.attributes.map(a => this.createMClassAttribute(a, node)) : [];
+        globalMClassAttributeInfo = globalMClassAttributeInfo.concat(attributeInfo);
+        return attributeInfo;
     }
 
     createMClassAttribute(attribute, node) {
         return Object.assign(
-            {
-                name: attribute.name,
-                type: stringToTypeMapper[attribute.typ] ? stringToTypeMapper[attribute.typ] : null,
-            },
+            attribute,
             this.createMClassAttributeText(attribute, node),
         );
     }
 
+    flattenGeoElement(geoElements) {
+        const results = [];
+
+        const flatten = function (elem, results) {
+            results.push(elem);
+            (elem.childGeoElements || []).forEach(e => {
+                e.parent = elem.id;
+                flatten(e, results);
+            })
+        };
+
+        geoElements.forEach(e => flatten(e, results));
+        return results;
+    }
+
     createMClassAttributeText(attribute, node) {
-        const vars = node.shape.vars ? node.shape.vars : [];
-        const entry = vars.find(v => v.value === attribute.name);
-        return entry ? { id: entry.key } : {};
+        const vars = node.geoElements ? node.geoElements : [];
+        const flatGeoElements = this.flattenGeoElement(vars);
+        const entry = flatGeoElements.find(v => v.identifier === attribute.name);
+        return entry ? { id: entry.id } : {};
     }
 
     createOptionalMcoreAttributes(node) {
