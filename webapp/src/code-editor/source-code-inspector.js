@@ -9,7 +9,7 @@ export class SourceCodeInspector {
         this.markers = [];
         this.dslType = dslType;
         this.inspection = $('#source-code-inspection');
-        this.inspectionAlert = $('<div>');
+        this.inspectionAlert = $('<div>').addClass('clearfix');
         this.inspection.append(this.inspectionAlert);
         this.sourceCodeOk = true;
         this.runInspection();
@@ -55,8 +55,11 @@ export class SourceCodeInspector {
         const errorMessage = errorMessages
             .map(errorMessage => `- ${errorMessage}`)
             .join('\n');
-        const lineEl = $("<span>").addClass("lineNumber").text(position.line);
-        this.inspectionAlert.text(errorMessage).append(lineEl);
+        this.inspectionAlert.text(errorMessage);
+        if(position.line > 0) {
+            const lineEl = $("<span>").addClass("lineNumber").text(position.line);
+            this.inspectionAlert.append(lineEl);
+        }
         this.inspectionAlert.removeClass().addClass('error');
         this.markEditorLine(position);
         this.fadeIn();
