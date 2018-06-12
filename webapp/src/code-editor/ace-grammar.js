@@ -43,13 +43,13 @@ const defaultStyle = {
     [TOKEN.NUMBER]: "constant.numeric",
     [TOKEN.PROPERTY]: "constant.regexp",
     [TOKEN.ATOM]: "type.support",
-    [TOKEN.OPERATOR]: "constant.character",
-    [TOKEN.DELIMITER]: "constant.character",
+    [TOKEN.OPERATOR]: "operator",
+    [TOKEN.DELIMITER]: "operator",
     [TOKEN.STRING]: "string",
 };
 
 //defines what to parse and in what order
-const defaultParser =  [
+const defaultParser = [
     TOKEN.COMMENT,
     TOKEN.HEREDOC,
     TOKEN.NUMBER,
@@ -69,10 +69,7 @@ const styleGrammar = {
     Style: defaultStyle,
     // defines the mapping of token patterns and token configuration to an associated tokenID
     Lex: {
-        [TOKEN.COMMENT]: commentToken([
-            ["//", null],
-            ["/*", "*/"],
-        ]),
+        [TOKEN.COMMENT]: commentToken([["//", null], ["/*", "*/"]]),
         [TOKEN.HEREDOC]: blockToken([["/**", "*/"]]),
         [TOKEN.IDENTIFIER]: simpleToken("RegExp::/[_A-Za-z][_A-Za-z0-9]*/"),
         [TOKEN.NUMBER]: simpleToken([
@@ -103,6 +100,50 @@ const styleGrammar = {
             "description", "line-color", "line-style", "line-width", "transparency", "background-color", "font-color",
             "font-name", "font-size", "font-bold", "font-italic", "gradient-orientation", "gradient-area-color",
             "gradient-area-offset"
+        ], true),
+    },
+    Parser: defaultParser
+};
+
+const shapeGrammar = {
+    RegExpID: "RegExp::",
+    Style: defaultStyle,
+    // defines the mapping of token patterns and token configuration to an associated tokenID
+    Lex: {
+        [TOKEN.COMMENT]: commentToken([["//", null], ["/*", "*/"]]),
+        [TOKEN.HEREDOC]: blockToken([["/**", "*/"]]),
+        [TOKEN.IDENTIFIER]: simpleToken("RegExp::/[_A-Za-z][_A-Za-z0-9]*/"),
+        [TOKEN.NUMBER]: simpleToken([
+            // floats
+            "RegExp::/\\d*\\.\\d+(e[\\+\\-]?\\d+)?/",
+            "RegExp::/\\d+\\.\\d*/",
+            "RegExp::/\\.\\d+/",
+            // integers
+            // hex
+            "RegExp::/#[0-9a-fA-F]{6,8}/",
+            // binary
+            "RegExp::/0b[01]+L?/",
+            // octal
+            "RegExp::/0o[0-7]+L?/",
+            // decimal
+            "RegExp::/[1-9]\\d*(e[\\+\\-]?\\d+)?L?/",
+            // just zero
+            "RegExp::/0(?![\\dx])/"
+        ]),
+        [TOKEN.ATOM]: simpleToken(["true", "false"]),
+        [TOKEN.STRING]: escapedBlockToken([["RegExp::/(['\"])/", 1]]),
+        [TOKEN.OPERATOR]: simpleToken([":", ","], false, true),
+        [TOKEN.DELIMITER]: simpleToken(["{", "}"], false, true),
+        [TOKEN.DECORATOR]: simpleToken("RegExp::/@[_A-Za-z][_A-Za-z0-9]*/"),
+        [TOKEN.PROPERTY]: simpleToken("RegExp::/\w+\.\w+(\.\w+\.\w+)?/"),
+        [TOKEN.KEYWORD]: simpleToken([
+            "node", "edge", "for", "ellipse", "textfield", "repeatingBox", "line", "polyline", "polygon",
+            "rectangle", "horizontalLayout", "verticalLayout", "statictext", "roundedRectangle", "placing"
+        ], true),
+        [TOKEN.BUILTIN]: simpleToken([
+            "resizing", "style", "sizeMin", "sizeMax", "anchor", "edges", "target",
+            "offset", "text", "textBody", "position", "point", "size", "align", "identifier", "multiline",
+            "editable", "curve", "for", "each", "as", "x", "y", "width", "height", "horizontal", "vertical"
         ], true),
     },
     Parser: defaultParser
@@ -198,5 +239,6 @@ const testGrammar = {
 };
 
 const styleLanguage = AceGrammar.getMode(styleGrammar);
+const shapeLanguage = AceGrammar.getMode(shapeGrammar);
 const testLanguage = AceGrammar.getMode(testGrammar);
-export {styleLanguage, testLanguage}
+export {styleLanguage, testLanguage, shapeLanguage}
