@@ -15,8 +15,8 @@ import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Position
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Size
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Style
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Text
-import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.VerticalAlignment
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.TextBody
+import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.VerticalAlignment
 
 object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
 
@@ -56,13 +56,18 @@ object GeoModelAttributeParser extends CommonParserMethods with UniteParsers {
     }
   }
 
-  def position: Parser[Position] = parseWholeNumberTuple("position", "x", "y").map(Position.tupled)
+  private val xLiteral = "x"
+  private val yLiteral = "y"
+  private val widthLiteral = "width"
+  private val heightLiteral = "height"
 
-  def point: Parser[Point] = parseWholeNumberTuple("point", "x", "y").map(Point.tupled)
+  def position: Parser[Position] = parseWholeNumberTuple("position", xLiteral, yLiteral).map(Position.tupled)
 
-  def size: Parser[Size] = parseNaturalNumberTuple("size", "width", "height").map(Size.tupled)
+  def point: Parser[Point] = parseWholeNumberTuple("point", xLiteral, yLiteral).map(Point.tupled)
 
-  def curve: Parser[Curve] = parseNaturalNumberTuple("curve", "width", "height").map(Curve.tupled)
+  def size: Parser[Size] = parseNaturalNumberTuple("size", widthLiteral, heightLiteral).map(Size.tupled)
+
+  def curve: Parser[Curve] = parseNaturalNumberTuple("curve", widthLiteral, heightLiteral).map(Curve.tupled)
 
   private def parseNaturalNumberTuple(name: String, arg1: String, arg2: String): Parser[(Int, Int)] = {
     (name ~> leftParenthesis ~> arg1 ~> colon ~> naturalNumber <~ comma) ~
