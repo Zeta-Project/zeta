@@ -77,29 +77,17 @@ object GdslInstanceToZetaModel {
 
     // TODO check two dropAnchor elements exists and pointing to same entity
 
-    val resultToDisplay = processRecursive() match {
-      case Some(result) =>
-        List(
-          File(gdslInstance.id, "Entity", result.toString)
-        )
-      case None =>
-        List(
-          File(gdslInstance.id, "Error", "Converting Zeta-Model to Klima-Model failed: " + processedEntities.size + " - " + processableEdges.size + " - " + nonProcessableEdges.size)
-        )
-    }
 
-
-
-    val nodes = gdslInstance.nodes.filter(_.className == "Entity").foreach { node =>
+    val entities = gdslInstance.nodes.filter(_.className == "Entity").map { node =>
       val name = getEntityName(node, gdslInstance)
-      println(name)
+      Entity(name, Nil, Nil, Nil, Nil, Nil, Nil)
     }
+    val generated = entities.map(entity => (entity, KlimaCodeGenerator.generateEntity(entity))).toList
 
     // Add Generate Step
-    resultToDisplay ::: List(
-      File(gdslInstance.id, "Concept", concept.toString),
-      File(gdslInstance.id, "gdslInstance", gdslInstance.toString)
-    )
+    generated.map {
+      case (entity: Entity, generatedClass: String) => File(gdslInstance.id, entity.name, generatedClass)
+    }
   }
 
   private def getEntityName(node: NodeInstance, gdslInstance: GraphicalDslInstance) = {
