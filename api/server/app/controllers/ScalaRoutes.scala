@@ -24,211 +24,213 @@ class ScalaRoutes @Inject()(
 ) extends RouteController with WebController {
 
 
-  def getSocketDeveloper: WebSocket = AuthenticatedSocket(BackendController.developer() _)
+  def getSocketDeveloper: WebSocket = AuthenticatedSocket(backendController.developer() _)
 
-  def getSocketGenerator(id: UUID): WebSocket = AuthenticatedSocket(BackendController.generator(id) _)
+  def getSocketGenerator(id: UUID): WebSocket = AuthenticatedSocket(backendController.generator(id) _)
 
-  def getSocketUser(modelId: UUID): WebSocket = AuthenticatedSocket(BackendController.user(modelId) _)
+  def getSocketUser(modelId: UUID): WebSocket = AuthenticatedSocket(backendController.user(modelId) _)
 
 
   // # Home page
-  def getIndex(): Action[AnyContent] = AuthenticatedGet(ApplicationController.index _)
+  def getIndex(): Action[AnyContent] = AuthenticatedGet(applicationController.index _)
 
-  def getUser(): Action[AnyContent] = AuthenticatedGet(ApplicationController.user _)
+  def getUser(): Action[AnyContent] = AuthenticatedGet(applicationController.user _)
 
-  def getSignout: Action[AnyContent] = AuthenticatedGet(ApplicationController.signOut _)
+  def getSignout: Action[AnyContent] = AuthenticatedGet(applicationController.signOut _)
 
-  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(SignUpController.view _)
+  def getSignUp(): Action[AnyContent] = UnAuthenticatedGet(signUpController.view _)
 
-  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(SignUpController.submit _)
+  def postSignUp(): Action[AnyContent] = UnAuthenticatedPost(signUpController.submit _)
 
-  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(SignInController.view _)
+  def getSignIn(): Action[AnyContent] = UnAuthenticatedGet(signInController.view _)
 
-  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(SignInController.submit _)
+  def postSignIn(): Action[AnyContent] = UnAuthenticatedPost(signInController.submit _)
 
-  def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(ForgotPasswordController.view _)
+  def getPasswordForgot(): Action[AnyContent] = UnAuthenticatedGet(forgotPasswordController.view _)
 
-  def postPasswordForgot(): Action[AnyContent] = UnAuthenticatedPost(ForgotPasswordController.submit _)
+  def postPasswordForgot(): Action[AnyContent] = UnAuthenticatedPost(forgotPasswordController.submit _)
 
-  def getPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ResetPasswordController.view(token: java.util.UUID) _)
+  def getPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedGet(resetPasswordController.view(token: java.util.UUID) _)
 
-  def postPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedPost(ResetPasswordController.submit(token: java.util.UUID) _)
+  def postPasswordReset(token: UUID): Action[AnyContent] = UnAuthenticatedPost(resetPasswordController.submit(token: java.util.UUID) _)
 
-  def getPasswordChange(): Action[AnyContent] = AuthenticatedGet(ChangePasswordController.view _)
+  def getPasswordChange(): Action[AnyContent] = AuthenticatedGet(changePasswordController.view _)
 
-  def postPasswordChange(): Action[AnyContent] = AuthenticatedPost(ChangePasswordController.submit _)
+  def postPasswordChange(): Action[AnyContent] = AuthenticatedPost(changePasswordController.submit _)
 
 
-  def getAccountEmail(email: String): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.send(email) _) // TODO send email per API??
+  def getAccountEmail(email: String): Action[AnyContent] = UnAuthenticatedGet(activateAccountController.send(email) _) // TODO send email per API??
 
-  def getAccountActivate(token: UUID): Action[AnyContent] = UnAuthenticatedGet(ActivateAccountController.activate(token: java.util.UUID) _)
+  def getAccountActivate(token: UUID): Action[AnyContent] = UnAuthenticatedGet(activateAccountController.activate(token: java.util.UUID) _)
 
 
   // ### Webpage
-  def getWebpage(): Action[AnyContent] = AuthenticatedGet(WebpageController.index _)
+  def getWebpage(): Action[AnyContent] = AuthenticatedGet(webpageController.index _)
 
-  def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverviewShortInfo _)
+  def getOverviewNoArgs(): Action[AnyContent] = AuthenticatedGet(webpageController.diagramsOverviewShortInfo _)
 
-  def getOverview(id: UUID): Action[AnyContent] = AuthenticatedGet(WebpageController.diagramsOverview(id) _)
+  def getOverview(id: UUID): Action[AnyContent] = AuthenticatedGet(webpageController.diagramsOverview(id) _)
 
 
   // # metamodel editor
-  def getMetamodelEditor(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelController.metaModelEditor(metaModelId) _)
+  def getMetamodelEditor(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelController.metaModelEditor(metaModelId) _)
 
-  def getMetamodelSocket(metaModelId: UUID): WebSocket = AuthenticatedSocket(MetaModelController.metaModelSocket(metaModelId) _)
+  def getMetamodelSocket(metaModelId: UUID): WebSocket = AuthenticatedSocket(metaModelController.metaModelSocket(metaModelId) _)
 
 
   // ### model editor
-  def getModelEditor(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelController.modelEditor(modelId) _)
+  def getModelEditor(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelController.modelEditor(modelId) _)
 
 
   /* ### MetaModel REST API
    * MMRA => MetaModelRestApi
    */
 
-  def getMetamodelsNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.showForUser _)
+  def getMetamodelsNoArgs: Action[AnyContent] = AuthenticatedGet(metaModelRestApi.showForUser _)
 
-  def postMetamodels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, MetaModelRestApi.insert _)
+  def postMetamodels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, metaModelRestApi.insert _)
 
-  def putMetamodels(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
+  def putMetamodels(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, metaModelRestApi.update(metaModelId) _)
 
-  def getMetamodels(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.get(metaModelId) _)
+  def getMetamodels(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.get(metaModelId) _)
 
-  def deleteMetamodels(metaModelId: UUID): Action[AnyContent] = AuthenticatedDelete(MetaModelRestApi.delete(metaModelId) _)
+  def deleteMetamodels(metaModelId: UUID): Action[AnyContent] = AuthenticatedDelete(metaModelRestApi.delete(metaModelId) _)
 
-  def getMetamodelsDefinition(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMetaModelDefinition(metaModelId) _)
+  def getMetamodelsDefinition(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.getMetaModelDefinition(metaModelId) _)
 
   def putMetamodelsDefinition(metaModelId: UUID): Action[JsValue] =
-    AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.update(metaModelId) _)
+    AuthenticatedPut(BodyParsers.parse.json, metaModelRestApi.update(metaModelId) _)
 
-  def getMetamodelsDefinitionMclassesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMClasses(metaModelId) _)
+  def getMetamodelsDefinitionMclassesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.getMClasses(metaModelId) _)
 
-  def getMetamodelsDefinitionMreferencesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getMReferences(metaModelId) _)
+  def getMetamodelsDefinitionMreferencesNoArgs(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.getMReferences(metaModelId) _)
 
   def getMetamodelsDefinitionMclasses(metaModelId: UUID, mClassName: String): Action[AnyContent] =
-    AuthenticatedGet(MetaModelRestApi.getMClass(metaModelId, mClassName) _)
+    AuthenticatedGet(metaModelRestApi.getMClass(metaModelId, mClassName) _)
 
   def getMetamodelsDefinitionMReferences(metaModelId: UUID, mReferenceName: String): Action[AnyContent] =
-    AuthenticatedGet(MetaModelRestApi.getMReference(metaModelId, mReferenceName) _)
+    AuthenticatedGet(metaModelRestApi.getMReference(metaModelId, mReferenceName) _)
 
-  def getMetamodelsShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getShape(metaModelId) _)
+  def getMetamodelsShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.getShape(metaModelId) _)
 
-  def putMetamodelsShape(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateShape(metaModelId) _)
+  def putMetamodelsShape(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, metaModelRestApi.updateShape(metaModelId) _)
 
-  def getMetamodelsStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getStyle(metaModelId) _)
+  def getMetamodelsStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.getStyle(metaModelId) _)
 
-  def putMetamodelsStyle(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateStyle(metaModelId) _)
+  def putMetamodelsStyle(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, metaModelRestApi.updateStyle(metaModelId) _)
 
-  def getMetamodelsDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(MetaModelRestApi.getDiagram(metaModelId) _)
+  def getMetamodelsDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApi.getDiagram(metaModelId) _)
 
-  def putMetamodelsDiagram(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, MetaModelRestApi.updateDiagram(metaModelId) _)
+  def putMetamodelsDiagram(metaModelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, metaModelRestApi.updateDiagram(metaModelId) _)
 
   def getMetamodelsValidator(metaModelId: UUID, generate: Option[Boolean]): Action[AnyContent] =
-    AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, generate, get = true) _)
+    AuthenticatedGet(metaModelRestApi.getValidator(metaModelId, generate, get = true) _)
 
   def headMetaModelsValidator(metaModelId: UUID, generate: Option[Boolean]): Action[AnyContent] =
-    AuthenticatedGet(MetaModelRestApi.getValidator(metaModelId, generate, get = false) _)
+    AuthenticatedGet(metaModelRestApi.getValidator(metaModelId, generate, get = false) _)
 
   def putMetaModelsClassMethod(metaModelId: UUID, className: String, methodName: String): Action[AnyContent] =
-    AuthenticatedPut(MetaModelRestApi.updateClassMethodCode(metaModelId, className, methodName) _)
+    AuthenticatedPut(metaModelRestApi.updateClassMethodCode(metaModelId, className, methodName) _)
 
   def putMetaModelsReferenceMethod(metaModelId: UUID, referenceName: String, methodName: String): Action[AnyContent] =
-    AuthenticatedPut(MetaModelRestApi.updateReferenceMethodCode(metaModelId, referenceName, methodName) _)
+    AuthenticatedPut(metaModelRestApi.updateReferenceMethodCode(metaModelId, referenceName, methodName) _)
 
   def putMetaModelsMainMethod(metaModelId: UUID, methodName: String): Action[AnyContent] =
-    AuthenticatedPut(MetaModelRestApi.updateCommonMethodCode(metaModelId, methodName) _)
+    AuthenticatedPut(metaModelRestApi.updateCommonMethodCode(metaModelId, methodName) _)
 
   /* ### Model REST API
    * MRA => ModelRestApi
    */
 
 
-  def getModelsNoArgs: Action[AnyContent] = AuthenticatedGet(ModelRestApi.showForUser() _)
+  def getModelsNoArgs: Action[AnyContent] = AuthenticatedGet(modelRestApi.showForUser() _)
 
-  def postModels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.insert() _)
+  def postModels: Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, modelRestApi.insert() _)
 
-  def putModels(modelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, ModelRestApi.update(modelId) _)
+  def putModels(modelId: UUID): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, modelRestApi.update(modelId) _)
 
-  def getModels(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.get(modelId) _)
+  def getModels(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.get(modelId) _)
 
-  def getModelsDefinition(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getModelDefinition(modelId) _)
+  def getModelsDefinition(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getModelDefinition(modelId) _)
 
-  def putModelsDefinition(modelId: UUID): Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, ModelRestApi.updateModel(modelId) _)
+  def putModelsDefinition(modelId: UUID): Action[JsValue] = AuthenticatedPost(BodyParsers.parse.json, modelRestApi.updateModel(modelId) _)
 
-  def getModelsDefinitionNodesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNodes(modelId) _)
+  def getModelsDefinitionNodesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getNodes(modelId) _)
 
-  def getModelsDefinitionNodes(modelId: UUID, nodeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getNode(modelId, nodeName) _)
+  def getModelsDefinitionNodes(modelId: UUID, nodeName: String): Action[AnyContent] = AuthenticatedGet(modelRestApi.getNode(modelId, nodeName) _)
 
-  def getModelDefinitionEdgesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdges(modelId) _)
+  def getModelDefinitionEdgesNoArgs(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getEdges(modelId) _)
 
-  def getModelDefinitionEdges(modelId: UUID, edgeName: String): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getEdge(modelId, edgeName) _)
+  def getModelDefinitionEdges(modelId: UUID, edgeName: String): Action[AnyContent] = AuthenticatedGet(modelRestApi.getEdge(modelId, edgeName) _)
 
-  def deleteModels(modelId: UUID): Action[AnyContent] = AuthenticatedDelete(ModelRestApi.delete(modelId) _)
+  def deleteModels(modelId: UUID): Action[AnyContent] = AuthenticatedDelete(modelRestApi.delete(modelId) _)
 
-  def getModelsValidation(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getValidation(modelId) _)
+  def getModelsValidation(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getValidation(modelId) _)
 
   /* ### Generator Image REST API */
-  def getGeneratorImagesNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorImageRestApi.showForUser() _)
+  def getGeneratorImagesNoArgs: Action[AnyContent] = AuthenticatedGet(generatorImageRestApi.showForUser() _)
 
   /* ### Generator REST API */
-  def getGeneratorsNoArgs: Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.showForUser() _)
-  def getGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.get(id) _)
-  def deleteGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(GeneratorRestApi.delete(id) _)
+  def getGeneratorsNoArgs: Action[AnyContent] = AuthenticatedGet(generatorRestApi.showForUser() _)
+  def getGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(generatorRestApi.get(id) _)
+  def deleteGenerators(id: UUID): Action[AnyContent] = AuthenticatedGet(generatorRestApi.delete(id) _)
 
   /* ### Filter REST API */
-  def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(FilterRestApi.showForUser() _)
-  def getFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.get(id) _)
-  def deleteFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(FilterRestApi.delete(id) _)
-  def postFilters: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, FilterRestApi.insert _)
+  def getFiltersNoArgs: Action[AnyContent] = AuthenticatedGet(filterRestApi.showForUser() _)
+  def getFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(filterRestApi.get(id) _)
+  def deleteFilters(id: UUID): Action[AnyContent] = AuthenticatedGet(filterRestApi.delete(id) _)
+  def postFilters: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, filterRestApi.insert _)
 
   /* ### Filter REST API */
-  def getMetaModelReleasesNoArgs: Action[AnyContent] = AuthenticatedGet(MetaModelReleaseRestApi.showForUser() _)
+  def getMetaModelReleasesNoArgs: Action[AnyContent] = AuthenticatedGet(metaModelReleaseRestApi.showForUser() _)
 
   /* ### BondedTask REST API */
-  def getBondedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.showForUser() _)
-  def deleteBondedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(BondedTaskRestApi.delete(id) _)
-  def postBondedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, BondedTaskRestApi.insert _)
+  def getBondedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(bondedTaskRestApi.showForUser() _)
+  def deleteBondedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(bondedTaskRestApi.delete(id) _)
+  def postBondedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, bondedTaskRestApi.insert _)
 
   /* ### EventDrivenTask REST API */
-  def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.showForUser() _)
-  def deleteEventDrivenTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(EventDrivenTaskRestApi.delete(id) _)
-  def postEventDrivenTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, EventDrivenTaskRestApi.insert _)
+  def getEventDrivenTasksNoArgs: Action[AnyContent] = AuthenticatedGet(eventDrivenTaskRestApi.showForUser() _)
+  def deleteEventDrivenTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(eventDrivenTaskRestApi.delete(id) _)
+  def postEventDrivenTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, eventDrivenTaskRestApi.insert _)
 
   /* ### TimedTask REST API */
-  def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.showForUser() _)
-  def deleteTimedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(TimedTaskRestApi.delete(id) _)
-  def postTimedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, TimedTaskRestApi.insert _)
+  def getTimedTasksNoArgs: Action[AnyContent] = AuthenticatedGet(timedTaskRestApi.showForUser() _)
+  def deleteTimedTasks(id: UUID): Action[AnyContent] = AuthenticatedGet(timedTaskRestApi.delete(id) _)
+  def postTimedTasks: Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, timedTaskRestApi.insert _)
 
   /* ### File REST API */
-  def getFiles(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(FileRestApi.get(id, name) _)
-  def putFiles(id: UUID, name: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, FileRestApi.update(id, name) _)
+  def getFiles(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(fileRestApi.get(id, name) _)
+  def putFiles(id: UUID, name: String): Action[JsValue] = AuthenticatedPut(BodyParsers.parse.json, fileRestApi.update(id, name) _)
 
   /* ### DSL REST API */
-  def getDslV1(id: UUID, apiType: String): Action[AnyContent] = AuthenticatedGet(DslRestApi.getDSL(id, apiType) _)
-  def getAllDslV1(id: UUID): Action[AnyContent] = AuthenticatedGet(DslRestApi.getTotalApiV1(id) _)
+  def getDslV1(id: UUID, apiType: String): Action[AnyContent] = AuthenticatedGet(dslRestApi.getDSL(id, apiType) _)
+  def getAllDslV1(id: UUID): Action[AnyContent] = AuthenticatedGet(dslRestApi.getTotalApiV1(id) _)
 
 
   // ### Code Editor
   def getCodeEditor(metaModelId: UUID, dslType: String): Action[AnyContent] =
-    AuthenticatedGet(CodeEditorController.codeEditor(metaModelId, dslType) _)
+    AuthenticatedGet(codeEditorController.codeEditor(metaModelId, dslType) _)
 
   // # Map static resources from the /public folder to the /assets URL path
   def getAssets(file: String): Action[AnyContent] = Assets.at(path = "/public", file)
 
-  def getWebjars(file: String): Action[AnyContent] = WebJarAssets.at(file)
+  def getWebjars(file: String): Action[AnyContent] = webJarAssets.at(file)
 
-  def getMode_specific(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(DynamicFileController.serveFile(id, name) _)
+  def getMode_specific(id: UUID, name: String): Action[AnyContent] = AuthenticatedGet(dynamicFileController.serveFile(id, name) _)
 
-  def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(WebAppController.get(path) _)
+  def getWebApp(path: String): Action[AnyContent] = AuthenticatedGet(webAppController.get(path) _)
 
-  def getStaticFiles(path: String): Action[AnyContent] = WebAppController.static(path)
+  def getStaticFiles(path: String): Action[AnyContent] = webAppController.static(path)
 
-  def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(ModelRestApi.getScalaCodeViewer(modelId) _)
+  def getScalaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getScalaCodeViewer(modelId) _)
 
-  def getMethodClassCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(CodeEditorController.methodClassCodeEditor(metaModelId, methodName, className) _)
+  def getKlimaCodeViewer(modelId: UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.getKlimaCodeViewer(modelId) _)
 
-  def getMethodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String) = AuthenticatedGet(CodeEditorController.methodReferenceCodeEditor(metaModelId, methodName, referenceName) _)
+  def getMethodClassCodeEditor(metaModelId: UUID, methodName: String, className: String) = AuthenticatedGet(codeEditorController.methodClassCodeEditor(metaModelId, methodName, className) _)
 
-  def getMethodCommonCodeEditor(metaModelId: UUID, methodName: String) = AuthenticatedGet(CodeEditorController.methodMainCodeEditor(metaModelId, methodName) _)
+  def getMethodReferenceCodeEditor(metaModelId: UUID, methodName: String, referenceName: String) = AuthenticatedGet(codeEditorController.methodReferenceCodeEditor(metaModelId, methodName, referenceName) _)
+
+  def getMethodCommonCodeEditor(metaModelId: UUID, methodName: String) = AuthenticatedGet(codeEditorController.methodMainCodeEditor(metaModelId, methodName) _)
 
 }

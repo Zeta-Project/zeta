@@ -4,11 +4,11 @@ import scala.util.control.NoStackTrace
 
 import play.api.libs.json.JsError
 import play.api.libs.json.JsSuccess
-import play.api.libs.json.OFormat
 import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 import reactivemongo.bson.BSONDocument
-import reactivemongo.bson.BSONDocumentWriter
 import reactivemongo.bson.BSONDocumentReader
+import reactivemongo.bson.BSONDocumentWriter
 import reactivemongo.play.json.JsObjectReader
 import reactivemongo.play.json.JsObjectWriter
 

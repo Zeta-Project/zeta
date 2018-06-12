@@ -14,16 +14,16 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
       "an empty string" in {
         val noDiagrams = ""
         val result = DiagramParser.parseDiagrams(noDiagrams)
-        result.successful shouldBe true
-        val diagrams = result.get
+        result.isRight shouldBe true
+        val diagrams = result.right.get
         diagrams shouldBe empty
       }
 
       "a diagram without palettes" in {
         val diagramWithoutPalettes = "diagram myDiagram { }"
         val result = DiagramParser.parseDiagrams(diagramWithoutPalettes)
-        result.successful shouldBe true
-        val tree = result.get
+        result.isRight shouldBe true
+        val tree = result.right.get
         tree should have size 1
         val diagram = tree.head
         diagram.name shouldBe "myDiagram"
@@ -38,8 +38,8 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
             |}
           """.stripMargin
         val result = DiagramParser.parseDiagrams(diagramWithSingleEmptyPalette)
-        result.successful shouldBe true
-        val tree = result.get
+        result.isRight shouldBe true
+        val tree = result.right.get
         tree should have size 1
         val diagram = tree.head
         diagram.name shouldBe "myDiagram"
@@ -59,8 +59,8 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
             |}
           """.stripMargin
         val result = DiagramParser.parseDiagrams(diagramWithSingleNode)
-        result.successful shouldBe true
-        val tree = result.get
+        result.isRight shouldBe true
+        val tree = result.right.get
         tree should have size 1
         val diagram = tree.head
         diagram.name shouldBe "myDiagram"
@@ -84,8 +84,8 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
             |}
           """.stripMargin
         val result = DiagramParser.parseDiagrams(diagramWithMultipleNodes)
-        result.successful shouldBe true
-        val tree = result.get
+        result.isRight shouldBe true
+        val tree = result.right.get
         tree should have size 1
         val diagram = tree.head
         diagram.name shouldBe "myDiagram"
@@ -108,8 +108,8 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
             |}
           """.stripMargin
         val result = DiagramParser.parseDiagrams(diagramWithMultipleEmptyPalettes)
-        result.successful shouldBe true
-        val tree = result.get
+        result.isRight shouldBe true
+        val tree = result.right.get
         tree should have size 1
         val diagram = tree.head
         diagram.name shouldBe "myDiagram"
@@ -140,8 +140,8 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
             |}
           """.stripMargin
         val result = DiagramParser.parseDiagrams(diagrams)
-        result.successful shouldBe true
-        val tree = result.get
+        result.isRight shouldBe true
+        val tree = result.right.get
         tree should have size 2
 
         val baumDiagramm = tree.head
@@ -166,7 +166,7 @@ class DiagramParserTest extends FreeSpec with Matchers with Inside {
       "an invalid diagram" in {
         val invalid = "bli bla blub"
         val result = DiagramParser.parseDiagrams(invalid)
-        result.successful shouldBe false
+        result.isRight shouldBe false
       }
 
     }

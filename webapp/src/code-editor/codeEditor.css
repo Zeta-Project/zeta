@@ -1,5 +1,10 @@
-.editor{
-    height:500px;
+.editor-container {
+    display: flex;
+}
+
+.editor {
+    height: 500px; /* fallback for older browsers */
+    height: calc(100vh - 140px);
 }
 
 .editor-body {
@@ -7,15 +12,37 @@
 }
 
 .editor-title {
-    height: 40px;
-    line-height: 40px;
+    text-transform: capitalize;
+    font-size: 14px;
+    font-weight: bold;
+}
+.editor-button {
+    margin: -5px -10px;
+    float: right;
+}
+.editor-button .btn>.glyphicon {
+    margin: 0 0 0 5px;
 }
 
 .ace-editor {
     height: 100%;
-    width:70%;
+    width: 70%;
 }
-.ace-container{
+
+.lineErrorMarker {
+    position: absolute;
+    background: #f0ad4e;
+    z-index: 20
+}
+
+.charErrorMarker {
+    position: absolute;
+    background-color: #d9534f;
+    border-color: #d43f3a;;
+    z-index: 21
+}
+
+.ace-container {
     border-radius: 5px;
     border: 1px solid gray;
 }
@@ -25,7 +52,7 @@
 }
 
 #selectable .ui-selected {
-    color:#F8F8F8;
+    color: #F8F8F8;
     background-color: #0c7cf4;
 }
 
@@ -34,7 +61,7 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    overflow:scroll;
+    overflow: scroll;
 }
 
 #selectable li {
@@ -42,17 +69,17 @@
     font-size: 14px;
     height: 22px;
     cursor: pointer;
-    width:100%;
-    border:none;
-    padding-left:5px;
-    padding-right:5px;
+    width: 100%;
+    border: none;
+    padding-left: 5px;
+    padding-right: 5px;
     vertical-align: middle;
     color: black;
 }
 
-.sidebar-container{
+.sidebar-container {
     background-color: #ff0000;
-    height:100%;
+    height: 100%;
 }
 
 #sidebar {
@@ -63,8 +90,8 @@
     user-select: none;
     height: 500px;
     max-width: 200px;
-    padding:0;
-    float:left;
+    padding: 0;
+    float: left;
     border-right: 1px solid lightgray;
     background-color: #F7F7F7;
 }
@@ -78,7 +105,7 @@
 .toolbar {
     height: 49px;
     width: 100%;
-    float:left;
+    float: left;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom: 1px solid lightgray;
@@ -86,47 +113,113 @@
 }
 
 .toolbarbtn {
-    margin:3px;
+    margin: 3px;
 }
 
-.toolbar-button:hover{
-    background:linear-gradient(#FCFCFC, #DCDCDC);
+.toolbar-button:hover {
+    background: linear-gradient(#FCFCFC, #DCDCDC);
 }
 
-.toolbar-button:active{
+.toolbar-button:active {
     background: linear-gradient(#1AD6FD, #1D62F0);
 }
 
-.code-editor-container{
-    font-family: Helvetica;
+#source-code-inspection {
+    height: 0;
+    overflow: hidden;
 }
-
-.source-code-inspection{
-    opacity: 0;
-    padding: 10px 10px;
-    margin-bottom: 20px;
-    border-radius: 15px;
-    border: 3px solid red;
+#source-code-inspection > div {
+    border-radius: 4px;
     vertical-align: middle;
-    text-align: center;
-    white-space: pre;
+    padding: 8px 15px;
+    /*white-space: pre;*/
+    margin-bottom: 20px;
+    height: auto;
+    border: 1px solid transparent;
+    color: #fff;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
-
-.box {
-    float: left;
-    width: 45%;
-    margin-right: 2%;
-    padding: 20px;
-    background: #eee;
-    box-sizing: border-box;
+#source-code-inspection > div.error {
+    background-color: #d9534f;
+    border-color: #d43f3a;
 }
 
-.box a {
+#source-code-inspection > div.success {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+#source-code-inspection > div.warning {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+}
+
+#source-code-inspection > div > .lineNumber {
     display: block;
+    font-size: 12px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    float: right;
+    line-height: 20px;
 }
 
-H4 {text-decoration: underline;}
+.side-box {
+    min-width: 275px;
+    max-width: 275px;
+}
 
-/*#outline-nodes { position:relative; }*/
-/*#outline-nodes p { position: absolute; width: 100%; height: 100%; top: 0; left: 0; text-decoration: none; z-index: 10; background-color: #FFF; opacity: 0; filter: alpha(opacity=1); }*/
+#outline-nodes .outline-heading {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#outline-nodes .outline-node {
+    padding: 0 0 4px 20px;
+    cursor: pointer;
+    font-size: 12px;
+    position: relative;
+    color: #333;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+
+#outline-nodes .outline-node > .line {
+    font-size: 12px;
+    float: right;
+}
+
+#outline-nodes .outline-node:hover {
+    font-weight: bold;
+}
+
+#outline-nodes .outline-node::before {
+    content: '';
+    background-color: #204d74;
+    width: 14px;
+    height: 14px;
+    font-size: 11px;
+    position: absolute;
+    font-weight: normal;
+    left: 1px;
+    top: 1px;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+}
+
+#outline-nodes .outline-node.style::before {
+    content: 'S';
+    background-color: #0ab27e;
+}
+
+#outline-nodes .outline-node.node::before {
+    content: 'N';
+    background-color: #1C5D99;
+}
+
+#outline-nodes .outline-node.edge::before {
+    content: 'E';
+    background-color: #81941a;
+}
+
+

@@ -31,3 +31,5 @@ global.chat = chat;
 global.CommonInspectorInputs = CommonInspectorInputs;
 global.CommonInspectorGroups = CommonInspectorGroups;
 global.inp = inp;
+global.globalMClassAttributeInfo = [];
+

@@ -46,8 +46,9 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.11"
   )
 ).enablePlugins(PlayScala).dependsOn(
+  ZetaBuild.codeGenerator,
   ZetaBuild.common,
   ZetaBuild.generatorControl,
-  ZetaBuild.persistence,
-  ZetaBuild.parser
+  ZetaBuild.parser,
+  ZetaBuild.persistence
 )

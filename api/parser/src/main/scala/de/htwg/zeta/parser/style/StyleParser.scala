@@ -2,10 +2,24 @@ package de.htwg.zeta.parser.style
 
 import de.htwg.zeta.parser.CommonParserMethods
 import de.htwg.zeta.parser.UniteParsers
+import de.htwg.zeta.parser.common.CommentParser
+import de.htwg.zeta.parser.common.ParseError
 
 object StyleParser extends CommonParserMethods with UniteParsers {
 
-  def parseStyles(input: String): ParseResult[List[StyleParseTree]] = parseAll(styles, trimRight(input))
+  def parseStyles(input: String): Either[ParseError, List[StyleParseTree]] = {
+    val strippedResult = CommentParser().parseComments(input)
+    strippedResult match {
+      case Left(l) => Left(l)
+      case Right(t) =>
+        parseAll(styles, t.text) match {
+          case NoSuccess(msg, next) =>
+            val newPosition = t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column)))
+            Left(newPosition)
+          case Success(s, _) => Right(s)
+        }
+    }
+  }
 
   private def styles: Parser[List[StyleParseTree]] = rep(style)
 

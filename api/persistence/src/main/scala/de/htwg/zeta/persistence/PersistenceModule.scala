@@ -1,7 +1,6 @@
 package de.htwg.zeta.persistence
 
-import javax.inject.Singleton
-
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 import com.google.inject.AbstractModule
@@ -48,10 +47,10 @@ import de.htwg.zeta.persistence.mongo.MongoTimedTaskRepository
 import de.htwg.zeta.persistence.mongo.MongoUserRepository
 import de.htwg.zeta.persistence.transient.TransientTokenCache
 import grizzled.slf4j.Logging
+import javax.inject.Singleton
 import net.codingwell.scalaguice.ScalaModule
 import reactivemongo.api.DefaultDB
 import reactivemongo.api.MongoDriver
-import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
   * The Guice module which wires all Persistence dependencies.
@@ -77,8 +76,9 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
   private val defaultServer = "localhost"
   private val defaultPort = "27017"
   private val defaultDb = "zeta"
-  private val defaultUsername = ""
-  private val defaultPassword = ""
+  private val emptyString = ""
+  private val defaultUsername = emptyString
+  private val defaultPassword = emptyString
   private val config = ConfigFactory.load()
 
   @Provides
@@ -99,7 +99,7 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
     val usernameAndPassword: String = {
       val username = getString(settingsUsername, defaultUsername)
       val password = getString(settingsPassword, defaultPassword)
-      if (username.isEmpty || password.isEmpty) "" else s"$username:$password@"
+      if (username.isEmpty || password.isEmpty) emptyString else s"$username:$password@"
     }
     info(s"Mongo connection: $usernameAndPassword$configServer:$configPort") // scalastyle:ignore multiple.string.literals
     val uri = s"$usernameAndPassword$configServer:$configPort/$configDb"

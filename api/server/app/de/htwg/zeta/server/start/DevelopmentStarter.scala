@@ -3,8 +3,8 @@ package de.htwg.zeta.server.start
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URLClassLoader
 import java.net.URL
+import java.net.URLClassLoader
 
 import scala.annotation.tailrec
 import scala.collection.mutable

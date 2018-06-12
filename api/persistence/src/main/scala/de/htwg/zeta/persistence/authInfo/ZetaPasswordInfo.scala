@@ -1,10 +1,10 @@
 package de.htwg.zeta.persistence.authInfo
 
-import play.api.libs.json.OFormat
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsResult
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.libs.json.OFormat
 
 case class ZetaPasswordInfo(
     hasher: String,

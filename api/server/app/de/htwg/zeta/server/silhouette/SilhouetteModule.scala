@@ -12,9 +12,9 @@ import com.mohiva.play.silhouette.api.Silhouette
 import com.mohiva.play.silhouette.api.SilhouetteProvider
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
 import com.mohiva.play.silhouette.api.actions.UnsecuredErrorHandler
-import com.mohiva.play.silhouette.api.crypto.Signer
 import com.mohiva.play.silhouette.api.crypto.Crypter
 import com.mohiva.play.silhouette.api.crypto.CrypterAuthenticatorEncoder
+import com.mohiva.play.silhouette.api.crypto.Signer
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.services.IdentityService
@@ -26,10 +26,10 @@ import com.mohiva.play.silhouette.api.util.IDGenerator
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PlayHTTPLayer
-import com.mohiva.play.silhouette.crypto.JcaSigner
-import com.mohiva.play.silhouette.crypto.JcaSignerSettings
 import com.mohiva.play.silhouette.crypto.JcaCrypter
 import com.mohiva.play.silhouette.crypto.JcaCrypterSettings
+import com.mohiva.play.silhouette.crypto.JcaSigner
+import com.mohiva.play.silhouette.crypto.JcaSignerSettings
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorService
 import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticatorSettings
@@ -42,8 +42,8 @@ import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
-import net.ceedubs.ficus.readers.ValueReader
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
+import net.ceedubs.ficus.readers.ValueReader
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
