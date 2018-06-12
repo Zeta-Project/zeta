@@ -74,7 +74,7 @@ object GdslInstanceToZetaModel {
 
     // TODO check two dropAnchor elements exists and pointing to same entity
 
-    processRecursive() match {
+    val resultToDisplay = processRecursive() match {
       case Some(result) =>
         List(
           File(gdslInstance.id, "Entity", result.toString)
@@ -85,7 +85,11 @@ object GdslInstanceToZetaModel {
         )
     }
 
-
+    // Add Generate Step
+    resultToDisplay ::: List(
+      File(gdslInstance.id, "Concept", concept.toString),
+      File(gdslInstance.id, "gdslInstance", gdslInstance.toString)
+    )
   }
 
 }
