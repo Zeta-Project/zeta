@@ -13,6 +13,7 @@ import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsObject
+import scalariform.formatter.ScalaFormatter
 
 
 object GdslInstanceToZetaModel {
@@ -82,7 +83,10 @@ object GdslInstanceToZetaModel {
       val name = getEntityName(node, gdslInstance)
       Entity(name, Nil, Nil, Nil, Nil, Nil, Nil)
     }
-    val generated = entities.map(entity => (entity, KlimaCodeGenerator.generateEntity(entity))).toList
+    val generated = entities
+      .map(entity => (entity, KlimaCodeGenerator.generateEntity(entity)))
+      .map(g => (g._1, ScalaCodeBeautifier.format(g._2)))
+      .toList
 
     // Add Generate Step
     generated.map {
