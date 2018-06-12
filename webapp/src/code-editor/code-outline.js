@@ -25,6 +25,9 @@ export class CodeOutline {
             case "style":
                 this.generateOutlineForDsl(["style"]);
                 break;
+            case "diagram":
+                this.generateOutlineForDsl(["palette"]);
+                break;
             default:
                 console.error("unknown dsl type for outline generation");
         }
