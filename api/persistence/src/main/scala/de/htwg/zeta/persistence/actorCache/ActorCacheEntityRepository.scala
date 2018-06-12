@@ -1,8 +1,6 @@
 package de.htwg.zeta.persistence.actorCache
 
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -27,15 +25,17 @@ import de.htwg.zeta.persistence.general.EntityRepository
 import de.htwg.zeta.persistence.general.EventDrivenTaskRepository
 import de.htwg.zeta.persistence.general.FilterImageRepository
 import de.htwg.zeta.persistence.general.FilterRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GeneratorImageRepository
 import de.htwg.zeta.persistence.general.GeneratorRepository
-import de.htwg.zeta.persistence.general.LogRepository
-import de.htwg.zeta.persistence.general.GdslProjectRepository
-import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslReleaseRepository
+import de.htwg.zeta.persistence.general.LogRepository
 import de.htwg.zeta.persistence.general.SettingsRepository
 import de.htwg.zeta.persistence.general.TimedTaskRepository
 import de.htwg.zeta.persistence.general.UserRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 /**

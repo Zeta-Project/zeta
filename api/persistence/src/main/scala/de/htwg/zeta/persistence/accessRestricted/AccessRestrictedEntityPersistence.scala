@@ -1,8 +1,6 @@
 package de.htwg.zeta.persistence.accessRestricted
 
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -13,9 +11,11 @@ import de.htwg.zeta.common.models.entity.AccessAuthorisation
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.EntityRepository
-import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.GdslProjectRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.general.LogRepository
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /** Persistence-Layer to restrict the access to the entity-persistence.
  *
