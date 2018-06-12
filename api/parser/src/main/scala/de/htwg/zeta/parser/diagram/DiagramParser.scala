@@ -12,7 +12,9 @@ object DiagramParser extends CommonParserMethods {
       case Left(l) => Left(l)
       case Right(t) =>
         parseAll(diagrams, t.text) match {
-          case NoSuccess(msg, next) => Left(t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column))))
+          case NoSuccess(msg, next) =>
+            val newPosition = t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column)))
+            Left(newPosition)
           case Success(s, _) => Right(s)
         }
     }
