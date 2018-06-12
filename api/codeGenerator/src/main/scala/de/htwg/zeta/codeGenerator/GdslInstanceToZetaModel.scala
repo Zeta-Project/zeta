@@ -6,10 +6,13 @@ import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
-
-
 import scala.collection.immutable.Seq
 import scala.collection.mutable
+
+import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
+import play.api.libs.json.Json
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsObject
 
 
 object GdslInstanceToZetaModel {
@@ -85,11 +88,48 @@ object GdslInstanceToZetaModel {
         )
     }
 
+
+
+    val nodes = gdslInstance.nodes.filter(_.className == "Entity").foreach { node =>
+      val name = getEntityName(node, gdslInstance)
+      println(name)
+    }
+
     // Add Generate Step
     resultToDisplay ::: List(
       File(gdslInstance.id, "Concept", concept.toString),
       File(gdslInstance.id, "gdslInstance", gdslInstance.toString)
     )
+  }
+
+  private def getEntityName(node: NodeInstance, gdslInstance: GraphicalDslInstance) = {
+
+    val idForEntityName = "schinken"
+
+    val id = node.name
+    val uiState = Json.parse(gdslInstance.uiState)
+    val cells = (uiState \ "cells").as[List[JsValue]]
+
+    val cell: JsValue = cells.find { cell =>
+      val mAttribute = (cell \ "mClassAttributeInfo" \ "id").as[String]
+      mAttribute == id
+    }.get
+
+    val attributeInfos: List[JsValue] = (cell \ "mClassAttributeInfo").as[List[JsValue]]
+    val o: JsValue = attributeInfos.find { attributeInfo: JsValue =>
+      val name = (attributeInfo \ "name").as[String]
+      name == idForEntityName
+    }.get
+
+    val generatedId = (o \ "id").as[String] // something like 0000-0000000000-0000-dead
+
+    val attrs = (cell \ "attrs").as[JsObject[JsValue]]
+    val attr = attrs.value.find { case (name, value) =>
+      name == s"text.$generatedId"
+    }.get._2
+
+    val entityName = (attr \ "text").as[String]
+    entityName
   }
 
 }
