@@ -70,15 +70,17 @@ export default (function modelExporter () {
             let attrs = ele.attributes.attrs;
             for(let key in attrs) {
                 if(_.include(key, "text")) {
-                    let attrName = ele.attributes.mClassAttributeInfo.find(element => element.id === attrs[key].id);
+                    let attrName = globalMClassAttributeInfo.find(element => element.id === attrs[key].id);
+
                     if(attrName !== undefined) {
-                        element.attributes[attrName.name] = attrs[key].text;
+                        element.attributes.push(attrName);
+                        element.attributeValues[attrName.name] = { value: attrs[key].text[0] ||'', type: attrName.type };
                     }
                 }
             }
 
             // add all attributes that have no value
-            ele.attributes.mClassAttributeInfo.forEach(function(info) {
+            globalMClassAttributeInfo.forEach(function(info) {
                 if(!element.attributes.hasOwnProperty(info.name)) {
                     element.attributes[info.name] = [];
                 }
