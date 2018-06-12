@@ -104,26 +104,27 @@ object GdslInstanceToZetaModel {
 
   private def getEntityName(node: NodeInstance, gdslInstance: GraphicalDslInstance) = {
 
-    val idForEntityName = "schinken"
+    val idForEntityName = "name"
 
     val id = node.name
     val uiState = Json.parse(gdslInstance.uiState)
     val cells = (uiState \ "cells").as[List[JsValue]]
 
     val cell: JsValue = cells.find { cell =>
-      val mAttribute = (cell \ "mClassAttributeInfo" \ "id").as[String]
-      mAttribute == id
+      val cellId = (cell \ "id").as[String]
+      cellId == id
     }.get
 
-    val attributeInfos: List[JsValue] = (cell \ "mClassAttributeInfo").as[List[JsValue]]
-    val o: JsValue = attributeInfos.find { attributeInfo: JsValue =>
+    val attributeInfos: List[JsObject] = (cell \ "mClassAttributeInfo").as[List[JsObject]]
+
+    val o: JsObject = attributeInfos.find { attributeInfo: JsValue =>
       val name = (attributeInfo \ "name").as[String]
       name == idForEntityName
     }.get
 
     val generatedId = (o \ "id").as[String] // something like 0000-0000000000-0000-dead
 
-    val attrs = (cell \ "attrs").as[JsObject[JsValue]]
+    val attrs = (cell \ "attrs").as[JsObject]
     val attr = attrs.value.find { case (name, value) =>
       name == s"text.$generatedId"
     }.get._2
