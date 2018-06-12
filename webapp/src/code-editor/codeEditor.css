@@ -212,6 +212,11 @@
     background-color: #0ab27e;
 }
 
+#outline-nodes .outline-node.palette::before {
+    content: 'P';
+    background-color: #b217a6;
+}
+
 #outline-nodes .outline-node.node::before {
     content: 'N';
     background-color: #1C5D99;
