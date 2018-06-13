@@ -3,6 +3,6 @@ scala:
   - 2.12.4
 env:
   - BUILD_DIR=api
-script: cd $BUILD_DIR && sbt compile && sbt clean coverage test coverageReport
+script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
