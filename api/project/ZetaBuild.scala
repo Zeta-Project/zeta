@@ -1,18 +1,14 @@
-import org.scalastyle.sbt.ScalastylePlugin.autoImport.scalastyle
-import org.scalastyle.sbt.ScalastylePlugin.autoImport.scalastyleFailOnError
-import sbt.taskKey
-import sbt.Project
-import sbt.project
-import sbt.file
-import sbt.Compile
-import sbt.Keys
 import sbt.Def
-import sbt.stringToOrganization
+import sbt.Keys
 import sbt.Keys.scalacOptions
-import sbt.Keys.compile
+import sbt.Project
+import sbt.file
+import sbt.project
+import sbt.stringToOrganization
+import sbt.taskKey
 import wartremover.WartRemover.autoImport.Wart
-import wartremover.WartRemover.autoImport.wartremoverWarnings
 import wartremover.WartRemover.autoImport.Warts
+import wartremover.WartRemover.autoImport.wartremoverWarnings
 
 object ZetaBuild {
 
@@ -46,11 +42,16 @@ object ZetaBuild {
   )
 
   val linterSettings = Seq(
-    scalastyleFailOnError := true,
-    ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
-    compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
-    wartremoverWarnings ++= Warts.unsafe.filterNot(_ == Wart.NonUnitStatements)
+    //    scalastyleFailOnError := true,
+    //    ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
+    //    compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
+    wartremoverWarnings ++= Warts.unsafe diff List(
+      Wart.NonUnitStatements,
+      Wart.Any,
+      Wart.Product,
+    )
   )
+
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
     // injection
