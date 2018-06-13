@@ -44,7 +44,8 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
 
     // quicklens
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.11"
-  )
+  ),
+  PlayKeys.devSettings := Seq("play.server.akka.requestTimeout" -> "infinite")
 ).enablePlugins(PlayScala).dependsOn(
   ZetaBuild.codeGenerator,
   ZetaBuild.common,
