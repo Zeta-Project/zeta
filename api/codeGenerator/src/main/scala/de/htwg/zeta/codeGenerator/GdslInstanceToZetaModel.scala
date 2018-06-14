@@ -1,22 +1,26 @@
 package de.htwg.zeta.codeGenerator
 
 
-import de.htwg.zeta.codeGenerator.model.{Entity, Link}
-import de.htwg.zeta.common.models.entity.File
-import de.htwg.zeta.common.models.project.concept.Concept
-import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import scala.collection.immutable.Seq
 import scala.collection.mutable
 
+import de.htwg.zeta.codeGenerator.model.Entity
+import de.htwg.zeta.codeGenerator.model.Link
+import de.htwg.zeta.codeGenerator.model.Value
+import de.htwg.zeta.common.models.entity.File
+import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
+import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
+import grizzled.slf4j.Logging
 import play.api.libs.json.JsObject
-import scalariform.formatter.ScalaFormatter
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 
 
-object GdslInstanceToZetaModel {
+object GdslInstanceToZetaModel extends Logging {
 
   // scalastyle:off
   def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Seq[File] = {
@@ -27,8 +31,6 @@ object GdslInstanceToZetaModel {
 
     val nonProcessableEdges = mutable.ListBuffer(gdslInstance.edges: _*).filter(_.referenceName == "LinkEdge") // edge pointing to unprocessed edges
     val processableEdges = mutable.ListBuffer.empty[EdgeInstance] // edges pointing to processed edges
-
-
 
 
     def processRecursive(): Option[Entity] = {
@@ -80,18 +82,31 @@ object GdslInstanceToZetaModel {
 
 
     val entities = gdslInstance.nodes.filter(_.className == "Entity").map { node =>
+      val fixValues = node.attributeValues.get("fix").flatMap(extractValue).toList
+      val inValues = node.attributeValues.get("in").flatMap(extractValue).toList
+      val outValues = node.attributeValues.get("out").flatMap(extractValue).toList
       val name = getEntityName(node, gdslInstance)
-      Entity(name, Nil, Nil, Nil, Nil, Nil, Nil)
+      Entity(name, fixValues, inValues, outValues, Nil, Nil, Nil)
     }
-    val generated = entities
-      .map(entity => (entity, KlimaCodeGenerator.generateEntity(entity)))
-      .map(g => (g._1, ScalaCodeBeautifier.format(g._2)))
-      .toList
 
-    // Add Generate Step
-    generated.map {
-      case (entity: Entity, generatedClass: String) => File(gdslInstance.id, entity.name, generatedClass)
+    for {
+      entity <- entities.toList
+    } yield {
+      val generatedFile = KlimaCodeGenerator.generateSingleEntity(entity)
+      val beautifiedFile = ScalaCodeBeautifier.format(generatedFile, entity.name)
+
+      File(gdslInstance.id, entity.name + ".scala", beautifiedFile)
     }
+  }
+
+  private def extractValue(at: AttributeValue): Option[Value] = at match {
+    case StringValue(combinedString) =>
+      combinedString.split(":", 2).toList match {
+        case name :: tpe :: Nil => Some(Value(name, tpe))
+        case _ => None
+      }
+
+    case _ => None
   }
 
   private def getEntityName(node: NodeInstance, gdslInstance: GraphicalDslInstance) = {
