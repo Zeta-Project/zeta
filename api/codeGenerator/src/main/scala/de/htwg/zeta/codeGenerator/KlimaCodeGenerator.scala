@@ -23,10 +23,14 @@ object KlimaCodeGenerator {
     mapBuilder.result()
   }
 
+  def generateSingleEntity(entity: Entity): String = {
+    EntityTemplate(entity).toString.trim
+  }
+
   // Model-Classes
   def generateEntity(entity: Entity): String = {
     val generated = collectAllEntities(entity).map { case (_, e) =>
-      EntityTemplate(e).toString
+      generateSingleEntity(e)
     }
 
     generated.mkString("\n")

@@ -13,13 +13,13 @@ object ScalaCodeBeautifier extends Logging {
    * @param source raw scala source
    * @return formatted scala source
    */
-  def format(source: String): String = try {
+  def format(source: String, fileName: String): String = try {
     ScalaFormatter.format(source).trim
   } catch {
     // catch exception to avoid failure on wrong generation
     // TODO should be handled in future
     case e: ScalaParserException =>
-      logger.error(e)
+      logger.error(s"failed beautifying $fileName", e)
       source
   }
 
