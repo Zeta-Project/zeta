@@ -10,10 +10,11 @@ object ScalaCodeBeautifier extends Logging {
    * Format the given scala source code. If code parsing failed, the
    * raw source is returned and only an error is logged.
    *
-   * @param source raw scala source
+   * @param fileName name of the file containing the source
+   * @param source   raw scala source
    * @return formatted scala source
    */
-  def format(source: String, fileName: String): String = try {
+  def format(fileName: String, source: String): String = try {
     ScalaFormatter.format(source).trim
   } catch {
     // catch exception to avoid failure on wrong generation
