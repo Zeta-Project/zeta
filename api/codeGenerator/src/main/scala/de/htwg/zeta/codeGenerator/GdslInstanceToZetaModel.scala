@@ -92,10 +92,11 @@ object GdslInstanceToZetaModel extends Logging {
     for {
       entity <- entities.toList
     } yield {
+      val fileName = s"${entity.name}.scala"
       val generatedFile = KlimaCodeGenerator.generateSingleEntity(entity)
-      val beautifiedFile = ScalaCodeBeautifier.format(generatedFile, entity.name)
+      val beautifiedFile = ScalaCodeBeautifier.format(fileName, generatedFile)
 
-      File(gdslInstance.id, entity.name + ".scala", beautifiedFile)
+      File(gdslInstance.id, fileName, beautifiedFile)
     }
   }
 
