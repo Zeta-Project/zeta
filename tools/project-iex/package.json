@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "adm-zip": "^0.4.7",
-    "fs-extra": "^5.0.0",
-    "mongodb": "^3.0.7",
-    "optimist": "^0.6.1"
+    "adm-zip": "0.4.11",
+    "fs-extra": "5.0.0",
+    "mongodb": "3.0.7",
+    "optimist": "0.6.1"
   }
 }
