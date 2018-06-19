@@ -77,8 +77,6 @@ export default Backbone.Router.extend({
         this.paperScroller = new joint.ui.PaperScroller({autoResizePaper: true});
         this.paper = new joint.dia.Paper({
             el: this.paperScroller.el,
-            width: 5000,
-            height: 5000,
             gridSize: 10,
             perpendicularLinks: true,
             model: this.graph,
