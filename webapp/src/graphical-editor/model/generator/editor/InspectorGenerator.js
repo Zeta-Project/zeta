@@ -4,19 +4,23 @@ import objectAssignDeep from 'object-assign-deep';
 
 class EdgeGenerator {
     create(edge, edges) {
+        // TO DO: Mehrere Attribute in einer Edge (Als MReference)
         let edgesWithTextField = edges.filter(fe => fe.placings.filter(p => p.geoElement.type === "textfield").length > 0);
-        return  Object.assign(this.getGroups(edgesWithTextField), this.getInputs(edgesWithTextField));
+        return Object.assign(this.getGroups(edgesWithTextField), this.getInputs(edgesWithTextField));
     }
 
     getGroups(edges) {
-        let groupNames = edges.map(edge => edge.name);
+        let placings;
         let result = {};
-        for (let i = 0; i < groupNames.length; i++) {
-            result[groupNames[i]] = {
-                label: groupNames[i],
-                index: i + 1
+        edges.forEach((edge) => {
+            placings = edge.placings.filter(p => p.geoElement.type === "textfield");
+            for (let i = 0; i < placings.length; i++) {
+                result[(placings[i].geoElement.identifier).replace(".", "_")] = {
+                    label: (placings[i].geoElement.identifier).replace(".", "_"),
+                    index: i + 1
+                }
             }
-        }
+        });
         return {groups: result}
     }
 
@@ -27,7 +31,7 @@ class EdgeGenerator {
             placings = edge.placings.filter(p => p.geoElement.type === "textfield");
             for (let i = 0; i < placings.length; i++) {
                 if (placings[i].geoElement.multiline) {
-                    result[edge.name] = {
+                    result[(placings[i].geoElement.identifier).replace(".", "_")] = {
                         type: 'list',
                         item: {
                             type: 'text',
@@ -38,7 +42,7 @@ class EdgeGenerator {
                         group: edge.name
                     }
                 } else {
-                    result[edge.name] = {
+                    result[(placings[i].geoElement.identifier).replace(".", "_")] = {
                         type: 'text',
                         label: placings[i].geoElement.identifier,
                         defaultValue: placings[i].geoElement.textBody,
