@@ -4,7 +4,7 @@ const AdmZip = require('adm-zip');
 const prettify = (json) => JSON.stringify(json, null, 2);
 
 const zipProject = ({gdslProject, gdslInstances}) => {
-  const dir = 'export';
+  const dir = './export';
   if (!fs.exists(dir)) {
     fs.mkdirpSync(dir);
   }
