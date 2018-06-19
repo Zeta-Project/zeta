@@ -120,24 +120,14 @@ export default (function modelExporter() {
             element.sourceNodeName = link.attributes.source.id;
             element.targetNodeName = link.attributes.target.id;
 
-            /* let referenceType = link.attributes.mReference;
-
-             let linkAttributeKeys = Object.keys(link.attributes);
-
-             let cde = linkAttributeKeys.find(attrKey => attrKey.toLowerCase() === referenceType.toLowerCase() );
-
-             let xyz = link.attributes[cde];
-             // add attributes
-             let def = Array.isArray(xyz);*/
-
-            let mClassAttributes = nodeToEdgeAttributeInfo[link.attributes.mReference];
-            if (mClassAttributes) {
-                element.attributes.push(mClassAttributes.map(attr => {
+            const mReferenceAttributesInfos = nodeToEdgeAttributeInfo[link.attributes.mReference];
+            if (mReferenceAttributesInfos) {
+                element.attributes = mReferenceAttributesInfos.map(attr => {
                     return {
                         'name': attr.name,
                         'globalUnique': attr.globalUnique,
                         'localUnique': attr.localUnique,
-                        'typ': attr.type,
+                        'type': attr.type,
                         'default': attr.default,
                         'constant': attr.constant,
                         'singleAssignment': attr.singleAssignment,
@@ -145,14 +135,12 @@ export default (function modelExporter() {
                         'ordered': attr.ordered,
                         'transient': attr.transient
                     }
-                }));
+                });
 
-                let attributeNames = mClassAttributes.map(attr => attr.name);
-
-                Object.keys(link.attributes).forEach((attr) => {
-                    attributeNames.forEach((attrN) => {
-                        if (attr.includes(attrN)) {
-                            element.attributeValues[attr] = {'value': link.attributes[attr], 'type': 'String'}
+                Object.keys(link.attributes).forEach((linkAttribute) => {
+                    mReferenceAttributesInfos.forEach((attributeInfo) => {
+                        if (linkAttribute.includes(attributeInfo.name)) {
+                            element.attributeValues[linkAttribute] = {'value': link.attributes[linkAttribute][0], 'type': attributeInfo.type}
                         }
                     });
                 });
