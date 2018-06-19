@@ -4,7 +4,7 @@ import GeneratorFactory from "../generator/GeneratorFactory";
 
 //TODO import {linkhelper} from '../generator/editor/LinkHelperGenerator'
 
-export default (function modelExporter () {
+export default (function modelExporter() {
     'use strict';
 
     let exportModel;
@@ -15,8 +15,8 @@ export default (function modelExporter () {
     let _showExportSuccess;
     let _showExportFailure;
 
-    exportModel = function(graph) {
-        $("[data-hide]").on("click", function(){
+    exportModel = function (graph) {
+        $("[data-hide]").on("click", function () {
             $("." + $(this).attr("data-hide")).hide();
         });
 
@@ -48,15 +48,17 @@ export default (function modelExporter () {
                 _showExportSuccess();
             },
             error: function (jqXHR, textStatus, errorThrown) {
-              _showExportFailure("Failure, there occurred an error during saving!");
+                _showExportFailure("Failure, there occurred an error during saving!");
             }
         });
     };
 
 
-    _buildNodes = function() {
+    _buildNodes = function () {
         let elements = [];
-        _graph.getElements().forEach(function(ele) {
+        _graph.getElements().forEach(function (ele) {
+
+            console.log(ele);
             let element = {
                 name: ele.id,
                 className: ele.attributes.className,
@@ -68,30 +70,30 @@ export default (function modelExporter () {
             };
 
             let attrs = ele.attributes.attrs;
-            for(let key in attrs) {
-                if(_.include(key, "text")) {
+            for (let key in attrs) {
+                if (_.include(key, "text")) {
                     let attrName = globalMClassAttributeInfo.find(element => element.id === attrs[key].id);
 
-                    if(attrName !== undefined) {
+                    if (attrName !== undefined) {
                         element.attributes.push(attrName);
-                        element.attributeValues[attrName.name] = { value: attrs[key].text[0] ||'', type: attrName.type };
+                        element.attributeValues[attrName.name] = {value: attrs[key].text[0] || '', type: attrName.type};
                     }
                 }
             }
 
             // add all attributes that have no value
-            globalMClassAttributeInfo.forEach(function(info) {
-                if(!element.attributes.hasOwnProperty(info.name)) {
+            globalMClassAttributeInfo.forEach(function (info) {
+                if (!element.attributes.hasOwnProperty(info.name)) {
                     element.attributes[info.name] = [];
                 }
             });
 
-            _graph.getConnectedLinks(ele, {outbound: true}).forEach(function(link) {
+            _graph.getConnectedLinks(ele, {outbound: true}).forEach(function (link) {
                 element.outputEdgeNames.push(link.attributes.source.id);
             });
 
-            _graph.getConnectedLinks(ele, {inbound: true}).forEach(function(link) {
-                   element.inputEdgeNames.push(link.attributes.target.id);
+            _graph.getConnectedLinks(ele, {inbound: true}).forEach(function (link) {
+                element.inputEdgeNames.push(link.attributes.target.id);
             });
             elements.push(element);
         });
@@ -100,9 +102,11 @@ export default (function modelExporter () {
     };
 
 
-    _buildEdges = function() {
+    _buildEdges = function () {
         let elements = [];
-        _graph.getLinks().forEach(function(link) {
+        _graph.getLinks().forEach(function (link) {
+
+            console.log(link);
             let element = {
                 name: link.id,
                 referenceName: link.attributes.mReference,
@@ -116,8 +120,45 @@ export default (function modelExporter () {
             element.sourceNodeName = link.attributes.source.id;
             element.targetNodeName = link.attributes.target.id;
 
-            // add attributes
-            link.attributes.labels.forEach(function(label) {
+            /* let referenceType = link.attributes.mReference;
+
+             let linkAttributeKeys = Object.keys(link.attributes);
+
+             let cde = linkAttributeKeys.find(attrKey => attrKey.toLowerCase() === referenceType.toLowerCase() );
+
+             let xyz = link.attributes[cde];
+             // add attributes
+             let def = Array.isArray(xyz);*/
+
+            let mClassAttributes = nodeToEdgeAttributeInfo[link.attributes.mReference];
+            if (mClassAttributes) {
+                element.attributes.push(mClassAttributes.map(attr => {
+                    return {
+                        'name': attr.name,
+                        'globalUnique': attr.globalUnique,
+                        'localUnique': attr.localUnique,
+                        'typ': attr.type,
+                        'default': attr.default,
+                        'constant': attr.constant,
+                        'singleAssignment': attr.singleAssignment,
+                        'expression': attr.expression,
+                        'ordered': attr.ordered,
+                        'transient': attr.transient
+                    }
+                }));
+
+                let attributeNames = mClassAttributes.map(attr => attr.name);
+
+                Object.keys(link.attributes).forEach((attr) => {
+                    attributeNames.forEach((attrN) => {
+                        if (attr.includes(attrN)) {
+                            element.attributeValues[attr] = {'value': link.attributes[attr], 'type': 'String'}
+                        }
+                    });
+                });
+            }
+
+            link.attributes.labels.forEach(function (label) {
                 let attributeName = GeneratorFactory.linkHelper.mapping[link.attributes.mReference][label.id];
                 element.attributes[attributeName] = [label.attrs.text.text];
             });
@@ -127,9 +168,9 @@ export default (function modelExporter () {
         return elements;
     };
 
-    _getAttributeValue = function(value, type) {
+    _getAttributeValue = function (value, type) {
         let ret = value;
-        switch(type) {
+        switch (type) {
             case 'Bool':
                 ret = value.toLowerCase() === 'true';
                 break;
@@ -143,9 +184,9 @@ export default (function modelExporter () {
         return ret;
     };
 
-    _showExportSuccess = function() {
-        $("#success-panel").fadeOut('slow', function() {
-            $("#error-panel").fadeOut('slow', function() {
+    _showExportSuccess = function () {
+        $("#success-panel").fadeOut('slow', function () {
+            $("#error-panel").fadeOut('slow', function () {
                 $("#success-panel").show();
                 $("#success-panel").find("div").text("Success, model saved!");
                 $("#success-panel").fadeIn('slow');
@@ -153,9 +194,9 @@ export default (function modelExporter () {
         });
     };
 
-    _showExportFailure = function(reason) {
-        $("#success-panel").fadeOut('slow', function() {
-            $("#error-panel").fadeOut('slow', function() {
+    _showExportFailure = function (reason) {
+        $("#success-panel").fadeOut('slow', function () {
+            $("#error-panel").fadeOut('slow', function () {
                 $("#error-panel").show();
                 $("#error-panel").find("div").text(reason);
                 $("#error-panel").fadeIn('slow');
@@ -164,7 +205,7 @@ export default (function modelExporter () {
     };
 
     return {
-        exportModel : exportModel
+        exportModel: exportModel
     };
 
 })();

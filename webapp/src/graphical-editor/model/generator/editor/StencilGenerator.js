@@ -2,7 +2,7 @@ import joint from 'jointjs';
 
 function getPalettes(diagrams) {
     //ToDo: multiDiagram impl. not yet.
-    return diagrams[0].palettes.map( palette => palette.name);
+    return diagrams[0].palettes.map(palette => palette.name);
 }
 
 function getVarName(string) {
@@ -24,7 +24,12 @@ class ShapesGenerator {
         this.shapeStyleGenerator = shapeStyleGenerator;
     }
 
-    create(nodes, classes, diagrams) {
+    create(nodes, concept, diagrams) {
+        const classes = concept && concept.classes ? concept.classes : [];
+        const references = concept && concept.references ? concept.references : [];
+
+        this.createNodeToEdgeAttributeInfo(nodes, references, classes);
+
         return getPalettes(diagrams).reduce((result, palette) => {
             result[getVarName(palette)] = this.createShapeList(palette, nodes, classes, diagrams);
             return result;
@@ -33,7 +38,7 @@ class ShapesGenerator {
 
     createShapeList(palette, nodes, classes, diagrams) {
         const paletteNodes = diagrams[0].palettes.find(p => p.name === palette).nodes;
-        const shapeNodes = nodes.filter( n => paletteNodes.includes(n.name));
+        const shapeNodes = nodes.filter(n => paletteNodes.includes(n.name));
         return shapeNodes.map(node => this.createShapeEntry(node, classes));
         /*this.createShapeEntry()
 
@@ -62,9 +67,20 @@ class ShapesGenerator {
 
     createMClassAttributeInfo(node, classes) {
         const mClass = classes.find(c => c.name === node.conceptElement);
-        const attributeInfo =  mClass && mClass.attributes ? mClass.attributes.map(a => this.createMClassAttribute(a, node)) : [];
+        const attributeInfo = mClass && mClass.attributes ? mClass.attributes.map(a => this.createMClassAttribute(a, node)) : [];
         globalMClassAttributeInfo = globalMClassAttributeInfo.concat(attributeInfo);
         return attributeInfo;
+    }
+
+    createNodeToEdgeAttributeInfo(node, references, classes) {
+
+        classes.forEach((clazz) => {
+            references.forEach((reference) => {
+                if (clazz.name.toLowerCase() === reference.name.toLowerCase()) {
+                    nodeToEdgeAttributeInfo[clazz.name] = clazz.attributes;
+                }
+            })
+        });
     }
 
     createMClassAttribute(attribute, node) {
@@ -93,7 +109,7 @@ class ShapesGenerator {
         const vars = node.geoElements ? node.geoElements : [];
         const flatGeoElements = this.flattenGeoElement(vars);
         const entry = flatGeoElements.find(v => v.identifier === attribute.name);
-        return entry ? { id: entry.id } : {};
+        return entry ? {id: entry.id} : {};
     }
 
     createOptionalMcoreAttributes(node) {
@@ -143,7 +159,7 @@ class ShapesGenerator {
 }
 
 /**
- * 
+ *
  */
 export default class StencilGenerator {
     constructor(diagram, shape, concept, shapeStyleGenerator, styleGenerator) {
@@ -158,13 +174,13 @@ export default class StencilGenerator {
     get groups() {
         return getPalettes(this.diagrams).reduce((result, palette, i) => {
             const key = getVarName(palette);
-            result[key] = { index: i + 1, label: palette };
+            result[key] = {index: i + 1, label: palette};
             return result;
         }, {});
     }
 
     get shapes() {
         const classes = this.concept && this.concept.classes ? this.concept.classes : [];
-        return this.shapesGenerator.create(this.nodes, classes, this.diagrams);
+        return this.shapesGenerator.create(this.nodes, this.concept, this.diagrams);
     }
 }
