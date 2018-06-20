@@ -38,14 +38,14 @@ class EdgeGenerator {
                             type: 'text',
                             defaultValue: placings[i].geoElement.textBody
                         },
-                        label: placings[i].geoElement.identifier,
+                        label: placings[i].geoElement.identifier.split('.')[1],
                         index: i + 1,
                         group: edge.name
-                    }
+                    })
                 } else {
                     result[edge.name].push({
                         type: 'text',
-                        label: placings[i].geoElement.identifier,
+                        label: placings[i].geoElement.identifier.split('.')[1],
                         defaultValue: placings[i].geoElement.textBody,
                         index: i + 1,
                         group: edge.name
