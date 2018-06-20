@@ -23,7 +23,7 @@ case class NodeInstance(
     outputEdgeNames: Seq[String],
     inputEdgeNames: Seq[String],
     attributes: Seq[MAttribute],
-    attributeValues: Map[String, AttributeValue],
+    attributeValues: Map[String, List[AttributeValue]],
     methods: Seq[Method]
 ) extends AttributeMap with HasAttributeValues with MethodMap
 

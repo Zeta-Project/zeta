@@ -17,13 +17,13 @@ class NodesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
   val emptyNode: NodeInstance = NodeInstance.empty("", mClass.name, Seq.empty, Seq.empty)
 
   "isValid" should "return true on non-empty attribute names" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeName1" -> StringValue(""))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeName1" -> List(StringValue("")))
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(true)
   }
 
   it should "return false on empty attribute names" in {
-    val attribute: Map[String, AttributeValue] = Map("" -> StringValue(""))
+    val attribute: Map[String, List[AttributeValue]] = Map("" -> List(StringValue("")))
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(false)
   }

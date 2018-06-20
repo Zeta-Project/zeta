@@ -32,7 +32,7 @@ case class GraphicalDslInstance(
     nodes: Seq[NodeInstance],
     edges: Seq[EdgeInstance],
     attributes: Seq[MAttribute],
-    attributeValues: Map[String, AttributeValue],
+    attributeValues: Map[String, List[AttributeValue]], // should always be empty, remove in the future
     methods: Seq[Method],
     uiState: String
 ) extends Entity with NodeMap with EdgeMap with AttributeMap with MethodMap

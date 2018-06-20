@@ -12,7 +12,7 @@ object AttributeValue {
   /** A mixin that offers the attributes field */
   trait HasAttributeValues {
 
-    val attributeValues: Map[String, AttributeValue]
+    val attributeValues: Map[String, List[AttributeValue]]
 
   }
 

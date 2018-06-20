@@ -24,7 +24,7 @@ case class EdgeInstance(
     sourceNodeName: String,
     targetNodeName: String,
     attributes: Seq[MAttribute],
-    attributeValues: Map[String, AttributeValue],
+    attributeValues: Map[String, List[AttributeValue]],
     methods: Seq[Method]
 ) extends HasAttributeValues with AttributeMap with MethodMap
 
