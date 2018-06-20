@@ -74,9 +74,23 @@ export default (function modelExporter() {
                     let attrName = globalMClassAttributeInfo.find(element => element.id === attrs[key].id);
 
                     if (attrName !== undefined) {
-                        element.attributes.push(attrName);
-                        // TODO remove [0] after fixing Backend
-                        element.attributeValues[attrName.name] = {value: attrs[key].text || '', type: attrName.type};
+                        element.attributes.push({
+                            'name': attrName.name,
+                            'globalUnique': attrName.globalUnique,
+                            'localUnique': attrName.localUnique,
+                            'type': attrName.type.toLowerCase(),
+                            'default': {'value': attrName.default.value, 'type': attrName.default.type.toLowerCase()},
+                            'constant': attrName.constant,
+                            'singleAssignment': attrName.singleAssignment,
+                            'expression': attrName.expression,
+                            'ordered': attrName.ordered,
+                            'transient': attrName.transient
+                        });
+
+                        element.attributeValues[attrName.name] = [];
+                        attrs[key].text.forEach(attr => {
+                            element.attributeValues[attrName.name].push({value: attr || '', type: attrName.type.toLowerCase()});
+                        });
                     }
                 }
             }
@@ -127,8 +141,8 @@ export default (function modelExporter() {
                         'name': attr.name,
                         'globalUnique': attr.globalUnique,
                         'localUnique': attr.localUnique,
-                        'type': attr.type,
-                        'default': attr.default,
+                        'type': attr.type.toLowerCase(),
+                        'default': {'value': attr.default.value, 'type': attr.default.type.toLowerCase()},
                         'constant': attr.constant,
                         'singleAssignment': attr.singleAssignment,
                         'expression': attr.expression,
@@ -146,9 +160,16 @@ export default (function modelExporter() {
 
                 if (attributeValues) {
                     for (var i = 0; i < attributeNames.length; i++) {
+                        element.attributeValues[attributeNames[i]] = [];
                         if (attributeValues[i] && attributeValues[i].length > 0) {
-                            // TODO remove [0] after fixing Backend
-                            element.attributeValues[attributeNames[i]] = {'value': attributeValues[i], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
+                            attributeValues[i].forEach(attrValue => {
+                                element.attributeValues[attributeNames[i]].push(
+                                    {
+                                        'value': attrValue,
+                                        'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i]).type.toLowerCase()
+                                    }
+                                )
+                            });
                         }
                     }
                 }
