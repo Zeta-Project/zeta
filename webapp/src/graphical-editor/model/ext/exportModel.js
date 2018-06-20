@@ -13,6 +13,7 @@ export default (function modelExporter() {
     let _graph;
     let _showExportSuccess;
     let _showExportFailure;
+    let _createAttributeInfo;
 
     exportModel = function (graph) {
         $("[data-hide]").on("click", function () {
@@ -74,9 +75,12 @@ export default (function modelExporter() {
                     let attrName = globalMClassAttributeInfo.find(element => element.id === attrs[key].id);
 
                     if (attrName !== undefined) {
-                        element.attributes.push(attrName);
-                        // TODO remove [0] after fixing Backend
-                        element.attributeValues[attrName.name] = {value: attrs[key].text || '', type: attrName.type};
+                        element.attributes.push(_createAttributeInfo(attrName));
+
+                        element.attributeValues[attrName.name] = [];
+                        attrs[key].text.forEach(attr => {
+                            element.attributeValues[attrName.name].push({value: attr || '', type: attrName.type});
+                        });
                     }
                 }
             }
@@ -123,18 +127,7 @@ export default (function modelExporter() {
             const mReferenceAttributesInfos = globalMReferenceAttributeInfo[link.attributes.mReference];
             if (mReferenceAttributesInfos) {
                 element.attributes = mReferenceAttributesInfos.map(attr => {
-                    return {
-                        'name': attr.name,
-                        'globalUnique': attr.globalUnique,
-                        'localUnique': attr.localUnique,
-                        'type': attr.type,
-                        'default': attr.default,
-                        'constant': attr.constant,
-                        'singleAssignment': attr.singleAssignment,
-                        'expression': attr.expression,
-                        'ordered': attr.ordered,
-                        'transient': attr.transient
-                    }
+                    return _createAttributeInfo(attr)
                 });
 
                 if ($.isEmptyObject(attributePositionMarker)) {
@@ -147,8 +140,15 @@ export default (function modelExporter() {
                 if (attributeValues) {
                     for (var i = 0; i < attributeNames.length; i++) {
                         if (attributeValues[i] && attributeValues[i].length > 0) {
-                            // TODO remove [0] after fixing Backend
-                            element.attributeValues[attributeNames[i]] = {'value': attributeValues[i], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
+                            element.attributeValues[attributeNames[i]] = [];
+                            attributeValues[i].forEach(attrValue => {
+                                element.attributeValues[attributeNames[i]].push(
+                                    {
+                                        'value': attrValue,
+                                        'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i]).type
+                                    }
+                                )
+                            });
                         }
                     }
                 }
@@ -156,6 +156,21 @@ export default (function modelExporter() {
             elements.push(element);
         });
         return elements;
+    };
+
+    _createAttributeInfo = (attribute) => {
+        return {
+            'name': attribute.name,
+            'globalUnique': attribute.globalUnique,
+            'localUnique': attribute.localUnique,
+            'type': attribute.type,
+            'default': {'value': attribute.default.value, 'type': attribute.default.type},
+            'constant': attribute.constant,
+            'singleAssignment': attribute.singleAssignment,
+            'expression': attribute.expression,
+            'ordered': attribute.ordered,
+            'transient': attribute.transient
+        }
     };
 
     _getAttributeValue = function (value, type) {

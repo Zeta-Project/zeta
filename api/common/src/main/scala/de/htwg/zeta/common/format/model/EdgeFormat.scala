@@ -32,7 +32,7 @@ class EdgeFormat(
     sSourceNodeName -> edge.sourceNodeName,
     sTargetNodeName -> edge.targetNodeName,
     sAttributes -> Writes.seq(attributeFormat).writes(edge.attributes),
-    sAttributeValues -> Writes.map(Writes.list(attributeValueFormat)).writes(edge.attributeValues),
+    sAttributeValues -> attributeValueFormat.asMapOfLists.writes(edge.attributeValues),
     sMethods -> Writes.seq(methodFormat).writes(edge.methods)
   )
 
@@ -42,7 +42,7 @@ class EdgeFormat(
     source <- (json \ sSourceNodeName).validate[String]
     target <- (json \ sTargetNodeName).validate[String]
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
-    attributeValues <- (json \ sAttributeValues).validate(Reads.map(Reads.list(attributeValueFormat)))
+    attributeValues <- (json \ sAttributeValues).validate(attributeValueFormat.asMapOfLists)
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
   } yield {
     EdgeInstance(
