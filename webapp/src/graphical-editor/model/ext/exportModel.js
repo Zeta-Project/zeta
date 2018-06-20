@@ -78,6 +78,11 @@ export default (function modelExporter() {
                         element.attributes.push(_createAttributeInfo(attrName));
 
                         element.attributeValues[attrName.name] = [];
+
+                        if (!Array.isArray(attrs[key].text)) {
+                            attrs[key].text = [attrs[key].text];
+                        }
+
                         attrs[key].text.forEach(attr => {
                             element.attributeValues[attrName.name].push({value: attr || '', type: attrName.type});
                         });
@@ -139,6 +144,9 @@ export default (function modelExporter() {
 
                 if (attributeValues) {
                     for (var i = 0; i < attributeNames.length; i++) {
+                        if (!Array.isArray(attributeValues[i])) {
+                            attributeValues[i] = [attributeValues[i]];
+                        }
                         if (attributeValues[i] && attributeValues[i].length > 0) {
                             element.attributeValues[attributeNames[i]] = [];
                             attributeValues[i].forEach(attrValue => {
