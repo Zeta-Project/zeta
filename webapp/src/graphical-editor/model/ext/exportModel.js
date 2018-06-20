@@ -13,6 +13,7 @@ export default (function modelExporter() {
     let _graph;
     let _showExportSuccess;
     let _showExportFailure;
+    let _createAttributeInfo;
 
     exportModel = function (graph) {
         $("[data-hide]").on("click", function () {
@@ -74,18 +75,7 @@ export default (function modelExporter() {
                     let attrName = globalMClassAttributeInfo.find(element => element.id === attrs[key].id);
 
                     if (attrName !== undefined) {
-                        element.attributes.push({
-                            'name': attrName.name,
-                            'globalUnique': attrName.globalUnique,
-                            'localUnique': attrName.localUnique,
-                            'type': attrName.type.toLowerCase(),
-                            'default': {'value': attrName.default.value, 'type': attrName.default.type.toLowerCase()},
-                            'constant': attrName.constant,
-                            'singleAssignment': attrName.singleAssignment,
-                            'expression': attrName.expression,
-                            'ordered': attrName.ordered,
-                            'transient': attrName.transient
-                        });
+                        element.attributes.push(_createAttributeInfo(attrName));
 
                         element.attributeValues[attrName.name] = [];
                         attrs[key].text.forEach(attr => {
@@ -137,18 +127,7 @@ export default (function modelExporter() {
             const mReferenceAttributesInfos = globalMReferenceAttributeInfo[link.attributes.mReference];
             if (mReferenceAttributesInfos) {
                 element.attributes = mReferenceAttributesInfos.map(attr => {
-                    return {
-                        'name': attr.name,
-                        'globalUnique': attr.globalUnique,
-                        'localUnique': attr.localUnique,
-                        'type': attr.type.toLowerCase(),
-                        'default': {'value': attr.default.value, 'type': attr.default.type.toLowerCase()},
-                        'constant': attr.constant,
-                        'singleAssignment': attr.singleAssignment,
-                        'expression': attr.expression,
-                        'ordered': attr.ordered,
-                        'transient': attr.transient
-                    }
+                    return _createAttributeInfo(attr)
                 });
 
                 if ($.isEmptyObject(attributePositionMarker)) {
@@ -177,6 +156,21 @@ export default (function modelExporter() {
             elements.push(element);
         });
         return elements;
+    };
+
+    _createAttributeInfo = (attribute) => {
+        return {
+            'name': attribute.name,
+            'globalUnique': attribute.globalUnique,
+            'localUnique': attribute.localUnique,
+            'type': attribute.type.toLowerCase(),
+            'default': {'value': attribute.default.value, 'type': attribute.default.type.toLowerCase()},
+            'constant': attribute.constant,
+            'singleAssignment': attribute.singleAssignment,
+            'expression': attribute.expression,
+            'ordered': attribute.ordered,
+            'transient': attribute.transient
+        }
     };
 
     _getAttributeValue = function (value, type) {
