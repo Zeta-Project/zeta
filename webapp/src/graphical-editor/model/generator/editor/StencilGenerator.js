@@ -77,7 +77,7 @@ class ShapesGenerator {
         classes.forEach((clazz) => {
             references.forEach((reference) => {
                 if (clazz.name.toLowerCase() === reference.name.toLowerCase()) {
-                    nodeToEdgeAttributeInfo[clazz.name] = clazz.attributes;
+                    globalMReferenceAttributeInfo[clazz.name] = clazz.attributes;
                 }
             })
         });

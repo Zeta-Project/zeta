@@ -4,7 +4,6 @@ import objectAssignDeep from 'object-assign-deep';
 
 class EdgeGenerator {
     create(edge, edges) {
-        // TO DO: Mehrere Attribute in einer Edge (Als MReference)
         let edgesWithTextField = edges.filter(fe => fe.placings.filter(p => p.geoElement.type === "textfield").length > 0);
         return Object.assign(this.getGroups(edgesWithTextField), this.getInputs(edgesWithTextField));
     }
