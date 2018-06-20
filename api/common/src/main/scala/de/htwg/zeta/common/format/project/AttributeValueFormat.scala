@@ -12,6 +12,8 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsValue
 import play.api.libs.json.OFormat
+import play.api.libs.json.Reads
+import play.api.libs.json.Writes
 
 @SuppressWarnings(Array("org.wartremover.warts.DefaultArguments"))
 class AttributeValueFormat(
@@ -25,6 +27,12 @@ class AttributeValueFormat(
     sEnumName: String = "enumName",
     sValueName: String = "valueName"
 ) extends OFormat[AttributeValue] {
+
+  val asMapOfLists: OFormat[Map[String, List[AttributeValue]]] = {
+    val reads = Reads.map(Reads.list(this))
+    val writes = Writes.map(Writes.list(this))
+    OFormat(reads, writes)
+  }
 
   override def writes(attributeValue: AttributeValue): JsObject = {
     attributeValue match {
