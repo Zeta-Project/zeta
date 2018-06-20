@@ -20,12 +20,12 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
 
   "check" should "return success validation results on correct attributes" in {
 
-    val attribute1: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value1"))
+    val attribute1: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("value1")))
     val node1 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
 
-    val attribute2: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value2"))
+    val attribute2: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("value2")))
     val node2 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
-    val attribute3: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value3"))
+    val attribute3: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("value3")))
     val node3 = NodeInstance.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))
@@ -35,11 +35,11 @@ class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
   }
 
   it should "return failure validation results on invalid attributes" in {
-    val attribute1: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
+    val attribute1: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("duplicateValue")))
     val node1 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute1)
-    val attribute2: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
+    val attribute2: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("value")))
     val node2 = NodeInstance.empty("", mClass1.name, Seq(), Seq()).copy(attributeValues = attribute2)
-    val attribute3: Map[String, AttributeValue] = Map("attributeType" -> StringValue("duplicateValue"))
+    val attribute3: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("duplicateValue")))
     val node3 = NodeInstance.empty("", mClass2.name, Seq(), Seq()).copy(attributeValues = attribute3)
 
     val results = rule.check(Seq(node1, node2, node3))

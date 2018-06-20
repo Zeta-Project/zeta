@@ -100,8 +100,8 @@ object GdslInstanceToZetaModel extends Logging {
     }
   }
 
-  private def extractValue(at: AttributeValue): Option[Value] = at match {
-    case StringValue(combinedString) =>
+  private def extractValue(at: List[AttributeValue]): Option[Value] = at match {
+    case StringValue(combinedString) :: _ => // FIXME currently only extracting only one value
       combinedString.split(":", 2).toList match {
         case name :: tpe :: Nil => Some(Value(name, tpe))
         case _ => None

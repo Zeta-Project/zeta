@@ -41,7 +41,7 @@ class GraphicalDslInstanceFormat(
     sNodes -> Writes.seq(nodeFormat).writes(instance.nodes),
     sEdges -> Writes.seq(edgeFormat).writes(instance.edges),
     sAttributes -> Writes.seq(attributeFormat).writes(instance.attributes),
-    sAttributeValues -> Writes.map(attributeValueFormat).writes(instance.attributeValues),
+    sAttributeValues -> Writes.map(Writes.list(attributeValueFormat)).writes(instance.attributeValues),
     sMethods -> Writes.seq(methodFormat).writes(instance.methods),
     sUiState -> instance.uiState
   )
@@ -53,7 +53,7 @@ class GraphicalDslInstanceFormat(
     nodes <- (json \ sNodes).validate(Reads.list(nodeFormat))
     edges <- (json \ sEdges).validate(Reads.list(edgeFormat))
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
-    attributeValues <- (json \ sAttributeValues).validate(Reads.map(attributeValueFormat))
+    attributeValues <- (json \ sAttributeValues).validate(Reads.map(Reads.list(attributeValueFormat)))
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
     uiState <- (json \ sUiState).validate[String]
   } yield {
@@ -86,7 +86,7 @@ class GraphicalDslInstanceFormat(
       nodes <- (json \ sNodes).validate(Reads.list(nodeFormat))
       edges <- (json \ sEdges).validate(Reads.list(edgeFormat))
       attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
-      attributeValues <- (json \ sAttributeValues).validate(Reads.map(attributeValueFormat))
+      attributeValues <- (json \ sAttributeValues).validate(Reads.map(Reads.list(attributeValueFormat)))
       methods <- (json \ sMethods).validate(Reads.list(methodFormat))
       uiState <- (json \ sUiState).validate[String]
     } yield {

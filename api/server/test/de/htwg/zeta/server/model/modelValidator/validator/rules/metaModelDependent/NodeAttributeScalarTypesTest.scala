@@ -19,12 +19,12 @@ class NodeAttributeScalarTypesTest extends FlatSpec with Matchers {
   val rule = new NodeAttributeScalarTypes("nodeType", "attributeType", StringType)
 
   "isValid" should "be true for valid nodes" in {
-    val node = emptyNode.copy(attributeValues = Map("attributeType" -> StringValue("")))
+    val node = emptyNode.copy(attributeValues = Map("attributeType" -> List(StringValue(""))))
     rule.isValid(node).get should be(true)
   }
 
   it should "be false for invalid nodes" in {
-    val node = emptyNode.copy(attributeValues = Map("attributeType" -> IntValue(0)))
+    val node = emptyNode.copy(attributeValues = Map("attributeType" -> List(IntValue(0))))
     rule.isValid(node).get should be(false)
   }
 
