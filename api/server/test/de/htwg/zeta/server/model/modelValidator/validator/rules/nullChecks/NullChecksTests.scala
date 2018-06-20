@@ -32,12 +32,12 @@ class NullChecksTests extends FlatSpec with Matchers {
   "EdgeAttributesNamesNotNull" should "check for null in edge attributes names" in {
     val rule = new EdgeAttributesNamesNotNull
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue(""), "name2" -> StringValue(""))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("")), "name2" -> List(StringValue("")))
     val nonNullEdge = emptyEdge.copy(attributeValues = nonNullAttributes)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
-    val nullAttributes: Map[String, AttributeValue] = Map((null, StringValue("")), "name" -> StringValue(""))
+    val nullAttributes: Map[String, List[AttributeValue]] = Map((null, List(StringValue(""))), "name" -> List(StringValue("")))
     val nullEdge = emptyEdge.copy(attributeValues = nullAttributes)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
@@ -46,12 +46,12 @@ class NullChecksTests extends FlatSpec with Matchers {
   "EdgeAttributesNoNullValues" should "check for null in edge attributes values" in {
     val rule = new EdgeAttributesNoNullValues
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> IntValue(0))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> List(IntValue(0)))
     val nonNullEdge = emptyEdge.copy(attributeValues = nonNullAttributes)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
-    val nullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> null)
+    val nullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> null)
     val nullEdge = emptyEdge.copy(attributeValues = nullAttributes)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
@@ -60,7 +60,7 @@ class NullChecksTests extends FlatSpec with Matchers {
   "EdgeAttributesNotNull" should "check for null edge attributes" in {
     val rule = new EdgeAttributesNotNull
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> IntValue(0))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> List(IntValue(0)))
     val nonNullEdge = emptyEdge.copy(attributeValues = nonNullAttributes)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
@@ -74,12 +74,12 @@ class NullChecksTests extends FlatSpec with Matchers {
   "EdgeAttributesValuesNotNull" should "check for null in edge attribute values" in {
     val rule = new EdgeAttributesValuesNotNull
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> IntValue(0))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> List(IntValue(0)))
     val nonNullEdge = emptyEdge.copy(attributeValues = nonNullAttributes)
     val nonNullModel = edgesToModel(Seq(nonNullEdge))
     rule.check(nonNullModel) should be(true)
 
-    val nullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> null)
+    val nullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> null)
     val nullEdge = emptyEdge.copy(attributeValues = nullAttributes)
     val nullModel = edgesToModel(Seq(nullEdge))
     rule.check(nullModel) should be(false)
@@ -160,12 +160,12 @@ class NullChecksTests extends FlatSpec with Matchers {
   "NodeAttributesNamesNotNull" should "check for null in nodes attributes names" in {
     val rule = new NodeAttributesNamesNotNull
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue(""), "name2" -> StringValue(""))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("")), "name2" -> List(StringValue("")))
     val nonNullNode = emptyNode.copy(attributeValues = nonNullAttributes)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
-    val nullAttributes: Map[String, AttributeValue] = Map((null: String) -> StringValue(""), "name" -> StringValue(""))
+    val nullAttributes: Map[String, List[AttributeValue]] = Map((null: String) -> List(StringValue("")), "name" -> List(StringValue("")))
     val nullNode = emptyNode.copy(attributeValues = nullAttributes)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
@@ -174,12 +174,12 @@ class NullChecksTests extends FlatSpec with Matchers {
   "NodeAttributesNoNullValues" should "check for null in node attributes values" in {
     val rule = new NodeAttributesNoNullValues
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> IntValue(0))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> List(IntValue(0)))
     val nonNullNode = emptyNode.copy(attributeValues = nonNullAttributes)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
-    val nullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> null)
+    val nullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> null)
     val nullNode = emptyNode.copy(attributeValues = nullAttributes)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)
@@ -188,7 +188,7 @@ class NullChecksTests extends FlatSpec with Matchers {
   "NodeAttributesNotNull" should "check for null node attributes" in {
     val rule = new NodeAttributesNotNull
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> IntValue(0))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> List(IntValue(0)))
     val nonNullNode = emptyNode.copy(attributeValues = nonNullAttributes)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
@@ -202,12 +202,12 @@ class NullChecksTests extends FlatSpec with Matchers {
   "NodeAttributesValuesNotNull" should "check for null in edge attribute values" in {
     val rule = new NodeAttributesValuesNotNull
 
-    val nonNullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> IntValue(0))
+    val nonNullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> List(IntValue(0)))
     val nonNullNode = emptyNode.copy(attributeValues = nonNullAttributes)
     val nonNullModel = nodesToModel(Seq(nonNullNode))
     rule.check(nonNullModel) should be(true)
 
-    val nullAttributes: Map[String, AttributeValue] = Map("name1" -> StringValue("value1"), "name2" -> null)
+    val nullAttributes: Map[String, List[AttributeValue]] = Map("name1" -> List(StringValue("value1")), "name2" -> null)
     val nullNode = emptyNode.copy(attributeValues = nullAttributes)
     val nullModel = nodesToModel(Seq(nullNode))
     rule.check(nullModel) should be(false)

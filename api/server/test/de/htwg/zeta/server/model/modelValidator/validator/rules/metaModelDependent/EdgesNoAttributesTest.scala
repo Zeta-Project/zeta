@@ -35,13 +35,13 @@ class EdgesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false on edges of type edgeType with attributes" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> StringValue("att"))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("att")))
     val edge = emptyEdge.copy(attributeValues = attribute)
     rule.isValid(edge).get should be(false)
   }
 
   it should "return true on edges of type edgeType with empty attribute values" in {
-    val attribute: Map[String, AttributeValue] = Map.empty
+    val attribute: Map[String, List[AttributeValue]] = Map.empty
     val edge = emptyEdge.copy(attributeValues = attribute)
     rule.isValid(edge).get should be(true)
   }

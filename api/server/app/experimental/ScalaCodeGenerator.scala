@@ -85,7 +85,7 @@ object ScalaCodeGenerator {
   private def generateAttributes(attributes: Seq[MAttribute]): String = {
     if (attributes.nonEmpty) {
       "  case class Attributes(\n" +
-        attributes.map(a => s"    ${if (a.constant) "" else "var "}${a.name}: ${a.typ.asString}").mkString(",\n") +
+        attributes.map(a => s"    ${if (a.constant) "" else "var "}${a.name}: List[${a.typ.asString}]").mkString(",\n") +
         "\n  )"
     } else {
       "  case class Attributes()"
@@ -208,8 +208,12 @@ object ScalaCodeGenerator {
 
   }
 
-  private def generateAttributeInstance(metaAttributes: Seq[MAttribute], attributes: Map[String, AttributeValue]): String = {
-    s"Attributes(" + metaAttributes.map(a => generateAttributeValue(attributes(a.name))).mkString(", ") + ")"
+  private def generateAttributeInstance(metaAttributes: Seq[MAttribute], attributes: Map[String, List[AttributeValue]]): String = {
+    s"Attributes(" + metaAttributes.map(a => generateAttributeValueList(attributes(a.name))).mkString(", ") + ")"
+  }
+
+  private def generateAttributeValueList(list: List[AttributeValue]): String ={
+    s"List(" + list.map(generateAttributeValue).mkString(", ") + ")"
   }
 
   private def generateAttributeValue(value: AttributeValue): String = {

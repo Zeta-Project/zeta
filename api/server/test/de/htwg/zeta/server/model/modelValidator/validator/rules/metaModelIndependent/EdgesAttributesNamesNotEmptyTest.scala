@@ -31,13 +31,13 @@ class EdgesAttributesNamesNotEmptyTest extends FlatSpec with Matchers {
   val emptyEdge: EdgeInstance = EdgeInstance.empty(emptyString, mReference.name, emptyString, emptyString)
 
   "isValid" should "return true on non-empty attribute names" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeName1" -> StringValue(emptyString))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeName1" -> List(StringValue(emptyString)))
     val edge = emptyEdge.copy(attributeValues = attribute)
     rule.isValid(edge).get should be(true)
   }
 
   it should "return false on empty attribute names" in {
-    val attribute: Map[String, AttributeValue] = Map(emptyString -> StringValue(emptyString))
+    val attribute: Map[String, List[AttributeValue]] = Map(emptyString -> List(StringValue(emptyString)))
     val edge = emptyEdge.copy(attributeValues = attribute)
     rule.isValid(edge).get should be(false)
   }

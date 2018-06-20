@@ -21,9 +21,9 @@ class NodeAttributesTest extends FlatSpec with Matchers {
   val rule = new NodeAttributes("nodeType", Seq("att1", "att2"))
 
   "isValid" should "return true for valid nodes" in {
-    val attributes: Map[String, AttributeValue] = Map(
-      "att1" -> StringValue(""),
-      "att2" -> BoolValue(false)
+    val attributes: Map[String, List[AttributeValue]] = Map(
+      "att1" -> List(StringValue("")),
+      "att2" -> List(BoolValue(false))
     )
     val node = emptyNode.copy(attributeValues = attributes)
 
@@ -31,10 +31,10 @@ class NodeAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false for invalid nodes" in {
-    val attributes: Map[String, AttributeValue] = Map(
-      "att1" -> StringValue(""),
-      "att2" -> BoolValue(false),
-      "att3" -> IntValue(0)
+    val attributes: Map[String, List[AttributeValue]] = Map(
+      "att1" -> List(StringValue("")),
+      "att2" -> List(BoolValue(false)),
+      "att3" -> List(IntValue(0))
     )
     val node = emptyNode.copy(attributeValues = attributes)
 
