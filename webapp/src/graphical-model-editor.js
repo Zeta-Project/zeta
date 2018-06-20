@@ -32,6 +32,6 @@ global.CommonInspectorInputs = CommonInspectorInputs;
 global.CommonInspectorGroups = CommonInspectorGroups;
 global.inp = inp;
 global.globalMClassAttributeInfo = [];
-global.nodeToEdgeAttributeInfo = [];
+global.globalMReferenceAttributeInfo = {};
 
 

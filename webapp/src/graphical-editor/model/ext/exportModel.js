@@ -1,5 +1,4 @@
 import $ from 'jquery';
-import {linkhelper} from '../generator/temporary/old/linkhelper'
 import GeneratorFactory from "../generator/GeneratorFactory";
 
 //TODO import {linkhelper} from '../generator/editor/LinkHelperGenerator'
@@ -30,7 +29,7 @@ export default (function modelExporter() {
             graphicalDslId: window._global_graph_type,
             nodes: nodes,
             edges: edges,
-            attributes: [], // TODO
+            attributes: [],
             attributeValues: {},
             methods: [],
             uiState: uiState
@@ -76,6 +75,7 @@ export default (function modelExporter() {
 
                     if (attrName !== undefined) {
                         element.attributes.push(attrName);
+                        // TODO remove [0] after fixing Backend
                         element.attributeValues[attrName.name] = {value: attrs[key].text[0] || '', type: attrName.type};
                     }
                 }
@@ -120,7 +120,7 @@ export default (function modelExporter() {
             element.sourceNodeName = link.attributes.source.id;
             element.targetNodeName = link.attributes.target.id;
 
-            const mReferenceAttributesInfos = nodeToEdgeAttributeInfo[link.attributes.mReference];
+            const mReferenceAttributesInfos = globalMReferenceAttributeInfo[link.attributes.mReference];
             if (mReferenceAttributesInfos) {
                 element.attributes = mReferenceAttributesInfos.map(attr => {
                     return {
@@ -150,6 +150,7 @@ export default (function modelExporter() {
                 let attributeName = GeneratorFactory.linkHelper.mapping[link.attributes.mReference][label.id];
                 element.attributes[attributeName] = [label.attrs.text.text];
             });
+                    // TODO remove [0] after fixing Backend
 
             elements.push(element);
         });
