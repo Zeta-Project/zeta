@@ -32,7 +32,7 @@ class NodeFormat(
     sOutputEdgeNames -> node.outputEdgeNames,
     sInputEdgeNames -> node.inputEdgeNames,
     sAttributes -> Writes.seq(attributeFormat).writes(node.attributes),
-    sAttributeValues -> Writes.map(Writes.list(attributeValueFormat)).writes(node.attributeValues),
+    sAttributeValues -> attributeValueFormat.asMapOfLists.writes(node.attributeValues),
     sMethods -> Writes.seq(methodFormat).writes(node.methods)
   )
 
@@ -42,7 +42,7 @@ class NodeFormat(
     outputs <- (json \ sOutputEdgeNames).validate(Reads.list[String])
     inputs <- (json \ sInputEdgeNames).validate(Reads.list[String])
     attributes <- (json \ sAttributes).validate(Reads.list(attributeFormat))
-    attributeValues <- (json \ sAttributeValues).validate(Reads.map(Reads.list(attributeValueFormat)))
+    attributeValues <- (json \ sAttributeValues).validate(attributeValueFormat.asMapOfLists)
     methods <- (json \ sMethods).validate(Reads.list(methodFormat))
   } yield {
     NodeInstance(
