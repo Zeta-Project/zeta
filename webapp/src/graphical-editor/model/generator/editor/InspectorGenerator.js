@@ -14,10 +14,11 @@ class EdgeGenerator {
         edges.forEach((edge) => {
             placings = edge.placings.filter(p => p.geoElement.type === "textfield");
             for (let i = 0; i < placings.length; i++) {
-                result[(placings[i].geoElement.identifier).replace(".", "_")] = {
+                result[edge.name] = [];
+                result[edge.name].push({
                     label: (placings[i].geoElement.identifier).replace(".", "_"),
                     index: i + 1
-                }
+                })
             }
         });
         return {groups: result}
@@ -28,9 +29,10 @@ class EdgeGenerator {
         let placings;
         edges.forEach((edge) => {
             placings = edge.placings.filter(p => p.geoElement.type === "textfield");
+            result[edge.name] = [];
             for (let i = 0; i < placings.length; i++) {
                 if (placings[i].geoElement.multiline) {
-                    result[(placings[i].geoElement.identifier).replace(".", "_")] = {
+                    result[edge.name].push({
                         type: 'list',
                         item: {
                             type: 'text',
@@ -41,13 +43,13 @@ class EdgeGenerator {
                         group: edge.name
                     }
                 } else {
-                    result[(placings[i].geoElement.identifier).replace(".", "_")] = {
+                    result[edge.name].push({
                         type: 'text',
                         label: placings[i].geoElement.identifier,
                         defaultValue: placings[i].geoElement.textBody,
                         index: i + 1,
                         group: edge.name
-                    }
+                    })
                 }
             }
         });
