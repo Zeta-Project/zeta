@@ -76,7 +76,7 @@ export default (function modelExporter() {
                     if (attrName !== undefined) {
                         element.attributes.push(attrName);
                         // TODO remove [0] after fixing Backend
-                        element.attributeValues[attrName.name] = {value: attrs[key].text[0] || '', type: attrName.type};
+                        element.attributeValues[attrName.name] = {value: attrs[key].text || '', type: attrName.type};
                     }
                 }
             }
@@ -148,7 +148,7 @@ export default (function modelExporter() {
                     for (var i = 0; i < attributeNames.length; i++) {
                         if (attributeValues[i] && attributeValues[i].length > 0) {
                             // TODO remove [0] after fixing Backend
-                            element.attributeValues[attributeNames[i]] = {'value': attributeValues[i][0], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
+                            element.attributeValues[attributeNames[i]] = {'value': attributeValues[i], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
                         }
                     }
                 }
