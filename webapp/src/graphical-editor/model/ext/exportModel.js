@@ -144,12 +144,15 @@ export default (function modelExporter() {
                 const attributeValues = link.attributes[link.attributes.mReference];
                 const attributeNames = attributePositionMarker[link.attributes.mReference];
 
-                for (let i = 0; i < attributeNames.length; i++) {
-                    // TODO remove [0] after fixing Backend
-                    element.attributeValues[attributeNames[i]] = {'value': attributeValues[i][0], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
+                if (attributeValues) {
+                    for (var i = 0; i < attributeNames.length; i++) {
+                        if (attributeValues[i] && attributeValues[i].length > 0) {
+                            // TODO remove [0] after fixing Backend
+                            element.attributeValues[attributeNames[i]] = {'value': attributeValues[i][0], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
+                        }
+                    }
                 }
             }
-
             elements.push(element);
         });
         return elements;
