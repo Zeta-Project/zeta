@@ -33,5 +33,6 @@ global.CommonInspectorGroups = CommonInspectorGroups;
 global.inp = inp;
 global.globalMClassAttributeInfo = [];
 global.globalMReferenceAttributeInfo = {};
+global.attributePositionMarker = {};
 
 

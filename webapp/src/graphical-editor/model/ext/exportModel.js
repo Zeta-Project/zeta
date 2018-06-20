@@ -137,20 +137,18 @@ export default (function modelExporter() {
                     }
                 });
 
-                Object.keys(link.attributes).forEach((linkAttribute) => {
-                    mReferenceAttributesInfos.forEach((attributeInfo) => {
-                        if (linkAttribute.includes(attributeInfo.name)) {
-                            element.attributeValues[linkAttribute] = {'value': link.attributes[linkAttribute][0], 'type': attributeInfo.type}
-                        }
-                    });
-                });
-            }
+                if ($.isEmptyObject(attributePositionMarker)) {
+                    GeneratorFactory.inspector.getEdgeInspectorDefs();
+                }
 
-            link.attributes.labels.forEach(function (label) {
-                let attributeName = GeneratorFactory.linkHelper.mapping[link.attributes.mReference][label.id];
-                element.attributes[attributeName] = [label.attrs.text.text];
-            });
+                const attributeValues = link.attributes[link.attributes.mReference];
+                const attributeNames = attributePositionMarker[link.attributes.mReference];
+
+                for (let i = 0; i < attributeNames.length; i++) {
                     // TODO remove [0] after fixing Backend
+                    element.attributeValues[attributeNames[i]] = {'value': attributeValues[i][0], 'type': mReferenceAttributesInfos.find(attributeInfo => attributeInfo.name === attributeNames[i])['type']}
+                }
+            }
 
             elements.push(element);
         });

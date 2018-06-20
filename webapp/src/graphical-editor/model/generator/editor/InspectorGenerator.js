@@ -29,8 +29,10 @@ class EdgeGenerator {
         let placings;
         edges.forEach((edge) => {
             placings = edge.placings.filter(p => p.geoElement.type === "textfield");
+            attributePositionMarker[edge.name] = [];
             result[edge.name] = [];
             for (let i = 0; i < placings.length; i++) {
+                attributePositionMarker[edge.name][i] = placings[i].geoElement.identifier.split('.')[1];
                 if (placings[i].geoElement.multiline) {
                     result[edge.name].push({
                         type: 'list',
