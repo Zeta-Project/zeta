@@ -23,21 +23,21 @@ class EdgeAttributeScalarTypesTest extends FlatSpec with Matchers {
   val rule = new EdgeAttributeScalarTypes(referenceLiteral, "attributeType", StringType)
 
   "the rule" should "be true for valid edges" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("value")))
     val edge = emptyEdge.copy(attributeValues = attribute)
 
     rule.isValid(edge).get should be(true)
   }
 
   it should "be false for invalid edges" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> IntValue(42))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(IntValue(42)))
     val edge = emptyEdge.copy(attributeValues = attribute)
 
     rule.isValid(edge).get should be(false)
   }
 
   it should "return None for non-matching edges" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> StringValue("value"))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("value")))
     val edge = emptyEdge.copy(referenceName = "differentMReference", attributeValues = attribute)
 
     rule.isValid(edge) should be(None)

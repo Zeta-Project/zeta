@@ -22,13 +22,13 @@ class NodesNoAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "return false on nodes of type nodeType with attributes" in {
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> StringValue(""))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(StringValue("")))
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(false)
   }
 
   it should "return true on nodes of type nodeType with empty attribute values" in {
-    val attribute: Map[String, AttributeValue] = Map.empty
+    val attribute: Map[String, List[AttributeValue]] = Map.empty
     val node = emptyNode.copy(attributeValues = attribute)
     rule.isValid(node).get should be(true)
   }

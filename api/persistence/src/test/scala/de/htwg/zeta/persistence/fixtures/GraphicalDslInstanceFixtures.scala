@@ -24,7 +24,7 @@ object GraphicalDslInstanceFixtures {
     outputEdgeNames = Seq(edgeName1, edgeName2),
     inputEdgeNames = Seq.empty,
     attributes = Seq.empty,
-    attributeValues = Map("attribute1" -> IntValue(1)),
+    attributeValues = Map("attribute1" -> List(IntValue(1))),
     methods = Seq.empty
   )
 
@@ -34,7 +34,7 @@ object GraphicalDslInstanceFixtures {
     outputEdgeNames = Seq.empty,
     inputEdgeNames = Seq(edgeName1, edgeName2),
     attributes = Seq.empty,
-    attributeValues = Map("attribute2" -> DoubleValue(2)),
+    attributeValues = Map("attribute2" -> List(DoubleValue(2))),
     methods = Seq.empty
   )
 
@@ -44,7 +44,7 @@ object GraphicalDslInstanceFixtures {
     sourceNodeName = nodeName1,
     targetNodeName = nodeName2,
     attributes = Seq.empty,
-    attributeValues = Map("attribute3" -> IntValue(-1)),
+    attributeValues = Map("attribute3" -> List(IntValue(-1))),
     methods = Seq.empty
   )
 

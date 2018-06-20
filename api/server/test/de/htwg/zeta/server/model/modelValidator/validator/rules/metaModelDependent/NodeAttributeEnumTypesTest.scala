@@ -22,7 +22,7 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   "isValid" should "be true for valid nodes" in {
     val mEnum = MEnum("enumName", Seq())
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("enumName", mEnum.name))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(EnumValue("enumName", mEnum.name)))
     val node = emptyNode.copy(attributeValues = attribute)
 
     rule.isValid(node).get should be(true)
@@ -30,7 +30,7 @@ class NodeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   it should "be false for invalid nodes" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("differentEnumName", differentEnum.name))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(EnumValue("differentEnumName", differentEnum.name)))
     val node = emptyNode.copy(attributeValues = attribute)
 
     rule.isValid(node).get should be(false)

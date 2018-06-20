@@ -37,9 +37,9 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
   val rule = new EdgeAttributes("reference", Seq("stringAttribute", "boolAttribute"))
 
   "the rule" should "be true for valid edge" in {
-    val attributes: Map[String, AttributeValue] = Map(
-      "stringAttribute" -> StringValue("test"),
-      "boolAttribute" -> BoolValue(true)
+    val attributes: Map[String, List[AttributeValue]] = Map(
+      "stringAttribute" -> List(StringValue("test")),
+      "boolAttribute" -> List(BoolValue(true))
     )
     val edge = emptyEdge.copy(attributeValues = attributes)
 
@@ -47,10 +47,10 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
   }
 
   it should "be false for invalid edges" in {
-    val attributes: Map[String, AttributeValue] = Map(
-      "stringAttribute" -> StringValue("test"),
-      "boolAttribute" -> BoolValue(true),
-      "invalidAttribute" -> DoubleValue(1.0)
+    val attributes: Map[String, List[AttributeValue]] = Map(
+      "stringAttribute" -> List(StringValue("test")),
+      "boolAttribute" -> List(BoolValue(true)),
+      "invalidAttribute" -> List(DoubleValue(1.0))
     )
 
     val edge = EdgeInstance.empty("", mReference.name, "", "").copy(attributeValues = attributes)
@@ -60,9 +60,9 @@ class EdgeAttributesTest extends FlatSpec with Matchers {
 
   it should "be None for non-matching edges" in {
 
-    val attributes: Map[String, AttributeValue] = Map(
-      "stringAttribute" -> StringValue("test"),
-      "boolAttribute" -> BoolValue(true)
+    val attributes: Map[String, List[AttributeValue]] = Map(
+      "stringAttribute" -> List(StringValue("test")),
+      "boolAttribute" -> List(BoolValue(true))
     )
 
     val edge = emptyEdge.copy(referenceName = "nonMatchingReference", attributeValues = attributes)

@@ -1,8 +1,8 @@
 package de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent
 
-import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.EnumValue
 import de.htwg.zeta.common.models.project.concept.Concept
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.MEnum
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -20,13 +20,13 @@ class EdgeAttributeEnumTypes(val edgeType: String, val attributeType: String, va
 
   def rule(edge: EdgeInstance): Boolean = edge.attributeValues.get(attributeType) match {
     case None => true
-    case Some(attribute) => attribute match {
-      case enumValue: EnumValue => enumValue.enumName == enumName
-      case _ => true
-    }
+    case Some(attributes) =>
+      val enumType = AttributeType.EnumType(enumName)
+      attributes.forall(at => at.attributeType == enumType)
   }
 
-  override val dslStatement: String = s"""Attributes ofType "$attributeType" inEdges "$edgeType" areOfEnumType "$enumName""""
+  override val dslStatement: String =
+    s"""Attributes ofType "$attributeType" inEdges "$edgeType" areOfEnumType "$enumName""""
 }
 
 object EdgeAttributeEnumTypes extends GeneratorRule {

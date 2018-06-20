@@ -1,11 +1,13 @@
 package de.htwg.zeta.server.controller.restApi
 
+import java.time.Instant
 import java.util.UUID
 import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+import akka.stream.scaladsl.StreamConverters
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
@@ -21,7 +23,6 @@ import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.util.FileZipper
 import grizzled.slf4j.Logging
-import play.api.http.HttpEntity
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
@@ -30,7 +31,6 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
-import play.api.mvc.ResponseHeader
 
 
 /**
@@ -222,27 +222,29 @@ class ModelRestApi @Inject()(
       graphicalDslInstance <- modelEntityRepo.restrictedTo(userId).read(modelId)
       metaModelEntity <- metaModelEntityRepo.restrictedTo(userId).read(graphicalDslInstance.graphicalDslId)
     } yield {
-      GdslInstanceToZetaModel.generate(metaModelEntity.concept, graphicalDslInstance).toList
+      val projectName = metaModelEntity.name
+      val modelName = graphicalDslInstance.name
+      val generatedFiles = GdslInstanceToZetaModel.generate(metaModelEntity.concept, graphicalDslInstance).toList
+      (projectName, modelName, generatedFiles)
     }
   }
 
   def getKlimaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      files <- generateSourceCodeFiles(modelId, request.identity.id)
+      (_, _, files) <- generateSourceCodeFiles(modelId, request.identity.id)
     } yield Ok(views.html.codeViewer.ScalaCodeViewer(files))
   }
 
   def downloadSourceCode(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      files <- generateSourceCodeFiles(modelId, request.identity.id)
+      (projectName, modelName, files) <- generateSourceCodeFiles(modelId, request.identity.id)
     } yield {
-      val fileStream = FileZipper.stream(files)
-      val ok = 200
-      Result(
-        header = ResponseHeader(ok, Map(
-          "Content-Disposition" -> "attachment; filename=test.zip"
-        )),
-        body = HttpEntity.Streamed(fileStream, None, Some("application/zip"))
+      val zipStream = StreamConverters.fromInputStream(() => FileZipper.zip(files))
+      val now = Instant.now()
+
+      val filename = s"${projectName}_${modelName}_$now".replace(" ", "_")
+      Ok.chunked(zipStream).withHeaders(
+        CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zip")
       )
     }
   }

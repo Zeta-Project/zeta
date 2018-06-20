@@ -31,7 +31,9 @@ class EdgesAttributesGlobalUnique(val edgeType: String, val attributeType: Strin
 
 
     val edges = elements.filter(_.referenceName == edgeType)
-    val attributeValues: Seq[AttributeValue] = edges.flatMap(_.attributeValues).filter(_._1 == attributeType).map(_._2)
+    val attributeValues: Seq[AttributeValue] = {
+      edges.flatMap(_.attributeValues).filter(_._1 == attributeType).flatMap(_._2)
+    }
 
     val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
       case None => Seq()
@@ -47,7 +49,7 @@ class EdgesAttributesGlobalUnique(val edgeType: String, val attributeType: Strin
     val duplicateAttributeValues: Seq[String] = attributesGrouped.filter(_._2.size > 1).keys.toSeq
 
     def checkEdgeDuplicateValues(acc: Seq[ModelValidationResult], currentEdge: EdgeInstance): Seq[ModelValidationResult] = {
-      val attributeValues = currentEdge.attributeValues.values.toSeq
+      val attributeValues = currentEdge.attributeValues.values.toSeq.flatten
 
       val attributeValuesStrings: Seq[String] = attributeValues.headOption match {
         case None => Seq()

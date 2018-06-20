@@ -52,7 +52,7 @@ class EdgeAttributeEnumTypesTest extends FlatSpec with Matchers {
 
   it should "be false for invalid edges" in {
     val differentEnum = MEnum(name = "differentEnumName", valueNames = Seq())
-    val attribute: Map[String, AttributeValue] = Map("attributeType" -> EnumValue("differentEnumName", differentEnum.name))
+    val attribute: Map[String, List[AttributeValue]] = Map("attributeType" -> List(EnumValue("differentEnumName", differentEnum.name)))
     val edge = EdgeInstance.empty(emptyString, mReference.name, emptyString, emptyString).copy(attributeValues = attribute)
 
     rule.isValid(edge).get should be(false)
