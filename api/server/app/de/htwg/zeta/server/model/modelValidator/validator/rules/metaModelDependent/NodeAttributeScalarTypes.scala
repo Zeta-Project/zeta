@@ -8,6 +8,7 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolTyp
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
@@ -32,24 +33,14 @@ class NodeAttributeScalarTypes(val nodeType: String, val attributeType: String, 
 
   def rule(node: NodeInstance): Boolean = {
 
-    def handleStrings(values: StringValue): Boolean = values.attributeType == attributeDataType
 
-    def handleBooleans(values: BoolValue): Boolean = values.attributeType == attributeDataType
-
-    def handleInts(values: IntValue): Boolean = values.attributeType == attributeDataType
-
-    def handleDoubles(values: DoubleValue): Boolean = values.attributeType == attributeDataType
+    // this is nonsense. It wont be completely replaced as it is part of a recent master thesis.
+    // also this is duplicate code to EdgeAttributeScalarTypes
+    def handleAttributeValues(list: List[AttributeValue]): Boolean = list.forall(value => value.attributeType == attributeDataType)
 
     node.attributeValues.get(attributeType) match {
       case None => true
-      case Some(attribute) => attribute match {
-        case value: StringValue => handleStrings(value)
-        case value: BoolValue => handleBooleans(value)
-        case value: IntValue => handleInts(value)
-        case value: DoubleValue => handleDoubles(value)
-        case _ => true
-
-      }
+      case Some(values) => handleAttributeValues(values)
     }
   }
 
