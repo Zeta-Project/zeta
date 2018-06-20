@@ -2,10 +2,13 @@ package de.htwg.zeta.common.models.project.concept.elements
 
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
+import de.htwg.zeta.common.models.project.concept.elements.AttributeType.EnumType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
 
-sealed trait AttributeValue
+sealed trait AttributeValue{
+  val attributeType: AttributeType
+}
 
 object AttributeValue {
 
@@ -37,6 +40,8 @@ object AttributeValue {
    * @param enumName name of the the belonging MEnum
    * @param valueName     name of the symbol
    */
-  case class EnumValue(enumName: String, valueName: String) extends AttributeValue
+  case class EnumValue(enumName: String, valueName: String) extends AttributeValue {
+    val attributeType: AttributeType = AttributeType.EnumType(enumName)
+  }
 
 }

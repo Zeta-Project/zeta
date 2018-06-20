@@ -8,10 +8,7 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeType.BoolTyp
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.DoubleType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.IntType
 import de.htwg.zeta.common.models.project.concept.elements.AttributeType.StringType
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.BoolValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.DoubleValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.IntValue
-import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.server.model.modelValidator.validator.rules.DslRule
 import de.htwg.zeta.server.model.modelValidator.validator.rules.GeneratorRule
@@ -33,23 +30,12 @@ class EdgeAttributeScalarTypes(val edgeType: String, val attributeType: String, 
 
   def rule(edge: EdgeInstance): Boolean = {
 
-    def handleString(value: StringValue): Boolean = value.attributeType == attributeDataType
-    def handleBoolean(value: BoolValue): Boolean = value.attributeType == attributeDataType
-    def handleInt(value: IntValue): Boolean = value.attributeType == attributeDataType
-    def handleDouble(value: DoubleValue): Boolean = value.attributeType == attributeDataType
+    // this is nonsense. It wont be completely replaced as it is part of a recent master thesis.
+    def handleAttributeValues(list: List[AttributeValue]): Boolean = list.forall(value => value.attributeType == attributeDataType)
 
     edge.attributeValues.get(attributeType) match {
       case None => true
-      case Some(attribute) => Option(attribute) match {
-        case None => true
-        case Some(head) => head match {
-          case value: StringValue => handleString(value)
-          case value: BoolValue => handleBoolean(value)
-          case value: IntValue => handleInt(value)
-          case value: DoubleValue => handleDouble(value)
-          case _ => true
-        }
-      }
+      case Some(values) => handleAttributeValues(values)
     }
   }
 
