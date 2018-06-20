@@ -139,8 +139,8 @@ export default (function modelExporter() {
 
                 if (attributeValues) {
                     for (var i = 0; i < attributeNames.length; i++) {
-                        element.attributeValues[attributeNames[i]] = [];
                         if (attributeValues[i] && attributeValues[i].length > 0) {
+                            element.attributeValues[attributeNames[i]] = [];
                             attributeValues[i].forEach(attrValue => {
                                 element.attributeValues[attributeNames[i]].push(
                                     {
