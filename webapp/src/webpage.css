@@ -143,10 +143,26 @@ paper-button::shadow #ripple {
     z-index: 10;
     height: 100%;
     width: 100%;
-    background-color: black;
-    opacity: 0.2;
-    display: block;
+    background-color: white;
+    opacity: 0.85;
+    display: flex; 
+    border-radius: 4px;
     position: absolute;
+}
+
+.overlay:before {
+    font-family: 'Glyphicons Halflings';
+    content: "\E033";
+    position: relative;
+    display: flex;
+    font-style: normal;
+    font-weight: normal;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    font-size: 40px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #edit-project .panel {
