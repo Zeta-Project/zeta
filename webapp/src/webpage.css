@@ -145,7 +145,7 @@ paper-button::shadow #ripple {
     width: 100%;
     background-color: white;
     opacity: 0.85;
-    display: flex; 
+    display: flex;
     border-radius: 4px;
     position: absolute;
 }
