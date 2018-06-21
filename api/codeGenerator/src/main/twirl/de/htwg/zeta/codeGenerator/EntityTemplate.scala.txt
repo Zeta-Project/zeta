@@ -8,25 +8,28 @@ case class @(entity.name)Entity(
   }
   fixValues: @(entity.name)FixValues,
   inValues: @(entity.name)InValues,
-  outValues: @(entity.name)OutValues,
+  outValues: @(entity.name)OutValues
 )
 
 case class @(entity.name)FixValues(
   @for(v <- entity.fixValues){
-    @param(v)
+    @param(v, entity.fixValues)
   }
 )
 
 case class @(entity.name)InValues(
   @for(v <- entity.inValues){
-    @param(v)
+    @param(v,entity.inValues)
   }
 )
 
 case class @(entity.name)OutValues(
   @for(v <- entity.outValues){
-    @param(v)
+    @param(v, entity.outValues)
   }
 )
 
-@param(v: Value) = { @(v.name): @(v.valueType),}
+@param(v: Value, l: List[Value]) = {
+  @(v.name): @(v.valueType)
+  @if(v != l.last){,}
+}
