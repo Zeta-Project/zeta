@@ -15,7 +15,28 @@
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
 
+.panel-default {
+    border: none;
+    -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+.form-control {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+
 /* end bootstrap theme corrects */
+
+.navbar-logo {
+    max-height: 40px;
+    margin-top: -11px;
+}
 
 .tile {
     width: 12em;
@@ -44,12 +65,12 @@
     height: 20%;
     position: absolute;
     margin-top: 67%;
-    background-color:rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
 }
 
 .tileBorder:hover .transparentBackground {
-    background-color:rgba(0, 100, 255, 0.7);
+    background-color: rgba(0, 100, 255, 0.7);
 }
 
 .linkText {
@@ -172,6 +193,7 @@ paper-button::shadow #ripple {
 #edit-project .col-md-6 {
     padding: 0;
 }
+
 .no-margin {
     margin: 0;
 }
@@ -180,6 +202,7 @@ paper-button::shadow #ripple {
     background-color: #337ab7;
     color: #fff;
 }
+
 .alert {
     margin-top: 10px;
 }
