@@ -70,68 +70,31 @@
                     <div class="panel-heading">
                         <strong>Edit project <em>@metaModel.get.name</em></strong>
                     </div>
-                    <div class="text-center">
-                        <div class="row no-margin" >
-                            <div class="col-md-6">
-                                <a href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "style")">
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <strong>Style</strong>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="col-md-6">
-                                <a href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "shape")">
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <strong>Shape</strong>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <a href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "diagram")">
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <strong>Diagram</strong>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <a href="@routes.ScalaRoutes.getMetamodelEditor(metaModel.get.id)">
-                                    <div class="panel panel-default">
-                                        <div class="panel-body">
-                                            <strong>Concept Editor</strong>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
+                    <div class="list-group">
+                        <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "style")">
+                            Style
+                        </a>
+                        <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "shape")">
+                            Shape
+                        </a>
+                        <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "diagram")">
+                            Diagram
+                        </a>
+                        <a class="list-group-item" href="@routes.ScalaRoutes.getMetamodelEditor(metaModel.get.id)">
+                            Concept Editor
+                        </a>
                     </div>
-                    <div class="panel-footer">
-                        <button id="btnGenerator" class="btn">
-                            Start Generator
+                    <div class="panel-footer dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="btnValidator" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Validator
+                            <span class="caret"></span>
                         </button>
+                        <ul class="dropdown-menu" aria-labelledby="btnValidator">
+                            <li><a href="#" id="validatorGenerate">Generate / Update Validator</a></li>
+                            <li><a href="#" id="validatorShow">Show Validation Rules</a></li>
+                        </ul>
                     </div>
                 </div>
-
-                <div class="panel dropdown">
-                    <button class="btn dropdown-toggle" type="button" id="btnValidator" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        Validator
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="btnValidator">
-                        <li><a href="#" id="validatorGenerate">Generate / Update Validator</a></li>
-                        <li><a href="#" id="validatorShow">Show Validation Rules</a></li>
-                    </ul>
-                </div>
-
 
                 <div id="error-panel" class="alert alert-danger alert-dismissible collapse" role="alert">
                     <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -154,7 +117,7 @@
                     </div>
                     @if(modelInstances.isEmpty) {
                         <div class="panel-body">
-                            There are no model instances.
+                            <span class="text-muted">There are no model instances.</span>
                         </div>
                     } else {
                         <div class="list-group">
