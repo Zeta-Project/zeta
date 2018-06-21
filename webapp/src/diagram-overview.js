@@ -111,6 +111,11 @@ import modelValidatorUtil from './modelValidatorUtil';
             });
         });
 
+        $(".export-project").click(function() {
+          const url = '/rest/v2/models/' + window.metaModelId + '/exportProject';
+          window.open(url);
+        });
+
         $("#btnGenerator").click(function () {
             $.ajax({
                 type: 'GET',

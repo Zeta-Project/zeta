@@ -87,6 +87,7 @@ GET           /rest/v1/models/:modelId/definition/edges/:edgeName               
 DELETE        /rest/v1/models/:modelId                                                            controllers.ScalaRoutes.deleteModels(modelId: java.util.UUID)
 GET           /rest/v1/models/:modelId/validation                                                 controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
 GET           /rest/v2/models/:modelId/downloadSourceCode                                         controllers.ScalaRoutes.downloadSourceCode(modelId: java.util.UUID)
+GET           /rest/v2/models/:modelId/exportProject                                              controllers.ScalaRoutes.exportProject(modelId: java.util.UUID)
 
 ### GeneratorImage REST API
 GET           /rest/v1/generator-images                                                           controllers.ScalaRoutes.getGeneratorImagesNoArgs

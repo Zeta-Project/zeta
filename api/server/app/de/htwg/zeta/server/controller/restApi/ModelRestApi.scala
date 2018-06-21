@@ -22,6 +22,8 @@ import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.util.FileZipper
+import de.htwg.zeta.server.util.ProjectExporter
+import de.htwg.zeta.server.util.ExportResult
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
@@ -41,7 +43,8 @@ class ModelRestApi @Inject()(
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
     nodeFormat: NodeFormat,
-    edgeFormat: EdgeFormat
+    edgeFormat: EdgeFormat,
+    projectExporter: ProjectExporter
 ) extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
@@ -239,12 +242,24 @@ class ModelRestApi @Inject()(
     for {
       (projectName, modelName, files) <- generateSourceCodeFiles(modelId, request.identity.id)
     } yield {
-      val zipStream = StreamConverters.fromInputStream(() => FileZipper.zip(files))
+      val zipStream = FileZipper.zip(files)
       val now = Instant.now()
 
       val filename = s"${projectName}_${modelName}_$now".replace(" ", "_")
       Ok.chunked(zipStream).withHeaders(
         CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zip")
+      )
+    }
+  }
+
+  def exportProject(gdslProjectId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    for {
+      ExportResult(projectName, zipStream) <- projectExporter.exportProject(gdslProjectId, request.identity.id)
+    } yield {
+      val now = Instant.now()
+      val filename = s"${projectName}_$now".replace(" ", "_")
+      Ok.chunked(zipStream).withHeaders(
+        CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zeta")
       )
     }
   }
