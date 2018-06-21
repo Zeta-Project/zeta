@@ -32,7 +32,7 @@ class ScalaRoutes @Inject()(
 
 
   // # Home page
-  def getIndex(): Action[AnyContent] = AuthenticatedGet(applicationController.index _)
+  def getIndex(): Action[AnyContent] = AuthenticatedGet(webpageController.index _)
 
   def getUser(): Action[AnyContent] = AuthenticatedGet(applicationController.user _)
 
