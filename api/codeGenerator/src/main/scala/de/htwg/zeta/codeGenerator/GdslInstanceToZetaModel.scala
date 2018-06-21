@@ -18,14 +18,13 @@ import grizzled.slf4j.Logging
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsValue
 import play.api.libs.json.Json
+import play.api.libs.json.JsonValidationError
 
 
 object GdslInstanceToZetaModel extends Logging {
 
   // scalastyle:off
   def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Seq[File] = {
-
-
     val unprocessedNodes = mutable.ListBuffer(gdslInstance.nodes: _*).filter(_.className == "Entity")
     val processedEntities = mutable.ListBuffer.empty[Entity]
 
@@ -82,9 +81,9 @@ object GdslInstanceToZetaModel extends Logging {
 
 
     val entities = gdslInstance.nodes.filter(_.className == "Entity").map { node =>
-      val fixValues = node.attributeValues.get("fix").flatMap(extractValue).toList
-      val inValues = node.attributeValues.get("in").flatMap(extractValue).toList
-      val outValues = node.attributeValues.get("out").flatMap(extractValue).toList
+      val fixValues = node.attributeValues.get("fix").toList.flatMap(extractValue)
+      val inValues = node.attributeValues.get("in").toList.flatMap(extractValue)
+      val outValues = node.attributeValues.get("out").toList.flatMap(extractValue)
       val name = getEntityName(node, gdslInstance)
       Entity(name, fixValues, inValues, outValues, Nil, Nil, Nil)
     }
@@ -100,8 +99,12 @@ object GdslInstanceToZetaModel extends Logging {
     }
   }
 
-  private def extractValue(at: List[AttributeValue]): Option[Value] = at match {
-    case StringValue(combinedString) :: _ => // FIXME currently only extracting only one value
+  private def extractValue(list: List[AttributeValue]): List[Value] = {
+    list.flatMap(extractSingleValue)
+  }
+
+  private def extractSingleValue(at: AttributeValue): Option[Value] = at match {
+    case StringValue(combinedString) =>
       combinedString.split(":", 2).toList match {
         case name :: tpe :: Nil => Some(Value(name, tpe))
         case _ => None
@@ -137,7 +140,7 @@ object GdslInstanceToZetaModel extends Logging {
       name == s"text.$generatedId"
     }.get._2
 
-    val entityName = (attr \ "text").as[String]
+    val entityName = (attr \ "text").validate[List[String]].collect(JsonValidationError("entityName must be one element")){case name :: Nil => name}.get
     entityName
   }
 
