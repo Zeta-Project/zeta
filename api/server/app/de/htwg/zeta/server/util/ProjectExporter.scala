@@ -33,8 +33,9 @@ class ProjectExporter @Inject()(
     for {
       project <- projectRepo.read(gdslProjectId)
       instanceIds <- instanceRepo.readAllIds()
-      instances <- Future.sequence(instanceIds.map(instanceRepo.read))
+      allInstances <- Future.sequence(instanceIds.map(instanceRepo.read))
     } yield {
+      val instances = allInstances.filter(_.graphicalDslId == project.id)
       val projectAsJson = gdslProjectFormat.writes(project)
       val instancesAsJson = Writes.list(graphicalDslInstanceFormat).writes(instances.toList)
       val files = List(
