@@ -7,8 +7,13 @@ class ScalaCodeBeautifierTest extends FreeSpec with Matchers {
 
   "A scala code beautifier should" - {
     "beautify a case class string" in {
-      ScalaCodeBeautifier.format("Test.scala", "\n\ncase class Test(t: \nString, f:\nString)") shouldBe
-        "case class Test(t: String, f: String)"
+      ScalaCodeBeautifier.format("Test.scala",
+        """
+         |
+         |case class Test(t: String,
+         |
+         |f: String)
+        """.stripMargin) shouldBe "case class Test(\n  t: String,\n  f: String\n)"
     }
   }
 
