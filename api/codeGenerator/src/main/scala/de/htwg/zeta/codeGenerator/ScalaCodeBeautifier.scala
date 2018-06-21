@@ -2,13 +2,22 @@ package de.htwg.zeta.codeGenerator
 
 import grizzled.slf4j.Logging
 import scalariform.formatter.ScalaFormatter
+import scalariform.formatter.preferences.AlignParameters
 import scalariform.formatter.preferences.DanglingCloseParenthesis
+import scalariform.formatter.preferences.FirstArgumentOnNewline
 import scalariform.formatter.preferences.FirstParameterOnNewline
 import scalariform.formatter.preferences.Force
 import scalariform.formatter.preferences.FormattingPreferences
 import scalariform.parser.ScalaParserException
 
 object ScalaCodeBeautifier extends Logging {
+
+  private val preferences = FormattingPreferences()
+    .setPreference(DanglingCloseParenthesis, Force)
+    .setPreference(FirstParameterOnNewline, Force)
+    .setPreference(AlignParameters, true)
+    .setPreference(FirstArgumentOnNewline, Force)
+    .setPreference(FirstParameterOnNewline, Force)
 
   /**
    * Format the given scala source code. If code parsing failed, the
@@ -20,10 +29,7 @@ object ScalaCodeBeautifier extends Logging {
    */
   def format(fileName: String, source: String): String = try {
     val strippedBreaks = source.replaceAll("[\r\n\\s]+", "\n")
-    ScalaFormatter.format(strippedBreaks, FormattingPreferences()
-      .setPreference(DanglingCloseParenthesis, Force)
-      .setPreference(FirstParameterOnNewline, Force)
-    ).trim
+    ScalaFormatter.format(strippedBreaks, preferences).trim
   } catch {
     // catch exception to avoid failure on wrong generation
     // TODO should be handled in future
