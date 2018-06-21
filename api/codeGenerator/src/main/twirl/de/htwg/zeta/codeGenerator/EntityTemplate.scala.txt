@@ -1,29 +1,32 @@
 @import de.htwg.zeta.codeGenerator.model.Entity
+@import de.htwg.zeta.codeGenerator.model.Value
 @(entity: Entity)
 
 case class @(entity.name)Entity(
- @for(link <- entity.links){
+  @for(link <- entity.links){
     @(link.name): @(link.entity.name)Entity,
- }
-   fixValues: @(entity.name)FixValues,
-   inValues: @(entity.name)InValues,
-   outValues: @(entity.name)OutValues,
+  }
+  fixValues: @(entity.name)FixValues,
+  inValues: @(entity.name)InValues,
+  outValues: @(entity.name)OutValues,
 )
 
 case class @(entity.name)FixValues(
   @for(v <- entity.fixValues){
-    @(v.name): @(v.valueType),
+    @param(v)
   }
 )
 
 case class @(entity.name)InValues(
   @for(v <- entity.inValues){
-    @(v.name): @(v.valueType),
+    @param(v)
   }
 )
 
 case class @(entity.name)OutValues(
   @for(v <- entity.outValues){
-    @(v.name): @(v.valueType),
+    @param(v)
   }
 )
+
+@param(v: Value) = { @(v.name): @(v.valueType),}
