@@ -1,12 +1,12 @@
 /* bootstrap theme corrects */
 .navbar-default {
-    background-color: #e8e8e8;
-    border-color: #e8e8e8;
+    background-color: #f5f5f5;
+    border-color: #f5f5f5;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
     -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
 }
 
 .navbar-default .dropdown-menu {
@@ -31,11 +31,23 @@
     border-color: #46b8da;
 }
 
+.navbar-default .navbar-nav > li > a {
+    color: #444;
+}
+
 /* end bootstrap theme corrects */
 
 .navbar-logo {
     max-height: 40px;
     margin-top: -11px;
+}
+
+.bottom-link {
+    position: absolute;
+    bottom: 15px;
+}
+.bottom-link.right {
+    right: 15px;
 }
 
 .tile {
