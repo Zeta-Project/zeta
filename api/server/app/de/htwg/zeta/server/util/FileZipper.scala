@@ -5,12 +5,18 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+import scala.concurrent.Future
+
+import akka.stream.IOResult
+import akka.stream.scaladsl.Source
+import akka.stream.scaladsl.StreamConverters
+import akka.util.ByteString
 import de.htwg.zeta.common.models.entity.File
 
 
 object FileZipper {
 
-  def zip(files: List[File]): ByteArrayInputStream = {
+  def zip(files: List[File]): Source[ByteString, Future[IOResult]] = {
     val os = new ByteArrayOutputStream()
     val zip = new ZipOutputStream(os)
     try {
@@ -22,7 +28,8 @@ object FileZipper {
     } finally {
       zip.close()
     }
-    new ByteArrayInputStream(os.toByteArray)
+    val is = new ByteArrayInputStream(os.toByteArray)
+    StreamConverters.fromInputStream(() => is)
   }
 
 }
