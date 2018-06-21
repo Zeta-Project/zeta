@@ -12,15 +12,29 @@
 #sidebar {
     flex-grow: 0;
     color: white;
+    min-width: 150px;
 }
 
 #sidebar a {
-    color: white;
+    color: #fff;
     text-decoration: none;
     padding: 2px;
     margin-right: 5px;
+    cursor: pointer;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+#sidebar a:hover {
+    color: #bbb;
 }
 
 .editor {
     flex-grow: 1;
+}
+
+.download-btn {
+    margin: 0 0 10px 0;
+}
+
+.download-btn>.glyhicon {
+    margin: 0 0 0 5px;
 }
