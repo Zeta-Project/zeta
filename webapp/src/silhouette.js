@@ -8,6 +8,7 @@ import 'bootstrap';
 import '../assets/favicon.png';
 import '../assets/silhouette.png';
 import './silhouette.css';
+import './webpage.css';
 
 
 $(function() {
