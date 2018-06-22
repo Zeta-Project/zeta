@@ -4,14 +4,13 @@ import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
-import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
 class BackgroundFormatTest extends FreeSpec with Matchers {
 
-  "A ColorFormatTest should" - {
+  "A BackgroundFormat should" - {
     "write an object" in {
       val result = BackgroundFormat().writes(Background(Color(23, 24, 25, 26)))
       result.toString() shouldBe

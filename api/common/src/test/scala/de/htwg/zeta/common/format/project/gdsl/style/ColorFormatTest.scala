@@ -9,7 +9,7 @@ import play.api.libs.json.JsSuccess
 //noinspection ScalaStyle
 class ColorFormatTest extends FreeSpec with Matchers {
 
-  "A ColorFormatTest should" - {
+  "A ColorFormat should" - {
     "write an object" in {
       val result = ColorFormat().writes(Color(23, 24, 25, 26))
       result.toString() shouldBe
