@@ -10,7 +10,7 @@ import play.api.libs.json.Json
 //noinspection ScalaStyle
 class FontFormatTest extends FreeSpec with Matchers {
 
-  "A ColorFormatTest should" - {
+  "A FontFormat should" - {
     "write an object" in {
       val result = FontFormat().writes(Font("Arial", bold = true, Color(23, 24, 25, 26), italic = true, 16))
       result.toString() shouldBe
