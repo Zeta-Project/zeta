@@ -3,10 +3,8 @@ package de.htwg.zeta.common.format.project.gdsl.style
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
-import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
-import play.api.libs.json.Json
 
 //noinspection ScalaStyle
 class ColorFormatTest extends FreeSpec with Matchers {
