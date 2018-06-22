@@ -41,6 +41,7 @@ class ColorFormat() extends Reads[Color] {
 
     def parser: Parser[Color] = {
       val comma = ","
+      val highComma = "\""
 
       def natural_number: Parser[Int] = "\\d+".r ^^ {
         _.toInt
@@ -50,8 +51,8 @@ class ColorFormat() extends Reads[Color] {
         _.toDouble
       }
 
-      ("rgba(" ~> natural_number) ~ (comma ~> natural_number) ~
-        (comma ~> natural_number) ~ (comma ~> argument_double <~ ")") ^^ {
+      (opt(highComma) ~> "rgba(" ~> natural_number) ~ (comma ~> natural_number) ~
+        (comma ~> natural_number) ~ (comma ~> argument_double <~ (")" ~ opt(highComma))) ^^ {
         case r ~ g ~ b ~ alpha => Color(r, g, b, alpha)
       }
     }
