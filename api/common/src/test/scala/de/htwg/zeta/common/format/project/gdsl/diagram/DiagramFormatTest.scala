@@ -19,7 +19,7 @@ class DiagramFormatTest extends FreeSpec with Matchers {
     "write an object" in {
       val result = DiagramFormat().writes(Diagram(
         "TestDiagram", List(
-          Palette("testPalette", List(
+          Palette("SchlaaandTestPalette", List(
             Node(
               name = "TestNode",
               conceptElement = "TextNodeConcept",
