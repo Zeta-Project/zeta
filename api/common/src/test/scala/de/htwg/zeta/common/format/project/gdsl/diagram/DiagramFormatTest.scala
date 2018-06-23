@@ -38,7 +38,7 @@ class DiagramFormatTest extends FreeSpec with Matchers {
           )))
       ))
       result.toString() shouldBe
-        """{"name":"TestDiagram","palettes":[{"name":"testPalette","nodes":["TestNode"]}]}"""
+        """{"name":"TestDiagram","palettes":[{"name":"SchlaaandTestPalette","nodes":["TestNode"]}]}"""
     }
     "read an object" in {
       val result = DiagramFormat().reads(Json.parse(
