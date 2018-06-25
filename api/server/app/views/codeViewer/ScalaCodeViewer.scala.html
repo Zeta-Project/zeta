@@ -1,5 +1,44 @@
 @import de.htwg.zeta.common.models.entity.File
+@import scala.collection.mutable.ListBuffer
 @(files: List[File])
+
+
+
+@buildDirectoryStructure(files: List[File]) = @{
+
+    val result = ListBuffer.empty[(Either[String, File], Int)]
+
+    def buildRecursive(files: List[File], depth: Int): Unit = {
+         val hasDir = files.groupBy(_.name.contains('/'))
+
+         hasDir.get(true).map(
+            _.groupBy(file => file.name.split('/').head).toSeq.sortBy(_._1).foreach{ case (k, v) =>
+                result += ((Left(k), depth))
+                buildRecursive(
+                    v.map(file =>
+                       file.copy(name = file.name.split('/').drop(1).mkString("/"))
+                    ), depth + 1
+                 )
+            }
+         )
+
+         hasDir.get(false).map(
+            _.sortBy(_.name).foreach(file =>
+              result += ((Right(file), depth))
+            )
+         )
+
+    }
+
+    buildRecursive(
+        files.map(file =>
+            file.copy(name = file.name.replace("\\", "/"))
+        ), 0
+    )
+
+    result.toList
+}
+
 
 <!DOCTYPE html>
 <html>
@@ -42,8 +81,16 @@
                 <span class="glyphicon glyphicon-cloud-download"></span> Download ZIP
               </button>
 
-              @for(file <- files.sortBy(_.name)) {
-                <a style="display: block" onclick="showEditor('@file.name.replace(".scala", "")');">@file.name</a>
+              @for(dirOrFile <- buildDirectoryStructure(files)) {
+                 @dirOrFile._1 match {
+                    case Left(dir) => {
+                        <div style="background: #494c41; padding-left: @{dirOrFile._2 * 10}px">@dir</div>
+                    }
+                    case Right(file) => {
+                        <a style="display: block; padding-left: @{dirOrFile._2 * 10}px" onclick="showEditor('@file.name.replace(".scala", "")');">@file.name</a>
+                    }
+                 }
+
               }
             </div>
 
@@ -55,10 +102,6 @@
             }
 
         </div>
-
-        <script>
-                showEditor('@files.minBy(_.name).name.replace(".scala", "")');
-        </script>
 
     </body>
 </html>
