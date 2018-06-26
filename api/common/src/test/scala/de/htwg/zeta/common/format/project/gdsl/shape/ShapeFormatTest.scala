@@ -59,7 +59,7 @@ class ShapeFormatTest extends FreeSpec with Matchers {
          |      "description":"default",
          |      "background":{"color":"rgba(0,0,0,1.0)"},
          |      "font":{"name":"Arial","bold":false,"color":"rgba(0,0,0,1.0)","italic":false,"size":10},
-         |    "line":{"color":"rgba(0,0,0,1.0)","style":"solid","width":1},
+         |      "line":{"color":"rgba(0,0,0,1.0)","style":"solid","width":1},
          |      "transparency":1},
          |    "placings":[],
          |    "meta":null}
