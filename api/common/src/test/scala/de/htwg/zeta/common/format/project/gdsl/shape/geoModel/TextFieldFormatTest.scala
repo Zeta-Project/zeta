@@ -4,7 +4,6 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Align
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.TextField
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.models.project.gdsl.style.Style
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
