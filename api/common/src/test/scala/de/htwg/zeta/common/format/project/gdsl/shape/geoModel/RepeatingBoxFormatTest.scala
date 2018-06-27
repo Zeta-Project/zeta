@@ -1,9 +1,6 @@
 package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RoundedRectangle
-import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Size
 import de.htwg.zeta.common.models.project.gdsl.style.Style
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
