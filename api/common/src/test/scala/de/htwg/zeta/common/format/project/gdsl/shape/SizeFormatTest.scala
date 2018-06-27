@@ -1,6 +1,5 @@
 package de.htwg.zeta.common.format.project.gdsl.shape
 
-import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import org.scalatest.FreeSpec
 import org.scalatest.Matchers
