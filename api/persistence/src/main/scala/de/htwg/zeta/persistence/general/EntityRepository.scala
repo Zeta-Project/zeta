@@ -95,6 +95,14 @@ private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
     }
   }
 
+  final def createOrUpdate(entities: List[E]): Future[List[E]] = {
+    val futures = for {
+      e <- entities
+      res = createOrUpdate(e)
+    } yield res
+    Future.sequence(futures)
+  }
+
   /** Update a entity. If it doesn't exist create it.
    *
    * @param id           the id of the entity
