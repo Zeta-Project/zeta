@@ -8,4 +8,5 @@ import jQuery from "jquery";
 global.jQuery = jQuery;
 global.$ = jQuery;
 
+import 'bootstrap';
 import './code-editor/style.css';

@@ -1,12 +1,49 @@
 @import de.htwg.zeta.common.models.entity.File
+@import scala.collection.mutable.ListBuffer
 @(files: List[File])
+
+
+
+@buildDirectoryStructure(files: List[File]) = @{
+
+    val result = ListBuffer.empty[(Either[String, File], Int)]
+
+    def buildRecursive(files: List[File], depth: Int): Unit = {
+         val hasDir = files.groupBy(_.name.contains('/'))
+
+         hasDir.get(true).map(
+            _.groupBy(file => file.name.split('/').head).toSeq.sortBy(_._1).foreach{ case (k, v) =>
+                result += ((Left(k), depth))
+                buildRecursive(
+                    v.map(file =>
+                       file.copy(name = file.name.split('/').drop(1).mkString("/"))
+                    ), depth + 1
+                 )
+            }
+         )
+
+         hasDir.get(false).map(
+            _.sortBy(_.name).foreach(file =>
+              result += ((Right(file), depth))
+            )
+         )
+
+    }
+
+    buildRecursive(
+        files.map(file =>
+            file.copy(name = file.name.replace("\\", "/"))
+        ), 0
+    )
+
+    result.toList
+}
+
 
 <!DOCTYPE html>
 <html>
     <head>
-
         <title>Scala Code Viewer</title>
-
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
         <meta name="mobile-web-app-capable" content="yes">
@@ -15,100 +52,7 @@
         <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("code-editor-simple.bundle.css")">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor-simple.bundle.js")"></script>
-        <style>
-                .button {
-                    height: 80px;
-                    width: 180px;
-                    cursor: pointer;
-                    margin: 50px auto;
-                }
-                .button .outer {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    /*padding: 10px;*/
-                    /*background: rgba(0,0,0,0.65);*/
-                    border-radius: 14px;
-                    -webkit-border-radius: 14px;
-                    -moz-border-radius: 14px;
-                    box-shadow: inset rgba(0,0,0,0.85) 0px 1px 5px;
-                    -webkit-box-shadow: inset rgba(0,0,0,0.85) 0px 1px 5px;
-                    -moz-box-shadow: inset rgba(0,0,0,0.85) 0px 1px 5px;
-                    -webkit-transform: perspective(500px) rotateX(35deg);
-                    -moz-transform: perspective(500px) rotateX(35deg);
-                }
-                .button .outer .height {
-                    position: relative;
-                    height: 100%;
-                    margin-top: -15px;
-                    padding-bottom: 15px;
-                    background: #39a02d;
-                    border-radius: 16px;
-                    -webkit-border-radius: 16px;
-                    -moz-border-radius: 16px;
-                    box-shadow: rgba(0,0,0,0.85) 0px 1px 1px, inset rgba(0,0,0,0.35) 0px -2px 8px;
-                    -webkit-box-shadow: rgba(0,0,0,0.85) 0px 1px 1px, inset rgba(0,0,0,0.35) 0px -2px 8px;
-                    -moz-box-shadow: rgba(0,0,0,0.85) 0px 1px 1px, inset rgba(0,0,0,0.35) 0px -2px 8px;
-                    -webkit-transition: all 0.1s ease-in-out;
-                    -moz-transition: all 0.1s ease-in-out;
-                }
-                .button:hover .outer .height {
-                    margin-top: -10px;
-                    padding-bottom: 10px;
-                    background: #3aaf2d;
-                    box-shadow: rgba(0,0,0,0.25) 0px 1px 1px, inset rgba(0,0,0,0.35) 0px -2px 6px;
-                    -webkit-box-shadow: rgba(0,0,0,0.25) 0px 1px 1px, inset rgba(0,0,0,0.35) 0px -2px 6px;
-                    -moz-box-shadow: rgba( 0,0,0,0.25) 0px 1px 1px, inset rgba(0,0,0,0.35) 0px -2px 6px;
-                }
-                .button:active .outer .height {
-                    margin-top: 0px;
-                    padding-bottom: 0px;
-                }
-                .button .outer .height .inner {
-                    line-height: 2.8em;
-                    font-size: 24px;
-                    letter-spacing: .05em;
-                    position: relative;
-                    height: 100%;
-                    text-align: center;
-                    text-shadow: #8aff7b 0px 0px 1px;
-                    background: #44d135;
-                    background: -moz-linear-gradient(top, #80ec75 0%, #43d034 100%); /* FF3.6+ */
-                    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#80ec75), color-stop(100%,#43d034)); /* Chrome,Safari4+ */
-                    background: -webkit-linear-gradient(top, #80ec75 0%,#43d034 100%); /* Chrome10+,Safari5.1+ */
-                    background: linear-gradient(top, #80ec75 0%,#43d034 100%); /* W3C */
-                    border-radius: 12px;
-                    -webkit-border-radius: 12px;
-                    -moz-border-radius: 12px;
-                    box-shadow: inset rgba(255,255,255,0.85) 0px 0px 1px;
-                    -webkit-box-shadow: inset rgba(255,255,255,0.85) 0px 0px 1px;
-                    -moz-box-shadow: inset rgba(255,255,255,0.85) 0px 0px 1px;
-                    -webkit-transition: all 0.1s ease-in-out;
-                    -moz-transition: all 0.1s ease-in-out;
-                }
-                .button:hover .outer .height .inner{
-                    text-shadow: #99f48d 0px 0px 1px;
-                    background: #43d034; /* Old browsers */
-                    background: -moz-linear-gradient(top, #43d034 0%, #67e45c 100%); /* FF3.6+ */
-                    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#43d034), color-stop(100%,#67e45c)); /* Chrome,Safari4+ */
-                    background: -webkit-linear-gradient(top, #43d034 0%,#67e45c 100%); /* Chrome10+,Safari5.1+ */
-                    background: linear-gradient(top, #43d034 0%,#67e45c 100%); /* W3C */
-                }
-                .button:active .outer .height .inner{
-                    text-shadow: #319926 0px 1px 0px;
-                    border-radius: 16px;
-                    -webkit-border-radius: 16px;
-                    -moz-border-radius: 16px;
-                    box-shadow: inset rgba(0,0,0,0.9) 0px 0px 8px;
-                    -webkit-box-shadow: inset rgba(0,0,0,0.9) 0px 0px 8px;
-                    -moz-box-shadow: inset rgba(0,0,0,0.9) 0px 0px 8px;
-                    background: #1d7d12; /* Old browsers */
-                    background: -moz-linear-gradient(top, #1d7d12 0%, #4fd342 100%); /* FF3.6+ */
-                    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1d7d12), color-stop(100%,#4fd342)); /* Chrome,Safari4+ */
-                    background: -webkit-linear-gradient(top, #1d7d12 0%,#4fd342 100%); /* Chrome10+,Safari5.1+ */
-                    background: linear-gradient(top, #1d7d12 0%,#4fd342 100%); /* W3C */
-                }
-        </style>
+
         <script>
                 function initEditor(name) {
                     const editor = ace.edit("editor" + name);
@@ -131,9 +75,23 @@
         <div id="container">
 
             <div id="sidebar" style="float: left">
-            @for(file <- files.sortBy(_.name)) {
-                <a style="display: block" onclick="showEditor('@file.name.replace(".scala", "")');">@file.name</a>
-            }
+              <button type="button"
+              onclick="window.open('/rest/v2/models/' + window.location.pathname.split('/')[2] + '/downloadSourceCode','');"
+              class="btn btn-success download-btn">
+                <span class="glyphicon glyphicon-cloud-download"></span> Download ZIP
+              </button>
+
+              @for(dirOrFile <- buildDirectoryStructure(files)) {
+                 @dirOrFile._1 match {
+                    case Left(dir) => {
+                        <div style="background: #494c41; padding-left: @{dirOrFile._2 * 10}px">@dir</div>
+                    }
+                    case Right(file) => {
+                        <a style="display: block; padding-left: @{dirOrFile._2 * 10}px" onclick="showEditor('@file.name.replace(".scala", "")');">@file.name</a>
+                    }
+                 }
+
+              }
             </div>
 
             @for(file <- files.sortBy(_.name)) {
@@ -143,14 +101,6 @@
                 </script>
             }
 
-        </div>
-
-        <script>
-                showEditor('@files.minBy(_.name).name.replace(".scala", "")');
-        </script>
-
-        <div id="sidebar" style="float: right; margin-right: 25px">
-            <div onclick="window.open('/rest/v2/models/' + window.location.pathname.split('/')[2] + '/downloadSourceCode','');" class="button">   <div class="outer"><div class="height"><div class="inner">DOWNLOAD</div></div></div></div>
         </div>
 
     </body>

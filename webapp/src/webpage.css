@@ -1,12 +1,53 @@
 /* bootstrap theme corrects */
 .navbar-default {
-    background-color: #e8e8e8;
-    border-color: #e8e8e8;
+    background-color: #f5f5f5;
+    border-color: #f5f5f5;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     border-radius: 0;
-    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+.navbar-default .dropdown-menu {
+    border: 1px solid transparent;
+    -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+}
+
+.panel-default {
+    border: none;
+    -webkit-box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+.form-control {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.list-group-item.active, .list-group-item.active:hover, .list-group-item.active:focus {
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+
+.navbar-default .navbar-nav > li > a {
+    color: #444;
+}
+
+/* end bootstrap theme corrects */
+
+.navbar-logo {
+    max-height: 40px;
+    margin-top: -11px;
+}
+
+.bottom-link {
+    position: absolute;
+    bottom: 15px;
+}
+.bottom-link.right {
+    right: 15px;
 }
 
 .tile {
@@ -36,12 +77,12 @@
     height: 20%;
     position: absolute;
     margin-top: 67%;
-    background-color:rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
 }
 
 .tileBorder:hover .transparentBackground {
-    background-color:rgba(0, 100, 255, 0.7);
+    background-color: rgba(0, 100, 255, 0.7);
 }
 
 .linkText {
@@ -135,10 +176,26 @@ paper-button::shadow #ripple {
     z-index: 10;
     height: 100%;
     width: 100%;
-    background-color: black;
-    opacity: 0.2;
-    display: block;
+    background-color: white;
+    opacity: 0.85;
+    display: flex;
+    border-radius: 4px;
     position: absolute;
+}
+
+.overlay:before {
+    font-family: 'Glyphicons Halflings';
+    content: "\E033";
+    position: relative;
+    display: flex;
+    font-style: normal;
+    font-weight: normal;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    font-size: 40px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 #edit-project .panel {
@@ -148,6 +205,7 @@ paper-button::shadow #ripple {
 #edit-project .col-md-6 {
     padding: 0;
 }
+
 .no-margin {
     margin: 0;
 }
@@ -156,6 +214,7 @@ paper-button::shadow #ripple {
     background-color: #337ab7;
     color: #fff;
 }
+
 .alert {
     margin-top: 10px;
 }
