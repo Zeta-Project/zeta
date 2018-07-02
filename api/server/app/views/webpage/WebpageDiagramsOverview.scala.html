@@ -56,6 +56,44 @@
                                 </button>
                             </span>
                         </div>
+                        <div>
+
+                          <!-- launch import modal -->
+                          <button type="button" class="btn btn-primary glyphicon glyphicon-import" data-toggle="modal" data-target="#importModal">
+                          </button>
+
+                          <!-- import modal -->
+                          <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="importModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="importModalLabel">Import project</h5>
+                                  <button id="close-import-modal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+
+                                  <!-- drop area -->
+                                  <div class="container" >
+                                    <input type="file" accept=".zeta" name="file" id="file">
+                                    <!-- Drag and Drop container-->
+                                    <div class="upload-area"  id="uploadfile">
+                                      <h1>Drag and Drop <b>.zeta</b> file here</h1>
+                                    </div>
+                                  </div>
+                                  <!-- end of drop area -->
+
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- end import modal -->
+
                     </form>
                 </div>
             </div>

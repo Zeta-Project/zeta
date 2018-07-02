@@ -2,12 +2,14 @@ package de.htwg.zeta.server.controller.restApi
 
 import java.time.Instant
 import java.util.UUID
+import java.util.zip.ZipFile
 import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Success
+import scala.util.Failure
 
-import akka.stream.scaladsl.StreamConverters
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
@@ -24,6 +26,7 @@ import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.util.FileZipper
 import de.htwg.zeta.server.util.ProjectExporter
 import de.htwg.zeta.server.util.ExportResult
+import de.htwg.zeta.server.util.ProjectImporter
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
@@ -33,6 +36,7 @@ import play.api.mvc.AnyContent
 import play.api.mvc.Controller
 import play.api.mvc.Result
 import play.api.mvc.Results
+import play.api.mvc.RawBuffer
 
 
 /**
@@ -44,7 +48,8 @@ class ModelRestApi @Inject()(
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
-    projectExporter: ProjectExporter
+    projectExporter: ProjectExporter,
+    projectImporter: ProjectImporter
 ) extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
@@ -262,6 +267,20 @@ class ModelRestApi @Inject()(
         CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zeta")
       )
     }
+  }
+
+  def importProject()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    val res = for {
+      raw: RawBuffer <- request.body.asRaw
+      zipFile = new ZipFile(raw.asFile)
+    } yield {
+      val result = projectImporter.importProject(zipFile, request.identity.id)
+      result.map {
+        case true => Ok
+        case false => BadRequest
+      }
+    }
+    res.getOrElse(Future(BadRequest))
   }
 
 }

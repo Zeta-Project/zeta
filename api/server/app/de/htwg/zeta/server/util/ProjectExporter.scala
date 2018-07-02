@@ -1,6 +1,5 @@
 package de.htwg.zeta.server.util
 
-import java.io.ByteArrayInputStream
 import java.util.UUID
 import javax.inject.Inject
 
@@ -45,10 +44,6 @@ class ProjectExporter @Inject()(
       val zipStream = FileZipper.zip(files)
       ExportResult(project.name, zipStream)
     }
-  }
-
-  def importProject(): Unit = {
-
   }
 
 }

@@ -171,6 +171,8 @@ class ScalaRoutes @Inject()(
 
   def exportProject(gdslProjectId: java.util.UUID): Action[AnyContent] = AuthenticatedGet(modelRestApi.exportProject(gdslProjectId) _)
 
+  def importProject(): Action[AnyContent] = AuthenticatedPost(modelRestApi.importProject() _)
+
   /* ### Generator Image REST API */
   def getGeneratorImagesNoArgs: Action[AnyContent] = AuthenticatedGet(generatorImageRestApi.showForUser() _)
 

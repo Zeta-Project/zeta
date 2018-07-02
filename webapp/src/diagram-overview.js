@@ -215,5 +215,54 @@ import modelValidatorUtil from './modelValidatorUtil';
             $("." + $(this).attr("data-hide")).hide();
         });
 
+
+      // Open file selector on div click
+      $("#uploadfile").click(function(){
+        $("#file").click();
+      });
+
+      // preventing page from redirecting
+      $("html").on("dragover", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $("h1").text("Drag here");
+      });
+
+      // file selected
+      $("#file").change(function(){
+        const fd = new FormData();
+        const file = $('#file')[0].files[0];
+        fd.append('file',file);
+        uploadData(fd);
+      });
+
+      // Drop
+      $('.upload-area').on('drop', function (e) {
+        //e.stopPropagation();
+        e.preventDefault();
+        const file = e.originalEvent.dataTransfer.files;
+        const fd = new FormData();
+        fd.append('file', file[0]);
+        uploadData(fd);
+      });
+
+      // Sending AJAX request and upload file
+      function uploadData(formdata){
+        $("#close-import-modal").click();
+        $.ajax({
+          url: '/rest/v2/projects/import',
+          type: 'post',
+          data: formdata,
+          contentType: "application/zip",
+          processData: false,
+          success: function(response) {
+            window.location.reload(true);
+          },
+          error: function(error) {
+            showError('Invalid .zeta project file!');
+          }
+        });
+      }
+
     });
 }(jQuery) );
