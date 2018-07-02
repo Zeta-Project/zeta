@@ -1,10 +1,9 @@
 package de.htwg.zeta.server.util
 
 import java.util.UUID
-import javax.inject.Inject
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import akka.stream.IOResult
 import akka.stream.scaladsl.Source
@@ -14,6 +13,7 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
+import javax.inject.Inject
 import play.api.libs.json.Writes
 
 case class ExportResult(projectName: String, stream: Source[ByteString, Future[IOResult]])
@@ -23,7 +23,7 @@ class ProjectExporter @Inject()(
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     gdslProjectRepository: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
-    graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
+    graphicalDslInstanceFormat: GraphicalDslInstanceFormat
 ) {
 
   def exportProject(gdslProjectId: UUID, userId: UUID): Future[ExportResult] = {
