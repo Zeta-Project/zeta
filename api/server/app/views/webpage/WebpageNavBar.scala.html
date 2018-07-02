@@ -2,7 +2,7 @@
 @(user: Option[User])
 
 <nav class="navbar navbar-default" role="navigation">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-overview">
                 <span class="sr-only">Toggle navigation</span>
@@ -12,7 +12,7 @@
             </button>
 
             <a class="navbar-brand" href="/">
-                <img src="@routes.ScalaRoutes.getStaticFiles("images/zeta_logo.png")" style="max-height:40px ; margin-top: -11px">
+                <img src="@routes.ScalaRoutes.getStaticFiles("images/zeta_logo.png")" class="navbar-logo">
             </a>
             <div id="metamodel-name"></div>
         </div>
@@ -24,7 +24,6 @@
                     case Some(u) => {
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                <span class="glyphicon glyphicon-lock" aria-hidden="true"> </span>
                                 <span>@u.fullName</span>
                                 <span class="caret"></span>
                             </a>

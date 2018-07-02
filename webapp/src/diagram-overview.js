@@ -189,15 +189,6 @@ import modelValidatorUtil from './modelValidatorUtil';
             deleteModelInstance(modelId);
         });
 
-        $("#btnDeleteAllModelInstances").click(function () {
-            $("#model-instance-container").children().map(function () {
-                if ($(this).is('a')) {
-                    var modelId = $(this).children(":first").data("model-id");
-                    deleteModelInstance(modelId);
-                }
-            })
-        });
-
         const showError = function (text) {
             $("#error-panel").fadeOut('slow', function () {
                 $("#error-panel").find("div").text(text);
