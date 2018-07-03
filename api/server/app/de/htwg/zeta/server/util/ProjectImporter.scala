@@ -29,7 +29,7 @@ class ProjectImporter @Inject()(
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat
 ) {
 
-  def importProject(zipFile: ZipFile, userId: UUID): Future[Boolean] = {
+  def importProject(zipFile: ZipFile, userId: UUID, newProjectName: String): Future[Boolean] = {
     val metaModelRepo = metaModelEntityRepo.restrictedTo(userId)
     val modelRepo = modelEntityRepo.restrictedTo(userId)
 
@@ -48,9 +48,11 @@ class ProjectImporter @Inject()(
     } else {
       (maybeProject.get, maybeInstances.get) match {
         case (project: JsSuccess[GdslProject], instances: JsSuccess[List[GraphicalDslInstance]]) =>
+          val projectCopy = project.get.copy(id = UUID.randomUUID(), name = newProjectName)
+          val instanceCopies = instances.get.map(i => i.copy(id = UUID.randomUUID(), graphicalDslId = projectCopy.id))
           for {
-            _ <- metaModelRepo.createOrUpdate(project.get)
-            _ <- modelRepo.createOrUpdate(instances.get)
+            _ <- metaModelRepo.createOrUpdate(projectCopy)
+            _ <- modelRepo.createOrUpdate(instanceCopies)
           } yield {
             true
           }
