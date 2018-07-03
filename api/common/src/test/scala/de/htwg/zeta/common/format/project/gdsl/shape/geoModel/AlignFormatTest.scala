@@ -58,12 +58,28 @@ class AlignFormatTest extends FreeSpec with Matchers {
         horizontal = Align.Horizontal.right,
         vertical = Align.Vertical.bottom))
     }
-    "fail in reading an invalid input" in {
-      val result = AlignFormat()
-        .reads(Json.parse(
-          """{"invalid":{"r":23}}"""
-        ))
-      result.isSuccess shouldBe false
+    "fail in" - {
+      "reading an invalid input" in {
+        val result = AlignFormat()
+          .reads(Json.parse(
+            """{"invalid":{"r":23}}"""
+          ))
+        result.isSuccess shouldBe false
+      }
+      "read a wrong right object" in {
+        val result = AlignFormat()
+          .reads(Json.parse(
+            """{"horizontal": "right", "vertical":"wrong"}""".stripMargin
+          ))
+        result.isSuccess shouldBe false
+      }
+      "read a bottom wrong object" in {
+        val result = AlignFormat()
+          .reads(Json.parse(
+            """{"horizontal": "wrong", "vertical":"bottom"}""".stripMargin
+          ))
+        result.isSuccess shouldBe false
+      }
     }
   }
 
