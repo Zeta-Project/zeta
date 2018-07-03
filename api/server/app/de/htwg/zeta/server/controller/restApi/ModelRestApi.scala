@@ -271,10 +271,11 @@ class ModelRestApi @Inject()(
 
   def importProject()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val res = for {
+      projectName <- request.getQueryString("projectName")
       raw: RawBuffer <- request.body.asRaw
       zipFile = new ZipFile(raw.asFile)
     } yield {
-      val result = projectImporter.importProject(zipFile, request.identity.id)
+      val result = projectImporter.importProject(zipFile, request.identity.id, projectName)
       result.map {
         case true => Ok
         case false => BadRequest

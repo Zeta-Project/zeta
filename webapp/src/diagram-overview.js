@@ -209,6 +209,9 @@ import modelValidatorUtil from './modelValidatorUtil';
         });
 
 
+      /* IMPORT PROJECT */
+      let file = undefined;
+
       // Open file selector on div click
       $("#uploadfile").click(function(){
         $("#file").click();
@@ -223,27 +226,71 @@ import modelValidatorUtil from './modelValidatorUtil';
 
       // file selected
       $("#file").change(function(){
-        const fd = new FormData();
-        const file = $('#file')[0].files[0];
-        fd.append('file',file);
-        uploadData(fd);
+        file = $('#file')[0].files[0];
+        onProjectSelected(file);
+        //uploadData(fd);
       });
 
       // Drop
       $('.upload-area').on('drop', function (e) {
         //e.stopPropagation();
         e.preventDefault();
-        const file = e.originalEvent.dataTransfer.files;
-        const fd = new FormData();
-        fd.append('file', file[0]);
-        uploadData(fd);
+        file = e.originalEvent.dataTransfer.files[0];
+        onProjectSelected(file);
+        //uploadData(fd);
       });
 
+      $("#start-import-btn").click(function() {
+        if (isValidZetaProjectFile() && isValidProjectName()) {
+          const fd = new FormData();
+          fd.append('file', file);
+          const projectName = getProjectName();
+          uploadProject(file, projectName);
+        }
+      });
+
+      function onProjectSelected() {
+        if (isValidZetaProjectFile()) {
+          const fd = new FormData();
+          fd.append('file', file);
+          $("h1").text(file.name);
+          const projectNameFromFile = file.name.split("_")[0];
+          $("#importProjectName").val(projectNameFromFile);
+          enableOrDisableImportButton();
+        } else {
+          $("h1").text("Invalid zeta project file");
+        }
+      }
+
+      function isValidZetaProjectFile() {
+        return file !== undefined && file.name.endsWith(".zeta");
+      }
+
+      function getProjectName() {
+        return $("#importProjectName").val().trim();
+      }
+
+      function isValidProjectName() {
+        return getProjectName() !== "";
+      }
+
+      $("#importProjectName").on('input', function() {
+        enableOrDisableImportButton();
+      });
+
+      function enableOrDisableImportButton() {
+        if (isValidZetaProjectFile() && isValidProjectName()) {
+          $("#start-import-btn").prop("disabled", false);
+        } else {
+          $("#start-import-btn").prop("disabled", true);
+        }
+      }
+
       // Sending AJAX request and upload file
-      function uploadData(formdata){
+      function uploadProject(formdata, projectName){
         $("#close-import-modal").click();
         $.ajax({
-          url: '/rest/v2/projects/import',
+          url: '/rest/v2/projects/import?projectName=' + projectName,
           type: 'post',
           data: formdata,
           contentType: "application/zip",
