@@ -1,11 +1,12 @@
 codecov:
+  branch: dev
   notify:
     require_ci_to_pass: yes
 
 coverage:
   precision: 2
   round: down
-  range: "70...100"
+  range: "40...80"
 
   status:
     project: yes
@@ -24,3 +25,6 @@ comment:
   layout: "header, diff"
   behavior: default
   require_changes: no
+  
+ignore:
+  - "api/generatorControl"
