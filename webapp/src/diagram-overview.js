@@ -221,7 +221,7 @@ import modelValidatorUtil from './modelValidatorUtil';
       $("html").on("dragover", function(e) {
         e.preventDefault();
         e.stopPropagation();
-        $("h1").text("Drag here");
+        $("#uploadtext").text("Drag here");
       });
 
       // file selected
@@ -253,12 +253,12 @@ import modelValidatorUtil from './modelValidatorUtil';
         if (isValidZetaProjectFile()) {
           const fd = new FormData();
           fd.append('file', file);
-          $("h1").text(file.name);
+          $("#uploadtext").text(file.name);
           const projectNameFromFile = file.name.split("_")[0];
           $("#importProjectName").val(projectNameFromFile);
           enableOrDisableImportButton();
         } else {
-          $("h1").text("Invalid zeta project file");
+          $("#uploadtext").text("Invalid zeta project file!");
         }
       }
 

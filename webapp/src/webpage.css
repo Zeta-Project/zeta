@@ -35,6 +35,24 @@
     color: #444;
 }
 
+.modal-header.modal-header-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-radius: 5px 5px 0 0;
+}
+.modal-header.modal-header-info {
+    color: #fff;
+    background-color: #5bc0de;
+    border-radius: 6px 6px 0 0;
+}
+.modal-header.modal-header-info .close:hover,
+.modal-header.modal-header-info .close,
+.modal-header.modal-header-primary .close:hover,
+.modal-header.modal-header-primary .close {
+    color: #fff;
+    opacity: 0.8;
+}
+
 /* end bootstrap theme corrects */
 
 .navbar-logo {
@@ -225,24 +243,15 @@ paper-button::shadow #ripple {
 
 /* drag & drop area */
 .upload-area {
-    width: 40%;
     height: 180px;
-    border: 2px solid lightgray;
+    border: 1px dashed #ccc;
     border-radius: 3px;
     text-align: center;
     overflow: auto;
-}
-
-.upload-area:hover{
-    cursor: pointer;
-}
-
-.upload-area h1{
-    text-align: center;
-    font-weight: normal;
-    font-family: sans-serif;
-    line-height: 50px;
+    font-size: 35px;
+    padding: 20px 0 0 0;
     color: darkslategray;
+    cursor: pointer;
 }
 
 /* hide 'upload project' button */
