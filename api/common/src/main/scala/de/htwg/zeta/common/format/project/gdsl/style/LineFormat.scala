@@ -42,9 +42,9 @@ class LineFormat(
 
   protected class LineStyleRead extends Reads[LineStyle] {
     override def reads(lineStyle: JsValue): JsResult[LineStyle] = lineStyle.toString match {
-      case "dot" => JsSuccess(Dotted())
-      case "solid" => JsSuccess(Solid())
-      case "dash" => JsSuccess(Dashed())
+      case "\"dot\"" => JsSuccess(Dotted())
+      case "\"solid\"" => JsSuccess(Solid())
+      case "\"dash\"" => JsSuccess(Dashed())
     }
   }
   protected object LineStyleRead {
