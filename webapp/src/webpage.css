@@ -198,14 +198,6 @@ paper-button::shadow #ripple {
     -moz-osx-font-smoothing: grayscale;
 }
 
-#edit-project .panel {
-    margin-bottom: 0;
-}
-
-#edit-project .col-md-6 {
-    padding: 0;
-}
-
 .no-margin {
     margin: 0;
 }
