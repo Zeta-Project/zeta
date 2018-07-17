@@ -40,6 +40,14 @@
     color: #e30a5e;
 }
 
+.navbar-breadcrumb::before {
+    content: "\E258";
+    font-family: 'Glyphicons Halflings';
+    position: absolute;
+    left: -5px;
+    font-size: 0.9em;
+}
+
 /* end bootstrap theme corrects */
 
 .navbar-logo {
