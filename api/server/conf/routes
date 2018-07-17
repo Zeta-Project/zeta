@@ -7,6 +7,9 @@ GET           /socket/developer                                                 
 GET           /socket/generator/:id                                                               controllers.ScalaRoutes.getSocketGenerator(id: java.util.UUID)
 GET           /socket/user/:model                                                                 controllers.ScalaRoutes.getSocketUser(model: java.util.UUID)
 
+# general user online socket
+GET           /socket                                                                             controllers.ScalaRoutes.getSocketConnection
+
 # Home page
 GET           /                                                                                   controllers.ScalaRoutes.getIndex
 GET           /user                                                                               controllers.ScalaRoutes.getUser
@@ -126,7 +129,7 @@ PUT           /rest/v1/files/:id/*name                                          
 
 ### Model DSL API
 GET           /rest/v1/dsl/:id/*apiType                                                           controllers.ScalaRoutes.getDslV1(id: java.util.UUID, apiType: String)
-GET           /rest/v1/totalDsl/:id                                                              controllers.ScalaRoutes.getAllDslV1(id: java.util.UUID)
+GET           /rest/v1/totalDsl/:id                                                               controllers.ScalaRoutes.getAllDslV1(id: java.util.UUID)
 
 ### Code Editor
 GET           /codeEditor/editor/:metaModelId/:dslType                                            controllers.ScalaRoutes.getCodeEditor(metaModelId: java.util.UUID, dslType: String)
