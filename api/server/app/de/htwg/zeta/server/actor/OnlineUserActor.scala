@@ -1,5 +1,7 @@
 package de.htwg.zeta.server.actor
 
+import java.util.UUID
+
 import scala.collection.mutable
 
 import akka.actor.Actor
@@ -31,11 +33,11 @@ class OnlineUserActor() extends Actor with Logging {
 
   override def receive: Receive = {
     case ClientOnline(id, area) =>
-      logger.info(s"Online: ${id.fullName} in $area")
+      logger.debug(s"Online: ${id.fullName} in $area")
       onlineUsers.add(AreaAccess(sender(), id, area))
       onlineClientsInArea(area).foreach(u => u ! onlineClientsInArea(id, area))
     case ClientOffline(id, area) =>
-      logger.info(s"Offline: ${id.fullName} in $area")
+      logger.debug(s"Offline: ${id.fullName} in $area")
       onlineUsers.remove(AreaAccess(sender(), id, area))
       onlineClientsInArea(area).foreach(u => u ! onlineClientsInArea(id, area))
   }
@@ -43,7 +45,7 @@ class OnlineUserActor() extends Actor with Logging {
   private def onlineClientsInArea(self: ZetaIdentity, area: String) =
     AreaState(
       onlineUsers.filter(_.areaName == area)
-        .map(a => ClientInfo(a.user.fullName))
+        .map(a => ClientInfo(a.user.fullName, a.user.id))
         .toList.distinct
     )
 
@@ -55,7 +57,7 @@ object OnlineUserActor {
   case class ClientOnline(identity: ZetaIdentity, area: String)
   case class ClientOffline(identity: ZetaIdentity, area: String)
 
-  case class ClientInfo(fullName: String)
+  case class ClientInfo(fullName: String, id: UUID)
   case class AreaState(onlineClients: List[ClientInfo])
 
   def props(): Props = Props(new OnlineUserActor())
