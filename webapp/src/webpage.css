@@ -33,6 +33,11 @@
 
 .navbar-default .navbar-nav > li > a {
     color: #444;
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav > li:hover > a {
+    color: #e30a5e;
 }
 
 /* end bootstrap theme corrects */
