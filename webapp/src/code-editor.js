@@ -33,7 +33,8 @@ class CodeEditor {
         this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType, this.editor);
         this.sourceCodeInspector.runInspection();
         this.codeOutline = new CodeOutline(element, metaModelId, dslType, this.editor);
-        this.onlineSocket = new OnlineSocket();
+        let area = "codeEditor-" + dslType;
+        this.onlineSocket = new OnlineSocket(area);
     }
 
     initAceEditor(element) {
