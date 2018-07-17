@@ -43,7 +43,6 @@ class OnlineUserActor() extends Actor with Logging {
   private def onlineClientsInArea(self: ZetaIdentity, area: String) =
     AreaState(
       onlineUsers.filter(_.areaName == area)
-        .filter(_.user.email != self.email)
         .map(a => ClientInfo(a.user.fullName))
         .toList.distinct
     )
