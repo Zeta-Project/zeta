@@ -5,7 +5,7 @@
 @import play.api.libs.json.Json
 
 
-@(user: Option[User], id: UUID, metaModel: GdslProject)
+@(user: Option[User], id: UUID, gdslProject: GdslProject)
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.css")">
@@ -14,10 +14,10 @@
     <script type="text/javascript">
         window.loadedMetaModel = {};
         window.loadedMetaModel.uuid = "@id";
-        window.loadedMetaModel.name = "@metaModel.name";
-    @if(metaModel.concept.uiState.nonEmpty) {
+        window.loadedMetaModel.name = "@gdslProject.name";
+    @if(gdslProject.concept.uiState.nonEmpty) {
         window.loadedMetaModel.loadOnStart = true;
-        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(metaModel.concept.uiState))));
+        window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(gdslProject.concept.uiState))));
     }
         // Hotfix for issue in the latest Chrome version, see https://github.com/clientIO/joint/issues/203
         SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
@@ -26,7 +26,7 @@
     </script>
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.js")"></script>
 }
-@views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user, styles, scripts, Some(metaModel)) {
+@views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user, styles, scripts, Some(gdslProject)) {
 
 
     <div class="toolbar-container panel panel-default">
