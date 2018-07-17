@@ -31,6 +31,10 @@
     border-color: #46b8da;
 }
 
+.navbar-default {
+    z-index: 999;
+}
+
 .navbar-default .navbar-nav > li > a {
     color: #444;
     font-weight: bold;

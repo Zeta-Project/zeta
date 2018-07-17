@@ -55,6 +55,10 @@
     left: 0;
 }
 
+.stencil-container {
+    overflow-y: auto;
+}
+
 .stencil-container-hidden {
     width: 40px;
 }
