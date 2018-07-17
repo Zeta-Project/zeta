@@ -20,8 +20,10 @@ class CodeEditorController @Inject()(
     fullAccessMetaModelEntityRepo: GdslProjectRepository
 ) extends Controller {
 
-  def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Result = {
-    Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity.user), metaModelId, dslType))
+  def codeEditor(metaModelId: UUID, dslType: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).map { metaModelEntity =>
+      Ok(views.html.metamodel.MetaModelCodeEditor(Some(request.identity.user), metaModelEntity, dslType))
+    }
   }
 
   def methodClassCodeEditor(metaModelId: UUID, methodName: String, className: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
