@@ -21,8 +21,8 @@ export class OnlineSocket {
             this.webSocket.onclose = function (closeEvent) {
                 console.log("WebSocket CLOSE: " + JSON.stringify(closeEvent, null, 4));
                 setTimeout(function () {
-                    connect();
-                }, 1000);
+                    service.connect();
+                }, 3000);
             };
             this.webSocket.onerror = function (errorEvent) {
                 console.log("WebSocket ERROR: " + JSON.stringify(errorEvent, null, 4));
@@ -34,6 +34,9 @@ export class OnlineSocket {
             };
         } catch (exception) {
             console.error(exception);
+            setTimeout(function () {
+                service.connect();
+            }, 3000);
         }
     }
 
