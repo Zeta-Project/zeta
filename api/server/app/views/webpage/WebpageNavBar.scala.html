@@ -20,7 +20,7 @@
         <div class="collapse navbar-collapse" id="navbar-collapse-overview">
             <ul class="nav navbar-nav">
             @for(p <- project) {
-                <li><a href="@routes.ScalaRoutes.getOverview(p.id)">@p.name</a></li>
+                <li><a class="navbar-breadcrumb" href="@routes.ScalaRoutes.getOverview(p.id)">@p.name</a></li>
             }
             </ul>
 
