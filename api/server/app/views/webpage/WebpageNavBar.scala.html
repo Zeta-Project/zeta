@@ -1,5 +1,6 @@
 @import de.htwg.zeta.common.models.entity.User
-@(user: Option[User])
+@import de.htwg.zeta.common.models.project.GdslProject
+@(user: Option[User], project: Option[GdslProject])
 
 <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
@@ -14,11 +15,15 @@
             <a class="navbar-brand" href="/">
                 <img src="@routes.ScalaRoutes.getStaticFiles("images/zeta_logo.png")" class="navbar-logo">
             </a>
-            <div id="metamodel-name"></div>
         </div>
 
-
         <div class="collapse navbar-collapse" id="navbar-collapse-overview">
+            <ul class="nav navbar-nav">
+            @for(p <- project) {
+                <li><a href="@routes.ScalaRoutes.getOverview(p.id)">@p.name</a></li>
+            }
+            </ul>
+
             <ul class="nav navbar-nav navbar-right">
                 @user match {
                     case Some(u) => {

@@ -1,5 +1,6 @@
 @import de.htwg.zeta.common.models.entity.User
-@(title: String, user: Option[User], styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
+@import de.htwg.zeta.common.models.project.GdslProject
+@(title: String, user: Option[User], styles: Html = Html(""), scripts: Html = Html(""), gdslProject: Option[GdslProject] = None)(content: Html)
 
 <!DOCTYPE html>
 <html>
@@ -12,7 +13,7 @@
         <title>@title</title>
     </head>
     <body>
-        @views.html.webpage.WebpageNavBar(user)
+        @views.html.webpage.WebpageNavBar(user, gdslProject)
         <div class="container-fluid">@content</div>
         @scripts
     </body>
