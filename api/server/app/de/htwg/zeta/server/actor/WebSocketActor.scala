@@ -59,6 +59,7 @@ class WebSocketActor(user: ZetaIdentity, out: ActorRef, manager: ActorRef) exten
 
   private implicit lazy val stateToJson: Writes[AreaState] =
     (o: AreaState) => Json.obj(
+      "name" -> "onlineStatus",
       "onlineClients" -> Writes.seq(clientInfoToJson).writes(o.onlineClients)
     )
 
