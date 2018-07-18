@@ -1,11 +1,14 @@
 package de.htwg.zeta.codeGenerator
 
 
+import scala.annotation.tailrec
 import scala.collection.immutable.Seq
-import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.model.Link
+import de.htwg.zeta.codeGenerator.model.MapLink
+import de.htwg.zeta.codeGenerator.model.ReferenceLink
 import de.htwg.zeta.codeGenerator.model.Value
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.project.concept.Concept
@@ -23,63 +26,34 @@ import play.api.libs.json.JsonValidationError
 
 object GdslInstanceToZetaModel extends Logging {
 
+  private case class GDSLState(
+      nodes: Map[String, NodeInstance],
+      edges: Map[String, EdgeInstance]
+  )
+
   // scalastyle:off
   def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Seq[File] = {
-    val unprocessedNodes = mutable.ListBuffer(gdslInstance.nodes: _*).filter(_.className == "Entity")
-    val processedEntities = mutable.ListBuffer.empty[Entity]
+    val state = GDSLState(
+      gdslInstance.nodes.map(n => n.name -> n).toMap,
+      gdslInstance.edges.map(e => e.name -> e).toMap
+    )
 
-    val nonProcessableEdges = mutable.ListBuffer(gdslInstance.edges: _*).filter(_.referenceName == "LinkEdge") // edge pointing to unprocessed edges
-    val processableEdges = mutable.ListBuffer.empty[EdgeInstance] // edges pointing to processed edges
-
-
-    def processRecursive(): Option[Entity] = {
-      // A node is processable, when all outgoing dependencies are processed
-
-      val processableNode = unprocessedNodes.find(node =>
-        // All output edges needs to be processed
-        node.outputEdgeNames.forall(processableEdges.map(_.name).contains)
-      )
-
-
-      processableNode match {
-        case Some(node) =>
-
-          unprocessedNodes -= node
-
-          val incomingEdges = nonProcessableEdges.filter(node.inputEdgeNames.contains)
-          nonProcessableEdges --= incomingEdges
-          processableEdges ++= incomingEdges
-
-          val entity = Entity(
-            name = node.name,
-            fixValues = List.empty, // TODO
-            inValues = List.empty, // TODO
-            outValues = List.empty, // TODO
-            links = processedEntities.filter(node.outputEdgeNames.contains).map(entity =>
-              Link(entity.name, entity)
-            ).toList,
-            maps = List.empty, // TODO Not possible in current project state
-            refs = List.empty // TODO Not possible in current project state
-          )
-
-          processedEntities += entity
-
-          if (unprocessedNodes.isEmpty) {
-            Some(entity)
-          } else {
-            processRecursive()
-          }
-
-        case None => None
-      }
-
-
+    val anchor = for {
+      teamAnch <- gdslInstance.nodes.find("TeamAnchor" == _.className)
+      periodAnch <- gdslInstance.nodes.find("PeriodAnchor" == _.className)
+      teamOutId <- expectOneElem(teamAnch.outputEdgeNames)
+      periodOutId <- expectOneElem(periodAnch.outputEdgeNames)
+      teamOut <- state.edges.get(teamOutId)
+      periodOut <- state.edges.get(periodOutId)
+      teamNode <- state.nodes.get(teamOut.targetNodeName)
+      periodNode: NodeInstance <- state.nodes.get(periodOut.targetNodeName)
+      teamEntity <- extractEntity(teamNode, state)
+      periodEntity <- extractEntity(periodNode, state)
+    } yield {
+      model.Anchor(teamEntity, periodEntity)
     }
 
-
-    // TODO check two dropAnchor elements exists and pointing to same entity
-
-
+    // todo remove
     val entities = gdslInstance.nodes.filter(_.className == "Entity").map { node =>
       val fixValues = node.attributeValues.get("fix").toList.flatMap(extractValue)
       val inValues = node.attributeValues.get("in").toList.flatMap(extractValue)
@@ -88,6 +62,7 @@ object GdslInstanceToZetaModel extends Logging {
       Entity(name, fixValues, inValues, outValues, Nil, Nil, Nil)
     }
 
+    // todo replace with anchor.
     for {
       entity <- entities.toList
     } yield {
@@ -98,6 +73,76 @@ object GdslInstanceToZetaModel extends Logging {
       File(gdslInstance.id, fileName, beautifiedFile)
     }
   }
+
+  private def expectOneElem[E](s: Seq[E]): Option[E] =
+    s.headOption.filter(_ => s.tail.isEmpty) // safe access to
+
+  private def mapAllOrNone[E, R](seq: Seq[E])(map: E => Option[R]): Option[List[R]] = {
+    val buff = ListBuffer[R]()
+    @tailrec def rek(s: List[E]): Option[List[R]] = s match {
+      case Nil => Some(buff.result())
+      case head :: tail => map(head) match {
+        case None => None
+        case Some(r) =>
+          buff += r
+          rek(tail)
+      }
+    }
+    rek(seq.toList)
+  }
+
+  private def extractEntity(node: NodeInstance, state: GDSLState): Option[Entity] = {
+    val fixValues = node.attributeValues.get("fix").toList.flatMap(extractValue)
+    val inValues = node.attributeValues.get("in").toList.flatMap(extractValue)
+    val outValues = node.attributeValues.get("out").toList.flatMap(extractValue)
+    mapAllOrNone(node.outputEdgeNames)(en => state.edges.get(en))
+    node.outputEdgeNames.map(en => state.edges.get(en))
+
+    for {
+      name <- node.attributeValues.get("name").flatMap(expectOneElem).collect { case StringValue(n) => n.trim }
+      edges <- mapAllOrNone(node.outputEdgeNames)(en => state.edges.get(en))
+      // names are from shape dsl
+      linkRef = edges.filter("LinkEdge" == _.referenceName)
+      mapRef = edges.filter("MapEdge" == _.referenceName) // this is not yet defined in shape
+      refRef = edges.filter("ReferenceEdge" == _.referenceName)
+      links <- mapAllOrNone(linkRef)(lr => extractLink(lr, state))
+      mapLinks <- mapAllOrNone(mapRef)(lr => extractMapLink(lr, state))
+      refLinks <- mapAllOrNone(refRef)(lr => extractReferenceLink(lr, state))
+    } yield {
+      Entity(name.trim, fixValues, inValues, outValues, links, mapLinks, refLinks)
+    }
+  }
+
+
+  private def extractLink(edge: EdgeInstance, state: GDSLState): Option[Link] = {
+    for {
+      node <- state.nodes.get(edge.targetNodeName)
+      entity <- extractEntity(node, state)
+    } yield {
+      // TODO name
+      Link(null, entity)
+    }
+  }
+
+  private def extractMapLink(edge: EdgeInstance, state: GDSLState): Option[MapLink] = {
+    for {
+      node <- state.nodes.get(edge.targetNodeName)
+      entity <- extractEntity(node, state)
+    } yield {
+      // TODO
+      MapLink(null, null, entity)
+    }
+  }
+
+  private def extractReferenceLink(edge: EdgeInstance, state: GDSLState): Option[ReferenceLink] = {
+    for {
+      node <- state.nodes.get(edge.targetNodeName)
+    } yield {
+      // TODO extract path later.
+      ReferenceLink(null, null)
+    }
+  }
+
 
   private def extractValue(list: List[AttributeValue]): List[Value] = {
     list.flatMap(extractSingleValue)
@@ -140,7 +185,7 @@ object GdslInstanceToZetaModel extends Logging {
       name == s"text.$generatedId"
     }.get._2
 
-    val entityName = (attr \ "text").validate[List[String]].collect(JsonValidationError("entityName must be one element")){case name :: Nil => name}.get
+    val entityName = (attr \ "text").validate[List[String]].collect(JsonValidationError("entityName must be one element")) { case name :: Nil => name }.get
     entityName
   }
 
