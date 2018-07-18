@@ -583,6 +583,8 @@ export default Backbone.Router.extend({
                 } else {
                     self.showError("Generator execution failed!");
                 }
+            } else if (obj.type !== 'Entry') {
+              // Entry messages are currently not handled.
             } else {
                 console.log("unhandled message!");
                 console.log(obj);
