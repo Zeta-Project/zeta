@@ -29,7 +29,7 @@ private[persistence] sealed abstract class AccessRestrictedEntityPersistence[E <
     underlying: EntityRepository[E]
 )(implicit manifest: Manifest[E]) {
 
-  final def restrictedTo(ownerId: UUID): EntityRepository[E] = new EntityRepository[E] {
+  def restrictedTo(ownerId: UUID): EntityRepository[E] = new EntityRepository[E] {
 
     override def create(entity: E): Future[E] = {
       underlying.create(entity).flatMap(entity =>

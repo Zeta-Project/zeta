@@ -43,7 +43,10 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber,
 
     // quicklens
-    "com.softwaremill.quicklens" %% "quicklens" % "1.4.11"
+    "com.softwaremill.quicklens" %% "quicklens" % "1.4.11",
+
+    // test mock framework
+    "org.scalamock" %% "scalamock" % "4.1.0" % Test
   ),
   PlayKeys.devSettings := Seq("play.server.akka.requestTimeout" -> "infinite")
 ).enablePlugins(PlayScala).dependsOn(

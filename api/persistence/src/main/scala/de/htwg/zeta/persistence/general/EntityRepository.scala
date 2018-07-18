@@ -26,7 +26,7 @@ import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
  *
  * @tparam E type of the entity
  */
-private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
+trait EntityRepository[E <: Entity] { // scalastyle:ignore
 
   /** The name of the entity-type.
    *
@@ -89,13 +89,13 @@ private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
    * @param entity the entity to create or update
    * @return The updated or created entity
    */
-  final def createOrUpdate(entity: E): Future[E] = {
+  def createOrUpdate(entity: E): Future[E] = {
     update(entity.id, _ => entity).recoverWith {
       case _ => create(entity)
     }
   }
 
-  final def createOrUpdate(entities: List[E]): Future[List[E]] = {
+  def createOrUpdate(entities: List[E]): Future[List[E]] = {
     val futures = for {
       e <- entities
       res = createOrUpdate(e)
@@ -110,7 +110,7 @@ private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
    * @param entity       the entity to create
    * @return The updated or created entity
    */
-  final def createOrUpdate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
+  def createOrUpdate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
     update(id, updateEntity).recoverWith {
       case _ => create(entity)
     }
