@@ -20,7 +20,6 @@ case class ExportResult(projectName: String, stream: Source[ByteString, Future[I
 
 class ProjectExporter @Inject()(
     modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
-    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     gdslProjectRepository: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat

@@ -23,14 +23,13 @@ import play.api.libs.json.Reads
 
 class ProjectImporter @Inject()(
     modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
-    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     gdslProjectRepository: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat
 ) {
 
   def importProject(zipFile: ZipFile, userId: UUID, newProjectName: String): Future[Boolean] = {
-    val metaModelRepo = metaModelEntityRepo.restrictedTo(userId)
+    val metaModelRepo = gdslProjectRepository.restrictedTo(userId)
     val modelRepo = modelEntityRepo.restrictedTo(userId)
 
     val maybeProject =
