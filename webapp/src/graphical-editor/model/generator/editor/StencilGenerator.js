@@ -73,13 +73,11 @@ class ShapesGenerator {
     }
 
     createNodeToEdgeAttributeInfo(node, references, classes) {
-
         classes.forEach((clazz) => {
-            references.forEach((reference) => {
-                if (clazz.name.toLowerCase() === reference.name.toLowerCase()) {
-                    globalMReferenceAttributeInfo[clazz.name] = clazz.attributes;
-                }
-            })
+            if(references.some((r) => { return r.name.toLowerCase() === clazz.name.toLowerCase() })){
+              const attributeInfo = clazz && clazz.attributes ? clazz.attributes.map(a => this.createMClassAttribute(a, node)) : [];
+              globalMReferenceAttributeInfo[clazz.name] = attributeInfo;
+            }
         });
     }
 
