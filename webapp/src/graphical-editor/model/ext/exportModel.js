@@ -58,7 +58,7 @@ export default (function modelExporter() {
         let elements = [];
         _graph.getElements().forEach(function (ele) {
 
-            console.log(ele);
+            // console.log(ele);
             let element = {
                 name: ele.id,
                 className: ele.attributes.className,
@@ -98,11 +98,11 @@ export default (function modelExporter() {
             });
 
             _graph.getConnectedLinks(ele, {outbound: true}).forEach(function (link) {
-                element.outputEdgeNames.push(link.attributes.source.id);
+                element.outputEdgeNames.push(link.attributes.id);
             });
 
             _graph.getConnectedLinks(ele, {inbound: true}).forEach(function (link) {
-                element.inputEdgeNames.push(link.attributes.target.id);
+                element.inputEdgeNames.push(link.attributes.id);
             });
             elements.push(element);
         });
@@ -115,7 +115,7 @@ export default (function modelExporter() {
         let elements = [];
         _graph.getLinks().forEach(function (link) {
 
-            console.log(link);
+            // console.log(link);
             let element = {
                 name: link.id,
                 referenceName: link.attributes.mReference,
