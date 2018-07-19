@@ -31,8 +31,25 @@
     border-color: #46b8da;
 }
 
+.navbar-default {
+    z-index: 999;
+}
+
 .navbar-default .navbar-nav > li > a {
     color: #444;
+    font-weight: bold;
+}
+
+.navbar-default .navbar-nav > li:hover > a {
+    color: #e30a5e;
+}
+
+.navbar-breadcrumb::before {
+    content: "\E258";
+    font-family: 'Glyphicons Halflings';
+    position: absolute;
+    left: -5px;
+    font-size: 0.9em;
 }
 
 .modal-header.modal-header-primary {
@@ -214,14 +231,6 @@ paper-button::shadow #ripple {
     font-size: 40px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-}
-
-#edit-project .panel {
-    margin-bottom: 0;
-}
-
-#edit-project .col-md-6 {
-    padding: 0;
 }
 
 .no-margin {

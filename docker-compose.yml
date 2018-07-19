@@ -1,57 +1,57 @@
 version: '2'
 services:
-  generatorControl:
-    image: zeta-sbt:1.0.3
-    build: ./api
-    volumes:
-      - ./api:/app
-      - ./sbt/generatorControl:/root
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["project generatorControl", "run --master-port 2551 --master-num 1 --workers 3 --worker-seeds generatorControl:2551 --dev-port 2552 --dev-seeds generatorControl:2551"]
-    environment:
-      - ZETA_MONGODB_SERVER=mongodb
-    links:
-      - mongodb
+   mongodb:
+     image: mongo:3.4.13
+     volumes:
+       - ./mongodb:/data/db
+     ports:
+       - 127.0.0.1:27017:27017
 
-  mongodb:
-    image: mongo:3.4.13
-    volumes:
-      - ./mongodb:/data/db
-    ports:
-      - 127.0.0.1:27017:27017
+   webapp:
+     image: node:10.6.0 # Alpine cannot be used, because git executable is needed
+     volumes:
+       - ./webapp:/src
+     command: "bash -c 'yarn install && yarn run dev'"
+     working_dir: /src
 
-  api:
-    image: zeta-sbt:1.0.3
-    build: ./api
-    volumes:
-      - ./api:/app
-      - ./sbt/server:/root
-    environment:
-      - APPLICATION_SECRET=superSecret
-      - ZETA_MONGODB_SERVER=mongodb
-      - ZETA_DEPLOYMENT=production
-    stdin_open: true
-    ports:
-      - 9000:9000
-    links:
-      - mongodb
-      - webapp
-      - generatorControl
-    command: ["-Dzeta.actor.cluster.0=generatorControl:2551", "-Dzeta.webapp.host=webapp", "project server", "run"]
+   api:
+     image: zeta-sbt:1.0.6
+     build: ./api
+     volumes:
+       - ./api:/app
+       - ./sbt/server:/root
+     environment:
+       - APPLICATION_SECRET=superSecret
+       - ZETA_MONGODB_SERVER=mongodb
+       - ZETA_DEPLOYMENT=production
+     stdin_open: true
+     ports:
+       - 80:9000
+     links:
+       - mongodb
+       - webapp
+     command: ["-Dlogger.play=ERROR","-Dlogger.application=ERROR","-Dzeta.webapp.host=webapp", "project server", "run"]
 
-  webapp:
-    image: node:6.13.0 # Alpine cannot be used, because git executable is needed
-    volumes:
-      - ./webapp:/src
-    command: "bash -c 'yarn; npm run dev'"
-    working_dir: /src
-
-  images:
-    image: zeta-sbt:1.0.3
-    build: ./api
-    volumes:
-      - ./api:/app
-      - ./sbt/images:/root
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["./createDockerImages.sh"]
-
+# --> temporarily deactivated: generation will not currently take place in the dockers <--
+#
+#  generatorControl:
+#    image: zeta-sbt:1.0.3
+#    build: ./api
+#    volumes:
+#      - ./api:/app
+#      - ./sbt/generatorControl:/root
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#    command: ["project generatorControl", "run --master-port 2551 --master-num 1 --workers 3 --worker-seeds generatorControl:2551 --dev-port 2552 --dev-seeds generatorControl:2551"]
+#    environment:
+#      - ZETA_MONGODB_SERVER=mongodb
+#    links:
+#      - mongodb
+#
+#  images:
+#    image: zeta-sbt:1.0.3
+#    build: ./api
+#    volumes:
+#      - ./api:/app
+#      - ./sbt/images:/root
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#    command: ["./createDockerImages.sh"]

@@ -2,7 +2,8 @@
 @import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 @import play.api.libs.json.Json
 
-@(modelEntity: GraphicalDslInstance, user: User)
+@import de.htwg.zeta.common.models.project.GdslProject
+@(modelEntity: GraphicalDslInstance, gdslProject: GdslProject, user: User)
 
 @styles = {
     <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-model-editor.bundle.css")">
@@ -38,7 +39,7 @@
     }
     </script>
 }
-@views.html.webpage.WebpageGeneralLayout("Model Editor", Some(user), styles, scripts) {
+@views.html.webpage.WebpageGeneralLayout("Model Editor", Some(user), styles, scripts, Some(gdslProject)) {
 
 
     <div class="toolbar-container panel panel-default">

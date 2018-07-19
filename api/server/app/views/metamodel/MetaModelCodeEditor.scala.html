@@ -1,6 +1,6 @@
-@import java.util.UUID
 @import de.htwg.zeta.common.models.entity.User
-@(user: Option[User], id: UUID, dslType: String)
+@import de.htwg.zeta.common.models.project.GdslProject
+@(user: Option[User], gdslProject: GdslProject, dslType: String)
 
 @styles = {
   <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.css")">
@@ -8,7 +8,7 @@
 @scripts = {
   <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor.bundle.js")"></script>
 }
-@views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts) {
+@views.html.webpage.WebpageGeneralLayout("CodeEditor", user, styles, scripts, Some(gdslProject)) {
 
 
   <div class="editor-container">
@@ -17,7 +17,7 @@
           <div id="outline-nodes"></div>
       </div>
 
-      <div class="container code-editor editor-box" data-meta-model-id="@id.toString" data-dsl-type="@dslType">
+      <div class="container code-editor editor-box" data-meta-model-id="@gdslProject.id.toString" data-dsl-type="@dslType">
           <div class="panel panel-default">
               <div class="panel-heading">
                   <span class="editor-title">@dslType</span>
