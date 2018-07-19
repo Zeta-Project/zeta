@@ -2,22 +2,22 @@
 @import de.htwg.zeta.common.format.ProjectShortInfo
 @import de.htwg.zeta.common.models.entity.User
 @import de.htwg.zeta.common.models.project.GdslProject
-@(user: Option[User], metaModels: Seq[ProjectShortInfo], metaModel: Option[GdslProject], modelInstances: Seq[GraphicalDslInstanceShortInfo])
+@(user: Option[User], metaModels: Seq[ProjectShortInfo], gdslProject: Option[GdslProject], modelInstances: Seq[GraphicalDslInstanceShortInfo])
 
 @styles = {
   <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.css")">
 }
 
 @scripts = {
-@if(metaModel.isDefined) {
+@if(gdslProject.isDefined) {
   <script>
-          window.metaModelId = "@metaModel.get.id";
+          window.metaModelId = "@gdslProject.get.id";
   </script>
 }
   <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("diagramm-overview.bundle.js")"></script>
 }
 
-@views.html.webpage.WebpageGeneralLayout("New Diagram", user, styles, scripts) {
+@views.html.webpage.WebpageGeneralLayout("New Diagram", user, styles, scripts, gdslProject) {
   <div class="row">
     <div class="col-md-4">
       <div class="panel panel-default">
@@ -28,7 +28,7 @@
           <div class="list-group">
           @for(metamodel <- metaModels) {
             <a href="@routes.ScalaRoutes.getOverview(metamodel.id)" class="list-group-item list-item-container
-                                    @if(metaModel.isDefined && metamodel.id == metaModel.get.id) {
+                                    @if(gdslProject.isDefined && metamodel.id == gdslProject.get.id) {
               active
             }
             ">
@@ -99,26 +99,26 @@
       </div>
     </div>
 
-    @if(metaModel.isDefined) {
+    @if(gdslProject.isDefined) {
       <div id="edit-project" class="col-md-4">
         <div class="panel panel-default overlay-container">
           @if(modelInstances.nonEmpty) {
             <div class="overlay" data-toggle="tooltip" title="Locked because there are model instances"></div>
           }
           <div class="panel-heading">
-            <strong>Edit project <em>@metaModel.get.name</em></strong>
+            <strong>Edit project <em>@gdslProject.get.name</em></strong>
           </div>
           <div class="list-group">
-            <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "style")">
+            <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(gdslProject.get.id, "style")">
               Style
             </a>
-            <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "shape")">
+            <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(gdslProject.get.id, "shape")">
               Shape
             </a>
-            <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(metaModel.get.id, "diagram")">
+            <a class="list-group-item" href="@routes.ScalaRoutes.getCodeEditor(gdslProject.get.id, "diagram")">
               Diagram
             </a>
-            <a class="list-group-item" href="@routes.ScalaRoutes.getMetamodelEditor(metaModel.get.id)">
+            <a class="list-group-item" href="@routes.ScalaRoutes.getMetamodelEditor(gdslProject.get.id)">
               Concept Editor
             </a>
           </div>
@@ -147,7 +147,7 @@
 
     }
 
-    @if(metaModel.isDefined) {
+    @if(gdslProject.isDefined) {
       <div class="col-md-4">
         <div id="model-instance-container" class="panel panel-default">
           <div class="panel-heading">

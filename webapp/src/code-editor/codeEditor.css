@@ -227,4 +227,21 @@
     background-color: #81941a;
 }
 
+@media (max-width: 768px) {
+    #outline-nodes {
+        display: none;
+    }
 
+    .editor-container {
+        flex-direction: column;
+    }
+
+    .side-box {
+        max-width: 100%;
+    }
+
+    .editor-box {
+        width: 100%;
+        padding: 0;
+    }
+}

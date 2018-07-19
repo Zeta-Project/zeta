@@ -20,6 +20,10 @@
    stroke-width: 0;
 }
 
+.paper-scroller {
+    overflow: auto;
+}
+
 .export-result-alert {
    z-index: 100;
    width: 300px;
