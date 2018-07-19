@@ -2,10 +2,9 @@ package de.htwg.zeta.server.controller.restApi
 
 import java.time.Instant
 import java.util.UUID
-import javax.inject.Inject
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 import akka.stream.scaladsl.StreamConverters
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
@@ -14,15 +13,17 @@ import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
 import de.htwg.zeta.common.format.model.EdgeFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
+import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.util.FileZipper
 import grizzled.slf4j.Logging
+import javax.inject.Inject
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
@@ -217,35 +218,44 @@ class ModelRestApi @Inject()(
     }
   }
 
-  private def generateSourceCodeFiles(modelId: UUID, userId: UUID) = {
+  private def generateSourceCodeFiles(modelId: UUID, userId: UUID): Future[(String, String, Either[String, List[File]])] = {
     for {
       graphicalDslInstance <- modelEntityRepo.restrictedTo(userId).read(modelId)
       metaModelEntity <- metaModelEntityRepo.restrictedTo(userId).read(graphicalDslInstance.graphicalDslId)
     } yield {
       val projectName = metaModelEntity.name
       val modelName = graphicalDslInstance.name
-      val generatedFiles = GdslInstanceToZetaModel.generate(metaModelEntity.concept, graphicalDslInstance).toList
+      val generatedFiles = GdslInstanceToZetaModel.generate(metaModelEntity.concept, graphicalDslInstance)
       (projectName, modelName, generatedFiles)
     }
   }
 
   def getKlimaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      (_, _, files) <- generateSourceCodeFiles(modelId, request.identity.id)
-    } yield Ok(views.html.codeViewer.ScalaCodeViewer(files))
+      (_, _, filesOrFail) <- generateSourceCodeFiles(modelId, request.identity.id)
+    } yield {
+      filesOrFail match {
+        case Left(fail) => BadRequest(fail)
+        case Right(files) => Ok(views.html.codeViewer.ScalaCodeViewer(files))
+      }
+    }
   }
 
   def downloadSourceCode(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      (projectName, modelName, files) <- generateSourceCodeFiles(modelId, request.identity.id)
+      (projectName, modelName, filesOrFail) <- generateSourceCodeFiles(modelId, request.identity.id)
     } yield {
-      val zipStream = StreamConverters.fromInputStream(() => FileZipper.zip(files))
-      val now = Instant.now()
+      filesOrFail match {
+        case Left(fail) => BadRequest(fail)
+        case Right(files) =>
+          val zipStream = StreamConverters.fromInputStream(() => FileZipper.zip(files))
+          val now = Instant.now()
 
-      val filename = s"${projectName}_${modelName}_$now".replace(" ", "_")
-      Ok.chunked(zipStream).withHeaders(
-        CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zip")
-      )
+          val filename = s"${projectName}_${modelName}_$now".replace(" ", "_")
+          Ok.chunked(zipStream).withHeaders(
+            CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zip")
+          )
+      }
     }
   }
 

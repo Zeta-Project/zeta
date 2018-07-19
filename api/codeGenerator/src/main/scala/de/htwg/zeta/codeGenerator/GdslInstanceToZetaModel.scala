@@ -1,11 +1,16 @@
 package de.htwg.zeta.codeGenerator
 
 
+import java.util.UUID
+
 import scala.annotation.tailrec
 import scala.collection.immutable.Seq
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
+import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
+import de.htwg.zeta.codeGenerator.model.GeneratedFolder
 import de.htwg.zeta.codeGenerator.model.Link
 import de.htwg.zeta.codeGenerator.model.MapLink
 import de.htwg.zeta.codeGenerator.model.ReferenceLink
@@ -13,32 +18,70 @@ import de.htwg.zeta.codeGenerator.model.Value
 import de.htwg.zeta.common.models.entity.File
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue
+import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.HasAttributeValues
 import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.StringValue
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
 import grizzled.slf4j.Logging
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.libs.json.JsonValidationError
 
-
+// scalastyle:off
 object GdslInstanceToZetaModel extends Logging {
+
+  val noUniquePath = "fail"
 
   private case class GDSLState(
       nodes: Map[String, NodeInstance],
-      edges: Map[String, EdgeInstance]
+      edges: Map[String, EdgeInstance],
+      entityIdCache: mutable.Map[String, Entity],
+      entityNameCache: mutable.Map[String, Entity],
+      nodePath: mutable.Map[String, String]
   )
 
-  // scalastyle:off
-  def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Seq[File] = {
-    val state = GDSLState(
-      gdslInstance.nodes.map(n => n.name -> n).toMap,
-      gdslInstance.edges.map(e => e.name -> e).toMap
-    )
+  def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Either[String, List[File]] = {
 
-    val anchor = for {
+    for {
+      state <- buildState(gdslInstance)
+      first <- buildOptAnchor(gdslInstance, state).toRight("failed to extract Anchor")
+      team <- updateReferences(first.team, state)
+      period <- updateReferences(first.period, state)
+    } yield {
+      val anchor = first.copy(team = team, period = period)
+      val generated = KlimaCodeGenerator.generateAnchor(anchor)
+      transformGeneratedFolder(gdslInstance.id, generated, "")
+    }
+
+  }
+
+  private def buildState(gdslInstance: GraphicalDslInstance): Either[String, GDSLState] = {
+
+    def extractName(ha: HasAttributeValues): Option[String] = ha.attributeValues.get("name").flatMap(extractOneStringElem)
+    def handleDuplicates[R](list: Seq[String], name: String)(right: => R): Either[String, R] = {
+      val duplicates = list.diff(list.distinct).distinct
+      if (duplicates.isEmpty) Right(right) else Left(s"duplicate $name: [${duplicates.mkString(", ")}]")
+    }
+
+    for {
+      namedPairs <- mapAllOrNone(gdslInstance.nodes)(n => extractName(n).map(n.name -> _)).toRight("node without Name")
+      // TODO check valid name
+      allNames = namedPairs.map(_._2)
+      idToName <- handleDuplicates(allNames, "nodes")(namedPairs.toMap)
+      // only look at edges with names and concatenate them with the sourceNode to find distinct names per sourceNode
+      allEdges = gdslInstance.edges.flatMap(e => extractName(e).map(en => s"${idToName(e.sourceNodeName)}.$en"))
+      _ <- handleDuplicates(allEdges, "edges")(())
+    } yield {
+      GDSLState(
+        gdslInstance.nodes.map(n => n.name -> n).toMap,
+        gdslInstance.edges.map(e => e.name -> e).toMap,
+        mutable.Map(),
+        mutable.Map(),
+        mutable.Map()
+      )
+    }
+  }
+
+  private def buildOptAnchor(gdslInstance: GraphicalDslInstance, state: GDSLState): Option[Anchor] = {
+    for {
       teamAnch <- gdslInstance.nodes.find("TeamAnchor" == _.className)
       periodAnch <- gdslInstance.nodes.find("PeriodAnchor" == _.className)
       teamOutId <- expectOneElem(teamAnch.outputEdgeNames)
@@ -47,35 +90,76 @@ object GdslInstanceToZetaModel extends Logging {
       periodOut <- state.edges.get(periodOutId)
       teamNode <- state.nodes.get(teamOut.targetNodeName)
       periodNode: NodeInstance <- state.nodes.get(periodOut.targetNodeName)
-      teamEntity <- extractEntity(teamNode, state)
-      periodEntity <- extractEntity(periodNode, state)
+      teamEntity <- extractEntity(teamNode, state, "team")
+      periodEntity <- extractEntity(periodNode, state, "period")
     } yield {
       model.Anchor(teamEntity, periodEntity)
     }
+  }
 
-    // todo remove
-    val entities = gdslInstance.nodes.filter(_.className == "Entity").map { node =>
-      val fixValues = node.attributeValues.get("fix").toList.flatMap(extractValue)
-      val inValues = node.attributeValues.get("in").toList.flatMap(extractValue)
-      val outValues = node.attributeValues.get("out").toList.flatMap(extractValue)
-      val name = getEntityName(node, gdslInstance)
-      Entity(name, fixValues, inValues, outValues, Nil, Nil, Nil)
+  private def updateReferences(entity: Entity, state: GDSLState): Either[String, Entity] = {
+    def updateRefs(list: List[ReferenceLink]): Either[String, List[ReferenceLink]] = {
+      updateEitherList(list) { ref =>
+        // get path for ref => actual update here
+        state.nodePath.get(ref.entityPath)
+          .toRight(s"no Path for ${entity.name}.${ref.name}")
+          .filterOrElse(_ != noUniquePath, s"no unique path for ${entity.name}.${ref.name}")
+      }((ref, newPath) => ref.copy(entityPath = newPath))
     }
 
-    // todo replace with anchor.
-    for {
-      entity <- entities.toList
-    } yield {
-      val fileName = s"${entity.name}.scala"
-      val generatedFile = KlimaCodeGenerator.generateSingleEntity(entity)
-      val beautifiedFile = ScalaCodeBeautifier.format(fileName, generatedFile)
-
-      File(gdslInstance.id, fileName, beautifiedFile)
+    state.entityNameCache.get(entity.name) match {
+      case Some(updated) => Right(updated)
+      case None =>
+        for {
+          links <- updateEitherList(entity.links)(l => updateReferences(l.entity, state))((l, e) => l.copy(entity = e))
+          maps <- updateEitherList(entity.maps)(m => updateReferences(m.entity, state))((m, e) => m.copy(entity = e))
+          refs <- updateRefs(entity.refs)
+        } yield {
+          val updatedEntity = entity.copy(
+            links = links,
+            maps = maps,
+            refs = refs
+          )
+          state.entityNameCache(entity.name) = updatedEntity
+          updatedEntity
+        }
     }
   }
 
-  private def expectOneElem[E](s: Seq[E]): Option[E] =
-    s.headOption.filter(_ => s.tail.isEmpty) // safe access to
+  private def transformGeneratedFolder(id: UUID, folder: GeneratedFolder, prefix: String): List[File] = {
+    val buff = ListBuffer[File]()
+    def rec(current: GeneratedFolder, pre: String): Unit = {
+      current.files.foreach { f =>
+        buff += File(id, s"$pre/${f.name}.${f.fileType}", f.content)
+      }
+      current.children.foreach { f =>
+        rec(f, s"$pre/${f.name}")
+      }
+    }
+    rec(folder, if (prefix.isEmpty) folder.name else s"$prefix/${folder.name}")
+    buff.result()
+  }
+
+  private def updateEitherList[L, R](oldList: List[L])(eitherFromL: L => Either[String, R])(update: (L, R) => L): Either[String, List[L]] = {
+    val buff = ListBuffer[L]()
+    def rec(list: List[L]): Either[String, List[L]] = list match {
+      case Nil => Right(buff.result())
+      case l :: tail =>
+        eitherFromL(l) match {
+          case Left(s) => Left(s)
+          case Right(newE) =>
+            buff += update(l, newE)
+            rec(tail)
+        }
+    }
+    rec(oldList)
+  }
+
+  private def expectOneElem[E](s: Seq[E]): Option[E] = s.headOption.filter(_ => s.tail.isEmpty) // safe access to tail
+
+  private def extractOneStringElem(s: List[AttributeValue]): Option[String] = {
+    expectOneElem(s).collect { case StringValue(n) => n.trim }
+  }
 
   private def mapAllOrNone[E, R](seq: Seq[E])(map: E => Option[R]): Option[List[R]] = {
     val buff = ListBuffer[R]()
@@ -91,61 +175,64 @@ object GdslInstanceToZetaModel extends Logging {
     rek(seq.toList)
   }
 
-  private def extractEntity(node: NodeInstance, state: GDSLState): Option[Entity] = {
-    val fixValues = node.attributeValues.get("fix").toList.flatMap(extractValue)
-    val inValues = node.attributeValues.get("in").toList.flatMap(extractValue)
-    val outValues = node.attributeValues.get("out").toList.flatMap(extractValue)
-    mapAllOrNone(node.outputEdgeNames)(en => state.edges.get(en))
-    node.outputEdgeNames.map(en => state.edges.get(en))
-
-    for {
-      name <- node.attributeValues.get("name").flatMap(expectOneElem).collect { case StringValue(n) => n.trim }
+  private def extractEntity(node: NodeInstance, state: GDSLState, path: String): Option[Entity] = {
+    def create = for {
+      name <- node.attributeValues.get("name").flatMap(extractOneStringElem)
       edges <- mapAllOrNone(node.outputEdgeNames)(en => state.edges.get(en))
       // names are from shape dsl
-      linkRef = edges.filter("LinkEdge" == _.referenceName)
-      mapRef = edges.filter("MapEdge" == _.referenceName) // this is not yet defined in shape
-      refRef = edges.filter("ReferenceEdge" == _.referenceName)
-      links <- mapAllOrNone(linkRef)(lr => extractLink(lr, state))
+      linkRef = edges.filter("Link" == _.referenceName)
+      mapRef = edges.filter("Map" == _.referenceName) // this is not yet defined in shape
+      refRef = edges.filter("Reference" == _.referenceName)
+      links <- mapAllOrNone(linkRef)(lr => extractLink(lr, state, path))
       mapLinks <- mapAllOrNone(mapRef)(lr => extractMapLink(lr, state))
       refLinks <- mapAllOrNone(refRef)(lr => extractReferenceLink(lr, state))
+      fixOpt <- node.attributeValues.get("fix")
+      inOpt <- node.attributeValues.get("in")
+      outOpt <- node.attributeValues.get("out")
+      fixValues <- mapAllOrNone(fixOpt)(extractSingleValue)
+      inValues <- mapAllOrNone(inOpt)(extractSingleValue)
+      outValues <- mapAllOrNone(outOpt)(extractSingleValue)
     } yield {
-      Entity(name.trim, fixValues, inValues, outValues, links, mapLinks, refLinks)
+      val e = Entity(name.trim, fixValues, inValues, outValues, links, mapLinks, refLinks)
+      state.entityIdCache(node.name) = e
+      e
     }
+
+    state.entityIdCache.get(node.name).orElse(create)
   }
 
-
-  private def extractLink(edge: EdgeInstance, state: GDSLState): Option[Link] = {
+  private def extractLink(edge: EdgeInstance, state: GDSLState, path: String): Option[Link] = {
     for {
+      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem)
       node <- state.nodes.get(edge.targetNodeName)
-      entity <- extractEntity(node, state)
+      entityPath = s"$path.$name"
+      entity <- extractEntity(node, state, entityPath)
     } yield {
-      // TODO name
-      Link(null, entity)
+      state.nodePath.get(node.name) match {
+        case Some(_ /* existing */) => state.nodePath(node.name) = noUniquePath
+        case None => state.nodePath(node.name) = entityPath
+      }
+      Link(name, entity)
     }
   }
 
   private def extractMapLink(edge: EdgeInstance, state: GDSLState): Option[MapLink] = {
     for {
+      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem)
       node <- state.nodes.get(edge.targetNodeName)
-      entity <- extractEntity(node, state)
+      entity <- extractEntity(node, state, null /* TODO path */)
     } yield {
-      // TODO
-      MapLink(null, null, entity)
+      MapLink(name, null /* TODO key type*/ , entity)
     }
   }
 
   private def extractReferenceLink(edge: EdgeInstance, state: GDSLState): Option[ReferenceLink] = {
     for {
+      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem)
       node <- state.nodes.get(edge.targetNodeName)
     } yield {
-      // TODO extract path later.
-      ReferenceLink(null, null)
+      ReferenceLink(name, node.name) // build path out of this later. see updateReferences
     }
-  }
-
-
-  private def extractValue(list: List[AttributeValue]): List[Value] = {
-    list.flatMap(extractSingleValue)
   }
 
   private def extractSingleValue(at: AttributeValue): Option[Value] = at match {
@@ -157,36 +244,4 @@ object GdslInstanceToZetaModel extends Logging {
 
     case _ => None
   }
-
-  private def getEntityName(node: NodeInstance, gdslInstance: GraphicalDslInstance) = {
-
-    val idForEntityName = "name"
-
-    val id = node.name
-    val uiState = Json.parse(gdslInstance.uiState)
-    val cells = (uiState \ "cells").as[List[JsValue]]
-
-    val cell: JsValue = cells.find { cell =>
-      val cellId = (cell \ "id").as[String]
-      cellId == id
-    }.get
-
-    val attributeInfos: List[JsObject] = (cell \ "mClassAttributeInfo").as[List[JsObject]]
-
-    val o: JsObject = attributeInfos.find { attributeInfo: JsValue =>
-      val name = (attributeInfo \ "name").as[String]
-      name == idForEntityName
-    }.get
-
-    val generatedId = (o \ "id").as[String] // something like 0000-0000000000-0000-dead
-
-    val attrs = (cell \ "attrs").as[JsObject]
-    val attr = attrs.value.find { case (name, value) =>
-      name == s"text.$generatedId"
-    }.get._2
-
-    val entityName = (attr \ "text").validate[List[String]].collect(JsonValidationError("entityName must be one element")) { case name :: Nil => name }.get
-    entityName
-  }
-
 }
