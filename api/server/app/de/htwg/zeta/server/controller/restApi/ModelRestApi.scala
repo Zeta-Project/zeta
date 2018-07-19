@@ -2,12 +2,11 @@ package de.htwg.zeta.server.controller.restApi
 
 import java.time.Instant
 import java.util.UUID
-import javax.inject.Inject
+import java.util.zip.ZipFile
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-import akka.stream.scaladsl.StreamConverters
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
@@ -16,19 +15,24 @@ import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
+import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
+import de.htwg.zeta.server.util.ExportResult
 import de.htwg.zeta.server.util.FileZipper
+import de.htwg.zeta.server.util.ProjectExporter
+import de.htwg.zeta.server.util.ProjectImporter
 import grizzled.slf4j.Logging
+import javax.inject.Inject
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsError
 import play.api.libs.json.JsValue
 import play.api.libs.json.Writes
 import play.api.mvc.AnyContent
 import play.api.mvc.Controller
+import play.api.mvc.RawBuffer
 import play.api.mvc.Result
 import play.api.mvc.Results
 
@@ -41,7 +45,9 @@ class ModelRestApi @Inject()(
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
     nodeFormat: NodeFormat,
-    edgeFormat: EdgeFormat
+    edgeFormat: EdgeFormat,
+    projectExporter: ProjectExporter,
+    projectImporter: ProjectImporter
 ) extends Controller with Logging {
 
   /** Lists all models for the requesting user, provides HATEOAS links */
@@ -232,14 +238,16 @@ class ModelRestApi @Inject()(
   def getKlimaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
       (_, _, files) <- generateSourceCodeFiles(modelId, request.identity.id)
-    } yield Ok(views.html.codeViewer.ScalaCodeViewer(files))
+    } yield {
+      Ok(views.html.codeViewer.ScalaCodeViewer(files))
+    }
   }
 
   def downloadSourceCode(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
       (projectName, modelName, files) <- generateSourceCodeFiles(modelId, request.identity.id)
     } yield {
-      val zipStream = StreamConverters.fromInputStream(() => FileZipper.zip(files))
+      val zipStream = FileZipper.zip(files)
       val now = Instant.now()
 
       val filename = s"${projectName}_${modelName}_$now".replace(" ", "_")
@@ -247,6 +255,33 @@ class ModelRestApi @Inject()(
         CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zip")
       )
     }
+  }
+
+  def exportProject(gdslProjectId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    for {
+      ExportResult(projectName, zipStream) <- projectExporter.exportProject(gdslProjectId, request.identity.id)
+    } yield {
+      val now = Instant.now()
+      val filename = s"${projectName}_$now".replace(" ", "_")
+      Ok.chunked(zipStream).withHeaders(
+        CONTENT_DISPOSITION -> ("attachment; filename=\"" + filename + "\".zeta")
+      )
+    }
+  }
+
+  def importProject()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    val res = for {
+      projectName <- request.getQueryString("projectName")
+      raw: RawBuffer <- request.body.asRaw
+      zipFile = new ZipFile(raw.asFile)
+    } yield {
+      val result = projectImporter.importProject(zipFile, request.identity.id, projectName)
+      result.map {
+        case true => Ok
+        case false => BadRequest
+      }
+    }
+    res.getOrElse(Future(BadRequest))
   }
 
 }
