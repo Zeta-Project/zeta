@@ -1,6 +1,8 @@
 package de.htwg.zeta.codeGenerator
 
+import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
+import de.htwg.zeta.codeGenerator.model.GeneratedFolder
 import de.htwg.zeta.codeGenerator.txt.EntityTemplate
 
 /**
@@ -25,6 +27,20 @@ object KlimaCodeGenerator {
 
   def generateSingleEntity(entity: Entity): String = {
     EntityTemplate(entity).toString.trim
+  }
+
+  private def generateFolder(folderName: String, parentNode: Entity): GeneratedFolder = {
+    GeneratedFolder(folderName,
+      collectAllEntities(parentNode).toList.map { case (name, entity) =>
+        model.GeneratedFile(name, "scala", generateSingleEntity(entity))
+      }, Nil)
+  }
+
+  def generateAnchor(anchor: Anchor): GeneratedFolder = {
+    GeneratedFolder("klima", Nil, List(
+      generateFolder("team", anchor.team),
+      generateFolder("period", anchor.period),
+    ))
   }
 
   // Model-Classes
