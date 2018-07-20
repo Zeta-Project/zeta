@@ -5,6 +5,22 @@
 Model-driven generation of graphical editors. <br>
 The goal is to generate simulations from a graphical DSL.
 
+## DSL-Editor
+
+### Edit and Parse
+![Alt Text](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/dsl-editor.gif)
+
+### Outline
+![Alt Text](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/dsl-editor-2.gif)
+
+## Model-Editor
+
+### Edit & Save
+![Alt Text](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/model-editor.gif)
+
+### Code-Generator
+![Alt Text](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/code-generator.gif)
+
 ## Wiki 
 For more information please visit our [Wiki](https://github.com/Zeta-Project/zeta/wiki) <br>
 
