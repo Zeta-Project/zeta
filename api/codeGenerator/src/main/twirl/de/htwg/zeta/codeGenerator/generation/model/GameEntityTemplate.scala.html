@@ -1,0 +1,8 @@
+@()
+
+case class GameEntity (
+    gameId: UUID,
+    currentPeriod: Int,
+    period: PeriodEntity,
+    teams: Map[UUID, TeamEntity]
+)
