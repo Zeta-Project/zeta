@@ -1,11 +1,11 @@
 package de.htwg.zeta.server.controller.restApi
 
 import java.util.UUID
+
 import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
 import controllers.routes
@@ -17,6 +17,7 @@ import de.htwg.zeta.common.format.project.ReferenceFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
+import de.htwg.zeta.persistence.general.{AccessAuthorisationRepository, UserRepository}
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
@@ -30,21 +31,25 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 
 /**
- * REST-ful API for GraphicalDsl definitions
- */
+  * REST-ful API for GraphicalDsl definitions
+  */
 class GraphicalDslRestApi @Inject()(
-    graphicalDslRepo: AccessRestrictedGdslProjectRepository,
-    conceptFormat: ConceptFormat,
-    graphicalDslFormat: GdslProjectFormat,
-    classFormat: ClassFormat,
-    referenceFormat: ReferenceFormat
-) extends Controller with Logging {
+                                     graphicalDslRepo: AccessRestrictedGdslProjectRepository,
+                                     userRepo: UserRepository,
+                                     accessAuthorisationRepo: AccessAuthorisationRepository,
+                                     conceptFormat: ConceptFormat,
+                                     graphicalDslFormat: GdslProjectFormat,
+                                     classFormat: ClassFormat,
+                                     referenceFormat: ReferenceFormat
+                                   ) extends Controller with Logging {
+
+  val sGdslProject = "GdslProject"
 
   /** Lists all MetaModels for the requesting user, provides HATEOAS links.
-   *
-   * @param request The request
-   * @return The result
-   */
+    *
+    * @param request The request
+    * @return The result
+    */
   def showForUser(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = graphicalDslRepo.restrictedTo(request.identity.id)
     repo.readAllIds().flatMap(ids => {
@@ -57,10 +62,10 @@ class GraphicalDslRestApi @Inject()(
   }
 
   /** inserts whole MetaModel structure (MetaModel itself, DSLs...)
-   *
-   * @param request The request
-   * @return The result
-   */
+    *
+    * @param request The request
+    * @return The result
+    */
   def insert(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
     request.body.validate(graphicalDslFormat.empty).fold(
       faulty => {
@@ -78,11 +83,11 @@ class GraphicalDslRestApi @Inject()(
   }
 
   /** Updates whole MetaModel structure (MetaModel itself, DSLs...)
-   *
-   * @param id      MetaModel-Id
-   * @param request request
-   * @return result
-   */
+    *
+    * @param id      MetaModel-Id
+    * @param request request
+    * @return result
+    */
   def update(id: UUID)(request: SecuredRequest[ZetaEnv, JsValue]): Future[Result] = {
     info("updating concept: " + request.body.toString)
     request.body.validate(conceptFormat).fold(
@@ -102,13 +107,13 @@ class GraphicalDslRestApi @Inject()(
   }
 
   /** Deletes whole MetaModel incl. dsl definitions
-   *
-   * @param id      MetaModel-Id
-   * @param request request
-   * @return result
-   */
+    *
+    * @param id      MetaModel-Id
+    * @param request request
+    * @return result
+    */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    graphicalDslRepo.restrictedTo(request.identity.id).delete(id).map { _ =>
+    accessAuthorisationRepo.update(request.identity.id, _.revokeEntityAccess(sGdslProject, id)).map { _ =>
       Ok("")
     }.recover {
       case e: Exception => BadRequest(e.getMessage)
@@ -289,19 +294,19 @@ class GraphicalDslRestApi @Inject()(
   }
 
   /**
-   * Loads or generates the validator for a given meta model.
-   *
-   * The following HTTP status codes can be returned:
-   * * 200 OK - The validator was loaded from memory and is contained in the response.
-   * * 201 CREATED - The validator has been generated or regenerated and is contained in the response.
-   * * 409 CONFLICT - A validator was not yet generated, or could not be generated.
-   *
-   * @param id          ID of the meta model to load or generate the validator.
-   * @param generateOpt Force a (re)generation.
-   * @param get         Return a result body.
-   * @param request     The HTTP-Request.
-   * @return The validator.
-   */
+    * Loads or generates the validator for a given meta model.
+    *
+    * The following HTTP status codes can be returned:
+    * * 200 OK - The validator was loaded from memory and is contained in the response.
+    * * 201 CREATED - The validator has been generated or regenerated and is contained in the response.
+    * * 409 CONFLICT - A validator was not yet generated, or could not be generated.
+    *
+    * @param id          ID of the meta model to load or generate the validator.
+    * @param generateOpt Force a (re)generation.
+    * @param get         Return a result body.
+    * @param request     The HTTP-Request.
+    * @return The validator.
+    */
   def getValidator(id: UUID, generateOpt: Option[Boolean], get: Boolean)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedRead(id, request, (metaModelEntity: GdslProject) => {
 
@@ -333,6 +338,42 @@ class GraphicalDslRestApi @Inject()(
       }
 
     })
+  }
+
+
+  /** Duplicate a project.
+    *
+    * @param id      MetaModel-Id
+    * @param name    name of the duplicated project
+    * @param request request
+    * @return result
+    */
+  def duplicate(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    val repo = graphicalDslRepo.restrictedTo(request.identity.id)
+    (for {
+      existing <- repo.read(id)
+      _ <- repo.create(existing.copy(id = UUID.randomUUID, name = name))
+    } yield {
+      Ok("")
+    }).recover {
+      case e: Exception => BadRequest(e.getMessage)
+    }
+  }
+
+  /** Invite a user to a project.
+    *
+    * @param id      MetaModel-Id
+    * @param email   email of the user to invite
+    * @param request request
+    * @return result
+    */
+  def inviteUser(id: UUID, email: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
+    userRepo.readByEmail(email).map { user =>
+      accessAuthorisationRepo.update(user.id, _.grantEntityAccess(sGdslProject, id))
+      Ok("")
+    }.recover {
+      case e: Exception => BadRequest(e.getMessage)
+    }
   }
 
 }

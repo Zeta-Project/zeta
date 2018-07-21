@@ -111,11 +111,72 @@ import modelValidatorUtil from './modelValidatorUtil';
             });
         });
 
-        $(".export-project").click(function() {
-          if (window.metaModelId) {
-            const url = '/rest/v2/models/' + window.metaModelId + '/exportProject';
-            window.open(url);
-          }
+
+        let selectedProjectId = null;
+        $(".invite-to-project").click(function () {
+            selectedProjectId = this.dataset.metamodelId;
+            jQuery('#inviteModal').modal('show');
+        });
+
+        $("#inviteProjectName").on('input', () => {
+            const isValid = $("#inviteProjectName").val().trim().length !== 0;
+            $("#start-invite-btn").prop("disabled", !isValid);
+        });
+
+        $("#start-invite-btn").click(function () {
+            const metaModelId = selectedProjectId;
+            const email = $("#inviteProjectName").val().trim();
+            $.ajax({
+                type: 'GET',
+                url: `/rest/v2/invite-to-project/${metaModelId}/${email}`,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                success: () => {
+                    location.reload()
+                },
+                error: () => {
+                    alert("failed to invite the user to the project, probably there is no user with this email");
+                }
+            });
+        });
+
+        $(".duplicate-project").click(function () {
+            selectedProjectId = this.dataset.metamodelId;
+            jQuery('#duplicateModal').modal('show');
+        });
+
+        $("#duplicateProjectName").on('input', () => {
+            const isValid = $("#duplicateProjectName").val().trim().length !== 0;
+            $("#start-duplicate-btn").prop("disabled", !isValid);
+        });
+
+        $("#start-duplicate-btn").click(() => {
+            const metaModelId = selectedProjectId;
+            const name = $("#duplicateProjectName").val().trim();
+            $.ajax({
+                type: 'GET',
+                url: `/rest/v2/duplicate-project/${metaModelId}/${name}`,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                success: () => {
+                    location.reload()
+                },
+                error: () => {
+                    alert("failed to duplicate the project");
+                }
+            });
+        });
+
+
+        $(".export-project").click(function () {
+            if (window.metaModelId) {
+                const url = '/rest/v2/models/' + window.metaModelId + '/exportProject';
+                window.open(url);
+            }
         });
 
         $("#btnGenerator").click(function () {
