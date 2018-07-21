@@ -1,0 +1,14 @@
+@import de.htwg.zeta.codeGenerator.model.Entity
+
+@(periodStart: Entity)
+
+sealed trait PeriodInput extends PeriodModel {
+  private[generated] val periodStart: @{periodStart.name}Input
+
+  private[generated] def copy(periodStart: @{periodStart.name}Input = this.periodStart): PeriodInput = PeriodInputImpl(periodStart)
+
+}
+
+private[generated] case class PeriodInputImpl(
+  periodStart: @{periodStart.name}Input
+) extends PeriodInput
