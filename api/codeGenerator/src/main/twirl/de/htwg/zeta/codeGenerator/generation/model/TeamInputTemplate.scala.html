@@ -1,0 +1,13 @@
+@import de.htwg.zeta.codeGenerator.model.Entity
+
+@(entity: Entity)
+
+sealed trait TeamInput extends TeamModel {
+  private[generated] val teamStart: @{entity.name}Input
+
+  private[generated] def copy(teamStart: @{entity.name}Input = this.teamStart): TeamInput = TeamInputImpl(teamStart)
+}
+
+private[generated] case class TeamInputImpl(
+    teamStart: @{entity.name}Input
+) extends TeamInput
