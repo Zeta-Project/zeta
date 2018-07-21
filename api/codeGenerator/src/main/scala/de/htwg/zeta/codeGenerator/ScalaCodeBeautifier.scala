@@ -27,15 +27,17 @@ object ScalaCodeBeautifier extends Logging {
    * @param source   raw scala source
    * @return formatted scala source
    */
-  def format(fileName: String, source: String): String = try {
+  def format(fileName: String, source: String): String = {
     val strippedBreaks = source.replaceAll("[\r\n\\s]+", "\n")
-    ScalaFormatter.format(strippedBreaks, preferences).trim
-  } catch {
-    // catch exception to avoid failure on wrong generation
-    // TODO should be handled in future
-    case e: ScalaParserException =>
-      logger.error(s"failed beautifying $fileName", e)
-      source
+    try {
+      ScalaFormatter.format(strippedBreaks, preferences).trim
+    } catch {
+      // catch exception to avoid failure on wrong generation
+      // TODO should be handled in future
+      case e: ScalaParserException =>
+        logger.error(s"failed beautifying $fileName", e)
+        strippedBreaks
+    }
   }
 
 }
