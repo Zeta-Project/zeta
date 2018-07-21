@@ -144,4 +144,13 @@ trait TimedTaskRepository extends EntityRepository[TimedTask]
 
 trait SettingsRepository extends EntityRepository[Settings]
 
-trait UserRepository extends EntityRepository[User]
+trait UserRepository extends EntityRepository[User] {
+
+  /** Get a user by email
+    *
+    * @param email The email of the user
+    * @return Future containing the read entity
+    */
+  def readByEmail(email: String): Future[User]
+
+}

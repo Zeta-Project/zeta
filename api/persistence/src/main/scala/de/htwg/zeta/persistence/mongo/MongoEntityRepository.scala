@@ -4,7 +4,6 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import de.htwg.zeta.common.format.entity.AccessAuthorisationFormat
 import de.htwg.zeta.common.format.entity.BondedTaskFormat
 import de.htwg.zeta.common.format.entity.EventDrivenTaskFormat
@@ -29,7 +28,7 @@ import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.format.project.GraphicalDslReleaseFormat
 import de.htwg.zeta.common.format.project.MethodFormat
 import de.htwg.zeta.common.format.project.ReferenceFormat
-import de.htwg.zeta.common.models.entity.Entity
+import de.htwg.zeta.common.models.entity.{Entity, User}
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
 import de.htwg.zeta.persistence.general.EntityRepository
@@ -73,7 +72,7 @@ sealed abstract class MongoEntityRepository[E <: Entity](
     implicit val format: OFormat[E]
 )(implicit manifest: Manifest[E]) extends EntityRepository[E] {
 
-  private val collection: Future[BSONCollection] = for {
+  protected val collection: Future[BSONCollection] = for {
     col <- database.map(_.collection[BSONCollection](entityTypeName))
     _ <- col.create().recover { case _ => }
   } yield {
@@ -264,4 +263,10 @@ class MongoTimedTaskRepository @Inject()(
 class MongoUserRepository @Inject()(
     database: Future[DefaultDB]
 ) extends MongoEntityRepository(database, new UserFormat(sId = sMongoId))
-  with UserRepository
+  with UserRepository {
+
+  override def readByEmail(email: String): Future[User] = collection.flatMap { collection =>
+    collection.find(BSONDocument("email" -> email)).requireOne[JsObject].map(readPlayJson[User])
+  }
+
+}

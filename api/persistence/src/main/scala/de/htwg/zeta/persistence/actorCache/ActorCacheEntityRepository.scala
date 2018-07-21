@@ -7,14 +7,13 @@ import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 import scala.util.Failure
 import scala.util.Success
-
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.routing.ConsistentHashingPool
 import akka.routing.ConsistentHashingRouter.ConsistentHashMapping
 import akka.util.Timeout
-import de.htwg.zeta.common.models.entity.Entity
+import de.htwg.zeta.common.models.entity.{Entity, User}
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Create
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Delete
 import de.htwg.zeta.persistence.actorCache.EntityCacheActor.Read
@@ -49,7 +48,7 @@ sealed abstract class ActorCacheEntityRepository[E <: Entity](
     implicit val timeout: Timeout
 )(implicit manifest: Manifest[E]) extends EntityRepository[E] {
 
-  private def hashMapping: ConsistentHashMapping = {
+  protected def hashMapping: ConsistentHashMapping = {
     case Create(entity) => entity.id.hashCode
     case Read(id) => id.hashCode
     case Update(id, _) => id.hashCode
@@ -240,4 +239,16 @@ class ActorCacheUserRepository @Inject()(
     cacheDuration: FiniteDuration,
     timeout: Timeout
 ) extends ActorCacheEntityRepository(underlying, system, numberActorsPerEntityType, cacheDuration, timeout)
-  with UserRepository
+  with UserRepository {
+
+  /** Get a user by email
+    *
+    * @param email The email of the user
+    * @return Future containing the read entity
+    */
+  override def readByEmail(email: String): Future[User] = {
+    // TODO
+    Future.failed(new NotImplementedError)
+  }
+
+}
