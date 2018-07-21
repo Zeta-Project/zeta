@@ -47,7 +47,7 @@ object GdslInstanceToZetaModel extends Logging {
       period <- updateReferences(first.period, state)
     } yield {
       val anchor = first.copy(team = team, period = period)
-      val generated = KlimaCodeGenerator.generateAnchor(anchor)
+      val generated = KlimaCodeGenerator.generate(anchor)
       transformGeneratedFolder(gdslInstance.id, generated, "")
     }
 
@@ -130,7 +130,9 @@ object GdslInstanceToZetaModel extends Logging {
     val buff = ListBuffer[File]()
     def rec(current: GeneratedFolder, pre: String): Unit = {
       current.files.foreach { f =>
-        buff += File(id, s"$pre/${f.name}.${f.fileType}", f.content)
+        val fileName = s"$pre/${f.name}.${f.fileType}"
+        val formattedCont = ScalaCodeBeautifier.format(fileName, f.content)
+        buff += File(id, fileName, formattedCont)
       }
       current.children.foreach { f =>
         rec(f, s"$pre/${f.name}")
