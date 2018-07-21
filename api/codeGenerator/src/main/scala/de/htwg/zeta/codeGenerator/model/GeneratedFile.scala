@@ -5,3 +5,7 @@ case class GeneratedFile(
     fileType: String,
     content: String
 )
+
+object GeneratedFile {
+  val scala = "scala"
+}
