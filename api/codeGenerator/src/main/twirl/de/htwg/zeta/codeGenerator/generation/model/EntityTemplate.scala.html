@@ -1,0 +1,59 @@
+@import de.htwg.zeta.codeGenerator.model.Entity
+@import de.htwg.zeta.codeGenerator.model.Value
+
+@(entity: Entity)
+
+trait @{entity.name} {
+  @links("val ", "", false)
+  val staticValues: @(entity.name)StaticValues
+  val inputValues: @(entity.name)InputValues
+}
+
+  case class @(entity.name)Input(
+  @links("", "Input")
+
+  staticValues: @(entity.name)StaticValues,
+  inputValues: @(entity.name)InputValues
+  ) extends @{entity.name}
+  
+  case class @(entity.name)Output(
+  @links("", "Output")
+
+  staticValues: @(entity.name)StaticValues,
+  inputValues: @(entity.name)InputValues,
+  outputValues: @(entity.name)OutputValues
+  ) extends @{entity.name} {
+    def toInput(): @{entity.name}Input = @{entity.name}Input(
+    @for(link <- entity.links) {
+    @{link.entity.name}.toInput(),
+    }
+    @*TODO add mapped links*@
+    staticValues,
+    inputValues
+    )
+  }
+
+  case class @(entity.name)StaticValues(
+    @valuesToString(entity.fixValues)
+  )
+  case class @(entity.name)InputValues(
+    @valuesToString(entity.inValues)
+  )
+  case class @(entity.name)OutputValues(
+  @valuesToString(entity.outValues)
+)
+
+@links(prefix: String, typePost: String, separator: Boolean = true) = {
+  @for((link, idx) <- entity.links.zipWithIndex) {
+    @{prefix}@{link.name}: @{link.entity.name}@typePost@if(separator && idx != entity.links.size-1){,}
+  }
+  @*TODO add mapped links*@
+}
+
+@valuesToString(values: List[Value]) = {
+@for((value, idx) <- values.zipWithIndex) {
+@singleValToString(value)@if(idx != values.size-1){,}
+}
+}
+
+@singleValToString(value: Value) = {@value.name: @value.valueType}
