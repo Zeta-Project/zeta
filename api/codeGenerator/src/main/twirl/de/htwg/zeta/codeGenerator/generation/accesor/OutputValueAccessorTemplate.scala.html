@@ -1,0 +1,18 @@
+
+
+@import de.htwg.zeta.codeGenerator.model.AnchorEnum
+@(start: AnchorEnum)
+
+trait @{start}OutputValueAccessor[R] {
+def get(model: @{start}Output): R
+}
+
+object @{start}OutputValueAccessor {
+
+private class @{start}OutputValueAccessorImpl[R](private val getter: @{start}Output => R) extends @{start}OutputValueAccessor[R] {
+override def get(model: @{start}Output): R = getter(model)
+}
+
+def apply[R](getter: @{start}Output => R): @{start}OutputValueAccessor[R] = new @{start}OutputValueAccessorImpl[R](getter)
+
+}

@@ -1,0 +1,29 @@
+
+@()
+
+@*todo map value*@
+
+/*
+
+trait MapValueAccessor[E, +A] {
+def apply(key: E): A
+private[generated] def update[B >: A](key: E)(func: A => B): MapValueAccessor[E, B]
+private[generated] def map[B](func: A => B): MapValueAccessor[E, B]
+}
+
+object MapValueAccessor {
+
+private class MapValueAccessorImpl[E, A](private val map: Map[E, A]) extends MapValueAccessor[E, A] {
+override def apply(key: E): A = map(key) // map is filled with all possibilities of E
+override def update[B >: A](key: E)(func: A => B) = new MapValueAccessorImpl[E , B](map.updated(key, func(map(key))))
+override def map[B](func: A => B) = new MapValueAccessorImpl(map.mapValues(func))
+}
+
+def apply[E, A](set: Set[E], supplier: E => A): MapValueAccessor[E, A] = {
+val map = set.toStream.map(e => (e, supplier(e))).toMap
+new MapValueAccessorImpl[E, A](map)
+}
+
+}
+
+*/
