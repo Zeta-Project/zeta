@@ -1,0 +1,80 @@
+@import de.htwg.zeta.codeGenerator.model.Entity
+@import de.htwg.zeta.codeGenerator.model.Link
+@import de.htwg.zeta.codeGenerator.model.Value
+@import de.htwg.zeta.codeGenerator.model.AnchorEnum
+
+@import de.htwg.zeta.codeGenerator.model.MapLink
+@import de.htwg.zeta.codeGenerator.model.ReferenceLink
+@(entity: Entity, startType: AnchorEnum, fileName: String)
+
+@name = @{entity.name}
+
+class @{fileName}(
+private val getModel: (@{startType}Model) => @name,
+private val getOutput: (@{startType}Output) => @{name}Output,
+private val update: (@{startType}Input, ${name}Input => @{name}Input) => @{startType}Input
+) {
+
+private[generated] def getStaticValues(model: @{startType}Model): @{name}StaticValues = getModel(model).staticValues
+
+private[generated] def getInputValues(model: @{startType}Model): @{name}InputValues = getModel(model).inputValues
+
+private[generated] def getOutputValues(model: @{startType}Output): @{name}OutputValues = getOutput(model).outputValues
+
+private def updateInput[V](func: (@{name}InputValues, V) => @{name}InputValues)(input: @{startType}Input, v: V): @{startType}Input = {
+update(input, m => m.copy(inputValues = func(m.inputValues, v)))
+}
+
+@allLinks
+
+@allMappedLinks
+
+@allRefLinks
+
+@allFixValues
+
+@allInValues
+
+@allOutValues
+
+}
+
+
+@allLinks = {// links:@for(link <- entity.links){@singleLink(link)}}
+@singleLink(link: Link) = {@con = @{link.name}
+val $con = new @{link.entity.name}@{startType}Accessor(getModel(_).@con, getOutput(_).$con, (i, f) => update(i, m => m.copy(@con = f(m.@con))))
+}
+
+@allMappedLinks = {// mapped links:@for(link <- entity.maps){@singleMapLink(link)}}
+@singleMapLink(link: MapLink) = {
+@* TODO MAPLINK
+  @con = @{link.name}
+
+  private val @{con}Map: Map[@{link.key}, @{link.entity.name}@{startType}Accessor] = @{link.enum.elementSet}.toList.map{e =>
+  val accessor = new @{link.entity.name}@{startType}Accessor(getModel(_).@{con}(e), getOutput(_).@{con}(e), (i, f) => update(i, m => m.copy(@{con} = m.@{con}.update(e)(f)) ))
+  (e, accessor)
+  }.toMap
+
+  def @{con}(key: @{link.key}) = @{con}Map(key)
+  *@
+}
+
+@allRefLinks = {// reference links:@for(link <- entity.refs){@singleRefLink(link)}}
+@singleRefLink(link: ReferenceLink) = {
+lazy val @{link.name} = Accessor.@{link.entityPath}
+}
+
+@allFixValues = {// fix values:@for(value <- entity.fixValues){@singleFixValue(value, value.name)}}
+@singleFixValue(value: Value, vname: String) = {
+val @{vname} = @{startType}ValueAccessor(getStaticValues(_).@{vname})
+}
+
+@allInValues = {// in values:@for(value <- entity.fixValues){@singleInValue(value, value.name)}}
+@singleInValue(value: Value, vname: String) = {
+  val @{vname}: @{startType}InputValueAccessor[@{value.valueType}] = @{startType}InputValueAccessor(getInputValues(_).@{vname})(updateInput((i, v) => i.copy(@{vname} = v)))
+}
+
+@allOutValues = {// out values:@for(value <- entity.fixValues){@singleOutValue(value, value.name)}}
+@singleOutValue(value: Value, vname: String) = {
+  val @{vname} = @{startType}OutputValueAccessor(getOutputValues(_).@{vname})
+}
