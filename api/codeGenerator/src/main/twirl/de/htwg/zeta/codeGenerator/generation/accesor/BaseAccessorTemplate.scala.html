@@ -1,0 +1,10 @@
+
+@import de.htwg.zeta.codeGenerator.generation.KlimaCodeGenerator
+@import de.htwg.zeta.codeGenerator.model.Anchor
+
+@(start: Anchor, teamPackage: String, periodPackage: String)
+
+object Accessor {
+val @{KlimaCodeGenerator.teamConst} = new @{start.team.name}TeamAccessor(_.teamStart, _.teamStart, (i, f) => i.copy(f(i.teamStart)))
+val @{KlimaCodeGenerator.periodConst} = new @{start.period.name}PeriodAccessor(_.periodStart, _.periodStart, (i, f) => i.copy(f(i.periodStart)))
+}
