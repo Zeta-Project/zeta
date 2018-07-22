@@ -7,6 +7,7 @@ package de.htwg.zeta.codeGenerator.model
  * @param period representing PeriodAnchor
  */
 case class Anchor(
+    name: String,
     team: Entity,
     period: Entity
 )

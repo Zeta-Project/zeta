@@ -21,7 +21,7 @@ class KlimaCodeGeneratorTest extends FreeSpec {
         val depUchLink = Link("depUchLink", dep)
         val myEntity = Entity("Krankenhaus", Nil, Nil, Nil, List(depChLink, depUchLink), Nil, Nil)
         val priodEntity = Entity("PeriodEntity", Nil, Nil, Nil, Nil, Nil, Nil)
-        val anchor = Anchor(myEntity, priodEntity)
+        val anchor = Anchor("klima", myEntity, priodEntity)
         println(KlimaCodeGenerator.generate(anchor))
       }
 

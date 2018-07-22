@@ -93,7 +93,7 @@ object GdslInstanceToZetaModel extends Logging {
       teamEntity <- extractEntity(teamNode, state, "team")
       periodEntity <- extractEntity(periodNode, state, "period")
     } yield {
-      model.Anchor(teamEntity, periodEntity)
+      model.Anchor("klima", teamEntity, periodEntity)
     }
   }
 
