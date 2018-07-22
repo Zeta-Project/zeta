@@ -8,6 +8,7 @@ import scala.collection.immutable.Seq
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
+import de.htwg.zeta.codeGenerator.generation.KlimaCodeGenerator
 import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.model.GeneratedFolder
