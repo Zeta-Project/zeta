@@ -1,5 +1,6 @@
 package de.htwg.zeta.codeGenerator
 
+import de.htwg.zeta.codeGenerator.generation.KlimaCodeGenerator
 import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.model.Link
@@ -20,8 +21,8 @@ class KlimaCodeGeneratorTest extends FreeSpec {
         val depChLink = Link("depChLink", dep)
         val depUchLink = Link("depUchLink", dep)
         val myEntity = Entity("Krankenhaus", Nil, Nil, Nil, List(depChLink, depUchLink), Nil, Nil)
-        val priodEntity = Entity("PeriodEntity", Nil, Nil, Nil, Nil, Nil, Nil)
-        val anchor = Anchor("klima", myEntity, priodEntity)
+        val periodEntity = Entity("PeriodEntity", Nil, Nil, Nil, Nil, Nil, Nil)
+        val anchor = Anchor("klima", myEntity, periodEntity)
         println(KlimaCodeGenerator.generate(anchor))
       }
 
