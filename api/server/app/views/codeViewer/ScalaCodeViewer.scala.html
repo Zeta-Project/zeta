@@ -91,7 +91,9 @@
                         </div>
                     }
                     case Right(file) => {
-                        <a style="padding-left: @{dirOrFile._2 * 10}px" onclick="showEditor('@file.name.replace(".scala", "")');" class="file-element">
+                        <a style="padding-left: @{dirOrFile._2 * 10}px"
+                        onclick="showEditor('@files.find(_.content == file.content).get.name.replace(".scala", "").replace("/", "_").replace("\\", "_")')"
+                        class="file-element">
                           <span class="glyphicon glyphicon-file"></span>
                           @file.name
                         </a>
@@ -102,9 +104,9 @@
             </div>
 
             @for(file <- files.sortBy(_.name)) {
-                <div id="editor@file.name.replace(".scala", "")" class="editor" style="display: none">@file.content</div>
+                <div id="editor@file.name.replace(".scala", "").replace("/", "_").replace("\\", "_")" class="editor" style="display: none">@file.content</div>
                 <script>
-                    initEditor('@file.name.replace(".scala", "")');
+                    initEditor('@file.name.replace(".scala", "").replace("/", "_").replace("\\", "_")');
                 </script>
             }
 
