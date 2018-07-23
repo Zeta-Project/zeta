@@ -41,9 +41,9 @@ update(input, m => m.copy(inputValues = func(m.inputValues, v)))
 
 
 @allLinks = {// links:@for(link <- entity.links){@singleLink(link)}}
-@singleLink(link: Link) = {@con = @{link.name}
-val $con = new @{link.entity.name}@{startType}Accessor(getModel(_).@con, getOutput(_).$con, (i, f) => update(i, m => m.copy(@con = f(m.@con))))
-}
+@singleLink(link: Link) = { @defining(s"${link.name}"){ con =>
+val @{con} = new @{link.entity.name}@{startType}Accessor(getModel(_).@con, getOutput(_).$con, (i, f) => update(i, m => m.copy(@con = f(m.@con))))
+}}
 
 @allMappedLinks = {// mapped links:@for(link <- entity.maps){@singleMapLink(link)}}
 @singleMapLink(link: MapLink) = {
