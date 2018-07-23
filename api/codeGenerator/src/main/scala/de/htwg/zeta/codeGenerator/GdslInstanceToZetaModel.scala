@@ -198,9 +198,9 @@ object GdslInstanceToZetaModel extends Logging {
       fixOpt <- node.attributeValues.get("fix").map(filterTripleDot).toRight("no Fix values")
       inOpt <- node.attributeValues.get("in").map(filterTripleDot).toRight("no in values")
       outOpt <- node.attributeValues.get("out").map(filterTripleDot).toRight("no out values")
-      fixValues <- mapAllOrNone(fixOpt)(extractSingleValue(_).toRight("multiple values for fix values"))
-      inValues <- mapAllOrNone(inOpt)(extractSingleValue(_).toRight("multiple values for in values"))
-      outValues <- mapAllOrNone(outOpt)(extractSingleValue(_).toRight("multiple values for out values"))
+      fixValues <- mapAllOrNone(fixOpt)(x => extractSingleValue(x).toRight(s"wrong fixValue format: $x in $name"))
+      inValues <- mapAllOrNone(inOpt)(x => extractSingleValue(x).toRight(s"wrong inValue format: $x in $name"))
+      outValues <- mapAllOrNone(outOpt)(x => extractSingleValue(x).toRight(s"wrong outValue format: $x in $name"))
     } yield {
       val e = Entity(name.trim, fixValues, inValues, outValues, links, mapLinks, refLinks)
       state.entityIdCache(node.name) = e
