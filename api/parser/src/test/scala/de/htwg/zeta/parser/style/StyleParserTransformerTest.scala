@@ -115,7 +115,7 @@ class StyleParserTransformerTest extends FreeSpec with Matchers {
         result.isSuccess shouldBe false
         val errors = result.toEither.left.get
         errors.size shouldBe 1
-        errors should contain("The following styles define a graph circle with its parent styles: style1, style2, style3")
+        errors should contain("The following styles define a cyclic graph with its parent styles: style1, style2, style3")
       }
     }
     "inherit style values" - {
