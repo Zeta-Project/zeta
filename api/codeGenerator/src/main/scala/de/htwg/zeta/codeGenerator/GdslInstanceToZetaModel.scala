@@ -48,7 +48,7 @@ object GdslInstanceToZetaModel extends Logging {
       period <- updateReferences(first.period, state)
     } yield {
       val anchor = first.copy(team = team, period = period)
-      val generated = KlimaCodeGenerator.generate(anchor)
+      val generated = KlimaCodeGenerator.generate(anchor, "de", "htwg")
       transformGeneratedFolder(gdslInstance.id, generated, "")
     }
 
