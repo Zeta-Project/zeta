@@ -8,7 +8,6 @@ import com.google.inject.Provides
 import com.typesafe.config.ConfigFactory
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedFilePersistence
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedLogRepository
 import de.htwg.zeta.persistence.general.AccessAuthorisationRepository
 import de.htwg.zeta.persistence.general.BondedTaskRepository
@@ -64,7 +63,6 @@ class PersistenceModule extends AbstractModule with ScalaModule with Logging {
     bind[TokenCache].to[TransientTokenCache]
     bind[AccessRestrictedFilePersistence]
     bind[AccessRestrictedGdslProjectRepository]
-    bind[AccessRestrictedGraphicalDslInstanceRepository]
     bind[AccessRestrictedLogRepository]
   }
 

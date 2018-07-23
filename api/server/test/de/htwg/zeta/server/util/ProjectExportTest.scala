@@ -5,19 +5,17 @@ import java.util.UUID
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.Future
-
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
-import de.htwg.zeta.persistence.general.EntityRepository
+import de.htwg.zeta.persistence.general.{EntityRepository, GraphicalDslInstanceRepository}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Matchers
 import org.scalatest.FreeSpec
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json.JsObject
 
 class ProjectExportTest extends FreeSpec with Matchers with MockFactory {
@@ -33,9 +31,7 @@ class ProjectExportTest extends FreeSpec with Matchers with MockFactory {
       val instance = new GraphicalDslInstance(instanceId, "model", projectId, Nil, Nil, Nil, Map.empty, Nil, "")
 
       // create stub for instance repo
-      val modelEntityRepo = stub[AccessRestrictedGraphicalDslInstanceRepository]
-      val instanceRepo = stub[EntityRepository[GraphicalDslInstance]]
-      (modelEntityRepo.restrictedTo _) when (userId) returns (instanceRepo)
+      val instanceRepo = stub[GraphicalDslInstanceRepository]
       (instanceRepo.readAllIds _) when() returns (Future(Set(instanceId)))
       (instanceRepo.read _) when (instanceId) returns (Future(instance))
 
@@ -55,7 +51,7 @@ class ProjectExportTest extends FreeSpec with Matchers with MockFactory {
       (graphicalDslInstanceFormat.writes _) when (instance) returns (JsObject.empty)
 
       // test
-      val projectExporter = new ProjectExporter(modelEntityRepo, gdslProjectRepository, gdslProjectFormat, graphicalDslInstanceFormat)
+      val projectExporter = new ProjectExporter(instanceRepo, gdslProjectRepository, gdslProjectFormat, graphicalDslInstanceFormat)
       val future = projectExporter.exportProject(projectId, userId)
       val result = Await.result(future, Duration.Inf)
       result.projectName shouldBe project.name

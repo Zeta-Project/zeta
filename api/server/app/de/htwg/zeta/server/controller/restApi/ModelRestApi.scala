@@ -6,7 +6,6 @@ import java.util.zip.ZipFile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
@@ -15,8 +14,8 @@ import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.model.NodeFormat
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GdslProjectRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
@@ -41,8 +40,8 @@ import play.api.mvc.Results
  * REST-ful API for model definitions
  */
 class ModelRestApi @Inject()(
-    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
-    metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
+    modelEntityRepo: GraphicalDslInstanceRepository,
+    metaModelEntityRepo: GdslProjectRepository,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat,
     nodeFormat: NodeFormat,
     edgeFormat: EdgeFormat,
@@ -52,7 +51,7 @@ class ModelRestApi @Inject()(
 
   /** Lists all models for the requesting user, provides HATEOAS links */
   def showForUser()(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    val repo = modelEntityRepo.restrictedTo(request.identity.id)
+    val repo = modelEntityRepo
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read))
     }.map(list =>
@@ -69,7 +68,7 @@ class ModelRestApi @Inject()(
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      model => modelEntityRepo.restrictedTo(request.identity.id).create(model).map { graphicalDslInstance =>
+      model => modelEntityRepo.create(model).map { graphicalDslInstance =>
         Ok(graphicalDslInstanceFormat.writes(graphicalDslInstance))
       }).recover {
       case e: Exception => Results.BadRequest(e.getMessage)
@@ -85,14 +84,14 @@ class ModelRestApi @Inject()(
         faulty.foreach(error(_))
         Future.successful(BadRequest(JsError.toJson(faulty)))
       },
-      metaModelId => metaModelEntityRepo.restrictedTo(request.identity.id).read(metaModelId).flatMap { _ =>
+      metaModelId => metaModelEntityRepo.read(metaModelId).flatMap { _ =>
         request.body.validate(graphicalDslInstanceFormat.withId(id)).fold(
           faulty => {
             faulty.foreach(error(_))
             Future.successful(BadRequest(JsError.toJson(faulty)))
           },
           graphicalDslInstance => {
-            modelEntityRepo.restrictedTo(request.identity.id).update(id, _ => graphicalDslInstance).map { updated =>
+            modelEntityRepo.update(id, _ => graphicalDslInstance).map { updated =>
               Ok(graphicalDslInstanceFormat.writes(updated))
             }.recover {
               case e: Exception => Results.BadRequest(e.getMessage)
@@ -158,7 +157,7 @@ class ModelRestApi @Inject()(
 
   /** deletes a whole model */
   def delete(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
-    modelEntityRepo.restrictedTo(request.identity.id).delete(id).map(_ => Ok("")).recover {
+    modelEntityRepo.delete(id).map(_ => Ok("")).recover {
       case e: Exception => BadRequest(e.getMessage)
     }
   }
@@ -179,7 +178,7 @@ class ModelRestApi @Inject()(
   def getValidation(id: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     protectedReadFuture(id, request, (modelEntity: GraphicalDslInstance) => {
 
-      metaModelEntityRepo.restrictedTo(request.identity.id).read(modelEntity.graphicalDslId).map(metaModelEntity => {
+      metaModelEntityRepo.read(modelEntity.graphicalDslId).map(metaModelEntity => {
         metaModelEntity.validator match {
           case Some(validatorText) => ValidatorGenerator.create(validatorText) match {
             case Some(validator) =>
@@ -199,7 +198,7 @@ class ModelRestApi @Inject()(
 
   /** A helper method for less verbose reads from the database */
   private def protectedReadFuture[A](id: UUID, request: SecuredRequest[ZetaEnv, A], trans: GraphicalDslInstance => Future[Result]): Future[Result] = {
-    modelEntityRepo.restrictedTo(request.identity.id).read(id).flatMap(model => {
+    modelEntityRepo.read(id).flatMap(model => {
       trans(model)
     }).recover {
       case e: Exception =>
@@ -215,8 +214,8 @@ class ModelRestApi @Inject()(
 
   def getScalaCodeViewer(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     for {
-      graphicalDslInstance <- modelEntityRepo.restrictedTo(request.identity.id).read(modelId)
-      metaModelEntity <- metaModelEntityRepo.restrictedTo(request.identity.id).read(graphicalDslInstance.graphicalDslId)
+      graphicalDslInstance <- modelEntityRepo.read(modelId)
+      metaModelEntity <- metaModelEntityRepo.read(graphicalDslInstance.graphicalDslId)
     } yield {
       val files = experimental.ScalaCodeGenerator.generate(metaModelEntity.concept, graphicalDslInstance).toList
       Ok(views.html.codeViewer.ScalaCodeViewer(files))
@@ -225,8 +224,8 @@ class ModelRestApi @Inject()(
 
   private def generateSourceCodeFiles(modelId: UUID, userId: UUID) = {
     for {
-      graphicalDslInstance <- modelEntityRepo.restrictedTo(userId).read(modelId)
-      metaModelEntity <- metaModelEntityRepo.restrictedTo(userId).read(graphicalDslInstance.graphicalDslId)
+      graphicalDslInstance <- modelEntityRepo.read(modelId)
+      metaModelEntity <- metaModelEntityRepo.read(graphicalDslInstance.graphicalDslId)
     } yield {
       val projectName = metaModelEntity.name
       val modelName = graphicalDslInstance.name

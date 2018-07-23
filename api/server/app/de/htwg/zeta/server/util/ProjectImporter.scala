@@ -7,13 +7,12 @@ import java.util.zip.ZipFile
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Try
-
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import javax.inject.Inject
 import org.apache.commons.io.IOUtils
 import play.api.libs.json.JsSuccess
@@ -22,7 +21,7 @@ import play.api.libs.json.Reads
 
 
 class ProjectImporter @Inject()(
-    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
+    modelEntityRepo: GraphicalDslInstanceRepository,
     gdslProjectRepository: AccessRestrictedGdslProjectRepository,
     gdslProjectFormat: GdslProjectFormat,
     graphicalDslInstanceFormat: GraphicalDslInstanceFormat
@@ -30,7 +29,7 @@ class ProjectImporter @Inject()(
 
   def importProject(zipFile: ZipFile, userId: UUID, newProjectName: String): Future[Boolean] = {
     val metaModelRepo = gdslProjectRepository.restrictedTo(userId)
-    val modelRepo = modelEntityRepo.restrictedTo(userId)
+    val modelRepo = modelEntityRepo
 
     val maybeProject =
       unzip(zipFile, "project.json")
