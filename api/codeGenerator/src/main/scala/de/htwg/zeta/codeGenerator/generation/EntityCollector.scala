@@ -4,8 +4,9 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 
 import de.htwg.zeta.codeGenerator.model.Entity
+import grizzled.slf4j.Logging
 
-object EntityCollector {
+object EntityCollector extends Logging {
 
 
   @inline private def concatList[A, B](startList: List[A], addList: List[B])(toA: B => A): List[A] = {
@@ -23,7 +24,7 @@ object EntityCollector {
       case Nil =>
       case entity :: tail =>
         map.get(entity.name) match {
-          case Some(_) => // already existing
+          case Some(_) => /* already existing */ rec(tail)
           case None =>
             map(entity.name) = entity
             val listWithLinks = concatList(tail, entity.links)(_.entity)
