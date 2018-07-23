@@ -1,0 +1,61 @@
+ @import de.htwg.zeta.codeGenerator.model.Entity
+ @import de.htwg.zeta.codeGenerator.model.Value
+
+@(entity: Entity, defValue: String)
+
+@name = @{entity.name}
+
+trait @{name}@{defValue} {
+
+private[defaultValue] def build(): @{name}Output = @{name}Output(
+@{connectionCalls}
+buildStaticValue(),
+buildInputValue(),
+buildOutputValue()
+)
+
+private def buildStaticValue(): @{name}StaticValues = @{name}StaticValues({@calls(entity.fixValues)})
+
+private def buildInputValue(): @{name}InputValues = @{name}InputValues({@calls(entity.inValues)})
+
+private def buildOutputValue(): @{name}OutputValues = @{name}OutputValues({@calls(entity.outValues)})
+
+// connections:
+@{connectionDefs}
+
+// values:
+@{valueDefs}
+
+}
+
+@connectionCalls = {
+  @for(link <- entity.links){
+    get@{link.name.capitalize}().build(),
+  }
+  @*TODO insert mapped calls here*@
+}
+
+@calls(list: List[Value]) = {
+@for((value, idx) <- list.zipWithIndex){
+  get@{value.name.capitalize}()@if(idx != list.size){,}
+}
+}
+
+@connectionDefs = {
+@for(link <- entity.links){
+  protected def get@{link.name.capitalize}(): @{link.entity.name}@{defValue}
+}
+  @*TODO insert mapped definitions here*@
+}
+
+@valueDefs = {
+  @singleValueDef(entity.fixValues)
+  @singleValueDef(entity.inValues)
+  @singleValueDef(entity.outValues)
+}
+
+@singleValueDef(list: List[Value]) = {
+@for(value <- list){
+  protected def get@{value.name.capitalize}(): @{value.valueType}
+}
+}

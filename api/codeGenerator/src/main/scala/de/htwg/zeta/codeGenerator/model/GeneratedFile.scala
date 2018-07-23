@@ -8,4 +8,6 @@ case class GeneratedFile(
 
 object GeneratedFile {
   val scala = "scala"
+
+  def scalaFile(name: String, content: String): GeneratedFile = GeneratedFile(name, scala, content)
 }
