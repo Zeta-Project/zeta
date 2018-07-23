@@ -49,6 +49,7 @@
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+        <link rel="icon" type="image/png" href="@routes.ScalaRoutes.getStaticFiles("images/favicon.png")">
         <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("code-editor-simple.bundle.css")">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("code-editor-simple.bundle.js")"></script>
@@ -84,10 +85,16 @@
               @for(dirOrFile <- buildDirectoryStructure(files)) {
                  @dirOrFile._1 match {
                     case Left(dir) => {
-                        <div style="background: #494c41; padding-left: @{dirOrFile._2 * 10}px">@dir</div>
+                        <div style="padding-left: @{dirOrFile._2 * 10}px" class="folder-element">
+                          <span class="glyphicon glyphicon-folder-open"></span>
+                          @dir
+                        </div>
                     }
                     case Right(file) => {
-                        <a style="display: block; padding-left: @{dirOrFile._2 * 10}px" onclick="showEditor('@file.name.replace(".scala", "")');">@file.name</a>
+                        <a style="padding-left: @{dirOrFile._2 * 10}px" onclick="showEditor('@file.name.replace(".scala", "")');" class="file-element">
+                          <span class="glyphicon glyphicon-file"></span>
+                          @file.name
+                        </a>
                     }
                  }
 
