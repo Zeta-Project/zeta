@@ -39,7 +39,10 @@ object GdslInstanceToZetaModel extends Logging {
       entityIdCache: mutable.Map[String, Entity],
       entityNameCache: mutable.Map[String, Entity],
       nodePath: mutable.Map[String, String]
-  )
+  ) {
+    def getEdge(key: String): Either[String, EdgeInstance] = edges.get(key).toRight(s"no edge for key: $key")
+    def getNode(key: String): Either[String, NodeInstance] = nodes.get(key).toRight(s"no node for key: $key")
+  }
 
   def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Either[String, List[File]] = {
     for {
@@ -64,7 +67,7 @@ object GdslInstanceToZetaModel extends Logging {
     }
     val nodesWithoutAnchors = gdslInstance.nodes.filterNot { n => n.className == teamAnchor || n.className == periodAnchor }
     for {
-      namedPairs <- mapAllOrNone(nodesWithoutAnchors)(n => extractName(n).map(n.name -> _)).toRight("node without Name")
+      namedPairs <- mapAllOrNone(nodesWithoutAnchors)(n => extractName(n).map(n.name -> _).toRight("node without Name"))
       // TODO check valid name
       allNames = namedPairs.map(_._2)
       idToName <- handleDuplicates(allNames, "nodes")(namedPairs.toMap)
@@ -92,8 +95,8 @@ object GdslInstanceToZetaModel extends Logging {
       periodOut <- state.edges.get(periodOutId).toRight("wrong id")
       teamNode <- state.nodes.get(teamOut.targetNodeName).toRight("wrong id")
       periodNode <- state.nodes.get(periodOut.targetNodeName).toRight("wrong id")
-      teamEntity <- extractEntity(teamNode, state, "team").toRight("failed to extract team entity")
-      periodEntity <- extractEntity(periodNode, state, "period").toRight("failed to extract period entity")
+      teamEntity <- extractEntity(teamNode, state, "team")
+      periodEntity <- extractEntity(periodNode, state, "period")
     } yield {
       state.nodePath(teamNode.name) = "team"
       state.nodePath(periodNode.name) = "period"
@@ -167,13 +170,13 @@ object GdslInstanceToZetaModel extends Logging {
     expectOneElem(s).collect { case StringValue(n) => n.trim }
   }
 
-  private def mapAllOrNone[E, R](seq: Seq[E])(map: E => Option[R]): Option[List[R]] = {
+  private def mapAllOrNone[E, R](seq: Seq[E])(map: E => Either[String, R]): Either[String, List[R]] = {
     val buff = ListBuffer[R]()
-    @tailrec def rek(s: List[E]): Option[List[R]] = s match {
-      case Nil => Some(buff.result())
+    @tailrec def rek(s: List[E]):  Either[String, List[R]]  = s match {
+      case Nil => Right(buff.result())
       case head :: tail => map(head) match {
-        case None => None
-        case Some(r) =>
+        case Left(msg) => Left(msg)
+        case Right(r) =>
           buff += r
           rek(tail)
       }
@@ -181,10 +184,10 @@ object GdslInstanceToZetaModel extends Logging {
     rek(seq.toList)
   }
 
-  private def extractEntity(node: NodeInstance, state: GDSLState, path: String): Option[Entity] = {
-    def create = for {
-      name <- node.attributeValues.get("name").flatMap(extractOneStringElem)
-      edges <- mapAllOrNone(node.outputEdgeNames)(en => state.edges.get(en))
+  private def extractEntity(node: NodeInstance, state: GDSLState, path: String): Either[String, Entity] = {
+    def create(): Either[String, Entity] = for {
+      name <- node.attributeValues.get("name").flatMap(extractOneStringElem).toRight("no node name")
+      edges <- mapAllOrNone(node.outputEdgeNames)(en => state.edges.get(en).toRight(s"no"))
       // names are from shape dsl
       linkRef = edges.filter("Link" == _.referenceName)
       mapRef = edges.filter("Map" == _.referenceName) // this is not yet defined in shape
@@ -192,19 +195,22 @@ object GdslInstanceToZetaModel extends Logging {
       links <- mapAllOrNone(linkRef)(lr => extractLink(lr, state, path))
       mapLinks <- mapAllOrNone(mapRef)(lr => extractMapLink(lr, state))
       refLinks <- mapAllOrNone(refRef)(lr => extractReferenceLink(lr, state))
-      fixOpt <- node.attributeValues.get("fix").map(filterTripleDot)
-      inOpt <- node.attributeValues.get("in").map(filterTripleDot)
-      outOpt <- node.attributeValues.get("out").map(filterTripleDot)
-      fixValues <- mapAllOrNone(fixOpt)(extractSingleValue)
-      inValues <- mapAllOrNone(inOpt)(extractSingleValue)
-      outValues <- mapAllOrNone(outOpt)(extractSingleValue)
+      fixOpt <- node.attributeValues.get("fix").map(filterTripleDot).toRight("no Fix values")
+      inOpt <- node.attributeValues.get("in").map(filterTripleDot).toRight("no in values")
+      outOpt <- node.attributeValues.get("out").map(filterTripleDot).toRight("no out values")
+      fixValues <- mapAllOrNone(fixOpt)(extractSingleValue(_).toRight("multiple values for fix values"))
+      inValues <- mapAllOrNone(inOpt)(extractSingleValue(_).toRight("multiple values for in values"))
+      outValues <- mapAllOrNone(outOpt)(extractSingleValue(_).toRight("multiple values for out values"))
     } yield {
       val e = Entity(name.trim, fixValues, inValues, outValues, links, mapLinks, refLinks)
       state.entityIdCache(node.name) = e
       e
     }
 
-    state.entityIdCache.get(node.name).orElse(create)
+    state.entityIdCache.get(node.name) match {
+      case None => create()
+      case Some(e) => Right(e)
+    }
   }
 
   private def filterTripleDot(list: List[AttributeValue]): List[AttributeValue] = {
@@ -214,10 +220,10 @@ object GdslInstanceToZetaModel extends Logging {
     }
   }
 
-  private def extractLink(edge: EdgeInstance, state: GDSLState, path: String): Option[Link] = {
+  private def extractLink(edge: EdgeInstance, state: GDSLState, path: String): Either[String, Link] = {
     for {
-      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem)
-      node <- state.nodes.get(edge.targetNodeName)
+      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem).toRight("no name for Link")
+      node <- state.nodes.get(edge.targetNodeName).toRight("link references nothing")
       entityPath = s"$path.$name"
       entity <- extractEntity(node, state, entityPath)
     } yield {
@@ -229,20 +235,20 @@ object GdslInstanceToZetaModel extends Logging {
     }
   }
 
-  private def extractMapLink(edge: EdgeInstance, state: GDSLState): Option[MapLink] = {
+  private def extractMapLink(edge: EdgeInstance, state: GDSLState): Either[String, MapLink] = {
     for {
-      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem)
-      node <- state.nodes.get(edge.targetNodeName)
+      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem).toRight("cannot extract Map name")
+      node <- state.nodes.get(edge.targetNodeName).toRight("map referenfes nothing")
       entity <- extractEntity(node, state, null /* TODO path */)
     } yield {
       MapLink(name, null /* TODO key type*/ , entity)
     }
   }
 
-  private def extractReferenceLink(edge: EdgeInstance, state: GDSLState): Option[ReferenceLink] = {
+  private def extractReferenceLink(edge: EdgeInstance, state: GDSLState): Either[String, ReferenceLink] = {
     for {
-      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem)
-      node <- state.nodes.get(edge.targetNodeName)
+      name <- edge.attributeValues.get("name").flatMap(extractOneStringElem).toRight("cannot extract Reference name")
+      node <- state.nodes.get(edge.targetNodeName).toRight("references references nothing")
     } yield {
       ReferenceLink(name, node.name) // build path out of this later. see updateReferences
     }
