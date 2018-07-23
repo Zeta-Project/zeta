@@ -12,7 +12,7 @@
 class @{fileName}(
 private val getModel: (@{startType}Model) => @name,
 private val getOutput: (@{startType}Output) => @{name}Output,
-private val update: (@{startType}Input, ${name}Input => @{name}Input) => @{startType}Input
+private val update: (@{startType}Input, @{name}Input => @{name}Input) => @{startType}Input
 ) {
 
 private[generated] def getStaticValues(model: @{startType}Model): @{name}StaticValues = getModel(model).staticValues
@@ -22,7 +22,7 @@ private[generated] def getInputValues(model: @{startType}Model): @{name}InputVal
 private[generated] def getOutputValues(model: @{startType}Output): @{name}OutputValues = getOutput(model).outputValues
 
 private def updateInput[V](func: (@{name}InputValues, V) => @{name}InputValues)(input: @{startType}Input, v: V): @{startType}Input = {
-update(input, m => m.copy(inputValues = func(m.inputValues, v)))
+  update(input, m => m.copy(inputValues = func(m.inputValues, v)))
 }
 
 @allLinks
@@ -42,7 +42,7 @@ update(input, m => m.copy(inputValues = func(m.inputValues, v)))
 
 @allLinks = {// links:@for(link <- entity.links){@singleLink(link)}}
 @singleLink(link: Link) = { @defining(s"${link.name}"){ con =>
-val @{con} = new @{link.entity.name}@{startType}Accessor(getModel(_).@con, getOutput(_).$con, (i, f) => update(i, m => m.copy(@con = f(m.@con))))
+val @{con} = new @{link.entity.name}@{startType}Accessor(getModel(_).@con, getOutput(_).@con, (i, f) => update(i, m => m.copy(@con = f(m.@con))))
 }}
 
 @allMappedLinks = {// mapped links:@for(link <- entity.maps){@singleMapLink(link)}}
