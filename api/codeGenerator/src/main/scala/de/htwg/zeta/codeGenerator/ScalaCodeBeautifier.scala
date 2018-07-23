@@ -28,7 +28,7 @@ object ScalaCodeBeautifier extends Logging {
    * @return formatted scala source
    */
   def format(fileName: String, source: String): String = {
-    val strippedBreaks = source.replaceAll("[\r?\n\\s]+", "\n")
+    val strippedBreaks = source.replaceAll("(\r?\n)+", "\n")
     try {
       ScalaFormatter.format(strippedBreaks, preferences).trim
     } catch {
