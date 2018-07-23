@@ -45,7 +45,7 @@ trait @{entity.name} {
 
 @links(prefix: String, typePost: String, separator: Boolean = true) = {
   @for((link, idx) <- entity.links.zipWithIndex) {
-    @{prefix}@{link.name}: @{link.entity.name}@typePost@if(separator && idx != entity.links.size-1){,}
+    @{prefix}@{link.name}: @{link.entity.name}@typePost@if(separator){,}
   }
   @*TODO add mapped links*@
 }
