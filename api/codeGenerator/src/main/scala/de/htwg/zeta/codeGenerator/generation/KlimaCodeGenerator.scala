@@ -1,8 +1,10 @@
 package de.htwg.zeta.codeGenerator.generation
 
 import de.htwg.zeta.codeGenerator.generation.accessor.AccessorGenerator
+import de.htwg.zeta.codeGenerator.generation.defaultValue.DefaultValueGenerator
 import de.htwg.zeta.codeGenerator.generation.framework.DependentValueBuilder
 import de.htwg.zeta.codeGenerator.generation.model.ModelGenerator
+import de.htwg.zeta.codeGenerator.generation.transition.TransitionGenerator
 import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.AnchorWithEntities
 import de.htwg.zeta.codeGenerator.model.GeneratedFolder
@@ -32,6 +34,8 @@ object KlimaCodeGenerator {
 
     GeneratedFolder.wrapInFolder("generated", anchor.name)(
       AccessorGenerator.generate(awe),
+      TransitionGenerator.generate(awe),
+      DefaultValueGenerator.generate(awe),
       ModelGenerator.generate(awe)
     )
   }
