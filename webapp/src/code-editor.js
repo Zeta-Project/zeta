@@ -10,6 +10,7 @@ import 'brace/mode/scala';
 import {styleLanguage, diagramLanguage, shapeLanguage} from './code-editor/ace-grammar';
 import {SourceCodeInspector} from "./code-editor/source-code-inspector";
 import {CodeOutline} from "./code-editor/code-outline";
+import {OnlineSocket} from "./code-editor/online-socket";
 
 $(document).ready(() => {
     $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
@@ -32,6 +33,8 @@ class CodeEditor {
         this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType, this.editor);
         this.sourceCodeInspector.runInspection();
         this.codeOutline = new CodeOutline(element, metaModelId, dslType, this.editor);
+        let area = "codeEditor-" + dslType + "-" + metaModelId;
+        this.onlineSocket = new OnlineSocket(area);
     }
 
     initAceEditor(element) {
