@@ -1,17 +1,17 @@
 package de.htwg.zeta.server.controller.webpage
 
 import java.util.UUID
+
 import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import controllers.routes
 import de.htwg.zeta.common.format.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.common.format.ProjectShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
@@ -19,7 +19,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Result
 
 class WebpageController @Inject()(
-    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository,
+    modelEntityRepo: GraphicalDslInstanceRepository,
     metaModelEntityRepo: AccessRestrictedGdslProjectRepository,
     ws: WSClient
 ) extends Controller {
@@ -39,7 +39,7 @@ class WebpageController @Inject()(
   }
 
   private def getModels[A](metaModelId: UUID, request: SecuredRequest[ZetaEnv, A]): Future[Seq[GraphicalDslInstanceShortInfo]] = {
-    val repo = modelEntityRepo.restrictedTo(request.identity.id)
+    val repo = modelEntityRepo
     repo.readAllIds().flatMap { ids =>
       Future.sequence(ids.toList.map(repo.read)).map(_.filter(_.graphicalDslId == metaModelId).map(entity => {
         GraphicalDslInstanceShortInfo(entity.id, entity.graphicalDslId, entity.name)

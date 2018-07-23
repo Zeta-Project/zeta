@@ -1,11 +1,11 @@
 package de.htwg.zeta.server.controller.generatorControlForwader
 
 import java.util.UUID
+
 import javax.inject.Inject
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import akka.actor.ActorRef
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -21,7 +21,7 @@ import de.htwg.zeta.common.models.frontend.UserResponse
 import de.htwg.zeta.generatorControl.actors.frontend.DeveloperFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.GeneratorFrontend
 import de.htwg.zeta.generatorControl.actors.frontend.UserFrontend
-import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGraphicalDslInstanceRepository
+import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.mvc.AnyContent
@@ -42,7 +42,7 @@ class GeneratorControlController @Inject()(
     mat: Materializer,
     backendRemoteClient: GeneratorControlRemoteClient,
     silhouette: Silhouette[ZetaEnv],
-    modelEntityRepo: AccessRestrictedGraphicalDslInstanceRepository
+    modelEntityRepo: GraphicalDslInstanceRepository
 ) extends Controller with Logging {
 
   private val developerMsg: MessageFlowTransformer[DeveloperRequest, DeveloperResponse] =
@@ -72,7 +72,7 @@ class GeneratorControlController @Inject()(
    * @return (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse])
    */
   def user(modelId: UUID)(request: SecuredRequest[ZetaEnv, AnyContent]): (Future[(ActorRef) => Props], MessageFlowTransformer[UserRequest, UserResponse]) = {
-    val futureProps = modelEntityRepo.restrictedTo(request.identity.id).read(modelId).map(_ => {
+    val futureProps = modelEntityRepo.read(modelId).map(_ => {
       val register = GeneratorControlRegisterFactory((ident, ref) => UserFrontend.CreateUserFrontend(ident, ref, request.identity.id, modelId))
       (out: ActorRef) => GeneratorControlForwarder.props(backendRemoteClient.userFrontendService, out, register)
     })

@@ -91,6 +91,13 @@ DELETE        /rest/v1/models/:modelId                                          
 GET           /rest/v1/models/:modelId/validation                                                 controllers.ScalaRoutes.getModelsValidation(modelId: java.util.UUID)
 GET           /rest/v2/models/:modelId/downloadSourceCode                                         controllers.ScalaRoutes.downloadSourceCode(modelId: java.util.UUID)
 
+
+GET           /rest/v2/models/:modelId/exportProject                                              controllers.ScalaRoutes.exportProject(modelId: java.util.UUID)
+POST          /rest/v2/projects/import                                                            controllers.ScalaRoutes.importProject()
+
+GET           /rest/v2/invite-to-project/:metaModelId/:email                                      controllers.ScalaRoutes.inviteToProject(metaModelId: java.util.UUID, email: String)
+GET           /rest/v2/duplicate-project/:metaModelId/:name                                       controllers.ScalaRoutes.duplicateProject(metaModelId: java.util.UUID, name: String)
+
 ### GeneratorImage REST API
 GET           /rest/v1/generator-images                                                           controllers.ScalaRoutes.getGeneratorImagesNoArgs
 
