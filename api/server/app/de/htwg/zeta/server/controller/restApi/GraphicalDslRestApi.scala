@@ -17,7 +17,7 @@ import de.htwg.zeta.common.format.project.ReferenceFormat
 import de.htwg.zeta.common.models.project.GdslProject
 import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
-import de.htwg.zeta.persistence.general.{AccessAuthorisationRepository, UserRepository}
+import de.htwg.zeta.persistence.general.{AccessAuthorisationRepository, GraphicalDslInstanceRepository, UserRepository}
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
 import de.htwg.zeta.server.silhouette.ZetaEnv
@@ -35,6 +35,7 @@ import play.api.mvc.Result
   */
 class GraphicalDslRestApi @Inject()(
                                      graphicalDslRepo: AccessRestrictedGdslProjectRepository,
+                                     instanceRepo: GraphicalDslInstanceRepository,
                                      userRepo: UserRepository,
                                      accessAuthorisationRepo: AccessAuthorisationRepository,
                                      conceptFormat: ConceptFormat,
@@ -350,9 +351,15 @@ class GraphicalDslRestApi @Inject()(
     */
   def duplicate(id: UUID, name: String)(request: SecuredRequest[ZetaEnv, AnyContent]): Future[Result] = {
     val repo = graphicalDslRepo.restrictedTo(request.identity.id)
+    val duplicatedId = UUID.randomUUID
     (for {
       existing <- repo.read(id)
-      _ <- repo.create(existing.copy(id = UUID.randomUUID, name = name))
+      _ <- repo.create(existing.copy(id = duplicatedId, name = name))
+      allInstanceIds <- instanceRepo.readAllIds()
+      allInstances <- Future.sequence(allInstanceIds.map(instanceRepo.read))
+      _ <- Future.sequence(allInstances.filter(_.graphicalDslId == id).map(instance =>
+        instanceRepo.create(instance.copy(id = UUID.randomUUID, graphicalDslId = duplicatedId))
+      ))
     } yield {
       Ok("")
     }).recover {
