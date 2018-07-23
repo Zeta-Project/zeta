@@ -14,11 +14,11 @@ buildInputValue(),
 buildOutputValue()
 )
 
-private def buildStaticValue(): @{name}StaticValues = @{name}StaticValues({@calls(entity.fixValues)})
+private def buildStaticValue(): @{name}StaticValues = @{name}StaticValues(@calls(entity.fixValues))
 
-private def buildInputValue(): @{name}InputValues = @{name}InputValues({@calls(entity.inValues)})
+private def buildInputValue(): @{name}InputValues = @{name}InputValues(@calls(entity.inValues))
 
-private def buildOutputValue(): @{name}OutputValues = @{name}OutputValues({@calls(entity.outValues)})
+private def buildOutputValue(): @{name}OutputValues = @{name}OutputValues(@calls(entity.outValues))
 
 // connections:
 @{connectionDefs}
@@ -37,7 +37,7 @@ private def buildOutputValue(): @{name}OutputValues = @{name}OutputValues({@call
 
 @calls(list: List[Value]) = {
 @for((value, idx) <- list.zipWithIndex){
-  get@{value.name.capitalize}()@if(idx != list.size){,}
+  get@{value.name.capitalize}()@if(idx != list.size - 1){,}
 }
 }
 
