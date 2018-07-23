@@ -1,0 +1,36 @@
+@import de.htwg.zeta.codeGenerator.model.Anchor
+
+@(anchor: Anchor)
+
+@teamCompName = {@{anchor.team.name}}
+
+
+import com.google.inject.Inject
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+
+object TeamTransition {
+
+  private[generated] class Factory @@Inject()(private val teamFact: @{teamCompName}TeamTransition.InjectionFactory) {
+
+    def build(gameTrans: GameTransition): TeamTransition = {
+      val teamTrans = teamFact.build("Accessor.team", Accessor.team, gameTrans)
+      new TeamTransition(teamTrans)
+    }
+  }
+}
+
+class TeamTransition(private[generated] val teamTrans: @{teamCompName}TeamTransition) {
+
+  private val teamDep: DependentValue[TeamTransitionResources, @{teamCompName}Output] = teamTrans.create
+
+
+  def transition(entity: TeamEntity, others: List[TeamEntity], period: PeriodOutput): Future[TeamEntity] = {
+    val tr = TeamTransitionResources(entity, others.filterNot(_ == entity), period)
+    teamDep.calculate(tr).map{ out =>
+      val to = TeamOutputImpl(out)
+      entity.copy(previous = to :: entity.previous)
+    }
+  }
+}

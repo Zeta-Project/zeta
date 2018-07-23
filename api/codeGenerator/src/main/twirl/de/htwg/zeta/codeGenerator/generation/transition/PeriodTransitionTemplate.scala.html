@@ -1,0 +1,35 @@
+@import de.htwg.zeta.codeGenerator.model.Anchor
+
+@(anchor: Anchor)
+
+@periodCompName = {@{anchor.period.name}}
+
+import com.google.inject.Inject
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+object PeriodTransition {
+
+  private[generated] class Factory @@Inject()(private val periodFact: @{periodCompName}PeriodTransition.InjectionFactory) {
+
+    def build(gameTrans: GameTransition): PeriodTransition = {
+      val periodTrans = periodFact.build("Accessor.period", Accessor.period, gameTrans)
+      new PeriodTransition(periodTrans)
+    }
+  }
+}
+
+class PeriodTransition(private[generated] val periodTrans: @{periodCompName}PeriodTransition) {
+
+  private val periodDep: DependentValue[PeriodTransitionResources, @{periodCompName}Output] = periodTrans.create
+
+
+  def transition(entity: PeriodEntity): Future[PeriodEntity] = {
+    val resources = PeriodTransitionResources(entity)
+
+    periodDep.calculate(resources).map{ out =>
+      val to = PeriodOutputImpl(out)
+      entity.copy(configuredPeriod = entity.configuredPeriod + 1, existingPeriodModels = to :: entity.existingPeriodModels)
+    }
+  }
+}
