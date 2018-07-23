@@ -1,7 +1,5 @@
 package de.htwg.zeta.server.routing
 
-import javax.inject.Inject
-
 import com.google.inject.Provider
 import de.htwg.zeta.server.controller.ActivateAccountController
 import de.htwg.zeta.server.controller.ApplicationController
@@ -14,6 +12,7 @@ import de.htwg.zeta.server.controller.ResetPasswordController
 import de.htwg.zeta.server.controller.SignInController
 import de.htwg.zeta.server.controller.SignUpController
 import de.htwg.zeta.server.controller.WebAppController
+import de.htwg.zeta.server.controller.WebSocketController
 import de.htwg.zeta.server.controller.codeEditor.CodeEditorController
 import de.htwg.zeta.server.controller.generatorControlForwader.GeneratorControlController
 import de.htwg.zeta.server.controller.restApi.BondedTaskRestApi
@@ -29,6 +28,7 @@ import de.htwg.zeta.server.controller.restApi.ModelRestApi
 import de.htwg.zeta.server.controller.restApi.TimedTaskRestApi
 import de.htwg.zeta.server.controller.restApi.v2
 import de.htwg.zeta.server.controller.webpage.WebpageController
+import javax.inject.Inject
 import org.webjars.play.WebJarAssets
 
 /**
@@ -60,4 +60,6 @@ class WebControllerContainer @Inject() private(
     val eventDrivenTaskRestApi: Provider[EventDrivenTaskRestApi],
     val timedTaskRestApi: Provider[TimedTaskRestApi],
     val fileRestApi: Provider[FileRestApi],
-    val dslRestApi: Provider[DslRestApi])
+    val dslRestApi: Provider[DslRestApi],
+    val webSocket: Provider[WebSocketController]
+)

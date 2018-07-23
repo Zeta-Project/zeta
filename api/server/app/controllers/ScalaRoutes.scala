@@ -30,6 +30,7 @@ class ScalaRoutes @Inject()(
 
   def getSocketUser(modelId: UUID): WebSocket = AuthenticatedSocket(backendController.user(modelId) _)
 
+  def getSocketConnection: WebSocket = webSocket.socket
 
   // # Home page
   def getIndex(): Action[AnyContent] = AuthenticatedGet(webpageController.index _)

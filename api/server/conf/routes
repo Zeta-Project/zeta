@@ -7,6 +7,9 @@ GET           /socket/developer                                                 
 GET           /socket/generator/:id                                                               controllers.ScalaRoutes.getSocketGenerator(id: java.util.UUID)
 GET           /socket/user/:model                                                                 controllers.ScalaRoutes.getSocketUser(model: java.util.UUID)
 
+# general user online socket
+GET           /socket                                                                             controllers.ScalaRoutes.getSocketConnection
+
 # Home page
 GET           /                                                                                   controllers.ScalaRoutes.getIndex
 GET           /user                                                                               controllers.ScalaRoutes.getUser
