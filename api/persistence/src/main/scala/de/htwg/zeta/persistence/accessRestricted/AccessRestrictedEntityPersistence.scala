@@ -83,11 +83,6 @@ class AccessRestrictedGdslProjectRepository @Inject()(
     underlying: GdslProjectRepository
 ) extends AccessRestrictedEntityPersistence(accessAuthorisation, underlying)
 
-@Singleton
-class AccessRestrictedGraphicalDslInstanceRepository @Inject()(
-    accessAuthorisation: AccessAuthorisationRepository,
-    underlying: GraphicalDslInstanceRepository
-) extends AccessRestrictedEntityPersistence(accessAuthorisation, underlying)
 
 @Singleton
 class AccessRestrictedLogRepository @Inject()(
