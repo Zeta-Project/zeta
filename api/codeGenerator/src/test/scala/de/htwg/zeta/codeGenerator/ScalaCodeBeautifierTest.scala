@@ -16,8 +16,8 @@ class ScalaCodeBeautifierTest extends FreeSpec with Matchers {
         """.stripMargin) shouldBe "case class Test(\n  t: String,\n  f: String\n)"
     }
     "return the source string in case of parse failure" in {
-      val input = "\n\ncase wrong syntax"
-      ScalaCodeBeautifier.format("WrongTest.scala", input) shouldBe input
+      val input = "\ncase wrong syntax"
+      ScalaCodeBeautifier.format("WrongTest.scala", s"\n$input") shouldBe input
     }
   }
 
