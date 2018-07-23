@@ -1,0 +1,145 @@
+@(folderName: String)
+package net.depVal
+
+import scala.collection.mutable
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
+final class DependentValueFutureConverter[B, C] private(conv: B => Future[C]) {
+  def convert(b: B): Future[C] = conv(b)
+}
+
+object DependentValueFutureConverter {
+  implicit def convert[A, B](implicit ev: B =:= Future[A]): DependentValueFutureConverter[B, A] =
+    new DependentValueFutureConverter((a: B) => ev.apply(a))
+
+  implicit def convertToFuture[A]: DependentValueFutureConverter[A, A] =
+    new DependentValueFutureConverter((a: A) => Future.successful(a))
+}
+
+
+sealed trait DependentValueBase[R, V] {
+
+  def flatMap[B](func: V => DependentValueBase[R, B]): DependentValueBuilder[R, B]
+
+  def map[B, C](func: V => B)(implicit conv: DependentValueFutureConverter[B, C]): DependentValueBuilder[R, C]
+
+  protected[folderName] def calculateWithResources(cr: CalculationResources[R]): Future[V]
+
+}
+
+sealed abstract class DependentValue[R, V] extends DependentValueBase[R, V] {
+
+  protected val name: String
+  private val cache: mutable.WeakHashMap[CalculationResources[R], Future[V]] = mutable.WeakHashMap()
+
+
+  /**
+   * Calculates a value that is dependent on other values and a resource. The calculation is asynchronous.
+   *
+   * Result values are cached during the executing of this calculation to ensure no calculation is executed twice,
+   * even in case of diamond dependencies.
+   *
+   * @@param resources The calculationResources for this DependentValue
+   * @@return the result of this calculation as Future
+   */
+  def calculate(resources: R): Future[V] = {
+    val cr = new CalculationResources(resources)
+    calculateWithResources(cr)
+  }
+
+  protected[folderName] final override def calculateWithResources(cr: CalculationResources[R]): Future[V] = {
+    this.synchronized {
+      // getOrElseUpdate might execute Future more than once.
+      cache.get(cr) match {
+        case Some(res) => res
+        case None =>
+          val res = Future(calculateFuture(cr)).flatMap(identity)(global)
+          cache.put(cr, res)
+          res
+      }
+    }
+  }
+
+  protected def calculateFuture(cr: CalculationResources[R]): Future[V]
+
+
+  private def toBuilder(): DependentValueBuilder[R, V] = {
+    val self = this
+    new DependentValueBuilder[R, V]() {
+      protected[@{folderName}] override def calculateWithResources(cr: CalculationResources[R]): Future[V] = self.calculateWithResources(cr)
+    }
+  }
+
+  def flatMap[B](func: V => DependentValueBase[R, B]): DependentValueBuilder[R, B] = {
+    toBuilder().flatMap(func)
+  }
+
+  def map[B, C](func: V => B)(implicit conv: DependentValueFutureConverter[B, C]): DependentValueBuilder[R, C] = {
+    toBuilder().map(func)
+  }
+
+}
+
+object DependentValue {
+  def resources[R]: DependentValueBuilder[R, R] = {
+    new DependentValueBuilder[R, R] {
+      protected[@{folderName}] override def calculateWithResources(cr: CalculationResources[R]): Future[R] = Future.successful(cr.resources)
+    }
+  }
+}
+
+sealed abstract class DependentValueBuilder[R, V] extends DependentValueBase[R, V] {
+
+  protected[@{folderName}] override def calculateWithResources(cr: CalculationResources[R]): Future[V]
+
+  override def flatMap[B](func: V => DependentValueBase[R, B]): DependentValueBuilder[R, B] = {
+    val self = this
+    new DependentValueBuilder[R, B] {
+      protected[@{folderName}] def calculateWithResources(cr: CalculationResources[R]): Future[B] = {
+        self.calculateWithResources(cr).flatMap(v => func(v).calculateWithResources(cr))
+      }
+    }
+  }
+
+  def map[B, C](func: V => B)(implicit conv: DependentValueFutureConverter[B, C]):
+  DependentValueBuilder[R, C] = {
+    val outer = this
+    new DependentValueBuilder[R, C] {
+      protected[@{folderName}] def calculateWithResources(cr: CalculationResources[R]): Future[C] = {
+        outer.calculateWithResources(cr).flatMap(v => conv.convert(func(v)))
+      }
+    }
+  }
+
+  def build(depValName: String): DependentValue[R, V] = {
+    val outer = this
+    new DependentValue[R, V] {
+      override protected val name: String = depValName
+
+      protected[@{folderName}] override def calculateFuture(cr: CalculationResources[R]): Future[V] = {
+        outer.calculateWithResources(cr)
+      }
+    }
+  }
+}
+
+/**
+ * overrides hashCode and equals to ensure that 2 instances of this with the same resource won't collide in a HashMap
+ *
+ * @@param resources the resources
+ * @@tparam R the type for the resources
+ */
+private[@{folderName}] final class CalculationResources[R](val resources: R) {
+
+  private val hc: Int = new java.util.Random().nextInt()
+
+  override def hashCode(): Int = hc
+
+  override def equals(obj: scala.Any): Boolean = obj match {
+    case ar: AnyRef => this eq ar
+    case _ => false
+  }
+}
+
