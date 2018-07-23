@@ -30,6 +30,8 @@ import grizzled.slf4j.Logging
 object GdslInstanceToZetaModel extends Logging {
 
   val noUniquePath = "fail"
+  private val teamAnchor = "TeamAnchor"
+  private val periodAnchor = "PeriodAnchor"
 
   private case class GDSLState(
       nodes: Map[String, NodeInstance],
@@ -40,10 +42,9 @@ object GdslInstanceToZetaModel extends Logging {
   )
 
   def generate(concept: Concept, gdslInstance: GraphicalDslInstance): Either[String, List[File]] = {
-
     for {
       state <- buildState(gdslInstance)
-      first <- buildOptAnchor(gdslInstance, state).toRight("failed to extract Anchor")
+      first <- buildEitherAnchor(gdslInstance, state)
       team <- updateReferences(first.team, state)
       period <- updateReferences(first.period, state)
     } yield {
@@ -61,9 +62,9 @@ object GdslInstanceToZetaModel extends Logging {
       val duplicates = list.diff(list.distinct).distinct
       if (duplicates.isEmpty) Right(right) else Left(s"duplicate $name: [${duplicates.mkString(", ")}]")
     }
-
+    val nodesWithoutAnchors = gdslInstance.nodes.filterNot { n => n.className == teamAnchor || n.className == periodAnchor }
     for {
-      namedPairs <- mapAllOrNone(gdslInstance.nodes)(n => extractName(n).map(n.name -> _)).toRight("node without Name")
+      namedPairs <- mapAllOrNone(nodesWithoutAnchors)(n => extractName(n).map(n.name -> _)).toRight("node without Name")
       // TODO check valid name
       allNames = namedPairs.map(_._2)
       idToName <- handleDuplicates(allNames, "nodes")(namedPairs.toMap)
@@ -72,7 +73,7 @@ object GdslInstanceToZetaModel extends Logging {
       _ <- handleDuplicates(allEdges, "edges")(())
     } yield {
       GDSLState(
-        gdslInstance.nodes.map(n => n.name -> n).toMap,
+        nodesWithoutAnchors.map(n => n.name -> n).toMap,
         gdslInstance.edges.map(e => e.name -> e).toMap,
         mutable.Map(),
         mutable.Map(),
@@ -81,19 +82,21 @@ object GdslInstanceToZetaModel extends Logging {
     }
   }
 
-  private def buildOptAnchor(gdslInstance: GraphicalDslInstance, state: GDSLState): Option[Anchor] = {
+  private def buildEitherAnchor(gdslInstance: GraphicalDslInstance, state: GDSLState): Either[String, Anchor] = {
     for {
-      teamAnch <- gdslInstance.nodes.find("TeamAnchor" == _.className)
-      periodAnch <- gdslInstance.nodes.find("PeriodAnchor" == _.className)
-      teamOutId <- expectOneElem(teamAnch.outputEdgeNames)
-      periodOutId <- expectOneElem(periodAnch.outputEdgeNames)
-      teamOut <- state.edges.get(teamOutId)
-      periodOut <- state.edges.get(periodOutId)
-      teamNode <- state.nodes.get(teamOut.targetNodeName)
-      periodNode: NodeInstance <- state.nodes.get(periodOut.targetNodeName)
-      teamEntity <- extractEntity(teamNode, state, "team")
-      periodEntity <- extractEntity(periodNode, state, "period")
+      teamAnch <- expectOneElem(gdslInstance.nodes.filter(teamAnchor == _.className)).toRight("more than one " + teamAnchor)
+      periodAnch <- expectOneElem(gdslInstance.nodes.filter(periodAnchor == _.className)).toRight("more than one " + periodAnchor)
+      teamOutId <- expectOneElem(teamAnch.outputEdgeNames).toRight(s"$teamAnchor has more than one outgoing edge")
+      periodOutId <- expectOneElem(periodAnch.outputEdgeNames).toRight(s"$periodAnch has more than one outgoing edge")
+      teamOut <- state.edges.get(teamOutId).toRight("wrong id")
+      periodOut <- state.edges.get(periodOutId).toRight("wrong id")
+      teamNode <- state.nodes.get(teamOut.targetNodeName).toRight("wrong id")
+      periodNode <- state.nodes.get(periodOut.targetNodeName).toRight("wrong id")
+      teamEntity <- extractEntity(teamNode, state, "team").toRight("failed to extract team entity")
+      periodEntity <- extractEntity(periodNode, state, "period").toRight("failed to extract period entity")
     } yield {
+      state.nodePath(teamNode.name) = "team"
+      state.nodePath(periodNode.name) = "period"
       model.Anchor("klima", teamEntity, periodEntity)
     }
   }
@@ -189,9 +192,9 @@ object GdslInstanceToZetaModel extends Logging {
       links <- mapAllOrNone(linkRef)(lr => extractLink(lr, state, path))
       mapLinks <- mapAllOrNone(mapRef)(lr => extractMapLink(lr, state))
       refLinks <- mapAllOrNone(refRef)(lr => extractReferenceLink(lr, state))
-      fixOpt <- node.attributeValues.get("fix")
-      inOpt <- node.attributeValues.get("in")
-      outOpt <- node.attributeValues.get("out")
+      fixOpt <- node.attributeValues.get("fix").map(filterTripleDot)
+      inOpt <- node.attributeValues.get("in").map(filterTripleDot)
+      outOpt <- node.attributeValues.get("out").map(filterTripleDot)
       fixValues <- mapAllOrNone(fixOpt)(extractSingleValue)
       inValues <- mapAllOrNone(inOpt)(extractSingleValue)
       outValues <- mapAllOrNone(outOpt)(extractSingleValue)
@@ -202,6 +205,13 @@ object GdslInstanceToZetaModel extends Logging {
     }
 
     state.entityIdCache.get(node.name).orElse(create)
+  }
+
+  private def filterTripleDot(list: List[AttributeValue]): List[AttributeValue] = {
+    list.filter {
+      case StringValue("...") => false
+      case _ => true
+    }
   }
 
   private def extractLink(edge: EdgeInstance, state: GDSLState, path: String): Option[Link] = {
