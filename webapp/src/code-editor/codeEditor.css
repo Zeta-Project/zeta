@@ -1,3 +1,18 @@
+/* scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+    background: #dedede; 
+}
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+
 .editor-container {
     display: flex;
 }
