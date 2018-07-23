@@ -1,0 +1,16 @@
+
+
+@(typeName: String)
+
+import com.google.inject.Inject
+
+class TeamDefaultValue @@Inject()(private val defaultValue: @{typeName}TeamDefaultValue) {
+  def build(teamId: UUID): TeamEntity = {
+  val out = defaultValue.build()
+  val in = out.toInput()
+
+  val outEntity = TeamOutputImpl(out)
+  val inEntity = TeamInputImpl(in)
+  TeamEntity(teamId, inEntity, List(outEntity))
+  }
+}

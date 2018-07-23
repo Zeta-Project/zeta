@@ -1,0 +1,16 @@
+
+
+@(typeName: String)
+
+import com.google.inject.Inject
+
+class PeriodDefaultValue @@Inject()(private val defaultValue: @{typeName}PeriodDefaultValue) {
+  def build(): PeriodEntity = {
+  val out = defaultValue.build()
+  val in = out.toInput()
+
+  val outEntity = PeriodOutputImpl(out)
+  val inEntity = PeriodInputImpl(in)
+  PeriodEntity(0, inEntity, List(outEntity))
+  }
+}
