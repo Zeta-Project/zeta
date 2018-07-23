@@ -20,7 +20,7 @@ trait PerTypeGenerator {
 
   protected def buildTypeIndependentFiles(start: AnchorWithEntities): List[GeneratedFile]
 
-  protected def buildEntity(comp: Entity, tpe: AnchorEnum, simName: String): GeneratedFile
+  protected def buildEntity(entity: Entity, tpe: AnchorEnum, simName: String): GeneratedFile
 
   def generate(start: AnchorWithEntities): GeneratedFolder = {
     def buildForType(e: AnchorEnum) = {

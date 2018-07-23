@@ -1,0 +1,11 @@
+@import de.htwg.zeta.codeGenerator.model.Anchor
+
+@(anchor: Anchor)
+
+trait GameTransition {
+
+def team: @{anchor.team.name}TeamTransition
+
+def period: @{anchor.period.name}PeriodTransition
+
+}

@@ -1,0 +1,149 @@
+@import de.htwg.zeta.codeGenerator.model.Entity
+@import de.htwg.zeta.codeGenerator.model.AnchorEnum
+@(entity:Entity, start: AnchorEnum)
+@name = @{entity.name}
+@trans = {@{start.name}Transition}
+
+import com.google.inject.Inject
+
+trait @{name}@{trans} {
+
+  protected val data: @{name}@{trans}.Data
+
+  protected val gameTransition: GameTransition = data._gameTrans
+  protected val accessorPrefix: String = data._accessorPrefix
+  protected val accessor: @{name + start.name}Accessor = data._accessor
+  @conTypesGetter
+
+  @outputValues
+
+  private val createOutputValues: DependentValue[@{start}TransitionResources, @{name}OutputValues] = {
+    val dvb = for {
+      _ <- DependentValue.resources
+      @for(value <- entity.outValues){
+      @{value.name} <- @{value.name}Value
+      }
+    } yield {
+      @{name}OutputValues(
+        @{entity.outValues.map(_.name).mkString(",\n")}
+      )
+    }
+    dvb.build(s"$accessorPrefix.outputValues")
+  }
+
+@mappedValueCreate
+
+  private[transition] val create: DependentValue[@{start}TransitionResources, @{name}Output] = {
+    val dvb = for {
+      resources <- DependentValue.resources
+      outputValues <- createOutputValues
+      @depValueForArgs
+    } yield {
+      @selfVal
+
+      @{name}Output(
+        @createOutParams
+        accessor.getStaticValues(self),
+        accessor.getInputValues(self),
+        outputValues
+      )
+    }
+    dvb.build(accessorPrefix)
+  }
+}
+
+object @{name}@{trans} {
+
+  /**
+  * This InjectionFactory will be injected It should not be instantiated by hand unless it is needed for testing.
+  */
+  final class InjectionFactory @@Inject()(
+@injectParams
+    factory: TransitionFactory
+  ) {
+    def build(accessorPrefix: String, accessor: @{name + start}Accessor, gameTrans: GameTransition): @{name}@{trans} = {
+      val data = new Data {
+        override val _gameTrans = gameTrans
+        override val _accessorPrefix = accessorPrefix
+        override val _accessor = accessor
+        @overrideParams
+      }
+      factory.build(data)
+    }
+  }
+
+  sealed trait Data {
+    private[@{name}@{trans}] val _gameTrans: GameTransition
+    private[@{name}@{trans}] val _accessorPrefix: String
+    private[@{name}@{trans}] val _accessor: @{name + start}Accessor
+    @paramDefs
+  }
+
+  /**
+  * This TransitionFactory will instantiate the overridden Transition.
+  *
+  * The implementation of this TransitionFactory will be injected. This means it can have injected Parameters.
+  */
+  trait TransitionFactory {
+    def build(data: @{name}@{trans}.Data): @{name}@{trans}
+  }
+}
+
+@conTypesGetter = {
+@for(link <- entity.links; argname = s"${link.name}Transition"){
+  val @{argname}: @{link.entity.name}@{trans} = data._@{argname}
+}
+
+  @*TODO mapped*@
+}
+  
+@outputValues = {@for(ov <- entity.outValues){
+  val @{ov.name}Value: DependentValue[@{start}TransitionResources, @{ov.valueType}] = DependentValue(s"$accessorPrefix#@{ov.name}", calculate@{ov.name.capitalize})
+
+  protected def calculate@{ov.name.capitalize}: DependentValueBuilder[@{start}TransitionResources, @{ov.valueType}]
+}}
+  
+@mappedValueCreate = {}
+
+@depValueForArgs = {@for(link <- entity.links) {
+      @{link.name}Transition <- @{link.name}Transition.create
+}}
+
+@selfVal = @{ start match {
+  case AnchorEnum.Team => "val self: TeamInput = resources.currentTeam.currentPeriod"
+  case AnchorEnum.Period => "val self: PeriodInput = resources.entity.nextPeriod"
+  }
+}
+
+@createOutParams ={@for(link <- entity.links) {
+        @{link.name}Transition,
+}}
+
+
+@injectParams = {
+  @* TODO add maplinks => (entity.links.map(_.entity.name) ++ entity.maps.map(_.entity.name)).distint *@
+  @for(typeName <- entity.links.map(_.entity.name).distinct;
+  param = firstCharToLower(typeName)){
+    @{param}: @{typeName}@{trans}.InjectionFactory,
+  }
+}
+
+
+@overrideParams = {@for(link <- entity.links){
+
+  override val _@{link.name}Transition = @{firstCharToLower(link.entity.name)}.build(accessorPrefix + ".@{link.name}", accessor.@{link.name}, gameTrans)
+}
+@* TODO add mapped links*@
+}
+
+@paramDefs = {@for(link <- entity.links) {
+  private[@{name}@{trans}] val _@{link.name}Transition: @{link.entity.name}@{trans}
+}
+@* TODO add mapped links*@
+}
+
+@firstCharToLower(s: String) = @{if(s.isEmpty){
+  ""
+} else {
+  s.charAt(0).toLower + s.substring(1)
+}}
