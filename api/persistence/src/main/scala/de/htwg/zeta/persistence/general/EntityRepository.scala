@@ -26,7 +26,7 @@ import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
  *
  * @tparam E type of the entity
  */
-private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
+trait EntityRepository[E <: Entity] { // scalastyle:ignore
 
   /** The name of the entity-type.
    *
@@ -89,10 +89,18 @@ private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
    * @param entity the entity to create or update
    * @return The updated or created entity
    */
-  final def createOrUpdate(entity: E): Future[E] = {
+  def createOrUpdate(entity: E): Future[E] = {
     update(entity.id, _ => entity).recoverWith {
       case _ => create(entity)
     }
+  }
+
+  def createOrUpdate(entities: List[E]): Future[List[E]] = {
+    val futures = for {
+      e <- entities
+      res = createOrUpdate(e)
+    } yield res
+    Future.sequence(futures)
   }
 
   /** Update a entity. If it doesn't exist create it.
@@ -102,7 +110,7 @@ private[persistence] trait EntityRepository[E <: Entity] { // scalastyle:ignore
    * @param entity       the entity to create
    * @return The updated or created entity
    */
-  final def createOrUpdate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
+  def createOrUpdate(id: UUID, updateEntity: E => E, entity: => E): Future[E] = {
     update(id, updateEntity).recoverWith {
       case _ => create(entity)
     }
@@ -136,4 +144,13 @@ trait TimedTaskRepository extends EntityRepository[TimedTask]
 
 trait SettingsRepository extends EntityRepository[Settings]
 
-trait UserRepository extends EntityRepository[User]
+trait UserRepository extends EntityRepository[User] {
+
+  /** Get a user by email
+    *
+    * @param email The email of the user
+    * @return Future containing the read entity
+    */
+  def readByEmail(email: String): Future[User]
+
+}

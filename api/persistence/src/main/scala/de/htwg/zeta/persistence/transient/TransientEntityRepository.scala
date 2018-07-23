@@ -44,7 +44,7 @@ import javax.inject.Singleton
  */
 sealed abstract class TransientEntityRepository[E <: Entity] extends EntityRepository[E] {
 
-  private val cache: TrieMap[UUID, E] = TrieMap.empty
+  protected val cache: TrieMap[UUID, E] = TrieMap.empty
 
   override def create(entity: E): Future[E] = {
     if (cache.putIfAbsent(entity.id, entity).isEmpty) {
@@ -155,4 +155,14 @@ class TransientTimedTaskRepository
 @Singleton
 class TransientUserRepository
   extends TransientEntityRepository[User]
-    with UserRepository
+    with UserRepository {
+
+  override def readByEmail(email: String): Future[User] = {
+    cache.find(_._2.email == email).fold[Future[User]] {
+      Future.failed(new IllegalArgumentException("can't read the user, a user with the email doesn't exist"))
+    } { entry =>
+      Future.successful(entry._2)
+    }
+  }
+
+}
