@@ -110,7 +110,7 @@ object @{name}@{trans} {
 }
   
 @outputValues = {@for(ov <- entity.outValues){
-  val @{ov.name}Value: DependentValue[@{start}TransitionResources, @{ov.valueType}] = DependentValue(s"$accessorPrefix#@{ov.name}", calculate@{ov.name.capitalize})
+  val @{ov.name}Value: DependentValue[@{start}TransitionResources, @{ov.valueType}] = calculate@{ov.name.capitalize}.build(s"$accessorPrefix#@{ov.name}")
 
   protected def calculate@{ov.name.capitalize}: DependentValueBuilder[@{start}TransitionResources, @{ov.valueType}]
 }}
