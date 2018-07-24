@@ -3,9 +3,12 @@
 @import de.htwg.zeta.codeGenerator.model.Anchor
 @import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 
-@(start: Anchor, teamPackage: String, periodPackage: String)(fileStructure:FileStructure)
+@(start: Anchor, teamPackage: String, periodPackage: String)(fileStructure: FileStructure)
 
 package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.accessor.periodAccessor.@{start.period.name}PeriodAccessor
+import @{fileStructure.nameSpace}.generated.klima.accessor.teamAccessor.@{start.period.name}TeamAccessor
 
 object Accessor {
 val @{KlimaCodeGenerator.teamConst} = new @{start.team.name}TeamAccessor(_.teamStart, _.teamStart, (i, f) => i.copy(f(i.teamStart)))
