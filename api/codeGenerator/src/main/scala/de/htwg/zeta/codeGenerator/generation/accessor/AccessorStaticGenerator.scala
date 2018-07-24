@@ -27,17 +27,17 @@ object AccessorStaticGenerator {
 
 
   private def generateValueAccessor(start: AnchorEnum): GeneratedFile = {
-    GeneratedFile(s"${start}ValueAccessor", GeneratedFile.scala, ValueAccessorTemplate(start).body)
+    GeneratedFile(s"${start}ValueAccessor", GeneratedFile.scala, ValueAccessorTemplate(start))
   }
   private def generateInputValueAccessor(start: AnchorEnum): GeneratedFile = {
-    GeneratedFile(s"${start}InputValueAccessor", GeneratedFile.scala, InputValueAccessorTemplate(start).body)
+    GeneratedFile(s"${start}InputValueAccessor", GeneratedFile.scala, InputValueAccessorTemplate(start))
   }
   private def generateOutputValueAccessor(start: AnchorEnum): GeneratedFile = {
-    GeneratedFile(s"${start}OutputValueAccessor", GeneratedFile.scala, OutputValueAccessorTemplate(start).body)
+    GeneratedFile(s"${start}OutputValueAccessor", GeneratedFile.scala, OutputValueAccessorTemplate(start))
   }
 
   private def generateMapValueAccessor(): GeneratedFile = {
-    GeneratedFile("MapValueAccessor", GeneratedFile.scala, MapValueAccessorTemplate().body)
+    GeneratedFile("MapValueAccessor", GeneratedFile.scala, MapValueAccessorTemplate())
 
   }
 

@@ -1,6 +1,11 @@
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @import de.htwg.zeta.codeGenerator.model.Entity
 
-@(teamStart: Entity)
+@(teamStart: Entity)(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{teamStart.name}Output
 
 sealed trait TeamOutput extends TeamModel {
   private[generated] val teamStart: @{teamStart.name}Output

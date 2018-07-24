@@ -1,4 +1,9 @@
-@()
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@()(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodEntity
 
 case class PeriodTransitionResources (
   entity: PeriodEntity

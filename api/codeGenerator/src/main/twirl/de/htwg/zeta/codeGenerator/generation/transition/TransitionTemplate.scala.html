@@ -1,10 +1,22 @@
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @import de.htwg.zeta.codeGenerator.model.Entity
 @import de.htwg.zeta.codeGenerator.model.AnchorEnum
-@(entity:Entity, start: AnchorEnum)
+@(entity:Entity, start: AnchorEnum)(fileStructure:FileStructure)
 @name = @{entity.name}
 @trans = {@{start.name}Transition}
 
+package @fileStructure.currentPackage
+
 import com.google.inject.Inject
+
+import @{fileStructure.nameSpace}.framework.dependentValue.DependentValue
+import @{fileStructure.nameSpace}.framework.dependentValue.DependentValueBuilder
+import @{fileStructure.nameSpace}.generated.klima.transition.GameTransition
+import @{fileStructure.nameSpace}.generated.klima.transition.@{start}TransitionResources
+import @{fileStructure.nameSpace}.generated.klima.accessor.@{start.lower}Accessor.@{name}@{start}Accessor
+import @{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Input
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{name}OutputValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{name}Output
 
 trait @{name}@{trans} {
 
@@ -18,7 +30,7 @@ trait @{name}@{trans} {
   @outputValues
 
   private val createOutputValues: DependentValue[@{start}TransitionResources, @{name}OutputValues] = {
-    val dvb = for {
+    val dvb: DependentValueBuilder[@{start}TransitionResources, @{name}OutputValues] = for {
       _ <- DependentValue.resources
       @for(value <- entity.outValues){
       @{value.name} <- @{value.name}Value
@@ -34,7 +46,7 @@ trait @{name}@{trans} {
 @mappedValueCreate
 
   private[transition] val create: DependentValue[@{start}TransitionResources, @{name}Output] = {
-    val dvb = for {
+    val dvb: DependentValueBuilder[@{start}TransitionResources, @{name}Output] = for {
       resources <- DependentValue.resources
       outputValues <- createOutputValues
       @depValueForArgs
@@ -98,7 +110,7 @@ object @{name}@{trans} {
 }
   
 @outputValues = {@for(ov <- entity.outValues){
-  val @{ov.name}Value: DependentValue[@{start}TransitionResources, @{ov.valueType}] = DependentValue(s"$accessorPrefix#@{ov.name}", calculate@{ov.name.capitalize})
+  val @{ov.name}Value: DependentValue[@{start}TransitionResources, @{ov.valueType}] = calculate@{ov.name.capitalize}.build(s"$accessorPrefix#@{ov.name}")
 
   protected def calculate@{ov.name.capitalize}: DependentValueBuilder[@{start}TransitionResources, @{ov.valueType}]
 }}

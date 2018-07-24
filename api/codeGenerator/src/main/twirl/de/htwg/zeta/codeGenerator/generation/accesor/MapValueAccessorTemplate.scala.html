@@ -1,9 +1,12 @@
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 
-@()
+@()(fileStructure:FileStructure)
 
 @*todo map value*@
 
-/*
+  /*
+
+package @fileStructure.currentPackage
 
 trait MapValueAccessor[E, +A] {
 def apply(key: E): A

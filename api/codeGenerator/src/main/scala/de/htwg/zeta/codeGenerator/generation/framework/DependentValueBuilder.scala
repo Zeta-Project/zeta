@@ -7,7 +7,7 @@ import de.htwg.zeta.codeGenerator.model.GeneratedFolder
 object DependentValueBuilder {
   val folderName = "dependentValue"
   def generate(): GeneratedFolder = {
-    val content = DependentValueTemplate(folderName).body
+    val content = DependentValueTemplate(folderName) _
     val file = GeneratedFile("DependentValue", GeneratedFile.scala, content)
     GeneratedFolder.wrapFiles(folderName)(file)
   }

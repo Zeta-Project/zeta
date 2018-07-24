@@ -1,8 +1,17 @@
 
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(typeName: String)(fileStructure:FileStructure)
 
-@(typeName: String)
+package @fileStructure.currentPackage
 
 import com.google.inject.Inject
+import com.google.inject.Inject
+
+import @{fileStructure.nameSpace}.generated.klima.defaultValue.periodDefaultValue.@{typeName}PeriodDefaultValue
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodEntity
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodOutputImpl
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodInputImpl
+
 
 class PeriodDefaultValue @@Inject()(private val defaultValue: @{typeName}PeriodDefaultValue) {
   def build(): PeriodEntity = {

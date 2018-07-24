@@ -1,6 +1,12 @@
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @import de.htwg.zeta.codeGenerator.model.Anchor
 
-@(anchor: Anchor)
+@(anchor: Anchor)(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.transition.periodTransition.@{anchor.period.name}PeriodTransition
+import @{fileStructure.nameSpace}.generated.klima.transition.teamTransition.@{anchor.team.name}TeamTransition
 
 trait GameTransition {
 

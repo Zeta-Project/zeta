@@ -1,9 +1,16 @@
- @import de.htwg.zeta.codeGenerator.model.Entity
+@import de.htwg.zeta.codeGenerator.model.Entity
  @import de.htwg.zeta.codeGenerator.model.Value
-
-@(entity: Entity, defValue: String)
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(entity: Entity, defValue: String)(fileStructure:FileStructure)
 
 @name = @{entity.name}
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}Output
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}StaticValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}InputValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}OutputValues
 
 trait @{name}@{defValue} {
 

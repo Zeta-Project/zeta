@@ -3,6 +3,7 @@ package de.htwg.zeta.codeGenerator.model
 
 sealed trait AnchorEnum {
   val name: String
+  def lower: String = name.toLowerCase
 
   override def toString: String = name
 }

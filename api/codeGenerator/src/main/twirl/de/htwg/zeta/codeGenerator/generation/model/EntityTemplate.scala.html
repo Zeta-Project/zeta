@@ -1,7 +1,9 @@
 @import de.htwg.zeta.codeGenerator.model.Entity
 @import de.htwg.zeta.codeGenerator.model.Value
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(entity: Entity)(fileStructure:FileStructure)
 
-@(entity: Entity)
+package @fileStructure.currentPackage
 
 trait @{entity.name} {
   @links("val ", "", false)
@@ -25,7 +27,7 @@ trait @{entity.name} {
   ) extends @{entity.name} {
     def toInput(): @{entity.name}Input = @{entity.name}Input(
     @for(link <- entity.links) {
-    @{link.entity.name}.toInput(),
+    @{link.name}.toInput(),
     }
     @*TODO add mapped links*@
     staticValues,

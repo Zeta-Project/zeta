@@ -17,13 +17,13 @@ object DefaultValueGenerator extends PerTypeGenerator {
 
   override protected def buildTypeIndependentFiles(start: AnchorWithEntities): List[GeneratedFile] = {
     List(
-      GeneratedFile.scalaFile("PeriodDefaultValue", PeriodDefaultValueTemplate(start.period.name).body),
-      GeneratedFile.scalaFile("TeamDefaultValue", TeamDefaultValueTemplate(start.team.name).body)
+      GeneratedFile.scalaFile("PeriodDefaultValue", PeriodDefaultValueTemplate(start.period.name)),
+      GeneratedFile.scalaFile("TeamDefaultValue", TeamDefaultValueTemplate(start.team.name))
     )
   }
 
   override protected def buildEntity(entity: Entity, tpe: AnchorEnum, simName: String): GeneratedFile = {
     val defValue = tpe.name + "DefaultValue"
-    GeneratedFile.scalaFile(s"${entity.name}$defValue", DefaultValueTemplate(entity, defValue).body)
+    GeneratedFile.scalaFile(s"${entity.name}$defValue", DefaultValueTemplate(entity, defValue))
   }
 }
