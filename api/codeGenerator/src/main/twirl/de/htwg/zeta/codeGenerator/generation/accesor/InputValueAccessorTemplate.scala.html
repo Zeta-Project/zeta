@@ -6,6 +6,10 @@
 
 package @fileStructure.currentPackage
 
+import de.htwg@{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Input
+import de.htwg@{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Model
+import de.htwg@{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Output
+
 trait @{start}InputValueAccessor[R] extends @{start}ValueAccessor[R] {
 def update(model:@{start}Input, value: R): @{start}Input
 
