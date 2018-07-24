@@ -13,9 +13,8 @@ object GeneratedFile {
   val scala = "scala"
 
   class FileStructure(nameSpaceList: List[String], packageList: List[String]) {
-    private def addPoint(list: List[String]) = if (list.isEmpty) "" else s"${list.mkString(".")}."
-    val nameSpace: String = addPoint(nameSpaceList)
-    val currentPackage: String = addPoint(packageList)
+    val nameSpace: String = nameSpaceList.mkString(".")
+    val currentPackage: String = packageList.mkString(".")
   }
 
   def scalaFile(name: String, content: FileStructure => Html): GeneratedFile = GeneratedFile(name, scala, content)
