@@ -149,7 +149,7 @@ object GdslInstanceToZetaModel extends Logging {
         rec(f, s"$preFolder/${f.name}", f.name :: reversePath)
       }
     }
-    rec(folder, "", Nil)
+    rec(folder, folder.name, List(folder.name))
     buff.result()
   }
 
