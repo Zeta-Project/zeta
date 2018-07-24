@@ -9,6 +9,15 @@ package @fileStructure.currentPackage
 
 import com.google.inject.Inject
 
+import @{fileStructure.nameSpace}.framework.dependentValue.DependentValue
+import @{fileStructure.nameSpace}.framework.dependentValue.DependentValueBuilder
+import @{fileStructure.nameSpace}.generated.klima.transition.GameTransition
+import @{fileStructure.nameSpace}.generated.klima.transition.@{start}TransitionResources
+import @{fileStructure.nameSpace}.generated.klima.accessor.@{start.lower}Accessor.@{name}@{start}Accessor
+import @{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Input
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{name}OutputValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{name}Output
+
 trait @{name}@{trans} {
 
   protected val data: @{name}@{trans}.Data
@@ -21,7 +30,7 @@ trait @{name}@{trans} {
   @outputValues
 
   private val createOutputValues: DependentValue[@{start}TransitionResources, @{name}OutputValues] = {
-    val dvb = for {
+    val dvb: DependentValueBuilder[@{start}TransitionResources, @{name}OutputValues] = for {
       _ <- DependentValue.resources
       @for(value <- entity.outValues){
       @{value.name} <- @{value.name}Value
@@ -37,7 +46,7 @@ trait @{name}@{trans} {
 @mappedValueCreate
 
   private[transition] val create: DependentValue[@{start}TransitionResources, @{name}Output] = {
-    val dvb = for {
+    val dvb: DependentValueBuilder[@{start}TransitionResources, @{name}Output] = for {
       resources <- DependentValue.resources
       outputValues <- createOutputValues
       @depValueForArgs
