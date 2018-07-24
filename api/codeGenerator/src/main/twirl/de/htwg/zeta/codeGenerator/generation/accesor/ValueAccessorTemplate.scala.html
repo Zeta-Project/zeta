@@ -6,6 +6,9 @@
 
 package @fileStructure.currentPackage
 
+import @{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Model
+import @{fileStructure.nameSpace}.generated.klima.model.@{start.lower}Entity.@{start}Output
+
 trait @{start}ValueAccessor[R] extends @{start}OutputValueAccessor[R] {
 def get(model: @{start}Model): R
 }
