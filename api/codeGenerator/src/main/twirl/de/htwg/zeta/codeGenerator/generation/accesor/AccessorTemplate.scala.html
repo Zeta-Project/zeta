@@ -12,6 +12,7 @@
 
 package @fileStructure.currentPackage
 
+import @{fileStructure.nameSpace}.generated.klima.accessor.Accessor
 import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}ValueAccessor
 import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}InputValueAccessor
 import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}OutputValueAccessor
@@ -86,12 +87,12 @@ lazy val @{link.name} = Accessor.@{link.entityPath}
 val @{vname} = @{startType}ValueAccessor(getStaticValues(_).@{vname})
 }
 
-@allInValues = {// in values:@for(value <- entity.fixValues){@singleInValue(value, value.name)}}
+@allInValues = {// in values:@for(value <- entity.inValues){@singleInValue(value, value.name)}}
 @singleInValue(value: Value, vname: String) = {
   val @{vname}: @{startType}InputValueAccessor[@{value.valueType}] = @{startType}InputValueAccessor(getInputValues(_).@{vname})(updateInput((i, v) => i.copy(@{vname} = v)))
 }
 
-@allOutValues = {// out values:@for(value <- entity.fixValues){@singleOutValue(value, value.name)}}
+@allOutValues = {// out values:@for(value <- entity.outValues){@singleOutValue(value, value.name)}}
 @singleOutValue(value: Value, vname: String) = {
   val @{vname} = @{startType}OutputValueAccessor(getOutputValues(_).@{vname})
 }
