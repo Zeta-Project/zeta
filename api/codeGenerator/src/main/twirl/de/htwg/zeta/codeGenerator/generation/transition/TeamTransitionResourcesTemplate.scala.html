@@ -1,4 +1,10 @@
-@()
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@()(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodOutput
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamEntity
 
 case class TeamTransitionResources(
   currentTeam: TeamEntity,

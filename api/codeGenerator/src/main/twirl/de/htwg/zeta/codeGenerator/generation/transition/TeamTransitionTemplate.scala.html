@@ -1,14 +1,22 @@
 @import de.htwg.zeta.codeGenerator.model.Anchor
-
-@(anchor: Anchor)
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(anchor: Anchor)(fileStructure:FileStructure)
 
 @teamCompName = {@{anchor.team.name}}
 
+package @fileStructure.currentPackage
 
 import com.google.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import @{fileStructure.nameSpace}.framework.dependentValue.DependentValue
+import @{fileStructure.nameSpace}.generated.klima.accessor.Accessor
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{teamCompName}Output
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodOutput
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamEntity
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamOutputImpl
+import @{fileStructure.nameSpace}.generated.klima.transition.teamTransition.@{teamCompName}TeamTransition
 
 object TeamTransition {
 

@@ -1,4 +1,9 @@
-@()
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@()(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import java.util.UUID
 
 case class TeamEntity(
     teamId: UUID,

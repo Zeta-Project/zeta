@@ -1,8 +1,16 @@
 
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(typeName: String)(fileStructure:FileStructure)
 
-@(typeName: String)
+package @fileStructure.currentPackage
 
+import java.util.UUID
 import com.google.inject.Inject
+
+import @{fileStructure.nameSpace}.generated.klima.defaultValue.teamDefaultValue.@{typeName}TeamDefaultValue
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamEntity
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamOutputImpl
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamInputImpl
 
 class TeamDefaultValue @@Inject()(private val defaultValue: @{typeName}TeamDefaultValue) {
   def build(teamId: UUID): TeamEntity = {

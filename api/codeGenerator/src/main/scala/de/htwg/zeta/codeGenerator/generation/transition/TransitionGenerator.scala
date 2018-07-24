@@ -22,14 +22,14 @@ object TransitionGenerator extends PerTypeGenerator {
   }
 
   override protected def buildTypeIndependentFiles(start: AnchorWithEntities): List[GeneratedFile] = List(
-    GeneratedFile.scalaFile("GameTransition", GameTransitionTemplate(start.anchor).body),
-    GeneratedFile.scalaFile("PeriodTransition", PeriodTransitionTemplate(start.anchor).body),
-    GeneratedFile.scalaFile("TeamTransition", TeamTransitionTemplate(start.anchor).body),
-    GeneratedFile.scalaFile("TeamTransitionResources", TeamTransitionResourcesTemplate().body),
-    GeneratedFile.scalaFile("PeriodTransitionResources", PeriodTransitionResourcesTemplate().body)
+    GeneratedFile.scalaFile("GameTransition", GameTransitionTemplate(start.anchor)),
+    GeneratedFile.scalaFile("PeriodTransition", PeriodTransitionTemplate(start.anchor)),
+    GeneratedFile.scalaFile("TeamTransition", TeamTransitionTemplate(start.anchor)),
+    GeneratedFile.scalaFile("TeamTransitionResources", TeamTransitionResourcesTemplate()),
+    GeneratedFile.scalaFile("PeriodTransitionResources", PeriodTransitionResourcesTemplate())
   )
 
   override protected def buildEntity(entity: Entity, tpe: AnchorEnum, simName: String): GeneratedFile = {
-    GeneratedFile.scalaFile(s"${entity.name}${tpe}Transition", TransitionTemplate(entity, tpe).body)
+    GeneratedFile.scalaFile(s"${entity.name}${tpe}Transition", TransitionTemplate(entity, tpe))
   }
 }

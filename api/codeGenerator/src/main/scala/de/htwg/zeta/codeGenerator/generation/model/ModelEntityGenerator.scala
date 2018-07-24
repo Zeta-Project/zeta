@@ -6,7 +6,7 @@ import de.htwg.zeta.codeGenerator.model.GeneratedFile
 
 object ModelEntityGenerator {
   def generate(entity: Entity): GeneratedFile = {
-    val cont = EntityTemplate(entity).body
+    val cont = EntityTemplate(entity) _
     GeneratedFile(entity.name, GeneratedFile.scala, cont)
   }
 

@@ -1,4 +1,12 @@
-@()
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@()(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import java.util.UUID
+
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodEntity
+import @{fileStructure.nameSpace}.generated.klima.model.teamEntity.TeamEntity
 
 case class GameEntity (
     gameId: UUID,

@@ -1,6 +1,11 @@
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @import de.htwg.zeta.codeGenerator.model.Entity
 
-@(entity: Entity)
+@(entity: Entity)(fileStructure:FileStructure)
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@(entity.name)
 
 trait PeriodModel {
   private[generated] val periodStart: @(entity.name)

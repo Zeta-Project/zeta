@@ -1,13 +1,21 @@
 package de.htwg.zeta.codeGenerator.model
 
+import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+import play.twirl.api.Html
+
 case class GeneratedFile(
     name: String,
     fileType: String,
-    content: String
+    content: FileStructure => Html
 )
 
 object GeneratedFile {
   val scala = "scala"
 
-  def scalaFile(name: String, content: String): GeneratedFile = GeneratedFile(name, scala, content)
+  class FileStructure(nameSpaceList: List[String], packageList: List[String]) {
+    val nameSpace: String = nameSpaceList.mkString(".")
+    val currentPackage: String = packageList.mkString(".")
+  }
+
+  def scalaFile(name: String, content: FileStructure => Html): GeneratedFile = GeneratedFile(name, scala, content)
 }

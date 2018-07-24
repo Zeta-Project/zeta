@@ -5,9 +5,27 @@
 
 @import de.htwg.zeta.codeGenerator.model.MapLink
 @import de.htwg.zeta.codeGenerator.model.ReferenceLink
-@(entity: Entity, startType: AnchorEnum, fileName: String)
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(entity: Entity, startType: AnchorEnum, fileName: String)(fileStructure:FileStructure)
 
 @name = @{entity.name}
+
+package @fileStructure.currentPackage
+
+import @{fileStructure.nameSpace}.generated.klima.accessor.Accessor
+import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}ValueAccessor
+import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}InputValueAccessor
+import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}OutputValueAccessor
+import @{fileStructure.nameSpace}.generated.klima.model.@{startType.lower}Entity.@{startType}Model
+import @{fileStructure.nameSpace}.generated.klima.model.@{startType.lower}Entity.@{startType}Output
+import @{fileStructure.nameSpace}.generated.klima.model.@{startType.lower}Entity.@{startType}Input
+
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}Output
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}Input
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}StaticValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}InputValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}OutputValues
 
 class @{fileName}(
 private val getModel: (@{startType}Model) => @name,
@@ -69,12 +87,12 @@ lazy val @{link.name} = Accessor.@{link.entityPath}
 val @{vname} = @{startType}ValueAccessor(getStaticValues(_).@{vname})
 }
 
-@allInValues = {// in values:@for(value <- entity.fixValues){@singleInValue(value, value.name)}}
+@allInValues = {// in values:@for(value <- entity.inValues){@singleInValue(value, value.name)}}
 @singleInValue(value: Value, vname: String) = {
   val @{vname}: @{startType}InputValueAccessor[@{value.valueType}] = @{startType}InputValueAccessor(getInputValues(_).@{vname})(updateInput((i, v) => i.copy(@{vname} = v)))
 }
 
-@allOutValues = {// out values:@for(value <- entity.fixValues){@singleOutValue(value, value.name)}}
+@allOutValues = {// out values:@for(value <- entity.outValues){@singleOutValue(value, value.name)}}
 @singleOutValue(value: Value, vname: String) = {
   val @{vname} = @{startType}OutputValueAccessor(getOutputValues(_).@{vname})
 }
