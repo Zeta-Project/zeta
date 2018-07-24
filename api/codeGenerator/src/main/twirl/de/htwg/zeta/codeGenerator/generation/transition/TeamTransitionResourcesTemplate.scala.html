@@ -1,6 +1,8 @@
 @import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @()(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 case class TeamTransitionResources(
   currentTeam: TeamEntity,
   otherTeams: List[TeamEntity],

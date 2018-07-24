@@ -3,6 +3,8 @@
 
 @(entity: Entity)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 trait TeamModel{
   private[generated] val teamStart: @{entity.name}
 }

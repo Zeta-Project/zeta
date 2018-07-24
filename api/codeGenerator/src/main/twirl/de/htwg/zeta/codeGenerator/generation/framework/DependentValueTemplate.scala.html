@@ -1,6 +1,6 @@
 @import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @(folderName: String)(fileStructure:FileStructure)
-package net.depVal
+package @fileStructure.currentPackage
 
 import scala.collection.mutable
 import scala.concurrent.Future

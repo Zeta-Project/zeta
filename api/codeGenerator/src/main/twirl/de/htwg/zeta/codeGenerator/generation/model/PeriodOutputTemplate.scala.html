@@ -3,6 +3,8 @@
 
 @(periodStart: Entity)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 sealed trait PeriodOutput extends PeriodModel {
   private[generated] val periodStart: @{periodStart.name}Output
 

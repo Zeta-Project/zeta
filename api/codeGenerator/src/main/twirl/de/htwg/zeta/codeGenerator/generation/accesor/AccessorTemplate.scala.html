@@ -10,6 +10,8 @@
 
 @name = @{entity.name}
 
+package @fileStructure.currentPackage
+
 class @{fileName}(
 private val getModel: (@{startType}Model) => @name,
 private val getOutput: (@{startType}Output) => @{name}Output,

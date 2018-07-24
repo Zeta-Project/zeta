@@ -3,6 +3,8 @@
 
 @(anchor: Anchor)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 trait GameTransition {
 
 def team: @{anchor.team.name}TeamTransition

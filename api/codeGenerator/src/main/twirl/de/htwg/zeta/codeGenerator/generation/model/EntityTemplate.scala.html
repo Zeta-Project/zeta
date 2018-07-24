@@ -3,6 +3,8 @@
 @import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @(entity: Entity)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 trait @{entity.name} {
   @links("val ", "", false)
   val staticValues: @(entity.name)StaticValues
