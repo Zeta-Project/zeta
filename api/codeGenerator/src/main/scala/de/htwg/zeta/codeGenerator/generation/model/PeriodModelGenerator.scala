@@ -22,19 +22,15 @@ object PeriodModelGenerator {
   }
 
   private def generateEntity(periodStart: Entity): GeneratedFile = {
-    val cont = PeriodEntityTemplate().body
-    GeneratedFile("PeriodEntity", GeneratedFile.scala, cont)
+    GeneratedFile("PeriodEntity", GeneratedFile.scala, PeriodEntityTemplate())
   }
   private def generateModel(periodStart: Entity): GeneratedFile = {
-    val cont = PeriodModelTemplate(periodStart).body
-    GeneratedFile("PeriodModel", GeneratedFile.scala, cont)
+    GeneratedFile("PeriodModel", GeneratedFile.scala, PeriodModelTemplate(periodStart))
   }
   private def generateInput(periodStart: Entity): GeneratedFile = {
-    val cont = PeriodInputTemplate(periodStart).body
-    GeneratedFile("PeriodInput", GeneratedFile.scala, cont)
+    GeneratedFile("PeriodInput", GeneratedFile.scala, PeriodInputTemplate(periodStart))
   }
   private def generateOutput(periodStart: Entity): GeneratedFile = {
-    val cont = PeriodOutputTemplate(periodStart).body
-    GeneratedFile("PeriodOutput", GeneratedFile.scala, cont)
+    GeneratedFile("PeriodOutput", GeneratedFile.scala, PeriodOutputTemplate(periodStart))
   }
 }

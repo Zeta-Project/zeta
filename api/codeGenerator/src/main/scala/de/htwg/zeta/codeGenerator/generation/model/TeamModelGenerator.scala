@@ -8,6 +8,7 @@ import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.model.GeneratedFile
 import de.htwg.zeta.codeGenerator.model.GeneratedFolder
+import play.twirl.api.Html
 
 object TeamModelGenerator {
   def generate(anchor: Anchor): GeneratedFolder = {
@@ -22,19 +23,15 @@ object TeamModelGenerator {
   }
 
   private def generateEntity(teamStart: Entity): GeneratedFile = {
-    val cont = TeamEntityTemplate().body
-    GeneratedFile("TeamEntity", GeneratedFile.scala, cont)
+    GeneratedFile("TeamEntity", GeneratedFile.scala, TeamEntityTemplate())
   }
   private def generateModel(teamStart: Entity): GeneratedFile = {
-    val cont = TeamModelTemplate(teamStart).body
-    GeneratedFile("TeamModel", GeneratedFile.scala, cont)
+    GeneratedFile("TeamModel", GeneratedFile.scala, TeamModelTemplate(teamStart))
   }
   private def generateInput(teamStart: Entity): GeneratedFile = {
-    val cont = TeamInputTemplate(teamStart).body
-    GeneratedFile("TeamInput", GeneratedFile.scala, cont)
+    GeneratedFile("TeamInput", GeneratedFile.scala, TeamInputTemplate(teamStart))
   }
   private def generateOutput(teamStart: Entity): GeneratedFile = {
-    val cont = TeamOutputTemplate(teamStart).body
-    GeneratedFile("TeamOutput", GeneratedFile.scala, cont)
+    GeneratedFile("TeamOutput", GeneratedFile.scala, TeamOutputTemplate(teamStart))
   }
 }

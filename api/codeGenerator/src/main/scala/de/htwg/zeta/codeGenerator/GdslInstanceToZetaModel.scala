@@ -8,6 +8,7 @@ import scala.collection.immutable.Seq
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
+import de.htwg.zeta.codeGenerator
 import de.htwg.zeta.codeGenerator.generation.KlimaCodeGenerator
 import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
@@ -52,8 +53,9 @@ object GdslInstanceToZetaModel extends Logging {
       period <- updateReferences(first.period, state)
     } yield {
       val anchor = first.copy(team = team, period = period)
-      val generated = KlimaCodeGenerator.generate(anchor, "de", "htwg")
-      transformGeneratedFolder(gdslInstance.id, generated, "")
+      val path = List("de", "htwg")
+      val generated = KlimaCodeGenerator.generate(anchor, path.head, path.tail: _*)
+      transformGeneratedFolder(gdslInstance.id, generated, path)
     }
 
   }
@@ -133,19 +135,21 @@ object GdslInstanceToZetaModel extends Logging {
     }
   }
 
-  private def transformGeneratedFolder(id: UUID, folder: GeneratedFolder, prefix: String): List[File] = {
+  private def transformGeneratedFolder(id: UUID, folder: GeneratedFolder, nameSpace: List[String]): List[File] = {
     val buff = ListBuffer[File]()
-    def rec(current: GeneratedFolder, pre: String): Unit = {
+    def rec(current: GeneratedFolder, preFolder: String, reversePath: List[String]): Unit = {
+      val path = reversePath.reverse
       current.files.foreach { f =>
-        val fileName = s"$pre/${f.name}.${f.fileType}"
-        val formattedCont = ScalaCodeBeautifier.format(fileName, f.content)
+        val fileName = s"$preFolder/${f.name}.${f.fileType}"
+        val fileStruct = new codeGenerator.model.GeneratedFile.FileStructure(nameSpace, path)
+        val formattedCont = ScalaCodeBeautifier.format(fileName, f.content(fileStruct).body)
         buff += File(id, fileName, formattedCont)
       }
       current.children.foreach { f =>
-        rec(f, s"$pre/${f.name}")
+        rec(f, s"$preFolder/${f.name}", f.name :: reversePath)
       }
     }
-    rec(folder, if (prefix.isEmpty) folder.name else s"$prefix/${folder.name}")
+    rec(folder, "", Nil)
     buff.result()
   }
 
@@ -172,7 +176,7 @@ object GdslInstanceToZetaModel extends Logging {
 
   private def mapAllOrNone[E, R](seq: Seq[E])(map: E => Either[String, R]): Either[String, List[R]] = {
     val buff = ListBuffer[R]()
-    @tailrec def rek(s: List[E]):  Either[String, List[R]]  = s match {
+    @tailrec def rek(s: List[E]): Either[String, List[R]] = s match {
       case Nil => Right(buff.result())
       case head :: tail => map(head) match {
         case Left(msg) => Left(msg)

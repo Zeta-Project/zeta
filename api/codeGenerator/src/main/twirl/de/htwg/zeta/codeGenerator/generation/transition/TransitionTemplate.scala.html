@@ -1,6 +1,7 @@
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @import de.htwg.zeta.codeGenerator.model.Entity
 @import de.htwg.zeta.codeGenerator.model.AnchorEnum
-@(entity:Entity, start: AnchorEnum)
+@(entity:Entity, start: AnchorEnum)(fileStructure:FileStructure)
 @name = @{entity.name}
 @trans = {@{start.name}Transition}
 

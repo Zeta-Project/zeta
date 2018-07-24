@@ -1,6 +1,6 @@
 @import de.htwg.zeta.codeGenerator.model.Anchor
-
-@(anchor: Anchor)
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(anchor: Anchor)(fileStructure:FileStructure)
 
 @teamCompName = {@{anchor.team.name}}
 

@@ -5,7 +5,8 @@
 
 @import de.htwg.zeta.codeGenerator.model.MapLink
 @import de.htwg.zeta.codeGenerator.model.ReferenceLink
-@(entity: Entity, startType: AnchorEnum, fileName: String)
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(entity: Entity, startType: AnchorEnum, fileName: String)(fileStructure:FileStructure)
 
 @name = @{entity.name}
 

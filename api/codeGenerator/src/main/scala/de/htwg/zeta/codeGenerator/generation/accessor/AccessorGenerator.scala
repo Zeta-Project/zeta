@@ -16,7 +16,7 @@ object AccessorGenerator extends PerTypeGenerator {
   }
 
   override protected def buildTypeIndependentFiles(start: AnchorWithEntities): List[GeneratedFile] = {
-    val content = BaseAccessorTemplate(start.anchor, teamPackage, periodPackage).body
+    val content = BaseAccessorTemplate(start.anchor, teamPackage, periodPackage) _
     val baseAccessor = GeneratedFile("Accessor", GeneratedFile.scala, content)
 
     List(baseAccessor)
@@ -24,7 +24,7 @@ object AccessorGenerator extends PerTypeGenerator {
 
   override protected def buildEntity(entity: Entity, startType: AnchorEnum, simName: String): GeneratedFile = {
     val fileName = s"${entity.name}${startType}Accessor"
-    val content = AccessorTemplate(entity, startType, fileName).body
+    val content = AccessorTemplate(entity, startType, fileName) _
     GeneratedFile(fileName, GeneratedFile.scala, content)
   }
 }
