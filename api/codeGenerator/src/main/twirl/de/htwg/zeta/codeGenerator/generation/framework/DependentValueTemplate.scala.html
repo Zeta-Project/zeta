@@ -25,7 +25,7 @@ sealed trait DependentValueBase[R, V] {
 
   def map[B, C](func: V => B)(implicit conv: DependentValueFutureConverter[B, C]): DependentValueBuilder[R, C]
 
-  protected[folderName] def calculateWithResources(cr: CalculationResources[R]): Future[V]
+  protected[@folderName] def calculateWithResources(cr: CalculationResources[R]): Future[V]
 
 }
 
@@ -49,7 +49,7 @@ sealed abstract class DependentValue[R, V] extends DependentValueBase[R, V] {
     calculateWithResources(cr)
   }
 
-  protected[folderName] final override def calculateWithResources(cr: CalculationResources[R]): Future[V] = {
+  protected[@folderName] final override def calculateWithResources(cr: CalculationResources[R]): Future[V] = {
     this.synchronized {
       // getOrElseUpdate might execute Future more than once.
       cache.get(cr) match {
@@ -68,7 +68,7 @@ sealed abstract class DependentValue[R, V] extends DependentValueBase[R, V] {
   private def toBuilder(): DependentValueBuilder[R, V] = {
     val self = this
     new DependentValueBuilder[R, V]() {
-      protected[@{folderName}] override def calculateWithResources(cr: CalculationResources[R]): Future[V] = self.calculateWithResources(cr)
+      protected[@folderName] override def calculateWithResources(cr: CalculationResources[R]): Future[V] = self.calculateWithResources(cr)
     }
   }
 
@@ -85,19 +85,19 @@ sealed abstract class DependentValue[R, V] extends DependentValueBase[R, V] {
 object DependentValue {
   def resources[R]: DependentValueBuilder[R, R] = {
     new DependentValueBuilder[R, R] {
-      protected[@{folderName}] override def calculateWithResources(cr: CalculationResources[R]): Future[R] = Future.successful(cr.resources)
+      protected[@folderName] override def calculateWithResources(cr: CalculationResources[R]): Future[R] = Future.successful(cr.resources)
     }
   }
 }
 
 sealed abstract class DependentValueBuilder[R, V] extends DependentValueBase[R, V] {
 
-  protected[@{folderName}] override def calculateWithResources(cr: CalculationResources[R]): Future[V]
+  protected[@folderName] override def calculateWithResources(cr: CalculationResources[R]): Future[V]
 
   override def flatMap[B](func: V => DependentValueBase[R, B]): DependentValueBuilder[R, B] = {
     val self = this
     new DependentValueBuilder[R, B] {
-      protected[@{folderName}] def calculateWithResources(cr: CalculationResources[R]): Future[B] = {
+      protected[@folderName] def calculateWithResources(cr: CalculationResources[R]): Future[B] = {
         self.calculateWithResources(cr).flatMap(v => func(v).calculateWithResources(cr))
       }
     }
@@ -107,7 +107,7 @@ sealed abstract class DependentValueBuilder[R, V] extends DependentValueBase[R, 
   DependentValueBuilder[R, C] = {
     val outer = this
     new DependentValueBuilder[R, C] {
-      protected[@{folderName}] def calculateWithResources(cr: CalculationResources[R]): Future[C] = {
+      protected[@folderName] def calculateWithResources(cr: CalculationResources[R]): Future[C] = {
         outer.calculateWithResources(cr).flatMap(v => conv.convert(func(v)))
       }
     }
