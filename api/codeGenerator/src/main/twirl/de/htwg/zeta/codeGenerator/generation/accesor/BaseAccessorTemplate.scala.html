@@ -5,6 +5,8 @@
 
 @(start: Anchor, teamPackage: String, periodPackage: String)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 object Accessor {
 val @{KlimaCodeGenerator.teamConst} = new @{start.team.name}TeamAccessor(_.teamStart, _.teamStart, (i, f) => i.copy(f(i.teamStart)))
 val @{KlimaCodeGenerator.periodConst} = new @{start.period.name}PeriodAccessor(_.periodStart, _.periodStart, (i, f) => i.copy(f(i.periodStart)))

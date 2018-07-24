@@ -1,6 +1,8 @@
 @import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @()(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 case class PeriodEntity(
     configuredPeriod: Int = 0,
     nextPeriod: PeriodInput,

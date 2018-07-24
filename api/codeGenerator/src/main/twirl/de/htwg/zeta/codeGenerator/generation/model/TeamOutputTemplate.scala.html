@@ -3,6 +3,8 @@
 
 @(teamStart: Entity)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 sealed trait TeamOutput extends TeamModel {
   private[generated] val teamStart: @{teamStart.name}Output
 

@@ -4,6 +4,8 @@
 @import de.htwg.zeta.codeGenerator.model.AnchorEnum
 @(start: AnchorEnum)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 trait @{start}ValueAccessor[R] extends @{start}OutputValueAccessor[R] {
 def get(model: @{start}Model): R
 }

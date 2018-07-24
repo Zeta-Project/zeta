@@ -2,6 +2,8 @@
 @import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 @(typeName: String)(fileStructure:FileStructure)
 
+package @fileStructure.currentPackage
+
 import com.google.inject.Inject
 
 class TeamDefaultValue @@Inject()(private val defaultValue: @{typeName}TeamDefaultValue) {
