@@ -12,6 +12,20 @@
 
 package @fileStructure.currentPackage
 
+import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}ValueAccessor
+import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}InputValueAccessor
+import @{fileStructure.nameSpace}.generated.klima.accessor.valueAccessor.@{startType}OutputValueAccessor
+import @{fileStructure.nameSpace}.generated.klima.model.@{startType.lower}Entity.@{startType}Model
+import @{fileStructure.nameSpace}.generated.klima.model.@{startType.lower}Entity.@{startType}Output
+import @{fileStructure.nameSpace}.generated.klima.model.@{startType.lower}Entity.@{startType}Input
+
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}Output
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}Input
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}StaticValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}InputValues
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{entity.name}OutputValues
+
 class @{fileName}(
 private val getModel: (@{startType}Model) => @name,
 private val getOutput: (@{startType}Output) => @{name}Output,
