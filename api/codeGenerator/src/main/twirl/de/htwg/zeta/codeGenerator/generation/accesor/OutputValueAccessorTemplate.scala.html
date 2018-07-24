@@ -1,7 +1,8 @@
 
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
 
 @import de.htwg.zeta.codeGenerator.model.AnchorEnum
-@(start: AnchorEnum)
+@(start: AnchorEnum)(fileStructure:FileStructure)
 
 trait @{start}OutputValueAccessor[R] {
 def get(model: @{start}Output): R

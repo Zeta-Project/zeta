@@ -6,7 +6,7 @@ import de.htwg.zeta.codeGenerator.model.GeneratedFolder
 
 object GameModelGenerator {
   def generate(): GeneratedFolder = {
-    val cont = GameEntityTemplate().body
+    val cont = GameEntityTemplate() _
     val file = GeneratedFile("GameEntity", GeneratedFile.scala, cont)
     GeneratedFolder("gameEntity", List(file), Nil)
   }

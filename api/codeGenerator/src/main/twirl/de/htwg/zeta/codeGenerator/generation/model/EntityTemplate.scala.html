@@ -1,7 +1,7 @@
 @import de.htwg.zeta.codeGenerator.model.Entity
 @import de.htwg.zeta.codeGenerator.model.Value
-
-@(entity: Entity)
+@import de.htwg.zeta.codeGenerator.model.GeneratedFile.FileStructure
+@(entity: Entity)(fileStructure:FileStructure)
 
 trait @{entity.name} {
   @links("val ", "", false)
