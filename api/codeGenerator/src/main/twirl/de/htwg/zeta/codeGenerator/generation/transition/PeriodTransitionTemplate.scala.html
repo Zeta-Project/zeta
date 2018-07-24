@@ -10,6 +10,13 @@ import com.google.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
+import @{fileStructure.nameSpace}.framework.dependentValue.DependentValue
+import @{fileStructure.nameSpace}.generated.klima.accessor.Accessor
+import @{fileStructure.nameSpace}.generated.klima.model.entity.@{periodCompName}Output
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodEntity
+import @{fileStructure.nameSpace}.generated.klima.model.periodEntity.PeriodOutputImpl
+import @{fileStructure.nameSpace}.generated.klima.transition.periodTransition.@{periodCompName}PeriodTransition
+
 object PeriodTransition {
 
   private[generated] class Factory @@Inject()(private val periodFact: @{periodCompName}PeriodTransition.InjectionFactory) {
