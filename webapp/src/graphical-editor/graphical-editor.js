@@ -12,3 +12,4 @@ import './css/toolbar.css';
 import './css/freetransform.css';
 import './css/style.css';
 import './css/linkTypeSelector.css';
+import 'yfiles/yfiles.css';

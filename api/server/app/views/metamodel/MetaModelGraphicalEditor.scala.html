@@ -19,124 +19,47 @@
         window.loadedMetaModel.loadOnStart = true;
         window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(gdslProject.concept.uiState))));
     }
-        // Hotfix for issue in the latest Chrome version, see https://github.com/clientIO/joint/issues/203
-        SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function(toElement) {
-            return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM());
-        };
     </script>
     <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.js")"></script>
 }
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user, styles, scripts, Some(gdslProject)) {
 
+    <aside class="sidebar left">
+        <h1 class="sidebar-header">Palette</h1>
+        <div class="sidebar-content" style="position: relative; padding: 0;">
+            <div id="drag-and-drop-panel">
 
-    <div class="toolbar-container panel panel-default">
-        <div class="btn-group">
-            <button id="btn-export-mm" class="btn btn-default" data-tooltip="Export current Model as JSON">
-                <span class="glyphicon glyphicon-floppy-save"></span>
-            </button>
-            <button id="btn-print" class="btn btn-default" data-tooltip="Open Print Dialog for current Model">
-                <span class="glyphicon glyphicon-print"></span>
-            </button>
-            <button id="btn-svg" class="btn btn-default" data-tooltip="Open current Model as SVG in a new Window">
-                SVG
-            </button>
-            <button id="btn-png" class="btn btn-default" data-tooltip="Open current Model as PNG in a new Window">
-                PNG
-            </button>
-        </div>
-
-        <div class="btn-group">
-            <button id="btn-zoom-in" class="btn btn-default" data-tooltip="Zoom In">
-                <span class="glyphicon glyphicon-zoom-in"></span>
-            </button>
-            <button id="btn-zoom-out" class="btn btn-default" data-tooltip="Zoom Out">
-                <span class="glyphicon glyphicon-zoom-out"></span>
-            </button>
-            <button id="btn-fullscreen" class="btn btn-default" data-tooltip="Toggle Fullscreen Mode">
-                <span class="glyphicon glyphicon-fullscreen"></span>
-            </button>
-        </div>
-
-        <div class="btn-group">
-            <button id="btn-undo" class="btn btn-default" data-tooltip="Undo last Operation">
-                <span class="glyphicon glyphicon-share-alt icon-flipped"></span>
-            </button>
-            <button id="btn-redo" class="btn btn-default" data-tooltip="Redo">
-                <span class="glyphicon glyphicon-share-alt"></span>
-            </button>
-            <button id="btn-clear" class="btn btn-default" data-tooltip="Clear Paper">
-                <span class="glyphicon glyphicon-trash"></span>
-            </button>
-            <button id="btn-to-front" class="btn btn-default" data-tooltip="Bring current Element to Front">
-                <img class="level-icon" src="@routes.ScalaRoutes.getStaticFiles("images/icon-to-front.svg")">
-            </button>
-            <button id="btn-to-back" class="btn btn-default" data-tooltip="Send current Element to Back">
-                <img class="level-icon" src="@routes.ScalaRoutes.getStaticFiles("images/icon-to-back.svg")">
-            </button>
-        </div>
-
-        <div class="btn-group">
-            <div class="toolbar-gridsize btn btn-default" id="btn-gridsize">
-                <label for="input-gridsize">Grid</label>
-                <div class="toolbar-hover-control">
-                    <input type="range" value="10" min="5" max="50" step="5" id="input-gridsize">
-                    <output for="input-gridsize" id="output-gridsize">10</output>
-                </div>
-            </div>
-
-            <div class="toolbar-guidelines btn btn-default" id="btn-guidelines">
-                <label for="input-guidelines">Guidelines</label>
-                <div class="toolbar-hover-control">
-                    <input type="checkbox" id="checkbox-guidelines" checked>
-                    <input type="range" value="5" min="0" max="15" step="5" id="input-guidelines">
-                    <output for="input-guidelines" id="output-guidelines">5</output>
-                </div>
-            </div>
-
-            <div class="toolbar-distancelines btn btn-default" id="btn-distancelines">
-                <label for="input-distancelines">Distancelines</label>
-                <div class="toolbar-hover-control">
-                    <input type="checkbox" id="checkbox-distancelines" checked>
-                    <input type="range" value="5" min="0" max="15" step="5" id="input-distancelines">
-                    <output for="input-distancelines" id="output-distancelines">5</output>
-                </div>
-            </div>
-
-        </div>
-        <div class="btn-group">
-            <button id="btn-method-verification" class="btn btn-default" data-tooltip="Verificate all methods">
-                Verifiy Methods
-            </button>
-        </div>
-
-
-    </div>
-
-    <div class="stencil-container panel panel-default">
-    </div>
-    <div class="toggle-container stencil-toggle-container">
-        <span class="stencil-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-left"></span>
-    </div>
-
-    <div class="paper-container">
-        <div id="error-panel" class="alert alert-danger alert-dismissible export-result-alert collapse" role="alert">
-            <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <div></div>
-        </div>
-        <div id="success-panel" class="alert alert-success alert-dismissible export-result-alert collapse" role="alert">
-            <button type="button" class="close" data-hide="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <div>
             </div>
         </div>
+    </aside>
+
+    <aside class="sidebar right">
+        <h1 class="sidebar-header">Properties</h1>
+        <div class="sidebar-content" style="position: relative; padding: 0;">
+            <div id="properties-panel"></div>
+        </div>
+    </aside>
+
+    <div class="toolbar">
+        <button class="icon-yIconSave" data-command="Save" title="Save"></button>
+        <span class="separator"></span>
+        <button class="icon-yIconZoomOriginal" data-command="ZoomOriginal"
+        title="Zoom to original size"></button>
+        <button class="icon-yIconZoomFit" data-command="FitContent" title="Fit Content"></button>
+        <span class="separator"></span>
+        <button class="icon-yIconCut" data-command="Cut" title="Cut"></button>
+        <button class="icon-yIconCopy" data-command="Copy" title="Copy"></button>
+        <button class="icon-yIconPaste" data-command="Paste" title="Paste"></button>
+        <span class="separator"></span>
+        <button class="icon-yIconUndo" data-command="Undo" title="Undo"></button>
+        <button class="icon-yIconRedo" data-command="Redo" title="Redo"></button>
+        <input type="checkbox" id="snapping-button" class="toggle-button"><label for="snapping-button" class="icon-yIconSnapping" title="Snapping"></label>
+        <button data-command="Layout" title="Run Layout" class="icon-yIconLayout"></button>
     </div>
 
-    <div class="inspector-container panel panel-default">
-        <div class="inspector-container-inner panel-body"></div>
-    </div>
-    <div class="toggle-container inspector-toggle-container">
-        <span class="inspector-toggle-icon-wrapper toggle-icon-wrapper glyphicon glyphicon-menu-right"></span>
+    <div class="content">
+        <div id="graphComponent"></div>
     </div>
 
-
-    <div id="contextMenuContainer"></div>
+    <div id="snackbar"></div>
 }
