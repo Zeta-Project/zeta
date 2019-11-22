@@ -19,6 +19,7 @@ module.exports = {
     "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
     "graphical-model-editor": "./src/graphical-model-editor.js",
     "silhouette": "./src/silhouette.js",
+    "yfiles-editor":"./src/yfiles-editor/scripts/app.js"
 	},
 	output: {
 		path: path.join(__dirname, "dist"),
@@ -138,5 +139,10 @@ module.exports = {
         ]
       }
     ]
+  },
+  devServer: {
+    contentBase: path.join(__dirname, './src/yfiles-editor'),
+    compress: true,
+    port: 9003
   }
 };
