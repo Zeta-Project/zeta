@@ -1,0 +1,270 @@
+/* Generic layout. */
+
+.header-zeta {
+    position: absolute;
+    top: 0;
+    height: 40px;
+    left: 0;
+    right: 0;
+    background-color: #4b4a4d;
+    color: white;
+    transition: padding-left 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s;
+}
+@media screen and (max-height: 500px) {
+    .header-zeta {
+        height: 20px;
+        font-size: 9px;
+    }
+}
+.header-zeta .demo-y-logo {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    padding: 0;
+    box-sizing: border-box;
+    border-color: transparent;
+}
+@media screen and (max-height: 500px) {
+    .header-zeta .demo-y-logo {
+        height: 20px;
+        line-height: 20px;
+    }
+}
+.header-zeta a {
+    display: inline-block;
+    height: 40px;
+    text-decoration: none;
+    color: white;
+    line-height: 40px;
+    padding: 0 5px;
+    vertical-align: top;
+    font-size: 1.5em;
+}
+@media screen and (max-height: 500px) {
+    .header-zeta a {
+        height: 20px;
+        line-height: 20px;
+    }
+}
+.header-zeta .title-zeta {
+    display: inline-block;
+    padding: 0 5px 0 30px;
+    height: 40px;
+    line-height: 40px;
+    color: white;
+    cursor: default;
+    font-size: 1.5em;
+    letter-spacing: 1px;
+    vertical-align: top;
+}
+@media screen and (max-width: 960px ) {
+    .header-zeta .title-zeta {
+        display: none;
+    }
+}
+@media screen and (max-height: 500px) {
+    .header-zeta .title-zeta {
+        height: 20px;
+        line-height: 20px;
+    }
+}
+
+.sidebar {
+    margin: 15px;
+    position: absolute;
+    top: 90px;
+    bottom: 30px;
+    width: 210px;
+    box-sizing: border-box;
+    background: #f7f7f7;
+    z-index: 15;
+    line-height: 150%;
+    transition: left 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s, right 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s, width 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s;
+}
+
+.sidebar .sidebar-header {
+    color: #666666;
+    padding-left: 0.2em;
+    font-size: 1.8em;
+    height: 60px;
+    line-height: 60px;
+    margin: 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.sidebar .sidebar-content {
+    overflow-y: auto;
+    height: calc(100% - 70px);
+    padding: 0 25px;
+}
+
+.sidebar .sidebar-content h1,
+.sidebar .sidebar-content h2,
+.sidebar .sidebar-content h3,
+.sidebar .sidebar-content h4,
+.sidebar .sidebar-content h5,
+.sidebar .sidebar-content h6 {
+    color: #666666;
+}
+
+.sidebar .sidebar-content a,
+.sidebar .sidebar-content a:visited {
+    text-decoration: none;
+    color: #1871bd;
+}
+
+.sidebar .sidebar-content a:hover {
+    text-decoration: none;
+    color: #18468c;
+}
+
+.sidebar .sidebar-content ul {
+    padding-left: 1.3em;
+}
+
+.sidebar .sidebar-content li {
+    margin: 0.5em 0;
+}
+
+.sidebar .sidebar-content dt {
+    font-weight: bold;
+    color: #333;
+    margin-top: 4px;
+}
+
+.sidebar .sidebar-content dd {
+    margin-left: 10px;
+}
+
+.sidebar.left {
+    left: 0;
+    right: auto;
+}
+
+.left-hidden .sidebar.left {
+    left: -320px;
+}
+
+@media screen and (max-width: 960px ) {
+    .left-hidden .sidebar.left {
+        left: -100%;
+    }
+}
+
+@media screen and (max-width: 960px ) {
+    .hide-left-when-small .sidebar.left {
+        display: none;
+    }
+}
+
+.sidebar.right {
+    right: 0;
+    left: auto;
+}
+
+.right-hidden .sidebar.right {
+    right: -320px;
+}
+
+@media screen and (max-width: 960px ) {
+    .right-hidden .sidebar.right {
+        right: -100%;
+    }
+}
+
+@media screen and (max-width: 960px ) {
+    .hide-right-when-small .sidebar.right {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 960px ) {
+    .sidebar {
+        width: 100%;
+    }
+}
+
+.left-hidden .content {
+    left: 0;
+}
+
+.right-hidden .content {
+    right: 0;
+}
+
+@media screen and (max-width: 960px ) {
+    .hide-left-when-small .content {
+        left: 0;
+    }
+}
+
+@media screen and (max-width: 960px ) {
+    .hide-right-when-small .content {
+        right: 0;
+    }
+}
+
+/* ------------------------------
+Beginning of the snackbar styling
+---------------------------------
+position it at the bottom and in the middle of the screen */
+#snackbar {
+    visibility: hidden; /* Hidden by default. Visible on click */
+    min-width: 250px; /* Set a default minimum width */
+    margin-left: -125px; /* Divide value of min-width by 2 */
+    background-color: #333; /* Black background color */
+    color: #fff; /* White text color */
+    text-align: center; /* Centered text */
+    border-radius: 2px; /* Rounded borders */
+    padding: 16px; /* Padding */
+    position: fixed; /* Sit on top of the screen */
+    z-index: 1; /* Add a z-index if needed */
+    left: 50%; /* Center the snackbar */
+    bottom: 30px; /* 30px from the bottom */
+}
+
+/* Show the snackbar if class added with JavaScript */
+#snackbar.show {
+    visibility: visible; /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+    However, delay the fade out process for 2.5 seconds */
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 3.7s;
+    animation: fadein 0.5s, fadeout 0.5s 3.7s;
+}
+
+/* Animations to fade the snackbar in and out */
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+/* --------------------
+End of Snackbar styling
+----------------------- */
+
+#metamodel-name {
+    position: absolute;
+    width: 300px;
+    top: 20px;
+    overflow: hidden;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+}
