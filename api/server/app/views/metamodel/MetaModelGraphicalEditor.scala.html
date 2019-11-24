@@ -8,7 +8,7 @@
 @(user: Option[User], id: UUID, gdslProject: GdslProject)
 
 @styles = {
-    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.css")">
+    <link rel="stylesheet" type="text/css" href="@routes.ScalaRoutes.getStaticFiles("yfiles-editor.bundle.css")">
 }
 @scripts = {
     <script type="text/javascript">
@@ -20,7 +20,7 @@
         window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(gdslProject.concept.uiState))));
     }
     </script>
-    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("graphical-meta-model-editor.bundle.js")"></script>
+    <script type="text/javascript" src="@routes.ScalaRoutes.getStaticFiles("yfiles-editor.bundle.js")"></script>
 }
 @views.html.webpage.WebpageGeneralLayout("Meta Model Editor", user, styles, scripts, Some(gdslProject)) {
 
