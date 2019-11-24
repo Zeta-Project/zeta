@@ -38,7 +38,7 @@ import '../styles/toolbar.css'
 
 
 // Tell the library about the license contents
-License.value = require('../../../yFiles-for-HTML-Complete-2.2.0.2/lib/license.json');
+License.value = require('../../../../../yFiles-for-HTML-Complete-2.2.0.2/lib/license.json');
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
