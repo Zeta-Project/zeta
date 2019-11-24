@@ -1,25 +1,37 @@
-.content {
-   position: absolute;
-   top: 0;
-   left: 0;
-   right: 0;
-   bottom: 25px;
-   transition: left 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s,
-   right 0.5s cubic-bezier(0.23, 1, 0.32, 1) 0s;
+.paper-container svg {
+   /* Grid background image */
+   background: white url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAHUlEQVQYV2NkYGAwBuKzQIwXMBJSAJMfVUidcAQAnUQBC6jEGBUAAAAASUVORK5CYII=');
 }
 
-#graphComponent {
-
-   position: absolute;
-   left: 0;
-   top: 80px;
-   right: 0;
-   bottom: 0;
-   background-color: #ffffff;
+.paper-container .labels > .label > text > tspan{
+   font-size: 14px;
+   font-weight: 700;
+   dominant-baseline: central;
+   color: red;
 }
 
-@media screen and (max-height: 500px) {
-   #graphComponent {
-      top: 60px;
-   }
+.paper-container .labels > .label > rect {
+   stroke-width: 0;
+}
+
+.paper-container .link-tool > .tool-options > circle {
+   fill: black;
+   fill-opacity: 1;
+   stroke-width: 0;
+}
+
+.paper-scroller {
+    overflow: auto;
+}
+
+.export-result-alert {
+   z-index: 100;
+   width: 300px;
+   margin: 0 5px 5px 3px;
+   bottom: 15px;
+   position: absolute;
+}
+
+.paper-container polyline {
+   fill: transparent
 }

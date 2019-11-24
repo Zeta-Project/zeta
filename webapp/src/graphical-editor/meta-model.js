@@ -1,363 +1,915 @@
 import $ from 'jquery';
+import joint from 'jointjs';
 import Backbone from 'backbone1.0';
+import KeyboardJS from 'keyboardjs/keyboard';
 
 import Exporter from './meta-model/ext/exportMetaModel/Exporter';
-import {Class,
-    EdgeRouter,
-    EdgeRouterScope, Fill, GridSnapTypes,
-    GraphComponent,
-    GraphEditorInputMode,
-    HierarchicLayout,
-    HierarchicLayoutData,
-    ICommand,
-    INode,
-    GraphSnapContext,
-    LayoutExecutor,
-    License,
-    List,
-    OrthogonalEdgeEditingContext,
-    PolylineEdgeRouterData,
-    Size, LabelSnapContext} from "yfiles";
-import {bindAction, bindCommand} from "./meta-model/utils/Bindings";
-import {showSnackbar} from "./meta-model/utils/AppStyle";
-import {DragAndDrop} from "./meta-model/DragAndDrop";
-import {ZetaApiWrapper} from "./meta-model/ZetaApiWrapper";
-import {UMLNodeStyle} from "./meta-model/UMLNodeStyle";
-import * as umlModel from "./meta-model/UMLClassModel";
-import UMLContextButtonsInputMode from "./meta-model/UMLContextButtonsInputMode";
+import collaboration from './meta-model/ext/collaboration';
+import linkTypeSelector from './meta-model/ext/linkTypeSelector';
+import mCoreUtil from './meta-model/ext/mCoreUtil';
+import mEnum from './meta-model/ext/mEnum';
+import mAttribute from './meta-model/ext/mAttribute';
+import Distancelines from './jointjs/distancelines';
+import ExtendedElementView from './jointjs/extendedElementView';
+import ExtendedSelectionView from './jointjs/extendedSelectionView';
+import HtwgGroup from './jointjs/de.htwg.group';
+import Guidelines from './jointjs/guidelines';
 
-License.value = require('../../../../yFiles-for-HTML-Complete-2.2.0.2/lib/license.json');
-
-// We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
-// tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
-Class.ensure(LayoutExecutor);
+import inspector from './meta-model/inspector';
+import Stencil from './meta-model/stencil';
 
 export default Backbone.Router.extend({
 
-    routes: {
-        '*path': 'home'
-    },
+        routes: {
+            '*path': 'home'
+        },
 
-    initialize: function (options) {
+        initialize: function (options) {
 
-        this.options = options || {};
-    },
+            this.options = options || {};
+        },
 
-    home: function () {
+        home: function () {
 
-        this.initializeEditor();
-    },
+            this.initializeEditor();
+        },
 
-    initializeEditor: function () {
+        initializeEditor: function () {
 
-        let graphComponent = new GraphComponent('#graphComponent');
-        const graph = graphComponent.graph;
-        graph.undoEngineEnabled = true
-        graphComponent.inputMode = this.createInputMode(graphComponent)
+            this.inspectorClosedGroups = {};
+            this.inspectorTooltips = [];
 
-        // configures default styles for newly created graph elements
-        graphComponent.graph.nodeDefaults.style = new UMLNodeStyle(new umlModel.UMLClassModel())
-        //clone or share styleInstance
-        graphComponent.graph.nodeDefaults.shareStyleInstance = false
-        graphComponent.graph.nodeDefaults.size = new Size(125, 100)
+            this.initializePaper();
+            this.initializeStencil();
+            this.initializeSelection();
+            this.initializeMEnum();
+            this.initializeMAttribute();
 
-        // configure and initialize drag and drop panel
-        let dragAndDropPanel = new DragAndDrop(graphComponent);
-
-        const zetaApiWrapper = new ZetaApiWrapper();
-        zetaApiWrapper.getConceptDefinition("d882f50c-7e89-48cf-8fea-1e0ea5feb8b7").then(data => {
-            this.buildGraphFromDefinition(graphComponent, data)
-
-            // bootstrap the sample graph
-            this.executeLayout(graphComponent).then(() => {
-                // the sample graph bootstrapping should not be undoable
-                graphComponent.graph.undoEngine.clear()
-            })
-        }).catch(reason => {
-            alert("Problem to load concept definition: " + reason)
-        });
-        //graphComponent.fitGraphBounds();
-
-        // bind toolbar commands
-        this.registerCommands(graphComponent)
-    },
-
-    createInputMode(graphComponent) {
-        console.log("createMode")
-        const mode = new GraphEditorInputMode({
-            orthogonalEdgeEditingContext: new OrthogonalEdgeEditingContext(),
-            allowAddLabel: false,
-            allowGroupingOperations: false,
-            allowCreateNode: false,
-            labelSnapContext: new LabelSnapContext({
-                enabled: false
-            }),
-            snapContext: new GraphSnapContext({
-                nodeToNodeDistance: 30,
-                nodeToEdgeDistance: 20,
-                snapOrthogonalMovement: false,
-                snapDistance: 10,
-                snapSegmentsToSnapLines: true,
-                snapBendsToSnapLines: true,
-                gridSnapType: GridSnapTypes.ALL,
-                enabled: false
-            })
-        })
-
-        // add input mode that handles the edge creations buttons
-        const umlContextButtonsInputMode = new UMLContextButtonsInputMode()
-        umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1
-        mode.add(umlContextButtonsInputMode)
-
-        // execute a layout after certain gestures
-        mode.moveInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes(graphComponent))
-        mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes(graphComponent))
-
-        // hide the edge creation buttons when the empty canvas was clicked
-        mode.addCanvasClickedListener((src, args) => {
-            graphComponent.currentItem = null
-        })
-
-        // the UMLNodeStyle should handle clicks itself
-        mode.addItemClickedListener((src, args) => {
-            if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
-                args.item.style.nodeClicked(src, args)
-            }
-        })
-
-        return mode
-    },
-
-    /**
-     * Routes all edges that connect to selected nodes. This is used when a selection of nodes is moved or resized.
-     */
-    routeEdgesAtSelectedNodes(graphComponent) {
-    const edgeRouter = new EdgeRouter()
-    edgeRouter.scope = EdgeRouterScope.ROUTE_EDGES_AT_AFFECTED_NODES
-
-    const layoutExecutor = new LayoutExecutor({
-        graphComponent,
-        layout: edgeRouter,
-        layoutData: new PolylineEdgeRouterData({
-            affectedNodes: node => graphComponent.selection.selectedNodes.isSelected(node)
-        }),
-        duration: '0.5s',
-        updateContentRect: false
-    })
-    layoutExecutor.start()
-},
-
-    /**
-     * Sets new HierarchicLayout, target nodes are drawn on top
-     * This method gets executed after building the sampleGraph since the nodes got no coordinates
-     * @returns {Promise<any>}
-     */
-    executeLayout(graphComponent) {
-    // configures the hierarchic layout
-    const layout = new HierarchicLayout({
-        orthogonalRouting: true
-    })
-    layout.edgeLayoutDescriptor.minimumFirstSegmentLength = 100
-    layout.edgeLayoutDescriptor.minimumLastSegmentLength = 100
-    layout.edgeLayoutDescriptor.minimumDistance = 100
-
-    const layoutData = new HierarchicLayoutData({
-        // mark all inheritance edges (generalization, realization) as directed so their target nodes
-        // will be placed above their source nodes
-        // all other edges are treated as undirected
-        edgeDirectedness: edge => (0),
-        // combine all inheritance edges (generalization, realization) in edge groups according to
-        // their line type
-        // do not group the other edges
-        sourceGroupIds: edge => getGroupId(edge, 'src'),
-        targetGroupIds: edge => getGroupId(edge, 'tgt')
-    })
-
-    return graphComponent.morphLayout(layout, '500ms', layoutData)
-},
-
-buildGraphFromDefinition(graphComponent, data) {
-
-        const graph = graphComponent.graph
-    const classes = data.classes
-    const references = data.references
-
-    const nodeList = new List()
-
-    //create a node for each class
-    //fill them with existing attributes, operations and names
-    classes.forEach(function (node) {
-        const attributeNames = []
-        for (let i = 0; i < node.attributes.length; i++) {
-            attributeNames[i] = node.attributes[i].name
-        }
-        const methodNames = []
-        for (let i = 0; i < node.methods.length; i++) {
-            methodNames[i] = node.methods[i].name
-        }
-        const tempNode = (graph.createNode({
-            style: new UMLNodeStyle(
-                new umlModel.UMLClassModel({
-                    className: node.name.toString(),
-                    attributes: attributeNames,
-                    operations: methodNames
-                })
-            )
-        }));
-        if (node.abstractness === true) {
-            tempNode.style.model.constraint = 'abstract'
-            tempNode.style.model.stereotype = ''
-            tempNode.style.fill = Fill.CRIMSON
-        }
-        nodeList.add(tempNode)
-        console.log(nodeList.size)
-    });
-
-
-    graph.nodes.forEach(node => {
-        if (node.style instanceof UMLNodeStyle) {
-            node.style.adjustSize(node, graphComponent.inputMode)
-        }
-    })
-
-    //connect each class
-    let source = null;
-    let target = null;
-    //const nodes = graph.getNodeArray() --> not a function???
-    references.forEach(function (reference) {
-        nodeList.forEach(function (node) {
-            if (node.style.model.className === reference.sourceClassName) {
-                source = node
-            }
-            if (node.style.model.className === reference.targetClassName) {
-                target = node
-            }
-        })
-        if (source != null && target != null) {
-            const edge = graph.createEdge(source, target);
-            // add a label to the node
-            if (reference.name !== '') {
-                graph.addLabel(edge, reference.name)
+            if (window.loadedMetaModel.loadOnStart === true) {
+                this.graph.fromJSON(_.extend({}, window.loadedMetaModel.graph));
             }
 
-        }
-        source = null
-        target = null
+            this.initializeHaloAndInspector();
+            this.initializeClipboard();
+            this.initializeCommandManager();
 
-    })
-},
+            this.initializeToolbar();
 
-    registerCommands(graphComponent) {
-        bindAction("button[data-command='Save']", () => {
-            const zetaApiWrapper = new ZetaApiWrapper();
-            zetaApiWrapper.postConceptDefinition("d882f50c-7e89-48cf-8fea-1e0ea5feb8b7", JSON.stringify(definition)).then(checkStatus).then(() => {
-                showSnackbar("Metamodel saved successfully!")
-            }).catch(reason => {
-                showSnackbar("Problem to save Metamodel: " + reason)
-            })
-        });
-        bindCommand("button[data-command='Cut']", ICommand.CUT, graphComponent)
-        bindCommand("button[data-command='Copy']", ICommand.COPY, graphComponent)
-        bindCommand("button[data-command='Paste']", ICommand.PASTE, graphComponent)
-        bindCommand("button[data-command='FitContent']", ICommand.FIT_GRAPH_BOUNDS, graphComponent)
-        bindCommand("button[data-command='ZoomOriginal']", ICommand.ZOOM, graphComponent, 1.0)
-        bindCommand("button[data-command='Undo']", ICommand.UNDO, graphComponent)
-        bindCommand("button[data-command='Redo']", ICommand.REDO, graphComponent)
-
-        bindAction('#snapping-button', () => {
-            const snappingEnabled = document.querySelector('#snapping-button').checked
-            graphComponent.inputMode.snapContext.enabled = snappingEnabled
-            graphComponent.inputMode.labelSnapContext.enabled = snappingEnabled
-        })
-        bindAction("button[data-command='Layout']", this.executeLayout)
-    },
-
-    /**
-     * Saves the meta model and graph on the server.
-     * @param metaModel
-     * @param graph
-     */
-    saveMetaModel: function (metaModel, graph) {
-        const showFailure = this.showExportFailure;
-        const showSuccess = this.showExportSuccess;
-
-        const data = JSON.stringify({
-            name: window.loadedMetaModel.name,
-            classes: metaModel.getClasses(),
-            references: metaModel.getReferences(),
-            enums: metaModel.getEnums(),
-            attributes: metaModel.getAttributes(),
-            methods: metaModel.getMethods(),
-            uiState: JSON.stringify(graph)
-        });
-
-
-        $.ajax({
-            type: 'PUT',
-            url: '/rest/v1/meta-models/' + window.loadedMetaModel.uuid + '/definition',
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: data,
-            success: function (data, textStatus, jqXHR) {
-                showSuccess();
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                showFailure("Error saving meta model: " + errorThrown);
-            }
-        });
-    },
-
-    externalSaveCall: function (mainElement) {
-        const exporter = new Exporter(mainElement.graph);
-        const metaModel = exporter.export();
-
-        if (metaModel.isValid()) {
-            // Send exported Metamodel to server
-            mainElement.saveMetaModel(metaModel, mainElement.graph.toJSON());
-        } else {
-            let errorMessage = "";
-            metaModel.getMessages().forEach(function (message) {
-                errorMessage += message + '\n';
+            $("[data-hide]").on("click", function () {
+                $("." + $(this).attr("data-hide")).hide();
             });
-            mainElement.showExportFailure(errorMessage);
+            linkTypeSelector.init(this.graph);
+            collaboration.init(this.graph);
+        },
+
+        // Create a graph, paper and wrap the paper in a PaperScroller.
+        initializePaper: function () {
+
+            this.graph = new joint.dia.Graph;
+
+            this.paperScroller = new joint.ui.PaperScroller({autoResizePaper: true});
+
+            this.paper = new joint.dia.Paper({
+                el: this.paperScroller.el,
+                width: 5000,
+                height: 5000,
+                gridSize: 10,
+                perpendicularLinks: true,
+                model: this.graph,
+                defaultLink: new joint.shapes.uml.Association(),
+                /*
+                 * Using own ElementView implementation. ExtendedElementView allows
+                 * to Multiselect elements(Shift must be pressed).
+                 * @author: Maximilian Göke
+                 */
+                elementView: ExtendedElementView
+            });
+            this.paperScroller.options.paper = this.paper;
+
+            $('.paper-container').append(this.paperScroller.render().el);
+
+            this.paperScroller.center();
+
+            this.graph.on('add', this.initializeLinkTooltips, this);
+
+            /*
+             * Added distanceLines and guideLines.
+             * @author: Maximilian Göke
+             */
+            this.guideLines = new Guidelines({paper: this.paper});
+            this.distanceLines = new Distancelines({graph: this.graph, paper: this.paper});
+
+        },
+
+        initializeLinkTooltips: function (cell) {
+
+            if (cell instanceof joint.dia.Link) {
+
+                var linkView = this.paper.findViewByModel(cell);
+                new joint.ui.Tooltip({
+                    className: 'tooltip small',
+                    target: linkView.$('.tool-options'),
+                    content: 'Click to open Inspector for this link',
+                    left: linkView.$('.tool-options'),
+                    direction: 'left'
+                });
+                new joint.ui.Tooltip({
+                    className: 'tooltip small',
+                    target: linkView.$('.tool-remove'),
+                    content: 'Remove Link',
+                    left: linkView.$('.tool-remove'),
+                    direction: 'left'
+                });
+            }
+        },
+
+        // Create and popoulate stencil.
+        initializeStencil: function () {
+
+            this.stencil = new joint.ui.Stencil({
+                graph: this.graph,
+                paper: this.paper,
+                width: 240,
+                groups: Stencil.groups
+            });
+
+            $('.stencil-container').append(this.stencil.render().el);
+
+            _.each(Stencil.groups, function (group, name) {
+                this.stencil.load(Stencil.shapes[name], name);
+
+                joint.layout.GridLayout.layout(this.stencil.getGraph(name), {
+                    columnWidth: this.stencil.options.width / 2 - 10,
+                    columns: 2,
+                    rowHeight: 80,
+                    resizeToFit: true,
+                    dy: 10,
+                    dx: 10
+                });
+
+                this.stencil.getPaper(name).fitToContent(1, 1, 10);
+
+            }, this);
+
+        },
+
+
+        initializeSelection: function () {
+
+            /*
+             * Create instance of group.
+             * @author: Maximilian Göke
+             */
+            this.group = new HtwgGroup();
+
+            this.selection = new Backbone.Collection;
+
+            /*
+             * use own selectionView instead of default
+             * @author: Maximilian Göke
+             */
+            this.selectionView = new ExtendedSelectionView({
+                paper: this.paper,
+                graph: this.graph,
+                model: this.selection,
+                group: this.group
+            });
+
+
+            // Initiate selecting when the user grabs the blank area of the paper while the Shift key is pressed.
+            // Otherwise, initiate paper pan.
+            this.paper.on('blank:pointerdown', function (evt, x, y) {
+
+                if (_.contains(KeyboardJS.activeKeys(), 'shift')) {
+                    this.selectionView.startSelecting(evt, x, y);
+                } else {
+                    this.paperScroller.startPanning(evt, x, y);
+                }
+            }, this);
+
+            /*
+             * Customized for new functions. Added behaviour when shift was pressed and
+             * behaviour when a group of a elemt get slected.
+             * @author: Maximilian Göke
+             */
+            this.paper.on('cell:pointerdown', function (cellView, evt) {
+                if (evt.shiftKey) {
+                    try {
+                        this.halo.remove();
+                        this.freetransform.remove();
+                    } catch (TypeError) {
+                    }
+                    return;
+                }
+                // Select an element if CTRL/Meta key is pressed while the element is clicked.
+                if ((evt.ctrlKey || evt.metaKey) && !(cellView.model instanceof joint.dia.Link)) {
+                    //remove halo and transform and create a selection box
+                    if (this.selection.length == 1 && this.halo !== undefined) {
+                        this.halo.remove();
+                        this.freetransform.remove();
+                        this.selectionView.createSelectionBox(this.paper.findViewByModel(this.selection.first()));
+                    }
+                    // select single element or complete group
+                    if (this.group.findGroupFromElement(cellView.model.get('id')) === undefined) {
+                        this.selectElement(cellView);
+                    } else {
+                        this.selectCompleteGroup(cellView.model.get('id'));
+                    }
+                } else {
+                    // if no other element is selected as the current selected element
+                    // and it's in a group select the whole group. If it's not in a group
+                    // show halo and transform
+                    try {
+                        this.halo.remove();
+                        this.freetransform.remove();
+                    } catch (TypeError) {
+                    } finally {
+                        this.selectionView.cancelSelection();
+                        this.selectCompleteGroup(cellView.model.get('id'));
+                    }
+                }
+            }, this);
+
+            /*
+             * Customized for new functions. Added behaviour when a element of a group
+             * gets deseleceted.
+             * @author: Maximilian Göke
+             */
+            this.selectionView.on('selection-box:pointerdown', function (evt) {
+                // Unselect an element if the CTRL/Meta key is pressed while a selected element is clicked.
+                if (evt.ctrlKey || evt.metaKey) {
+                    var elementID = $(evt.target).data('model');
+                    var groupID = this.group.findGroupFromElement(elementID);
+
+                    // deselect single element or complete group
+                    if (groupID === undefined) {
+                        this.deselectElement(elementID);
+                    } else {
+                        this.deselectCompleteGroup(groupID);
+                    }
+                }
+            }, this);
+
+            // Disable context menu inside the paper.
+            // This prevents from context menu being shown when selecting individual elements with Ctrl in OS X.
+            this.paper.el.oncontextmenu = function (evt) {
+                evt.preventDefault();
+            };
+
+            KeyboardJS.on('delete, backspace', _.bind(function () {
+
+                this.commandManager.initBatchCommand();
+                this.selection.invoke('remove');
+                this.commandManager.storeBatchCommand();
+                this.selectionView.cancelSelection();
+            }, this));
+        },
+
+        createInspector: function (cellView) {
+            this.destroyInspector();
+
+            var inspectorDefs = inspector.getDefs(cellView.model, this.graph.getElements(), this.graph.getLinks());
+
+            this.inspector = new joint.ui.Inspector({
+                inputs: inspectorDefs.inputs,
+                groups: inspectorDefs.groups,
+                cellView: cellView,
+                live: true,
+                saveFunction : this.externalSaveCall,
+                mainElement: this
+            });
+
+            this.inspector.on('change:name', function (text) {
+                if (mCoreUtil.isReference(cellView.model)) {
+                    cellView.model.label(0, {
+                        position: 0.5,
+                        attrs: {
+                            text: {
+                                text: text
+                            }
+                        }
+                    });
+                }
+            });
+
+
+            this.inspector.render();
+
+            $('.inspector-container-inner').html(this.inspector.el);
+
+            if (this.inspectorClosedGroups[cellView.model.id]) {
+                _.each(this.inspector.$('.group'), function (g, i) {
+                    if (_.contains(this.inspectorClosedGroups[cellView.model.id], $(g).index())) {
+                        $(g).addClass('closed');
+                    }
+                }, this);
+            } else {
+                this.inspector.$('.group:not(:first-child)').addClass('closed');
+            }
+
+            var inspectorHelpter = this.inspector;
+
+            $('[data-attribute^="m_methods/"][data-attribute$="/code"]').each( function(i, item) {
+                $(item).on('click', _.bind(inspectorHelpter.showMethodCodeEditor, inspectorHelpter));
+            });
+
+            var collapseButtons = $(this.inspector.el).find('.custom-btn-list-collapse');
+
+            var inspectorElement = document.getElementsByClassName("inspector");
+
+            if (inspectorElement.length == 1) {
+                if (mCoreUtil.isReference(cellView.model)) {
+                    $(inspectorElement).first().attr("methodElementType", "reference");
+                } else if (mCoreUtil.isMEnumContainer(cellView.model)) {
+                    $(inspectorElement).first().attr("methodElementType", "main");
+                } else {
+                    $(inspectorElement).first().attr("methodElementType", "class");
+                }
+            } else {
+                // TODO failure handling.
+                console.log("no inspector in ")
+            }
+
+            for (var i = 0; i < collapseButtons.length; ++i) {
+                collapseButtons[i].click();
+            }
+
+
+        },
+
+        destroyInspector: function () {
+            if (this.inspector) {
+
+                this.inspectorClosedGroups[this.inspector.options.cellView.model.id] = _.map(this.inspector.$('.group.closed'), function (g) {
+                    return $(g).index()
+                });
+
+                // Clean up the old inspector if there was one.
+                this.inspector.remove();
+            }
+        },
+
+        /*
+         * Customized to create the possibility to remove freetransform or halo in
+         * an other funciton and to set halo only when no group is selected.
+         * @author:Maximilian Göke
+         */
+        initializeHaloAndInspector: function () {
+
+            // MEnum-inspector by default.
+            this.createInspector(this.paper.findViewByModel(mEnum.getMEnumContainer()));
+            this.inspector.closeGroups();
+
+            this.paper.on('blank:pointerdown', function () {
+                this.createInspector(this.paper.findViewByModel(mEnum.getMEnumContainer()));
+            }, this);
+
+            this.paper.on('cell:pointerup', function (cellView, evt) {
+
+
+                if (this.selection.length > 0) return;
+
+                if (cellView.model instanceof joint.dia.Link || this.selection.contains(cellView.model)) return;
+
+                // In order to display halo link magnets on top of the freetransform div we have to create the
+                // freetransform first. This is necessary for IE9+ where pointer-events don't work and we wouldn't
+                // be able to access magnets hidden behind the div.
+                this.freetransform = new joint.ui.FreeTransform({
+                    graph: this.graph,
+                    paper: this.paper,
+                    cell: cellView.model
+                });
+                this.halo = new joint.ui.Halo({graph: this.graph, paper: this.paper, cellView: cellView});
+
+                this.freetransform.render();
+                this.halo.render();
+
+                this.initializeHaloTooltips(this.halo);
+
+                this.createInspector(cellView);
+
+                this.selectionView.cancelSelection();
+                this.selection.reset([cellView.model]);
+
+            }, this);
+
+            this.paper.on('link:options', function (cellView, evt, x, y) {
+                this.createInspector(cellView);
+            }, this);
+        },
+
+        initializeHaloTooltips: function (halo) {
+
+            new joint.ui.Tooltip({
+                className: 'tooltip small',
+                target: halo.$('.remove'),
+                content: 'Click to remove the object',
+                direction: 'right',
+                right: halo.$('.remove'),
+                padding: 15
+            });
+            new joint.ui.Tooltip({
+                className: 'tooltip small',
+                target: halo.$('.fork'),
+                content: 'Click and drag to clone and connect the object in one go',
+                direction: 'left',
+                left: halo.$('.fork'),
+                padding: 15
+            });
+            new joint.ui.Tooltip({
+                className: 'tooltip small',
+                target: halo.$('.clone'),
+                content: 'Click and drag to clone the object',
+                direction: 'left',
+                left: halo.$('.clone'),
+                padding: 15
+            });
+            new joint.ui.Tooltip({
+                className: 'tooltip small',
+                target: halo.$('.unlink'),
+                content: 'Click to break all connections to other objects',
+                direction: 'right',
+                right: halo.$('.unlink'),
+                padding: 15
+            });
+            new joint.ui.Tooltip({
+                className: 'tooltip small',
+                target: halo.$('.link'),
+                content: 'Click and drag to connect the object',
+                direction: 'left',
+                left: halo.$('.link'),
+                padding: 15
+            });
+            new joint.ui.Tooltip({
+                className: 'tooltip small',
+                target: halo.$('.rotate'),
+                content: 'Click and drag to rotate the object',
+                direction: 'right',
+                right: halo.$('.rotate'),
+                padding: 15
+            });
+        },
+
+        initializeClipboard: function () {
+
+            this.clipboard = new joint.ui.Clipboard;
+
+            KeyboardJS.on('ctrl + c', _.bind(function () {
+                // Copy all selected elements and their associated links.
+                this.clipboard.copyElements(this.selection, this.graph, {
+                    translate: {dx: 20, dy: 20},
+                    useLocalStorage: true
+                });
+            }, this));
+
+            KeyboardJS.on('ctrl + v', _.bind(function () {
+                this.clipboard.pasteCells(this.graph);
+                this.selectionView.cancelSelection();
+
+                this.clipboard.pasteCells(this.graph, {link: {z: -1}, useLocalStorage: true});
+
+                // Make sure pasted elements get selected immediately. This makes the UX better as
+                // the user can immediately manipulate the pasted elements.
+                var selectionTmp = [];
+
+                this.clipboard.each(function (cell) {
+
+                    if (cell.get('type') === 'link') {
+                        return;
+                    }
+
+                    // Push to the selection not to the model from the clipboard but put the model into the graph.
+                    // Note that they are different models. There is no views associated with the models
+                    // in clipboard.
+                    selectionTmp.push(this.graph.getCell(cell.id));
+                    this.selectionView.createSelectionBox(this.paper.findViewByModel(cell));
+                }, this);
+
+                this.selection.reset(selectionTmp);
+            }, this));
+
+            KeyboardJS.on('ctrl + x', _.bind(function () {
+
+                var originalCells = this.clipboard.copyElements(this.selection, this.graph, {useLocalStorage: true});
+                this.commandManager.initBatchCommand();
+                _.invoke(originalCells, 'remove');
+                this.commandManager.storeBatchCommand();
+                this.selectionView.cancelSelection();
+            }, this));
+        },
+
+        initializeCommandManager: function () {
+
+            this.commandManager = new joint.dia.CommandManager({graph: this.graph});
+
+            KeyboardJS.on('ctrl + z', _.bind(function () {
+
+                this.commandManager.undo();
+                this.selectionView.cancelSelection();
+            }, this));
+
+            KeyboardJS.on('ctrl + y', _.bind(function () {
+
+                this.commandManager.redo();
+                this.selectionView.cancelSelection();
+            }, this));
+        },
+
+        initializeToolbar: function () {
+
+            this.initializeToolbarTooltips();
+
+            $('#btn-undo').on('click', _.bind(this.commandManager.undo, this.commandManager));
+            $('#btn-redo').on('click', _.bind(this.commandManager.redo, this.commandManager));
+
+            $('#btn-clear').on('click', _.bind(function () {
+                var enumContainer = mEnum.getMEnumContainer();
+                var attributeContainer = mAttribute.getMAttributeContainer();
+                this.graph.clear();
+                this.graph.addCell(enumContainer);
+            }, this));
+
+            $('#btn-svg').on('click', _.bind(this.paper.openAsSVG, this.paper));
+            $('#btn-png').on('click', _.bind(this.openAsPNG, this));
+            $('#btn-zoom-in').on('click', _.bind(this.zoomIn, this));
+            $('#btn-zoom-out').on('click', _.bind(this.zoomOut, this));
+            $('#btn-fullscreen').on('click', _.bind(this.toggleFullscreen, this));
+            $('#btn-print').on('click', _.bind(this.paper.print, this.paper));
+            $('#btn-method-verification').on('click', _.bind(this.verifyMethods, this));
+
+            // toFront/toBack must be registered on mousedown. SelectionView empties the selection
+            // on document mouseup which happens before the click event. @TODO fix SelectionView?
+            /*
+             * Changed function in binding for btn-to-front and btn-to-back
+             * This changes were needed because the call that was bind to these
+             * buttons won't work after updating jointjs.
+             * @author: Maximilian Göke
+             */
+            $('#btn-to-front').on('mousedown', _.bind(function (evt) {
+                this.setPositionOfSelected('toFront');
+            }, this));
+            $('#btn-to-back').on('mousedown', _.bind(function (evt) {
+                this.setPositionOfSelected('toBack');
+            }, this));
+
+
+            $('#input-gridsize').on('input', _.bind(function (evt) {
+                var gridSize = parseInt(evt.target.value, 10);
+                $('#output-gridsize').text(gridSize);
+                this.setGrid(gridSize);
+            }, this));
+
+            $('#input-distancelines').on('input', _.bind(function (evt) {
+                var distance = parseInt(evt.target.value, 10);
+                $('#output-distancelines').text(distance);
+                this.distanceLines.options.distance = distance;
+            }, this));
+
+            $('#checkbox-distancelines').on('change', _.bind(function (evt) {
+                var input = $('#input-distancelines');
+                if ($('#checkbox-distancelines').is(':checked')) {
+                    this.distanceLines.start();
+                    $('#btn-distancelines').addClass('active');
+                    input.prop("disabled", false);
+                } else {
+                    this.distanceLines.stop();
+                    $('#btn-distancelines').removeClass('active');
+                    input.prop("disabled", true);
+                }
+            }, this));
+
+            $('#input-guidelines').on('input', _.bind(function (evt) {
+                var distance = parseInt(evt.target.value, 10);
+                $('#output-guidelines').text(distance);
+                this.guideLines.options.distance = distance;
+            }, this));
+
+            $('#checkbox-guidelines').on('change', _.bind(function (evt) {
+                var input = $('#input-guidelines');
+                if ($('#checkbox-guidelines').is(':checked')) {
+                    this.guideLines.start();
+                    input.prop("disabled", false);
+                    $('#btn-guidelines').addClass('active');
+                } else {
+                    this.guideLines.stop();
+                    input.prop("disabled", true);
+                    $('#btn-guidelines').removeClass('active');
+                }
+            }, this));
+
+            /*
+             * Added to update the zoom percentage that is displayes in the toolbar.
+             * @author: Maximilian Göke
+             */
+            this.paper.on('scale', function (scale) {
+                $('#zoom-percentage').text(Math.round(scale * 100) + '%');
+            }, this);
+
+            $('#btn-export-mm').on('click', _.bind(function (evt) {
+                const exporter = new Exporter(this.graph);
+                const metaModel = exporter.export();
+
+                if (metaModel.isValid()) {
+                    // Send exported Metamodel to server
+                    this.saveMetaModel(metaModel, this.graph.toJSON());
+                } else {
+                    let errorMessage = "";
+                    metaModel.getMessages().forEach(function (message) {
+                        errorMessage += message + '\n';
+                    });
+                    this.showExportFailure(errorMessage);
+                }
+            }, this));
+
+        },
+
+        /**
+         * Saves the meta model and graph on the server.
+         * @param metaModel
+         * @param graph
+         */
+        saveMetaModel: function (metaModel, graph) {
+            const showFailure = this.showExportFailure;
+            const showSuccess = this.showExportSuccess;
+
+            const data = JSON.stringify({
+                name: window.loadedMetaModel.name,
+                classes: metaModel.getClasses(),
+                references: metaModel.getReferences(),
+                enums: metaModel.getEnums(),
+                attributes: metaModel.getAttributes(),
+                methods: metaModel.getMethods(),
+                uiState: JSON.stringify(graph)
+            });
+
+
+            $.ajax({
+                type: 'PUT',
+                url: '/rest/v1/meta-models/' + window.loadedMetaModel.uuid + '/definition',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: data,
+                success: function (data, textStatus, jqXHR) {
+                    showSuccess();
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    showFailure("Error saving meta model: " + errorThrown);
+                }
+            });
+        },
+
+        externalSaveCall: function (mainElement) {
+            const exporter = new Exporter(mainElement.graph);
+            const metaModel = exporter.export();
+
+            if (metaModel.isValid()) {
+                // Send exported Metamodel to server
+                mainElement.saveMetaModel(metaModel, mainElement.graph.toJSON());
+            } else {
+                let errorMessage = "";
+                metaModel.getMessages().forEach(function (message) {
+                    errorMessage += message + '\n';
+                });
+                mainElement.showExportFailure(errorMessage);
+            }
+        },
+
+        initializeToolbarTooltips: function () {
+            _.each($('.toolbar-container .btn'), function (button) {
+                var btn = $(button);
+                var content = btn.data('tooltip');
+                if (content) {
+                    new joint.ui.Tooltip({
+                        className: 'tooltip',
+                        target: btn,
+                        content: content,
+                        direction: 'top',
+                        top: btn
+                    });
+                }
+            });
         }
-    },
+        ,
 
-    showExportSuccess: function () {
-        $("#success-panel").fadeOut('slow', function () {
-            $("#error-panel").fadeOut('slow', function () {
-                $("#success-panel").show();
-                $("#success-panel").find("div").text("Success, metamodel saved!");
-                $("#success-panel").fadeIn('slow');
-            });
-        });
-    },
+        initializeMEnum: function () {
+            mEnum.init(this.graph);
+            if (!this.graph.getCell(mEnum.MENUM_CONTAINER_ID)) {
+                this.graph.addCell(mEnum.getMEnumContainer());
+            }
+        }
+        ,
 
-    showExportFailure: function (reason) {
-        $("#success-panel").fadeOut('slow', function () {
-            $("#error-panel").fadeOut('slow', function () {
-                $("#error-panel").show();
-                $("#error-panel").find("div").text(reason);
-                $("#error-panel").fadeIn('slow');
+        initializeMAttribute: function () {
+            mAttribute.init(this.graph);
+            if (!this.graph.getCell(mAttribute.MATTRIBUTE_CONTAINER_ID)) {
+                this.graph.addCell(mAttribute.getMAttributeContainer());
+            }
+        }
+        ,
+
+        openAsPNG: function () {
+
+            var windowFeatures = 'menubar=yes,location=yes,resizable=yes,scrollbars=yes,status=yes';
+            var windowName = _.uniqueId('png_output');
+            var imageWindow = window.open('', windowName, windowFeatures);
+
+            this.paper.toPNG(function (dataURL) {
+                imageWindow.document.write('<img src="' + dataURL + '"/>');
+            }, {padding: 10});
+        }
+        ,
+
+        zoom: function (newZoomLevel, ox, oy) {
+
+            if (_.isUndefined(this.zoomLevel)) {
+                this.zoomLevel = 1;
+            }
+
+            if (newZoomLevel > 0.2 && newZoomLevel < 20) {
+
+                ox = ox || (this.paper.el.scrollLeft + this.paper.el.clientWidth / 2) / this.zoomLevel;
+                oy = oy || (this.paper.el.scrollTop + this.paper.el.clientHeight / 2) / this.zoomLevel;
+
+                /*
+                 * Changed function call. Removed two arguments. The removed arguments
+                 * are used for paperScroller.center().
+                 * @author: Maximilian Göke
+                 */
+                this.paper.scale(newZoomLevel, newZoomLevel);
+
+                /*
+                 * Added function call. Helps to align scaled SVG.
+                 * @author: Maximilian Göke
+                 */
+                this.paperScroller.center(ox, oy);
+
+                this.zoomLevel = newZoomLevel;
+            }
+        }
+        ,
+
+        zoomOut: function () {
+            this.zoom((this.zoomLevel || 1) - 0.2);
+        }
+        ,
+        zoomIn: function () {
+            this.zoom((this.zoomLevel || 1) + 0.2);
+        }
+        ,
+
+        toggleFullscreen: function () {
+
+            var el = document.body;
+
+            function prefixedResult(el, prop) {
+
+                var prefixes = ['webkit', 'moz', 'ms', 'o', ''];
+                for (var i = 0; i < prefixes.length; i++) {
+                    var prefix = prefixes[i];
+                    var propName = prefix ? (prefix + prop) : (prop.substr(0, 1).toLowerCase() + prop.substr(1));
+                    if (!_.isUndefined(el[propName])) {
+                        return _.isFunction(el[propName]) ? el[propName]() : el[propName];
+                    }
+                }
+            }
+
+            if (prefixedResult(document, 'FullScreen') || prefixedResult(document, 'IsFullScreen')) {
+                prefixedResult(document, 'CancelFullScreen');
+            } else {
+                prefixedResult(el, 'RequestFullScreen');
+            }
+        }
+        ,
+
+        setGrid: function (gridSize) {
+
+            this.paper.options.gridSize = gridSize;
+
+            var backgroundImage = this.getGridBackgroundImage(gridSize);
+            $(this.paper.svg).css('background-image', 'url("' + backgroundImage + '")');
+        }
+        ,
+
+        getGridBackgroundImage: function (gridSize, color) {
+
+            var canvas = $('<canvas/>', {width: gridSize, height: gridSize});
+
+            canvas[0].width = gridSize;
+            canvas[0].height = gridSize;
+
+            var context = canvas[0].getContext('2d');
+            context.beginPath();
+            context.rect(1, 1, 1, 1);
+            context.fillStyle = color || '#AAAAAA';
+            context.fill();
+
+            return canvas[0].toDataURL('image/png');
+        }
+        ,
+
+        verifyMethods: function () {
+
+        }
+        ,
+
+        showMethodCodeEditor: function () {
+
+            console.log("show Method-Code-Editor")
+        },
+
+// ---------- customization start
+// Functions between customization start and end are created
+// by Maximilian Göke
+        /* zooms stencil objects. */
+        zoomStencilElementsOnDrop: function () {
+            this.graph.on('add', function (cell) {
+                var type = cell.get('type');
+                switch (type) {
+                    case 'wireframe.SmartPhone':
+                        cell.set('size', {width: 300, height: 600});
+                        break;
+                    case 'wireframe.ProgramPanel':
+                        cell.set('size', {width: 276, height: 50});
+                        break;
+                    case 'wireframe.Statusbar':
+                        cell.set('size', {width: 276, height: 30});
+                        break;
+                    default:
+                        break;
+                }
             });
-        });
-    }
-})
+        }
+        ,
+
+        /* Selects a complete group. */
+        selectCompleteGroup: function (elementID) {
+            // find group id
+            var groupID = this.group.findGroupFromElement(elementID);
+
+            // find all elements from group and select them
+            if (groupID !== undefined) {
+                var elementIDs = this.group.getElementIDsFromGroup(groupID);
+                elementIDs.forEach(function (id) {
+                    this.selectElement(this.paper.findViewByModel(this.graph.getCell(id)));
+                }, this);
+            }
+        }
+        ,
+
+        /* Selects a single Element */
+        selectElement: function (view) {
+            this.selection.add(view.model);
+            this.selectionView.createSelectionBox(view);
+        }
+        ,
+
+        /* Deselects a complete group */
+        deselectCompleteGroup: function (groupID) {
+            // find all elements from group and deselect them
+            var elementIDs = this.group.getElementIDsFromGroup(groupID);
+            elementIDs.forEach(function (id) {
+                this.deselectElement(id);
+            }, this);
+        }
+        ,
+
+        /* Deselects a single element. */
+        deselectElement: function (elementID) {
+            var cell = this.selection.get(elementID);
+            this.selection.reset(this.selection.without(cell));
+            this.selectionView.destroySelectionBox(this.paper.findViewByModel(cell));
+        }
+        ,
+
+        /* Handles the toFront/toBack functionality */
+        setPositionOfSelected: function (functionName) {
+            this.selection.each(function (cell) {
+                cell.attributes[functionName]();
+                this.halo.remove();
+                this.freetransform.remove();
+            }, this);
+
+        },
+
+        showExportSuccess: function () {
+            $("#success-panel").fadeOut('slow', function () {
+                $("#error-panel").fadeOut('slow', function () {
+                    $("#success-panel").show();
+                    $("#success-panel").find("div").text("Success, metamodel saved!");
+                    $("#success-panel").fadeIn('slow');
+                });
+            });
+        },
+
+        showExportFailure: function (reason) {
+            $("#success-panel").fadeOut('slow', function () {
+                $("#error-panel").fadeOut('slow', function () {
+                    $("#error-panel").show();
+                    $("#error-panel").find("div").text(reason);
+                    $("#error-panel").fadeIn('slow');
+                });
+            });
+        }
+// ---------- customization end
+    })
 ;
-
-/**
- * Returns an edge group id according to the edge style.
- * @param {IEdge} edge
- * @param {string} marker
- * @return {object|null}
- */
-function getGroupId(edge, marker) {
-    /*
-    if (edge.style instanceof PolylineEdgeStyle) {
-        const edgeStyle = edge.style
-        return isInheritance(edgeStyle) ? edgeStyle.stroke.dashStyle + marker : null
-    }
-
-     */
-    return null
-}

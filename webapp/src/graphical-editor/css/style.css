@@ -1,34 +1,20 @@
-html,
-body {
-    /* make the body expand to fill the visible window */
-    position: fixed;
+html, body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    touch-action: none;
-    -ms-touch-action: none;
-    overscroll-behavior-y: contain;
-}
-
-@keyframes rotation {
-    0% {
-        -webkit-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
-    100% {
-        -webkit-transform: rotate(360deg);
-        transform: rotate(360deg);
-    }
 }
 
 body {
-    /* don't disable scrollbars on the html element as well
-       - otherwise, event coordinates will be wrong if scrolling
-       is re-enabled later */
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
+    font-family: "Source Sans Pro", sans-serif;
     overflow: hidden;
-    font-family: Tahoma, Verdana, sans-serif;
-    font-size: 12px;
-    color: #333333;
+}
+
+.icon-flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
 }
