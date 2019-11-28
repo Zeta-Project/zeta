@@ -28,7 +28,8 @@ import {
 } from 'yfiles'
 import {Properties} from "./Properties";
 import Exporter from "./exportMetaModel/Exporter"
-import Attribute from "./exportMetaModel/Attribute";
+import {Attribute} from "./utils/Attribute";
+import {Operation} from "./utils/Operation";
 
 import '../styles/layout.css'
 import '../styles/paper.css'
@@ -138,9 +139,8 @@ class YFilesZeta {
             style: new UMLNodeStyle(
                 new umlModel.UMLClassModel({
                     className: 'FirstNode',
-                    attributes: ["ATTR", "Another One"
-                    ],
-                    operations: ['OP1', 'OP2']
+                    operations: ["OPER", "SECONDPOPR"],//[new Operation(), new Operation],
+                    attributes: ["ATR", "nextAttr"]//[new Attribute(), new Attribute()]
                 })
             )
         })
@@ -150,12 +150,12 @@ class YFilesZeta {
             style: new UMLNodeStyle(
                 new umlModel.UMLClassModel({
                     className: 'SecondNode',
-                    attributes: ['FirstAttribute', 'second'],
-                    operations: ['OperationZero', 'OperationSecond']
+                    operations: ["OPOP", "NexOP"],//[new Operation({name: "OP1"}), new Operation({name:"OPERATION"})],
+                    attributes: ["ATTR", "Secondatr"]//[new Attribute({name: "Attr"}), new Attribute({name: "Attribute2"})]
                 })
             )
         })
-        node2.style.adjustSize(node, graphComponent.inputMode)
+        node2.style.adjustSize(node2, graphComponent.inputMode)
         let edge1 = graph.createEdge(node,node2)
         let edge2 = graph.createEdge(node2,node)
         executeLayout()
@@ -343,14 +343,10 @@ function buildGraphFromDefinition(graph, data) {
             if (reference.name !== '') {
                 graph.addLabel(edge, reference.name)
             }
-
         }
         source = null
         target = null
-
     })
-
-
 }
 
 

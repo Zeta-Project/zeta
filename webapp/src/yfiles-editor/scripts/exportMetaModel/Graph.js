@@ -13,6 +13,7 @@ export default (function() {
   /*
     Returns all nodes (which are nodes of type UMLSNodeStyle).
    */
+  //Todo try getNodeArray()
   Graph.prototype.getNodes = function() {
     let nodes = []
     this.graph.nodes.forEach(node => nodes.push(node))

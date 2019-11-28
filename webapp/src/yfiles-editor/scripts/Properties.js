@@ -10,10 +10,8 @@ export class Properties {
     constructor(graphComponent) {
         // retrieve the panel element
         this.divField = document.getElementById('properties-panel')
-
+        this.currentItem = graphComponent.graph.currentItem
         this.graphComponent = graphComponent
-        //this.graphComponent.selection.addItemSelectionChangedListener(this.updateProperties)
-        //console.log(this.graphComponent)
     }
 
     get div() {
@@ -23,36 +21,63 @@ export class Properties {
         this.divField = div
     }
 
+
+    /**
+     * gets called upon selecting another ui element
+     * @param sender
+     * @param args
+     */
     updateProperties(sender, args) {
-        let div = this.div
+        let div = document.getElementById('properties-panel')
+        //let div = this.div
         if (args == null) return
         let item = args.item
         let model = item.style.model
 
         if (INode.isInstance(item) && item.style instanceof UMLNodeStyle) {
             //There is a node and it is type of UMLNodeStyle
-            if (!div.hasChildNodes()) {
-                //update properties
-            }
-            //rebuild properties
             this.div.innerHTML = ""
-            this.div = this.buildUMLNodeProperties(model, div) //not sure where to set object.div
-
-            //this.div = this.updateUMLNodeProperties(model, div)
+            this.buildNodeProperties(model, div)
         }
         else {
-            this.div.removeAll()
-            console.log(item)
+            this.div.innerHTML = ""
+            console.log("No Valid Item Selected")
         }
     }
 
+    buildNodeProperties(model, div) {
 
-    buildUMLNodeProperties(model, container) {
-        let div = container
-        //build metapanel
+        //build metaAccordion
         let accordionMeta = document.createElement('button')
         accordionMeta.className = 'accordion'
         accordionMeta.innerHTML = 'MetaInformation'
+        div.appendChild(accordionMeta)
+
+        //add MetaPanel
+        let pMeta = this.buildMeta(model)
+        div.appendChild(pMeta)
+
+        //build attributeAccordion
+        let accordionAttributes = document.createElement('button')
+        accordionAttributes.className = 'accordion'
+        accordionAttributes.innerHTML = 'Attributes'
+        div.appendChild(accordionAttributes)
+
+        //build AttributePanel
+        div.appendChild(this.buildAttributes(model))
+
+        //build operationAccordion
+        let accordionOperations = document.createElement('button')
+        accordionOperations.className = 'accordion'
+        accordionOperations.innerHTML = 'Operations'
+        div.appendChild(accordionOperations)
+
+        // build OperationPanel
+        div.appendChild(this.buildOperations(model))
+
+    }
+
+    buildMeta(model) {
         let pMeta = document.createElement('p')
         pMeta.class = 'panel'
 
@@ -61,10 +86,10 @@ export class Properties {
         pMeta.appendChild(nameLabel)
         let name = document.createElement("INPUT");
         name.setAttribute("type", "text");
-        name.setAttribute("value", model.className);
+        name.setAttribute("value", model.className)
         name.class = "input"
         name.oninput = function(){
-            console.log(model.className = name.value)
+            model.className = name.value
         }
         pMeta.appendChild(name)
 
@@ -76,17 +101,31 @@ export class Properties {
         description.setAttribute("value", model.description);
         description.class = "input"
         description.oninput = function(){
-            console.log(model.description = description.value)
+            model.description = description.value
         }
         pMeta.appendChild(description)
 
         //abstractness
-        //Todo add beautiful icons like in UML
+        //Todo add neat icons like in UML
+        let abstractLabel = document.createTextNode("Abstract")
+        pMeta.appendChild(abstractLabel)
+        let abstractness = document.createElement("INPUT")
+        abstractness.setAttribute("type", "checkbox")
+        abstractness.setAttribute("value", model.abstract)
+        abstractness.onchange = function() {
+            if(abstractness === true) {
+                abstractness.value = false
+            } else {
+                abstractness.value = true
+            }
+            model.abstract = abstractness.value
+            console.log(abstractness.value)
+        }
+        pMeta.appendChild(abstractness)
+        return pMeta
+    }
 
-        //attributespanel
-        let accordionAttributes = document.createElement('button')
-        accordionAttributes.className = 'accordion'
-        accordionAttributes.innerHTML = 'Attributes'
+    buildAttributes(model) {
         let pAttributes = document.createElement('p')
         pAttributes.class = 'panel'
         //label
@@ -112,13 +151,10 @@ export class Properties {
             }
             pAttributes.appendChild(localUniqueBox);
         }
+        return pAttributes
+    }
 
-        //pAttributes.className = model.attributes.toString()
-
-        //operationspanel
-        let accordionOperations = document.createElement('button')
-        accordionOperations.className = 'accordion'
-        accordionOperations.innerHTML = 'Operations'
+    buildOperations(model) {
         let pOperations = document.createElement('p')
         pOperations.class = 'panel'
         //label
@@ -133,31 +169,9 @@ export class Properties {
             }
             pOperations.appendChild(textBox);
         }
+        return pOperations
+    }
 
-
-        div.appendChild(accordionMeta)
-        div.appendChild(pMeta)
-        div.appendChild(accordionAttributes)
-        div.appendChild(pAttributes)
-        div.appendChild(accordionOperations)
-        div.appendChild(pOperations)
-
-        let acc = document.getElementsByClassName('accordion'); //cant find Elements
-        for (let i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                /* Toggle between adding and removing the "active" class,
-                to highlight the button that controls the panel */
-                this.classList.toggle("active");
-
-                /* Toggle between hiding and showing the active panel */
-                let panel = this.nextElementSibling;
-                if (panel.style.display === "block") {
-                    panel.style.display = "none";
-                } else {
-                    panel.style.display = "block";
-                }
-            });
-        }
-        return div
+    buildEdgeProperties() {
     }
 }
