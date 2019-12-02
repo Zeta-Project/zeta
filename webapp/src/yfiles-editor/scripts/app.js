@@ -80,12 +80,13 @@ class YFilesZeta {
         // configure and initialize drag and drop panel
         let dragAndDropPanel = new DragAndDrop(graphComponent);
         let propertyPanel = new Properties(graphComponent);
-
-        //Question: Why does this work but the bottom one doesn't? -> graphComponent.selection.addItemSelectionChangedListener(propertyPanel.updateProperties)
-        graphComponent.selection.addItemSelectionChangedListener((src, args) => {
-            //if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle)
-            propertyPanel.updateProperties(src, args)
-        })
+        /*
+            //Question: Why does this work but the bottom one doesn't? -> graphComponent.selection.addItemSelectionChangedListener(propertyPanel.updateProperties)
+    graphComponent.selection.addItemSelectionChangedListener((src, args) => {
+    //if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle)
+    propertyPanel.updateProperties(src, args)
+})
+         */
 
 /*
         const zetaApiWrapper = new ZetaApiWrapper();
@@ -140,7 +141,8 @@ class YFilesZeta {
                 new umlModel.UMLClassModel({
                     className: 'FirstNode',
                     operations: ["OPER", "SECONDPOPR"],//[new Operation(), new Operation],
-                    attributes: ["ATR", "nextAttr"]//[new Attribute(), new Attribute()]
+                    attributes: ["ATR", "nextAttr"],//[new Attribute(), new Attribute()]
+                    tempAttributes: [new Attribute({_name: "Attr"}), new Attribute({_name: "Attribute2"})]
                 })
             )
         })
@@ -151,7 +153,8 @@ class YFilesZeta {
                 new umlModel.UMLClassModel({
                     className: 'SecondNode',
                     operations: ["OPOP", "NexOP"],//[new Operation({name: "OP1"}), new Operation({name:"OPERATION"})],
-                    attributes: ["ATTR", "Secondatr"]//[new Attribute({name: "Attr"}), new Attribute({name: "Attribute2"})]
+                    attributes: ["ATTR", "Secondatr"],//[new Attribute({name: "Attr"}), new Attribute({name: "Attribute2"})]
+                    tempAttributes: [new Attribute({_name: "Attr"}), new Attribute({_name: "Attribute2"})]
                 })
             )
         })

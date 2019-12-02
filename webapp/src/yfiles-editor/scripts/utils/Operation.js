@@ -4,7 +4,7 @@ export class Operation {
 
     constructor(data) {
 
-        this._name = (data && data._name) || ""
+        this._name = (data && data._name) || "default"
         this._parameters = (data && data._parameters) || []
         this._description = (data && data.localUnique) || ""
         this._returnType = (data && data._returnType) || ""
