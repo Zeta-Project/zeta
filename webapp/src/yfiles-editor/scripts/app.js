@@ -77,14 +77,27 @@ class YFilesZeta {
     console.log(exporter.export())
 
     // Init grid
-    console.log(graphComponent)
     const grid = new Grid(graphComponent)
+    // Set the default snapping behaviour
     grid.initializeSnapping()
+
+    // Custom snapping behaviour
+
+    // const graphSnapContext = new GraphSnapContext({
+    //   enabled: true,
+    //   // disable some of the default snapping behavior such that the graph items only snap to the grid and nowhere else
+    //   snapBendAdjacentSegments: false,
+    //   snapBendsToSnapLines: false,
+    //   snapNodesToSnapLines: false,
+    //   snapOrthogonalMovement: false,
+    //   snapPortAdjacentSegments: false,
+    //   snapSegmentsToSnapLines: false
+    // })
+    // grid.configureSnapping(graphSnapContext)
+
     grid.initializeGrid()
     grid.registerCommand()
-    console.log(graphComponent)
     graphComponent = grid.graphComponent
-    console.log(graphComponent)
 
     // configure and initialize drag and drop panel
     let dragAndDropPanel = new DragAndDrop(graphComponent)

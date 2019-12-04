@@ -32,16 +32,26 @@ export class Grid {
     const graphSnapContext = new GraphSnapContext({
       enabled: true,
       // disable some of the default snapping behavior such that the graph items only snap to the grid and nowhere else
-      snapBendAdjacentSegments: false,
-      snapBendsToSnapLines: false,
-      snapNodesToSnapLines: false,
-      snapOrthogonalMovement: false,
-      snapPortAdjacentSegments: false,
-      snapSegmentsToSnapLines: false
+      // snapBendAdjacentSegments: false,
+      // snapBendsToSnapLines: false,
+      // snapNodesToSnapLines: false,
+      // snapOrthogonalMovement: false,
+      // snapPortAdjacentSegments: false,
+      // snapSegmentsToSnapLines: false
     })
     const labelSnapContext = new LabelSnapContext()
     geim.snapContext = graphSnapContext
     geim.labelSnapContext = labelSnapContext
+  }
+
+  /**
+   * The snapping behaviour can be configured by this function
+   * @param graphSnapContext
+   */
+  configureSnapping (graphSnapContext) {
+    if (graphSnapContext) {
+      this.graphComponent.inputMode.snapContext = graphSnapContext
+    }
   }
 
   /**
@@ -77,8 +87,7 @@ export class Grid {
    * @param {GridSnapTypes} gridSnapType
    */
   updateSnapType (gridSnapType) {
-    const graphSnapContext = this.graphComponent.inputMode.snapContext
-    graphSnapContext.gridSnapType = GridSnapTypes.ALL
+    this.graphComponent.inputMode.snapContext.gridSnapType = GridSnapTypes.ALL
   }
 
   updateGridStyle (gridStyle) {
