@@ -88,3 +88,17 @@ export function bindAction(/**string*/ selector, /**function(Event)*/ action) {
 
 
 }
+
+export function bindChangeListener(/**string*/ selector, /**function(string|boolean)*/ action) {
+    const element = document.querySelector(selector)
+    if (!element) {
+        return
+    }
+    element.addEventListener('change', e => {
+        if (e.target instanceof HTMLInputElement && e.target.type === 'checkbox') {
+            action(e.target.checked)
+        } else {
+            action(e.target.value)
+        }
+    })
+}
