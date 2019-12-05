@@ -18,9 +18,9 @@ The goal is to generate simulations from a graphical DSL.
 
 ## Find out more
 
-| **[Technical Docs][techdocs]**     | **[Setup Guide][setup]**     | **[Roadmap][roadmap]**           | **[Contributing][contributing]**           |
+| **[Technical Docs][aboutZeta]**     | **[Setup Guide][setup]**     | **[About Zeta][aboutZeta]**           | **[Contributing][aboutZeta]**           |
 |-------------------------------------|-------------------------------|-----------------------------------|---------------------------------------------|
-| [![i1][techdocs-image]][techdocs] | [![i2][setup-image]][setup] | [![i3][roadmap-image]][roadmap] | [![i4][contributing-image]][contributing] |
+| [![i1][techdocs-image]][aboutZeta] | [![i2][setup-image]][setup] | [![i3][roadmap-image]][aboutZeta] | [![i4][contributing-image]][aboutZeta] |
 
 ## DSL-Editor
 The Graphical-Editor is configured via the textual DSL's by using the DSL-Editor.
@@ -51,3 +51,6 @@ For more information please visit our [Wiki](https://github.com/Zeta-Project/zet
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
 [roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
 [contributing-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/contributing.png
+
+[aboutZeta]: https://github.com/Zeta-Project/zeta/wiki%20
+[setup]: https://github.com/Zeta-Project/zeta/wiki/Installation
