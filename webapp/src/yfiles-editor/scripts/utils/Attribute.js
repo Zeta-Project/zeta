@@ -8,7 +8,7 @@ export class Attribute {
         this._globalUnique = (data && data._globalUnique) || false
         this._localUnique = (data && data._localUnique) || false
         this._type = (data && data._type) || ""
-        this._defaultVal = {type: "String", value: ""}
+        this._defaultVal = (data && data._defaultVal) || {type: "String", value: ""}
         this._constant = (data && data._constant) || false
         this._singleAssignment = (data && data._singleAssignment) || false
         this._expression = (data && data._expression) || false

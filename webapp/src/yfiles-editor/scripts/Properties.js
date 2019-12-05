@@ -1,9 +1,11 @@
 import {
+    Fill,
     INode,
 
 } from "yfiles";
 
 import {UMLNodeStyle} from "./UMLNodeStyle";
+import {Operation} from "./utils/Operation";
 
 export class Properties {
 
@@ -57,8 +59,8 @@ export class Properties {
 
     /**
      * Todo update panel content instead of rebuilding it - necessary?
-     * @param sender
-     * @param args
+     * @param model
+     * @param div
      */
     updateProperties(model, div) {
         console.log(this)
@@ -99,16 +101,151 @@ export class Properties {
         for (i = 0; i < acc.length; i++) {
             acc[i].addEventListener("click", function() {
                 this.classList.toggle("active");
+                /*
                 let panel = this.nextElementSibling;
                 if (panel.style.maxHeight) {
                     panel.style.maxHeight = null;
                 } else {
                     panel.style.maxHeight = panel.scrollHeight + "px";
-                }
+                }*/
             });
         }
-
     }
+}
+function buildOperations(model) {
+    let operationList = document.createElement('div')
+    operationList.setAttribute("class", "panel")
+
+    if(model.operations === []) return operationList
+
+    //accordion and list setup
+    model.tempOperations.forEach((operation) => {
+        let openOptionsButton = document.createElement('button')
+        openOptionsButton.className = 'accordion'
+        openOptionsButton.innerHTML = operation.name
+        operationList.appendChild(openOptionsButton)
+        let operationInformation = document.createElement('div')
+        operationInformation.setAttribute("class", "panel")
+        operationList.appendChild(operationInformation)
+
+        //description
+        let descriptionLabel = document.createTextNode("Description")
+        operationInformation.appendChild(descriptionLabel)
+        let description = document.createElement("INPUT");
+        description.setAttribute("type", "text");
+        description.setAttribute("value", operation.description);
+        description.setAttribute("class", "input")
+        description.oninput = function(){
+            operation.description = description.value
+        }
+        operationInformation.appendChild(description)
+
+        //parameters
+        let parameterList = document.createElement('div')
+        parameterList.setAttribute("class", "panel")
+        operation.parameters.forEach((parameter) => {
+            let openParameterButton = document.createElement('button')
+            openParameterButton.className = 'accordion'
+            openParameterButton.innerHTML = parameter.value
+            parameterList.appendChild(openParameterButton)
+            let parameterInformation = document.createElement('div')
+            parameterInformation.setAttribute("class", "panel")
+            parameterList.appendChild(parameterInformation)
+
+            let parameterText = document.createElement('INPUT')
+            parameterText.setAttribute("type", "text");
+            parameterText.setAttribute("value", (parameter.value) || "default")
+            parameterText.oninput = function(){
+                parameter.value = parameterText.value
+            }
+            parameterInformation.appendChild(parameterText);
+            //returnTypeParameter
+            let returnTypeLabel = document.createTextNode('returnTypeParameter')
+            parameterInformation.appendChild(returnTypeLabel)
+            let returnType = document.createElement('SELECT')
+            let optString = document.createElement('option')
+            optString.text = "String"
+            returnType.add(optString)
+            let optBool = document.createElement('option')
+            optBool.text = "Boolean"
+            returnType.add(optBool)
+            let optDouble = document.createElement('option')
+            optDouble.text = "Double"
+            returnType.add(optDouble)
+            let optInt = document.createElement('option')
+            optInt.text = "Integer"
+            returnType.add(optInt)
+            parameterInformation.appendChild(returnType)
+            //set returnType
+            for(let i = 0; i < returnType.options.length; i++){
+                if(returnType.options[i].value === parameter.type) returnType.options[i].selected = true
+            }
+            //set operation.returnType
+            returnType.onchange = () => {
+                for(let i = 0; i < returnType.options.length; i++){
+                    if(returnType.options[i].selected === true) {
+                        parameter.type = returnType.options[i].value;
+                    }
+                }
+            }
+        })
+        operationInformation.appendChild(parameterList)
+        let addPropertyButton = document.createElement('button')
+        addPropertyButton.innerHTML = "Add Property"
+        addPropertyButton.onclick = () => {
+
+        }
+        operationInformation.appendChild(addPropertyButton)
+
+        //returnType
+        let returnTypeLabel = document.createTextNode('returnType')
+        operationInformation.appendChild(returnTypeLabel)
+        let returnType = document.createElement('SELECT')
+        let optString = document.createElement('option')
+        optString.text = "String"
+        returnType.add(optString)
+        let optBool = document.createElement('option')
+        optBool.text = "Boolean"
+        returnType.add(optBool)
+        let optDouble = document.createElement('option')
+        optDouble.text = "Double"
+        returnType.add(optDouble)
+        let optInt = document.createElement('option')
+        optInt.text = "Integer"
+        returnType.add(optInt)
+        operationInformation.appendChild(returnType)
+        //set returnType
+        for(let i = 0; i < returnType.options.length; i++){
+            if(returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
+        }
+        //set operation.returnType
+        returnType.onchange = () => {
+            for(let i = 0; i < returnType.options.length; i++){
+                if(returnType.options[i].selected === true) {
+                    operation.returnType = returnType.options[i].value;
+                }
+            }
+        }
+
+        //code
+        let codeLabel = document.createTextNode("Code")
+        operationInformation.appendChild(codeLabel)
+        let code = document.createElement("input");
+        code.setAttribute("type", "text");
+        code.setAttribute("value", operation.code || "");
+        code.setAttribute("class", "input")
+        code.oninput = function(){
+            operation.code = code.value
+        }
+        operationInformation.appendChild(code)
+    })
+    let addOperationButton = document.createElement('button')
+    addOperationButton.innerHTML = "Add Operation"
+    addOperationButton.onclick = () => {
+        model.tempOperations.push(new Operation())
+    }
+    operationList.appendChild(addOperationButton)
+    return operationList
 }
 
 
@@ -164,6 +301,8 @@ function buildAttributes(model) {
     let attributeList = document.createElement('div')
     attributeList.setAttribute("class", "panel")
 
+    if(model.tempAttributes === []) return attributeList
+
     model.tempAttributes.forEach((tempAttribute) => {
         let openAttributeButton = document.createElement('button')
         openAttributeButton.className = 'accordion'
@@ -195,7 +334,7 @@ function buildAttributes(model) {
         attributeInformation.appendChild(lowerBoundLabel);
         attributeInformation.appendChild(lowerBound);
 
-        //Default - Type(Auswahl)
+        //Default Value
         let defaultVal = document.createElement("INPUT");
         defaultVal.setAttribute("type", "text");
         defaultVal.setAttribute("value", (tempAttribute.defaultVal.value) || "")
@@ -216,19 +355,18 @@ function buildAttributes(model) {
         let optInt = document.createElement('option')
         optInt.text = "Integer"
         defaultType.add(optInt)
-        //Todo Switch case für Type einbinden
-        //defaultType.setAttribute('option', tempAttribute.defaultVal.value)
-        defaultType.value = tempAttribute.defaultVal.value
         attributeInformation.appendChild(defaultType)
-        //oninput is last to assure type is added
+        //set properties defaultVal
+        for(let i = 0; i < defaultType.options.length; i++){
+            if(defaultType.options[i].value === tempAttribute.defaultVal.type) defaultType.options[i].selected = true
+        }
         defaultVal.oninput = function(){
             tempAttribute.defaultVal.value = defaultVal.value
         }
-        defaultType.oninput = () => {
-            tempAttribute.defaultVal.type = defaultType.value
-            console.log(tempAttribute.defaultVal.type)
-            console.log(tempAttribute.defaultVal.value)
-
+        defaultType.onchange = () => {
+            for(let i = 0; i < defaultType.options.length; i++){
+                if(defaultType.options[i].selected === true) tempAttribute.defaultVal.type = defaultType.options[i].value;
+            }
         }
 
         //Expression
@@ -323,23 +461,4 @@ function buildAttributes(model) {
 
     })
     return attributeList
-
-}
-
-function buildOperations(model) {
-    let pOperations = document.createElement('div')
-    pOperations.setAttribute("class", "panel")
-    //label
-    let operationsLabel = document.createTextNode("Operations")
-    pOperations.appendChild(operationsLabel)
-    for(let i = 0; i < model.operations.length; i++) {
-        let textBox = document.createElement("INPUT");
-        textBox.setAttribute("type", "text");
-        textBox.setAttribute("value", model.operations[i].toString())
-        textBox.oninput = function(){
-            model.operations[i] = textBox.value
-        }
-        pOperations.appendChild(textBox);
-    }
-    return pOperations
 }
