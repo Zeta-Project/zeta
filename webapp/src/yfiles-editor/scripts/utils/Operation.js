@@ -5,11 +5,12 @@ export class Operation {
     constructor(data) {
 
         this._name = (data && data._name) || "default"
-        this._parameters = (data && data._parameters) || []
+        this._parameters = (data && data._parameters) || {type: "String", name: "default"}
         this._description = (data && data.localUnique) || ""
         this._returnType = (data && data._returnType) || ""
         this._code = (data && data._code) || ""
     }
+
 
     get name() {
         return this._name;

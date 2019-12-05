@@ -141,6 +141,7 @@ class YFilesZeta {
                 new umlModel.UMLClassModel({
                     className: 'FirstNode',
                     operations: ["OPER", "SECONDPOPR"],//[new Operation(), new Operation],
+                    tempOperations: [new Operation({_name: "Operation1", _parameters:[{name: "size", type: "int"}, {name: "color", type: "String"}], _description: "some text to describe op1", _returnType: "String", _code: "some Code"})],
                     attributes: ["ATR", "nextAttr"],//[new Attribute(), new Attribute()]
                     tempAttributes: [new Attribute({_name: "Attr"}), new Attribute({_name: "Attribute2"})]
                 })
@@ -154,7 +155,7 @@ class YFilesZeta {
                     className: 'SecondNode',
                     operations: ["OPOP", "NexOP"],//[new Operation({name: "OP1"}), new Operation({name:"OPERATION"})],
                     attributes: ["ATTR", "Secondatr"],//[new Attribute({name: "Attr"}), new Attribute({name: "Attribute2"})]
-                    tempAttributes: [new Attribute({_name: "Attr"}), new Attribute({_name: "Attribute2"})]
+                    tempAttributes: [new Attribute({_name: "Attr", _defaultVal:{type: "Boolean",value: "True"}}), new Attribute({_name: "Attribute2"})]
                 })
             )
         })
