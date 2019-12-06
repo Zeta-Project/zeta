@@ -36,13 +36,28 @@ body {
     background-color: #eee;
     color: #444;
     cursor: pointer;
-    padding: 18px;
+    padding: 8px;
     width: 100%;
     border: none;
     text-align: left;
     outline: none;
     font-size: 15px;
-    transition: 0.4s;
+    transition: 0.5s;
+}
+.accordion ~ .panel{
+    height: 0px;
+}
+
+.accordion.active + .panel{
+    height: 100%;
+}
+
+.panel {
+    padding: 0px;
+    background-color: white;
+    /*max-height: 0;*/
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
 }
 
 .active, .accordion:hover {
@@ -59,12 +74,4 @@ body {
 
 .active:after {
     content: "\2212";
-}
-
-.panel {
-    padding: 0 18px;
-    background-color: white;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-out;
 }
