@@ -4,11 +4,11 @@ export class Attribute {
 
     constructor(data) {
 
-        this._name = (data && data._name) || ""
+        this._name = (data && data._name) || "default"
         this._globalUnique = (data && data._globalUnique) || false
         this._localUnique = (data && data._localUnique) || false
         this._type = (data && data._type) || ""
-        this._default = {type: "String", value: ""}
+        this._defaultVal = (data && data._defaultVal) || {type: "String", value: ""}
         this._constant = (data && data._constant) || false
         this._singleAssignment = (data && data._singleAssignment) || false
         this._expression = (data && data._expression) || false
@@ -47,12 +47,12 @@ export class Attribute {
         this._type = value;
     }
 
-    get default() {
-        return this._default;
+    get defaultVal() {
+        return this._defaultVal;
     }
 
-    set default(value) {
-        this._default = value;
+    set defaultVal(value) {
+        this._defaultVal = value;
     }
 
     get constant() {
