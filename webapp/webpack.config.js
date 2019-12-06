@@ -19,7 +19,8 @@ module.exports = {
     "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
     "graphical-model-editor": "./src/graphical-model-editor.js",
     "silhouette": "./src/silhouette.js",
-    "yfiles-editor":"./src/yfiles-editor/scripts/app.js"
+    "yfiles-editor":"./src/yfiles-editor/concept-editor.js",
+    "yfiles-editor-dev":"./src/yfiles-editor/devEnv/app-dev.js"
 	},
 	output: {
 		path: path.join(__dirname, "dist"),

@@ -32,7 +32,7 @@ export default (function() {
 
       //Todo check if enuMs are needed, also compare to yfiles enuMs
       //exportedModel.setEnums(this.createEnums());
-      //exportedModel.setEnums([]);
+      exportedModel.setEnums([]);
       //exportedModel.setAttributes(this.createAttributes());
       exportedModel.setAttributes([]);
       //exportedModel.setMethods(this.createMethods());

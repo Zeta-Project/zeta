@@ -15,6 +15,7 @@
         window.loadedMetaModel = {};
         window.loadedMetaModel.uuid = "@id";
         window.loadedMetaModel.name = "@gdslProject.name";
+        window.loadedMetaModel.concept = @gdslProject.concept;
     @if(gdslProject.concept.uiState.nonEmpty) {
         window.loadedMetaModel.loadOnStart = true;
         window.loadedMetaModel.graph = JSON.parse(@Html(Json.stringify(Json.toJson(gdslProject.concept.uiState))));
