@@ -40,17 +40,21 @@ class YFilesZetaDev {
         let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
 
         const args = process.argv.slice(2);
-        if(args.length === 4) {
+        if(process.env.NODE_ENV === 'remote') {
             const zetaApiWrapper = new ZetaApiWrapper();
-            zetaApiWrapper.rootUrl = args[0];
-            zetaApiWrapper.email = args[1];
-            zetaApiWrapper.password = args[2];
-            uuid = args[3];
+            zetaApiWrapper.rootUrl = process.env.ZETA_DEV_ROOT_URL;
+            zetaApiWrapper.email = process.env.ZETA_DEV_USER_EMAIL;
+            zetaApiWrapper.password = process.env.ZETA_DEV_USER_PASSWORD;
+            uuid = process.env.ZETA_DEV_PROJECT_UUID;
             zetaApiWrapper.getConceptDefinition(uuid).then(data => {
                 conceptDefinition = data;
             }).catch(reason => {
                 showSnackbar("Problem to load concept definition from server: " + reason);
             })
+
+            // override rootUrl for later save model calls
+            ZetaApiWrapper.prototype.rootUrl = process.env.ZETA_DEV_ROOT_URL;
+
         } else {
             // override postConceptDefinition with local storage logic
             ZetaApiWrapper.prototype.postConceptDefinition = function (metaModelId, jsonValue) {
