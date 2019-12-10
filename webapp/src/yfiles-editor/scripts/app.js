@@ -36,6 +36,7 @@ import '../styles/paper.css'
 import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
+import definition from "../devEnv/graphData/definition";
 
 
 // Tell the library about the license contents
@@ -122,11 +123,10 @@ export class YFilesZeta {
                     enums: exportedMetaModel.getEnums(),
                     attributes: exportedMetaModel.getAttributes(),
                     methods: exportedMetaModel.getMethods(),
-                    uiState: []
+                    uiState: JSON.stringify({"empty":"value"})
                 });
 
-                const zetaApiWrapper = new ZetaApiWrapper();
-                zetaApiWrapper.postConceptDefinition(this.loadedMetaModel.uuid, data).then(checkStatus).then(() => {
+                ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(checkStatus).then(() => {
                     showSnackbar("Meta model saved successfully!")
                 }).catch(reason => {
                     showSnackbar("Problem to save meta model: " + reason)
