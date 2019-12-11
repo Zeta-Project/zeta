@@ -36,6 +36,7 @@ import '../styles/paper.css'
 import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
+import '../styles/sidebar.css'
 
 
 // Tell the library about the license contents
