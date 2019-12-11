@@ -1,5 +1,3 @@
-import { Class, MarkupExtension, TypeAttribute, YBoolean, YObject, YString } from 'yfiles'
-
 /**
  * The data model of the UML node style.
  * A modification counter tracks if there have been modifications since the last drawing of this model.
@@ -26,25 +24,14 @@ export class UMLClassModel {
         this.stereotype = (data && data.stereotype) || '' //if data && data.stereotype != null, use data.stereotype. else ''
         this.constraint = (data && data.constraint) || ''
         this.className = (data && data.className) || 'UML Class Node'
-        if(data && data.attributes) {
-            this.attributes = data.attributes
-        } else {
-            this.attributes = []
-        }
-        if(data && data.operations) {
-            this.operations = data.operations
-        } else {
-            this.operations = []
-        }
-        //this.attributes = (data && data.attributes) || []
-        //this.operations = (data && data.operations) || []
+        this.attributes = (data && data.attributes) || []
+        this.operations = (data && data.operations) || []
+
         this.attributesOpen = this.attributes.length > 0
         this.operationsOpen = this.operations.length > 0
         this.$selectedIndex = -1
         this.selectedCategory = 1
         this.$modCount = 0
-
-
 
     }
 
