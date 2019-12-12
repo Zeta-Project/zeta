@@ -13,13 +13,13 @@ console.log("Production mode " + (prodMode ? "enabled" : "disabled"));
 
 module.exports = {
 	entry: {
-	//	"code-editor": "./src/code-editor.js",
-    //"code-editor-simple": "./src/code-editor-simple.js",
-    //"diagramm-overview": "./src/diagram-overview.js",
-    //"webpage": "./src/webpage.js",
-    //"graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
-    //"graphical-model-editor": "./src/graphical-model-editor.js",
-    //"silhouette": "./src/silhouette.js",
+	"code-editor": "./src/code-editor.js",
+    "code-editor-simple": "./src/code-editor-simple.js",
+    "diagramm-overview": "./src/diagram-overview.js",
+    "webpage": "./src/webpage.js",
+    "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
+    "graphical-model-editor": "./src/graphical-model-editor.js",
+    "silhouette": "./src/silhouette.js",
     "yfiles-editor":"./src/yfiles-editor/concept-editor.js",
     "yfiles-editor-dev":"./src/yfiles-editor/devEnv/app-dev.js"
 	},
