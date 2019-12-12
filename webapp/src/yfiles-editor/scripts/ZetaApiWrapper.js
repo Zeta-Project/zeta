@@ -1,13 +1,20 @@
 export class ZetaApiWrapper {
 
+    constructor() {
+        this.rootUrl = "";
+        this.email = "";
+        this.password = "";
+    }
+
+
     authenticate() {
 
-        return fetch("http://zeta-dev.syslab.in.htwg-konstanz.de/signIn", {
+        return fetch(this.rootUrl + "/signIn", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: "email=manuele.lorusso%40htwg-konstanz.de&password=zetadev",
+            body: "email=" + encodeURIComponent(this.email) + "&password=" + encodeURIComponent(this.password),
             credentials: "include"
         });
     }
@@ -16,7 +23,7 @@ export class ZetaApiWrapper {
 
         let isAuthenticated = false;
 
-        fetch("http://zeta-dev.syslab.in.htwg-konstanz.de/user").then(checkStatus).then(() => {
+        fetch(this.rootUrl + "/user").then(checkStatus).then(() => {
             isAuthenticated = true;
         });
 
@@ -30,7 +37,7 @@ export class ZetaApiWrapper {
             this.authenticate();
         }
 
-        const url = "http://zeta-dev.syslab.in.htwg-konstanz.de/rest/v1/meta-models/" + metaModelId + "/definition"
+        const url = this.rootUrl + "/rest/v1/meta-models/" + metaModelId + "/definition"
 
         return fetch(url, {
             method: "GET",
@@ -40,21 +47,21 @@ export class ZetaApiWrapper {
             credentials: "include"
         }).then(checkStatus).then(json)
     }
-
-    postConceptDefinition(metaModelId, jsonValue) {
-
-        const url = "http://zeta-dev.syslab.in.htwg-konstanz.de/rest/v1/meta-models/" + metaModelId + "/definition"
-
-        return fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: jsonValue,
-            credentials: "include"
-        });
-    }
 }
+
+ZetaApiWrapper.prototype.postConceptDefinition = function(metaModelId, jsonValue) {
+
+    const url = this.rootUrl + "/rest/v1/meta-models/" + metaModelId + "/definition";
+
+    return fetch(url, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: jsonValue,
+        credentials: "include"
+    });
+};
 
 export function checkStatus(response) {
 

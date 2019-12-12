@@ -32,7 +32,7 @@ export default (function() {
 
       //Todo check if enuMs are needed, also compare to yfiles enuMs
       //exportedModel.setEnums(this.createEnums());
-      //exportedModel.setEnums([]);
+      exportedModel.setEnums([]);
       //exportedModel.setAttributes(this.createAttributes());
       exportedModel.setAttributes([]);
       //exportedModel.setMethods(this.createMethods());
@@ -87,8 +87,8 @@ export default (function() {
       edges.push({
         name: this.graph.getName(edge),
         description: "",
-        sourceDeletionDeletesTarget: "", //Todo check if this is necessary
-        targetDeletionDeletesSource: "",
+        sourceDeletionDeletesTarget: false, //Todo check if this is necessary
+        targetDeletionDeletesSource: false,
         attributes: [],//this.graph.getAttributes(edge),
         methods: [],//this.graph.getEntityMethods(edge),
         sourceClassName: this.graph.getSourceName(edge),

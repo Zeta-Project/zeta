@@ -5,31 +5,34 @@ import {DragAndDrop} from "./DragAndDrop";
 import * as umlModel from './UMLClassModel.js'
 import {UMLNodeStyle} from './UMLNodeStyle.js'
 import UMLContextButtonsInputMode from './UMLContextButtonsInputMode.js'
-import definition from '../graphData/definition.js'
 import {checkStatus, ZetaApiWrapper} from "./ZetaApiWrapper";
 import {showSnackbar} from "./utils/AppStyle";
 import {
     Class,
     EdgeRouter,
-    EdgeRouterScope, Fill, GridSnapTypes,
+    EdgeRouterScope,
+    Fill,
     GraphComponent,
     GraphEditorInputMode,
+    GraphSnapContext,
+    GridSnapTypes,
     HierarchicLayout,
     HierarchicLayoutData,
     ICommand,
     INode,
-    GraphSnapContext,
+    LabelSnapContext,
     LayoutExecutor,
     License,
     List,
     OrthogonalEdgeEditingContext,
     PolylineEdgeRouterData,
-    Size, LabelSnapContext, Rect, Edge
+    Size
 } from 'yfiles'
 import {Properties} from "./Properties";
 import Exporter from "./exportMetaModel/Exporter"
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
+import definition from "../devEnv/graphData/definition";
 
 import '../styles/layout.css'
 import '../styles/paper.css'
@@ -54,14 +57,14 @@ Class.ensure(LayoutExecutor);
 //move graph inside class YFilesZeta?
 let graphComponent = null;
 
-class YFilesZeta {
+export class YFilesZeta {
 
-    constructor() {
+    constructor(loadedMetaModel) {
+        this.loadedMetaModel = loadedMetaModel;
         this.initialize();
     }
 
     initialize() {
-
         graphComponent = new GraphComponent('#graphComponent');
         const graph = graphComponent.graph;
         graph.undoEngineEnabled = true
@@ -73,10 +76,17 @@ class YFilesZeta {
         graphComponent.graph.nodeDefaults.shareStyleInstance = false
         graphComponent.graph.nodeDefaults.size = new Size(125, 100)
 
-        this.buldSampleGraph(graph)
+        if (this.loadedMetaModel.constructor === Object && Object.entries(this.loadedMetaModel).length > 0 && Object.entries(this.loadedMetaModel.concept).length > 0) {
 
-        const exporter = new Exporter(graph);
-        console.log(exporter.export())
+            buildGraphFromDefinition(graph, this.loadedMetaModel.concept);
+
+            executeLayout().then(() => {
+                // the graph bootstrapping should not be undoable
+                graphComponent.graph.undoEngine.clear()
+            })
+        } else {
+            showSnackbar("No loaded meta model found");
+        }
 
         // configure and initialize drag and drop panel
         let dragAndDropPanel = new DragAndDrop(graphComponent);
@@ -86,38 +96,47 @@ class YFilesZeta {
         graphComponent.selection.addItemSelectionChangedListener((src, args) => {
             //if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle)
             propertyPanel.updateProperties(src, args)
-        })
+        });
 
-/*
-        const zetaApiWrapper = new ZetaApiWrapper();
-        zetaApiWrapper.getConceptDefinition("d882f50c-7e89-48cf-8fea-1e0ea5feb8b7").then(data => {
-            buildGraphFromDefinition(graph, data)
-            // bootstrap the sample graph
-            executeLayout().then(() => {
-                // the sample graph bootstrapping should not be undoable
-                graphComponent.graph.undoEngine.clear()
-            })
-        }).catch(reason => {
-            alert("Problem to load concept definition: " + reason)
-        })
-        //graphComponent.fitGraphBounds();
+        graphComponent.fitGraphBounds();
+
         // bind toolbar commands
- */
-        this.registerCommands(graphComponent)
+        this.registerCommands(graphComponent, this.loadedMetaModel)
     }
 
     /**
      * Wires up the UI.
      * @param {GraphComponent} graphComponent
+     * @param loadedMetaModel
      */
-    registerCommands(graphComponent) {
+    registerCommands(graphComponent, loadedMetaModel) {
         bindAction("button[data-command='Save']", () => {
-            const zetaApiWrapper = new ZetaApiWrapper();
-            zetaApiWrapper.postConceptDefinition("d882f50c-7e89-48cf-8fea-1e0ea5feb8b7", JSON.stringify(definition)).then(checkStatus).then(() => {
-                showSnackbar("Metamodel saved successfully!")
-            }).catch(reason => {
-                showSnackbar("Problem to save Metamodel: " + reason)
-            })
+
+            if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0 && loadedMetaModel.name.length > 0 && loadedMetaModel.uuid.length > 0) {
+
+                const graph = graphComponent.graph;
+
+                const exporter = new Exporter(graph);
+                const exportedMetaModel = exporter.export();
+
+                const data = JSON.stringify({
+                    name: loadedMetaModel.name,
+                    classes: exportedMetaModel.getClasses(),
+                    references: exportedMetaModel.getReferences(),
+                    enums: exportedMetaModel.getEnums(),
+                    attributes: exportedMetaModel.getAttributes(),
+                    methods: exportedMetaModel.getMethods(),
+                    uiState: JSON.stringify({"empty":"value"})
+                });
+
+                ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(checkStatus).then(() => {
+                    showSnackbar("Meta model saved successfully!")
+                }).catch(reason => {
+                    showSnackbar("Problem to save meta model: " + reason)
+                })
+            } else {
+                showSnackbar("No loaded meta model found");
+            }
         })
         bindCommand("button[data-command='Cut']", ICommand.CUT, graphComponent)
         bindCommand("button[data-command='Copy']", ICommand.COPY, graphComponent)
@@ -133,33 +152,6 @@ class YFilesZeta {
             graphComponent.inputMode.labelSnapContext.enabled = snappingEnabled
         })
         bindAction("button[data-command='Layout']", executeLayout)
-    }
-
-    buldSampleGraph(graph) {
-        let node = graph.createNode({
-            style: new UMLNodeStyle(
-                new umlModel.UMLClassModel({
-                    className: 'FirstNode',
-                    operations: ["OPER", "SECONDPOPR"],//[new Operation(), new Operation],
-                    attributes: ["ATR", "nextAttr"]//[new Attribute(), new Attribute()]
-                })
-            )
-        })
-        node.style.adjustSize(node, graphComponent.inputMode)
-
-        let node2 = graph.createNode({
-            style: new UMLNodeStyle(
-                new umlModel.UMLClassModel({
-                    className: 'SecondNode',
-                    operations: ["OPOP", "NexOP"],//[new Operation({name: "OP1"}), new Operation({name:"OPERATION"})],
-                    attributes: ["ATTR", "Secondatr"]//[new Attribute({name: "Attr"}), new Attribute({name: "Attribute2"})]
-                })
-            )
-        })
-        node2.style.adjustSize(node2, graphComponent.inputMode)
-        let edge1 = graph.createEdge(node,node2)
-        let edge2 = graph.createEdge(node2,node)
-        executeLayout()
     }
 }
 
@@ -291,20 +283,23 @@ function buildGraphFromDefinition(graph, data) {
     //create a node for each class
     //fill them with existing attributes, operations and names
     classes.forEach(function (node) {
-        const attributeNames = []
-        for (let i = 0; i < node.attributes.length; i++) {
-            attributeNames[i] = node.attributes[i].name
-        }
-        const methodNames = []
-        for (let i = 0; i < node.methods.length; i++) {
-            methodNames[i] = node.methods[i].name
-        }
+        const attributes = [];
+        node.attributes.forEach(attribute => {
+            attributes.push(new Attribute(attribute))
+        })
+
+        const methods = [];
+        node.methods.forEach(method => {
+            methods.push(new Operation(method))
+        });
+
         const tempNode = (graph.createNode({
             style: new UMLNodeStyle(
                 new umlModel.UMLClassModel({
-                    className: node.name.toString(),
-                    attributes: attributeNames,
-                    operations: methodNames
+                    className: node.name,
+                    description: node.description,
+                    attributes: attributes,
+                    operations: methods
                 })
             )
         }));
@@ -314,7 +309,6 @@ function buildGraphFromDefinition(graph, data) {
             tempNode.style.fill = Fill.CRIMSON
         }
         nodeList.add(tempNode)
-        console.log(nodeList.size)
     });
 
 
@@ -367,5 +361,3 @@ function getGroupId(edge, marker) {
      */
     return null
 }
-
-new YFilesZeta();

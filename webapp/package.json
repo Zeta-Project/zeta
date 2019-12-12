@@ -11,7 +11,8 @@
     "test": "npm run test:js",
     "test:js": "jest --coverage",
     "test:polymer": "polymer test",
-    "start": "webpack-dev-server --open"
+    "start": "webpack-dev-server --open",
+    "startRemote": "NODE_ENV=remote webpack-dev-server --open"
   },
   "dependencies": {
     "ace-grammar": "github:foo123/ace-grammar#1.0.3",
@@ -45,10 +46,12 @@
     "babel-loader": "7",
     "babel-preset-env": "^2.0.0-alpha.20",
     "browser-sync": "^2.13.0",
+    "dotenv-webpack": "^1.7.0",
     "exports-loader": "0",
     "express": "4",
     "extract-text-webpack-plugin": "3",
     "file-loader": "1",
+    "file-saver": "^2.0.2",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
     "imports-loader": "0",

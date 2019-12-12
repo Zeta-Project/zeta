@@ -44,7 +44,7 @@ export default (function() {
   ExportedMetaModel.prototype.getReferences = function() {
     return this.references;
   };
-/*
+
   ExportedMetaModel.prototype.setEnums = function(enums) {
     return this.enums = enums;
   };
@@ -52,7 +52,7 @@ export default (function() {
   ExportedMetaModel.prototype.getEnums = function() {
     return this.enums;
   };
-*/
+
   ExportedMetaModel.prototype.setAttributes = function(attributes) {
     return this.attributes = attributes;
   };
