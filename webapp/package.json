@@ -17,7 +17,7 @@
   "dependencies": {
     "ace-grammar": "github:foo123/ace-grammar#1.0.3",
     "bootbox": "4.4.0",
-    "bootstrap": "3.3.6",
+    "bootstrap": "4.4.1",
     "brace": "0.5.0",
     "css-loader": "0",
     "ionicons": "github:ionic-team/ionicons#1.5.2",
