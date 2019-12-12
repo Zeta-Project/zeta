@@ -36,7 +36,6 @@ class YFilesZetaDev {
 
     initialize() {
 
-        let conceptDefinition = definition;
         let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
 
         const args = process.argv.slice(2);
@@ -47,7 +46,13 @@ class YFilesZetaDev {
             zetaApiWrapper.password = process.env.ZETA_DEV_USER_PASSWORD;
             uuid = process.env.ZETA_DEV_PROJECT_UUID;
             zetaApiWrapper.getConceptDefinition(uuid).then(data => {
-                conceptDefinition = data;
+                const loadedMetaModel = {
+                    uuid: uuid,
+                    name: "petrinet",
+                    concept: data
+                }
+
+                new YFilesZeta(loadedMetaModel);
             }).catch(reason => {
                 showSnackbar("Problem to load concept definition from server: " + reason);
             })
@@ -63,16 +68,15 @@ class YFilesZetaDev {
                     saveAs(blob, metaModelId + ".json");
                 });
             }
+
+            const loadedMetaModel = {
+                uuid: uuid,
+                name: "petrinet",
+                concept: definition
+            }
+
+            new YFilesZeta(loadedMetaModel);
         }
-
-        const loadedMetaModel = {
-            uuid: uuid,
-            name: "petrinet",
-            concept: conceptDefinition
-        }
-
-        new YFilesZeta(loadedMetaModel);
-
     }
 }
 

@@ -36,6 +36,9 @@ import {
 } from 'yfiles'
 
 import { UMLClassModel } from './UMLClassModel.js'
+import {Attribute} from "./utils/Attribute";
+import {Operation} from "./utils/Operation";
+
 // additional spacing after certain elements
 const VERTICAL_SPACING = 2
 
@@ -188,7 +191,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
                 }
                 if (data.attributes[i] !== null && typeof data.attributes[i] !== 'undefined') {
-                    this.elementLabel.text = data.attributes[i]
+                    this.elementLabel.text = data.attributes[i].name
                     this.elementLabel.style.backgroundFill = null
                     this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 5, 0)
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
@@ -237,7 +240,7 @@ export class UMLNodeStyle extends NodeStyleBase {
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
                 }
                 if (data.operations[i] !== null && typeof data.operations[i] !== 'undefined') {
-                    this.elementLabel.text = data.operations[i]
+                    this.elementLabel.text = data.operations[i].name
                     this.elementLabel.style.backgroundFill = null
                     this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 5, 0)
                     g.appendChild(UMLNodeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
@@ -325,7 +328,7 @@ export class UMLNodeStyle extends NodeStyleBase {
         const elementFont = this.elementLabel.style.font
         const elements = data.attributes.concat(data.operations)
         elements.forEach(element => {
-            const size = TextRenderSupport.measureText(element, elementFont)
+            const size = TextRenderSupport.measureText(element.name, elementFont)
             width = Math.max(width, size.width + LEFT_SPACING + 5)
         })
         const classNameSize = TextRenderSupport.measureText(data.className, this.classLabel.style.font)
@@ -452,18 +455,18 @@ export class UMLNodeStyle extends NodeStyleBase {
             if (index < 0) {
                 text = data.className
             } else if (index >= data.attributes.length) {
-                text = data.operations[index - data.attributes.length] || ''
+                text = data.operations[index - data.attributes.length].name || ''
             } else {
-                text = data.attributes[index] || ''
+                text = data.attributes[index].name || ''
             }
         } else {
             // we add a dummy entry to make space for the label editing
             // eslint-disable-next-line no-lonely-if
             if (categoryHit === 1) {
-                data.attributes.push('')
+                data.attributes.push(new Attribute({name: ""}))
                 this.adjustSize(node, editorInputMode)
             } else if (categoryHit === 2) {
-                data.operations.push('')
+                data.operations.push(new Operation({name: ""}))
                 this.adjustSize(node, editorInputMode)
             }
         }
@@ -484,17 +487,17 @@ export class UMLNodeStyle extends NodeStyleBase {
                     data.className = res
                 } else if (categoryHit === 1) {
                     if (adding) {
-                        data.attributes[data.attributes.length - 1] = res
+                        data.attributes[data.attributes.length - 1].name = res
                         data.selectedIndex = data.attributes.length - 1
                     } else {
-                        data.attributes[index] = res
+                        data.attributes[index].name = res
                     }
                 } else if (categoryHit === 2) {
                     if (adding) {
-                        data.operations[data.operations.length - 1] = res
+                        data.operations[data.operations.length - 1].name = res
                         data.selectedIndex = data.attributes.length + (data.operations.length - 1)
                     } else {
-                        data.operations[index - data.attributes.length] = res
+                        data.operations[index - data.attributes.length].name = res
                     }
                 }
             } else {
