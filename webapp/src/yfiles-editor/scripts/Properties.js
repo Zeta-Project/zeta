@@ -338,7 +338,7 @@ function buildAttributes(model) {
         let defaultVal = document.createElement("INPUT");
         defaultVal.setAttribute("type", "text");
         defaultVal.setAttribute("value", (tempAttribute.defaultVal.value) || "")
-        let defaultValLabel = document.createTextNode('defaultVal:')
+        let defaultValLabel = document.createTextNode('default:')
         attributeInformation.appendChild(defaultValLabel);
         attributeInformation.appendChild(defaultVal);
         //DefaultType Dropdown
@@ -356,7 +356,7 @@ function buildAttributes(model) {
         optInt.text = "Integer"
         defaultType.add(optInt)
         attributeInformation.appendChild(defaultType)
-        //set properties defaultVal
+        //set properties default
         for(let i = 0; i < defaultType.options.length; i++){
             if(defaultType.options[i].value === tempAttribute.defaultVal.type) defaultType.options[i].selected = true
         }

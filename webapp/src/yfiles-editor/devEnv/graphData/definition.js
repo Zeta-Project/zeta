@@ -33,7 +33,7 @@ export default {
         ],
         "methods": [
             {
-                "name": "something",
+                "name": "localDefinition",
                 "parameters": [],
                 "description": "",
                 "returnType": "String",
