@@ -37,6 +37,8 @@ import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
 import definition from "../devEnv/graphData/definition";
+import {Attribute} from "./utils/Attribute";
+import {Operation} from "./utils/Operation";
 
 
 // Tell the library about the license contents
@@ -280,20 +282,23 @@ function buildGraphFromDefinition(graph, data) {
     //create a node for each class
     //fill them with existing attributes, operations and names
     classes.forEach(function (node) {
-        const attributeNames = []
-        for (let i = 0; i < node.attributes.length; i++) {
-            attributeNames[i] = node.attributes[i].name
-        }
-        const methodNames = []
-        for (let i = 0; i < node.methods.length; i++) {
-            methodNames[i] = node.methods[i].name
-        }
+        const attributes = [];
+        node.attributes.forEach(attribute => {
+            attributes.push(new Attribute(attribute))
+        })
+
+        const methods = [];
+        node.methods.forEach(method => {
+            methods.push(new Operation(method))
+        });
+
         const tempNode = (graph.createNode({
             style: new UMLNodeStyle(
                 new umlModel.UMLClassModel({
-                    className: node.name.toString(),
-                    attributes: attributeNames,
-                    operations: methodNames
+                    className: node.name,
+                    description: node.description,
+                    attributes: attributes,
+                    operations: methods
                 })
             )
         }));
