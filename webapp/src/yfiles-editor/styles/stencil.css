@@ -1,0 +1,13 @@
+.yfiles-drag {
+    z-index: 15;
+    opacity: 0.35;
+    transition: opacity .2s ease-in-out;
+}
+
+.yfiles-drag.hidden {
+    opacity: 0;
+}
+
+.dndPanelItem {
+    margin: 10px auto;
+}
