@@ -5,7 +5,7 @@ import {DragAndDrop} from "./DragAndDrop";
 import * as umlModel from './UMLClassModel.js'
 import {UMLNodeStyle} from './UMLNodeStyle.js'
 import UMLContextButtonsInputMode from './UMLContextButtonsInputMode.js'
-import {checkStatus, ZetaApiWrapper} from "./ZetaApiWrapper";
+import {isSuccessStatus, ZetaApiWrapper} from "./ZetaApiWrapper";
 import {showSnackbar} from "./utils/AppStyle";
 import {
     Class,
@@ -128,7 +128,7 @@ export class YFilesZeta {
                     uiState: JSON.stringify({"empty":"value"})
                 });
 
-                ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(checkStatus).then(() => {
+                ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
                     showSnackbar("Meta model saved successfully!")
                 }).catch(reason => {
                     showSnackbar("Problem to save meta model: " + reason)

@@ -15,10 +15,7 @@ export default (function() {
    */
   //Todo try getNodeArray()
   Graph.prototype.getNodes = function() {
-    let nodes = []
-    this.graph.nodes.forEach(node => nodes.push(node))
-    nodes = nodes.filter(node => node.style instanceof UMLNodeStyle)
-    return nodes
+    return this.graph.nodes.filter(node => node.style instanceof UMLNodeStyle)
   };
 
   /*

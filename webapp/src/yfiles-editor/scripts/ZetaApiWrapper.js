@@ -21,35 +21,20 @@ export class ZetaApiWrapper {
 
     isAuthenticated() {
 
-        let isAuthenticated = false;
-
-        fetch(this.rootUrl + "/user").then(checkStatus).then(() => {
-            isAuthenticated = true;
-        });
-
-        return isAuthenticated;
+        return new Promise((resolve, reject) => fetch(this.rootUrl + "/user")
+            .then(isSuccessStatus).then(() => resolve(true)));
     }
 
     getConceptDefinition(metaModelId) {
 
-        const isAuthenticated = this.isAuthenticated();
-        if (!isAuthenticated) {
-            this.authenticate();
-        }
-
-        const url = this.rootUrl + "/rest/v1/meta-models/" + metaModelId + "/definition"
-
-        return fetch(url, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: "include"
-        }).then(checkStatus).then(json)
+        return new Promise((resolve, reject) => this.isAuthenticated().then(fetchDefinition(this.rootUrl, metaModelId).then(data =>
+            resolve(data))).catch(() => {
+            this.authenticate().then(isSuccessStatus).then(fetchDefinition(this.rootUrl, metaModelId).then(data => resolve(data))).catch(reason => reject(reason))
+        }));
     }
 }
 
-ZetaApiWrapper.prototype.postConceptDefinition = function(metaModelId, jsonValue) {
+ZetaApiWrapper.prototype.postConceptDefinition = function (metaModelId, jsonValue) {
 
     const url = this.rootUrl + "/rest/v1/meta-models/" + metaModelId + "/definition";
 
@@ -63,7 +48,7 @@ ZetaApiWrapper.prototype.postConceptDefinition = function(metaModelId, jsonValue
     });
 };
 
-export function checkStatus(response) {
+export function isSuccessStatus(response) {
 
     if (response.status >= 200 && response.status < 300) {
         return Promise.resolve(response)
@@ -72,7 +57,14 @@ export function checkStatus(response) {
     }
 }
 
-function json(response) {
+function fetchDefinition(rootUrl, metaModelId) {
+    const url = rootUrl + "/rest/v1/meta-models/" + metaModelId + "/definition"
 
-    return response.json()
+    return fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include"
+    }).then(isSuccessStatus).then(response => response.json())
 }
