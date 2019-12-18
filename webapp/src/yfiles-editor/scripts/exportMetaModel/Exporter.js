@@ -67,99 +67,40 @@ export default (function() {
     let nodes = this.graph.getNodes()
     nodes.forEach(node => {
       classes.push({
-          name: this.graph.getName(node),
-          description: this.graph.getDescription(node),
+          name: this.graph.getNodeName(node),
+          description: this.graph.getNodeDescription(node),
           abstractness: this.graph.isAbstract(node),
           superTypeNames: this.graph.getSuperTypes(node),
-          attributes: this.graph.getAttributes(node),
-          methods: this.graph.getEntityMethods(node),
-          inputReferenceNames: this.graph.getInputs(node),
-          outputReferenceNames: this.graph.getOutputs(node)
+          attributes: this.graph.getNodeAttributes(node),
+          methods: this.graph.getNodeMethods(node),
+          inputReferenceNames: this.graph.getInputReferenceNames(node),
+          outputReferenceNames: this.graph.getOutputReferenceNames(node)
         });
     })
     return classes;
   };
 
   Exporter.prototype.createReferences = function() {
-    let edges = []
-    let ret = this.graph.getReferences()
-    ret.forEach(edge => {
-      edges.push({
-        name: this.graph.getName(edge),
+    let references = []
+    let ref = this.graph.getReferences()
+    ref.forEach(reference => {
+      references.push({
+        name: this.graph.getReferenceName(reference),
         description: "",
-        sourceDeletionDeletesTarget: false, //Todo check if this is necessary
+        sourceDeletionDeletesTarget: false,
         targetDeletionDeletesSource: false,
-        attributes: [],//this.graph.getAttributes(edge),
-        methods: [],//this.graph.getEntityMethods(edge),
-        sourceClassName: this.graph.getSourceName(edge),
-        targetClassName: this.graph.getTargetName(edge),
+        attributes: [],//this.graph.getNodeAttributes(reference),
+        methods: [],//this.graph.getNodeMethods(reference),
+        sourceClassName: this.graph.getSourceName(reference),
+        targetClassName: this.graph.getTargetName(reference),
         sourceLowerBounds: 0,//reference.attributes.linkdef_source[0]?.lowerBound || 0,
         sourceUpperBounds: -1,//reference.attributes.linkdef_source[0]?.upperBound || -1,
         targetLowerBounds: 0,//reference.attributes.linkdef_target[0]?.lowerBound || 0,
         targetUpperBounds: -1,//reference.attributes.linkdef_target[0]?.upperBound || -1,
       });
     })
-    return edges;
-  };
-/*
-  Exporter.prototype.createEnums = function() {
-    let enums, thisMEnum, _i, _len, _ref;
-    enums = [];
-    _ref = mEnum.getMEnums();
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      thisMEnum = _ref[_i];
-      enums.push({
-        name: thisMEnum.name,
-        valueNames: thisMEnum.symbols
-      });
-    }
-    return enums;
+    return references;
   };
 
-  Exporter.prototype.createAttributes = function() {
-    let attributes, thisAttribute, _i, _len, _ref;
-    attributes = [];
-    if (mEnum.getMEnumContainer().attributes.hasOwnProperty('m_attributes')) {
-      _ref = mEnum.getMEnumContainer().attributes['m_attributes'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thisAttribute = _ref[_i];
-        attributes.push({
-          name: thisAttribute.name,
-          upperBound: thisAttribute.upperBound,
-          lowerBound: thisAttribute.lowerBound,
-          default: this.graph.attributeValueToJson(thisAttribute.typ, thisAttribute.default),
-          type: this.graph.attributeTypeToJson(thisAttribute.typ),
-          expression: thisAttribute.expression,
-          localUnique: thisAttribute.localUnique,
-          globalUnique: thisAttribute.globalUnique,
-          constant: thisAttribute.constant,
-          ordered: thisAttribute.ordered,
-          transient: thisAttribute.transient,
-          singleAssignment: thisAttribute.singleAssignment
-        });
-      }
-    }
-    return attributes;
-  };
-
-  Exporter.prototype.createMethods = function() {
-    let methods, thisMethod, _i, _len, _ref;
-    methods = [];
-    if (mEnum.getMEnumContainer().attributes.hasOwnProperty('m_methods')) {
-      _ref = mEnum.getMEnumContainer().attributes['m_methods'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        thisMethod = _ref[_i];
-        methods.push({
-          name: thisMethod.name,
-          parameters: thisMethod.parameters,
-          description: thisMethod.description,
-          returnType: thisMethod.returnType,
-          code: thisMethod.code
-        });
-      }
-    }
-    return methods;
-  };
-*/
   return Exporter;
 })();

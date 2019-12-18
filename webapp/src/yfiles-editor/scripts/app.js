@@ -297,12 +297,14 @@ function buildGraphFromDefinition(graph, data) {
                 new umlModel.UMLClassModel({
                     className: node.name,
                     description: node.description,
+                    superTypeNames: node.superTypeNames,
                     attributes: attributes,
                     operations: methods
                 })
             )
         }));
         if (node.abstractness === true) {
+            tempNode.style.model.abstract = true
             tempNode.style.model.constraint = 'abstract'
             tempNode.style.model.stereotype = ''
             tempNode.style.fill = Fill.CRIMSON
