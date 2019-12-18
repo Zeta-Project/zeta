@@ -15,8 +15,9 @@ The basic structure is given by the DSLs which were defined specifically for the
 3. **Style** - The style language provides the functionality for defining different representations (layouts or design features) for elements. This could be seen similar to cascading style sheets (CSS).
 4. **Concept** - The graphical DSL is also called Meta Model. With this DSL the underlying data structure for the later model instance can be defined.
 
-Model-driven generation of graphical editors. <br>
-The goal is to generate simulations from a graphical DSL.
+
+The structure of the architecture is shown in the following figure.
+<img src="webapp/assets/ZetaArchitecture.PNG" alt="Snowplow logo" title="Snowplow" align="right" />
 
 
 ## Find out more
@@ -24,6 +25,9 @@ The goal is to generate simulations from a graphical DSL.
 | **[Technical Docs][aboutZeta]**     | **[Setup Guide][setup]**     | **[About Zeta][aboutZeta]**           | **[Contributing][aboutZeta]**           |
 |-------------------------------------|-------------------------------|-----------------------------------|---------------------------------------------|
 | [![i1][techdocs-image]][aboutZeta] | [![i2][setup-image]][setup] | [![i3][roadmap-image]][aboutZeta] | [![i4][contributing-image]][aboutZeta] |
+
+Model-driven generation of graphical editors. <br>
+The goal is to generate simulations from a graphical DSL.
 
 ## DSL-Editor
 The Graphical-Editor is configured via the textual DSL's by using the DSL-Editor.
