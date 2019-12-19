@@ -75,7 +75,7 @@
     top: 90px;
     bottom: 30px;
     width: 210px;
-    box-sizing: border-box;
+    zbox-sizing: border-box;
     background: #f7f7f7;
     z-index: 15;
     line-height: 150%;
@@ -167,6 +167,7 @@
     right: -320px;
 }
 
+/*
 @media screen and (max-width: 960px ) {
     .right-hidden .sidebar.right {
         right: -100%;
@@ -185,6 +186,9 @@
     }
 }
 
+
+
+ */
 .left-hidden .content {
     left: 0;
 }
