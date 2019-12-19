@@ -3,9 +3,9 @@ export default {
     "classes": [
     {
         "name": "Place",
-        "description": "",
+        "description": "Test Description for Place Class",
         "abstractness": true,
-        "superTypeNames": [],
+        "superTypeNames": ["Transition"],
         "inputReferenceNames": [
             "toPlace",
             "placeToPlace"
@@ -34,10 +34,13 @@ export default {
         "methods": [
             {
                 "name": "localDefinition",
-                "parameters": [],
+                "parameters": [
+                    "a",
+                    "b"
+                ],
                 "description": "",
-                "returnType": "String",
-                "code": ""
+                "returnType": "int",
+                "code": "return a + b;"
             },
             {
                 "name": "somethingElse",
