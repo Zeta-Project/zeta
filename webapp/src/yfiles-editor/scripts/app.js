@@ -222,12 +222,14 @@ function createInputMode () {
   // hide the edge creation buttons when the empty canvas was clicked
   mode.addCanvasClickedListener((src, args) => {
     graphComponent.currentItem = null
+    closeNav("PropertiesSidebar")
   })
 
   // the UMLNodeStyle should handle clicks itself
   mode.addItemClickedListener((src, args) => {
     if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
       args.item.style.nodeClicked(src, args)
+      openNav("PropertiesSidebar");
     }
   })
 
@@ -390,5 +392,14 @@ function getGroupId (edge, marker) {
    */
   return null
 }
+
+function openNav(target) {
+  document.getElementById(target).className = "sidebar right";
+}
+
+function closeNav(target) {
+  document.getElementById(target).className = ".right-hidden .sidebar.right"
+}
+
 
 new YFilesZeta()
