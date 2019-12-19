@@ -6,7 +6,7 @@ import * as umlModel from './UMLClassModel.js'
 import {UMLNodeStyle} from './UMLNodeStyle.js'
 import UMLContextButtonsInputMode from './UMLContextButtonsInputMode.js'
 import {isSuccessStatus, ZetaApiWrapper} from "./ZetaApiWrapper";
-import {showSnackbar} from "./utils/AppStyle";
+import {showExportFailure, showSnackbar} from "./utils/AppStyle";
 import {
     Class,
     EdgeRouter,
@@ -36,7 +36,6 @@ import '../styles/paper.css'
 import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
-import definition from "../devEnv/graphData/definition";
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
 
@@ -118,21 +117,31 @@ export class YFilesZeta {
                 const exporter = new Exporter(graph);
                 const exportedMetaModel = exporter.export();
 
-                const data = JSON.stringify({
-                    name: loadedMetaModel.name,
-                    classes: exportedMetaModel.getClasses(),
-                    references: exportedMetaModel.getReferences(),
-                    enums: exportedMetaModel.getEnums(),
-                    attributes: exportedMetaModel.getAttributes(),
-                    methods: exportedMetaModel.getMethods(),
-                    uiState: JSON.stringify({"empty":"value"})
-                });
+                if (exportedMetaModel.isValid()) {
 
-                ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
-                    showSnackbar("Meta model saved successfully!")
-                }).catch(reason => {
-                    showSnackbar("Problem to save meta model: " + reason)
-                })
+                    const data = JSON.stringify({
+                        name: loadedMetaModel.name,
+                        classes: exportedMetaModel.getClasses(),
+                        references: exportedMetaModel.getReferences(),
+                        enums: exportedMetaModel.getEnums(),
+                        attributes: exportedMetaModel.getAttributes(),
+                        methods: exportedMetaModel.getMethods(),
+                        uiState: JSON.stringify({"empty": "value"})
+                    });
+
+                    ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
+                        showSnackbar("Meta model saved successfully!")
+                    }).catch(reason => {
+                        showSnackbar("Problem to save meta model: " + reason)
+                    });
+
+                } else {
+                    let errorMessage = "";
+                    exportedMetaModel.getMessages().forEach(message => {
+                        errorMessage += message + '\n';
+                    });
+                    showExportFailure(errorMessage);
+                }
             } else {
                 showSnackbar("No loaded meta model found");
             }
@@ -313,9 +322,8 @@ function buildGraphFromDefinition(graph, data) {
     });
 
 
-
     graph.nodes.forEach(node => {
-        if ( node.style instanceof UMLNodeStyle) {
+        if (node.style instanceof UMLNodeStyle) {
             node.style.adjustSize(node, graphComponent.inputMode)
         }
     })

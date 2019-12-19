@@ -1,5 +1,4 @@
 import {UMLNodeStyle} from "../UMLNodeStyle";
-import CoreUtil from "../utils/CoreUtil";
 
 /*
   Wrapper class around the internal yfiles graph.
@@ -57,15 +56,17 @@ export default (function () {
     };
 
     /*
-    TODO: implement edge model and fix CoreUtil.isGeneralization
+    TODO: implement edge model and use CoreUtil.isGeneralization and load value from model
      */
     Graph.prototype.getSuperTypes = function (node) {
-      // return this.graph.outEdgesAt(node).filter(edge => {
-      //   return CoreUtil.isGeneralization(edge);
-      // }).map(edge => {
-      //   return edge.targetNode.style.model.className;
-      // });
-        return []
+        // let generalizations = this.graph.outEdgesAt(node).filter(edge => isGeneralization(edge.style));
+        //
+        // let superTypes = generalizations.map(edge => {
+        //     return edge.targetNode.style.model.className;
+        // });
+        //
+        // return superTypes;
+        return [];
     };
 
     Graph.prototype.getNodeAttributes = function (node) {
@@ -86,24 +87,26 @@ export default (function () {
 
     //Todo mCoreUtil need to check validity like above (getInputReferenceNames)
     Graph.prototype.getInputReferenceNames = function (node) {
-        if (this.graph.inDegree(node) > 0) {
+        /*if (this.graph.inDegree(node) > 0) {
             return this.graph.inEdgesAt(node).map(edge => {
                 let label = edge.labels.find(label => label !== undefined);
                 return label.text;
             })
-        } else {
+        } else*/
+        {
             return []
         }
     };
 
     //Todo mCoreUtil need to check validity
     Graph.prototype.getOutputReferenceNames = function (node) {
-        if (this.graph.outDegree(node) > 0) {
+        /*if (this.graph.outDegree(node) > 0) {
             return this.graph.outEdgesAt(node).map(edge => {
                 let label = edge.labels.find(label => label !== undefined);
                 return label.text;
             })
-        } else {
+        } else*/
+        {
             return []
         }
     };
@@ -156,6 +159,52 @@ export default (function () {
     Graph.prototype.getTargetName = function (reference) {
         return reference.targetNode.style.model.className
     };
+
+    /*
+    Returns all element- and reference-names which are assigned more than once.
+    */
+    Graph.prototype.getDuplicateKeys = function () {
+        let keys = [];
+        let duplicateKeys = [];
+        let elements = this.getNodeNames().concat(this.getReferenceNames());
+
+        elements.forEach(key => {
+            if (keys.includes(key)) {
+                duplicateKeys.push(key);
+            } else {
+                keys.push(key);
+            }
+        });
+
+        return duplicateKeys;
+    };
+
+    /*
+    Returns all attribute keys which are assigned more than once inside an element.
+     */
+
+    Graph.prototype.getDuplicateNodeAttributes = function () {
+        let duplicateAttributes = [];
+        let attributes = [];
+
+        this.getNodes().forEach(element => {
+            this.getNodeAttributes(element).forEach(attribute => {
+                if (attributes.includes(attribute.name)) {
+                    duplicateAttributes.push({
+                        nodeName: Graph.prototype.getNodeName(element),
+                        attributeName: attribute.name
+                    });
+                } else {
+                    attributes.push(attribute.name)
+                }
+            })
+            // clear attributes array for new element
+            attributes = [];
+        });
+
+        return duplicateAttributes;
+    };
+
 
     /*
      Convert a attribute type into json
@@ -230,51 +279,6 @@ export default (function () {
     };
 
 
-    Returns all element-, reference and enum-names which are assigned more than once.
-
-  Graph.prototype.getDuplicateKeys = function() {
-    let duplicateKeys, key, keys, _i, _len, _ref;
-    keys = [];
-    duplicateKeys = [];
-    _ref = this.getElementNames().concat(this.getReferenceNames()).concat(mEnum.getMEnumNames());
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      key = _ref[_i];
-      if (keys.indexOf(key) === -1) {
-        keys.push(key);
-      } else {
-        duplicateKeys.push(key);
-      }
-    }
-    return duplicateKeys;
-  };
-
-
-      Returns all attribute keys which are assigned more than once insinde an element.
-
-    Graph.prototype.getDuplicateAttributes = function() {
-      let attribute, attributes, cell, duplicateAttributes, key, _i, _j, _len, _len1, _ref, _ref1;
-      duplicateAttributes = [];
-      _ref = this.getElements().concat(this.getReferences());
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        cell = _ref[_i];
-        if (cell.attributes[Constants.field.ATTRIBUTES] != null) {
-          attributes = [];
-          _ref1 = cell.attributes[Constants.field.ATTRIBUTES];
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            attribute = _ref1[_j];
-            key = attribute.name;
-            if (attributes.indexOf(key) === -1) {
-              attributes.push(key);
-            } else {
-              duplicateAttributes.push(new Attribute(cell.attributes.name, key));
-            }
-          }
-        }
-      }
-      return duplicateAttributes;
-    };
-
-
     Returns all input references of the element.
 
   Graph.prototype.getInputReferenceNames = function(element) {
@@ -287,25 +291,6 @@ export default (function () {
     );
   };
 
-
-    Returns the methods of the cell.
-
-  Graph.prototype.getNodeMethods = function(cell) {
-    let attributes, key, mMethods, value, _i, _len, _ref;
-    mMethods = [];
-    if (cell.attributes[Constants.field.METHODS] != null) {
-      _ref = cell.attributes[Constants.field.METHODS];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        attributes = _ref[_i];
-        mMethods.push({});
-        for (key in attributes) {
-          value = attributes[key];
-          mMethods[mMethods.length - 1][key] = value;
-        }
-      }
-    }
-    return mMethods;
-  };
 
 
        Returns the attributes of the cell.
@@ -336,18 +321,6 @@ export default (function () {
        return mAttributes;
      };
 
-
-    Returns all superTypes of the given element (which is defined by the generalization reference type).
-
-  Graph.prototype.getSuperTypes = function(element) {
-    return this.graph.getConnectedLinks(element, {
-      outbound: true
-    }).filter(function(link) {
-      return mCoreUtil.isGeneralization(link);
-    }).map((function(link) {
-      return this.graph.getCell(link.attributes.target.id).attributes.name;
-    }), this);
-  };
   */
 
     return Graph;
