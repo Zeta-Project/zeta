@@ -32,46 +32,112 @@ body {
     font-size: 12px;
     color: #333333;
 }
-.accordion {
-    background-color: #eee;
-    color: #444;
+
+.addElementButton:before {
+    content: "\2795";
+    color: white;
+    font-weight: bold;
+}
+
+.addElementButton {
+    padding: 5px;
+    border: none;
+    float: right;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    background-color: #777;
+}
+
+.removeElementButton:before {
+    content: "\2796";
+    color: white;
+    font-weight: bold;
+}
+
+.removeElementButton {
+    margin-top: 5px;
+    border: none;
+    float: right;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    background-color: #777;
+}
+
+
+.listCollapsibleButton:before {
+    content: "\279C";
+    color: white;
+}
+
+.listCollapsibleButtonOpen:before {
+    content: "\279C";
+    color: white;
+}
+
+.listCollapsibleButtonOpen {
+    margin-top: 5px;
+    border: none;
+    float: left;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    background-color: #777;
+    transition: 0.2s ease;
+    transform: rotate(90deg);
+}
+
+.listCollapsibleButton {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border: none;
+    float: left;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    background-color: #777;
+    transition: 0.2s ease;
+    transform: rotateZ(0deg);
+}
+
+.collapsible {
+    background-color: #777;
+    color: white;
     cursor: pointer;
-    padding: 8px;
+    padding: 18px;
     width: 100%;
     border: none;
     text-align: left;
     outline: none;
     font-size: 15px;
-    transition: 0.5s;
-}
-.accordion ~ .panel{
-    height: 0px;
 }
 
-.accordion.active + .panel{
-    height: 100%;
+.active, .collapsible:hover {
+    background-color: #555;
 }
 
-.panel {
-    padding: 0px;
-    background-color: white;
-    /*max-height: 0;*/
+.collapsibleContent {
+    padding: 0 5px;
+    max-height: 0;
+    width: 90%;
     overflow: hidden;
-    transition: max-height 0.5s ease-out;
+    transition: max-height 0.2s ease-out;
+    background-color: #f1f1f1;
 }
 
-.active, .accordion:hover {
-    background-color: #ccc;
+.elementName {
+    margin: 5px;
+    background-color: #eaeaea;
+    border-radius: 10%;
+    width: 60%;
+    height: 25px;
 }
 
-.accordion:after {
-    content: '\002B';
-    color: #777;
-    font-weight: bold;
-    float: right;
-    margin-left: 5px;
+.textBox {
+    width: 95%;
 }
 
-.active:after {
-    content: "\2212";
+.checkbox {
+    white-space: pre-line;
 }

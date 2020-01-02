@@ -9,3 +9,4 @@ export class Operation {
         this.code = (data && data.code) || ""
     }
 }
+
