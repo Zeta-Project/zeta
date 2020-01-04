@@ -6,6 +6,8 @@ import {
 
 import {UMLNodeStyle} from "./UMLNodeStyle";
 import {Operation} from "./utils/Operation";
+import {Parameter} from "./utils/parameter";
+import {Attribute} from "./utils/Attribute";
 
 export class Properties {
 
@@ -299,6 +301,16 @@ function buildAttributes(model) {
     model.attributes.forEach((attribute) => {
         attributeContainer.appendChild(buildAttribute(model, attribute))
     });
+
+    let addAttributeButton = document.createElement('button')
+    addAttributeButton.innerHTML = "Add Attribute"
+    addAttributeButton.onclick = () => {
+        let dummyAttribute = new Attribute()
+        model.attributes.push(dummyAttribute)
+        attributeContainer.insertBefore(buildAttribute(model, dummyAttribute), addAttributeButton)
+    }
+    attributeContainer.appendChild(addAttributeButton)
+
     return attributeContainer
 }
 
@@ -307,7 +319,7 @@ function buildParameter(operation, parameter) {
     singleParameter.className = 'singleParameterContainer';
 
     let paraMeterName = document.createElement('INPUT');
-    paraMeterName.setAttribute('value', parameter.value);
+    paraMeterName.setAttribute('value', parameter.value || "");
     paraMeterName.className = 'elementName';
     singleParameter.appendChild(paraMeterName);
 
@@ -382,6 +394,16 @@ function buildOperations(model) {
     model.operations.forEach((operation) => {
         operationContainer.appendChild(buildOperation(model, operation))
     });
+
+    let addOperationButton = document.createElement('button')
+    addOperationButton.innerHTML = "Add Operation"
+    addOperationButton.onclick = () => {
+        let dummyOperation = new Operation()
+        model.operations.push(dummyOperation)
+        operationContainer.insertBefore(buildOperation(model, dummyOperation), addOperationButton)
+    }
+    operationContainer.appendChild(addOperationButton)
+
     return operationContainer
 }
 
@@ -442,6 +464,10 @@ function buildOperation(model, operation) {
     let addPropertyButton = document.createElement('button')
     addPropertyButton.innerHTML = "Add Parameter"
     addPropertyButton.onclick = () => {
+        let dummyParameter = new Parameter()
+        operation.parameters.push(dummyParameter)
+        singleOperationDetails.insertBefore(buildParameter(operation, dummyParameter), addPropertyButton)
+        console.log("built")
         //parameterList.appendChild(document.createTextNode("LELELELE"))
     }
     singleOperationDetails.appendChild(addPropertyButton)
