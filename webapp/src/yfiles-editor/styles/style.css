@@ -118,9 +118,10 @@ body {
 }
 
 .collapsibleContent {
+    border: black;
     padding: 0 5px;
-    max-height: 0;
     width: 90%;
+    max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
     background-color: #f1f1f1;
@@ -134,10 +135,16 @@ body {
     height: 25px;
 }
 
+.textBoxContainer {
+    width: 90%;
+}
+
 .textBox {
-    width: 95%;
+    width: 90%;
 }
 
 .checkbox {
-    white-space: pre-line;
+    clear: right;
+    overflow: hidden;
+
 }

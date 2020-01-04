@@ -102,7 +102,10 @@ export default {
             },
             {
                 "name": "MethodTwo",
-                "parameters": [],
+                "parameters": [
+                    {"type": "String", "value": "parameterString"},
+                    {"type": "Integer", "value": "8"}
+                ],
                 "description": "",
                 "returnType": "String",
                 "code": ""
