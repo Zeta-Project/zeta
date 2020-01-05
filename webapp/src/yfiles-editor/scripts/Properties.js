@@ -1,5 +1,5 @@
 import {
-    Fill,
+    Fill, IEdge,
     INode,
 
 } from "yfiles";
@@ -8,6 +8,7 @@ import {UMLNodeStyle} from "./UMLNodeStyle";
 import {Operation} from "./utils/Operation";
 import {Parameter} from "./utils/parameter";
 import {Attribute} from "./utils/Attribute";
+import {UMLEdgeModel} from "./utils/UMLEdgeModel";
 
 export class Properties {
 
@@ -22,6 +23,21 @@ export class Properties {
         this.itemSelectionChangedListener = (sender, args) => this.itemSelectionChanged(sender, args)
         graphComponent.selection.addItemSelectionChangedListener(this.itemSelectionChangedListener)
 
+        let edge = UMLEdgeModel({
+            name: "testEdge",
+            sourceDeletionDeletesTarget: false,
+            targetDeletionDeletesSource: false,
+            sourceClassName: "edgeSourceNode",
+            targetClassName: "edgeTargetNode",
+            sourceLowerBounds: 0,
+            sourceUpperBounds: -1,
+            targetLowerBounds: 0,
+            targetUpperBounds: -1,
+            attributes: [new Attribute()],
+            methods: [new Operation()]
+        })
+
+        this.buildEdgeProperties(edge, this.div);
     }
 
     get div() {
@@ -53,8 +69,8 @@ export class Properties {
                 this.buildNodeProperties(model, this.div)
             }
         }
-        else {
-            this.div.innerHTML = ""
+        else if(IEdge.isInstance(item)){
+            //Todo handle click on Edges after EdgeStyle is implemented
             //console.log("No Valid Item Selected")
         }
     }
@@ -67,6 +83,52 @@ export class Properties {
     updateProperties(model, div) {
         //console.log(this)
         //console.log(div)
+    }
+
+    //Todo combine buildEdgeProperties & buildNodeProperties function -> differentiate if edge or node in itemSelectionChanged
+    buildEdgeProperties(model, div) {
+        //build metaAccordion
+        let accordionMeta = document.createElement('button')
+        accordionMeta.className = 'collapsible'
+        accordionMeta.innerHTML = 'MetaInformation'
+        div.appendChild(accordionMeta)
+
+        //add MetaPanel
+        div.appendChild(buildEdgeMeta(model))
+
+        //build attributeAccordion
+        let accordionAttributes = document.createElement('button')
+        accordionAttributes.className = 'collapsible'
+        accordionAttributes.innerHTML = 'Attributes'
+        div.appendChild(accordionAttributes)
+
+        //build AttributePanel
+        div.appendChild(buildAttributes(model))
+
+        //build operationAccordion
+        let accordionOperations = document.createElement('button')
+        accordionOperations.className = 'collapsible'
+        accordionOperations.innerHTML = 'Operations'
+        div.appendChild(accordionOperations)
+
+        //build OperationPanel
+        div.appendChild(buildOperations(model))
+
+        let coll = document.getElementsByClassName("collapsible");
+        let i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                let content = this.nextElementSibling;
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+
+                }
+            });
+        }
     }
 
     buildNodeProperties(model, div) {
@@ -115,6 +177,33 @@ export class Properties {
         }
     }
 }
+
+function buildEdgeMeta(model) {
+    let metaContainer = document.createElement('DIV')
+    metaContainer.setAttribute("class", "collapsibleContent")
+
+    //name
+    metaContainer.appendChild(buildTextBox("name", model, "name"))
+    //sourceDeletionDeletesTarget
+    metaContainer.appendChild(buildTextBox("sourceDeletionDeletesTarget", model, "sourceDeletionDeletesTarget"))
+    //targetDeletionDeletesSource
+    metaContainer.appendChild(buildTextBox("targetDeletionDeletesSource", model, "targetDeletionDeletesSource"))
+    //sourceClassName
+    metaContainer.appendChild(buildTextBox("sourceClassName", model, "sourceClassName"))
+    //targetClassName
+    metaContainer.appendChild(buildTextBox("targetClassName", model, "targetClassName"))
+    //sourceLowerBounds
+    metaContainer.appendChild(buildTextBox("sourceLowerBounds", model, "sourceLowerBounds"))
+    //sourceUpperBounds
+    metaContainer.appendChild(buildTextBox("sourceUpperBounds", model, "sourceUpperBounds"))
+    //targetLowerBounds
+    metaContainer.appendChild(buildTextBox("targetLowerBounds", model, "targetLowerBounds"))
+    //targetUpperBounds
+    metaContainer.appendChild(buildTextBox("targetUpperBounds", model, "targetUpperBounds"))
+
+    return metaContainer
+}
+
 
 function buildMeta(model) {
     let metaContainer = document.createElement('DIV')
@@ -303,6 +392,7 @@ function buildAttributes(model) {
     });
 
     let addAttributeButton = document.createElement('button')
+    addAttributeButton.className = 'addElementButton'
     addAttributeButton.innerHTML = "Add Attribute"
     addAttributeButton.onclick = () => {
         let dummyAttribute = new Attribute()
@@ -396,6 +486,7 @@ function buildOperations(model) {
     });
 
     let addOperationButton = document.createElement('button')
+    addOperationButton.className = 'addElementButton'
     addOperationButton.innerHTML = "Add Operation"
     addOperationButton.onclick = () => {
         let dummyOperation = new Operation()
@@ -451,7 +542,6 @@ function buildOperation(model, operation) {
     //description
     singleOperationDetails.appendChild(buildTextBox("description", operation, "description"))
 
-
     //Parameterlist
     let parameterContainer = document.createElement('div')
     parameterContainer.setAttribute("class", "collapsibleContent")
@@ -462,13 +552,12 @@ function buildOperation(model, operation) {
     });
 
     let addPropertyButton = document.createElement('button')
+    addPropertyButton.className = 'addElementButton'
     addPropertyButton.innerHTML = "Add Parameter"
     addPropertyButton.onclick = () => {
         let dummyParameter = new Parameter()
         operation.parameters.push(dummyParameter)
         singleOperationDetails.insertBefore(buildParameter(operation, dummyParameter), addPropertyButton)
-        console.log("built")
-        //parameterList.appendChild(document.createTextNode("LELELELE"))
     }
     singleOperationDetails.appendChild(addPropertyButton)
 
@@ -507,143 +596,3 @@ function buildOperation(model, operation) {
 
     return singleOperation
 }
-
-/*
-function buildOperations(model) {
-    let operationList = document.createElement('div')
-    operationList.setAttribute("class", "listContent")
-
-    if(model.operations === []) return operationList
-
-    //accordion and list setup
-    model.operations.forEach((operation) => {
-        let openOptionsButton = document.createElement('button')
-        openOptionsButton.className = 'accordion'
-        openOptionsButton.innerHTML = operation.name
-        operationList.appendChild(openOptionsButton)
-        let operationInformation = document.createElement('div')
-        operationInformation.setAttribute("class", "panel")
-        operationList.appendChild(operationInformation)
-
-        //description
-        let descriptionLabel = document.createTextNode("Description")
-        operationInformation.appendChild(descriptionLabel)
-        let description = document.createElement("INPUT");
-        description.setAttribute("type", "text");
-        description.setAttribute("value", operation.description);
-        description.setAttribute("class", "input")
-        description.oninput = function(){
-            operation.description = description.value
-        }
-        operationInformation.appendChild(description)
-
-        //parameters
-        let parameterList = document.createElement('div')
-        parameterList.setAttribute("class", "listContent")
-        operation.parameters.forEach((parameter) => {
-            let openParameterButton = document.createElement('button')
-            openParameterButton.className = 'accordion'
-            openParameterButton.innerHTML = parameter.value
-            parameterList.appendChild(openParameterButton)
-            let parameterInformation = document.createElement('div')
-            parameterInformation.setAttribute("class", "panel")
-            parameterList.appendChild(parameterInformation)
-
-            let parameterText = document.createElement('INPUT')
-            parameterText.setAttribute("type", "text");
-            parameterText.setAttribute("value", (parameter.value) || "default")
-            parameterText.oninput = function(){
-                parameter.value = parameterText.value
-            }
-            parameterInformation.appendChild(parameterText);
-            //returnTypeParameter
-            let returnTypeLabel = document.createTextNode('returnTypeParameter')
-            parameterInformation.appendChild(returnTypeLabel)
-            let returnType = document.createElement('SELECT')
-            let optString = document.createElement('option')
-            optString.text = "String"
-            returnType.add(optString)
-            let optBool = document.createElement('option')
-            optBool.text = "Boolean"
-            returnType.add(optBool)
-            let optDouble = document.createElement('option')
-            optDouble.text = "Double"
-            returnType.add(optDouble)
-            let optInt = document.createElement('option')
-            optInt.text = "Integer"
-            returnType.add(optInt)
-            parameterInformation.appendChild(returnType)
-            //set returnType
-            for(let i = 0; i < returnType.options.length; i++){
-                console.log(parameter.type)
-                if(returnType.options[i].value === parameter.type) returnType.options[i].selected = true
-            }
-            //set operation.returnType
-            returnType.onchange = () => {
-                for(let i = 0; i < returnType.options.length; i++){
-                    if(returnType.options[i].selected === true) {
-                        parameter.type = returnType.options[i].value;
-                    }
-                }
-            }
-        })
-        operationInformation.appendChild(parameterList)
-        let addPropertyButton = document.createElement('button')
-        addPropertyButton.innerHTML = "Add Property"
-        addPropertyButton.onclick = () => {
-            parameterList.appendChild(document.createTextNode("LELELELE"))
-        }
-        operationInformation.appendChild(addPropertyButton)
-
-        //returnType
-        let returnTypeLabel = document.createTextNode('returnType')
-        operationInformation.appendChild(returnTypeLabel)
-        let returnType = document.createElement('SELECT')
-        let optString = document.createElement('option')
-        optString.text = "String"
-        returnType.add(optString)
-        let optBool = document.createElement('option')
-        optBool.text = "Boolean"
-        returnType.add(optBool)
-        let optDouble = document.createElement('option')
-        optDouble.text = "Double"
-        returnType.add(optDouble)
-        let optInt = document.createElement('option')
-        optInt.text = "Integer"
-        returnType.add(optInt)
-        operationInformation.appendChild(returnType)
-        //set returnType
-        for(let i = 0; i < returnType.options.length; i++){
-            if(returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
-        }
-        //set operation.returnType
-        returnType.onchange = () => {
-            for(let i = 0; i < returnType.options.length; i++){
-                if(returnType.options[i].selected === true) {
-                    operation.returnType = returnType.options[i].value;
-                }
-            }
-        }
-
-        //code
-        let codeLabel = document.createTextNode("Code")
-        operationInformation.appendChild(codeLabel)
-        let code = document.createElement("input");
-        code.setAttribute("type", "text");
-        code.setAttribute("value", operation.code || "");
-        code.setAttribute("class", "input")
-        code.oninput = function(){
-            operation.code = code.value
-        }
-        operationInformation.appendChild(code)
-    })
-    let addOperationButton = document.createElement('button')
-    addOperationButton.innerHTML = "Add Operation"
-    addOperationButton.onclick = () => {
-        model.operations.push(new Operation())
-    }
-    operationList.appendChild(addOperationButton)
-    return operationList
-}
-
-*/
