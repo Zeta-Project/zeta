@@ -303,7 +303,6 @@ function buildAttributes(model) {
     });
 
     let addAttributeButton = document.createElement('button')
-    addAttributeButton.className = 'addElementButton'
     addAttributeButton.innerHTML = "Add Attribute"
     addAttributeButton.onclick = () => {
         let dummyAttribute = new Attribute()
@@ -397,7 +396,6 @@ function buildOperations(model) {
     });
 
     let addOperationButton = document.createElement('button')
-    addOperationButton.className = 'addElementButton'
     addOperationButton.innerHTML = "Add Operation"
     addOperationButton.onclick = () => {
         let dummyOperation = new Operation()
@@ -453,6 +451,7 @@ function buildOperation(model, operation) {
     //description
     singleOperationDetails.appendChild(buildTextBox("description", operation, "description"))
 
+
     //Parameterlist
     let parameterContainer = document.createElement('div')
     parameterContainer.setAttribute("class", "collapsibleContent")
@@ -463,12 +462,13 @@ function buildOperation(model, operation) {
     });
 
     let addPropertyButton = document.createElement('button')
-    addPropertyButton.className = 'addElementButton'
     addPropertyButton.innerHTML = "Add Parameter"
     addPropertyButton.onclick = () => {
         let dummyParameter = new Parameter()
         operation.parameters.push(dummyParameter)
         singleOperationDetails.insertBefore(buildParameter(operation, dummyParameter), addPropertyButton)
+        console.log("built")
+        //parameterList.appendChild(document.createTextNode("LELELELE"))
     }
     singleOperationDetails.appendChild(addPropertyButton)
 
@@ -507,3 +507,143 @@ function buildOperation(model, operation) {
 
     return singleOperation
 }
+
+/*
+function buildOperations(model) {
+    let operationList = document.createElement('div')
+    operationList.setAttribute("class", "listContent")
+
+    if(model.operations === []) return operationList
+
+    //accordion and list setup
+    model.operations.forEach((operation) => {
+        let openOptionsButton = document.createElement('button')
+        openOptionsButton.className = 'accordion'
+        openOptionsButton.innerHTML = operation.name
+        operationList.appendChild(openOptionsButton)
+        let operationInformation = document.createElement('div')
+        operationInformation.setAttribute("class", "panel")
+        operationList.appendChild(operationInformation)
+
+        //description
+        let descriptionLabel = document.createTextNode("Description")
+        operationInformation.appendChild(descriptionLabel)
+        let description = document.createElement("INPUT");
+        description.setAttribute("type", "text");
+        description.setAttribute("value", operation.description);
+        description.setAttribute("class", "input")
+        description.oninput = function(){
+            operation.description = description.value
+        }
+        operationInformation.appendChild(description)
+
+        //parameters
+        let parameterList = document.createElement('div')
+        parameterList.setAttribute("class", "listContent")
+        operation.parameters.forEach((parameter) => {
+            let openParameterButton = document.createElement('button')
+            openParameterButton.className = 'accordion'
+            openParameterButton.innerHTML = parameter.value
+            parameterList.appendChild(openParameterButton)
+            let parameterInformation = document.createElement('div')
+            parameterInformation.setAttribute("class", "panel")
+            parameterList.appendChild(parameterInformation)
+
+            let parameterText = document.createElement('INPUT')
+            parameterText.setAttribute("type", "text");
+            parameterText.setAttribute("value", (parameter.value) || "default")
+            parameterText.oninput = function(){
+                parameter.value = parameterText.value
+            }
+            parameterInformation.appendChild(parameterText);
+            //returnTypeParameter
+            let returnTypeLabel = document.createTextNode('returnTypeParameter')
+            parameterInformation.appendChild(returnTypeLabel)
+            let returnType = document.createElement('SELECT')
+            let optString = document.createElement('option')
+            optString.text = "String"
+            returnType.add(optString)
+            let optBool = document.createElement('option')
+            optBool.text = "Boolean"
+            returnType.add(optBool)
+            let optDouble = document.createElement('option')
+            optDouble.text = "Double"
+            returnType.add(optDouble)
+            let optInt = document.createElement('option')
+            optInt.text = "Integer"
+            returnType.add(optInt)
+            parameterInformation.appendChild(returnType)
+            //set returnType
+            for(let i = 0; i < returnType.options.length; i++){
+                console.log(parameter.type)
+                if(returnType.options[i].value === parameter.type) returnType.options[i].selected = true
+            }
+            //set operation.returnType
+            returnType.onchange = () => {
+                for(let i = 0; i < returnType.options.length; i++){
+                    if(returnType.options[i].selected === true) {
+                        parameter.type = returnType.options[i].value;
+                    }
+                }
+            }
+        })
+        operationInformation.appendChild(parameterList)
+        let addPropertyButton = document.createElement('button')
+        addPropertyButton.innerHTML = "Add Property"
+        addPropertyButton.onclick = () => {
+            parameterList.appendChild(document.createTextNode("LELELELE"))
+        }
+        operationInformation.appendChild(addPropertyButton)
+
+        //returnType
+        let returnTypeLabel = document.createTextNode('returnType')
+        operationInformation.appendChild(returnTypeLabel)
+        let returnType = document.createElement('SELECT')
+        let optString = document.createElement('option')
+        optString.text = "String"
+        returnType.add(optString)
+        let optBool = document.createElement('option')
+        optBool.text = "Boolean"
+        returnType.add(optBool)
+        let optDouble = document.createElement('option')
+        optDouble.text = "Double"
+        returnType.add(optDouble)
+        let optInt = document.createElement('option')
+        optInt.text = "Integer"
+        returnType.add(optInt)
+        operationInformation.appendChild(returnType)
+        //set returnType
+        for(let i = 0; i < returnType.options.length; i++){
+            if(returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
+        }
+        //set operation.returnType
+        returnType.onchange = () => {
+            for(let i = 0; i < returnType.options.length; i++){
+                if(returnType.options[i].selected === true) {
+                    operation.returnType = returnType.options[i].value;
+                }
+            }
+        }
+
+        //code
+        let codeLabel = document.createTextNode("Code")
+        operationInformation.appendChild(codeLabel)
+        let code = document.createElement("input");
+        code.setAttribute("type", "text");
+        code.setAttribute("value", operation.code || "");
+        code.setAttribute("class", "input")
+        code.oninput = function(){
+            operation.code = code.value
+        }
+        operationInformation.appendChild(code)
+    })
+    let addOperationButton = document.createElement('button')
+    addOperationButton.innerHTML = "Add Operation"
+    addOperationButton.onclick = () => {
+        model.operations.push(new Operation())
+    }
+    operationList.appendChild(addOperationButton)
+    return operationList
+}
+
+*/
