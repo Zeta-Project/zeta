@@ -1,7 +1,6 @@
 
 export class UMLEdgeModel {
 
-
     get selectedIndex() {
         return this.$selectedIndex
     }
@@ -16,7 +15,7 @@ export class UMLEdgeModel {
         this.sourceDeletionDeletesTarget = (data && data.sourceDeletionDeletesTarget) || false;
         this.targetDeletionDeletesSource = (data && data.targetDeletionDeletesSource) || false;
         this.sourceClassName = (data && data.sourceClassName) || "";
-        this.targetDeletionDeletesSource = (data && data.targetDeletionDeletesSource) || "";
+        this.targetClassName = (data && data.targetClassName) || "";
         this.sourceLowerBounds = (data && data.sourceLowerBounds) || 0;
         this.sourceUpperBounds = (data && data.sourceUpperBounds) || -1;
         this.targetLowerBounds = (data && data.targetLowerBounds) || 0;

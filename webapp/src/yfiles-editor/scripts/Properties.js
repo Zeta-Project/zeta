@@ -23,10 +23,11 @@ export class Properties {
         this.itemSelectionChangedListener = (sender, args) => this.itemSelectionChanged(sender, args)
         graphComponent.selection.addItemSelectionChangedListener(this.itemSelectionChangedListener)
 
-        let edge = UMLEdgeModel({
-            name: "testEdge",
-            sourceDeletionDeletesTarget: false,
-            targetDeletionDeletesSource: false,
+
+        let edge = new UMLEdgeModel({
+            description: "testEdge",
+            sourceDeletionDeletesTarget: true,
+            targetDeletionDeletesSource: true,
             sourceClassName: "edgeSourceNode",
             targetClassName: "edgeTargetNode",
             sourceLowerBounds: 0,
@@ -183,11 +184,11 @@ function buildEdgeMeta(model) {
     metaContainer.setAttribute("class", "collapsibleContent")
 
     //name
-    metaContainer.appendChild(buildTextBox("name", model, "name"))
+    metaContainer.appendChild(buildTextBox("description", model, "description"))
     //sourceDeletionDeletesTarget
-    metaContainer.appendChild(buildTextBox("sourceDeletionDeletesTarget", model, "sourceDeletionDeletesTarget"))
+    metaContainer.appendChild(buildCheckBox("sourceDeletionDeletesTarget", model, model.sourceDeletionDeletesTarget))
     //targetDeletionDeletesSource
-    metaContainer.appendChild(buildTextBox("targetDeletionDeletesSource", model, "targetDeletionDeletesSource"))
+    metaContainer.appendChild(buildCheckBox("targetDeletionDeletesSource", model, model.targetDeletionDeletesSource))
     //sourceClassName
     metaContainer.appendChild(buildTextBox("sourceClassName", model, "sourceClassName"))
     //targetClassName
@@ -354,7 +355,7 @@ function buildTextBox(label, data, value) {
     let textBox = document.createElement("input");
     textBox.className = 'textBox';
     textBox.setAttribute("type", "text");
-    textBox.setAttribute("value", data[value] || "");
+    textBox.setAttribute("value", data[value]);
     textBox.oninput = function() {
         data[value] = textBox.value
     };
