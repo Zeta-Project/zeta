@@ -3,6 +3,7 @@ import 'yfiles/yfiles.css';
 import {bindAction, bindCommand} from "./utils/Bindings";
 import {DragAndDrop} from "./DragAndDrop";
 import * as umlModel from './UMLClassModel.js'
+import * as umlEdgeModel from './utils/UMLEdgeModel.js'
 import {UMLNodeStyle} from './UMLNodeStyle.js'
 import UMLContextButtonsInputMode from './UMLContextButtonsInputMode.js'
 import {isSuccessStatus, ZetaApiWrapper} from "./ZetaApiWrapper";
@@ -39,6 +40,7 @@ import '../styles/toolbar.css'
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
 import {Parameter} from "./utils/parameter";
+import { UMLEdgeStyle } from './UMLEdgeStyle'
 
 
 // Tell the library about the license contents
