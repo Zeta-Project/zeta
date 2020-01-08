@@ -1,976 +1,315 @@
-
+/****************************************************************************
+ ** @license
+ ** This demo file is part of yFiles for HTML 2.2.0.2.
+ ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** 72070 Tuebingen, Germany. All rights reserved.
+ **
+ ** yFiles demo files exhibit yFiles for HTML functionalities. Any redistribution
+ ** of demo files in source code or binary form, with or without
+ ** modification, is not permitted.
+ **
+ ** Owners of a valid software license for a yFiles for HTML version that this
+ ** demo is shipped with are allowed to use the demo source code as basis
+ ** for their own yFiles for HTML powered applications. Use of such programs is
+ ** governed by the rights and conditions as set out in the yFiles for HTML
+ ** license agreement.
+ **
+ ** THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED
+ ** WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ ** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+ ** NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ ** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ ** TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ ** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ ** LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ ** NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ **
+ ***************************************************************************/
 import {
-    Class,
-    DefaultLabelStyle,
-    Fill,
-    Font,
-    FontStyle,
-    GraphEditorInputMode,
-    HorizontalTextAlignment,
-    IClipboardHelper,
-    IEditLabelHelper,
-    INode,
-    INodeSizeConstraintProvider,
-    IRenderContext,
-    Insets,
-    InteriorStretchLabelModel,
-    InteriorStretchLabelModelPosition,
-    ItemClickedEventArgs,
-    LabelEditingEventArgs,
-    MarkupExtension,
-    NodeStyleBase,
-    Point,
-    Rect,
-    ShapeNodeStyle,
-    SimpleLabel,
-    SimpleNode,
-    Size,
-    SolidColorFill,
-    Stroke,
-    SvgVisual,
-    TextRenderSupport,
-    TypeAttribute,
-    VerticalTextAlignment,
-    Visual,
-    YObject, EdgeStyleBase
+    Arrow,
+    EdgeSelectionIndicatorInstaller,
+    EdgeStyleBase,
+    GeneralPath,
+    IArrow,
+    IEdge,
+    ISelectionIndicatorInstaller, LinearGradient,
+    PolylineEdgeStyle,
+    SvgVisual
 } from 'yfiles'
 
-import { UMLClassModel } from './UMLClassModel.js'
-import {Attribute} from "./utils/Attribute";
-import {Operation} from "./utils/Operation";
-
-// additional spacing after certain elements
-const VERTICAL_SPACING = 2
-
-// empty space before the text elements
-const LEFT_SPACING = 25
-
 /**
- * An UML node style that visualizes an UMLClassModel.
+ * This class is an example for a custom edge style based on {@link EdgeStyleBase}.
  */
-export class UMLEdgeStyle extends EdgeStyleBase {
+export default class UMLEdgeStyle extends EdgeStyleBase {
     /**
-     * Returns the background fill.
-     * @return {Fill}
+     * Initializes a new instance of the {@link CustomSimpleEdgeStyle} class.
      */
-    get fill() {
-        return this.$fill
-    }
-
-    /**
-     * Sets the fill for the background.
-     * @param {Fill} value
-     */
-    set fill(value) {
-        this.$fill = value
-    }
-
-    /**
-     * Returns the highlight background fill.
-     * @return {Fill}
-     */
-    get highlightFill() {
-        return this.$highlightFill
-    }
-
-    /**
-     * Sets the fill for the highlight background.
-     * @param {Fill} value
-     */
-    set highlightFill(value) {
-        this.$highlightFill = value
-    }
-
-    /**
-     * Gets the UML data of this style.
-     * @returns {UMLClassModel}
-     */
-    get model() {
-        return this.$model
-    }
-
-    /**
-     * Sets the UML data for this style.
-     * @param {UMLClassModel} model
-     */
-    set model(model) {
-        this.$model = model
-    }
-
-    /**
-     * Creates a new instance of the UML node style.
-     * @param {UMLClassModel?} model The UML data that should be visualization by this style
-     * @param {Fill?} fill The background fill of the header sections.
-     * @param {Fill?} highlightFill The background fill of the selected entry.
-     */
-    constructor(model, fill, highlightFill) {
+    constructor() {
         super()
-        this.$model = model || new UMLClassModel()
-        this.$fill = fill || new SolidColorFill(0x60, 0x7d, 0x8b)
-        this.$highlightFill = highlightFill || new SolidColorFill(0xa3, 0xf1, 0xbb)
-        this.initializeStyles()
+        this.$arrows = new Arrow()
+        this.$pathThickness = 3
     }
 
     /**
-     * Creates the UML node style visual based on the UMLClassModel.
-     * @param {IRenderContext} ctx The render context.
-     * @param {INode} node The node to which this style instance is assigned.
-     * @returns {Visual}
+     * Gets the thickness of the edge.
+     * @type {number}
      */
-    createVisual(ctx, node) {
-        this.initializeStyles() // fill color might have changed
-        const data = this.$model
-        const layout = node.layout
-        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-        g.setAttribute('class', 'uml-node')
-        this.dummyNode.layout = new Rect(0, 0, layout.width, layout.height)
-        g.appendChild(UMLEdgeStyle.getCreator(this.dummyNode).createVisual(ctx).svgElement)
-
-        let yOffset = 0
-
-        // add the class label
-        this.stretchLabelModel.insets = new Insets(0, yOffset, 0, 0)
-        this.classLabel.text = ''
-        g.appendChild(
-            UMLEdgeStyle.getCreator(this.classLabel, this.backgroundStyle).createVisual(ctx).svgElement
-        )
-        this.classLabel.text = data.className
-        g.appendChild(UMLEdgeStyle.getCreator(this.classLabel).createVisual(ctx).svgElement)
-
-        // add stereotype
-        if (data.stereotype) {
-            this.stretchLabelModel.insets = new Insets(0, 5, 0, 0)
-            this.stereotypeLabel.text = `<<${data.stereotype}>>`
-            g.appendChild(UMLEdgeStyle.getCreator(this.stereotypeLabel).createVisual(ctx).svgElement)
-        }
-
-        // add constraint
-        if (data.constraint) {
-            this.stretchLabelModel.insets = new Insets(0, 5, 0, 0)
-            this.constraintLabel.text = `{${data.constraint}}`
-            g.appendChild(UMLEdgeStyle.getCreator(this.constraintLabel).createVisual(ctx).svgElement)
-        }
-
-        yOffset += this.classLabel.preferredSize.height
-
-        let selectedIndex = -1
-        if (ctx.canvasComponent.currentItem === node && data.selectedIndex >= 0) {
-            selectedIndex = data.selectedIndex
-        }
-
-        yOffset += VERTICAL_SPACING
-        this.stretchLabelModel.insets = new Insets(0, yOffset, 0, 0)
-        this.categoryLabel.text = ''
-        const attributesHeaderBackground = UMLEdgeStyle.getCreator(
-            this.categoryLabel,
-            this.backgroundStyle
-        ).createVisual(ctx).svgElement
-        attributesHeaderBackground.setAttribute('cursor', 'pointer')
-        g.appendChild(attributesHeaderBackground)
-        this.categoryLabel.text = 'Attributes'
-        this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 0, 0)
-        const attributesTextElement = UMLEdgeStyle.getCreator(this.categoryLabel).createVisual(ctx)
-            .svgElement
-        attributesTextElement.setAttribute('cursor', 'pointer')
-        g.appendChild(attributesTextElement)
-
-        yOffset += this.categoryLabel.preferredSize.height
-        const attributesHeaderOffset = yOffset
-
-        let counter = 0
-        let hasLocalSelection = false
-        let hasGlobalSelection = false
-        if (data.attributesOpen) {
-            for (let i = 0; i < data.attributes.length; i++, counter++) {
-                if (counter === selectedIndex) {
-                    hasGlobalSelection = true
-                    hasLocalSelection = true
-                    this.elementLabel.text = ''
-                    this.elementLabel.style.backgroundFill = this.$highlightFill
-                    this.stretchLabelModel.insets = new Insets(1, yOffset, 1, 0)
-                    g.appendChild(UMLEdgeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
-                }
-                if (data.attributes[i] !== null && typeof data.attributes[i] !== 'undefined') {
-                    this.elementLabel.text = data.attributes[i].name
-                    this.elementLabel.style.backgroundFill = null
-                    this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 5, 0)
-                    g.appendChild(UMLEdgeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
-                    yOffset += this.elementLabel.preferredSize.height
-                }
-            }
-        } else {
-            counter += data.attributes.length
-        }
-        if (attributesHeaderOffset <= layout.height) {
-            this.addControls(
-                ctx,
-                attributesHeaderBackground,
-                layout,
-                data.attributesOpen,
-                hasLocalSelection
-            )
-        }
-
-        this.stretchLabelModel.insets = new Insets(0, yOffset, 0, 0)
-        this.categoryLabel.text = ''
-        const operationsHeaderBackground = UMLEdgeStyle.getCreator(
-            this.categoryLabel,
-            this.backgroundStyle
-        ).createVisual(ctx).svgElement
-        operationsHeaderBackground.setAttribute('cursor', 'pointer')
-        g.appendChild(operationsHeaderBackground)
-        this.categoryLabel.text = 'Operations'
-        this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 0, 0)
-        const operationsTextElement = UMLEdgeStyle.getCreator(this.categoryLabel).createVisual(ctx)
-            .svgElement
-        operationsTextElement.setAttribute('cursor', 'pointer')
-        g.appendChild(operationsTextElement)
-        yOffset += this.categoryLabel.preferredSize.height
-        const operationsHeaderOffset = yOffset
-
-        hasLocalSelection = false
-        if (data.operationsOpen) {
-            for (let i = 0; i < data.operations.length; i++, counter++) {
-                if (counter === selectedIndex) {
-                    hasGlobalSelection = true
-                    hasLocalSelection = true
-                    this.elementLabel.text = ''
-                    this.elementLabel.style.backgroundFill = this.$highlightFill
-                    this.stretchLabelModel.insets = new Insets(1, yOffset, 1, 0)
-                    g.appendChild(UMLEdgeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
-                }
-                if (data.operations[i] !== null && typeof data.operations[i] !== 'undefined') {
-                    this.elementLabel.text = data.operations[i].name
-                    this.elementLabel.style.backgroundFill = null
-                    this.stretchLabelModel.insets = new Insets(LEFT_SPACING, yOffset, 5, 0)
-                    g.appendChild(UMLEdgeStyle.getCreator(this.elementLabel).createVisual(ctx).svgElement)
-                    yOffset += this.elementLabel.preferredSize.height
-                }
-            }
-        }
-        if (operationsHeaderOffset <= layout.height) {
-            this.addControls(
-                ctx,
-                operationsHeaderBackground,
-                layout,
-                data.operationsOpen,
-                hasLocalSelection
-            )
-        }
-
-        SvgVisual.setTranslate(g, layout.x, layout.y)
-
-        const svgVisual = new SvgVisual(g)
-        svgVisual.data = {
-            x: layout.x,
-            y: layout.y,
-            width: layout.width,
-            height: layout.height,
-            dataModCount: data.modCount,
-            hasSelection: hasGlobalSelection,
-            fill: this.$fill,
-            highlightFill: this.$highlightFill
-        }
-        return svgVisual
+    get pathThickness() {
+        return this.$pathThickness
     }
 
     /**
-     * Updates the location of the UML node style. If anything other changed, a new visual is created.
-     * @param {IRenderContext} ctx The render context.
-     * @param {Visual} oldVisual The visual that has been created in the call to
-     *   {@link NodeStyleBase#createVisual}.
-     * @param {INode} node The node to which this style instance is assigned.
-     * @returns {Visual}
+     * Sets the thickness of the edge.
+     * @type {number}
      */
-    updateVisual(ctx, oldVisual, node) {
-        const layout = node.layout
+    set pathThickness(value) {
+        this.$pathThickness = value
+    }
 
-        const data = oldVisual.data
-        const model = this.$model
-        if (
-            !data ||
-            data.dataModCount !== model.modCount ||
-            (data.width !== layout.width || data.height !== layout.height) ||
-            (data.hasSelection && ctx.canvasComponent.currentItem !== node) ||
-            data.fill !== node.style.fill ||
-            data.highlightFill !== node.style.highlightFill
-        ) {
-            return this.createVisual(ctx, node)
+    /**
+     * Gets the arrows drawn at the beginning and at the end of the edge.
+     * @type {number}
+     */
+    get arrows() {
+        return this.$arrows
+    }
+
+    /**
+     * Sets the arrows drawn at the beginning and at the end of the edge.
+     * @type {number}
+     */
+    set arrows(value) {
+        this.$arrows = value
+    }
+
+    /**
+     * Creates the visual for an edge.
+     * @see Overrides {@link EdgeStyleBase#createVisual}
+     * @return {Visual}
+     */
+    createVisual(renderContext, edge) {
+        // This implementation creates a CanvasContainer and uses it for the rendering of the edge.
+        const g = window.document.createElementNS('http://www.w3.org/2000/svg', 'g')
+        // Get the necessary data for rendering of the edge
+        const cache = this.createRenderDataCache(renderContext, edge)
+        // Render the edge
+        this.render(renderContext, edge, g, cache)
+        return new SvgVisual(g)
+    }
+
+    /**
+     * Re-renders the edge using the old visual for performance reasons.
+     * @see Overrides {@link EdgeStyleBase#updateVisual}
+     * @return {Visual}
+     */
+    updateVisual(renderContext, oldVisual, edge) {
+        const container = oldVisual.svgElement
+        // get the data with which the oldvisual was created
+        const oldCache = container['data-renderDataCache']
+        // get the data for the new visual
+        const newCache = this.createRenderDataCache(renderContext, edge)
+
+        // check if something changed
+        if (!newCache.stateEquals(oldCache)) {
+            // more than only the path changed - re-render the visual
+            while (container.firstChild) {
+                container.removeChild(container.firstChild)
+            }
+            this.render(renderContext, edge, container, newCache)
+            return oldVisual
         }
 
-        if (data.x !== layout.x || data.y !== layout.y) {
-            SvgVisual.setTranslate(oldVisual.svgElement, layout.x, layout.y)
-            data.x = layout.x
-            data.y = layout.y
+        if (!newCache.pathEquals(oldCache)) {
+            // only the path changed - update the old visual
+            this.updatePath(renderContext, edge, container, newCache)
         }
         return oldVisual
     }
 
     /**
-     * Return the size of this node considering the associated UML data.
-     * @param {INode} node The node of which the size should be determined.
-     * @returns {Size} The preferred size of this node.
+     * Creates an object containing all necessary data to create an edge visual.
+     * @return {object}
      */
-    getPreferredSize(node) {
-        const data = this.$model
-
-        // determine height
-        let entries = data.attributesOpen ? data.attributes.length : 0
-        entries += data.operationsOpen ? data.operations.length : 0
-        const height =
-            this.classLabel.preferredSize.height +
-            VERTICAL_SPACING + // title section
-            this.categoryLabel.preferredSize.height * 2 + // both section titles
-            this.elementLabel.preferredSize.height * entries // visible entries
-
-        // determine width
-        let width = 125
-        const elementFont = this.elementLabel.style.font
-        const elements = data.attributes.concat(data.operations)
-        elements.forEach(element => {
-            const size = TextRenderSupport.measureText(element.name, elementFont)
-            width = Math.max(width, size.width + LEFT_SPACING + 5)
-        })
-        const classNameSize = TextRenderSupport.measureText(data.className, this.classLabel.style.font)
-        width = Math.max(width, classNameSize.width)
-        const stereotypeSize = TextRenderSupport.measureText(
-            data.stereotype,
-            this.stereotypeLabel.style.font
-        )
-        width = Math.max(width, stereotypeSize.width)
-        const constraintSize = TextRenderSupport.measureText(
-            data.className,
-            this.constraintLabel.style.font
-        )
-        width = Math.max(width, constraintSize.width)
-
-        return new Size(width, height)
-    }
-
-    /**
-     * Adjusts the size of the given node considering UML data of the node. If the current node layout is bigger than
-     * the minimal needed size for the UML data then the current node layout will be used instead.
-     * @param {INode} node The node whose size should be adjusted.
-     * @param {GraphEditorInputMode} geim The responsible input mode.
-     */
-    adjustSize(node, geim) {
-        const layout = node.layout
-        const minSize = this.getPreferredSize(node)
-        const width = Math.max(minSize.width, layout.width)
-        const height = Math.max(minSize.height, layout.height)
-        // GEIM's setNodeLayout handles affected orthogonal edges automatically
-        geim.setNodeLayout(node, new Rect(layout.x, layout.y, width, height))
-        geim.graphComponent.invalidate()
-    }
-
-    /**
-     * Adjusts the height of the given node to fit the UML data.
-     * @param {INode} node The node whose size should be adjusted.
-     * @param {GraphEditorInputMode} geim The responsible input mode.
-     * @private
-     */
-    fitHeight(node, geim) {
-        const layout = node.layout
-        const newSize = this.getPreferredSize(node)
-        // GEIM's setNodeLayout handles affected orthogonal edges automatically
-        geim.setNodeLayout(node, new Rect(layout.x, layout.y, layout.width, newSize.height))
-        geim.graphComponent.invalidate()
-    }
-
-    /**
-     * Upon label edit, we check which UML entry was hit and adjust the label edit accordingly. Additionally, we provide
-     * an {@link INodeSizeConstraintProvider} to limit the interactive node resizing to the node's size
-     * considering the attached UML data.
-     * @param {INode} node The node to use for the context lookup.
-     * @param {Class} type The type to query.
-     * @returns {Object}
-     */
-    lookup(node, type) {
-        const outerThis = this
-        if (type === IEditLabelHelper.$class) {
-            const oldData = this.$model.clone()
-            return new IEditLabelHelper({
-                onLabelAdding(evt) {
-                    outerThis.editLabel(evt, node, true).then(newData => {
-                        outerThis.handleUndo(evt.context.canvasComponent.inputMode, node, newData, oldData)
-                    })
-                },
-                onLabelEditing(evt) {
-                    outerThis.editLabel(evt, node, false).then(newData => {
-                        outerThis.handleUndo(evt.context.canvasComponent.inputMode, node, newData, oldData)
-                    })
-                }
-            })
-        } else if (type === INodeSizeConstraintProvider.$class) {
-            return new INodeSizeConstraintProvider({
-                getMinimumSize: item => this.getPreferredSize(item),
-                getMaximumSize: item => Size.INFINITE,
-                getMinimumEnclosedArea: item => Rect.EMPTY
-            })
-        } else if (type === IClipboardHelper.$class) {
-            return new IClipboardHelper({
-                shouldCopy: (context, item) => true,
-                shouldCut: (context, item) => true,
-                shouldPaste: (context, item, userData) => true,
-                copy: (context, item) => null,
-                cut: (context, item) => null,
-                paste: (context, item, userData) => {
-                    const style = item.style
-                    if (style instanceof UMLEdgeStyle) {
-                        if (context.targetGraph.foldingView) {
-                            context.targetGraph.foldingView.manager.masterGraph.setStyle(item, style.clone())
-                        } else {
-                            context.targetGraph.setStyle(item, style.clone())
-                        }
-                    }
-                }
-            })
-        }
-        return null
-    }
-
-    /**
-     * Manages text edits on the {@link UMLEdgeStyle} by preconfiguring the {@link TextEditorInputMode}
-     * with the text that should be edited and its position such that the label edit text box is opened on top of the
-     * clicked text.
-     * @param {LabelEditingEventArgs} evt The event args with which the edit label was triggered.
-     * @param {INode} node The node whose label should be edited.
-     * @param {boolean} adding Whether a new label is added or an existing one should be edited.
-     * @return {Promise}
-     * @private
-     */
-    editLabel(evt, node, adding) {
-        const data = this.$model
-        const index = data.selectedIndex
-        const categoryHit = data.selectedCategory
-        evt.cancel = true
-        evt.handled = true
-        const graphComponent = evt.context.canvasComponent
-        const editorInputMode = graphComponent.inputMode
-
-        const layout = this.getRelativeSlotLayout(index, node, adding, categoryHit)
-
-        let text = ''
-        if (!adding) {
-            if (index < 0) {
-                text = data.className
-            } else if (index >= data.attributes.length) {
-                text = data.operations[index - data.attributes.length].name || ''
-            } else {
-                text = data.attributes[index].name || ''
-            }
+    createRenderDataCache(context, edge) {
+        // Get the owner node's color
+        const node = edge.sourcePort.owner
+        let color
+        const nodeStyle = node.style
+        if (typeof nodeStyle.getNodeColor === 'function') {
+            color = nodeStyle.getNodeColor(node)
+        } else if (
+          typeof nodeStyle.wrapper !== 'undefined' &&
+          typeof nodeStyle.wrapper.getNodeColor === 'function'
+        ) {
+            color = nodeStyle.wrapper.getNodeColor(node)
         } else {
-            // we add a dummy entry to make space for the label editing
-            // eslint-disable-next-line no-lonely-if
-            if (categoryHit === 1) {
-                data.attributes.push(new Attribute({name: ""}))
-                this.adjustSize(node, editorInputMode)
-            } else if (categoryHit === 2) {
-                data.operations.push(new Operation({name: ""}))
-                this.adjustSize(node, editorInputMode)
-            }
+            color = '#0082b4'
         }
 
-        editorInputMode.textEditorInputMode.editorText = text
-        editorInputMode.textEditorInputMode.upVector = new Point(0, -1)
-        const leftPadding = index < 0 ? 0 : LEFT_SPACING
-        editorInputMode.textEditorInputMode.location = new Point(
-            layout.x + node.layout.x + leftPadding,
-            layout.y + node.layout.y + layout.height
-        )
-        editorInputMode.textEditorInputMode.anchor = new Point(0, 1)
-
-        // actually edit the text and update the UML data model
-        return editorInputMode.textEditorInputMode.edit().then(res => {
-            if (res !== null) {
-                if (index < 0) {
-                    data.className = res
-                } else if (categoryHit === 1) {
-                    if (adding) {
-                        data.attributes[data.attributes.length - 1].name = res
-                        data.selectedIndex = data.attributes.length - 1
-                    } else {
-                        data.attributes[index].name = res
-                    }
-                } else if (categoryHit === 2) {
-                    if (adding) {
-                        data.operations[data.operations.length - 1].name = res
-                        data.selectedIndex = data.attributes.length + (data.operations.length - 1)
-                    } else {
-                        data.operations[index - data.attributes.length].name = res
-                    }
-                }
-            } else {
-                // canceled, maybe remove the dummy entry
-                // eslint-disable-next-line no-lonely-if
-                if (adding) {
-                    if (categoryHit === 1) {
-                        data.attributes.splice(data.attributes.length - 1, 1)
-                    } else if (categoryHit === 2) {
-                        data.operations.splice(data.operations.length - 1, 1)
-                    }
-                    this.adjustSize(node, editorInputMode)
-                }
-            }
-            data.modify()
-            evt.context.canvasComponent.invalidate()
-            return data
-        })
-    }
-
-    /**
-     * Clones this style and the associated UML model.
-     * @returns {UMLEdgeStyle}
-     */
-    clone() {
-        const clone = super.clone()
-        clone.model = clone.model.clone()
-        return clone
-    }
-
-    /**
-     * Handles clicks on this style.
-     * @param {GraphEditorInputMode} geim
-     * @param {ItemClickedEventArgs} args
-     */
-    nodeClicked(geim, args) {
-        const node = args.item
-        const data = this.$model
-        const location = args.location
-        const x = location.x - node.layout.x
-        const y = location.y - node.layout.y
-
-        //Todo decide if hard selection or listener. Current Listener: app.js (selectionChangedListener) -> probably better to use in input mode?!
-        geim.graphComponent.selection.selectedNodes.clear()
-        geim.graphComponent.selection.selectedNodes.setSelected(args.item, true)
-
-        // the vertical relative coordinates of the different interactive parts
-        const topAttributesCategory = this.classLabel.preferredSize.height + VERTICAL_SPACING
-        const bottomAttributesCategory = topAttributesCategory + this.categoryLabel.preferredSize.height
-        let topOperationsCategory = bottomAttributesCategory
-        let bottomOperationsCategory = topOperationsCategory + this.categoryLabel.preferredSize.height
-        if (data.attributesOpen) {
-            const attributesHeight = this.elementLabel.preferredSize.height * data.attributes.length
-            topOperationsCategory += attributesHeight
-            bottomOperationsCategory += attributesHeight
-        }
-
-        // determine which section or button was clicked
-        if (y < topAttributesCategory) {
-            if (data.selectedIndex !== -1) {
-                data.selectedIndex = -1
-            }
-            return
-        } else if (y >= topAttributesCategory && y <= bottomAttributesCategory) {
-            // the attributes header was clicked
-            if (x >= 5 && x < node.layout.width - 36) {
-                this.toggleOpenState(1, geim, node)
-            } else if (x >= node.layout.width - 36 && x <= node.layout.width - 20) {
-                this.addLabel(1, geim, node)
-            } else if (
-                x >= node.layout.width - 18 &&
-                x <= node.layout.width - 2 &&
-                data.selectedIndex >= 0 &&
-                data.selectedIndex <= data.attributes.length - 1
-            ) {
-                this.removeLabel(1, geim, node)
-            } else {
-                if (data.selectedIndex !== -1) {
-                    data.selectedIndex = -1
-                }
-                return
-            }
-        } else if (data.attributesOpen && y > bottomAttributesCategory && y < topOperationsCategory) {
-            // an attribute was clicked
-            data.selectedCategory = 1
-            data.selectedIndex =
-                ((y - bottomAttributesCategory) / this.elementLabel.preferredSize.height) | 0
-        } else if (y >= topOperationsCategory && y <= bottomOperationsCategory) {
-            // the operations header was clicked
-            if (x >= 5 && x < node.layout.width - 36) {
-                this.toggleOpenState(2, geim, node)
-            } else if (x >= node.layout.width - 36 && x <= node.layout.width - 20) {
-                this.addLabel(2, geim, node)
-            } else if (
-                x >= node.layout.width - 18 &&
-                x <= node.layout.width - 2 &&
-                data.selectedIndex >= data.attributes.length &&
-                data.selectedIndex <= data.attributes.length + data.operations.length - 1
-            ) {
-                this.removeLabel(2, geim, node)
-            } else {
-                if (data.selectedIndex !== -1) {
-                    data.selectedIndex = -1
-                }
-                return
-            }
-        } else if (y > bottomOperationsCategory) {
-            // an operation was clicked
-            data.selectedCategory = 2
-            data.selectedIndex =
-                (data.attributes.length +
-                    (y - (topOperationsCategory + this.categoryLabel.preferredSize.height)) /
-                    this.elementLabel.preferredSize.height) |
-                0
-        } else {
-            // a non-interactive part of the style was clicked, just do nothing
-            return
-        }
-
-        //geim.inputModeContext.canvasComponent.currentItem = node
-        geim.inputModeContext.canvasComponent.invalidate()
-        args.handled = true
-    }
-
-    /**
-     * Triggers interactive label adding.
-     * @param {number} category 1 represents the attributes section, 2 represents the operations section
-     * @param {GraphEditorInputMode} geim
-     * @param {INode} node
-     * @private
-     */
-    addLabel(category, geim, node) {
-        const data = this.$model
-        data.selectedCategory = category
-        if (category === 1) {
-            data.selectedIndex = Math.max(0, data.attributes.length)
-            data.attributesOpen = true
-        } else if (category === 2) {
-            data.selectedIndex = Math.max(
-                data.attributes.length,
-                data.attributes.length + data.operations.length
-            )
-            data.operationsOpen = true
-        }
-        geim.clickInputMode.preventNextDoubleClick()
-        geim.addLabel(node)
-    }
-
-    /**
-     * Removes the selected label from the node.
-     * @param {number} category 1 represents the attributes section, 2 represents the operations section
-     * @param {GraphEditorInputMode} geim
-     * @param {INode} node
-     * @private
-     */
-    removeLabel(category, geim, node) {
-        const data = this.$model
-        const oldData = data.clone()
-        data.selectedCategory = category
-        if (category === 1) {
-            data.attributes.splice(data.selectedIndex, 1)
-        } else if (category === 2) {
-            data.operations.splice(data.selectedIndex - data.attributes.length, 1)
-        }
-        data.selectedIndex = Math.min(
-            data.selectedIndex,
-            data.attributes.length + data.operations.length - 1
-        )
-        data.modify()
-        geim.clickInputMode.preventNextDoubleClick()
-        this.handleUndo(geim, node, data, oldData)
-        this.adjustSize(node, geim)
-    }
-
-    /**
-     * Toggles the open/closed state of the attributes or operations section.
-     * @param {number} category 1 represents the attributes section, 2 represents the operations section
-     * @param {GraphEditorInputMode} geim
-     * @param {INode} node
-     * @private
-     */
-    toggleOpenState(category, geim, node) {
-        const data = this.$model
-        if (category === 1) {
-            data.attributesOpen = !data.attributesOpen
-        } else if (category === 2) {
-            data.operationsOpen = !data.operationsOpen
-        }
-        data.modify()
-        this.fitHeight(node, geim)
-        geim.clickInputMode.preventNextDoubleClick()
-    }
-
-    /**
-     * Adds an undo unit to the graphs undo engine which may undo/redo the UML data change.
-     * @param {GraphEditorInputMode} geim The responsible input mode.
-     * @param {INode} node The node whose data is changed.
-     * @param {UMLClassModel} newData The new data.
-     * @param {UMLClassModel} oldData The previous data.
-     * @private
-     */
-    handleUndo(geim, node, newData, oldData) {
-        const graph = geim.graph
-        const edit = graph.beginEdit('AddingLabel', 'AddingLabel')
-        graph.addUndoUnit(
-            'DataChanged',
-            'DataChanged',
-            () => {
-                this.$model = oldData
-                this.adjustSize(node, geim)
+        const selection = context.canvasComponent !== null ? context.canvasComponent.selection : null
+        const selected = selection !== null && selection.isSelected(edge)
+        return {
+            thickness: this.pathThickness,
+            selected,
+            color,
+            path: this.getPath(edge),
+            arrows: this.arrows,
+            equals(other) {
+                return this.pathEquals(other) && this.stateEquals(other)
             },
-            () => {
-                this.$model = newData
-                this.adjustSize(node, geim)
+            stateEquals(other) {
+                return (
+                  other.thickness === this.thickness &&
+                  other.selected === this.selected &&
+                  other.color === this.color &&
+                  this.arrows.equals(other.arrows)
+                )
+            },
+            pathEquals(other) {
+                return other.path.hasSameValue(this.path)
             }
-        )
-        edit.commit()
+        }
     }
 
     /**
-     * Helper function to return the relative layout of a given slot index. A negative index indicates the class header
-     * area.
-     * @returns {Rect}
-     * @private
+     * Creates the visual appearance of an edge.
      */
-    getRelativeSlotLayout(slot, node, isAdding, category) {
-        const data = this.$model
-        const layout = node.layout
+    render(context, edge, container, cache) {
+        const g = container
 
-        if (slot < 0) {
-            const classNameSize = TextRenderSupport.measureText(
-                data.className,
-                this.classLabel.style.font
-            )
-            return new Rect(
-                layout.width / 2 - classNameSize.width / 2,
-                0,
-                layout.width,
-                this.classLabel.preferredSize.height - 10
-            )
+        // store information with the visual on how we created it
+        g['data-renderDataCache'] = cache
+
+        const path = cache.path.createSvgPath()
+
+        path.setAttribute('fill', 'none')
+        path.setAttribute('stroke-width', cache.thickness.toString())
+        path.setAttribute('stroke-linejoin', 'round')
+
+        if (cache.selected) {
+            // Fill for selected state
+            // LinearGradient.applyToElement(context, path)
+            path.setAttribute('stroke', cache.color)
+        } else {
+            // Fill for non-selected state
+            path.setAttribute('stroke', cache.color)
         }
 
-        // determine y-coordinate of the queried slot
-        let top =
-            this.classLabel.preferredSize.height +
-            VERTICAL_SPACING +
-            this.categoryLabel.preferredSize.height
-        top += slot * this.elementLabel.preferredSize.height
-        if ((isAdding && category === 2) || (!isAdding && slot >= data.attributes.length)) {
-            // account for the operations category label
-            top += this.categoryLabel.preferredSize.height
+        container.appendChild(path)
+
+        // add the arrows to the container
+        super.addArrows(context, container, edge, cache.path, cache.arrows, cache.arrows)
+    }
+
+    /**
+     * Updates the edge path data as well as the arrow positions of the visuals stored in <param name="container" />.
+     * @param context {IRenderContext}
+     * @param edge {IEdge}
+     * @param container {SVGElement}
+     * @param cache {RenderDataCache}
+     */
+    updatePath(context, edge, container, cache) {
+        // The first child must be a path - else re-create the container from scratch
+        if (container.childNodes.length === 0 || !(container.childNodes[0] instanceof SVGPathElement)) {
+            while (container.firstChild) {
+                container.removeChild(container.firstChild)
+            }
+            this.render(context, edge, container, cache)
+            return
         }
 
-        return new Rect(0, top, layout.width, this.elementLabel.preferredSize.height)
+        // store information with the visual on how we created it
+        container['data-renderDataCache'] = cache
+
+        const gp = cache.path
+        // //////////////////////////////////////////////////
+        const path = container.childNodes[0]
+
+        const updatedPath = gp.createSvgPath()
+        path.setAttribute('d', updatedPath.getAttribute('d'))
+
+        // update the arrows
+        super.updateArrows(context, container, edge, gp, cache.arrows, cache.arrows)
     }
 
     /**
-     * Helper function to add the control buttons.
-     * @private
+     * Creates a {@link GeneralPath} from the edge's bends.
+     * @param {IEdge} edge The edge to create the path for.
+     * @return {GeneralPath} A {@link GeneralPath} following the edge
+     * @see Overrides {@link EdgeStyleBase#getPath}
      */
-    addControls(ctx, container, nodeLayout, opened, enableRemoveButton) {
-        const openMarker = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-        openMarker.setAttribute('fill', 'white')
-        openMarker.setAttribute('points', opened ? '-5,-3.5 5,-3.5 0,6' : '-3.5,5 6,0 -3.5,-5')
-        openMarker.setAttribute('transform', 'translate(12 10)')
-        openMarker.setAttribute('class', 'uml-button')
-        container.appendChild(openMarker)
+    getPath(edge) {
+        // Create a general path from the locations of the ports and the bends of the edge.
+        const path = new GeneralPath()
+        path.moveTo(edge.sourcePort.location)
+        edge.bends.forEach(bend => {
+            path.lineTo(bend.location)
+        })
+        path.lineTo(edge.targetPort.location)
 
-        const plusBackground = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-        Fill.setFill(this.$fill, plusBackground, ctx)
-        plusBackground.setAttribute('x', `${nodeLayout.width - 37}px`)
-        plusBackground.setAttribute('y', '2px')
-        plusBackground.setAttribute('width', '16px')
-        plusBackground.setAttribute('height', '16px')
-        const plusButtonPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        plusButtonPath.setAttribute('fill', 'white')
-        plusButtonPath.setAttribute(
-            'd',
-            'M8.5,16.5c-4.418,0-8,3.582-8,8s3.582,8,8,8c4.418,0,8-3.582,8-8S12.918,16.5,8.5,16.5z M13.5,25.5h-4v4h-2v-4h-4v-2h4v-4h2v4h4V25.5z'
-        )
-        plusButtonPath.setAttribute('transform', `matrix(0.8 0 0 0.8 ${nodeLayout.width - 36} -10)`)
-        const plus = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-        plus.setAttribute('class', 'uml-button')
-        plus.appendChild(plusBackground)
-        plus.appendChild(plusButtonPath)
-        container.appendChild(plus)
-
-        const minusButtonBackground = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-        Fill.setFill(this.$fill, minusButtonBackground, ctx)
-        minusButtonBackground.setAttribute('x', `${nodeLayout.width - 19}px`)
-        minusButtonBackground.setAttribute('y', '2px')
-        minusButtonBackground.setAttribute('width', '16px')
-        minusButtonBackground.setAttribute('height', '16px')
-        const minusButtonPath = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-        minusButtonPath.setAttribute('fill', 'white')
-        minusButtonPath.setAttribute('fill-opacity', enableRemoveButton ? '1' : '0.5')
-        minusButtonPath.setAttribute(
-            'd',
-            'M8.5,16.5c-4.418,0-8,3.582-8,8s3.582,8,8,8c4.418,0,8-3.582,8-8S12.918,16.5,8.5,16.5z M13.5,25.5h-10v-2h10V25.5z'
-        )
-        minusButtonPath.setAttribute('transform', `matrix(0.8 0 0 0.8 ${nodeLayout.width - 18} -10)`)
-        const minus = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-        minus.setAttribute('class', enableRemoveButton ? 'uml-button' : 'uml-button disabled')
-        minus.appendChild(minusButtonBackground)
-        minus.appendChild(minusButtonPath)
-        container.appendChild(minus)
+        // shorten the path in order to provide room for drawing the arrows.
+        const croppedPath = super.cropPath(edge, this.arrows, this.arrows, path)
+        return croppedPath
     }
 
     /**
-     * Helper method to initialize the dummy styles and label models that are used to build the UML node style.
-     * @private
+     * Determines whether the visual representation of the edge has been hit at the given location.
+     * Overridden method to include the {@link CustomSimpleEdgeStyle#pathThickness} and the HitTestRadius specified in
+     * the context in the calculation.
+     * @see Overrides {@link EdgeStyleBase#isHit}
+     * @return {boolean}
      */
-    initializeStyles() {
-        this.dummyNode = new SimpleNode()
-        const stroke = new Stroke({
-            fill: this.$fill,
-            thickness: 2
-        })
-        stroke.freeze()
-        this.dummyNode.style = new ShapeNodeStyle({ stroke })
-
-        this.backgroundStyle = new DefaultLabelStyle({
-            backgroundFill: this.$fill
-        })
-
-        this.stretchLabelModel = new InteriorStretchLabelModel()
-
-        // initialize the category label visualization
-        this.categoryLabel = new SimpleLabel(
-            this.dummyNode,
-            '',
-            this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
+    isHit(canvasContext, p, edge) {
+        // Use the convenience method in GeneralPath
+        return this.getPath(edge).pathContains(
+          p,
+          canvasContext.hitTestRadius + this.pathThickness * 0.5
         )
-        this.categoryLabel.style = new DefaultLabelStyle({
-            textFill: Fill.WHITE,
-            verticalTextAlignment: VerticalTextAlignment.CENTER
-        })
-        this.categoryLabel.preferredSize = new Size(1, 20)
-
-        // initialize the element label visualization
-        this.elementLabel = new SimpleLabel(
-            this.dummyNode,
-            '',
-            this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-        )
-        this.elementLabel.style = new DefaultLabelStyle({
-            verticalTextAlignment: VerticalTextAlignment.CENTER
-        })
-        this.elementLabel.preferredSize = new Size(1, 16)
-
-        // initialize the class label visualization
-        this.classLabel = new SimpleLabel(
-            this.dummyNode,
-            '',
-            this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-        )
-        this.classLabel.style = new DefaultLabelStyle({
-            textFill: Fill.WHITE,
-            horizontalTextAlignment: HorizontalTextAlignment.CENTER,
-            verticalTextAlignment: VerticalTextAlignment.CENTER
-        })
-        this.classLabel.preferredSize = new Size(1, 50)
-
-        // initialize the stereotype label visualization
-        this.stereotypeLabel = new SimpleLabel(
-            this.dummyNode,
-            '',
-            this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-        )
-        this.stereotypeLabel.style = new DefaultLabelStyle({
-            textFill: Fill.WHITE,
-            horizontalTextAlignment: HorizontalTextAlignment.CENTER,
-            font: new Font({
-                fontStyle: FontStyle.ITALIC,
-                fontSize: 10
-            })
-        })
-
-        // initialize the constraint label visualization
-        this.constraintLabel = new SimpleLabel(
-            this.dummyNode,
-            '',
-            this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-        )
-        this.constraintLabel.style = new DefaultLabelStyle({
-            textFill: Fill.WHITE,
-            horizontalTextAlignment: HorizontalTextAlignment.CENTER,
-            verticalTextAlignment: VerticalTextAlignment.BOTTOM,
-            font: new Font({
-                fontStyle: FontStyle.ITALIC,
-                fontSize: 10
-            })
-        })
     }
 
     /**
-     * Helper function to obtain the visual creator of the item.
-     * @param {INode|ILabel} item
-     * @param {INodeStyle|ILabelStyle?} itemStyle
-     * @private
+     * Determines whether the edge is visible in the given rectangle.
+     * Overridden method to improve performance of the suprt implementation
+     * @see Overrides {@link EdgeStyleBase#isVisible}
+     * @return {boolean}
      */
-    static getCreator(item, itemStyle) {
-        itemStyle = itemStyle || item.style
-        return itemStyle.renderer.getVisualCreator(item, itemStyle)
+    isVisible(context, rectangle, edge) {
+        // enlarge the test rectangle to include the path thickness
+        const enlargedRectangle = rectangle.getEnlarged(this.pathThickness)
+        // delegate to the efficient implementation of PolylineEdgeStyle
+        return helperEdgeStyle.renderer
+          .getVisibilityTestable(edge, helperEdgeStyle)
+          .isVisible(context, enlargedRectangle)
+    }
+
+    /**
+     * This implementation of the look up provides a custom implementation of the
+     * {@link ISelectionIndicatorInstaller} interface that better suits to this style.
+     * @see Overrides {@link EdgeStyleBase#lookup}
+     * @return {Object}
+     */
+    lookup(edge, type) {
+        if (type === ISelectionIndicatorInstaller.$class) {
+            return new CustomSelectionInstaller()
+        }
+
+        return super.lookup.call(this, edge, type)
     }
 }
 
-/**
- * Markup extension needed to (de-)serialize the UML style.
- */
-export const UMLNodeStyleExtension = Class('UMLNodeStyleExtension', {
-    $extends: MarkupExtension,
-
-    $fill: null,
-    fill: {
-        $meta() {
-            return [TypeAttribute(Fill.$class)]
-        },
-        get() {
-            return this.$fill
-        },
-        set(fill) {
-            this.$fill = fill
-        }
-    },
-
-    $highlightFill: null,
-    highlightFill: {
-        $meta() {
-            return [TypeAttribute(Fill.$class)]
-        },
-        get() {
-            return this.$highlightFill
-        },
-        set(fill) {
-            this.$highlightFill = fill
-        }
-    },
-
-    $model: null,
-    model: {
-        $meta() {
-            return [TypeAttribute(YObject.$class)]
-        },
-        get() {
-            return this.$model
-        },
-        set(model) {
-            this.$model = model
-        }
-    },
-
-    provideValue(serviceProvider) {
-        return new UMLEdgeStyle(this.model, this.fill, this.highlightFill)
-    }
+const helperEdgeStyle = new PolylineEdgeStyle({
+    sourceArrow: IArrow.NONE,
+    targetArrow: IArrow.NONE
 })
 
 /**
- * Listener that handles the serialization of the UML style.
-
-export const UMLNodeStyleSerializationListener = (sender, args) => {
-    const item = args.item
-    if (item instanceof UMLEdgeStyle) {
-        const umlNodeStyleExtension = new UMLNodeStyleExtension()
-        umlNodeStyleExtension.fill = item.fill
-        umlNodeStyleExtension.highlightFill = item.highlightFill
-        umlNodeStyleExtension.model = item.model
-        const context = args.context
-        context.serializeReplacement(UMLNodeStyleExtension.$class, item, umlNodeStyleExtension)
-        args.handled = true
+ * This customized {@link EdgeSelectionIndicatorInstaller} overrides the
+ * getStroke method to return <code>null</code>, so that no edge path is rendered if the edge is selected.
+ */
+class CustomSelectionInstaller extends EdgeSelectionIndicatorInstaller {
+    /** @return {Stroke} */
+    getStroke(canvas, edge) {
+        return null
     }
 }
-
-// export a default object to be able to map a namespace to this module for serialization
-export default { UMLEdgeStyle, UMLNodeStyleExtension }
- */
