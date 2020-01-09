@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/Zeta-Project/zeta.svg?branch=dev)](https://travis-ci.org/Zeta-Project/zeta)
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/Zeta-Project/zeta.svg?columns=all)](https://waffle.io/Zeta-Project/zeta)
 [![Codecoverage codecov.io](https://codecov.io/gh/Zeta-Project/zeta/branch/dev/graph/badge.svg)](https://codecov.io/gh/Zeta-Project/zeta)
 # Zeta
 <img src="https://avatars3.githubusercontent.com/u/29041085?s=150&v=4" alt="Snowplow logo" title="Snowplow" align="right" />
@@ -59,5 +58,5 @@ For more information please visit our [Wiki](https://github.com/Zeta-Project/zet
 [roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
 [contributing-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/contributing.png
 
-[aboutZeta]: https://github.com/Zeta-Project/zeta/wiki%20
+[aboutZeta]: https://github.com/Zeta-Project/zeta/wiki
 [setup]: https://github.com/Zeta-Project/zeta/wiki/Installation
