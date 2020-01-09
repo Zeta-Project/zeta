@@ -30,6 +30,16 @@ export function createRealizationStyle() {
   })
 }
 
+export function createCompositionStyle() {
+  return new PolylineEdgeStyle({
+    sourceArrow: new Arrow({
+      stroke: Stroke.BLACK,
+      fill: Fill.BLACK,
+      type: ArrowType.DIAMOND
+    })
+  })
+}
+
 export function createGeneralizationStyle() {
   return new PolylineEdgeStyle({
     sourceArrow: new Arrow({

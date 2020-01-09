@@ -25,8 +25,10 @@ import {
   createDependencyStyle,
   createDirectedAssociationStyle,
   createGeneralizationStyle,
-  createRealizationStyle
+  createRealizationStyle,
+  createCompositionStyle
 } from './UMLEdgeStyleFactory.js'
+import {  } from './UMLEdgeStyleFactory'
 
 /**
  * Provides the visuals of the edge creation buttons.
@@ -38,10 +40,11 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
    */
   static get edgeCreationButtons() {
     return [
-      createRealizationStyle(),
+      // createRealizationStyle(),
       createGeneralizationStyle(),
-      createAggregationStyle(),
-      createDependencyStyle(),
+      createCompositionStyle(),
+      // createAggregationStyle(),
+      // createDependencyStyle(),
       createDirectedAssociationStyle(),
       createAssociationStyle()
     ]
