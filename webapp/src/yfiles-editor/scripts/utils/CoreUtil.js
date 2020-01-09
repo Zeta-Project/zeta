@@ -3,22 +3,21 @@
  *
  * @type {{isElement, isGeneralization, isReference, isAbstract, isMEnumContainer}}
  */
-//Todo check each element for datatype in yfiles env
 export default (function () {
 
-    const ELEMENT_TYPES = ['uml.Class', 'uml.Abstract'];
-    const GENERALIZATION_TYPES = ['uml.Generalization'];
-    const REFERENCE_TYPES = ['uml.Aggregation', 'uml.Composition', 'uml.Association'];
-    const ABSTRACT_TYPES = ['uml.Abstract', 'uml.Interface'];
-    const M_ENUM_CONTAINER_TYPE = 'mcore.Enum';
-    const M_ATTRIBUTE_CONTAINER_TYPE = 'mcore.Attribute';
+    var ELEMENT_TYPES = ['uml.Class', 'uml.Abstract'];
+    var GENERALIZATION_TYPES = ['uml.Generalization'];
+    var REFERENCE_TYPES = ['uml.Aggregation', 'uml.Composition', 'uml.Association'];
+    var ABSTRACT_TYPES = ['uml.Abstract', 'uml.Interface'];
+    var M_ENUM_CONTAINER_TYPE = 'mcore.Enum';
+    var M_ATTRIBUTE_CONTAINER_TYPE = 'mcore.Attribute';
 
-    let isElement;
-    let isGeneralization;
-    let isReference;
-    let isAbstract;
-    let isMEnumContainer;
-    let isMAttributeContainer;
+    var isElement;
+    var isGeneralization;
+    var isReference;
+    var isAbstract;
+    var isMEnumContainer;
+    var isMAttributeContainer;
 
     /**
      * Checks whether the given object is a MoDiGen-Metamodel-Element.
@@ -27,7 +26,7 @@ export default (function () {
      * @returns {boolean}
      */
     isElement = function isElement(element) {
-        let check = false;
+        var check = false;
 
         switch (typeof element) {
             case 'string':
@@ -47,7 +46,7 @@ export default (function () {
      * @returns {boolean}
      */
     isGeneralization = function isGeneralization(link) {
-        let check = false;
+        var check = false;
 
         switch (typeof link) {
             case 'string':
@@ -68,15 +67,14 @@ export default (function () {
      * @returns {boolean}
      */
     isReference = function isReference(link) {
-        let check = false;
+        var check = false;
 
         switch (typeof link) {
             case 'string':
                 check = REFERENCE_TYPES.indexOf(link) !== -1;
                 break;
             case 'object':
-                check = true
-                //check = REFERENCE_TYPES.indexOf(link.attribute.type) !== -1;
+                check = REFERENCE_TYPES.indexOf(link.attributes.type) !== -1;
         }
 
         return check;
@@ -89,15 +87,14 @@ export default (function () {
      * @returns {boolean}
      */
     isAbstract = function isAbstract(element) {
-        let check = false;
+        var check = false;
 
         switch (typeof element) {
             case 'string':
                 check = ABSTRACT_TYPES.indexOf(element) !== -1;
                 break;
             case 'object':
-                check = true
-                //check = ABSTRACT_TYPES.indexOf(element.attributes.type) !== -1;
+                check = ABSTRACT_TYPES.indexOf(element.attributes.type) !== -1;
         }
 
         return check;
@@ -111,15 +108,14 @@ export default (function () {
      * @returns {boolean}
      */
     isMEnumContainer = function isMEnumContainer(element) {
-        let check = false;
+        var check = false;
 
         switch (typeof element) {
             case 'string':
                 check = element === M_ENUM_CONTAINER_TYPE;
                 break;
             case 'object':
-                return true
-                //check = element.attributes.type === M_ENUM_CONTAINER_TYPE;
+                check = element.attributes.type === M_ENUM_CONTAINER_TYPE;
         }
 
         return check;
@@ -133,15 +129,14 @@ export default (function () {
      * @returns {boolean}
      */
     isMAttributeContainer = function isMAttributeContainer(element) {
-        let check = false;
+        var check = false;
 
         switch (typeof element) {
             case 'string':
                 check = element === M_ATTRIBUTE_CONTAINER_TYPE;
                 break;
             case 'object':
-                check = trueS
-                //check = element.attributes.type === M_ATTRIBUTE_CONTAINER_TYPE;
+                check = element.attributes.type === M_ATTRIBUTE_CONTAINER_TYPE;
         }
 
         return check;

@@ -3,9 +3,9 @@ export default {
     "classes": [
     {
         "name": "Place",
-        "description": "",
+        "description": "Test Description for Place Class",
         "abstractness": true,
-        "superTypeNames": [],
+        "superTypeNames": ["Transition"],
         "inputReferenceNames": [
             "toPlace",
             "placeToPlace"
@@ -33,11 +33,14 @@ export default {
         ],
         "methods": [
             {
-                "name": "localDefinition",
-                "parameters": [],
-                "description": "",
-                "returnType": "String",
-                "code": ""
+                "name": "methodName",
+                "parameters": [
+                    {"type": "String", "value": "parameterOne"},
+                    {"type": "Int", "value": "5"}
+                ],
+                "description": "methodDescription",
+                "returnType": "int",
+                "code": "return a + b;"
             },
             {
                 "name": "somethingElse",
@@ -64,13 +67,51 @@ export default {
     },
     {
         "name": "Token",
-        "description": "",
+        "description": "Some Describing Text",
         "abstractness": false,
         "superTypeNames": [],
         "inputReferenceNames": [],
         "outputReferenceNames": [],
-        "attributes": [],
-        "methods": []
+        "attributes": [
+            {
+                "name": "Test",
+                "globalUnique": false,
+                "localUnique": false,
+                "type": "String",
+                "default": {
+                    "type": "String",
+                    "value": "attributeWert"
+                },
+                "constant": false,
+                "singleAssignment": false,
+                "expression": "",
+                "ordered": false,
+                "transient": false
+            }
+        ],
+        "methods": [
+            {
+                "name": "methodOne",
+                "parameters": [
+                    {"type": "String", "value": "parameterOne"},
+                    {"type": "Integer", "value": "5"}
+                ],
+                "description": "description for Method",
+                "returnType": "int",
+                "code": "return a + b;"
+            },
+            {
+                "name": "MethodTwo",
+                "parameters": [
+                    {"type": "String", "value": "parameterString"},
+                    {"type": "Integer", "value": "8"}
+                ],
+                "description": "",
+                "returnType": "String",
+                "code": ""
+            }
+        ]
+
     }
 ],
     "references": [

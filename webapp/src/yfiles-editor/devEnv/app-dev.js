@@ -50,12 +50,12 @@ class YFilesZetaDev {
                     uuid: uuid,
                     name: "petrinet",
                     concept: data
-                }
+                };
 
                 new YFilesZeta(loadedMetaModel);
             }).catch(reason => {
                 showSnackbar("Problem to load concept definition from server: " + reason);
-            })
+            });
 
             // override rootUrl for later save model calls
             ZetaApiWrapper.prototype.rootUrl = process.env.ZETA_DEV_ROOT_URL;
@@ -67,13 +67,13 @@ class YFilesZetaDev {
                     const blob = new Blob([jsonValue], {type: "application/json;charset=utf-8"});
                     saveAs(blob, metaModelId + ".json");
                 });
-            }
+            };
 
             const loadedMetaModel = {
                 uuid: uuid,
                 name: "petrinet",
                 concept: definition
-            }
+            };
 
             new YFilesZeta(loadedMetaModel);
         }
