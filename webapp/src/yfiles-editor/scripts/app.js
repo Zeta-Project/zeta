@@ -32,7 +32,7 @@ import {Properties} from "./Properties";
 import Exporter from "./exportMetaModel/Exporter"
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
-import {Parameter} from "./utils/parameter";
+import {Parameter} from "./utils/Parameter";
 
 import '../styles/layout.css'
 import '../styles/paper.css'
@@ -40,7 +40,6 @@ import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
 import '../styles/sidebar.css'
-
 
 
 // Tell the library about the license contents

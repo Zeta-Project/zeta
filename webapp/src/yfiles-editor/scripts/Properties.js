@@ -1,12 +1,8 @@
-import {
-    Fill, IEdge,
-    INode,
-
-} from "yfiles";
+import {IEdge, INode,} from "yfiles";
 
 import {UMLNodeStyle} from "./UMLNodeStyle";
 import {Operation} from "./utils/Operation";
-import {Parameter} from "./utils/parameter";
+import {Parameter} from "./utils/Parameter";
 import {Attribute} from "./utils/Attribute";
 import {UMLEdgeModel} from "./utils/UMLEdgeModel";
 
