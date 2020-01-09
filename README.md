@@ -5,7 +5,7 @@
 
 Zeta is a tool for automatically generating a graphical DSL from a range of text DSLs. In combination with a suitable meta-model, you render these text definitions for a generator that creates a graphical editor for the web. So it can bee seen as a Model-driven generation of graphical editors with the goal to generate simulations from a graphical DSL.
 
-The Zeta Project was orginally developed by Markus Erhart under the direction of Marco Boger at the University of Konstanz. It is based on the previous developed open source project Modigen which presents a set of specially developed textual DSLs to fully describe graphical DSLs based on node and edge diagrams. Zeta continues to be actively developed by students of the University of Konstanz.
+The Zeta Project was orginally developed by Markus Erhart under the direction of Marco Boger at the HTWG Konstanz. It is based on the previous developed open source project Modigen which presents a set of specially developed textual DSLs to fully describe graphical DSLs based on node and edge diagrams. Zeta continues to be actively developed by students of the HTWG Konstanz.
 
 The basic structure is given by the DSLs which were defined specifically for the creation of graphical DSLs.
 
