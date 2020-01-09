@@ -1,11 +1,14 @@
 import {
-    Fill,
+    Fill, IEdge,
     INode,
 
 } from "yfiles";
 
 import {UMLNodeStyle} from "./UMLNodeStyle";
 import {Operation} from "./utils/Operation";
+import {Parameter} from "./utils/parameter";
+import {Attribute} from "./utils/Attribute";
+import {UMLEdgeModel} from "./utils/UMLEdgeModel";
 
 export class Properties {
 
@@ -20,6 +23,22 @@ export class Properties {
         this.itemSelectionChangedListener = (sender, args) => this.itemSelectionChanged(sender, args)
         graphComponent.selection.addItemSelectionChangedListener(this.itemSelectionChangedListener)
 
+
+        let edge = new UMLEdgeModel({
+            description: "testEdge",
+            sourceDeletionDeletesTarget: true,
+            targetDeletionDeletesSource: true,
+            sourceClassName: "edgeSourceNode",
+            targetClassName: "edgeTargetNode",
+            sourceLowerBounds: 0,
+            sourceUpperBounds: -1,
+            targetLowerBounds: 0,
+            targetUpperBounds: -1,
+            attributes: [new Attribute()],
+            methods: [new Operation()]
+        })
+
+        this.buildEdgeProperties(edge, this.div);
     }
 
     get div() {
@@ -51,9 +70,9 @@ export class Properties {
                 this.buildNodeProperties(model, this.div)
             }
         }
-        else {
-            this.div.innerHTML = ""
-            console.log("No Valid Item Selected")
+        else if(IEdge.isInstance(item)){
+            //Todo handle click on Edges after EdgeStyle is implemented
+            //console.log("No Valid Item Selected")
         }
     }
 
@@ -63,24 +82,24 @@ export class Properties {
      * @param div
      */
     updateProperties(model, div) {
-        console.log(this)
-        console.log(div)
+        //console.log(this)
+        //console.log(div)
     }
 
-    buildNodeProperties(model, div) {
-
+    //Todo combine buildEdgeProperties & buildNodeProperties function -> differentiate if edge or node in itemSelectionChanged
+    buildEdgeProperties(model, div) {
         //build metaAccordion
         let accordionMeta = document.createElement('button')
-        accordionMeta.className = 'accordion'
+        accordionMeta.className = 'collapsible'
         accordionMeta.innerHTML = 'MetaInformation'
         div.appendChild(accordionMeta)
 
         //add MetaPanel
-        div.appendChild(buildMeta(model))
+        div.appendChild(buildEdgeMeta(model))
 
         //build attributeAccordion
         let accordionAttributes = document.createElement('button')
-        accordionAttributes.className = 'accordion'
+        accordionAttributes.className = 'collapsible'
         accordionAttributes.innerHTML = 'Attributes'
         div.appendChild(accordionAttributes)
 
@@ -89,174 +108,111 @@ export class Properties {
 
         //build operationAccordion
         let accordionOperations = document.createElement('button')
-        accordionOperations.className = 'accordion'
+        accordionOperations.className = 'collapsible'
         accordionOperations.innerHTML = 'Operations'
         div.appendChild(accordionOperations)
 
-        // build OperationPanel
+        //build OperationPanel
         div.appendChild(buildOperations(model))
 
-        let acc = document.getElementsByClassName('accordion');
+        let coll = document.getElementsByClassName("collapsible");
         let i;
-        for (i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function() {
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
                 this.classList.toggle("active");
-                /*
-                let panel = this.nextElementSibling;
-                if (panel.style.maxHeight) {
-                    panel.style.maxHeight = null;
+                let content = this.nextElementSibling;
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
                 } else {
-                    panel.style.maxHeight = panel.scrollHeight + "px";
-                }*/
+                    content.style.maxHeight = content.scrollHeight + "px";
+
+                }
+            });
+        }
+    }
+
+    buildNodeProperties(model, div) {
+
+        //build metaAccordion
+        let accordionMeta = document.createElement('button')
+        accordionMeta.className = 'collapsible'
+        accordionMeta.innerHTML = 'MetaInformation'
+        div.appendChild(accordionMeta)
+
+        //add MetaPanel
+        div.appendChild(buildMeta(model))
+
+        //build attributeAccordion
+        let accordionAttributes = document.createElement('button')
+        accordionAttributes.className = 'collapsible'
+        accordionAttributes.innerHTML = 'Attributes'
+        div.appendChild(accordionAttributes)
+
+        //build AttributePanel
+        div.appendChild(buildAttributes(model))
+
+        //build operationAccordion
+        let accordionOperations = document.createElement('button')
+        accordionOperations.className = 'collapsible'
+        accordionOperations.innerHTML = 'Operations'
+        div.appendChild(accordionOperations)
+
+        //build OperationPanel
+        div.appendChild(buildOperations(model))
+
+        let coll = document.getElementsByClassName("collapsible");
+        let i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                let content = this.nextElementSibling;
+                if (content.style.maxHeight){
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+
+                }
             });
         }
     }
 }
-function buildOperations(model) {
-    let operationList = document.createElement('div')
-    operationList.setAttribute("class", "panel")
 
-    if(model.operations === []) return operationList
+function buildEdgeMeta(model) {
+    let metaContainer = document.createElement('DIV')
+    metaContainer.setAttribute("class", "collapsibleContent")
 
-    //accordion and list setup
-    model.tempOperations.forEach((operation) => {
-        let openOptionsButton = document.createElement('button')
-        openOptionsButton.className = 'accordion'
-        openOptionsButton.innerHTML = operation.name
-        operationList.appendChild(openOptionsButton)
-        let operationInformation = document.createElement('div')
-        operationInformation.setAttribute("class", "panel")
-        operationList.appendChild(operationInformation)
+    //name
+    metaContainer.appendChild(buildTextBox("description", model, "description"))
+    //sourceDeletionDeletesTarget
+    metaContainer.appendChild(buildCheckBox("sourceDeletionDeletesTarget", model, model.sourceDeletionDeletesTarget))
+    //targetDeletionDeletesSource
+    metaContainer.appendChild(buildCheckBox("targetDeletionDeletesSource", model, model.targetDeletionDeletesSource))
+    //sourceClassName
+    metaContainer.appendChild(buildTextBox("sourceClassName", model, "sourceClassName"))
+    //targetClassName
+    metaContainer.appendChild(buildTextBox("targetClassName", model, "targetClassName"))
+    //sourceLowerBounds
+    metaContainer.appendChild(buildTextBox("sourceLowerBounds", model, "sourceLowerBounds"))
+    //sourceUpperBounds
+    metaContainer.appendChild(buildTextBox("sourceUpperBounds", model, "sourceUpperBounds"))
+    //targetLowerBounds
+    metaContainer.appendChild(buildTextBox("targetLowerBounds", model, "targetLowerBounds"))
+    //targetUpperBounds
+    metaContainer.appendChild(buildTextBox("targetUpperBounds", model, "targetUpperBounds"))
 
-        //description
-        let descriptionLabel = document.createTextNode("Description")
-        operationInformation.appendChild(descriptionLabel)
-        let description = document.createElement("INPUT");
-        description.setAttribute("type", "text");
-        description.setAttribute("value", operation.description);
-        description.setAttribute("class", "input")
-        description.oninput = function(){
-            operation.description = description.value
-        }
-        operationInformation.appendChild(description)
-
-        //parameters
-        let parameterList = document.createElement('div')
-        parameterList.setAttribute("class", "panel")
-        operation.parameters.forEach((parameter) => {
-            let openParameterButton = document.createElement('button')
-            openParameterButton.className = 'accordion'
-            openParameterButton.innerHTML = parameter.value
-            parameterList.appendChild(openParameterButton)
-            let parameterInformation = document.createElement('div')
-            parameterInformation.setAttribute("class", "panel")
-            parameterList.appendChild(parameterInformation)
-
-            let parameterText = document.createElement('INPUT')
-            parameterText.setAttribute("type", "text");
-            parameterText.setAttribute("value", (parameter.value) || "default")
-            parameterText.oninput = function(){
-                parameter.value = parameterText.value
-            }
-            parameterInformation.appendChild(parameterText);
-            //returnTypeParameter
-            let returnTypeLabel = document.createTextNode('returnTypeParameter')
-            parameterInformation.appendChild(returnTypeLabel)
-            let returnType = document.createElement('SELECT')
-            let optString = document.createElement('option')
-            optString.text = "String"
-            returnType.add(optString)
-            let optBool = document.createElement('option')
-            optBool.text = "Boolean"
-            returnType.add(optBool)
-            let optDouble = document.createElement('option')
-            optDouble.text = "Double"
-            returnType.add(optDouble)
-            let optInt = document.createElement('option')
-            optInt.text = "Integer"
-            returnType.add(optInt)
-            parameterInformation.appendChild(returnType)
-            //set returnType
-            for(let i = 0; i < returnType.options.length; i++){
-                if(returnType.options[i].value === parameter.type) returnType.options[i].selected = true
-            }
-            //set operation.returnType
-            returnType.onchange = () => {
-                for(let i = 0; i < returnType.options.length; i++){
-                    if(returnType.options[i].selected === true) {
-                        parameter.type = returnType.options[i].value;
-                    }
-                }
-            }
-        })
-        operationInformation.appendChild(parameterList)
-        let addPropertyButton = document.createElement('button')
-        addPropertyButton.innerHTML = "Add Property"
-        addPropertyButton.onclick = () => {
-
-        }
-        operationInformation.appendChild(addPropertyButton)
-
-        //returnType
-        let returnTypeLabel = document.createTextNode('returnType')
-        operationInformation.appendChild(returnTypeLabel)
-        let returnType = document.createElement('SELECT')
-        let optString = document.createElement('option')
-        optString.text = "String"
-        returnType.add(optString)
-        let optBool = document.createElement('option')
-        optBool.text = "Boolean"
-        returnType.add(optBool)
-        let optDouble = document.createElement('option')
-        optDouble.text = "Double"
-        returnType.add(optDouble)
-        let optInt = document.createElement('option')
-        optInt.text = "Integer"
-        returnType.add(optInt)
-        operationInformation.appendChild(returnType)
-        //set returnType
-        for(let i = 0; i < returnType.options.length; i++){
-            if(returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
-        }
-        //set operation.returnType
-        returnType.onchange = () => {
-            for(let i = 0; i < returnType.options.length; i++){
-                if(returnType.options[i].selected === true) {
-                    operation.returnType = returnType.options[i].value;
-                }
-            }
-        }
-
-        //code
-        let codeLabel = document.createTextNode("Code")
-        operationInformation.appendChild(codeLabel)
-        let code = document.createElement("input");
-        code.setAttribute("type", "text");
-        code.setAttribute("value", operation.code || "");
-        code.setAttribute("class", "input")
-        code.oninput = function(){
-            operation.code = code.value
-        }
-        operationInformation.appendChild(code)
-    })
-    let addOperationButton = document.createElement('button')
-    addOperationButton.innerHTML = "Add Operation"
-    addOperationButton.onclick = () => {
-        model.tempOperations.push(new Operation())
-    }
-    operationList.appendChild(addOperationButton)
-    return operationList
+    return metaContainer
 }
 
 
 function buildMeta(model) {
-
-    let pMeta = document.createElement('div')
-    pMeta.setAttribute("class", "panel")
+    let metaContainer = document.createElement('DIV')
+    metaContainer.setAttribute("class", "collapsibleContent")
 
     //name
     let nameLabel = document.createTextNode("Name")
-    pMeta.appendChild(nameLabel)
+    metaContainer.appendChild(nameLabel)
     let name = document.createElement("INPUT");
     name.setAttribute("type", "text");
     name.setAttribute("value", model.className)
@@ -264,11 +220,11 @@ function buildMeta(model) {
     name.oninput = function(){
         model.className = name.value
     }
-    pMeta.appendChild(name)
+    metaContainer.appendChild(name)
 
     //description
     let descriptionLabel = document.createTextNode("Description")
-    pMeta.appendChild(descriptionLabel)
+    metaContainer.appendChild(descriptionLabel)
     let description = document.createElement("INPUT");
     description.setAttribute("type", "text");
     description.setAttribute("value", model.description);
@@ -276,189 +232,368 @@ function buildMeta(model) {
     description.oninput = function(){
         model.description = description.value
     }
-    pMeta.appendChild(description)
+    metaContainer.appendChild(description)
 
     //isAbstract
-    //Todo add neat icons like in UMLNode example
     let abstractLabel = document.createTextNode("Abstract")
-    pMeta.appendChild(abstractLabel)
+    metaContainer.appendChild(abstractLabel)
     let isAbstract = document.createElement("INPUT")
     isAbstract.setAttribute("type", "checkbox")
-    isAbstract.setAttribute("value", model.abstract)
+    if(model.abstract) isAbstract.checked = true;
     isAbstract.onchange = function() {
-        if(isAbstract === true) {
-            isAbstract.value = false
+        if(isAbstract.checked) {
+            model.abstract = true
         } else {
-            isAbstract.value = true
+            model.abstract = false
         }
-        model.abstract = isAbstract.value
     }
-    pMeta.appendChild(isAbstract)
-    return pMeta
+    metaContainer.appendChild(isAbstract)
+    return metaContainer
+}
+
+function buildAttribute(model ,attribute) {
+
+    let singleAttribute = document.createElement('div')
+    singleAttribute.className = 'singleAttributeContainer'
+
+    let attributeName = document.createElement('INPUT')
+    attributeName.setAttribute('value', attribute.name)
+    attributeName.className = 'elementName';
+    singleAttribute.appendChild(attributeName);
+
+    let removeAttributeButton = document.createElement('button')
+    removeAttributeButton.className = 'removeElementButton'
+    singleAttribute.appendChild(removeAttributeButton)
+    removeAttributeButton.onclick = function(e) {
+        if (confirm('Attribut entfernen?')) {
+            this.parentNode.parentNode.removeChild(this.parentNode)
+            let index = model.attributes.indexOf(attribute)
+            model.attributes.splice(index, 1)
+        } else {
+            // Do nothing!
+        }
+    }
+
+    let attributeListButton = document.createElement('button')
+    attributeListButton.className = 'listCollapsibleButton'
+    attributeListButton.onclick = function() {
+        attributeListButton.classList.toggle('listCollapsibleButtonOpen')
+        attributeListButton.classList.toggle('listCollapsibleButton')
+        let content = this.nextElementSibling;
+        if (content.style.maxHeight){
+            content.style.maxHeight = null;
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
+    }
+    singleAttribute.appendChild(attributeListButton)
+
+    //collapsible Details
+    let singleAttributeDetails = document.createElement('div')
+    singleAttributeDetails.className = 'collapsibleContent'
+    singleAttribute.appendChild(singleAttributeDetails)
+
+    //upper Bound
+    singleAttributeDetails.appendChild(buildTextBox("upperBound", attribute, "upperBound"))
+
+    //lower Bound
+    singleAttributeDetails.appendChild(buildTextBox("lowerBound", attribute, "lowerBound"))
+
+    //Default Value
+    let defaultValue = document.createElement("INPUT");
+    defaultValue.setAttribute("type", "text");
+    defaultValue.className = 'textBox'
+    defaultValue.setAttribute("value", (attribute.default.value) || "")
+    let defaultValLabel = document.createTextNode('default:')
+    singleAttributeDetails.appendChild(defaultValLabel);
+    singleAttributeDetails.appendChild(defaultValue);
+
+    //DefaultType Dropdown
+    let defaultType = document.createElement('SELECT')
+    let optString = document.createElement('option')
+    optString.text = "String"
+    defaultType.add(optString)
+    let optBool = document.createElement('option')
+    optBool.text = "Boolean"
+    defaultType.add(optBool)
+    let optDouble = document.createElement('option')
+    optDouble.text = "Double"
+    defaultType.add(optDouble)
+    let optInt = document.createElement('option')
+    optInt.text = "Integer"
+    defaultType.add(optInt)
+    singleAttributeDetails.appendChild(defaultType)
+    //set properties default
+    for(let i = 0; i < defaultType.options.length; i++){
+        if(defaultType.options[i].value === attribute.default.type) defaultType.options[i].selected = true
+    }
+    defaultValue.oninput = function(){
+        attribute.default.value = defaultValue.value
+    }
+    defaultType.onchange = () => {
+        for(let i = 0; i < defaultType.options.length; i++){
+            if(defaultType.options[i].selected === true) attribute.default.type = defaultType.options[i].value;
+        }
+    }
+    //Expression
+    singleAttributeDetails.appendChild(buildTextBox("expression", attribute, "expression"))
+
+    //Checkboxes
+    singleAttributeDetails.appendChild(buildCheckBox("globalUnique", attribute, "globalUnique"))
+    singleAttributeDetails.appendChild(buildCheckBox("localUnique", attribute, "localUnique"))
+    singleAttributeDetails.appendChild(buildCheckBox("constant", attribute, "constant"))
+    singleAttributeDetails.appendChild(buildCheckBox("ordered", attribute, "ordered"))
+    singleAttributeDetails.appendChild(buildCheckBox("singleAssignment", attribute, "singleAssignment"))
+    singleAttributeDetails.appendChild(buildCheckBox("transient", attribute, "transient"))
+
+    return singleAttribute
+}
+
+function buildTextBox(label, data, value) {
+    let textBoxContainer = document.createElement('div');
+    textBoxContainer.className = 'textBoxContainer';
+    let textBox = document.createElement("input");
+    textBox.className = 'textBox';
+    textBox.setAttribute("type", "text");
+    textBox.setAttribute("value", data[value]);
+    textBox.oninput = function() {
+        data[value] = textBox.value
+    };
+    let textBoxLabel = document.createTextNode(label);
+    textBoxContainer.appendChild(textBoxLabel);
+    textBoxContainer.appendChild(textBox);
+    return textBoxContainer;
+}
+
+function buildCheckBox(label, data, boolAttribute) {
+    //globalUnique
+    let checkBoxContainer = document.createElement('div');
+    let checkbox = document.createElement('input')
+    checkbox.setAttribute("type", "checkbox");
+    checkBoxContainer.className = 'checkbox';
+    if(data[boolAttribute]) checkbox.checked = true;
+    checkbox.onchange = () => {
+        data[boolAttribute] = checkbox.checked
+        //console.log(attribute.globalUnique)
+    }
+    let checkboxLabel = document.createTextNode(label);
+    checkBoxContainer.appendChild(checkbox);
+    checkBoxContainer.appendChild(checkboxLabel);
+    return checkBoxContainer
 }
 
 function buildAttributes(model) {
-    let attributeList = document.createElement('div')
-    attributeList.setAttribute("class", "panel")
+    let attributeContainer = document.createElement('div');
+    attributeContainer.setAttribute("class", "collapsibleContent");
 
-    if(model.tempAttributes === []) return attributeList
+    //return of no attributes in node
+    if(model.attributes === []) return attributeContainer
+    model.attributes.forEach((attribute) => {
+        attributeContainer.appendChild(buildAttribute(model, attribute))
+    });
 
-    model.tempAttributes.forEach((tempAttribute) => {
-        let openAttributeButton = document.createElement('button')
-        openAttributeButton.className = 'accordion'
-        openAttributeButton.innerHTML = tempAttribute.name
-        attributeList.appendChild(openAttributeButton)
-        let attributeInformation = document.createElement('div')
-        attributeInformation.setAttribute("class", "panel")
-        attributeList.appendChild(attributeInformation)
+    let addAttributeButton = document.createElement('button')
+    addAttributeButton.className = 'addElementButton'
+    addAttributeButton.innerHTML = "Add Attribute"
+    addAttributeButton.onclick = () => {
+        let dummyAttribute = new Attribute()
+        model.attributes.push(dummyAttribute)
+        attributeContainer.insertBefore(buildAttribute(model, dummyAttribute), addAttributeButton)
+    }
+    attributeContainer.appendChild(addAttributeButton)
 
-        //upper Bound
-        let upperBound = document.createElement("INPUT");
-        upperBound.setAttribute("type", "text");
-        upperBound.setAttribute("value", (tempAttribute.upperBound) || "")
-        upperBound.oninput = function(){
-            tempAttribute.upperBound = upperBound.value
+    return attributeContainer
+}
+
+function buildParameter(operation, parameter) {
+    let singleParameter = document.createElement('div');
+    singleParameter.className = 'singleParameterContainer';
+
+    let paraMeterName = document.createElement('INPUT');
+    paraMeterName.setAttribute('value', parameter.value || "");
+    paraMeterName.className = 'elementName';
+    singleParameter.appendChild(paraMeterName);
+
+    let removeParameterButton = document.createElement('button');
+    removeParameterButton.className = 'removeElementButton';
+    singleParameter.appendChild(removeParameterButton);
+    removeParameterButton.onclick = function(e) {
+        if (confirm('Parameter entfernen?')) {
+            this.parentNode.parentNode.removeChild(this.parentNode);
+            let index = operation.parameters.indexOf(parameter);
+            operation.parameters.splice(index, 1)
         }
-        let upperBoundLabel = document.createTextNode('Upper Bound:')
-        attributeInformation.appendChild(upperBoundLabel);
-        attributeInformation.appendChild(upperBound);
+    }
 
-        //lower Bound
-        let lowerBound = document.createElement("INPUT");
-        lowerBound.setAttribute("type", "text");
-        lowerBound.setAttribute("value", (tempAttribute.lowerBound) || "")
-        lowerBound.oninput = function(){
-            tempAttribute.lowerBound = lowerBound.value
+    let parameterListButton = document.createElement('button')
+    parameterListButton.className = 'listCollapsibleButton'
+    parameterListButton.onclick = function() {
+        parameterListButton.classList.toggle('listCollapsibleButtonOpen')
+        parameterListButton.classList.toggle('listCollapsibleButton')
+        let content = this.nextElementSibling;
+        if (content.style.maxHeight){
+            content.style.maxHeight = null;
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
         }
-        let lowerBoundLabel = document.createTextNode('Lower Bound:')
-        attributeInformation.appendChild(lowerBoundLabel);
-        attributeInformation.appendChild(lowerBound);
+    }
+    singleParameter.appendChild(parameterListButton)
 
-        //Default Value
-        let defaultVal = document.createElement("INPUT");
-        defaultVal.setAttribute("type", "text");
-        defaultVal.setAttribute("value", (tempAttribute.defaultVal.value) || "")
-        let defaultValLabel = document.createTextNode('default:')
-        attributeInformation.appendChild(defaultValLabel);
-        attributeInformation.appendChild(defaultVal);
-        //DefaultType Dropdown
-        let defaultType = document.createElement('SELECT')
-        let optString = document.createElement('option')
-        optString.text = "String"
-        defaultType.add(optString)
-        let optBool = document.createElement('option')
-        optBool.text = "Boolean"
-        defaultType.add(optBool)
-        let optDouble = document.createElement('option')
-        optDouble.text = "Double"
-        defaultType.add(optDouble)
-        let optInt = document.createElement('option')
-        optInt.text = "Integer"
-        defaultType.add(optInt)
-        attributeInformation.appendChild(defaultType)
-        //set properties default
-        for(let i = 0; i < defaultType.options.length; i++){
-            if(defaultType.options[i].value === tempAttribute.defaultVal.type) defaultType.options[i].selected = true
-        }
-        defaultVal.oninput = function(){
-            tempAttribute.defaultVal.value = defaultVal.value
-        }
-        defaultType.onchange = () => {
-            for(let i = 0; i < defaultType.options.length; i++){
-                if(defaultType.options[i].selected === true) tempAttribute.defaultVal.type = defaultType.options[i].value;
+    let parameterDetails = document.createElement('div')
+    parameterDetails.className = 'collapsibleContent'
+    singleParameter.appendChild(parameterDetails)
+
+    //returnTypeParameter
+    let returnTypeLabel = document.createTextNode('returnTypeParameter')
+    parameterDetails.appendChild(returnTypeLabel)
+    let returnType = document.createElement('SELECT')
+    let optString = document.createElement('option')
+    optString.text = "String"
+    returnType.add(optString)
+    let optBool = document.createElement('option')
+    optBool.text = "Boolean"
+    returnType.add(optBool)
+    let optDouble = document.createElement('option')
+    optDouble.text = "Double"
+    returnType.add(optDouble)
+    let optInt = document.createElement('option')
+    optInt.text = "Integer"
+    returnType.add(optInt)
+    parameterDetails.appendChild(returnType)
+    //set returnType
+    for(let i = 0; i < returnType.options.length; i++){
+        //console.log(parameter.type)
+        if(returnType.options[i].value === parameter.type) returnType.options[i].selected = true
+    }
+    //set operation.returnType
+    returnType.onchange = () => {
+        for(let i = 0; i < returnType.options.length; i++){
+            if(returnType.options[i].selected === true) {
+                parameter.type = returnType.options[i].value;
             }
         }
+    }
 
-        //Expression
-        let expression = document.createElement("INPUT");
-        expression.setAttribute("type", "text");
-        expression.setAttribute("value", (tempAttribute.expression) || "")
-        expression.oninput = function(){
-            tempAttribute.expression = expression.value
+    return singleParameter;
+}
+
+function buildOperations(model) {
+    let operationContainer = document.createElement('div')
+    operationContainer.setAttribute("class", "collapsibleContent")
+
+    if(model.operations === []) return operationContainer
+    model.operations.forEach((operation) => {
+        operationContainer.appendChild(buildOperation(model, operation))
+    });
+
+    let addOperationButton = document.createElement('button')
+    addOperationButton.className = 'addElementButton'
+    addOperationButton.innerHTML = "Add Operation"
+    addOperationButton.onclick = () => {
+        let dummyOperation = new Operation()
+        model.operations.push(dummyOperation)
+        operationContainer.insertBefore(buildOperation(model, dummyOperation), addOperationButton)
+    }
+    operationContainer.appendChild(addOperationButton)
+
+    return operationContainer
+}
+
+function buildOperation(model, operation) {
+    let singleOperation = document.createElement('div')
+    singleOperation.className = 'singleOperationContainer'
+
+    let operationName = document.createElement('INPUT')
+    operationName.setAttribute('value', operation.name)
+    operationName.className = 'elementName';
+    singleOperation.appendChild(operationName);
+
+    let removeOperationButton = document.createElement('button')
+    removeOperationButton.className = 'removeElementButton'
+    singleOperation.appendChild(removeOperationButton)
+    removeOperationButton.onclick = function(e) {
+        if (confirm('Operation entfernen?')) {
+            this.parentNode.parentNode.removeChild(this.parentNode)
+            let index = model.operations.indexOf(operation)
+            model.operations.splice(index, 1)
+        } else {
+            // Do nothing!
         }
-        let expressionLabel = document.createTextNode('expression:')
-        attributeInformation.appendChild(expressionLabel);
-        attributeInformation.appendChild(expression);
+    }
 
-        //Todo create checkBoxBuild function
-        //globalUnique
-        let globalUnique = document.createElement('input')
-        globalUnique.setAttribute("type", "checkbox")
-        if(tempAttribute.globalUnique) globalUnique.checked = true
-        globalUnique.setAttribute("name", "globalUnique")
-        globalUnique.onchange = () => {
-            tempAttribute.globalUnique = globalUnique.checked
-            console.log(tempAttribute.globalUnique)
+    let operationListButton = document.createElement('button')
+    operationListButton.className = 'listCollapsibleButton'
+    operationListButton.onclick = function() {
+        operationListButton.classList.toggle('listCollapsibleButtonOpen')
+        operationListButton.classList.toggle('listCollapsibleButton')
+        let content = this.nextElementSibling;
+        if (content.style.maxHeight){
+            content.style.maxHeight = null;
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
         }
-        let globalUniqueLabel = document.createTextNode("globalUnique")
-        attributeInformation.appendChild(globalUniqueLabel)
-        attributeInformation.appendChild(globalUnique)
+    }
+    singleOperation.appendChild(operationListButton)
 
-        //localUnique
-        let localUnique = document.createElement('input')
-        localUnique.setAttribute("type", "checkbox")
-        if(tempAttribute.localUnique) localUnique.checked = true
-        localUnique.setAttribute("name", "localUnique")
-        localUnique.onchange = () => {
-            tempAttribute.localUnique = localUnique.checked
-            console.log(tempAttribute.localUnique)
+    //collapsible Details
+    let singleOperationDetails = document.createElement('div')
+    singleOperationDetails.className = 'collapsibleContent'
+    singleOperation.appendChild(singleOperationDetails)
+
+    //description
+    singleOperationDetails.appendChild(buildTextBox("description", operation, "description"))
+
+    //Parameterlist
+    let parameterContainer = document.createElement('div')
+    parameterContainer.setAttribute("class", "collapsibleContent")
+
+    operation.parameters.forEach((parameter) => {
+        //parameterContainer.appendChild(buildParameter(parameter))
+        singleOperationDetails.appendChild(buildParameter(operation, parameter))
+    });
+
+    let addPropertyButton = document.createElement('button')
+    addPropertyButton.className = 'addElementButton'
+    addPropertyButton.innerHTML = "Add Parameter"
+    addPropertyButton.onclick = () => {
+        let dummyParameter = new Parameter()
+        operation.parameters.push(dummyParameter)
+        singleOperationDetails.insertBefore(buildParameter(operation, dummyParameter), addPropertyButton)
+    }
+    singleOperationDetails.appendChild(addPropertyButton)
+
+    //returnType
+    let returnTypeLabel = document.createTextNode('returnType')
+    singleOperationDetails.appendChild(returnTypeLabel)
+    let returnType = document.createElement('SELECT')
+    let optString = document.createElement('option')
+    optString.text = "String"
+    returnType.add(optString)
+    let optBool = document.createElement('option')
+    optBool.text = "Boolean"
+    returnType.add(optBool)
+    let optDouble = document.createElement('option')
+    optDouble.text = "Double"
+    returnType.add(optDouble)
+    let optInt = document.createElement('option')
+    optInt.text = "Integer"
+    returnType.add(optInt)
+    singleOperationDetails.appendChild(returnType)
+    //set returnType
+    for(let i = 0; i < returnType.options.length; i++){
+        if(returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
+    }
+    //set operation.returnType
+    returnType.onchange = () => {
+        for(let i = 0; i < returnType.options.length; i++){
+            if(returnType.options[i].selected === true) {
+                operation.returnType = returnType.options[i].value;
+            }
         }
-        let localUniqueLabel = document.createTextNode("localUnique")
-        attributeInformation.appendChild(localUniqueLabel)
-        attributeInformation.appendChild(localUnique)
+    }
 
-        //constant
-        let constant = document.createElement('input')
-        constant.setAttribute("type", "checkbox")
-        if(tempAttribute.constant) constant.checked = true
-        constant.setAttribute("name", "constant")
-        constant.onchange = () => {
-            tempAttribute.constant = constant.checked
-            console.log(tempAttribute.constant)
-        }
-        let constantLabel = document.createTextNode("localUnique")
-        attributeInformation.appendChild(constantLabel)
-        attributeInformation.appendChild(constant)
+    //code
+    singleOperationDetails.appendChild(buildTextBox("code", operation, "code"))
 
-        //ordered
-        let ordered = document.createElement('input')
-        ordered.setAttribute("type", "checkbox")
-        if(tempAttribute.ordered) ordered.checked = true
-        ordered.setAttribute("name", "ordered")
-        ordered.onchange = () => {
-            tempAttribute.ordered = ordered.checked
-            console.log(tempAttribute.ordered)
-        }
-        let orderedLabel = document.createTextNode("ordered")
-        attributeInformation.appendChild(orderedLabel)
-        attributeInformation.appendChild(ordered)
-
-        //singleAssignment
-        let singleAssignment = document.createElement('input')
-        singleAssignment.setAttribute("type", "checkbox")
-        if(tempAttribute.singleAssignment) singleAssignment.checked = true
-        singleAssignment.setAttribute("name", "singleAssignment")
-        singleAssignment.onchange = () => {
-            tempAttribute.singleAssignment = singleAssignment.checked
-            console.log(tempAttribute.singleAssignment)
-        }
-        let singleAssignmentLabel = document.createTextNode("singleAssignment")
-        attributeInformation.appendChild(singleAssignmentLabel)
-        attributeInformation.appendChild(singleAssignment)
-
-        //transient
-        let transient = document.createElement('input')
-        transient.setAttribute("type", "checkbox")
-        if(tempAttribute.singleAssignment) transient.checked = true
-        transient.setAttribute("name", "transient")
-        transient.onchange = () => {
-            tempAttribute.transient = transient.checked
-            console.log(tempAttribute.transient)
-        }
-        let transientLabel = document.createTextNode("transient")
-        attributeInformation.appendChild(transientLabel)
-        attributeInformation.appendChild(transient)
-
-    })
-    return attributeList
+    return singleOperation
 }

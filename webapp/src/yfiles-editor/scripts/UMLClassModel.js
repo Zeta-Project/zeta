@@ -26,9 +26,9 @@ export class UMLClassModel {
         this.constraint = (data && data.constraint) || ''
         this.className = (data && data.className) || 'UML Class Node'
         this.attributes = (data && data.attributes) || []
-        this.tempOperations = (data && data.tempOperations) || []
         this.operations = (data && data.operations) || []
-        this.tempAttributes = (data && data.tempAttributes) || []
+        this.operations = (data && data.operations) || []
+        this.attributes = (data && data.attributes) || []
         this.attributesOpen = this.attributes.length > 0
         this.operationsOpen = this.operations.length > 0
         this.$selectedIndex = -1

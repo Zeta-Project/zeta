@@ -38,6 +38,7 @@ import '../styles/style.css'
 import '../styles/toolbar.css'
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
+import {Parameter} from "./utils/parameter";
 
 
 // Tell the library about the license contents
@@ -295,11 +296,33 @@ function buildGraphFromDefinition(graph, data) {
         node.attributes.forEach(attribute => {
             attributes.push(new Attribute(attribute))
         })
-
+        /*
         const methods = [];
         node.methods.forEach(method => {
             methods.push(new Operation(method))
         });
+
+          this.name = (data && data.name) || "default"
+        this.parameters = (data && data.parameters) || []
+        this.description = (data && data.description) || ""
+        this.returnType = (data && data.returnType) || ""
+        this.code = (data && data.code) || ""
+
+        */
+        const methods = [];
+        node.methods.forEach(function(method){
+            const parameters = [];
+            method.parameters.forEach(parameter => {
+                parameters.push(new Parameter(parameter))
+            })
+            methods.push(new Operation({
+                name: method.name,
+                parameters: parameters,
+                description: method.description,
+                returnType: method.returnType,
+                code: method.code
+            }))
+        })
 
         const tempNode = (graph.createNode({
             style: new UMLNodeStyle(
