@@ -71,6 +71,7 @@ export class Properties {
             }
         }
         else if(IEdge.isInstance(item)){
+            console.log(model)
             //Todo handle click on Edges after EdgeStyle is implemented
             //console.log("No Valid Item Selected")
         }
