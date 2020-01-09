@@ -48,8 +48,6 @@ With the graphical editor configured by the DSL's, you can create and edit any m
 Now scala code can be generated and downloaded from a previously created and saved model.
 ![Code-Generator](https://github.com/Zeta-Project/zeta/blob/dev/api/wiki/code-generator.gif)
 
-![](https://avatars3.githubusercontent.com/u/29041085?s=150&v=4)
-
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
 [roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
