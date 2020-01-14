@@ -218,8 +218,11 @@ function createInputMode() {
 /**
  * Routes all edges that connect to selected nodes. This is used when a selection of nodes is moved or resized.
  */
-function routeEdgesAtSelectedNodes(src, args) {
+function routeEdgesAtSelectedNodes(src, args)  {
     const edgeRouter = new EdgeRouter()
+    {
+        edgeRouter.minimumNodeToEdgeDistance = 100 //Distance increased
+    }
     edgeRouter.scope = EdgeRouterScope.ROUTE_EDGES_AT_AFFECTED_NODES
 
     const layoutExecutor = new LayoutExecutor({
