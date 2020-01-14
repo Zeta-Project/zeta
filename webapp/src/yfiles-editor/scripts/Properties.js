@@ -24,22 +24,6 @@ export class Properties {
         this.itemSelectionChangedListener = (sender, args) => this.itemSelectionChanged(sender, args)
         graphComponent.selection.addItemSelectionChangedListener(this.itemSelectionChangedListener)
 
-
-        let edge = new UMLEdgeModel({
-            description: "testEdge",
-            sourceDeletionDeletesTarget: true,
-            targetDeletionDeletesSource: true,
-            sourceClassName: "edgeSourceNode",
-            targetClassName: "edgeTargetNode",
-            sourceLowerBounds: 0,
-            sourceUpperBounds: -1,
-            targetLowerBounds: 0,
-            targetUpperBounds: -1,
-            attributes: [new Attribute()],
-            methods: [new Operation()]
-        })
-
-        this.buildEdgeProperties(edge, this.div);
     }
 
     get div() {
