@@ -9,6 +9,7 @@ import {Operation} from "./utils/Operation";
 import {Parameter} from "./utils/parameter";
 import {Attribute} from "./utils/Attribute";
 import {UMLEdgeModel} from "./utils/UMLEdgeModel";
+import {UMLEdgeStyle} from "./UMLEdgeStyle";
 
 export class Properties {
 
@@ -56,24 +57,17 @@ export class Properties {
     itemSelectionChanged(sender, args) {
         if (args == null) return
         let item = args.item
-        let model = item.style.model
 
         if (INode.isInstance(item) && item.style instanceof UMLNodeStyle) {
-            //There is a node and it is type of UMLNodeStyle
-            if(this.div.childNodes.length > 0) {
-                //this.updateProperties(model, this.div)
-                //Todo check if update instead of rebuild is necessary
-                this.div.innerHTML = ""
-                this.buildNodeProperties(model, this.div)
-            } else {
-                this.div.innerHTML = ""
-                this.buildNodeProperties(model, this.div)
-            }
+            let model = item.style.model
+            this.div.innerHTML = ""
+            this.buildNodeProperties(model, this.div)
         }
-        else if(IEdge.isInstance(item)){
-            console.log(model)
-            //Todo handle click on Edges after EdgeStyle is implemented
-            //console.log("No Valid Item Selected")
+        else if(IEdge.isInstance(item) && item.style instanceof UMLEdgeStyle){
+            let model = item.style.model
+            this.div.innerHTML = ""
+            this.buildEdgeProperties(model, this.div);
+
         }
     }
 
