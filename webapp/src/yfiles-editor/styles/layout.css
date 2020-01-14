@@ -72,10 +72,11 @@
 .sidebar {
     margin: 15px;
     position: absolute;
-    top: 90px;
-    bottom: 30px;
-    width: 210px;
+    margin-top: 90px;
+    margin-bottom: 20px;
+    width: 250px;
     zbox-sizing: border-box;
+    height:100%;
     background: #f7f7f7;
     z-index: 15;
     line-height: 150%;

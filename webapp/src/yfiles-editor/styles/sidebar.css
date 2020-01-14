@@ -7,7 +7,7 @@
     background: #f7f7f7;
     border-right: 1px solid #e5e5e5;
     position: absolute;
-    margin-top: 80px;
+    margin-top: 90px;
     margin-bottom: 20px;
     height: 100%;
     left: 0;
@@ -17,6 +17,7 @@
     transition: width .05s linear;
     -webkit-transform: translateZ(0) scale(1, 1);
     z-index: 15;
+
 }
 
 .main-menu > ul {
