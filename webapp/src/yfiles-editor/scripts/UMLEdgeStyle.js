@@ -34,7 +34,7 @@ import {
   IArrow,
   IEdge,
   ISelectionIndicatorInstaller, LinearGradient,
-  PolylineEdgeStyle,
+  PolylineEdgeStyle, PolylineEdgeStyleRenderer, Stroke, StrokeConvertible,
   SvgVisual
 } from 'yfiles'
 import { UMLClassModel } from './UMLClassModel'
@@ -43,15 +43,29 @@ import { UMLEdgeModel } from './utils/UMLEdgeModel'
 /**
  * This class is an example for a custom edge style based on {@link EdgeStyleBase}.
  */
-export class UMLEdgeStyle extends EdgeStyleBase {
+export class UMLEdgeStyle extends PolylineEdgeStyle {
+
   /**
    * Initializes a new instance of the {@link CustomSimpleEdgeStyle} class.
    */
-  constructor (model) {
+  constructor (options) {
     super()
-    this.$model = model || new UMLEdgeModel()
+    this.$model = new UMLEdgeModel()
     this.$arrows = new Arrow()
-    this.$pathThickness = 3
+    this.$pathThickness = 1
+    if (options)
+      this.setOptions(options)
+  }
+
+  /**
+   * Sets the options from an option object. See constructor of PolylineEdgeStyle
+   * @param options
+   */
+  setOptions (options) {
+    if (options)
+      for (let key in options) {
+        this[key] = options[key]
+      }
   }
 
   /**
@@ -70,21 +84,21 @@ export class UMLEdgeStyle extends EdgeStyleBase {
     this.$pathThickness = value
   }
 
-    /**
-     * Gets the UML data of this style.
-     * @returns {UMLClassModel}
-     */
-    get model() {
-        return this.$model
-    }
+  /**
+   * Gets the UML data of this style.
+   * @returns {UMLClassModel}
+   */
+  get model () {
+    return this.$model
+  }
 
-    /**
-     * Sets the UML data for this style.
-     * @param {UMLClassModel} model
-     */
-    set model(model) {
-        this.$model = model
-    }
+  /**
+   * Sets the UML data for this style.
+   * @param {UMLClassModel} model
+   */
+  set model (model) {
+    this.$model = model
+  }
 
   /**
    * Gets the arrows drawn at the beginning and at the end of the edge.
