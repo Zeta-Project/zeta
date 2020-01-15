@@ -78,7 +78,7 @@ export default (function () {
     };
 
     Graph.prototype.getNodeMethods = function (node) {
-        if (node.style.model.attributes !== null) {
+        if (node.style.model.operations !== null) {
             return node.style.model.operations
         } else {
             return []
@@ -137,26 +137,85 @@ export default (function () {
 
       TODO: Is a temporary solution. Reference Model is necessary and access to different labels of edge.
      */
-    Graph.prototype.getReferenceName = function (edge) {
-        if (Object.entries(edge.labels).length > 0) {
-            let label = edge.labels.find(label => label !== undefined);
+    Graph.prototype.getReferenceName = function (reference) {
+        if (Object.entries(reference.labels).length > 0) {
+            let label = reference.labels.find(label => label !== undefined);
             return label.text;
         }
         return "";
     };
 
     /*
+      Returns the description of the given edge.
+     */
+    Graph.prototype.getReferenceDescription = function (reference) {
+        let result = reference.style.model.description;
+        if (typeof result !== 'string') {
+            return "";
+        }
+        return result;
+    };
+
+    /*
+      Returns the sourceDeletionDeletesTarget value of the reference.
+    */
+
+    Graph.prototype.getSourceDeletionDeletesTarget = function (reference) {
+        return reference.style.model.sourceDeletionDeletesTarget || false;
+    };
+
+    /*
+      Returns the targetDeletionDeletesSource value of the reference.
+    */
+
+    Graph.prototype.getTargetDeletionDeletesSource = function (reference) {
+        return reference.style.model.targetDeletionDeletesSource || false;
+    };
+
+    /*
       Returns all source classes of the reference.
      */
-    Graph.prototype.getSourceName = function (edge) {
-        return edge.sourceNode.style.model.className
+    Graph.prototype.getSourceClassName = function (reference) {
+        return reference.sourceNode.style.model.className
     };
 
     /*
       Returns all target classes of the reference.
      */
-    Graph.prototype.getTargetName = function (reference) {
+    Graph.prototype.getTargetClassName = function (reference) {
         return reference.targetNode.style.model.className
+    };
+
+    Graph.prototype.getReferenceAttributes = function (reference) {
+        if (reference.style.model.attributes !== null) {
+            return reference.style.model.attributes
+        } else {
+            return []
+        }
+    };
+
+    Graph.prototype.getReferenceMethods = function (reference) {
+        if (reference.style.model.operations !== null) {
+            return reference.style.model.operations
+        } else {
+            return []
+        }
+    };
+
+    Graph.prototype.getSourceLowerBounds = function (reference) {
+        return reference.style.model.sourceLowerBounds
+    };
+
+    Graph.prototype.getSourceUpperBounds = function (reference) {
+        return reference.style.model.sourceUpperBounds
+    };
+
+    Graph.prototype.getTargetLowerBounds = function (reference) {
+        return reference.style.model.targetLowerBounds
+    };
+
+    Graph.prototype.getTargetUpperBounds = function (reference) {
+        return reference.style.model.targetUpperBounds
     };
 
     /*
@@ -230,22 +289,6 @@ export default (function () {
 
         return duplicateMethods;
     };
-
-    /*
-      Returns the sourceDeletionDeletesTarget value of the reference.
-
-    Graph.prototype.getSourceDeletionDeletesTarget = function(reference) {
-      return reference.attributes[Constants.field.SOURCE_DELETION_DELETES_TARGET] || false;
-    };
-
-
-      Returns the targetDeletionDeletesSource value of the reference.
-
-    Graph.prototype.getTargetDeletionDeletesSource = function(reference) {
-      return reference.attributes[Constants.field.TARGET_DELETION_DELETES_SOURCE] || false;
-    };
-
-  */
 
     return Graph;
 })();
