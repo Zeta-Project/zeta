@@ -39,6 +39,8 @@ import '../styles/toolbar.css'
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
 import {Parameter} from "./utils/parameter";
+import {UMLEdgeStyle} from './UMLEdgeStyle'
+import * as umlEdgeModel from './utils/UMLEdgeModel'
 
 
 // Tell the library about the license contents
@@ -71,6 +73,7 @@ export class YFilesZeta {
 
         // configures default styles for newly created graph elements
         graphComponent.graph.nodeDefaults.style = new UMLNodeStyle(new umlModel.UMLClassModel())
+        graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel())
         //clone or share styleInstance
         graphComponent.graph.nodeDefaults.shareStyleInstance = false
         graphComponent.graph.nodeDefaults.size = new Size(125, 100)
