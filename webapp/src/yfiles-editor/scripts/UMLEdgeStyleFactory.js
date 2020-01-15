@@ -7,12 +7,21 @@ import { UMLEdgeModel } from './utils/UMLEdgeModel'
  * Static helpers class to create UML styles and provide methods to check for certain styles.
  */
 export function createAssociationStyle () {
-  const edge = new UMLEdgeStyle()
-  return edge
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: false,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model)
 }
 
 export function createDirectedAssociationStyle () {
-  return new UMLEdgeStyle({
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: false,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model,{
     targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.BLACK,
@@ -22,7 +31,12 @@ export function createDirectedAssociationStyle () {
 }
 
 export function createRealizationStyle () {
-  return new UMLEdgeStyle({
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: true,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model,{
     stroke: new Stroke({
       dashStyle: DashStyle.DASH
     }),
@@ -35,8 +49,13 @@ export function createRealizationStyle () {
 }
 
 export function createCompositionStyle () {
-  return new UMLEdgeStyle({
-    sourceArrow: new Arrow({
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: true,
+    targetDeletionDeletesSource: true
+  })
+
+  return new UMLEdgeStyle(model, {
+    targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.BLACK,
       type: ArrowType.DIAMOND
@@ -45,8 +64,13 @@ export function createCompositionStyle () {
 }
 
 export function createGeneralizationStyle () {
-  return new UMLEdgeStyle({
-    sourceArrow: new Arrow({
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: false,
+    targetDeletionDeletesSource: true
+  })
+
+  return new UMLEdgeStyle(model,{
+    targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.WHITE,
       type: ArrowType.TRIANGLE

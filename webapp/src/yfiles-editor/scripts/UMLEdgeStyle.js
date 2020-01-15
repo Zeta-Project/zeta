@@ -48,9 +48,9 @@ export class UMLEdgeStyle extends PolylineEdgeStyle {
   /**
    * Initializes a new instance of the {@link CustomSimpleEdgeStyle} class.
    */
-  constructor (options) {
+  constructor (model, options) {
     super()
-    this.$model = new UMLEdgeModel()
+    this.$model = model || new UMLEdgeModel()
     this.$arrows = new Arrow()
     this.$pathThickness = 1
     if (options)
