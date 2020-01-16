@@ -165,9 +165,9 @@ function buildEdgeMeta(model) {
     //name
     metaContainer.appendChild(buildTextBox("description", model, "description"))
     //sourceDeletionDeletesTarget
-    metaContainer.appendChild(buildCheckBox("sourceDeletionDeletesTarget", model, model.sourceDeletionDeletesTarget))
+    metaContainer.appendChild(buildCheckBox("sourceDeletionDeletesTarget", model, "sourceDeletionDeletesTarget"))
     //targetDeletionDeletesSource
-    metaContainer.appendChild(buildCheckBox("targetDeletionDeletesSource", model, model.targetDeletionDeletesSource))
+    metaContainer.appendChild(buildCheckBox("targetDeletionDeletesSource", model, "targetDeletionDeletesSource"))
     //sourceClassName
     metaContainer.appendChild(buildTextBox("sourceClassName", model, "sourceClassName"))
     //targetClassName

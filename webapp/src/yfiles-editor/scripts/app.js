@@ -200,6 +200,7 @@ function createInputMode() {
     mode.moveInputMode.addDragFinishedListener((src, args) => routeEdgesAtSelectedNodes())
     mode.handleInputMode.addDragFinishedListener((src, args) => routeEdgesAtSelectedNodes())
 
+
     // hide the edge creation buttons when the empty canvas was clicked
     mode.addCanvasClickedListener((src, args) => {
         graphComponent.currentItem = null

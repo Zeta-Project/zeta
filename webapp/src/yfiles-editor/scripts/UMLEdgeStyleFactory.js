@@ -1,4 +1,14 @@
-import { Arrow, ArrowType, DashStyle, Fill, PolylineEdgeStyle, Stroke } from 'yfiles'
+import {
+  Arrow,
+  ArrowType,
+  DashStyle,
+  EdgeRouter,
+  EdgeRouterScope,
+  Fill,
+  LayoutExecutor, PolylineEdgeRouterData,
+  PolylineEdgeStyle,
+  Stroke
+} from 'yfiles'
 import { UMLEdgeStyle } from './UMLEdgeStyle'
 import * as umlEdgeModel from './utils/UMLEdgeModel'
 import { UMLEdgeModel } from './utils/UMLEdgeModel'
