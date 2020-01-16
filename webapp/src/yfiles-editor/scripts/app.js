@@ -39,7 +39,7 @@ import '../styles/toolbar.css'
 import '../styles/sidebar.css'
 import {Attribute} from "./utils/Attribute";
 import {Operation} from "./utils/Operation";
-import {Parameter} from "./utils/parameter";
+import {Parameter} from "./utils/Parameter";
 import {UMLEdgeStyle} from './UMLEdgeStyle'
 import * as umlEdgeModel from './utils/UMLEdgeModel'
 import {
@@ -108,6 +108,14 @@ export class YFilesZeta {
         });
 
         graphComponent.fitGraphBounds();
+
+        /*// Init grid
+        const grid = new Grid(graphComponent)
+        // Set the default snapping behaviour
+        grid.initializeSnapping()
+        grid.initializeGrid()
+        grid.registerCommand()
+        graphComponent = grid.graphComponent*/
 
         // bind toolbar commands
         this.registerCommands(graphComponent, this.loadedMetaModel)

@@ -6,6 +6,7 @@ import '../styles/paper.css'
 import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
+import '../styles/sidebar.css'
 import {YFilesZeta} from "../scripts/app";
 import definition from "./graphData/definition";
 import {ZetaApiWrapper} from "../scripts/ZetaApiWrapper";

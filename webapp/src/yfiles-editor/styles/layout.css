@@ -74,9 +74,9 @@
     position: absolute;
     margin-top: 90px;
     margin-bottom: 20px;
-    width: 250px;
+    width: 320px;
     zbox-sizing: border-box;
-    height:100%;
+    height: 100%;
     background: #f7f7f7;
     z-index: 15;
     line-height: 150%;
