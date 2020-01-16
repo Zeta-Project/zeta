@@ -117,9 +117,9 @@ export default {
     "references": [
     {
         "name": "toTransition",
-        "description": "",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
+        "description": "Reference description of toTransition.",
+        "sourceDeletionDeletesTarget": true,
+        "targetDeletionDeletesSource": true,
         "sourceClassName": "Place",
         "targetClassName": "Transition",
         "sourceLowerBounds": 0,
@@ -129,34 +129,34 @@ export default {
         "attributes": [],
         "methods": []
     },
-    {
-        "name": "toPlace",
-        "description": "",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
-        "sourceClassName": "Transition",
-        "targetClassName": "Place",
-        "sourceLowerBounds": 0,
-        "sourceUpperBounds": -1,
-        "targetLowerBounds": 0,
-        "targetUpperBounds": -1,
-        "attributes": [],
-        "methods": []
-    },
-    {
-        "name": "placeToPlace",
-        "description": "",
-        "sourceDeletionDeletesTarget": false,
-        "targetDeletionDeletesSource": false,
-        "sourceClassName": "Place",
-        "targetClassName": "Place",
-        "sourceLowerBounds": 0,
-        "sourceUpperBounds": -1,
-        "targetLowerBounds": 0,
-        "targetUpperBounds": -1,
-        "attributes": [],
-        "methods": []
-    }
+        {
+            "name": "toPlace",
+            "description": "Reference description of toPlace.",
+            "sourceDeletionDeletesTarget": false,
+            "targetDeletionDeletesSource": true,
+            "sourceClassName": "Transition",
+            "targetClassName": "Place",
+            "sourceLowerBounds": 0,
+            "sourceUpperBounds": -1,
+            "targetLowerBounds": 0,
+            "targetUpperBounds": -1,
+            "attributes": [],
+            "methods": []
+        },
+        {
+            "name": "placeToPlace",
+            "description": "",
+            "sourceDeletionDeletesTarget": true,
+            "targetDeletionDeletesSource": false,
+            "sourceClassName": "Place",
+            "targetClassName": "Place",
+            "sourceLowerBounds": 0,
+            "sourceUpperBounds": -1,
+            "targetLowerBounds": 0,
+            "targetUpperBounds": -1,
+            "attributes": [],
+            "methods": []
+        }
 ],
     "attributes": [],
     "methods": [],

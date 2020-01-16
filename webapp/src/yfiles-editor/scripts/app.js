@@ -30,9 +30,6 @@ import {
 } from 'yfiles'
 import {Properties} from "./Properties";
 import Exporter from "./exportMetaModel/Exporter"
-import {Attribute} from "./utils/Attribute";
-import {Operation} from "./utils/Operation";
-import {Parameter} from "./utils/Parameter";
 
 import '../styles/layout.css'
 import '../styles/paper.css'
@@ -40,6 +37,17 @@ import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
 import '../styles/sidebar.css'
+import {Attribute} from "./utils/Attribute";
+import {Operation} from "./utils/Operation";
+import {Parameter} from "./utils/parameter";
+import {UMLEdgeStyle} from './UMLEdgeStyle'
+import * as umlEdgeModel from './utils/UMLEdgeModel'
+import {
+    createAggregationStyle,
+    createAssociationStyle,
+    createCompositionStyle,
+    createGeneralizationStyle
+} from "./UMLEdgeStyleFactory";
 
 
 // Tell the library about the license contents
@@ -72,6 +80,7 @@ export class YFilesZeta {
 
         // configures default styles for newly created graph elements
         graphComponent.graph.nodeDefaults.style = new UMLNodeStyle(new umlModel.UMLClassModel())
+        graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel())
         //clone or share styleInstance
         graphComponent.graph.nodeDefaults.shareStyleInstance = false
         graphComponent.graph.nodeDefaults.size = new Size(125, 100)
@@ -218,7 +227,7 @@ function createInputMode() {
 /**
  * Routes all edges that connect to selected nodes. This is used when a selection of nodes is moved or resized.
  */
-function routeEdgesAtSelectedNodes(src, args)  {
+function routeEdgesAtSelectedNodes(src, args) {
     const edgeRouter = new EdgeRouter()
     {
         edgeRouter.minimumNodeToEdgeDistance = 100 //Distance increased
@@ -302,19 +311,7 @@ function buildGraphFromDefinition(graph, data) {
         node.attributes.forEach(attribute => {
             attributes.push(new Attribute(attribute))
         })
-        /*
-        const methods = [];
-        node.methods.forEach(method => {
-            methods.push(new Operation(method))
-        });
 
-          this.name = (data && data.name) || "default"
-        this.parameters = (data && data.parameters) || []
-        this.description = (data && data.description) || ""
-        this.returnType = (data && data.returnType) || ""
-        this.code = (data && data.code) || ""
-
-        */
         const methods = [];
         node.methods.forEach(function(method){
             const parameters = [];
@@ -335,6 +332,7 @@ function buildGraphFromDefinition(graph, data) {
                 new umlModel.UMLClassModel({
                     className: node.name,
                     description: node.description,
+                    abstract: node.abstractness,
                     superTypeNames: node.superTypeNames,
                     attributes: attributes,
                     operations: methods
@@ -342,7 +340,6 @@ function buildGraphFromDefinition(graph, data) {
             )
         }));
         if (node.abstractness === true) {
-            tempNode.style.model.abstract = true
             tempNode.style.model.constraint = 'abstract'
             tempNode.style.model.stereotype = ''
             tempNode.style.fill = Fill.CRIMSON
@@ -371,8 +368,38 @@ function buildGraphFromDefinition(graph, data) {
             }
         })
         if (source != null && target != null) {
-            const edge = graph.createEdge(source, target);
-            // add a label to the node
+            const edgeModel = new umlEdgeModel.UMLEdgeModel({
+                description: reference.description,
+                sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,
+                targetDeletionDeletesSource: reference.targetDeletionDeletesSource,
+                sourceClassName: reference.sourceClassName,
+                targetClassName: reference.targetClassName,
+                sourceLowerBounds: reference.sourceLowerBounds,
+                sourceUpperBounds: reference.sourceUpperBounds,
+                targetLowerBounds: reference.targetLowerBounds,
+                targetUpperBounds: reference.targetUpperBounds,
+                operations: reference.operations,
+                attributes: reference.attributes
+            })
+            let edgeStyle;
+            if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === true) {
+                edgeStyle = createCompositionStyle();
+            } else if (reference.sourceDeletionDeletesTarget === false && reference.targetDeletionDeletesSource === true) {
+                edgeStyle = createGeneralizationStyle();
+            } else if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === false) {
+                edgeStyle = createAggregationStyle();
+            } else {
+                edgeStyle = createAssociationStyle();
+            }
+
+            edgeStyle.model = edgeModel;
+
+            const edge = graph.createEdge({
+                source: source,
+                target: target,
+                style: edgeStyle
+            });
+            // add a label to the edge
             if (reference.name !== '') {
                 graph.addLabel(edge, reference.name)
             }

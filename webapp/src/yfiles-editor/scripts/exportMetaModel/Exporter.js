@@ -80,17 +80,17 @@ export default (function () {
         ref.forEach(reference => {
             references.push({
                 name: this.graph.getReferenceName(reference),
-                description: "",
-                sourceDeletionDeletesTarget: false,
-                targetDeletionDeletesSource: false,
-                attributes: [],//this.graph.getNodeAttributes(reference),
-                methods: [],//this.graph.getNodeMethods(reference),
-                sourceClassName: this.graph.getSourceName(reference),
-                targetClassName: this.graph.getTargetName(reference),
-                sourceLowerBounds: 0,//reference.attributes.linkdef_source[0]?.lowerBound || 0,
-                sourceUpperBounds: -1,//reference.attributes.linkdef_source[0]?.upperBound || -1,
-                targetLowerBounds: 0,//reference.attributes.linkdef_target[0]?.lowerBound || 0,
-                targetUpperBounds: -1,//reference.attributes.linkdef_target[0]?.upperBound || -1,
+                description: this.graph.getReferenceDescription(reference),
+                sourceDeletionDeletesTarget: this.graph.getSourceDeletionDeletesTarget(reference),
+                targetDeletionDeletesSource: this.graph.getTargetDeletionDeletesSource(reference),
+                attributes: this.graph.getReferenceAttributes(reference),
+                methods: this.graph.getReferenceMethods(reference),
+                sourceClassName: this.graph.getSourceClassName(reference),
+                targetClassName: this.graph.getTargetClassName(reference),
+                sourceLowerBounds: this.graph.getSourceLowerBounds(reference),
+                sourceUpperBounds: this.graph.getSourceUpperBounds(reference),
+                targetLowerBounds: this.graph.getTargetLowerBounds(reference),
+                targetUpperBounds: this.graph.getTargetUpperBounds(reference)
             });
         });
         return references;

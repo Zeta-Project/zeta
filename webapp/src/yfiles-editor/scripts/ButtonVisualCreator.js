@@ -17,15 +17,13 @@ import {
   TextRenderSupport,
   TimeSpan,
   VoidNodeStyle
-} from 'yfiles'//from 'yfiles/typings/yfiles-api-npm'
-
+} from 'yfiles' //from 'yfiles/typings/yfiles-api-npm'
 import {
   createAggregationStyle,
   createAssociationStyle,
-  createDependencyStyle,
+  createCompositionStyle,
   createDirectedAssociationStyle,
-  createGeneralizationStyle,
-  createRealizationStyle
+  createGeneralizationStyle
 } from './UMLEdgeStyleFactory.js'
 
 /**
@@ -38,10 +36,11 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
    */
   static get edgeCreationButtons() {
     return [
-      createRealizationStyle(),
+      // createRealizationStyle(),
       createGeneralizationStyle(),
+      createCompositionStyle(),
       createAggregationStyle(),
-      createDependencyStyle(),
+      // createDependencyStyle(),
       createDirectedAssociationStyle(),
       createAssociationStyle()
     ]

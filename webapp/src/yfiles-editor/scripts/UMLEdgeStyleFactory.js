@@ -1,14 +1,32 @@
-import { Arrow, ArrowType, DashStyle, Fill, PolylineEdgeStyle, Stroke } from 'yfiles'
+import {
+  Arrow,
+  ArrowType,
+  DashStyle,
+  Fill,
+  Stroke
+} from 'yfiles'
+import { UMLEdgeStyle } from './UMLEdgeStyle'
+import { UMLEdgeModel } from './utils/UMLEdgeModel'
 
 /**
  * Static helpers class to create UML styles and provide methods to check for certain styles.
  */
 export function createAssociationStyle() {
-  return new PolylineEdgeStyle()
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: false,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model)
 }
 
-export function createDirectedAssociationStyle() {
-  return new PolylineEdgeStyle({
+export function createDirectedAssociationStyle () {
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: false,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model,{
     targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.BLACK,
@@ -17,8 +35,13 @@ export function createDirectedAssociationStyle() {
   })
 }
 
-export function createRealizationStyle() {
-  return new PolylineEdgeStyle({
+export function createRealizationStyle () {
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: true,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model,{
     stroke: new Stroke({
       dashStyle: DashStyle.DASH
     }),
@@ -30,9 +53,29 @@ export function createRealizationStyle() {
   })
 }
 
-export function createGeneralizationStyle() {
-  return new PolylineEdgeStyle({
-    sourceArrow: new Arrow({
+export function createCompositionStyle () {
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: true,
+    targetDeletionDeletesSource: true
+  })
+
+  return new UMLEdgeStyle(model, {
+    targetArrow: new Arrow({
+      stroke: Stroke.BLACK,
+      fill: Fill.BLACK,
+      type: ArrowType.DIAMOND
+    })
+  })
+}
+
+export function createGeneralizationStyle () {
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: false,
+    targetDeletionDeletesSource: true
+  })
+
+  return new UMLEdgeStyle(model,{
+    targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.WHITE,
       type: ArrowType.TRIANGLE
@@ -40,9 +83,14 @@ export function createGeneralizationStyle() {
   })
 }
 
-export function createAggregationStyle() {
-  return new PolylineEdgeStyle({
-    sourceArrow: new Arrow({
+export function createAggregationStyle () {
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: true,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model, {
+    targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.WHITE,
       type: ArrowType.DIAMOND
@@ -50,8 +98,8 @@ export function createAggregationStyle() {
   })
 }
 
-export function createDependencyStyle() {
-  return new PolylineEdgeStyle({
+export function createDependencyStyle () {
+  return new UMLEdgeStyle({
     stroke: new Stroke({
       dashStyle: DashStyle.DASH
     }),
@@ -68,7 +116,7 @@ export function createDependencyStyle() {
  * @param style
  * @returns {boolean}
  */
-export function isInheritance(style) {
+export function isInheritance (style) {
   return isGeneralization(style) || isRealization(style)
 }
 
@@ -77,7 +125,7 @@ export function isInheritance(style) {
  * @param style
  * @returns {boolean}
  */
-export function isGeneralization(style) {
+export function isGeneralization (style) {
   if (!style.stroke || !style.sourceArrow) {
     return false
   }
@@ -89,7 +137,7 @@ export function isGeneralization(style) {
  * @param style
  * @returns {boolean}
  */
-export function isRealization(style) {
+export function isRealization (style) {
   if (!style.stroke || !style.sourceArrow) {
     return false
   }
