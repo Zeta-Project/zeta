@@ -1,6 +1,12 @@
-import {Arrow, ArrowType, DashStyle, Fill, Stroke} from 'yfiles'
-import {UMLEdgeStyle} from './UMLEdgeStyle'
-import {UMLEdgeModel} from './utils/UMLEdgeModel'
+import {
+  Arrow,
+  ArrowType,
+  DashStyle,
+  Fill,
+  Stroke
+} from 'yfiles'
+import { UMLEdgeStyle } from './UMLEdgeStyle'
+import { UMLEdgeModel } from './utils/UMLEdgeModel'
 
 /**
  * Static helpers class to create UML styles and provide methods to check for certain styles.

@@ -101,7 +101,7 @@ export default class UMLContextButtonsInputMode extends InputModeBase {
         if (styleButton) {
           const parentInputMode = this.inputModeContext.parentInputMode
           if (parentInputMode instanceof GraphEditorInputMode) {
-            const createEdgeInputMode = parentInputMode.createEdgeInputMode //currently no edgeinputmode in graphcomponent --> how does it work?
+            const createEdgeInputMode = parentInputMode.createEdgeInputMode
 
             // initialize dummy edge
             const umlEdgeType = styleButton
