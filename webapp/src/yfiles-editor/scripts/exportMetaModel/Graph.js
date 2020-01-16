@@ -59,14 +59,14 @@ export default (function () {
     TODO: implement edge model and use CoreUtil.isGeneralization and load value from model
      */
     Graph.prototype.getSuperTypes = function (node) {
-        // let generalizations = this.graph.outEdgesAt(node).filter(edge => isGeneralization(edge.style));
-        //
-        // let superTypes = generalizations.map(edge => {
-        //     return edge.targetNode.style.model.className;
-        // });
-        //
-        // return superTypes;
-        return [];
+        /*let generalizations = this.graph.outEdgesAt(node).filter(edge => isGeneralization(edge.style));
+
+        let superTypes = generalizations.map(edge => {
+            return edge.targetNode.style.model.className;
+        });
+
+        return superTypes;*/
+        return []
     };
 
     Graph.prototype.getNodeAttributes = function (node) {
@@ -87,12 +87,13 @@ export default (function () {
 
     //Todo mCoreUtil need to check validity like above (getInputReferenceNames)
     Graph.prototype.getInputReferenceNames = function (node) {
-        if (this.graph.inDegree(node) > 0) {
+        /*if (this.graph.inDegree(node) > 0) {
             return this.graph.inEdgesAt(node).map(edge => {
                 let label = edge.labels.find(label => label !== undefined);
                 return label.text;
             })
-        } else {
+        } else*/
+        {
             return []
         }
     };

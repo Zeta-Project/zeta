@@ -1,12 +1,11 @@
-import { Arrow, ArrowType, DashStyle, Fill, PolylineEdgeStyle, Stroke } from 'yfiles'
-import { UMLEdgeStyle } from './UMLEdgeStyle'
-import * as umlEdgeModel from './utils/UMLEdgeModel'
-import { UMLEdgeModel } from './utils/UMLEdgeModel'
+import {Arrow, ArrowType, DashStyle, Fill, Stroke} from 'yfiles'
+import {UMLEdgeStyle} from './UMLEdgeStyle'
+import {UMLEdgeModel} from './utils/UMLEdgeModel'
 
 /**
  * Static helpers class to create UML styles and provide methods to check for certain styles.
  */
-export function createAssociationStyle () {
+export function createAssociationStyle() {
   const model = new UMLEdgeModel({
     sourceDeletionDeletesTarget: false,
     targetDeletionDeletesSource: false
@@ -79,8 +78,13 @@ export function createGeneralizationStyle () {
 }
 
 export function createAggregationStyle () {
-  return new UMLEdgeStyle({
-    sourceArrow: new Arrow({
+  const model = new UMLEdgeModel({
+    sourceDeletionDeletesTarget: true,
+    targetDeletionDeletesSource: false
+  })
+
+  return new UMLEdgeStyle(model, {
+    targetArrow: new Arrow({
       stroke: Stroke.BLACK,
       fill: Fill.WHITE,
       type: ArrowType.DIAMOND

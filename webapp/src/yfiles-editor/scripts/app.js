@@ -41,6 +41,12 @@ import {Operation} from "./utils/Operation";
 import {Parameter} from "./utils/parameter";
 import {UMLEdgeStyle} from './UMLEdgeStyle'
 import * as umlEdgeModel from './utils/UMLEdgeModel'
+import {
+    createAggregationStyle,
+    createAssociationStyle,
+    createCompositionStyle,
+    createGeneralizationStyle
+} from "./UMLEdgeStyleFactory";
 
 
 // Tell the library about the license contents
@@ -299,19 +305,7 @@ function buildGraphFromDefinition(graph, data) {
         node.attributes.forEach(attribute => {
             attributes.push(new Attribute(attribute))
         })
-        /*
-        const methods = [];
-        node.methods.forEach(method => {
-            methods.push(new Operation(method))
-        });
 
-          this.name = (data && data.name) || "default"
-        this.parameters = (data && data.parameters) || []
-        this.description = (data && data.description) || ""
-        this.returnType = (data && data.returnType) || ""
-        this.code = (data && data.code) || ""
-
-        */
         const methods = [];
         node.methods.forEach(function(method){
             const parameters = [];
@@ -332,6 +326,7 @@ function buildGraphFromDefinition(graph, data) {
                 new umlModel.UMLClassModel({
                     className: node.name,
                     description: node.description,
+                    abstract: node.abstractness,
                     superTypeNames: node.superTypeNames,
                     attributes: attributes,
                     operations: methods
@@ -339,7 +334,6 @@ function buildGraphFromDefinition(graph, data) {
             )
         }));
         if (node.abstractness === true) {
-            tempNode.style.model.abstract = true
             tempNode.style.model.constraint = 'abstract'
             tempNode.style.model.stereotype = ''
             tempNode.style.fill = Fill.CRIMSON
@@ -368,8 +362,38 @@ function buildGraphFromDefinition(graph, data) {
             }
         })
         if (source != null && target != null) {
-            const edge = graph.createEdge(source, target);
-            // add a label to the node
+            const edgeModel = new umlEdgeModel.UMLEdgeModel({
+                description: reference.description,
+                sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,
+                targetDeletionDeletesSource: reference.targetDeletionDeletesSource,
+                sourceClassName: reference.sourceClassName,
+                targetClassName: reference.targetClassName,
+                sourceLowerBounds: reference.sourceLowerBounds,
+                sourceUpperBounds: reference.sourceUpperBounds,
+                targetLowerBounds: reference.targetLowerBounds,
+                targetUpperBounds: reference.targetUpperBounds,
+                operations: reference.operations,
+                attributes: reference.attributes
+            })
+            let edgeStyle;
+            if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === true) {
+                edgeStyle = createCompositionStyle();
+            } else if (reference.sourceDeletionDeletesTarget === false && reference.targetDeletionDeletesSource === true) {
+                edgeStyle = createGeneralizationStyle();
+            } else if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === false) {
+                edgeStyle = createAggregationStyle();
+            } else {
+                edgeStyle = createAssociationStyle();
+            }
+
+            edgeStyle.model = edgeModel;
+
+            const edge = graph.createEdge({
+                source: source,
+                target: target,
+                style: edgeStyle
+            });
+            // add a label to the edge
             if (reference.name !== '') {
                 graph.addLabel(edge, reference.name)
             }

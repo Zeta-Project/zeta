@@ -33,12 +33,12 @@ import {
   GeneralPath,
   IArrow,
   IEdge,
-  ISelectionIndicatorInstaller, LinearGradient,
-  PolylineEdgeStyle, PolylineEdgeStyleRenderer, Stroke, StrokeConvertible,
+  ISelectionIndicatorInstaller,
+  PolylineEdgeStyle,
+  Stroke,
   SvgVisual
 } from 'yfiles'
-import { UMLClassModel } from './UMLClassModel'
-import { UMLEdgeModel } from './utils/UMLEdgeModel'
+import {UMLEdgeModel} from './utils/UMLEdgeModel'
 
 /**
  * This class is an example for a custom edge style based on {@link EdgeStyleBase}.
@@ -86,7 +86,7 @@ export class UMLEdgeStyle extends PolylineEdgeStyle {
 
   /**
    * Gets the UML data of this style.
-   * @returns {UMLClassModel}
+   * @returns {UMLEdgeModel}
    */
   get model () {
     return this.$model
@@ -94,7 +94,7 @@ export class UMLEdgeStyle extends PolylineEdgeStyle {
 
   /**
    * Sets the UML data for this style.
-   * @param {UMLClassModel} model
+   * @param {UMLEdgeModel} model
    */
   set model (model) {
     this.$model = model
