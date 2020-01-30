@@ -14,6 +14,7 @@ tmp
 /.settings
 *.iml
 .idea
+.env
 /api/server/app/de/htwg/zeta/server/model/modelValidator/generated/
 /api/server/model_specific/
 /couchbase/
@@ -22,5 +23,7 @@ tmp
 /sbt/
 docker-compose\.override\.yml
 /webapp/yarn.lock
+/webapp/yarn-error.log
+/webapp/node_modules
 
 webapp/coverage/
