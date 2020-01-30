@@ -14,7 +14,6 @@ tmp
 /.settings
 *.iml
 .idea
-.env
 /api/server/app/de/htwg/zeta/server/model/modelValidator/generated/
 /api/server/model_specific/
 /couchbase/
