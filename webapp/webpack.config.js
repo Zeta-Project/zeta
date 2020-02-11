@@ -17,7 +17,7 @@ module.exports = {
       "code-editor-simple": "./src/code-editor-simple.js",
       "diagramm-overview": "./src/diagram-overview.js",
       "webpage": "./src/webpage.js",
-      // "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
+      "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
       "graphical-model-editor": "./src/graphical-model-editor.js",
       "silhouette": "./src/silhouette.js",
       "yfiles-editor": "./src/yfiles-editor/concept-editor.js",
