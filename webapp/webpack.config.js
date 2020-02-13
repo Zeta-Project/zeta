@@ -142,10 +142,5 @@ module.exports = {
         ]
       }
     ]
-  },
-  devServer: {
-    contentBase: path.join(__dirname, './src/yfiles-editor'),
-    compress: true,
-    port: 9003
   }
 };
