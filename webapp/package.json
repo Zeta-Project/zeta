@@ -34,7 +34,7 @@
     "rappid": "file:./rappid.tar.gz",
     "script-loader": "0",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
-    "yfiles": "../../yFiles-for-HTML-Complete-2.2.0.2/lib/es-modules/",
+    "yfiles": "file:./yfiles-for-html/lib/es-modules",
     "zxcvbn": "4.2.0"
   },
   "devDependencies": {
