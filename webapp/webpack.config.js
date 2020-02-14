@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
@@ -34,16 +35,17 @@ module.exports = {
       NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
       DEBUG: false
     }),
-    extractLess,
-    new UglifyJSPlugin({
-      parallel: true,
-      sourceMap: !prodMode
-    }),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-    })
-	],
+      extractLess,
+      new UglifyJSPlugin({
+        parallel: true,
+        sourceMap: !prodMode
+      }),
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+      }),
+      new Dotenv()
+    ],
   resolve: {
     alias: {
       joint: 'jointjs',
