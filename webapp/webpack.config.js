@@ -135,10 +135,15 @@ module.exports = {
             options: {
               name: "[name].[ext]",
               outputPath: 'images/',
-            }  
+            }
           }
         ]
       }
     ]
+  },
+  devServer: {
+    contentBase: path.join(__dirname, './src/yfiles-editor'),
+    compress: true,
+    port: 9003
   }
 };
