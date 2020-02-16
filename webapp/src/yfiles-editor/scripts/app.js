@@ -149,7 +149,7 @@ export class YFilesZeta {
                         uiState: JSON.stringify({"empty": "value"})
                     });
 
-                    ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
+                    ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
                         showSnackbar("Meta model saved successfully!")
                     }).catch(reason => {
                         showSnackbar("Problem to save meta model: " + reason)
