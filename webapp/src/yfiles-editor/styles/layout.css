@@ -137,6 +137,14 @@
     margin-left: 10px;
 }
 
+.sidebar .sidebar-content .checkbox {
+    margin-left: 20px;
+    overflow: unset;
+}
+.sidebar .sidebar-content .checkbox input[type="checkbox"]  {
+    margin-left: -20px;
+}
+
 .sidebar.left {
     left: 0;
     right: auto;
