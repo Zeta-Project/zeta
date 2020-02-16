@@ -10,6 +10,7 @@
     margin-bottom: 20px;
     left: 0;
     width: 80px;
+    top: 140px;
     overflow: hidden;
     -webkit-transition: width .05s linear;
     transition: width .05s linear;
