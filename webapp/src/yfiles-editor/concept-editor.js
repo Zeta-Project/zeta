@@ -15,4 +15,7 @@ zetaApiWrapper.getConceptDefinition(loadedMetaModel.uuid).then(data => {
     showSnackbar("Problem to load concept definition: " + reason);
 });
 
+// override rootUrl for later intern save model calls
+ZetaApiWrapper.prototype.rootUrl = "";
+
 
