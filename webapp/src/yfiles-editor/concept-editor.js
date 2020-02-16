@@ -1,7 +1,11 @@
 import {YFilesZeta} from "./scripts/app";
 import {ZetaApiWrapper} from "./scripts/ZetaApiWrapper";
 
-let loadedMetaModel = window.loadedMetaModel;
+let loadedMetaModel = {};
+loadedMetaModel.uuid = window.loadedMetaModel.uuid;
+loadedMetaModel.name = window.loadedMetaModel.name;
+loadedMetaModel.concept = window.loadedMetaModel.concept;
+
 console.log(loadedMetaModel);
 
 // const zetaApiWrapper = new ZetaApiWrapper();
