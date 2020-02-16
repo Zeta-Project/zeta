@@ -159,6 +159,8 @@ function buildEdgeMeta(model) {
     metaContainer.setAttribute("class", "collapsibleContent")
 
     //name
+    metaContainer.appendChild(buildTextBox("name", model, "name"))
+    //description
     metaContainer.appendChild(buildTextBox("description", model, "description"))
     //sourceDeletionDeletesTarget
     metaContainer.appendChild(buildCheckBox("sourceDeletionDeletesTarget", model, "sourceDeletionDeletesTarget"))

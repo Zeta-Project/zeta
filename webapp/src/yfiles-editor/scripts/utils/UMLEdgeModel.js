@@ -11,6 +11,7 @@ export class UMLEdgeModel {
 
     constructor(data) {
 
+        this.name = (data && data.name) || '';
         this.description = (data && data.description) || '';
         this.sourceDeletionDeletesTarget = (data && data.sourceDeletionDeletesTarget) || false;
         this.targetDeletionDeletesSource = (data && data.targetDeletionDeletesSource) || false;
