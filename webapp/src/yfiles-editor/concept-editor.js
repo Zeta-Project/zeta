@@ -1,3 +1,4 @@
+import '../webpage'
 import {YFilesZeta} from "./scripts/app";
 import {ZetaApiWrapper} from "./scripts/ZetaApiWrapper";
 import {showSnackbar} from "./scripts/utils/AppStyle";

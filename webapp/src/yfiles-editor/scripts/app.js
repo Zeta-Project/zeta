@@ -31,7 +31,6 @@ import {
 import {Properties} from "./Properties";
 import Exporter from "./exportMetaModel/Exporter"
 
-import '../../webpage.css'
 import '../styles/layout.css'
 import '../styles/paper.css'
 import '../styles/stencil.css'
