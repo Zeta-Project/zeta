@@ -7,9 +7,7 @@
     background: #f7f7f7;
     border-right: 1px solid #e5e5e5;
     position: absolute;
-    margin-top: 90px;
     margin-bottom: 20px;
-    height: 100%;
     left: 0;
     width: 80px;
     overflow: hidden;
@@ -106,11 +104,4 @@ nav ul, nav li {
     background: #f7f7f7;
     width: 100%;
     height: 100%;
-}
-
-@font-face {
-    font-family: 'Titillium Web';
-    font-style: normal;
-    font-weight: 300;
-    src: local('Titillium WebLight'), local('TitilliumWeb-Light'), url(http://themes.googleusercontent.com/static/fonts/titilliumweb/v2/anMUvcNT0H1YN4FII8wpr24bNCNEoFTpS2BTjF6FB5E.woff) format('woff');
 }
