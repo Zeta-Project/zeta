@@ -18,7 +18,7 @@ import {
     GridSnapTypes,
     HierarchicLayout,
     HierarchicLayoutData,
-    ICommand,
+    ICommand, IEdge,
     INode,
     LabelSnapContext,
     LayoutExecutor,
@@ -225,8 +225,11 @@ function createInputMode() {
   // the UMLNodeStyle should handle clicks itself
   mode.addItemClickedListener((src, args) => {
     if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
-      args.item.style.nodeClicked(src, args)
-      openNav("PropertiesSidebar");
+        args.item.style.nodeClicked(src, args)
+        openNav("PropertiesSidebar");
+    }
+    else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
+        openNav("PropertiesSidebar");
     }
   })
 
@@ -377,7 +380,9 @@ function buildGraphFromDefinition(graph, data) {
             }
         })
         if (source != null && target != null) {
+            console.log(reference.name)
             const edgeModel = new umlEdgeModel.UMLEdgeModel({
+                name: reference.name,
                 description: reference.description,
                 sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,
                 targetDeletionDeletesSource: reference.targetDeletionDeletesSource,
