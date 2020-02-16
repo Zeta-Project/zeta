@@ -6,8 +6,6 @@ let loadedMetaModel = {};
 loadedMetaModel.uuid = window.loadedMetaModel.uuid;
 loadedMetaModel.name = window.loadedMetaModel.name;
 
-console.log(loadedMetaModel);
-
 const zetaApiWrapper = new ZetaApiWrapper();
 zetaApiWrapper.getConceptDefinition(loadedMetaModel.uuid).then(data => {
     loadedMetaModel.concept = data
