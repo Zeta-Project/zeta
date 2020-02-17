@@ -41,7 +41,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
       createCompositionStyle(),
       createAggregationStyle(),
       // createDependencyStyle(),
-      createDirectedAssociationStyle(),
+      // createDirectedAssociationStyle(),
       createAssociationStyle()
     ]
   }
