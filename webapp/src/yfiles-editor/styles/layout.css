@@ -70,13 +70,12 @@
 }
 
 .sidebar {
-    margin: 15px;
+    margin-right: 15px;
     position: absolute;
-    margin-top: 90px;
     margin-bottom: 20px;
     width: 320px;
+    top: 140px;
     zbox-sizing: border-box;
-    height: 100%;
     background: #f7f7f7;
     z-index: 15;
     line-height: 150%;
@@ -96,7 +95,7 @@
 
 .sidebar .sidebar-content {
     overflow-y: auto;
-    height: calc(100% - 70px);
+    height: 750px;
     padding: 0 25px;
 }
 
@@ -136,6 +135,14 @@
 
 .sidebar .sidebar-content dd {
     margin-left: 10px;
+}
+
+.sidebar .sidebar-content .checkbox {
+    margin-left: 20px;
+    overflow: unset;
+}
+.sidebar .sidebar-content .checkbox input[type="checkbox"]  {
+    margin-left: -20px;
 }
 
 .sidebar.left {

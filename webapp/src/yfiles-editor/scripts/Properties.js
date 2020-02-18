@@ -20,6 +20,7 @@ export class Properties {
         this.itemSelectionChangedListener = (sender, args) => this.itemSelectionChanged(sender, args)
         graphComponent.selection.addItemSelectionChangedListener(this.itemSelectionChangedListener)
 
+        //this.divField.className = "propertiesPanel";
     }
 
     get div() {
@@ -101,6 +102,7 @@ export class Properties {
                     content.style.maxHeight = null;
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
+                    content.parentElement.parentElement.nextElementSibling.style.maxHeight = content.parentElement.parentElement.nextElementSibling.scrollHeight + content.scrollHeight + "px";
 
                 }
             });
@@ -147,6 +149,7 @@ export class Properties {
                     content.style.maxHeight = null;
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
+                    content.parentElement.parentElement.style.maxHeight = content.parentElement.parentElement.scrollHeight + content.scrollHeight + "px"; 
 
                 }
             });
@@ -188,43 +191,14 @@ function buildMeta(model) {
     metaContainer.setAttribute("class", "collapsibleContent")
 
     //name
-    let nameLabel = document.createTextNode("Name")
-    metaContainer.appendChild(nameLabel)
-    let name = document.createElement("INPUT");
-    name.setAttribute("type", "text");
-    name.setAttribute("value", model.className)
-    name.setAttribute("class", "input")
-    name.oninput = function(){
-        model.className = name.value
-    }
-    metaContainer.appendChild(name)
+    metaContainer.appendChild(buildTextBox("Name", model, "className"))
 
     //description
-    let descriptionLabel = document.createTextNode("Description")
-    metaContainer.appendChild(descriptionLabel)
-    let description = document.createElement("INPUT");
-    description.setAttribute("type", "text");
-    description.setAttribute("value", model.description);
-    description.setAttribute("class", "input")
-    description.oninput = function(){
-        model.description = description.value
-    }
-    metaContainer.appendChild(description)
+    metaContainer.appendChild(buildTextBox("Description", model, "description"))
 
     //isAbstract
-    let abstractLabel = document.createTextNode("Abstract")
-    metaContainer.appendChild(abstractLabel)
-    let isAbstract = document.createElement("INPUT")
-    isAbstract.setAttribute("type", "checkbox")
-    if(model.abstract) isAbstract.checked = true;
-    isAbstract.onchange = function() {
-        if(isAbstract.checked) {
-            model.abstract = true
-        } else {
-            model.abstract = false
-        }
-    }
-    metaContainer.appendChild(isAbstract)
+    metaContainer.appendChild(buildCheckBox("Abstract", model, "abstract"))
+
     return metaContainer
 }
 
@@ -233,10 +207,19 @@ function buildAttribute(model ,attribute) {
     let singleAttribute = document.createElement('div')
     singleAttribute.className = 'singleAttributeContainer'
 
+    /*
     let attributeName = document.createElement('INPUT')
     attributeName.setAttribute('value', attribute.name)
     attributeName.className = 'elementName';
     singleAttribute.appendChild(attributeName);
+        */
+    let attributeName = document.createElement('INPUT')
+    attributeName.setAttribute('value', attribute.name)
+    attributeName.className = 'elementName';
+    attributeName.oninput = function() {
+       attribute.name = attributeName.value
+    };
+    singleAttribute.appendChild(attributeName); 
 
     let removeAttributeButton = document.createElement('button')
     removeAttributeButton.className = 'removeElementButton'
@@ -261,6 +244,7 @@ function buildAttribute(model ,attribute) {
             content.style.maxHeight = null;
         } else {
             content.style.maxHeight = content.scrollHeight + "px";
+            content.parentElement.parentElement.style.maxHeight = content.parentElement.parentElement.scrollHeight + content.scrollHeight + "px";
         }
     }
     singleAttribute.appendChild(attributeListButton)
@@ -271,10 +255,10 @@ function buildAttribute(model ,attribute) {
     singleAttribute.appendChild(singleAttributeDetails)
 
     //upper Bound
-    singleAttributeDetails.appendChild(buildTextBox("upperBound", attribute, "upperBound"))
+    //singleAttributeDetails.appendChild(buildTextBox("upperBound", attribute, "upperBound"))
 
     //lower Bound
-    singleAttributeDetails.appendChild(buildTextBox("lowerBound", attribute, "lowerBound"))
+    //singleAttributeDetails.appendChild(buildTextBox("lowerBound", attribute, "lowerBound"))
 
     //Default Value
     let defaultValue = document.createElement("INPUT");
@@ -401,7 +385,7 @@ function buildParameter(operation, parameter) {
             operation.parameters.splice(index, 1)
         }
     }
-
+    /*
     let parameterListButton = document.createElement('button')
     parameterListButton.className = 'listCollapsibleButton'
     parameterListButton.onclick = function() {
@@ -412,17 +396,22 @@ function buildParameter(operation, parameter) {
             content.style.maxHeight = null;
         } else {
             content.style.maxHeight = content.scrollHeight + "px";
+            console.log(content.parentElement.parentElement.parentElement.parentElement);
+
+            content.parentElement.parentElement.parentElement.parentElement.style.maxHeight = content.parentElement.parentElement.parentElement.parentElement.scrollHeight + content.scrollHeight + "px";
+            //console.log(content.parentElement.style.height)
+            //content.parentElement.style.maxHeight = content.parentElement.style.maxHeight + content.scrollHeight + "px";
         }
     }
     singleParameter.appendChild(parameterListButton)
-
-    let parameterDetails = document.createElement('div')
-    parameterDetails.className = 'collapsibleContent'
-    singleParameter.appendChild(parameterDetails)
+      */
+    //let parameterDetails = document.createElement('div')
+    //parameterDetails.className = 'collapsibleContent'
+    //singleParameter.appendChild(parameterDetails)
 
     //returnTypeParameter
     let returnTypeLabel = document.createTextNode('returnTypeParameter')
-    parameterDetails.appendChild(returnTypeLabel)
+    singleParameter.appendChild(returnTypeLabel)
     let returnType = document.createElement('SELECT')
     let optString = document.createElement('option')
     optString.text = "String"
@@ -436,7 +425,7 @@ function buildParameter(operation, parameter) {
     let optInt = document.createElement('option')
     optInt.text = "Integer"
     returnType.add(optInt)
-    parameterDetails.appendChild(returnType)
+    singleParameter.appendChild(returnType)
     //set returnType
     for(let i = 0; i < returnType.options.length; i++){
         //console.log(parameter.type)
@@ -508,6 +497,7 @@ function buildOperation(model, operation) {
             content.style.maxHeight = null;
         } else {
             content.style.maxHeight = content.scrollHeight + "px";
+            content.parentElement.parentElement.style.maxHeight = content.parentElement.parentElement.scrollHeight + content.scrollHeight + "px";
         }
     }
     singleOperation.appendChild(operationListButton)
@@ -536,6 +526,7 @@ function buildOperation(model, operation) {
         let dummyParameter = new Parameter()
         operation.parameters.push(dummyParameter)
         singleOperationDetails.insertBefore(buildParameter(operation, dummyParameter), addPropertyButton)
+        
     }
     singleOperationDetails.appendChild(addPropertyButton)
 

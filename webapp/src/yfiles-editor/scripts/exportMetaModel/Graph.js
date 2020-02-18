@@ -124,12 +124,8 @@ export default (function () {
        TODO: Is a temporary solution. Reference Model is necessary and access to different labels of edge.
      */
     Graph.prototype.getReferenceNames = function () {
-        return this.getReferences().map(edge => {
-            if (Object.entries(edge.labels).length > 0) {
-                let label = edge.labels.find(label => label !== undefined);
-                return label.text;
-            }
-            return "";
+        return this.getReferences().map(reference => {
+            return reference.style.model.name;
         });
     };
 
@@ -139,11 +135,7 @@ export default (function () {
       TODO: Is a temporary solution. Reference Model is necessary and access to different labels of edge.
      */
     Graph.prototype.getReferenceName = function (reference) {
-        if (Object.entries(reference.labels).length > 0) {
-            let label = reference.labels.find(label => label !== undefined);
-            return label.text;
-        }
-        return "";
+        return reference.style.model.name;
     };
 
     /*

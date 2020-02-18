@@ -11,6 +11,7 @@ services:
      image: node:10.6.0 # Alpine cannot be used, because git executable is needed
      volumes:
        - ./webapp:/src
+       - ../yFiles-for-HTML-Complete-2.2.0.2:/src/yfiles-for-html/:ro
      command: "bash -c 'yarn install && yarn run dev'"
      working_dir: /src
 

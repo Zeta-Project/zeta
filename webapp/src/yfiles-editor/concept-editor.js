@@ -1,5 +1,22 @@
+import '../webpage'
 import {YFilesZeta} from "./scripts/app";
+import {ZetaApiWrapper} from "./scripts/ZetaApiWrapper";
+import {showSnackbar} from "./scripts/utils/AppStyle";
 
-let loadedMetaModel = window.loadedMetaModel;
+let loadedMetaModel = {};
+loadedMetaModel.uuid = window.loadedMetaModel.uuid;
+loadedMetaModel.name = window.loadedMetaModel.name;
 
-new YFilesZeta(loadedMetaModel);
+const zetaApiWrapper = new ZetaApiWrapper();
+zetaApiWrapper.getConceptDefinition(loadedMetaModel.uuid).then(data => {
+    loadedMetaModel.concept = data
+
+    new YFilesZeta(loadedMetaModel);
+}).catch(reason => {
+    showSnackbar("Problem to load concept definition: " + reason);
+});
+
+// override rootUrl for later intern save model calls
+ZetaApiWrapper.prototype.rootUrl = "";
+
+

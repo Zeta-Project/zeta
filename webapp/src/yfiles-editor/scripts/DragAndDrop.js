@@ -119,12 +119,17 @@ function InitializeDnDPanel(graphComponent) {
 function createDnDPanelItems(graphComponent) {
     const itemContainer = []
 
-    // Create nodes and push them into the itemContainer
+    // Create node and push them into the itemContainer
     const Node1 = new SimpleNode()
     Node1.layout = new Rect(0, 0, 150, 100)
     Node1.style = graphComponent.graph.nodeDefaults.style
+
+    // PUSH - Element in Container schieben
     itemContainer.push({ element: Node1, tooltip: 'Node' })
 
+
+
+    /* More Shapes, Labels, Edges for the itemContainer
     const Node2 = new SimpleNode()
     Node2.layout = new Rect(0, 0, 150, 100)
     Node2.style = graphComponent.graph.nodeDefaults.style
@@ -137,9 +142,7 @@ function createDnDPanelItems(graphComponent) {
         drawShadow: false
     })
     itemContainer.push({ element: shinyPlateNode, tooltip: 'Shiny Plate Node' })
-    // PUSH - Element in Container schieben
 
-    /* More Shapes, Labels, Edges for the itemContainer
 
     const shapeStyleNode = new SimpleNode()
     shapeStyleNode.layout = new Rect(0, 0, 60, 40)
@@ -193,8 +196,7 @@ function createDnDPanelItems(graphComponent) {
     labelNode.tag = label
     labelNode.labels = new ListEnumerable([label])
     itemContainer.push({ element: labelNode, tooltip: 'Label' })
-    // PUSH - Element in Container schieben
-    */
+
     const edge1 = new SimpleEdge({
         style: new PolylineEdgeStyle({
             smoothingLength: 100,
@@ -214,10 +216,13 @@ function createDnDPanelItems(graphComponent) {
         })
     })
 
+
+
+
     itemContainer.push({ element: edge1, tooltip: 'Default' })
     itemContainer.push({ element: edge2, tooltip: 'Bidirectional' })
     itemContainer.push({ element: edge3, tooltip: 'Dashed' })
     // PUSH - Element in Container schieben
-
+    */
     return itemContainer
 }

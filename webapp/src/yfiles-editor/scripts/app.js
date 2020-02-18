@@ -51,7 +51,7 @@ import {
 
 
 // Tell the library about the license contents
-License.value = require('../../../../../yFiles-for-HTML-Complete-2.2.0.2/lib/license.json');
+License.value = require('../../../yfiles-for-html/lib/license.json');
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
@@ -148,7 +148,7 @@ export class YFilesZeta {
                         uiState: JSON.stringify({"empty": "value"})
                     });
 
-                    ZetaApiWrapper.prototype.postConceptDefinition(this.loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
+                    ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
                         showSnackbar("Meta model saved successfully!")
                     }).catch(reason => {
                         showSnackbar("Problem to save meta model: " + reason)

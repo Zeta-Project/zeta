@@ -35,17 +35,17 @@ module.exports = {
       NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
       DEBUG: false
     }),
-    extractLess,
-    new UglifyJSPlugin({
-      parallel: true,
-      sourceMap: !prodMode
-    }),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-    }),
-    new Dotenv()
-	],
+      extractLess,
+      new UglifyJSPlugin({
+        parallel: true,
+        sourceMap: !prodMode
+      }),
+      new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+      }),
+      new Dotenv()
+    ],
   resolve: {
     alias: {
       joint: 'jointjs',
@@ -137,7 +137,7 @@ module.exports = {
             options: {
               name: "[name].[ext]",
               outputPath: 'images/',
-            }  
+            }
           }
         ]
       }
