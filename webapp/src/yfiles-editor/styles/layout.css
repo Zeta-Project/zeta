@@ -95,7 +95,7 @@
 
 .sidebar .sidebar-content {
     overflow-y: auto;
-    height: calc(100% - 70px);
+    height: 450px;
     padding: 0 25px;
 }
 

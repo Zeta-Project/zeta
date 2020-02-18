@@ -113,13 +113,17 @@ body {
     background-color: #555;
 }
 
+.propertiesPanel {
+    overflow-y: auto;
+}
+
 .collapsibleContent {
     border: black;
     padding: 0 5px;
     width: 90%;
-    max-height: 0;
     overflow-x: hidden;
     overflow-y: auto;
+    max-height: 0;
     transition: max-height 0.2s ease-out;
     background-color: #f1f1f1;
 }
