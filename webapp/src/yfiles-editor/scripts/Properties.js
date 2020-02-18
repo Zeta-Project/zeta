@@ -207,10 +207,19 @@ function buildAttribute(model ,attribute) {
     let singleAttribute = document.createElement('div')
     singleAttribute.className = 'singleAttributeContainer'
 
+    /*
     let attributeName = document.createElement('INPUT')
     attributeName.setAttribute('value', attribute.name)
     attributeName.className = 'elementName';
     singleAttribute.appendChild(attributeName);
+        */
+    let attributeName = document.createElement('INPUT')
+    attributeName.setAttribute('value', attribute.name)
+    attributeName.className = 'elementName';
+    attributeName.oninput = function() {
+       attribute.name = attributeName.value
+    };
+    singleAttribute.appendChild(attributeName); 
 
     let removeAttributeButton = document.createElement('button')
     removeAttributeButton.className = 'removeElementButton'
