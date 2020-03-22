@@ -38,7 +38,7 @@ import {
   Stroke,
   SvgVisual
 } from 'yfiles'
-import {UMLEdgeModel} from './utils/UMLEdgeModel'
+import {UMLEdgeModel} from '../UMLEdgeModel'
 
 /**
  * This class is an example for a custom edge style based on {@link EdgeStyleBase}.

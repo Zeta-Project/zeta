@@ -1,4 +1,4 @@
-import {UMLNodeStyle} from "../UMLNodeStyle";
+import {UMLNodeStyle} from "../uml/nodes/styles/UMLNodeStyle";
 
 /*
   Wrapper class around the internal yfiles graph.

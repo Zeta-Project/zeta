@@ -10,7 +10,7 @@ import {
   RenderModes,
   Stroke
 } from 'yfiles'
-import { bindAction, bindChangeListener } from './Bindings'
+import { bindAction, bindChangeListener } from '../../utils/Bindings'
 
 /**
  * A palette of sample nodes. Users can drag and drop the nodes from this palette to a graph control.

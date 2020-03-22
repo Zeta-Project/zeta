@@ -35,9 +35,9 @@ import {
     YObject
 } from 'yfiles'
 
-import { UMLClassModel } from './UMLClassModel.js'
-import {Attribute} from "./utils/Attribute";
-import {Operation} from "./utils/Operation";
+import { UMLClassModel } from '../../models/UMLClassModel.js'
+import {Attribute} from "../../attributes/Attribute";
+import {Operation} from "../../operations/Operation";
 
 // additional spacing after certain elements
 const VERTICAL_SPACING = 2

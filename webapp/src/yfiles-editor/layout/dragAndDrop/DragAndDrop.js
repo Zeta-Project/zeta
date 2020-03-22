@@ -1,39 +1,8 @@
-import {
-    DefaultLabelStyle,
-    ShapeNodeShape,
-    DragDropEffects,
-    GraphEditorInputMode,
-    GraphSnapContext,
-    InteriorStretchLabelModel,
-    ListEnumerable,
-    NodeDropInputMode,
-    PanelNodeStyle,
-    Rect,
-    SimpleLabel,
-    SimpleNode,
-    GridSnapTypes,
-    ILabel,
-    LabelDropInputMode,
-    PortDropInputMode,
-    IEdge,
-    DragSource,
-    DragDropItem,
-    IPort,
-    ShapeNodeStyle,
-    ShinyPlateNodeStyle,
-    SimpleEdge,
-    PolylineEdgeStyle,
-    VoidNodeStyle,
-    NodeStylePortStyleAdapter,
-    SimplePort,
-    ImageNodeStyle,
-    FreeNodePortLocationModel,
-    FreeNodeLabelModel
-} from "yfiles";
+import {DragDropEffects, DragDropItem, DragSource, IEdge, ILabel, IPort, LabelDropInputMode, NodeDropInputMode, PanelNodeStyle, PortDropInputMode, Rect, SimpleNode} from "yfiles";
 
-import {DragAndDropPanel} from "./utils/DndPanel";
-import {passiveSupported} from "./utils/Workarounds";
-import {addClass, removeClass} from "./utils/Bindings";
+import {DragAndDropPanel} from "./Panel";
+import {passiveSupported} from "../../utils/Workarounds";
+import {addClass, removeClass} from "../../utils/Bindings";
 
 export class DragAndDrop {
 

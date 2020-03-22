@@ -1,14 +1,13 @@
 import {IEdge, INode,} from "yfiles";
 
-import {UMLNodeStyle} from "./UMLNodeStyle";
-import {Operation} from "./utils/Operation";
-import {Parameter} from "./utils/Parameter";
-import {Attribute} from "./utils/Attribute";
-import {UMLEdgeModel} from "./utils/UMLEdgeModel";
-import {UMLEdgeStyle} from "./UMLEdgeStyle";
+import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
+import {Operation} from "../../uml/operations/Operation";
+import {Parameter} from "../../uml/parameters/Parameter";
+import {Attribute} from "../../uml/attributes/Attribute";
+import {UMLEdgeModel} from "../../uml/edges/UMLEdgeModel";
+import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
 
-export class Properties {
-
+export class PropertyPanel {
     /**
      *
      * @param graphComponent
@@ -26,6 +25,7 @@ export class Properties {
     get div() {
         return this.divField
     }
+
     set div(div) {
         this.divField = div
     }
@@ -43,8 +43,7 @@ export class Properties {
             let model = item.style.model
             this.div.innerHTML = ""
             this.buildNodeProperties(model, this.div)
-        }
-        else if(IEdge.isInstance(item) && item.style instanceof UMLEdgeStyle){
+        } else if (IEdge.isInstance(item) && item.style instanceof UMLEdgeStyle) {
             let model = item.style.model
             this.div.innerHTML = ""
             this.buildEdgeProperties(model, this.div);
@@ -95,10 +94,10 @@ export class Properties {
         let i;
 
         for (i = 0; i < coll.length; i++) {
-            coll[i].addEventListener("click", function() {
+            coll[i].addEventListener("click", function () {
                 this.classList.toggle("active");
                 let content = this.nextElementSibling;
-                if (content.style.maxHeight){
+                if (content.style.maxHeight) {
                     content.style.maxHeight = null;
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
@@ -142,14 +141,14 @@ export class Properties {
         let i;
 
         for (i = 0; i < coll.length; i++) {
-            coll[i].addEventListener("click", function() {
+            coll[i].addEventListener("click", function () {
                 this.classList.toggle("active");
                 let content = this.nextElementSibling;
-                if (content.style.maxHeight){
+                if (content.style.maxHeight) {
                     content.style.maxHeight = null;
                 } else {
                     content.style.maxHeight = content.scrollHeight + "px";
-                    content.parentElement.parentElement.style.maxHeight = content.parentElement.parentElement.scrollHeight + content.scrollHeight + "px"; 
+                    content.parentElement.parentElement.style.maxHeight = content.parentElement.parentElement.scrollHeight + content.scrollHeight + "px";
 
                 }
             });
@@ -202,7 +201,7 @@ function buildMeta(model) {
     return metaContainer
 }
 
-function buildAttribute(model ,attribute) {
+function buildAttribute(model, attribute) {
 
     let singleAttribute = document.createElement('div')
     singleAttribute.className = 'singleAttributeContainer'
@@ -216,15 +215,15 @@ function buildAttribute(model ,attribute) {
     let attributeName = document.createElement('INPUT')
     attributeName.setAttribute('value', attribute.name)
     attributeName.className = 'elementName';
-    attributeName.oninput = function() {
-       attribute.name = attributeName.value
+    attributeName.oninput = function () {
+        attribute.name = attributeName.value
     };
-    singleAttribute.appendChild(attributeName); 
+    singleAttribute.appendChild(attributeName);
 
     let removeAttributeButton = document.createElement('button')
     removeAttributeButton.className = 'removeElementButton'
     singleAttribute.appendChild(removeAttributeButton)
-    removeAttributeButton.onclick = function(e) {
+    removeAttributeButton.onclick = function (e) {
         if (confirm('Attribut entfernen?')) {
             this.parentNode.parentNode.removeChild(this.parentNode)
             let index = model.attributes.indexOf(attribute)
@@ -236,11 +235,11 @@ function buildAttribute(model ,attribute) {
 
     let attributeListButton = document.createElement('button')
     attributeListButton.className = 'listCollapsibleButton'
-    attributeListButton.onclick = function() {
+    attributeListButton.onclick = function () {
         attributeListButton.classList.toggle('listCollapsibleButtonOpen')
         attributeListButton.classList.toggle('listCollapsibleButton')
         let content = this.nextElementSibling;
-        if (content.style.maxHeight){
+        if (content.style.maxHeight) {
             content.style.maxHeight = null;
         } else {
             content.style.maxHeight = content.scrollHeight + "px";
@@ -285,15 +284,15 @@ function buildAttribute(model ,attribute) {
     defaultType.add(optInt)
     singleAttributeDetails.appendChild(defaultType)
     //set properties default
-    for(let i = 0; i < defaultType.options.length; i++){
-        if(defaultType.options[i].value === attribute.default.type) defaultType.options[i].selected = true
+    for (let i = 0; i < defaultType.options.length; i++) {
+        if (defaultType.options[i].value === attribute.default.type) defaultType.options[i].selected = true
     }
-    defaultValue.oninput = function(){
+    defaultValue.oninput = function () {
         attribute.default.value = defaultValue.value
     }
     defaultType.onchange = () => {
-        for(let i = 0; i < defaultType.options.length; i++){
-            if(defaultType.options[i].selected === true) attribute.default.type = defaultType.options[i].value;
+        for (let i = 0; i < defaultType.options.length; i++) {
+            if (defaultType.options[i].selected === true) attribute.default.type = defaultType.options[i].value;
         }
     }
     //Expression
@@ -317,7 +316,7 @@ function buildTextBox(label, data, value) {
     textBox.className = 'textBox';
     textBox.setAttribute("type", "text");
     textBox.setAttribute("value", data[value]);
-    textBox.oninput = function() {
+    textBox.oninput = function () {
         data[value] = textBox.value
     };
     let textBoxLabel = document.createTextNode(label);
@@ -332,7 +331,7 @@ function buildCheckBox(label, data, boolAttribute) {
     let checkbox = document.createElement('input')
     checkbox.setAttribute("type", "checkbox");
     checkBoxContainer.className = 'checkbox';
-    if(data[boolAttribute]) checkbox.checked = true;
+    if (data[boolAttribute]) checkbox.checked = true;
     checkbox.onchange = () => {
         data[boolAttribute] = checkbox.checked
         //console.log(attribute.globalUnique)
@@ -348,7 +347,7 @@ function buildAttributes(model) {
     attributeContainer.setAttribute("class", "collapsibleContent");
 
     //return of no attributes in node
-    if(model.attributes === []) return attributeContainer
+    if (model.attributes === []) return attributeContainer
     model.attributes.forEach((attribute) => {
         attributeContainer.appendChild(buildAttribute(model, attribute))
     });
@@ -378,7 +377,7 @@ function buildParameter(operation, parameter) {
     let removeParameterButton = document.createElement('button');
     removeParameterButton.className = 'removeElementButton';
     singleParameter.appendChild(removeParameterButton);
-    removeParameterButton.onclick = function(e) {
+    removeParameterButton.onclick = function (e) {
         if (confirm('Parameter entfernen?')) {
             this.parentNode.parentNode.removeChild(this.parentNode);
             let index = operation.parameters.indexOf(parameter);
@@ -427,14 +426,14 @@ function buildParameter(operation, parameter) {
     returnType.add(optInt)
     singleParameter.appendChild(returnType)
     //set returnType
-    for(let i = 0; i < returnType.options.length; i++){
+    for (let i = 0; i < returnType.options.length; i++) {
         //console.log(parameter.type)
-        if(returnType.options[i].value === parameter.type) returnType.options[i].selected = true
+        if (returnType.options[i].value === parameter.type) returnType.options[i].selected = true
     }
     //set operation.returnType
     returnType.onchange = () => {
-        for(let i = 0; i < returnType.options.length; i++){
-            if(returnType.options[i].selected === true) {
+        for (let i = 0; i < returnType.options.length; i++) {
+            if (returnType.options[i].selected === true) {
                 parameter.type = returnType.options[i].value;
             }
         }
@@ -447,7 +446,7 @@ function buildOperations(model) {
     let operationContainer = document.createElement('div')
     operationContainer.setAttribute("class", "collapsibleContent")
 
-    if(model.operations === []) return operationContainer
+    if (model.operations === []) return operationContainer
     model.operations.forEach((operation) => {
         operationContainer.appendChild(buildOperation(model, operation))
     });
@@ -477,7 +476,7 @@ function buildOperation(model, operation) {
     let removeOperationButton = document.createElement('button')
     removeOperationButton.className = 'removeElementButton'
     singleOperation.appendChild(removeOperationButton)
-    removeOperationButton.onclick = function(e) {
+    removeOperationButton.onclick = function (e) {
         if (confirm('Operation entfernen?')) {
             this.parentNode.parentNode.removeChild(this.parentNode)
             let index = model.operations.indexOf(operation)
@@ -489,11 +488,11 @@ function buildOperation(model, operation) {
 
     let operationListButton = document.createElement('button')
     operationListButton.className = 'listCollapsibleButton'
-    operationListButton.onclick = function() {
+    operationListButton.onclick = function () {
         operationListButton.classList.toggle('listCollapsibleButtonOpen')
         operationListButton.classList.toggle('listCollapsibleButton')
         let content = this.nextElementSibling;
-        if (content.style.maxHeight){
+        if (content.style.maxHeight) {
             content.style.maxHeight = null;
         } else {
             content.style.maxHeight = content.scrollHeight + "px";
@@ -526,7 +525,7 @@ function buildOperation(model, operation) {
         let dummyParameter = new Parameter()
         operation.parameters.push(dummyParameter)
         singleOperationDetails.insertBefore(buildParameter(operation, dummyParameter), addPropertyButton)
-        
+
     }
     singleOperationDetails.appendChild(addPropertyButton)
 
@@ -548,13 +547,13 @@ function buildOperation(model, operation) {
     returnType.add(optInt)
     singleOperationDetails.appendChild(returnType)
     //set returnType
-    for(let i = 0; i < returnType.options.length; i++){
-        if(returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
+    for (let i = 0; i < returnType.options.length; i++) {
+        if (returnType.options[i].value === operation.returnType) returnType.options[i].selected = true
     }
     //set operation.returnType
     returnType.onchange = () => {
-        for(let i = 0; i < returnType.options.length; i++){
-            if(returnType.options[i].selected === true) {
+        for (let i = 0; i < returnType.options.length; i++) {
+            if (returnType.options[i].selected === true) {
                 operation.returnType = returnType.options[i].value;
             }
         }

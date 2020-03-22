@@ -24,7 +24,7 @@ import {
   createCompositionStyle,
   createDirectedAssociationStyle,
   createGeneralizationStyle
-} from './UMLEdgeStyleFactory.js'
+} from '../edges/styles/UMLEdgeStyleFactory.js'
 
 /**
  * Provides the visuals of the edge creation buttons.

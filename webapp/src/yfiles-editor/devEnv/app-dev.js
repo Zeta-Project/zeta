@@ -7,15 +7,15 @@ import '../styles/stencil.css'
 import '../styles/style.css'
 import '../styles/toolbar.css'
 import '../styles/sidebar.css'
-import {YFilesZeta} from "../scripts/app";
+import {YFilesZeta} from "../app";
 import definition from "./graphData/definition";
-import {ZetaApiWrapper} from "../scripts/ZetaApiWrapper";
-import {showSnackbar} from "../scripts/utils/AppStyle";
+import {ZetaApiWrapper} from "../utils/ZetaApiWrapper";
+import {showSnackbar} from "../utils/Snackbar";
 import {saveAs} from "file-saver";
 
 
 // Tell the library about the license contents
-License.value = require('../../../yfiles-for-html/lib/license.json');
+License.value = require('../../../../../yfiles-for-html/lib/license.json');
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.

@@ -34,7 +34,7 @@
     "rappid": "file:./rappid.tar.gz",
     "script-loader": "0",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
-    "yfiles": "file:./yfiles-for-html/lib/es-modules",
+    "yfiles": "../../yfiles-for-html/lib/es-modules",
     "zxcvbn": "4.2.0"
   },
   "devDependencies": {
@@ -64,7 +64,7 @@
     "style-loader": "0",
     "uglifyjs-webpack-plugin": "1",
     "url-loader": "0",
-    "webpack": "3",
+    "webpack": "^3.12.0",
     "webpack-dev-server": "2"
   },
   "jest": {

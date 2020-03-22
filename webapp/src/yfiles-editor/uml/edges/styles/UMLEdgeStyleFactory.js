@@ -6,7 +6,7 @@ import {
   Stroke
 } from 'yfiles'
 import { UMLEdgeStyle } from './UMLEdgeStyle'
-import { UMLEdgeModel } from './utils/UMLEdgeModel'
+import { UMLEdgeModel } from '../UMLEdgeModel'
 
 /**
  * Static helpers class to create UML styles and provide methods to check for certain styles.
