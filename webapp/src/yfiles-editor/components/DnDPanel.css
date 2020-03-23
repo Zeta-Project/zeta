@@ -72,3 +72,11 @@
   width: 110px;
   margin: 5px;
 }
+
+.demo-sidebar.left.dnd-expanded {
+  width: 350px;
+}
+
+.demo-sidebar.left.dnd-collapsed {
+  width: 100px;
+}

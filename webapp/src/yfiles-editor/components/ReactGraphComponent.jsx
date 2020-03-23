@@ -1,20 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import {
-    Arrow,
-    DefaultLabelStyle,
-    Font,
-    GraphBuilder,
-    GraphComponent,
-    GraphViewerInputMode,
-    HierarchicLayout,
-    ICommand,
-    LayoutExecutor,
-    License,
-    PolylineEdgeStyle,
-    ShapeNodeStyle,
-    Size
-} from 'yfiles'
+import {DefaultLabelStyle, Font, GraphBuilder, GraphComponent, GraphViewerInputMode, HierarchicLayout, ICommand, LayoutExecutor, License, Size} from 'yfiles'
 import 'yfiles/yfiles.css'
 import './ReactGraphComponent.css'
 import '../App.css'
@@ -27,13 +13,16 @@ import * as umlEdgeModel from "../uml/edges/UMLEdgeModel";
 import {UMLNodeStyle} from "../uml/nodes/styles/UMLNodeStyle";
 import * as umlModel from "../uml/models/UMLClassModel";
 import {getInputMode} from "../uml/utils/GraphComponentUtils";
-import {DragAndDrop} from "../layout/dragAndDrop/DragAndDrop";
 import DnDPanel from "./DnDPanel";
 import DemoDataPanel from "./DemoDataPanel";
 
 export default class ReactGraphComponent extends Component {
     constructor(props) {
-        super(props)
+        super(props);
+        this.state = {
+            isDnDExpanded: false
+        };
+
         // Newly created elements are animated during which the graph data should not be modified
         this.updating = false
         this.scheduledUpdate = null
@@ -177,10 +166,22 @@ export default class ReactGraphComponent extends Component {
 
     }
 
+    expandDnD() {
+        this.setState({isDnDExpanded: true})
+    }
+
+    collapseDnD() {
+        this.setState({isDnDExpanded: false})
+    }
+
     render() {
         return (
             <div>
-                <aside className="demo-sidebar left">
+                <aside
+                    className={`demo-sidebar left ${this.state.isDnDExpanded ? "dnd-expanded" : "dnd-collapsed"}`}
+                    id={'dnd-panel'}
+                    onMouseEnter={() => this.expandDnD()}
+                    onMouseLeave={() => this.collapseDnD()}>
                     <DnDPanel graphComponent={this.graphComponent}/>
                 </aside>
 

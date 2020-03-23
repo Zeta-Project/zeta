@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './DemoDescription.css'
+import './DnDPanel.css'
 import ItemElement from './ItemElement.jsx'
 import plusIcon from '../assets/plus-16.svg'
 import minusIcon from '../assets/minus-16.svg'
