@@ -22,6 +22,12 @@ License.value = require('../../../../../yfiles-for-html/lib/license.json');
 Class.ensure(LayoutExecutor);
 
 
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "../ReactApp.js";
+ReactDOM.render(<App />, document.getElementById("root"));
+
+
 /**
  * A simple yFiles application that creates a GraphComponent and enables basic input gestures.
  */
@@ -29,7 +35,7 @@ Class.ensure(LayoutExecutor);
 //move graph inside class YFilesZeta?
 let graphComponent = null;
 
-class YFilesZetaDev {
+export class YFilesZetaDev {
 
     constructor() {
         this.initialize();
@@ -81,4 +87,3 @@ class YFilesZetaDev {
     }
 }
 
-new YFilesZetaDev();

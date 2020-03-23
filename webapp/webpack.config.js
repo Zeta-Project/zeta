@@ -44,9 +44,11 @@ module.exports = {
         $: 'jquery',
         jQuery: 'jquery',
       }),
-      new Dotenv()
+      new Dotenv(),
+      new webpack.HotModuleReplacementPlugin()
     ],
   resolve: {
+    extensions: ["*", ".js", ".jsx"],
     alias: {
       joint: 'jointjs',
       'backbone1.0': path.resolve(__dirname, 'src', 'graphical-editor', 'backbone1.0.js'),
@@ -54,13 +56,6 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: {
-          loader: 'babel-loader',
-        }
-      },
       {
         test: /\.less$/,
         use: extractLess.extract({
@@ -140,7 +135,14 @@ module.exports = {
             }
           }
         ]
-      }
+      },
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /(node_modules|bower_components)/,
+        loader: "babel-loader",
+        options: { presets: ["@babel/env"] }
+      },
+
     ]
   },
   devServer: {
