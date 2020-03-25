@@ -1,89 +1,40 @@
-import 'yfiles/yfiles.css';
-import {Class, LayoutExecutor, License} from 'yfiles'
+/****************************************************************************
+ ** @license
+ ** This demo file is part of yFiles for HTML 2.2.0.2.
+ ** Copyright (c) 2000-2019 by yWorks GmbH, Vor dem Kreuzberg 28,
+ ** 72070 Tuebingen, Germany. All rights reserved.
+ **
+ ** yFiles demo files exhibit yFiles for HTML functionalities. Any redistribution
+ ** of demo files in source code or binary form, with or without
+ ** modification, is not permitted.
+ **
+ ** Owners of a valid software license for a yFiles for HTML version that this
+ ** demo is shipped with are allowed to use the demo source code as basis
+ ** for their own yFiles for HTML powered applications. Use of such programs is
+ ** governed by the rights and conditions as set out in the yFiles for HTML
+ ** license agreement.
+ **
+ ** THIS SOFTWARE IS PROVIDED ''AS IS'' AND ANY EXPRESS OR IMPLIED
+ ** WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ ** MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
+ ** NO EVENT SHALL yWorks BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ ** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ ** TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ ** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ ** LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ ** NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ **
+ ***************************************************************************/
+import Vue from 'vue'
+import App from '../vue-cli/src/App.vue'
+import { enableWorkarounds } from '../utils/Workarounds'
 
-import '../styles/layout.css'
-import '../styles/paper.css'
-import '../styles/stencil.css'
-import '../styles/style.css'
-import '../styles/toolbar.css'
-import '../styles/sidebar.css'
-import {YFilesZeta} from "../app";
-import definition from "./graphData/definition";
-import {ZetaApiWrapper} from "../utils/ZetaApiWrapper";
-import {showSnackbar} from "../utils/Snackbar";
-import {saveAs} from "file-saver";
+// enable browser-bug workarounds
+enableWorkarounds()
 
+Vue.config.productionTip = false
 
-// Tell the library about the license contents
-License.value = require('../../../../../yfiles-for-html/lib/license.json');
-
-// We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
-// tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
-Class.ensure(LayoutExecutor);
-
-
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "../ReactApp.js";
-ReactDOM.render(<App />, document.getElementById("root"));
-
-
-/**
- * A simple yFiles application that creates a GraphComponent and enables basic input gestures.
- */
-
-//move graph inside class YFilesZeta?
-let graphComponent = null;
-
-export class YFilesZetaDev {
-
-    constructor() {
-        this.initialize();
-    }
-
-    initialize() {
-
-        let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
-
-        const args = process.argv.slice(2);
-        if(process.env.NODE_ENV === 'remote') {
-            const zetaApiWrapper = new ZetaApiWrapper();
-            zetaApiWrapper.rootUrl = process.env.ZETA_DEV_ROOT_URL;
-            zetaApiWrapper.email = process.env.ZETA_DEV_USER_EMAIL;
-            zetaApiWrapper.password = process.env.ZETA_DEV_USER_PASSWORD;
-            uuid = process.env.ZETA_DEV_PROJECT_UUID;
-            zetaApiWrapper.getConceptDefinition(uuid).then(data => {
-                const loadedMetaModel = {
-                    uuid: uuid,
-                    name: "petrinet",
-                    concept: data
-                };
-
-                new YFilesZeta(loadedMetaModel);
-            }).catch(reason => {
-                showSnackbar("Problem to load concept definition from server: " + reason);
-            });
-
-            // override rootUrl for later save model calls
-            ZetaApiWrapper.prototype.rootUrl = process.env.ZETA_DEV_ROOT_URL;
-
-        } else {
-            // override postConceptDefinition with local storage logic
-            ZetaApiWrapper.prototype.postConceptDefinition = function (metaModelId, jsonValue) {
-                return new Promise(function (resolve, reject) {
-                    const blob = new Blob([jsonValue], {type: "application/json;charset=utf-8"});
-                    saveAs(blob, metaModelId + ".json");
-                });
-            };
-
-            const loadedMetaModel = {
-                uuid: uuid,
-                name: "petrinet",
-                concept: definition
-            };
-
-            new YFilesZeta(loadedMetaModel);
-        }
-    }
-}
-
+new Vue({
+    render: h => h(App)
+}).$mount('#app')

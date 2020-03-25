@@ -12,7 +12,8 @@
     "test:js": "jest --coverage",
     "test:polymer": "polymer test",
     "start": "webpack-dev-server --open",
-    "startRemote": "NODE_ENV=remote webpack-dev-server --open"
+    "startRemote": "NODE_ENV=remote webpack-dev-server --open",
+    "serve": "vue-cli-service serve"
   },
   "dependencies": {
     "@material-ui/core": "^4.9.7",
@@ -37,7 +38,9 @@
     "script-loader": "0",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
     "yfiles": "../../yfiles-for-html/lib/es-modules",
-    "zxcvbn": "4.2.0"
+    "zxcvbn": "4.2.0",
+    "core-js": "^2.6.5",
+    "vue": "^2.6.10"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
@@ -71,7 +74,11 @@
     "url-loader": "0",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.8"
+    "webpack-dev-server": "^3.1.8",
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "@yworks/optimizer": "^1.0.3",
+    "vue-template-compiler": "^2.6.10"
   },
   "jest": {
     "cacheDirectory": "./node_modules/.cache/jest"
