@@ -321,11 +321,9 @@ export function getEdgesFromReferences(graph, references, nodes) {
 
         });
 
-        return {
-            ...model,
-            source: source,
-            target: target
-        }
+        model.source = source;
+        model.target = target;
+        return model;
     });
 }
 
@@ -347,6 +345,8 @@ export function addEdgeStyleToEdges(edges) {
             edgeStyle = createAssociationStyle();
         }
 
+        edgeStyle.model = edge;
+
         return {
             ...edge,
             style: edgeStyle
@@ -354,27 +354,6 @@ export function addEdgeStyleToEdges(edges) {
     })
 }
 
-
-export function appendNodesToGraph(graph, nodes) {
-    nodes.map(node => {
-        graph.createNode(node)
-        return node;
-    })
-}
-
-export function appendEdgesToGraph(graph, edges) {
-    edges.map(edge => {
-        const tempEdge = graph.createEdge({
-            source: edge.source,
-            target: edge.target,
-            style: edge.style
-        });
-        // add a label to the edge
-        if (edge.name !== '') {
-            graph.addLabel(tempEdge, edge.name)
-        }
-    })
-}
 
 export function getGraphFromDefinition(graph, data) {
     let nodes = getNodesFromClasses(graph, data.classes);
@@ -390,5 +369,112 @@ export function getGraphFromDefinition(graph, data) {
 
 
 export function buildGraphFromDefinition(graphComponent, data) {
-    // legacy
+    const graph = graphComponent.graph;
+
+    const classes = data.classes
+    const references = data.references
+
+    let nodeList;
+
+    //create a node for each class
+    //fill them with existing attributes, operations and names
+    nodeList = classes.map(node => {
+        const attributes = node.attributes.map(attribute => new Attribute(attribute));
+        const methods = node.methods.map(method => {
+            const parameters = method.parameters.map(parameter => new Parameter(parameter));
+            return new Operation({
+                name: method.name,
+                parameters: parameters,
+                description: method.description,
+                returnType: method.returnType,
+                code: method.code
+            })
+        });
+
+        const tempNode = (graph.createNode({
+            style: new UMLNodeStyle(
+                new umlModel.UMLClassModel({
+                    className: node.name,
+                    description: node.description,
+                    abstract: node.abstractness,
+                    superTypeNames: node.superTypeNames,
+                    attributes: attributes,
+                    operations: methods
+                })
+            )
+        }));
+
+        console.log(tempNode)
+
+        if (node.abstractness === true) {
+            tempNode.style.model.constraint = 'abstract'
+            tempNode.style.model.stereotype = ''
+            tempNode.style.fill = Fill.CRIMSON
+        }
+        return tempNode
+    });
+
+
+    graph.nodes.forEach(node => {
+        if (node.style instanceof UMLNodeStyle) {
+            node.style.adjustSize(node, graphComponent.inputMode)
+        }
+    });
+
+    //connect each class
+    let source = null;
+    let target = null;
+    //const nodes = graph.getNodeArray() --> not a function???
+    references.forEach(function (reference) {
+        nodeList.forEach(function (node) {
+            if (node.style.model.className === reference.sourceClassName) {
+                source = node
+            }
+            if (node.style.model.className === reference.targetClassName) {
+                target = node
+            }
+        })
+        if (source != null && target != null) {
+            const edgeModel = new umlEdgeModel.UMLEdgeModel({
+                name: reference.name,
+                description: reference.description,
+                sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,
+                targetDeletionDeletesSource: reference.targetDeletionDeletesSource,
+                sourceClassName: reference.sourceClassName,
+                targetClassName: reference.targetClassName,
+                sourceLowerBounds: reference.sourceLowerBounds,
+                sourceUpperBounds: reference.sourceUpperBounds,
+                targetLowerBounds: reference.targetLowerBounds,
+                targetUpperBounds: reference.targetUpperBounds,
+                operations: reference.operations,
+                attributes: reference.attributes
+            })
+            let edgeStyle;
+            if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === true) {
+                edgeStyle = createCompositionStyle();
+            } else if (reference.sourceDeletionDeletesTarget === false && reference.targetDeletionDeletesSource === true) {
+                edgeStyle = createGeneralizationStyle();
+            } else if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === false) {
+                edgeStyle = createAggregationStyle();
+            } else {
+                edgeStyle = createAssociationStyle();
+            }
+
+            edgeStyle.model = edgeModel;
+
+            console.log(edgeStyle, source, target)
+
+            const edge = graph.createEdge({
+                source: source,
+                target: target,
+                style: edgeStyle
+            });
+            // add a label to the edge
+            if (reference.name !== '') {
+                graph.addLabel(edge, reference.name)
+            }
+        }
+        source = null
+        target = null
+    })
 }

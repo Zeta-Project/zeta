@@ -9,7 +9,6 @@ export let defaultGraph = null;
  * Simulates an REST call to return a predefined, hard-coded graph
  */
 export function getDefaultGraph() {
-    console.log("hello")
     let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
 
     const args = process.argv.slice(2);

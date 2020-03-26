@@ -33,7 +33,7 @@
 
     import {UMLNodeStyle} from "../../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../../uml/models/UMLClassModel";
-    import {buildGraphFromDefinition, executeLayout, getGraphFromDefinition, getInputMode} from "../../../uml/utils/GraphComponentUtils";
+    import {addEdgeStyleToEdges, addNodeStyleToNodes, buildGraphFromDefinition, executeLayout, getEdgesFromReferences, getGraphFromDefinition, getInputMode, getNodesFromClasses} from "../../../uml/utils/GraphComponentUtils";
     import {UMLEdgeStyle} from "../../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../utils/RESTApi";
@@ -87,16 +87,13 @@
                     // Load graph from definition
                     // TODO replace with actual api call in future
                     getDefaultGraph().then(response => {
-                        const defaultGraph = response;
-                        console.log(defaultGraph);
-                        const graph = getGraphFromDefinition(this.$graphComponent, defaultGraph.concept);
-                        this.createDefaultGraph(graph.nodes, graph.edges);
-                        executeLayout(this.$graphComponent).then(() => {
-                            // the graph bootstrapping should not be undoable
-                            this.$graphComponent.graph.undoEngine.clear()
-                        }).then(error => console.error(error))
-                        const isLoaded = true;
-                        resolve(isLoaded);
+                        this.plotDefaultGraph(response.concept);
+                        this.executeLayout()
+                            .then(() => {
+                                const isLoaded = true;
+                                resolve(isLoaded);
+                            })
+                            .catch(error => console.error(error))
                     });
                 })
             },
@@ -119,31 +116,64 @@
             /**
              * Creates the default graph.
              */
-            createDefaultGraph(nodes, edges) {
+            plotDefaultGraph(concept) {
+                const graphNodes = this.plotNodes(concept);
+                this.plotEdges(concept, graphNodes);
+                this.$graphComponent.fitGraphBounds();
+            },
 
-                // appendNodesToGraph(graph, nodes);
-                //  appendEdgesToGraph(graph, edges)
-                /*graph.nodes.forEach(node => {
-        if (node.style instanceof UMLNodeStyle) {
-            node.style.adjustSize(node, graphComponent.inputMode)
-        }
-    });*/
-                console.log("create default graph", nodes, edges)
-
+            /**
+             * Plots nodes in the graph
+             * @param concept: concept definition
+             **/
+            plotNodes(concept) {
                 const graph = this.$graphComponent.graph;
-                graph.clear();
 
-                nodes.forEach(node => graph.createNode(node))
+                // At this point nodes are only models and style
+                let nodes = getNodesFromClasses(graph, concept.classes);
+                nodes = addNodeStyleToNodes(nodes);
+                // Append nodes to actual graph at which point they can be referenced by edges.
+                const graphNodes = nodes.map(node => graph.createNode({style: node.style}));
+                graph.nodes.forEach(node => {
+                    if (node.style instanceof UMLNodeStyle) {
+                        node.style.adjustSize(node, this.$graphComponent.inputMode)
+                    }
+                });
+                return graphNodes;
+            },
+
+            /**
+             * Plots the edges in the graph
+             * @param concept: concept definition
+             * @param graphNodes: has to be already existing nodes in the graph for it to work
+             * */
+            plotEdges(concept, graphNodes) {
+                const graph = this.$graphComponent.graph;
+                let edges = getEdgesFromReferences(graph, concept.references, graphNodes)
+                edges = addEdgeStyleToEdges(edges);
                 edges.forEach(edge => {
-                    graph.createEdge({
+                    const tempEdge = graph.createEdge({
                         source: edge.source,
                         target: edge.target,
                         style: edge.style
                     });
-                    graph.addLabel(edge, edge.name)
-                })
+                    graph.addLabel(tempEdge, edge.name)
+                });
+            },
 
-                this.$graphComponent.fitGraphBounds()
+            /**
+             * Executes the layout of the graph. Applies positions, directions, ... to elements in graph
+             */
+            executeLayout() {
+                return new Promise((resolve, reject) => {
+                    executeLayout(this.$graphComponent)
+                        .then(() => {
+                            // the graph bootstrapping should not be undoable
+                            this.$graphComponent.graph.undoEngine.clear();
+                            resolve();
+                        })
+                        .catch(error => reject(error))
+                })
             },
 
             /**
