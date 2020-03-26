@@ -3,7 +3,7 @@
         <demo-toolbar
                 class="toolbar"
                 :style="isDndExpanded ? {left: '320px'} : {left: '160px'}"
-                @reload-graph="createDefaultGraph()"
+                @reload-graph="plotDefaultGraph()"
                 @toggle-editable="toggleEditable"
         />
         <aside
@@ -16,6 +16,7 @@
                     v-if="graphComponent"
                     :graph-component="graphComponent"
                     :is-expanded="isDndExpanded"
+                    :passiveSupported="true"
                     :on-drag-release="onDragRelease"
             />
         </aside>
@@ -33,7 +34,7 @@
 
     import {UMLNodeStyle} from "../../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../../uml/models/UMLClassModel";
-    import {addEdgeStyleToEdges, addNodeStyleToNodes, buildGraphFromDefinition, executeLayout, getEdgesFromReferences, getGraphFromDefinition, getInputMode, getNodesFromClasses} from "../../../uml/utils/GraphComponentUtils";
+    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses} from "../../../uml/utils/GraphComponentUtils";
     import {UMLEdgeStyle} from "../../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../utils/RESTApi";
@@ -79,7 +80,7 @@
              * Initialize and mount the y-Files graph component
              **/
             initGraphComponent() {
-                return new Promise((resolve) => {
+                return new Promise((resolve, reject) => {
                     this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
                     this.$graphComponent.inputMode = getInputMode(this.$graphComponent);
                     this.initializeDefaultStyles();
@@ -93,10 +94,11 @@
                                 const isLoaded = true;
                                 resolve(isLoaded);
                             })
-                            .catch(error => console.error(error))
-                    });
+                            .catch(error => reject(error))
+                    }).catch(error => reject(error));
                 })
             },
+
             /**
              * Sets default styles for the graph.
              */
@@ -192,8 +194,8 @@
             },
 
             toggleDnd() {
-                this.isDndExpanded = !this.isDndExpanded
-                this.$emit('on-toggle-dnd', this.isDndExpanded)
+                this.isDndExpanded = !this.isDndExpanded;
+                this.$emit('on-toggle-dnd', this.isDndExpanded);
             }
         }
     }

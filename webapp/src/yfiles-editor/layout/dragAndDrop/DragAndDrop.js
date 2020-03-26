@@ -7,12 +7,13 @@ import {addClass, removeClass} from "../../utils/Bindings";
 export class DragAndDrop {
 
     constructor(graphComponent) {
-        DnDConfigureInputModes(graphComponent)
+        configureInputModes(graphComponent)
         InitializeDnDPanel(graphComponent)
     }
 }
 
-function DnDConfigureInputModes(graphComponent) {
+export function configureInputModes(graphComponent) {
+    console.log(graphComponent)
     const nodeDropInputMode = graphComponent.inputMode.nodeDropInputMode
     // By default the mode available in GraphEditorInputMode is disabled, so first enable it.
     nodeDropInputMode.enabled = true
@@ -25,7 +26,7 @@ function DnDConfigureInputModes(graphComponent) {
     nodeDropInputMode.snappingEnabled = true
 }
 
-function InitializeDnDPanel(graphComponent) {
+export function InitializeDnDPanel(graphComponent) {
 
     // initialize panel for yFiles drag and drop
     let yZetaDragAndDropPanel = new DragAndDropPanel(document.getElementById('drag-and-drop-panel'), passiveSupported)

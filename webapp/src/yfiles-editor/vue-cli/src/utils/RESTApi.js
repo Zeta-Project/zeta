@@ -10,9 +10,7 @@ export let defaultGraph = null;
  */
 export function getDefaultGraph() {
     let uuid = "d882f50c-7e89-48cf-8fea-1e0ea5feb8b7";
-
     const args = process.argv.slice(2);
-
 
     return new Promise((resolve, reject) => {
         if(process.env.NODE_ENV === 'remote') {
@@ -29,9 +27,7 @@ export function getDefaultGraph() {
                 };
 
                 resolve(loadedMetaModel)
-            }).catch(reason => {
-                showSnackbar("Problem to load concept definition from server: " + reason);
-            });
+            }).catch(error => reject(error));
 
             // override rootUrl for later save model calls
             ZetaApiWrapper.prototype.rootUrl = process.env.ZETA_DEV_ROOT_URL;

@@ -101,6 +101,7 @@ export class DragAndDropPanel {
         ? this.createNodeVisual(item, graphComponent)
         : this.createEdgeVisual(item, graphComponent)
       this.addPointerDownListener(modelItem, visual, this.beginDragCallback)
+
       this.div.appendChild(visual)
     }
   }
