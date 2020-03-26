@@ -2,9 +2,9 @@ import 'yfiles/yfiles.css';
 
 import {bindAction, bindCommand} from "./utils/Bindings";
 import {DragAndDrop} from "./layout/dragAndDrop/DragAndDrop";
-import * as umlModel from './uml/models/UMLClassModel.js'
-import {UMLNodeStyle} from './uml/nodes/styles/UMLNodeStyle.js'
-import UMLContextButtonsInputMode from './uml/utils/UMLContextButtonsInputMode.js'
+import * as umlModel from './vue-cli/src/uml/models/UMLClassModel.js'
+import {UMLNodeStyle} from './vue-cli/src/uml/nodes/styles/UMLNodeStyle.js'
+import UMLContextButtonsInputMode from './vue-cli/src/uml/utils/UMLContextButtonsInputMode.js'
 import {isSuccessStatus, ZetaApiWrapper} from "./utils/ZetaApiWrapper";
 import {showExportFailure, showSnackbar} from "./utils/Snackbar";
 import {
@@ -37,18 +37,18 @@ import './styles/stencil.css'
 import './styles/style.css'
 import './styles/toolbar.css'
 import './styles/sidebar.css'
-import {Attribute} from "./uml/attributes/Attribute";
-import {Operation} from "./uml/operations/Operation";
-import {Parameter} from "./uml/parameters/Parameter";
-import {UMLEdgeStyle} from './uml/edges/styles/UMLEdgeStyle'
-import * as umlEdgeModel from './uml/edges/UMLEdgeModel'
+import {Attribute} from "./vue-cli/src/uml/attributes/Attribute";
+import {Operation} from "./vue-cli/src/uml/operations/Operation";
+import {Parameter} from "./vue-cli/src/uml/parameters/Parameter";
+import {UMLEdgeStyle} from './vue-cli/src/uml/edges/styles/UMLEdgeStyle'
+import * as umlEdgeModel from './vue-cli/src/uml/edges/UMLEdgeModel'
 import {
     createAggregationStyle,
     createAssociationStyle,
     createCompositionStyle,
     createGeneralizationStyle
-} from "./uml/edges/styles/UMLEdgeStyleFactory";
-import {buildGraphFromDefinition, executeLayout, getInputMode, registerCommands, setDefaultStyles} from "./uml/utils/GraphComponentUtils";
+} from "./vue-cli/src/uml/edges/styles/UMLEdgeStyleFactory";
+import {buildGraphFromDefinition, executeLayout, getInputMode, registerCommands, setDefaultStyles} from "./vue-cli/src/components/editor/EditorUtils";
 import {Grid} from "./layout/grid/Grid";
 
 

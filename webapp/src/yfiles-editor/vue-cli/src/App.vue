@@ -12,8 +12,8 @@
 </template>
 
 <script>
-    import DiagramComponent from './components/DiagramComponent'
-    import DemoSidebar from './components/DndPanel'
+    import DiagramComponent from './components/editor/EditorComponent'
+    import DemoSidebar from './components/dnd/DndPanel'
 
     export default {
         name: 'app',

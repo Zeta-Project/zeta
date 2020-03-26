@@ -1,6 +1,6 @@
 <template>
     <div v-show="isExpanded">
-        <h1 class="demo-sidebar-header">Description</h1>
+        <h1 class="demo-sidebar-header">{{title}}</h1>
         <div class="demo-sidebar-content">
             <div id="drag-and-drop-panel"/>
         </div>
@@ -30,14 +30,15 @@
         SvgExport,
         VoidNodeStyle
     } from "yfiles";
-    import {addClass, removeClass} from "../../../utils/Bindings";
+    import {addClass, removeClass} from "../../../../utils/Bindings";
 
     export default {
         name: 'DndPanel',
         mounted() {
             this.panelItems = this.getPanelItems(this.graphComponent);
             this.div = document.getElementById("drag-and-drop-panel");
-            this.getVisuals(this.panelItems)
+            // Append svg images as draggable nodes to the drag-and-drop-panel
+            this.appendVisuals(this.panelItems)
         },
         data: function () {
             return {
@@ -63,7 +64,7 @@
              * This method delegates the creation of the visualization of each node
              * to createNodeVisual.
              */
-            getVisuals(itemFactory) {
+            appendVisuals(itemFactory) {
                 if (!itemFactory) {
                     return
                 }
@@ -339,6 +340,12 @@
             passiveSupported: {
                 type: Boolean,
                 required: true
+            },
+            title: {
+                type: String,
+                default: function () {
+                    return 'Drag and Drop Panel'
+                }
             }
         }
     }

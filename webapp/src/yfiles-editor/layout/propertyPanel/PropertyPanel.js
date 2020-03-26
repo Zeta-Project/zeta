@@ -1,11 +1,11 @@
 import {IEdge, INode,} from "yfiles";
 
-import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
-import {Operation} from "../../uml/operations/Operation";
-import {Parameter} from "../../uml/parameters/Parameter";
-import {Attribute} from "../../uml/attributes/Attribute";
-import {UMLEdgeModel} from "../../uml/edges/UMLEdgeModel";
-import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
+import {UMLNodeStyle} from "../../vue-cli/src/uml/nodes/styles/UMLNodeStyle";
+import {Operation} from "../../vue-cli/src/uml/operations/Operation";
+import {Parameter} from "../../vue-cli/src/uml/parameters/Parameter";
+import {Attribute} from "../../vue-cli/src/uml/attributes/Attribute";
+import {UMLEdgeModel} from "../../vue-cli/src/uml/edges/UMLEdgeModel";
+import {UMLEdgeStyle} from "../../vue-cli/src/uml/edges/styles/UMLEdgeStyle";
 
 export class PropertyPanel {
     /**

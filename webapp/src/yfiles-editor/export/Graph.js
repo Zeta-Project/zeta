@@ -1,4 +1,4 @@
-import {UMLNodeStyle} from "../uml/nodes/styles/UMLNodeStyle";
+import {UMLNodeStyle} from "../vue-cli/src/uml/nodes/styles/UMLNodeStyle";
 
 /*
   Wrapper class around the internal yfiles graph.

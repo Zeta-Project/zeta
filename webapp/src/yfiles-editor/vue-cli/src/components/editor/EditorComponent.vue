@@ -8,6 +8,7 @@
         />
         <aside
                 class="demo-sidebar demo-description"
+                title="Drag and Drop Panel"
                 :class="isDndExpanded ? 'expandedDnd' : 'collapsedDnd'"
                 @mouseover="!isDndExpanded && toggleDnd()"
                 @mouseleave="isDndExpanded && toggleDnd()"
@@ -25,19 +26,19 @@
 </template>
 
 <script>
-    import licenseData from '../../../../../../../yFiles-for-html/lib/license.json'
+    import licenseData from '../../../../../../../../yFiles-for-html/lib/license.json'
     import {DefaultLabelStyle, Font, GraphComponent, GraphEditorInputMode, GraphViewerInputMode, License, Size} from 'yfiles'
     // Custom components
-    import DemoToolbar from './DemoToolbar'
-    import PropertyPanel from "./PropertyPanel";
-    import DndPanel from "./DndPanel"
+    import DemoToolbar from '../DemoToolbar'
+    import PropertyPanel from "../PropertyPanel";
+    import DndPanel from "../dnd/DndPanel"
 
-    import {UMLNodeStyle} from "../../../uml/nodes/styles/UMLNodeStyle";
-    import * as umlModel from "../../../uml/models/UMLClassModel";
-    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses} from "../../../uml/utils/GraphComponentUtils";
-    import {UMLEdgeStyle} from "../../../uml/edges/styles/UMLEdgeStyle";
-    import * as umlEdgeModel from "../../../uml/edges/UMLEdgeModel";
-    import {getDefaultGraph} from "../utils/RESTApi";
+    import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
+    import * as umlModel from "../../uml/models/UMLClassModel";
+    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses, registerCommands} from "./EditorUtils";
+    import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
+    import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
+    import {getDefaultGraph} from "../../utils/RESTApi";
 
     License.value = licenseData
 
@@ -92,6 +93,8 @@
                         this.executeLayout()
                             .then(() => {
                                 const isLoaded = true;
+                                // bind toolbar commands
+                                //registerCommands(this.$graphComponent, response) TODO
                                 resolve(isLoaded);
                             })
                             .catch(error => reject(error))
@@ -202,7 +205,7 @@
 </script>
 
 <style scoped>
-    @import '~yfiles/yfiles.css';
+    @import '../../../../../../node_modules/yfiles/yfiles.css';
 
     .toolbar {
         position: absolute;

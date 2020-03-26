@@ -22,30 +22,27 @@ import {
     Size
 } from 'yfiles'
 
-import '../../styles/layout.css'
-import '../../styles/paper.css'
-import '../../styles/stencil.css'
-import '../../styles/style.css'
-import '../../styles/toolbar.css'
-import '../../styles/sidebar.css'
+import '../../../../styles/layout.css'
+import '../../../../styles/paper.css'
+import '../../../../styles/stencil.css'
+import '../../../../styles/style.css'
+import '../../../../styles/toolbar.css'
+import '../../../../styles/sidebar.css'
 import {UMLEdgeStyle} from '../../uml/edges/styles/UMLEdgeStyle'
 import * as umlEdgeModel from '../../uml/edges/UMLEdgeModel'
-
-
-import {close as closePropertyPanel, open as openPropertyPanel} from "../../layout/propertyPanel/Utils"
-import {bindAction, bindCommand} from "../../utils/Bindings";
-import Exporter from "../../export/Exporter";
-import {isSuccessStatus, ZetaApiWrapper} from "../../utils/ZetaApiWrapper";
-import {showExportFailure, showSnackbar} from "../../utils/Snackbar";
-import {Attribute} from "../attributes/Attribute";
-import {Parameter} from "../parameters/Parameter";
-import {Operation} from "../operations/Operation";
-import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle} from "../edges/styles/UMLEdgeStyleFactory";
+import {bindAction, bindCommand} from "../../../../utils/Bindings";
+import Exporter from "../../../../export/Exporter";
+import {isSuccessStatus, ZetaApiWrapper} from "../../../../utils/ZetaApiWrapper";
+import {showExportFailure, showSnackbar} from "../../../../utils/Snackbar";
+import {Attribute} from "../../uml/attributes/Attribute";
+import {Parameter} from "../../uml/parameters/Parameter";
+import {Operation} from "../../uml/operations/Operation";
+import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle} from "../../uml/edges/styles/UMLEdgeStyleFactory";
+import {configureDndInputMode} from "../../components/dnd/DndUtils";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
 Class.ensure(LayoutExecutor);
-
 
 export function setDefaultStyles(graphComponent) {
     // configures default styles for newly created graph elements
@@ -65,6 +62,7 @@ export function getInputMode(graphComponent) {
         labelSnapContext: new LabelSnapContext({
             enabled: false
         }),
+        nodeDropInputMode: configureDndInputMode(graphComponent.graph),
         snapContext: new GraphSnapContext({
             nodeToNodeDistance: 30,
             nodeToEdgeDistance: 20,
@@ -89,16 +87,16 @@ export function getInputMode(graphComponent) {
     // hide the edge creation buttons when the empty canvas was clicked
     mode.addCanvasClickedListener((src, args) => {
         graphComponent.currentItem = null;
-        closePropertyPanel();
+        // closePropertyPanel();
     });
 
     // the UMLNodeStyle should handle clicks itself
     mode.addItemClickedListener((src, args) => {
         if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
             args.item.style.nodeClicked(src, args);
-            openPropertyPanel();
+            // openPropertyPanel();
         } else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
-            openPropertyPanel();
+            // openPropertyPanel();
         }
     });
 
@@ -357,5 +355,5 @@ export function addEdgeStyleToEdges(edges) {
 
 
 export function buildGraphFromDefinition(graphComponent, data) {
-   // legacy
+    // legacy
 }
