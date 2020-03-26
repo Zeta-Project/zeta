@@ -26,7 +26,6 @@ export class ZetaApiWrapper {
     }
 
     getConceptDefinition(metaModelId) {
-
         return new Promise((resolve, reject) => this.isAuthenticated().then(fetchDefinition(this.rootUrl, metaModelId).then(data =>
             resolve(data))).catch(() => {
             this.authenticate().then(isSuccessStatus).then(fetchDefinition(this.rootUrl, metaModelId).then(data => resolve(data))).catch(reason => reject(reason))

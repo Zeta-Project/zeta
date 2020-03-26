@@ -28,10 +28,10 @@
  ***************************************************************************/
 import Vue from 'vue'
 import App from '../vue-cli/src/App.vue'
-import { enableWorkarounds } from '../utils/Workarounds'
+import {enableWorkarounds} from '../utils/Workarounds'
 
 // enable browser-bug workarounds
-enableWorkarounds()
+enableWorkarounds();
 
 Vue.config.productionTip = false
 

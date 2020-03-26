@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="isExpanded">
     <h1 class="demo-sidebar-header">Description</h1>
     <div class="demo-sidebar-content">
       <p>
@@ -34,8 +34,25 @@
 </template>
 
 <script>
+
+  import {GraphComponent} from "yfiles";
+  import {DragAndDrop} from "../../../layout/dragAndDrop/DragAndDrop";
+
   export default {
-    name: 'DemoSidebar'
+    name: 'DndPanel',
+    created() {
+      let dragAndDropPanel = new DragAndDrop(this.graphComponent);
+    },
+    props: {
+      graphComponent: {
+        type: Object,
+        required: true,
+      },
+      isExpanded: {
+        type: Boolean,
+        required: true
+      }
+    }
   }
 </script>
 

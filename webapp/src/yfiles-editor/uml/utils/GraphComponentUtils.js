@@ -227,18 +227,15 @@ export function getGroupId(edge, marker) {
     return null
 }
 
-
-export function buildGraphFromDefinition(graphComponent, data) {
-    const graph = graphComponent.graph;
-
-    const classes = data.classes
-    const references = data.references
-
-    let nodeList;
-
-    //create a node for each class
-    //fill them with existing attributes, operations and names
-    nodeList = classes.map(node => {
+/**
+ * Returns a list of nodes based on the classes of the definition.
+ * The nodes are modelled after the default zeta node model
+ * @param graph: graphComponent.graph
+ * @param classes: classes of definition
+ * @returns {*}
+ */
+export function getNodesFromClasses(graph, classes) {
+    return classes.map(node => {
         const attributes = node.attributes.map(attribute => new Attribute(attribute));
         const methods = node.methods.map(method => {
             const parameters = method.parameters.map(parameter => new Parameter(parameter));
@@ -251,85 +248,147 @@ export function buildGraphFromDefinition(graphComponent, data) {
             })
         });
 
-        const tempNode = (graph.createNode({
-            style: new UMLNodeStyle(
-                new umlModel.UMLClassModel({
-                    className: node.name,
-                    description: node.description,
-                    abstract: node.abstractness,
-                    superTypeNames: node.superTypeNames,
-                    attributes: attributes,
-                    operations: methods
-                })
-            )
-        }));
-        if (node.abstractness === true) {
-            tempNode.style.model.constraint = 'abstract'
-            tempNode.style.model.stereotype = ''
-            tempNode.style.fill = Fill.CRIMSON
-        }
-        return tempNode
+        return {
+            ...node,
+            attributes: attributes,
+            methods: methods
+        };
     });
+}
 
-
-    graph.nodes.forEach(node => {
-        if (node.style instanceof UMLNodeStyle) {
-            node.style.adjustSize(node, graphComponent.inputMode)
-        }
-    });
-
-    //connect each class
-    let source = null;
-    let target = null;
-    //const nodes = graph.getNodeArray() --> not a function???
-    references.forEach(function (reference) {
-        nodeList.forEach(function (node) {
-            if (node.style.model.className === reference.sourceClassName) {
-                source = node
-            }
-            if (node.style.model.className === reference.targetClassName) {
-                target = node
-            }
-        })
-        if (source != null && target != null) {
-            const edgeModel = new umlEdgeModel.UMLEdgeModel({
-                name: reference.name,
-                description: reference.description,
-                sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,
-                targetDeletionDeletesSource: reference.targetDeletionDeletesSource,
-                sourceClassName: reference.sourceClassName,
-                targetClassName: reference.targetClassName,
-                sourceLowerBounds: reference.sourceLowerBounds,
-                sourceUpperBounds: reference.sourceUpperBounds,
-                targetLowerBounds: reference.targetLowerBounds,
-                targetUpperBounds: reference.targetUpperBounds,
-                operations: reference.operations,
-                attributes: reference.attributes
+/**
+ * Adds the default zeta node style to every node given
+ * @param nodes: list of nodes
+ * @returns {*}
+ */
+export function addNodeStyleToNodes(nodes) {
+    return nodes.map(node => {
+        let style = new UMLNodeStyle(
+            new umlModel.UMLClassModel({
+                className: node.name,
+                description: node.description,
+                abstract: node.abstractness,
+                superTypeNames: node.superTypeNames,
+                attributes: node.attributes,
+                operations: node.methods
             })
-            let edgeStyle;
-            if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === true) {
-                edgeStyle = createCompositionStyle();
-            } else if (reference.sourceDeletionDeletesTarget === false && reference.targetDeletionDeletesSource === true) {
-                edgeStyle = createGeneralizationStyle();
-            } else if (reference.sourceDeletionDeletesTarget === true && reference.targetDeletionDeletesSource === false) {
-                edgeStyle = createAggregationStyle();
-            } else {
-                edgeStyle = createAssociationStyle();
-            }
+        );
 
-            edgeStyle.model = edgeModel;
-
-            const edge = graph.createEdge({
-                source: source,
-                target: target,
-                style: edgeStyle
-            });
-            // add a label to the edge
-            if (reference.name !== '') {
-                graph.addLabel(edge, reference.name)
-            }
+        if (node.abstractness === true) {
+            style.model.constraint = 'abstract';
+            style.model.stereotype = '';
+            style.fill = Fill.CRIMSON;
         }
-        source = null
-        target = null
+
+        return {
+            ...node,
+            style: style
+        };
     })
+}
+
+/**
+ * Returns a list of edges based on the default zeta edge model. Takes a list of references
+ * from the definition. Requires a list of all nodes to filter all relevant edges
+ * @param graph
+ * @param references
+ * @param nodes
+ * @returns {*}
+ */
+export function getEdgesFromReferences(graph, references, nodes) {
+    // Filter all relevant references
+    // Remove all references that don't have a target AND source
+    references.filter(reference => {
+        return nodes.some(node => (node.style.model.className === reference.sourceClassName) || (node.style.model.className === reference.targetClassName))
+    });
+    // Transform references to Zeta specific EdgeModels
+    return references.map(reference => {
+        const source = nodes.find(node => node.style.model.className === reference.sourceClassName);
+        const target = nodes.find(node => node.style.model.className === reference.targetClassName);
+        const model = new umlEdgeModel.UMLEdgeModel({
+            name: reference.name,
+            description: reference.description,
+            sourceDeletionDeletesTarget: reference.sourceDeletionDeletesTarget,
+            targetDeletionDeletesSource: reference.targetDeletionDeletesSource,
+            sourceClassName: reference.sourceClassName,
+            targetClassName: reference.targetClassName,
+            sourceLowerBounds: reference.sourceLowerBounds,
+            sourceUpperBounds: reference.sourceUpperBounds,
+            targetLowerBounds: reference.targetLowerBounds,
+            targetUpperBounds: reference.targetUpperBounds,
+            operations: reference.operations,
+            attributes: reference.attributes,
+
+        });
+
+        return {
+            ...model,
+            source: source,
+            target: target
+        }
+    });
+}
+
+/**
+ *  Adds the default zeta edge style to every edge given
+ * @param edges
+ * @returns {*}
+ */
+export function addEdgeStyleToEdges(edges) {
+    return edges.map(edge => {
+        let edgeStyle;
+        if (edge.sourceDeletionDeletesTarget === true && edge.targetDeletionDeletesSource === true) {
+            edgeStyle = createCompositionStyle();
+        } else if (edge.sourceDeletionDeletesTarget === false && edge.targetDeletionDeletesSource === true) {
+            edgeStyle = createGeneralizationStyle();
+        } else if (edge.sourceDeletionDeletesTarget === true && edge.targetDeletionDeletesSource === false) {
+            edgeStyle = createAggregationStyle();
+        } else {
+            edgeStyle = createAssociationStyle();
+        }
+
+        return {
+            ...edge,
+            style: edgeStyle
+        };
+    })
+}
+
+
+export function appendNodesToGraph(graph, nodes) {
+    nodes.map(node => {
+        graph.createNode(node)
+        return node;
+    })
+}
+
+export function appendEdgesToGraph(graph, edges) {
+    edges.map(edge => {
+        const tempEdge = graph.createEdge({
+            source: edge.source,
+            target: edge.target,
+            style: edge.style
+        });
+        // add a label to the edge
+        if (edge.name !== '') {
+            graph.addLabel(tempEdge, edge.name)
+        }
+    })
+}
+
+export function getGraphFromDefinition(graph, data) {
+    let nodes = getNodesFromClasses(graph, data.classes);
+    nodes = addNodeStyleToNodes(nodes);
+
+    let edges = getEdgesFromReferences(graph, data.references, nodes)
+    edges = addEdgeStyleToEdges(edges);
+    return {
+        nodes: nodes,
+        edges: edges
+    }
+}
+
+
+export function buildGraphFromDefinition(graphComponent, data) {
+    // legacy
 }
