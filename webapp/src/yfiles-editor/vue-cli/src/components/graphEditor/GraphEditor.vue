@@ -25,6 +25,15 @@
                     title="Drag and Drop"
             />
         </aside>
+        <aside
+                class="property-panel"
+                v-show="selectedItem !== null && isEditEnabled"
+        >
+            <PropertyPanel
+                    :item="selectedItem"
+                    :is-open="selectedItem != null"
+            />
+        </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
     </div>
 </template>
@@ -49,9 +58,9 @@
         Size
     } from 'yfiles'
     // Custom components
-    import Toolbar from '../Toolbar'
-    import PropertyPanel from "../PropertyPanel";
-    import DndPanel from "../dnd/DndPanel"
+    import Toolbar from '../toolbar/Toolbar'
+    import PropertyPanel from "../propertyPanel/PropertyPanel";
+    import DndPanel from "../dndPanel/DndPanel"
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/nodes/UMLClassModel";
@@ -59,7 +68,7 @@
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../../utils/RESTApi";
-    import {getDefaultDndInputMode} from "../dnd/DndUtils";
+    import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../../../layout/grid/Grid";
 
@@ -89,6 +98,7 @@
                 isEditEnabled: false,
                 isDndExpanded: false,
                 grid: null,
+                selectedItem: null
             }
         },
         computed: {
@@ -217,7 +227,7 @@
                 mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
                 mode.addCanvasClickedListener((src, args) => this.handleCanvasClicked(src, args));
                 mode.addItemClickedListener((src, args) => this.handleItemClicked(src, args))
-                // Configure input mode for dnd actions
+                // Configure input mode for dndPanel actions
                 mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
                 return mode
@@ -261,15 +271,17 @@
             handleItemClicked(src, args) {
                 if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
                     args.item.style.nodeClicked(src, args);
-                    // openPropertyPanel();
+                    this.selectedItem = args.item
+                    this.$graphComponent.currentItem = args.item;
                 } else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
-                    // openPropertyPanel();
+                    this.$graphComponent.currentItem = args.item;
+                    this.selectedItem = args.item
                 }
             },
 
             handleCanvasClicked(src, args) {
                 this.$graphComponent.currentItem = null;
-                // closePropertyPanel();
+                this.selectedItem = null
             },
 
             /**
@@ -302,7 +314,7 @@
 
             toggleDnd() {
                 this.isDndExpanded = !this.isDndExpanded;
-                this.$emit('on-toggle-dnd', this.isDndExpanded);
+                this.$emit('on-toggle-dndPanel', this.isDndExpanded);
             }
         }
     }
@@ -344,6 +356,19 @@
         z-index: 15;
         line-height: 150%;
         left: 0;
+        overflow-y: auto;
+    }
+
+    .property-panel {
+        position: absolute;
+        top: 101px;
+        bottom: 0;
+        width: 320px;
+        box-sizing: border-box;
+        background: #f7f7f7;
+        z-index: 15;
+        line-height: 150%;
+        right: 0;
         overflow-y: auto;
     }
 

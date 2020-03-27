@@ -22,9 +22,9 @@
 </template>
 
 <script>
-    import {bindAction, bindCommand} from "../../../utils/Bindings";
+    import {bindAction, bindCommand} from "../../../../utils/Bindings";
     import {ICommand} from "yfiles";
-    import {executeLayout} from "./graphEditor/GraphEditorUtils";
+    import {executeLayout} from "../graphEditor/GraphEditorUtils";
 
     export default {
         name: 'Toolbar',
@@ -148,10 +148,10 @@
     }
 
     .demo-icon-yIconReload {
-        background-image: url('../assets/reload-16.svg');
+        background-image: url('../../assets/reload-16.svg');
     }
 
     .demo-icon-yIconGrid {
-        background-image: url('../../../styles/icons/grid-16.svg');
+        background-image: url('../../../../styles/icons/grid-16.svg');
     }
 </style>

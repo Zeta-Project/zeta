@@ -38,7 +38,7 @@ import {Attribute} from "../../uml/attributes/Attribute";
 import {Parameter} from "../../uml/parameters/Parameter";
 import {Operation} from "../../uml/operations/Operation";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
-import {configureDndInputMode} from "../../components/dnd/DndUtils";
+import {configureDndInputMode} from "../dndPanel/DndUtils";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.

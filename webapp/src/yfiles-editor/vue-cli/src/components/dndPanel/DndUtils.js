@@ -1,7 +1,7 @@
 import {NodeDropInputMode} from "yfiles";
 
 /**
- * Returns the zeta default input mode for dnd actions
+ * Returns the zeta default input mode for dndPanel actions
  * @param graph
  * @returns {NodeDropInputMode}
  */
