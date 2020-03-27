@@ -23,11 +23,11 @@
 });
 /*
 $( document ).ready(function() {
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/chrome");
-        editor.getSession().setMode("ace/mode/javascript");
+        var graphEditor = ace.edit("graphEditor");
+        graphEditor.setTheme("ace/theme/chrome");
+        graphEditor.getSession().setMode("ace/mode/javascript");
 
-        $( "#btn-code-editor" ).click(function(e) {
+        $( "#btn-code-graphEditor" ).click(function(e) {
                var target = $(this).attr('href');
                $(target).trigger('openModal');
                e.preventDefault();

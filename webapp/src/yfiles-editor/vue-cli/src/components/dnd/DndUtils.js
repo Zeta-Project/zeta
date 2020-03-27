@@ -1,6 +1,11 @@
 import {NodeDropInputMode} from "yfiles";
 
-export function configureDndInputMode(graph) {
+/**
+ * Returns the zeta default input mode for dnd actions
+ * @param graph
+ * @returns {NodeDropInputMode}
+ */
+export function getDefaultDndInputMode(graph) {
     const nodeDropInputMode = new NodeDropInputMode()
     nodeDropInputMode.showPreview = true
     nodeDropInputMode.enabled = true

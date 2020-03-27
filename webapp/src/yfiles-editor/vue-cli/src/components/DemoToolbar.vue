@@ -1,31 +1,37 @@
 <template>
     <div class="demo-toolbar">
+        <md-switch v-model="isEditEnabled" @change="$emit('toggle-editable', isEditEnabled)">Toggle Editing</md-switch> |
         <button class="icon-yIconSave" data-command="Save" title="Save"></button>
         <span class="separator"></span>
         <button class="icon-yIconZoomOriginal" data-command="ZoomOriginal"
                 title="Zoom to original size"></button>
         <button class="icon-yIconZoomFit" data-command="FitContent" title="Fit Content"></button>
         <span class="separator"></span>
-        <button class="icon-yIconCut" data-command="Cut" title="Cut"></button>
-        <button class="icon-yIconCopy" data-command="Copy" title="Copy"></button>
-        <button class="icon-yIconPaste" data-command="Paste" title="Paste"></button>
+        <button class="icon-yIconCut" data-command="Cut" title="Cut" :disabled="!isEditEnabled"></button>
+        <button class="icon-yIconCopy" data-command="Copy" title="Copy" :disabled="!isEditEnabled"></button>
+        <button class="icon-yIconPaste" data-command="Paste" title="Paste" :disabled="!isEditEnabled"></button>
         <span class="separator"></span>
         <button class="icon-yIconUndo" data-command="Undo" title="Undo"></button>
         <button class="icon-yIconRedo" data-command="Redo" title="Redo"></button>
-        <input type="checkbox" id="snapping-button" class="toggle-button"><label for="snapping-button" class="icon-yIconSnapping" title="Snapping"></label>
-        <button data-command="Layout" title="Run Layout" class="icon-yIconLayout"></button>
+        <input type="checkbox" id="snapping-button" class="toggle-button" :disabled="!isEditEnabled"><label for="snapping-button" class="icon-yIconSnapping" title="Snapping"></label>
+        <button data-command="Layout" title="Run Layout" class="icon-yIconLayout" :disabled="!isEditEnabled"></button>
     </div>
 </template>
 
 <script>
     import {bindAction, bindCommand} from "../../../utils/Bindings";
     import {ICommand} from "yfiles";
-    import {executeLayout} from "./editor/EditorUtils";
+    import {executeLayout} from "./graphEditor/GraphEditorUtils";
 
     export default {
         name: 'DemoToolbar',
         mounted() {
             this.registerCommands(this.graphComponent)
+        },
+        data: function () {
+          return {
+              isEditEnabled: false
+          }
         },
         methods: {
             registerCommands(graphComponent) {
@@ -54,7 +60,7 @@
             saveGraph: {
                 type: Function,
                 required: true
-            }
+            },
         }
     }
 </script>

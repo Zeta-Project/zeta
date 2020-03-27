@@ -32,7 +32,7 @@ const TOKEN = Object.freeze({
     STRING: "string",
 });
 
-// defines the mapping of tokens to editor styles
+// defines the mapping of tokens to graphEditor styles
 const defaultStyle = {
     [TOKEN.BUILTIN]: "constant.support",
     [TOKEN.COMMENT]: "comment",

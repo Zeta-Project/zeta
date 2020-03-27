@@ -18,7 +18,7 @@ import {
     LabelSnapContext,
     LayoutExecutor,
     OrthogonalEdgeEditingContext,
-    PolylineEdgeRouterData,
+    PolylineEdgeRouterData, PolylineEdgeStyle,
     Size
 } from 'yfiles'
 
@@ -37,23 +37,45 @@ import {showExportFailure, showSnackbar} from "../../../../utils/Snackbar";
 import {Attribute} from "../../uml/attributes/Attribute";
 import {Parameter} from "../../uml/parameters/Parameter";
 import {Operation} from "../../uml/operations/Operation";
-import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle} from "../../uml/edges/styles/UMLEdgeStyleFactory";
+import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
 import {configureDndInputMode} from "../../components/dnd/DndUtils";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
 Class.ensure(LayoutExecutor);
 
-export function setDefaultStyles(graphComponent) {
-    // configures default styles for newly created graph elements
-    graphComponent.graph.nodeDefaults.style = new UMLNodeStyle(new umlModel.UMLClassModel());
-    graphComponent.graph.nodeDefaults.shareStyleInstance = false;
-    graphComponent.graph.nodeDefaults.size = new Size(125, 100);
-
-    graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel());
+/**
+ * Returns a zeta specific default input mode for the graph graphEditor
+ * @returns {GraphEditorInputMode}
+ */
+export function getDefaultGraphEditorInputMode() {
+    return new GraphEditorInputMode({
+        orthogonalEdgeEditingContext: new OrthogonalEdgeEditingContext(),
+        allowAddLabel: false,
+        allowGroupingOperations: false,
+        allowCreateNode: false,
+        labelSnapContext: new LabelSnapContext({
+            enabled: false
+        }),
+        snapContext: new GraphSnapContext({
+            nodeToNodeDistance: 30,
+            nodeToEdgeDistance: 20,
+            snapOrthogonalMovement: false,
+            snapDistance: 10,
+            snapSegmentsToSnapLines: true,
+            snapBendsToSnapLines: true,
+            gridSnapType: GridSnapTypes.ALL,
+            enabled: false
+        })
+    });
 }
 
-export function saveGraph(graphComponent, loadedMetaModel){
+/**
+ * Validation TODO
+ * @param graphComponent
+ * @param loadedMetaModel
+ */
+export function saveGraph(graphComponent, loadedMetaModel) {
     if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0 && loadedMetaModel.name.length > 0 && loadedMetaModel.uuid.length > 0) {
 
         const graph = graphComponent.graph;
@@ -127,13 +149,11 @@ export function executeLayout(graphComponent) {
  * @return {object|null}
  */
 export function getGroupId(edge, marker) {
-    /*
     if (edge.style instanceof PolylineEdgeStyle) {
         const edgeStyle = edge.style
         return isInheritance(edgeStyle) ? edgeStyle.stroke.dashStyle + marker : null
     }
 
-     */
     return null
 }
 

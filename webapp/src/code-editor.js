@@ -13,7 +13,7 @@ import {CodeOutline} from "./code-editor/code-outline";
 import {OnlineSocket} from "./code-editor/online-socket";
 
 $(document).ready(() => {
-    $('.code-editor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
+    $('.code-graphEditor').each((i, e) => new CodeEditor(e, $(e).data('meta-model-id'), $(e).data('dsl-type')));
 });
 
 const modesForModel = {
@@ -27,7 +27,7 @@ class CodeEditor {
         this.$element = $(element);
         this.metaModelId = metaModelId;
         this.dslType = dslType;
-        this.editor = this.initAceEditor(element.querySelector('.editor'));
+        this.editor = this.initAceEditor(element.querySelector('.graphEditor'));
         this.loadSourceCode();
         this.$element.on('click', '.js-save', () => this.saveSourceCode(this.editor.getValue()));
         this.sourceCodeInspector = new SourceCodeInspector(element, metaModelId, dslType, this.editor);

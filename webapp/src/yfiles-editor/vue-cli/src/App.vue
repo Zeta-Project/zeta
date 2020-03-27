@@ -5,21 +5,19 @@
                 <a href="https://www.yworks.com" target="_blank"> yFiles for HTML</a> <span class="demo-title">Vue-CLI Demo [yFiles for HTML]</span>
             </div>
 
-            <diagram-component ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></diagram-component>
+            <GraphEditorComponent ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></GraphEditorComponent>
 
         </div>
     </div>
 </template>
 
 <script>
-    import DiagramComponent from './components/editor/EditorComponent'
-    import DemoSidebar from './components/dnd/DndPanel'
+    import GraphEditorComponent from './components/graphEditor/GraphEditorComponent'
 
     export default {
         name: 'app',
         components: {
-            DemoSidebar,
-            DiagramComponent,
+            GraphEditorComponent,
         },
         data: function () {
             return {

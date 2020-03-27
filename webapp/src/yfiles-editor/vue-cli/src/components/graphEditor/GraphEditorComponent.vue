@@ -5,6 +5,7 @@
                 :style="isDndExpanded ? {left: '320px'} : {left: '160px'}"
                 v-if="graphComponent"
                 :graph-component="graphComponent"
+                :isEditEnabled="isEditEnabled"
                 :save-graph="saveGraph"
                 @reload-graph="plotDefaultGraph()"
                 @toggle-editable="toggleEditable"
@@ -30,21 +31,7 @@
 
 <script>
     import licenseData from '../../../../../../../../yFiles-for-html/lib/license.json'
-    import {
-        DefaultLabelStyle,
-        EdgeRouter,
-        EdgeRouterScope,
-        Font,
-        GraphComponent,
-        GraphEditorInputMode, GraphSnapContext,
-        GraphViewerInputMode, GridSnapTypes, IEdge, INode,
-        LabelSnapContext,
-        LayoutExecutor,
-        License,
-        OrthogonalEdgeEditingContext,
-        PolylineEdgeRouterData,
-        Size
-    } from 'yfiles'
+    import {DefaultLabelStyle, EdgeRouter, EdgeRouterScope, Font, GraphComponent, GraphEditorInputMode, GraphViewerInputMode, IEdge, INode, LayoutExecutor, License, PolylineEdgeRouterData, Size} from 'yfiles'
     // Custom components
     import DemoToolbar from '../DemoToolbar'
     import PropertyPanel from "../PropertyPanel";
@@ -52,17 +39,17 @@
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/nodes/UMLClassModel";
-    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses, registerCommands, routeEdgesAtSelectedNodes, saveGraph} from "./EditorUtils";
+    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getDefaultGraphEditorInputMode, getEdgesFromReferences, getNodesFromClasses} from "./GraphEditorUtils";
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../../utils/RESTApi";
-    import {configureDndInputMode} from "../dnd/DndUtils";
+    import {getDefaultDndInputMode} from "../dnd/DndUtils";
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
 
     License.value = licenseData
 
     export default {
-        name: 'DiagramComponent',
+        name: 'GraphEditorComponent',
         components: {
             DemoToolbar,
             PropertyPanel,
@@ -80,6 +67,7 @@
             return {
                 concept: {},
                 isGraphComponentLoaded: false,
+                isEditEnabled: false,
                 isDndExpanded: false
             }
         },
@@ -187,52 +175,22 @@
                 });
             },
 
+            /**
+             * Returns the zeta default input mode
+             **/
             getInputMode(graphComponent) {
-                const mode = new GraphEditorInputMode({
-                    orthogonalEdgeEditingContext: new OrthogonalEdgeEditingContext(),
-                    allowAddLabel: false,
-                    allowGroupingOperations: false,
-                    allowCreateNode: false,
-                    labelSnapContext: new LabelSnapContext({
-                        enabled: false
-                    }),
-                    nodeDropInputMode: configureDndInputMode(graphComponent.graph),
-                    snapContext: new GraphSnapContext({
-                        nodeToNodeDistance: 30,
-                        nodeToEdgeDistance: 20,
-                        snapOrthogonalMovement: false,
-                        snapDistance: 10,
-                        snapSegmentsToSnapLines: true,
-                        snapBendsToSnapLines: true,
-                        gridSnapType: GridSnapTypes.ALL,
-                        enabled: false
-                    })
-                });
-
-                // add input mode that handles the edge creations buttons
+                const mode = getDefaultGraphEditorInputMode();
+                // Add buttons that appear above a selected node for the creation of a new edge
                 const umlContextButtonsInputMode = new UMLContextButtonsInputMode()
                 umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1
                 mode.add(umlContextButtonsInputMode)
-
                 // execute a layout after certain gestures
                 mode.moveInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
                 mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
-
-                // hide the edge creation buttons when the empty canvas was clicked
-                mode.addCanvasClickedListener((src, args) => {
-                    graphComponent.currentItem = null;
-                    // closePropertyPanel();
-                });
-
-                // the UMLNodeStyle should handle clicks itself
-                mode.addItemClickedListener((src, args) => {
-                    if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
-                        args.item.style.nodeClicked(src, args);
-                        // openPropertyPanel();
-                    } else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
-                        // openPropertyPanel();
-                    }
-                });
+                mode.addCanvasClickedListener((src, args) => this.handleCanvasClicked(src, args));
+                mode.addItemClickedListener((src, args) => this.handleItemClicked(src, args))
+                // Configure input mode for dnd actions
+                mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
 
                 return mode
             },
@@ -270,11 +228,28 @@
             },
 
             /**
+             * Handles the item click action. Used as a callback for a item-clicked-event.
+             * */
+            handleItemClicked(src, args) {
+                if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
+                    args.item.style.nodeClicked(src, args);
+                    // openPropertyPanel();
+                } else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
+                    // openPropertyPanel();
+                }
+            },
+
+            handleCanvasClicked(src, args) {
+                this.$graphComponent.currentItem = null;
+                // closePropertyPanel();
+            },
+
+            /**
              * Enables/disables interactive editing of the graph
              */
             toggleEditable(editable) {
                 if (editable) {
-                    this.$graphComponent.inputMode = new GraphEditorInputMode()
+                    this.$graphComponent.inputMode = this.getInputMode(this.$graphComponent)
                 } else {
                     this.$graphComponent.inputMode = new GraphViewerInputMode()
                 }

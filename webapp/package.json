@@ -21,6 +21,7 @@
     "bootbox": "4.4.0",
     "bootstrap": "3.3.6",
     "brace": "0.5.0",
+    "core-js": "^2.6.5",
     "ionicons": "github:ionic-team/ionicons#1.5.2",
     "jest-cli": "^22.4.3",
     "jointjs": "2.0.1",
@@ -36,11 +37,11 @@
     "react": "16.13.1",
     "react-dom": "^16.13.1",
     "script-loader": "0",
+    "vue": "^2.6.10",
+    "vue-material": "^1.0.0-beta-11",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
     "yfiles": "../../yfiles-for-html/lib/es-modules",
-    "zxcvbn": "4.2.0",
-    "core-js": "^2.6.5",
-    "vue": "^2.6.10"
+    "zxcvbn": "4.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
@@ -48,6 +49,9 @@
     "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.42",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "@yworks/optimizer": "^1.0.3",
     "babel-core": "^7.0.0-0",
     "babel-jest": "^23.0.0-alpha.4",
     "babel-loader": "^8.0.2",
@@ -72,13 +76,10 @@
     "style-loader": "^0.23.0",
     "uglifyjs-webpack-plugin": "1",
     "url-loader": "0",
+    "vue-template-compiler": "^2.6.10",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",
-    "webpack-dev-server": "^3.1.8",
-    "@vue/cli-plugin-babel": "^3.0.1",
-    "@vue/cli-service": "^3.0.1",
-    "@yworks/optimizer": "^1.0.3",
-    "vue-template-compiler": "^2.6.10"
+    "webpack-dev-server": "^3.1.8"
   },
   "jest": {
     "cacheDirectory": "./node_modules/.cache/jest"

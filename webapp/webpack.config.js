@@ -13,15 +13,15 @@ console.log("Production mode " + (prodMode ? "enabled" : "disabled"));
 
 module.exports = {
 	entry: {
-      "code-editor": "./src/code-editor.js",
-      "code-editor-simple": "./src/code-editor-simple.js",
+      "code-editor": "./src/code-graphEditor.js",
+      "code-editor-simple": "./src/code-graphEditor-simple.js",
       "diagramm-overview": "./src/diagram-overview.js",
       "webpage": "./src/webpage.js",
-      "graphical-meta-model-editor": "./src/graphical-meta-model-editor.js",
-      "graphical-model-editor": "./src/graphical-model-editor.js",
+      "graphical-meta-model-editor": "./src/graphical-meta-model-graphEditor.js",
+      "graphical-model-editor": "./src/graphical-model-graphEditor.js",
       "silhouette": "./src/silhouette.js",
-      "yfiles-editor": "./src/yfiles-editor/concept-editor.js",
-      "yfiles-editor-dev": "./src/yfiles-editor/devEnv/app-dev.js"
+      "yfiles-editor": "./src/yfiles-graphEditor/concept-graphEditor.js",
+      "yfiles-editor-dev": "./src/yfiles-graphEditor/devEnv/app-dev.js"
     },
 	output: {
 		path: path.join(__dirname, "dist"),
@@ -51,7 +51,7 @@ module.exports = {
     extensions: ["*", ".js", ".jsx"],
     alias: {
       joint: 'jointjs',
-      'backbone1.0': path.resolve(__dirname, 'src', 'graphical-editor', 'backbone1.0.js'),
+      'backbone1.0': path.resolve(__dirname, 'src', 'graphical-graphEditor', 'backbone1.0.js'),
     }
   },
   module: {
@@ -146,7 +146,7 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: path.join(__dirname, './src/yfiles-editor'),
+    contentBase: path.join(__dirname, './src/yfiles-graphEditor'),
     compress: true,
     port: 9003
   }

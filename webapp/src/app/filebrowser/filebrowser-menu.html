@@ -114,7 +114,7 @@
 
           const file = Object.keys(project.files).find(() => true);
           if (file && this.route.path === '/' + this.routeData.type + '/' + project.id) {
-            this.$.redirect.href = '/app/editor/' + this.routeData.type + '/' + project.id + '/file/' + file + '/' + project.files[file];
+            this.$.redirect.href = '/app/graphEditor/' + this.routeData.type + '/' + project.id + '/file/' + file + '/' + project.files[file];
             this.$.redirect.click();
           }
         } else {
@@ -185,7 +185,7 @@
 
       _computeBasLink(routeData) {
         if (routeData.value.id && routeData.value.type) {
-          this.baseLink = '/editor/' + routeData.value.type + '/' + routeData.value.id;
+          this.baseLink = '/graphEditor/' + routeData.value.type + '/' + routeData.value.id;
           this.backlink = '/app/' + routeData.value.type;
         }
       }

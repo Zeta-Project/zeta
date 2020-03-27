@@ -48,7 +48,7 @@ import {
     createCompositionStyle,
     createGeneralizationStyle
 } from "./vue-cli/src/uml/edges/styles/UMLEdgeStyleFactory";
-import {buildGraphFromDefinition, executeLayout, getInputMode, registerCommands, setDefaultStyles} from "./vue-cli/src/components/editor/EditorUtils";
+import {buildGraphFromDefinition, executeLayout, getInputMode, registerCommands, setDefaultStyles} from "./vue-cli/src/components/graphEditor/GraphEditorUtils";
 import {Grid} from "./layout/grid/Grid";
 
 

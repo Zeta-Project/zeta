@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import GeneratorFactory from "../generator/GeneratorFactory";
 
-//TODO import {linkhelper} from '../generator/editor/LinkHelperGenerator'
+//TODO import {linkhelper} from '../generator/graphEditor/LinkHelperGenerator'
 
 export default (function modelExporter() {
     'use strict';

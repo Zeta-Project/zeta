@@ -29,7 +29,11 @@
 import Vue from 'vue'
 import App from './yfiles-editor/vue-cli/src/App.vue'
 import { enableWorkarounds } from './yfiles-editor/utils/Workarounds'
+import VueMaterial from 'vue-material'
+import 'vue-material/dist/vue-material.min.css'
+import 'vue-material/dist/theme/default.css'
 
+Vue.use(VueMaterial)
 // enable browser-bug workarounds
 enableWorkarounds()
 
