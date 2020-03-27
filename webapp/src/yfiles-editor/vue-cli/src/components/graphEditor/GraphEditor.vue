@@ -1,28 +1,28 @@
 <template>
     <div>
-        <demo-toolbar
+        <Toolbar
                 class="toolbar"
-                :style="isDndExpanded ? {left: '320px'} : {left: '160px'}"
                 v-if="graphComponent"
                 :graph-component="graphComponent"
                 :isEditEnabled="isEditEnabled"
                 :save-graph="saveGraph"
                 @reload-graph="plotDefaultGraph()"
                 @toggle-editable="toggleEditable"
+                @toggle-grid="toggleGrid"
         />
         <aside
                 class="demo-sidebar demo-description"
-                title="Drag and Drop Panel"
                 :class="isDndExpanded ? 'expandedDnd' : 'collapsedDnd'"
                 @mouseover="!isDndExpanded && toggleDnd()"
                 @mouseleave="isDndExpanded && toggleDnd()"
+                v-show="isEditEnabled"
         >
             <DndPanel
                     v-if="graphComponent"
                     :graph-component="graphComponent"
                     :is-expanded="isDndExpanded"
                     :passiveSupported="true"
-                    :on-drag-release="onDragRelease"
+                    title="Drag and Drop"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -31,9 +31,25 @@
 
 <script>
     import licenseData from '../../../../../../../../yFiles-for-html/lib/license.json'
-    import {DefaultLabelStyle, EdgeRouter, EdgeRouterScope, Font, GraphComponent, GraphEditorInputMode, GraphViewerInputMode, IEdge, INode, LayoutExecutor, License, PolylineEdgeRouterData, Size} from 'yfiles'
+    import {
+        DefaultLabelStyle,
+        EdgeRouter,
+        EdgeRouterScope,
+        Font,
+        GraphComponent,
+        GraphEditorInputMode, GraphSnapContext,
+        GraphViewerInputMode, GridSnapTypes,
+        IEdge,
+        INode,
+        LabelSnapContext,
+        LayoutExecutor,
+        License,
+        OrthogonalEdgeEditingContext,
+        PolylineEdgeRouterData,
+        Size
+    } from 'yfiles'
     // Custom components
-    import DemoToolbar from '../DemoToolbar'
+    import Toolbar from '../Toolbar'
     import PropertyPanel from "../PropertyPanel";
     import DndPanel from "../dnd/DndPanel"
 
@@ -45,19 +61,22 @@
     import {getDefaultGraph} from "../../utils/RESTApi";
     import {getDefaultDndInputMode} from "../dnd/DndUtils";
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
+    import {Grid} from "../../../../layout/grid/Grid";
 
     License.value = licenseData
 
     export default {
         name: 'GraphEditorComponent',
         components: {
-            DemoToolbar,
+            Toolbar,
             PropertyPanel,
             DndPanel
         },
         mounted() {
             this.initGraphComponent().then(response => {
                 this.isGraphComponentLoaded = response
+                // Set the current edit mode to view only
+                this.$graphComponent.inputMode = new GraphViewerInputMode()
             }).catch(error => {
                 // TODO add snackbar error
                 console.error(error)
@@ -68,7 +87,8 @@
                 concept: {},
                 isGraphComponentLoaded: false,
                 isEditEnabled: false,
-                isDndExpanded: false
+                isDndExpanded: false,
+                grid: null,
             }
         },
         computed: {
@@ -93,6 +113,7 @@
                     this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
                     this.$graphComponent.inputMode = this.getInputMode(this.$graphComponent);
                     this.initializeDefaultStyles();
+                    this.initGrid()
 
                     // Load graph from definition
                     // TODO replace with actual api call in future
@@ -102,8 +123,6 @@
                         this.executeLayout()
                             .then(() => {
                                 const isLoaded = true;
-                                // bind toolbar commands
-                                //registerCommands(this.$graphComponent, response) TODO
                                 resolve(isLoaded);
                             })
                             .catch(error => reject(error))
@@ -125,6 +144,15 @@
                 })
                 this.$graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel());
                 this.$graphComponent.graph.undoEngineEnabled = true
+            },
+
+            /**
+             * Initializes the grid. Makes use of the yFiles Grid.
+             */
+            initGrid() {
+                this.grid = new Grid(this.$graphComponent)
+                this.grid.initializeGrid()
+                this.grid.grid.visible = false;
             },
 
             /**
@@ -176,8 +204,8 @@
             },
 
             /**
-             * Returns the zeta default input mode
-             **/
+             * Returns the default zeta input mode
+             */
             getInputMode(graphComponent) {
                 const mode = getDefaultGraphEditorInputMode();
                 // Add buttons that appear above a selected node for the creation of a new edge
@@ -229,7 +257,7 @@
 
             /**
              * Handles the item click action. Used as a callback for a item-clicked-event.
-             * */
+             */
             handleItemClicked(src, args) {
                 if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
                     args.item.style.nodeClicked(src, args);
@@ -253,15 +281,23 @@
                 } else {
                     this.$graphComponent.inputMode = new GraphViewerInputMode()
                 }
+                this.isEditEnabled = editable
+            },
+
+            /**
+             * Toggles the grid and snapping to the grid
+             * @param isEnabled
+             */
+            toggleGrid(isEnabled) {
+                this.$graphComponent.inputMode.labelSnapContext.enabled = isEnabled
+                this.$graphComponent.inputMode.snapContext.enabled = isEnabled
+                this.grid.grid.visible = isEnabled
+                this.$graphComponent.invalidate()
             },
 
             saveGraph() {
                 console.log("save")
                 //saveGraph(this.$graphComponent, this.concept)
-            },
-
-            onDragRelease() {
-                console.log("on drag release")
             },
 
             toggleDnd() {
@@ -300,7 +336,7 @@
 
     .demo-sidebar {
         position: absolute;
-        top: 0;
+        top: 101px;
         bottom: 0;
         width: 320px;
         box-sizing: border-box;
@@ -312,10 +348,10 @@
     }
 
     .collapsedDnd {
-        width: 160px
+        width: 100px
     }
 
     .expandedDnd {
-        width: 320px;
+        width: 200px;
     }
 </style>

@@ -45,7 +45,10 @@ import {configureDndInputMode} from "../../components/dnd/DndUtils";
 Class.ensure(LayoutExecutor);
 
 /**
- * Returns a zeta specific default input mode for the graph graphEditor
+ * Returns a zeta specific default input mode for the graph graphEditor.
+ * - SnapContext specifies the snapping behaviour of elements in the graph. Especially
+ *   interesting for grid related behaviour. Snapping is disabled (enabled = false) on default
+ *
  * @returns {GraphEditorInputMode}
  */
 export function getDefaultGraphEditorInputMode() {
@@ -60,12 +63,15 @@ export function getDefaultGraphEditorInputMode() {
         snapContext: new GraphSnapContext({
             nodeToNodeDistance: 30,
             nodeToEdgeDistance: 20,
-            snapOrthogonalMovement: false,
             snapDistance: 10,
+            gridSnapType: GridSnapTypes.ALL,
+            enabled: false,
+            snapBendAdjacentSegments: true,
+            snapNodesToSnapLines: true,
+            snapPortAdjacentSegments: true,
             snapSegmentsToSnapLines: true,
             snapBendsToSnapLines: true,
-            gridSnapType: GridSnapTypes.ALL,
-            enabled: false
+            snapOrthogonalMovement: true,
         })
     });
 }

@@ -359,7 +359,7 @@
         line-height: 60px;
         margin: 0;
         box-sizing: border-box;
-        padding-left: 65px;
+        padding-left: 10px;
     }
 
     .demo-sidebar-content {

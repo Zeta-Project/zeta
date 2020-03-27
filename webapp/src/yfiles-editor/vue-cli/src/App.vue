@@ -1,23 +1,23 @@
 <template>
     <div id="app">
         <div class="demo-content">
-            <div class="demo-header" :style="isDndExpanded ? {left: '320px'} : {left: '160px'}">
-                <a href="https://www.yworks.com" target="_blank"> yFiles for HTML</a> <span class="demo-title">Vue-CLI Demo [yFiles for HTML]</span>
+            <div class="demo-header">
+                <h1 class="demo-title">Vue Zeta</h1>
             </div>
 
-            <GraphEditorComponent ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></GraphEditorComponent>
+            <GraphEditor ref="GraphComponent" v-on:on-toggle-dnd="toggleDnd"></GraphEditor>
 
         </div>
     </div>
 </template>
 
 <script>
-    import GraphEditorComponent from './components/graphEditor/GraphEditorComponent'
+    import GraphEditor from './components/graphEditor/GraphEditor'
 
     export default {
         name: 'app',
         components: {
-            GraphEditorComponent,
+            GraphEditor,
         },
         data: function () {
             return {
@@ -92,7 +92,6 @@
         cursor: default;
         font-size: 1.5em;
         letter-spacing: 1px;
-        background: url('./assets/header-angle.svg') no-repeat 5px 50%;
         background-size: 20px 20px;
         vertical-align: top;
     }

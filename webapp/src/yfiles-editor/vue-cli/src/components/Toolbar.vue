@@ -1,6 +1,7 @@
 <template>
     <div class="demo-toolbar">
-        <md-switch v-model="isEditEnabled" @change="$emit('toggle-editable', isEditEnabled)">Toggle Editing</md-switch> |
+        <md-switch v-model="isEditEnabled" @change="$emit('toggle-editable', isEditEnabled)">Toggle Editing</md-switch>
+        <span class="separator"></span>
         <button class="icon-yIconSave" data-command="Save" title="Save"></button>
         <span class="separator"></span>
         <button class="icon-yIconZoomOriginal" data-command="ZoomOriginal"
@@ -15,6 +16,8 @@
         <button class="icon-yIconRedo" data-command="Redo" title="Redo"></button>
         <input type="checkbox" id="snapping-button" class="toggle-button" :disabled="!isEditEnabled"><label for="snapping-button" class="icon-yIconSnapping" title="Snapping"></label>
         <button data-command="Layout" title="Run Layout" class="icon-yIconLayout" :disabled="!isEditEnabled"></button>
+        <span class="demo-separator"></span> <input type="checkbox" id="grid-button" class="demo-toggle-button"
+                                                    :checked="isGridEnabled" v-model="isGridEnabled" :disabled="!isEditEnabled" @change="$emit('toggle-grid', isGridEnabled)"><label for="grid-button" class="demo-icon-yIconGrid" title="Show Grid"></label>
     </div>
 </template>
 
@@ -24,13 +27,14 @@
     import {executeLayout} from "./graphEditor/GraphEditorUtils";
 
     export default {
-        name: 'DemoToolbar',
+        name: 'Toolbar',
         mounted() {
             this.registerCommands(this.graphComponent)
         },
         data: function () {
           return {
-              isEditEnabled: false
+              isEditEnabled: false,
+              isGridEnabled: false
           }
         },
         methods: {
@@ -145,5 +149,9 @@
 
     .demo-icon-yIconReload {
         background-image: url('../assets/reload-16.svg');
+    }
+
+    .demo-icon-yIconGrid {
+        background-image: url('../../../styles/icons/grid-16.svg');
     }
 </style>
