@@ -35,7 +35,7 @@ import {
     YObject
 } from 'yfiles'
 
-import { UMLClassModel } from '../../models/UMLClassModel.js'
+import { UMLClassModel } from '../UMLClassModel.js'
 import {Attribute} from "../../attributes/Attribute";
 import {Operation} from "../../operations/Operation";
 

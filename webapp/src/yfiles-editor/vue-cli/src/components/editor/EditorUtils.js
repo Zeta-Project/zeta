@@ -1,5 +1,5 @@
 import 'yfiles/yfiles.css';
-import * as umlModel from '../../uml/models/UMLClassModel.js'
+import * as umlModel from '../../uml/nodes/UMLClassModel.js'
 import {UMLNodeStyle} from '../../uml/nodes/styles/UMLNodeStyle.js'
 import UMLContextButtonsInputMode from '../../uml/utils/UMLContextButtonsInputMode.js'
 import {
@@ -53,62 +53,43 @@ export function setDefaultStyles(graphComponent) {
     graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel());
 }
 
+export function saveGraph(graphComponent, loadedMetaModel){
+    if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0 && loadedMetaModel.name.length > 0 && loadedMetaModel.uuid.length > 0) {
 
-export function registerCommands(graphComponent, loadedMetaModel) {
-    bindAction("button[data-command='Save']", () => {
+        const graph = graphComponent.graph;
 
-        if (loadedMetaModel.constructor === Object && Object.entries(loadedMetaModel).length > 0 && loadedMetaModel.name.length > 0 && loadedMetaModel.uuid.length > 0) {
+        const exporter = new Exporter(graph);
+        const exportedMetaModel = exporter.export();
 
-            const graph = graphComponent.graph;
+        if (exportedMetaModel.isValid()) {
 
-            const exporter = new Exporter(graph);
-            const exportedMetaModel = exporter.export();
+            const data = JSON.stringify({
+                name: loadedMetaModel.name,
+                classes: exportedMetaModel.getClasses(),
+                references: exportedMetaModel.getReferences(),
+                enums: exportedMetaModel.getEnums(),
+                attributes: exportedMetaModel.getAttributes(),
+                methods: exportedMetaModel.getMethods(),
+                uiState: JSON.stringify({"empty": "value"})
+            });
 
-            if (exportedMetaModel.isValid()) {
+            ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
+                showSnackbar("Meta model saved successfully!")
+            }).catch(reason => {
+                showSnackbar("Problem to save meta model: " + reason)
+            });
 
-                const data = JSON.stringify({
-                    name: loadedMetaModel.name,
-                    classes: exportedMetaModel.getClasses(),
-                    references: exportedMetaModel.getReferences(),
-                    enums: exportedMetaModel.getEnums(),
-                    attributes: exportedMetaModel.getAttributes(),
-                    methods: exportedMetaModel.getMethods(),
-                    uiState: JSON.stringify({"empty": "value"})
-                });
-
-                ZetaApiWrapper.prototype.postConceptDefinition(loadedMetaModel.uuid, data).then(isSuccessStatus).then(() => {
-                    showSnackbar("Meta model saved successfully!")
-                }).catch(reason => {
-                    showSnackbar("Problem to save meta model: " + reason)
-                });
-
-            } else {
-                let errorMessage = "";
-                exportedMetaModel.getMessages().forEach(message => {
-                    errorMessage += message + '\n';
-                });
-                showExportFailure(errorMessage);
-            }
         } else {
-            showSnackbar("No loaded meta model found");
+            let errorMessage = "";
+            exportedMetaModel.getMessages().forEach(message => {
+                errorMessage += message + '\n';
+            });
+            showExportFailure(errorMessage);
         }
-    })
-    bindCommand("button[data-command='Cut']", ICommand.CUT, graphComponent)
-    bindCommand("button[data-command='Copy']", ICommand.COPY, graphComponent)
-    bindCommand("button[data-command='Paste']", ICommand.PASTE, graphComponent)
-    bindCommand("button[data-command='FitContent']", ICommand.FIT_GRAPH_BOUNDS, graphComponent)
-    bindCommand("button[data-command='ZoomOriginal']", ICommand.ZOOM, graphComponent, 1.0)
-    bindCommand("button[data-command='Undo']", ICommand.UNDO, graphComponent)
-    bindCommand("button[data-command='Redo']", ICommand.REDO, graphComponent)
-
-    bindAction('#snapping-button', () => {
-        const snappingEnabled = document.querySelector('#snapping-button').checked
-        graphComponent.inputMode.snapContext.enabled = snappingEnabled
-        graphComponent.inputMode.labelSnapContext.enabled = snappingEnabled
-    })
-    bindAction("button[data-command='Layout']", () => executeLayout(graphComponent))
+    } else {
+        showSnackbar("No loaded meta model found");
+    }
 }
-
 
 /**
  * Sets new HierarchicLayout, target nodes are drawn on top

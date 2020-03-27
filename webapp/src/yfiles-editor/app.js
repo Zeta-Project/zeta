@@ -2,7 +2,7 @@ import 'yfiles/yfiles.css';
 
 import {bindAction, bindCommand} from "./utils/Bindings";
 import {DragAndDrop} from "./layout/dragAndDrop/DragAndDrop";
-import * as umlModel from './vue-cli/src/uml/models/UMLClassModel.js'
+import * as umlModel from './vue-cli/src/uml/nodes/UMLClassModel.js'
 import {UMLNodeStyle} from './vue-cli/src/uml/nodes/styles/UMLNodeStyle.js'
 import UMLContextButtonsInputMode from './vue-cli/src/uml/utils/UMLContextButtonsInputMode.js'
 import {isSuccessStatus, ZetaApiWrapper} from "./utils/ZetaApiWrapper";

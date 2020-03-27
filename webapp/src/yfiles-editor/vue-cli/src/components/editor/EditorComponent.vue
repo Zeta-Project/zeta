@@ -3,6 +3,9 @@
         <demo-toolbar
                 class="toolbar"
                 :style="isDndExpanded ? {left: '320px'} : {left: '160px'}"
+                v-if="graphComponent"
+                :graph-component="graphComponent"
+                :save-graph="saveGraph"
                 @reload-graph="plotDefaultGraph()"
                 @toggle-editable="toggleEditable"
         />
@@ -48,8 +51,8 @@
     import DndPanel from "../dnd/DndPanel"
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
-    import * as umlModel from "../../uml/models/UMLClassModel";
-    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses, registerCommands, routeEdgesAtSelectedNodes} from "./EditorUtils";
+    import * as umlModel from "../../uml/nodes/UMLClassModel";
+    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses, registerCommands, routeEdgesAtSelectedNodes, saveGraph} from "./EditorUtils";
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../../utils/RESTApi";
@@ -75,6 +78,7 @@
         },
         data: function () {
             return {
+                concept: {},
                 isGraphComponentLoaded: false,
                 isDndExpanded: false
             }
@@ -105,6 +109,7 @@
                     // Load graph from definition
                     // TODO replace with actual api call in future
                     getDefaultGraph().then(response => {
+                        this.concept = response.concept
                         this.plotDefaultGraph(response.concept);
                         this.executeLayout()
                             .then(() => {
@@ -273,6 +278,11 @@
                 } else {
                     this.$graphComponent.inputMode = new GraphViewerInputMode()
                 }
+            },
+
+            saveGraph() {
+                console.log("save")
+                //saveGraph(this.$graphComponent, this.concept)
             },
 
             onDragRelease() {
