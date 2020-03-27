@@ -27,7 +27,21 @@
 
 <script>
     import licenseData from '../../../../../../../../yFiles-for-html/lib/license.json'
-    import {DefaultLabelStyle, Font, GraphComponent, GraphEditorInputMode, GraphViewerInputMode, License, Size} from 'yfiles'
+    import {
+        DefaultLabelStyle,
+        EdgeRouter,
+        EdgeRouterScope,
+        Font,
+        GraphComponent,
+        GraphEditorInputMode, GraphSnapContext,
+        GraphViewerInputMode, GridSnapTypes, IEdge, INode,
+        LabelSnapContext,
+        LayoutExecutor,
+        License,
+        OrthogonalEdgeEditingContext,
+        PolylineEdgeRouterData,
+        Size
+    } from 'yfiles'
     // Custom components
     import DemoToolbar from '../DemoToolbar'
     import PropertyPanel from "../PropertyPanel";
@@ -35,10 +49,12 @@
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/models/UMLClassModel";
-    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses, registerCommands} from "./EditorUtils";
+    import {addEdgeStyleToEdges, addNodeStyleToNodes, executeLayout, getEdgesFromReferences, getInputMode, getNodesFromClasses, registerCommands, routeEdgesAtSelectedNodes} from "./EditorUtils";
     import {UMLEdgeStyle} from "../../uml/edges/styles/UMLEdgeStyle";
     import * as umlEdgeModel from "../../uml/edges/UMLEdgeModel";
     import {getDefaultGraph} from "../../utils/RESTApi";
+    import {configureDndInputMode} from "../dnd/DndUtils";
+    import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
 
     License.value = licenseData
 
@@ -83,7 +99,7 @@
             initGraphComponent() {
                 return new Promise((resolve, reject) => {
                     this.$graphComponent = new GraphComponent(this.$refs.GraphComponentElement);
-                    this.$graphComponent.inputMode = getInputMode(this.$graphComponent);
+                    this.$graphComponent.inputMode = this.getInputMode(this.$graphComponent);
                     this.initializeDefaultStyles();
 
                     // Load graph from definition
@@ -164,6 +180,73 @@
                     });
                     graph.addLabel(tempEdge, edge.name)
                 });
+            },
+
+            getInputMode(graphComponent) {
+                const mode = new GraphEditorInputMode({
+                    orthogonalEdgeEditingContext: new OrthogonalEdgeEditingContext(),
+                    allowAddLabel: false,
+                    allowGroupingOperations: false,
+                    allowCreateNode: false,
+                    labelSnapContext: new LabelSnapContext({
+                        enabled: false
+                    }),
+                    nodeDropInputMode: configureDndInputMode(graphComponent.graph),
+                    snapContext: new GraphSnapContext({
+                        nodeToNodeDistance: 30,
+                        nodeToEdgeDistance: 20,
+                        snapOrthogonalMovement: false,
+                        snapDistance: 10,
+                        snapSegmentsToSnapLines: true,
+                        snapBendsToSnapLines: true,
+                        gridSnapType: GridSnapTypes.ALL,
+                        enabled: false
+                    })
+                });
+
+                // add input mode that handles the edge creations buttons
+                const umlContextButtonsInputMode = new UMLContextButtonsInputMode()
+                umlContextButtonsInputMode.priority = mode.clickInputMode.priority - 1
+                mode.add(umlContextButtonsInputMode)
+
+                // execute a layout after certain gestures
+                mode.moveInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
+                mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
+
+                // hide the edge creation buttons when the empty canvas was clicked
+                mode.addCanvasClickedListener((src, args) => {
+                    graphComponent.currentItem = null;
+                    // closePropertyPanel();
+                });
+
+                // the UMLNodeStyle should handle clicks itself
+                mode.addItemClickedListener((src, args) => {
+                    if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
+                        args.item.style.nodeClicked(src, args);
+                        // openPropertyPanel();
+                    } else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
+                        // openPropertyPanel();
+                    }
+                });
+
+                return mode
+            },
+
+            routeEdgesAtSelectedNodes(src, args) {
+                const edgeRouter = new EdgeRouter()
+                edgeRouter.minimumNodeToEdgeDistance = 100 //Distance increased
+                edgeRouter.scope = EdgeRouterScope.ROUTE_EDGES_AT_AFFECTED_NODES
+
+                const layoutExecutor = new LayoutExecutor({
+                    graphComponent: this.$graphComponent,
+                    layout: edgeRouter,
+                    layoutData: new PolylineEdgeRouterData({
+                        affectedNodes: node => this.$graphComponent.selection.selectedNodes.isSelected(node)
+                    }),
+                    duration: '0.5s',
+                    updateContentRect: false
+                })
+                layoutExecutor.start()
             },
 
             /**
