@@ -1,21 +1,21 @@
 <template>
-    <div v-if="tag">
-        <h1 class="property-panel-header">Property Panel</h1>
-        <div class="property-panel-content">
-          <md-field>
-            <label>Type here!</label>
-            <md-input v-model="tag.name"></md-input>
-          </md-field>
-        </div>
-    </div>
+        <md-content v-if="tag" class="md-scrollbar">
+            <h1 class="property-panel-header">Property Panel</h1>
+            <div class="property-panel-content">
+                <md-field>
+                    <label>Name</label>
+                    <md-input v-model="tag.name"></md-input>
+                </md-field>
+            </div>
+        </md-content>
 </template>
 
 <script>
     export default {
         name: 'PropertyPanel',
         watch: {
-            tag: function(newVal, oldVal) { // watch it
-                console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+            tag: function (newVal, oldVal) { // watch it
+                //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
             }
         },
         methods: {},

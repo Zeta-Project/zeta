@@ -172,7 +172,7 @@ export function getGroupId(edge, marker) {
  * @returns {*}
  */
 export function getNodesFromClasses(graph, classes) {
-    return classes.map((node, index) => {
+    return classes.map(node => {
         const attributes = node.attributes.map(attribute => new Attribute(attribute));
         const methods = node.methods.map(method => {
             const parameters = method.parameters.map(parameter => new Parameter(parameter));
@@ -187,12 +187,6 @@ export function getNodesFromClasses(graph, classes) {
 
         return {
             ...node,
-            layout: {
-                x: (index*19) + 595.5,
-                y: (index*19) + 43.79999542236334,
-                width: 40,
-                height: 40
-            },
             attributes: attributes,
             methods: methods
         };
@@ -243,12 +237,12 @@ export function getEdgesFromReferences(graph, references, nodes) {
     // Filter all relevant references
     // Remove all references that don't have a target AND source
     references.filter(reference => {
-        return nodes.some(node => (node.style.model.className === reference.sourceClassName) || (node.style.model.className === reference.targetClassName))
+        return nodes.some(node => (node.tag.name === reference.sourceClassName) || (node.tag.name === reference.targetClassName))
     });
     // Transform references to Zeta specific EdgeModels
     return references.map(reference => {
-        const source = nodes.find(node => node.style.model.className === reference.sourceClassName);
-        const target = nodes.find(node => node.style.model.className === reference.targetClassName);
+        const source = nodes.find(node => node.tag.name === reference.sourceClassName);
+        const target = nodes.find(node => node.tag.name === reference.targetClassName);
         const model = new umlEdgeModel.UMLEdgeModel({
             name: reference.name,
             description: reference.description,

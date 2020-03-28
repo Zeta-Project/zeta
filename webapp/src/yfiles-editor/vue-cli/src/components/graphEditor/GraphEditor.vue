@@ -19,7 +19,7 @@
         >
         </aside>
         <aside
-                class="property-panel"
+                class="md-scrollbar property-panel"
                 v-show="selectedItem !== null && isEditEnabled"
         >
             <PropertyPanel
@@ -171,7 +171,8 @@
              */
             plotDefaultGraph(concept) {
                 const graphNodes = this.plotNodes(concept);
-                //this.plotEdges(concept, graphNodes);
+                console.log(concept)
+                this.plotEdges(concept, graphNodes);
                 this.$graphComponent.fitGraphBounds();
             },
 
@@ -186,18 +187,14 @@
                 const graph = this.$graphComponent.graph;
                 // At this point nodes are only models and style
                 let nodes = getNodesFromClasses(graph, concept.classes);
-                // nodes = addNodeStyleToNodes(NodeConstructor, [nodes[1], nodes[1]]);
-                // Append nodes to actual graph at which point they can be referenced by edges.
-                //const graphNodes = nodes.map(node => graph.createNode({style: node.style}));
-                /*graph.nodes.forEach(node => {
-                    if (node.style instanceof UMLNodeStyle) {
-                        node.style.adjustSize(node, this.$graphComponent.inputMode)
-                    }
-                });*/
-                //return graphNodes;
+                // Create nodes that can be appended to the do by the builder
+                const graphNodes = nodes.map(node => graph.createNode({
+                    tag: node,
+                    style: new VuejsNodeStyle(NodeConstructor)
+                }));
 
                 const treeBuilder = new TreeBuilder({
-                    graph,
+                    graphNodes,
                     childBinding: 'subordinates',
                     nodesSource: nodes
                 })
@@ -206,7 +203,8 @@
                 treeBuilder.graph.nodeDefaults.style = graph.nodeDefaults.style
                 treeBuilder.graph.nodeDefaults.size = graph.nodeDefaults.size
                 treeBuilder.graph.edgeDefaults.style = graph.edgeDefaults.style
-                return treeBuilder.buildGraph()
+                treeBuilder.buildGraph()
+                return graphNodes
             },
 
             /**
@@ -241,12 +239,13 @@
                 mode.moveInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
                 mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
                 mode.addCanvasClickedListener((src, args) => this.handleCanvasClicked(src, args));
-                mode.addItemClickedListener((src, args) => this.handleItemClicked(src, args))
+                //mode.addItemClickedListener((src, args) => this.handleItemClicked(src, args))
                 // Configure input mode for dndPanel actions
                 mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
                 this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS
                 this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
-                    this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem.tag)
+                    if (this.$graphComponent.focusIndicatorManager.focusedItem)
+                        this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem.tag)
                 })
 
                 return mode
@@ -293,7 +292,8 @@
             },
 
             handleCanvasClicked(src, args) {
-                console.log("srasdfdsf")
+                this.sharedData.focusedNodeData = null;
+                this.selectedItem = null;
             },
 
             /**

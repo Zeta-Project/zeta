@@ -27,200 +27,97 @@
  **
  ***************************************************************************/
 import {
-  DefaultLabelStyle,
-  Fill, Font, FontStyle, HorizontalTextAlignment,
-  INode,
-  InteriorStretchLabelModel,
-  InteriorStretchLabelModelPosition,
-  IRenderContext,
-  NodeStyleBase,
-  ShapeNodeStyle,
-  SimpleLabel,
-  SimpleNode, Size,
-  SolidColorFill,
-  Stroke,
-  SvgVisual,
-  VerticalTextAlignment
+    DefaultLabelStyle,
+    Fill, Font, FontStyle, HorizontalTextAlignment,
+    INode, Insets,
+    InteriorStretchLabelModel,
+    InteriorStretchLabelModelPosition,
+    IRenderContext,
+    NodeStyleBase, Rect,
+    ShapeNodeStyle,
+    SimpleLabel,
+    SimpleNode, Size,
+    SolidColorFill,
+    Stroke,
+    SvgVisual, TextRenderSupport,
+    VerticalTextAlignment
 } from 'yfiles'
 import {UMLClassModel} from "../uml/nodes/UMLClassModel";
+
+// additional spacing after certain elements
+const VERTICAL_SPACING = 2
+
+// empty space before the text elements
+const LEFT_SPACING = 25
 
 /**
  * A node style which uses a Vuejs component to display a node.
  */
 export default class VuejsNodeStyle extends NodeStyleBase {
-  /**
-   * Creates a new instance of the UML node style.
-   * @param {UMLClassModel?} model The UML data that should be visualization by this style
-   * @param {Fill?} fill The background fill of the header sections.
-   * @param {Fill?} highlightFill The background fill of the selected entry.
-   */
-  constructor(vueComponentConstructor, model, fill, highlightFill) {
-    super()
-    this.$vueComponentConstructor = vueComponentConstructor;
-    this.$model = model || new UMLClassModel()
-    this.$fill = fill || new SolidColorFill(0x60, 0x7d, 0x8b)
-    this.$highlightFill = highlightFill || new SolidColorFill(0xa3, 0xf1, 0xbb)
-    this.initializeStyles()
-  }
+    /**
+     * Creates a new instance of the UML node style.
+     * @param vueComponentConstructor: constructor of a vue js node
+     * @param {Fill?} fill The background fill of the header sections.
+     * @param {Fill?} highlightFill The background fill of the selected entry.
+     */
+    constructor(vueComponentConstructor, fill, highlightFill) {
+        super()
+        this.$vueComponentConstructor = vueComponentConstructor;
+    }
 
-  /**
-   * Gets the UML data of this style.
-   * @returns {UMLClassModel}
-   */
-  get model() {
-    return this.$model
-  }
+    /**
+     * Creates a visual that uses a Vuejs component to display a node.
+     * @see Overrides {@link LabelStyleBase#createVisual}
+     * @param {IRenderContext} context
+     * @param {INode} node
+     * @return {SvgVisual}
+     */
+    createVisual(context, node) {
+        // create the Vue component
+        const component = new this.$vueComponentConstructor()
+        // Populate it with the node data.
+        // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
+        // changes.
+        component.$props.tag = node.tag
+        component.$data.zoom = context.zoom
+        // mount the component without passing in a DOM element
+        component.$mount()
 
-  /**
-   * Sets the UML data for this style.
-   * @param {UMLClassModel} model
-   */
-  set model(model) {
-    this.$model = model
-  }
+        const svgElement = component.$el
 
-  /**
-   * Creates a visual that uses a Vuejs component to display a node.
-   * @see Overrides {@link LabelStyleBase#createVisual}
-   * @param {IRenderContext} context
-   * @param {INode} node
-   * @return {SvgVisual}
-   */
-  createVisual(context, node) {
-    console.log(context, node)
-    // create the Vue component
-    const component = new this.$vueComponentConstructor()
-    // Populate it with the node data.
-    // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
-    // changes.
-    component.$props.tag = node.tag
-    component.$data.zoom = context.zoom
-    // mount the component without passing in a DOM element
-    component.$mount()
+        // set the location
+        SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
 
-    const svgElement = component.$el
+        // save the component instance with the DOM element so we can retrieve it later
+        svgElement['data-vueComponent'] = component
 
-    console.log(node)
-    // set the location
-    SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
+        // return an SvgVisual that uses the DOM element of the component
+        const svgVisual = new SvgVisual(svgElement)
+        context.setDisposeCallback(svgVisual, (context, visual) => {
+            // clean up vue component instance after the visual is disposed
+            visual.svgElement['data-vueComponent'].$destroy()
+        })
+        return svgVisual
+    }
 
-    // save the component instance with the DOM element so we can retrieve it later
-    svgElement['data-vueComponent'] = component
+    /**
+     * Updates the visual by returning the old visual, as Vuejs handles updating the component.
+     * @see Overrides {@link LabelStyleBase#updateVisual}
+     * @param {IRenderContext} context
+     * @param {SvgVisual} oldVisual
+     * @param {INode} node
+     * @return {SvgVisual}
+     */
+    updateVisual(context, oldVisual, node) {
+        const svgElement = oldVisual.svgElement
 
-    // return an SvgVisual that uses the DOM element of the component
-    const svgVisual = new SvgVisual(svgElement)
-    context.setDisposeCallback(svgVisual, (context, visual) => {
-      // clean up vue component instance after the visual is disposed
-      visual.svgElement['data-vueComponent'].$destroy()
-    })
-    return svgVisual
-  }
-
-  /**
-   * Updates the visual by returning the old visual, as Vuejs handles updating the component.
-   * @see Overrides {@link LabelStyleBase#updateVisual}
-   * @param {IRenderContext} context
-   * @param {SvgVisual} oldVisual
-   * @param {INode} node
-   * @return {SvgVisual}
-   */
-  updateVisual(context, oldVisual, node) {
-    const svgElement = oldVisual.svgElement
-
-    // Update the location
-    SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
-    // the zoom property is a primitive value, so we must update it manually on the component
-    svgElement['data-vueComponent'].$data.zoom = context.zoom
-    // set the focused property of each component
-    svgElement['data-vueComponent'].$data.focused =
-      context.canvasComponent.focusIndicatorManager.focusedItem === node
-    return oldVisual
-  }
-
-  /**
-   * Helper method to initialize the dummy styles and label models that are used to build the UML node style.
-   * @private
-   */
-  initializeStyles() {
-    this.dummyNode = new SimpleNode()
-    const stroke = new Stroke({
-      fill: this.$fill,
-      thickness: 2
-    })
-    stroke.freeze()
-    this.dummyNode.style = new ShapeNodeStyle({ stroke })
-
-    this.backgroundStyle = new DefaultLabelStyle({
-      backgroundFill: this.$fill
-    })
-
-    this.stretchLabelModel = new InteriorStretchLabelModel()
-
-    // initialize the category label visualization
-    this.categoryLabel = new SimpleLabel(
-        this.dummyNode,
-        '',
-        this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-    )
-    this.categoryLabel.style = new DefaultLabelStyle({
-      textFill: Fill.WHITE,
-      verticalTextAlignment: VerticalTextAlignment.CENTER
-    })
-    this.categoryLabel.preferredSize = new Size(1, 20)
-
-    // initialize the element label visualization
-    this.elementLabel = new SimpleLabel(
-        this.dummyNode,
-        '',
-        this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-    )
-    this.elementLabel.style = new DefaultLabelStyle({
-      verticalTextAlignment: VerticalTextAlignment.CENTER
-    })
-    this.elementLabel.preferredSize = new Size(1, 16)
-
-    // initialize the class label visualization
-    this.classLabel = new SimpleLabel(
-        this.dummyNode,
-        '',
-        this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-    )
-    this.classLabel.style = new DefaultLabelStyle({
-      textFill: Fill.WHITE,
-      horizontalTextAlignment: HorizontalTextAlignment.CENTER,
-      verticalTextAlignment: VerticalTextAlignment.CENTER
-    })
-    this.classLabel.preferredSize = new Size(1, 50)
-
-    // initialize the stereotype label visualization
-    this.stereotypeLabel = new SimpleLabel(
-        this.dummyNode,
-        '',
-        this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-    )
-    this.stereotypeLabel.style = new DefaultLabelStyle({
-      textFill: Fill.WHITE,
-      horizontalTextAlignment: HorizontalTextAlignment.CENTER,
-      font: new Font({
-        fontStyle: FontStyle.ITALIC,
-        fontSize: 10
-      })
-    })
-
-    // initialize the constraint label visualization
-    this.constraintLabel = new SimpleLabel(
-        this.dummyNode,
-        '',
-        this.stretchLabelModel.createParameter(InteriorStretchLabelModelPosition.NORTH)
-    )
-    this.constraintLabel.style = new DefaultLabelStyle({
-      textFill: Fill.WHITE,
-      horizontalTextAlignment: HorizontalTextAlignment.CENTER,
-      verticalTextAlignment: VerticalTextAlignment.BOTTOM,
-      font: new Font({
-        fontStyle: FontStyle.ITALIC,
-        fontSize: 10
-      })
-    })
-  }
+        // Update the location
+        SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
+        // the zoom property is a primitive value, so we must update it manually on the component
+        svgElement['data-vueComponent'].$data.zoom = context.zoom
+        // set the focused property of each component
+        svgElement['data-vueComponent'].$data.focused =
+            context.canvasComponent.focusIndicatorManager.focusedItem === node
+        return oldVisual
+    }
 }

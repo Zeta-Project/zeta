@@ -106,10 +106,10 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     container.appendChild(abstractButton)
 
     // visualize the button state
-    if (this.node.style.model.stereotype === 'interface') {
+    if (this.node.tag.stereotype === 'interface') {
       interfaceButton.setAttribute('class', 'interface-toggle toggled')
     }
-    if (this.node.style.model.constraint === 'abstract') {
+    if (this.node.tag.constraint === 'abstract') {
       abstractButton.setAttribute('class', 'abstract-toggle toggled')
     }
 
@@ -128,8 +128,8 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     container['data-renderDataCache'] = {
       width: layout.width,
       height: layout.height,
-      interfaceToggle: this.node.style.model.stereotype,
-      constraintToggle: this.node.style.model.constraint
+      interfaceToggle: this.node.tag.stereotype,
+      constraintToggle: this.node.tag.constraint
     }
 
     return new SvgVisual(container)
@@ -165,7 +165,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     }
 
     // update the button state if they have changed
-    if (cache.interfaceToggle !== this.node.style.model.stereotype) {
+    if (cache.interfaceToggle !== this.node.tag.stereotype) {
       interfaceButton.setAttribute(
         'class',
         this.node.style.model.stereotype.length > 0
@@ -174,12 +174,12 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
       )
       cache.interfaceToggle = this.node.style.model.stereotype
     }
-    if (cache.constraintToggle !== this.node.style.model.constraint) {
+    if (cache.constraintToggle !== this.node.tag.constraint) {
       abstractButton.setAttribute(
         'class',
-        this.node.style.model.constraint.length > 0 ? 'abstract-toggle toggled' : 'abstract-toggle'
+          this.node.tag.constraint.length > 0 ? 'abstract-toggle toggled' : 'abstract-toggle'
       )
-      cache.constraintToggle = this.node.style.model.constraint
+      cache.constraintToggle = this.node.tag.constraint
     }
 
     return oldVisual

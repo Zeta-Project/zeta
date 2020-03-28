@@ -1,5 +1,5 @@
 <template>
-    <g v-if="tag" class="vue-node-style-node">
+    <g v-if="tag" class="vue-node-style-node uml-node">
         <rect fill="#C0C0C0" width="285" height="100" transform="translate(2 2)"></rect>
         <rect fill="#FFFFFF" stroke="#C0C0C0" width="285" height="100"></rect>
         <rect width="285" height="2" :fill="statusColor"></rect>
@@ -13,11 +13,19 @@
         </g>
         <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: '#444' }">
             <text :transform="zoom >= 1 ? 'translate(100 25)' : 'translate(75 40)'" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: '#336699' }">{{tag.name}}</text>
-            <text :transform="zoom >= 1 ? 'translate(100 45)' : 'translate(75 70)'" style="text-transform: uppercase; font-weight: 400">{{positionFirstLine}}</text>
+            <text :transform="zoom >= 1 ? 'translate(100 45)' : 'translate(75 70)'" style="text-transform: uppercase; font-weight: 400">{{tag.name}}</text>
             <text :transform="zoom >= 1 ? 'translate(100 57)' : 'translate(75 90)'" style="text-transform: uppercase; font-weight: 400">{{positionSecondLine}}</text>
             <text v-show="zoom >= 1" transform="translate(100 72)">{{tag.email}}</text>
             <text v-show="zoom >= 1" transform="translate(100 88)">{{tag.phone}}</text>
             <text v-show="zoom >= 1" transform="translate(170 88)">{{tag.fax}}</text>
+            <text
+                    v-show="zoom >= 1"
+                    v-if="tag.attributes"
+                    v-for="attribute in tag.attributes"
+                    transform="translate(170 88)"
+            >
+                {{attribute.name}}
+            </text>
         </g>
     </g>
 </template>
@@ -32,11 +40,11 @@
 
     export default {
         name: 'node',
-        data: function() {
-           return {
-               zoom: 1,
-               focused: false
-           }
+        data: function () {
+            return {
+                zoom: 1,
+                focused: false
+            }
         },
         // the node tag is passed as a prop
         props: ['tag'],
