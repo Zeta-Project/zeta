@@ -39,6 +39,7 @@ import {Parameter} from "../../uml/parameters/Parameter";
 import {Operation} from "../../uml/operations/Operation";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
 import {configureDndInputMode} from "../dndPanel/DndUtils";
+import VuejsNodeStyle from "../VuejsNodeStyle";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
@@ -171,7 +172,7 @@ export function getGroupId(edge, marker) {
  * @returns {*}
  */
 export function getNodesFromClasses(graph, classes) {
-    return classes.map(node => {
+    return classes.map((node, index) => {
         const attributes = node.attributes.map(attribute => new Attribute(attribute));
         const methods = node.methods.map(method => {
             const parameters = method.parameters.map(parameter => new Parameter(parameter));
@@ -186,6 +187,12 @@ export function getNodesFromClasses(graph, classes) {
 
         return {
             ...node,
+            layout: {
+                x: (index*19) + 595.5,
+                y: (index*19) + 43.79999542236334,
+                width: 40,
+                height: 40
+            },
             attributes: attributes,
             methods: methods
         };
@@ -197,9 +204,10 @@ export function getNodesFromClasses(graph, classes) {
  * @param nodes: list of nodes
  * @returns {*}
  */
-export function addNodeStyleToNodes(nodes) {
+export function addNodeStyleToNodes(vuejsComponent, nodes) {
     return nodes.map(node => {
-        let style = new UMLNodeStyle(
+        let style = new VuejsNodeStyle(
+            vuejsComponent,
             new umlModel.UMLClassModel({
                 className: node.name,
                 description: node.description,
@@ -210,11 +218,11 @@ export function addNodeStyleToNodes(nodes) {
             })
         );
 
-        if (node.abstractness === true) {
+        /*if (node.abstractness === true) {
             style.model.constraint = 'abstract';
             style.model.stereotype = '';
             style.fill = Fill.CRIMSON;
-        }
+        }*/
 
         return {
             ...node,

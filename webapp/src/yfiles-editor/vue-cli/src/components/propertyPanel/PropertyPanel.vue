@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div v-if="tag">
         <h1 class="property-panel-header">Property Panel</h1>
         <div class="property-panel-content">
           <md-field>
             <label>Type here!</label>
-            <md-input></md-input>
+            <md-input v-model="tag.name"></md-input>
           </md-field>
         </div>
     </div>
@@ -13,26 +13,17 @@
 <script>
     export default {
         name: 'PropertyPanel',
-        data: function () {
-            return {
-
-            }
-        },
         watch: {
-            item: function(newVal, oldVal) { // watch it
+            tag: function(newVal, oldVal) { // watch it
                 console.log('Prop changed: ', newVal, ' | was: ', oldVal)
             }
         },
         methods: {},
         props: {
-            item: {
+            tag: {
                 validator: prop => typeof prop === 'object' || prop === null,
-                required: true,
-            },
-            isOpen: {
-                type: Boolean,
                 required: true
-            },
+            }
         }
     }
 </script>

@@ -17,13 +17,6 @@
                 @mouseleave="isDndExpanded && toggleDnd()"
                 v-show="isEditEnabled"
         >
-            <DndPanel
-                    v-if="graphComponent"
-                    :graph-component="graphComponent"
-                    :is-expanded="isDndExpanded"
-                    :passiveSupported="true"
-                    title="Drag and Drop"
-            />
         </aside>
         <aside
                 class="property-panel"
@@ -32,6 +25,7 @@
             <PropertyPanel
                     :item="selectedItem"
                     :is-open="selectedItem != null"
+                    :tag="sharedData.focusedNodeData"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -39,12 +33,13 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import licenseData from '../../../../../../../../yFiles-for-html/lib/license.json'
     import {
         DefaultLabelStyle,
         EdgeRouter,
         EdgeRouterScope,
-        Font,
+        Font, GraphBuilder,
         GraphComponent,
         GraphEditorInputMode, GraphSnapContext,
         GraphViewerInputMode, GridSnapTypes,
@@ -54,13 +49,15 @@
         LayoutExecutor,
         License,
         OrthogonalEdgeEditingContext,
-        PolylineEdgeRouterData,
-        Size
+        PolylineEdgeRouterData, Rect,
+        Size, TreeBuilder,
+        ShowFocusPolicy
     } from 'yfiles'
     // Custom components
     import Toolbar from '../toolbar/Toolbar'
     import PropertyPanel from "../propertyPanel/PropertyPanel";
     import DndPanel from "../dndPanel/DndPanel"
+    import Node from "../Node"
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/nodes/UMLClassModel";
@@ -71,6 +68,7 @@
     import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../../../layout/grid/Grid";
+    import VuejsNodeStyle from "../VuejsNodeStyle";
 
     License.value = licenseData
 
@@ -79,7 +77,8 @@
         components: {
             Toolbar,
             PropertyPanel,
-            DndPanel
+            //DndPanel,
+            Node
         },
         mounted() {
             this.initGraphComponent().then(response => {
@@ -98,7 +97,8 @@
                 isEditEnabled: false,
                 isDndExpanded: false,
                 grid: null,
-                selectedItem: null
+                selectedItem: null,
+                sharedData: {focusedNodeData: null}
             }
         },
         computed: {
@@ -144,10 +144,11 @@
              * Sets default styles for the graph.
              */
             initializeDefaultStyles() {
+                const NodeConstructor = Vue.extend(Node);
                 this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
-                this.$graphComponent.graph.nodeDefaults.style = new UMLNodeStyle(new umlModel.UMLClassModel());
+                this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor)
                 this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
-                this.$graphComponent.graph.nodeDefaults.size = new Size(125, 100);
+                this.$graphComponent.graph.nodeDefaults.size = new Size(285, 100)
                 this.$graphComponent.graph.nodeDefaults.labels.style = new DefaultLabelStyle({
                     textFill: '#fff',
                     font: new Font('Robot, sans-serif', 14)
@@ -170,7 +171,7 @@
              */
             plotDefaultGraph(concept) {
                 const graphNodes = this.plotNodes(concept);
-                this.plotEdges(concept, graphNodes);
+                //this.plotEdges(concept, graphNodes);
                 this.$graphComponent.fitGraphBounds();
             },
 
@@ -179,19 +180,33 @@
              * @param concept: concept definition
              **/
             plotNodes(concept) {
+                // Get the node constructor from the node component
+                const NodeConstructor = Vue.extend(Node);
+                // Get the graph from graph component
                 const graph = this.$graphComponent.graph;
-
                 // At this point nodes are only models and style
                 let nodes = getNodesFromClasses(graph, concept.classes);
-                nodes = addNodeStyleToNodes(nodes);
+                // nodes = addNodeStyleToNodes(NodeConstructor, [nodes[1], nodes[1]]);
                 // Append nodes to actual graph at which point they can be referenced by edges.
-                const graphNodes = nodes.map(node => graph.createNode({style: node.style}));
-                graph.nodes.forEach(node => {
+                //const graphNodes = nodes.map(node => graph.createNode({style: node.style}));
+                /*graph.nodes.forEach(node => {
                     if (node.style instanceof UMLNodeStyle) {
                         node.style.adjustSize(node, this.$graphComponent.inputMode)
                     }
-                });
-                return graphNodes;
+                });*/
+                //return graphNodes;
+
+                const treeBuilder = new TreeBuilder({
+                    graph,
+                    childBinding: 'subordinates',
+                    nodesSource: nodes
+                })
+
+                // use the VuejsNodeStyle, which uses a Vue component to display nodes
+                treeBuilder.graph.nodeDefaults.style = graph.nodeDefaults.style
+                treeBuilder.graph.nodeDefaults.size = graph.nodeDefaults.size
+                treeBuilder.graph.edgeDefaults.style = graph.edgeDefaults.style
+                return treeBuilder.buildGraph()
             },
 
             /**
@@ -229,6 +244,10 @@
                 mode.addItemClickedListener((src, args) => this.handleItemClicked(src, args))
                 // Configure input mode for dndPanel actions
                 mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
+                this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS
+                this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
+                    this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem.tag)
+                })
 
                 return mode
             },
@@ -268,20 +287,13 @@
             /**
              * Handles the item click action. Used as a callback for a item-clicked-event.
              */
-            handleItemClicked(src, args) {
-                if (INode.isInstance(args.item) && args.item.style instanceof UMLNodeStyle) {
-                    args.item.style.nodeClicked(src, args);
-                    this.selectedItem = args.item
-                    this.$graphComponent.currentItem = args.item;
-                } else if (IEdge.isInstance(args.item) && args.item.style instanceof UMLEdgeStyle) {
-                    this.$graphComponent.currentItem = args.item;
-                    this.selectedItem = args.item
-                }
+            handleItemClicked(tag) {
+                this.sharedData.focusedNodeData = tag;
+                this.selectedItem = tag;
             },
 
             handleCanvasClicked(src, args) {
-                this.$graphComponent.currentItem = null;
-                this.selectedItem = null
+                console.log("srasdfdsf")
             },
 
             /**
