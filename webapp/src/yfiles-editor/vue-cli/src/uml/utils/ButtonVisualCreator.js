@@ -105,6 +105,7 @@ export default class ButtonVisualCreator extends BaseClass(IVisualCreator) {
     container.appendChild(interfaceButton)
     container.appendChild(abstractButton)
 
+    console.log(this.node)
     // visualize the button state
     if (this.node.tag.stereotype === 'interface') {
       interfaceButton.setAttribute('class', 'interface-toggle toggled')

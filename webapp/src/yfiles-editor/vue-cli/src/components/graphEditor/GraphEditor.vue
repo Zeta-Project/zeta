@@ -17,6 +17,11 @@
                 @mouseleave="isDndExpanded && toggleDnd()"
                 v-show="isEditEnabled"
         >
+            <DndPanel
+                    v-if="graphComponent"
+                    :graph-component="graphComponent"
+                    :is-expanded="isDndExpanded"
+                    :passive-supported="true"/>
         </aside>
         <aside
                 class="md-scrollbar property-panel"
@@ -77,7 +82,7 @@
         components: {
             Toolbar,
             PropertyPanel,
-            //DndPanel,
+            DndPanel,
             Node
         },
         mounted() {
@@ -171,7 +176,6 @@
              */
             plotDefaultGraph(concept) {
                 const graphNodes = this.plotNodes(concept);
-                console.log(concept)
                 this.plotEdges(concept, graphNodes);
                 this.$graphComponent.fitGraphBounds();
             },
@@ -185,9 +189,9 @@
                 const NodeConstructor = Vue.extend(Node);
                 // Get the graph from graph component
                 const graph = this.$graphComponent.graph;
-                // At this point nodes are only models and style
+                // Map data from the concept to uml classes
                 let nodes = getNodesFromClasses(graph, concept.classes);
-                // Create nodes that can be appended to the do by the builder
+                // Create nodes that can be appended to the graph by the builder
                 const graphNodes = nodes.map(node => graph.createNode({
                     tag: node,
                     style: new VuejsNodeStyle(NodeConstructor)
@@ -204,6 +208,9 @@
                 treeBuilder.graph.nodeDefaults.size = graph.nodeDefaults.size
                 treeBuilder.graph.edgeDefaults.style = graph.edgeDefaults.style
                 treeBuilder.buildGraph()
+                /*graph.nodes.forEach(node => {
+                    node.style.adjustSize(node, this.$graphComponent.inputMode)
+                })*/
                 return graphNodes
             },
 

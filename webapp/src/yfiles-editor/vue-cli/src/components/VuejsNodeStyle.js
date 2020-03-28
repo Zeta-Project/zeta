@@ -26,29 +26,8 @@
  ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **
  ***************************************************************************/
-import {
-    DefaultLabelStyle,
-    Fill, Font, FontStyle, HorizontalTextAlignment,
-    INode, Insets,
-    InteriorStretchLabelModel,
-    InteriorStretchLabelModelPosition,
-    IRenderContext,
-    NodeStyleBase, Rect,
-    ShapeNodeStyle,
-    SimpleLabel,
-    SimpleNode, Size,
-    SolidColorFill,
-    Stroke,
-    SvgVisual, TextRenderSupport,
-    VerticalTextAlignment
-} from 'yfiles'
-import {UMLClassModel} from "../uml/nodes/UMLClassModel";
+import {Fill, INode, IRenderContext, NodeStyleBase, Rect, Size, SvgVisual} from 'yfiles'
 
-// additional spacing after certain elements
-const VERTICAL_SPACING = 2
-
-// empty space before the text elements
-const LEFT_SPACING = 25
 
 /**
  * A node style which uses a Vuejs component to display a node.
@@ -119,5 +98,54 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         svgElement['data-vueComponent'].$data.focused =
             context.canvasComponent.focusIndicatorManager.focusedItem === node
         return oldVisual
+    }
+
+    /**
+     * Adjusts the size of the given node considering UML data of the node. If the current node layout is bigger than
+     * the minimal needed size for the UML data then the current node layout will be used instead.
+     * @param {INode} node The node whose size should be adjusted.
+     * @param {GraphEditorInputMode} geim The responsible input mode.
+     */
+    adjustSize(node, geim) {
+        const layout = node.layout
+        const minSize = this.getPreferredSize(node)
+        const width = Math.max(minSize.width, layout.width)
+        const height = Math.max(minSize.height, layout.height)
+        // GEIM's setNodeLayout handles affected orthogonal edges automatically
+        geim.setNodeLayout(node, new Rect(layout.x, layout.y, width, height))
+        geim.graphComponent.invalidate()
+    }
+
+    /**
+     * Return the size of this node considering the associated UML data.
+     * @param {INode} node The node of which the size should be determined.
+     * @returns {Size} The preferred size of this node.
+     */
+    getPreferredSize(node) {
+        const data = node.tag
+        const entriesCount = Object.keys(data).length
+
+        // determine width
+        /*let width = 125
+        const elementFont = this.elementLabel.style.font
+        const elements = data.attributes.concat(data.operations)
+        elements.forEach(element => {
+            const size = TextRenderSupport.measureText(element.name, elementFont)
+            width = Math.max(width, size.width + LEFT_SPACING + 5)
+        })
+        const classNameSize = TextRenderSupport.measureText(data.className, this.classLabel.style.font)
+        width = Math.max(width, classNameSize.width)
+        const stereotypeSize = TextRenderSupport.measureText(
+            data.stereotype,
+            this.stereotypeLabel.style.font
+        )
+        width = Math.max(width, stereotypeSize.width)
+        const constraintSize = TextRenderSupport.measureText(
+            data.className,
+            this.constraintLabel.style.font
+        )
+        width = Math.max(width, constraintSize.width)*/
+
+        return new Size(100, 50)
     }
 }

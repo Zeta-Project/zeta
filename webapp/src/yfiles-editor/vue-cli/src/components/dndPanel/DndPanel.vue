@@ -22,15 +22,20 @@
         IStripe,
         LabelDropInputMode,
         ListEnumerable,
-        NodeDropInputMode,
+        NodeDropInputMode, NodeStyleBase,
         Point,
         PortDropInputMode,
-        Rect,
+        Rect, ShapeNodeStyle,
         SimpleNode,
         SvgExport,
         VoidNodeStyle
     } from "yfiles";
     import {addClass, removeClass} from "../../../../utils/Bindings";
+    import VuejsNodeStyle from "../VuejsNodeStyle";
+    import Vue from "vue";
+    import Node from "../Node";
+    import {getNodesFromClasses} from "../graphEditor/GraphEditorUtils";
+    import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
 
     export default {
         name: 'DndPanel',
@@ -52,10 +57,12 @@
              * Return panel items
              **/
             getPanelItems(graphComponent) {
+                const NodeConstructor = Vue.extend(Node);
                 // Create node and push them into the itemContainer
                 const Node1 = new SimpleNode();
                 Node1.layout = new Rect(0, 0, 150, 100);
-                Node1.style = graphComponent.graph.nodeDefaults.style;
+                // Set the style of the node in the dnd panel
+                Node1.style = new UMLNodeStyle();
                 return [{element: Node1, tooltip: 'Node'}]
             },
 
@@ -142,15 +149,13 @@
             createNodeVisual(original, graphComponent) {
                 const graph = graphComponent.graph
                 graph.clear()
-
                 const originalNode = INode.isInstance(original) ? original : original.element
-                const node = graph.createNode(
-                    new Rect(0, 0, 100, 50),
-                    // enable instead of new Rect to show the whole Node
-                    //originalNode.layout.toRect(),
-                    originalNode.style,
-                    originalNode.tag
-                )
+
+                // Create nodes that can be appended to the graph by the builder
+                const node = graph.createNode({
+                    style: originalNode.style,
+                    tag: originalNode.tag
+                })
                 originalNode.labels.forEach(label => {
                     graph.addLabel(
                         node,
@@ -225,6 +230,7 @@
                 exporter.scale = exporter.calculateScaleForWidth(
                     Math.min(this.maxItemWidth, graphComponent.contentRect.width)
                 )
+
                 const visual = exporter.exportSvg(graphComponent)
 
                 // Firefox does not display the SVG correctly because of the clip - so we remove it.
