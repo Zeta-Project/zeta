@@ -1,24 +1,97 @@
 <template>
-        <md-content v-if="tag" class="md-scrollbar">
-            <h1 class="property-panel-header">Property Panel</h1>
-            <div class="property-panel-content">
-                <md-field>
-                    <label>Name</label>
-                    <md-input v-model="tag.name"></md-input>
-                </md-field>
-            </div>
-        </md-content>
+    <div class="full-control" v-if="tag">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <div class="list">
+            <md-list :md-expand-single="expandSingle">
+                <md-list-item md-expand :md-expanded.sync="expandNews">
+                    <span class="md-list-item-text">Meta-Information</span>
+                    <md-list slot="md-expand">
+                        <md-list-item class="md-inset">
+                            <md-field>
+                                <label>Name</label>
+                                <md-input v-model="tag.name"></md-input>
+                            </md-field>
+                        </md-list-item>
+                        <md-list-item class="md-inset">
+                            <md-field>
+                                <label>Description</label>
+                                <md-input v-model="tag.description"></md-input>
+                            </md-field>
+                        </md-list-item>
+                        <md-list-item class="md-inset">
+                            <md-checkbox v-model="tag.stereotype" value="1">Is Abstract?</md-checkbox>
+                        </md-list-item>
+                    </md-list>
+                </md-list-item>
+
+                <md-list-item md-expand>
+                    <span class="md-list-item-text">Attributes</span>
+                    <md-list slot="md-expand">
+                        <md-list-item
+                                v-if="tag.attributes"
+                                v-for="(attribute, index) in tag.attributes"
+                                :key="`${tag.name}-properties-attributes-${index}`"
+                                class="md-inset"
+                        >
+                            <md-field>
+                                <label>Name</label>
+                                <md-input v-model="attribute.name"></md-input>
+                            </md-field>
+                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-attribute', attribute.name)">
+                                <md-icon
+                                        class="fa fa-trash"
+                                />
+                            </md-button>
+                        </md-list-item>
+                        <md-list-item class="md-inset">
+                            <md-button class="md-raised md-primary" @click="$emit('add-attribute', 'default')">Add Attribute</md-button>
+                        </md-list-item>
+                    </md-list>
+                </md-list-item>
+
+                <md-list-item md-expand>
+                    <span class="md-list-item-text">Operations</span>
+                    <md-list slot="md-expand">
+                        <md-list-item
+                                v-if="tag.methods"
+                                v-for="(method, index) in tag.methods"
+                                :key="`${tag.name}-properties-operations-${index}`"
+                                class="md-inset"
+                        >
+                            <md-field>
+                                <label>Name</label>
+                                <md-input v-model="method.name"></md-input>
+                            </md-field>
+                            <md-button class="md-icon-button md-dense md-primary" @click="$emit('delete-operation', method.name)">
+                                <md-icon
+                                        class="fa fa-trash"
+                                />
+                            </md-button>
+                        </md-list-item>
+                        <md-list-item class="md-inset">
+                            <md-button class="md-raised md-primary" @click="$emit('add-operation', 'default')">Add Operation</md-button>
+                        </md-list-item>
+                    </md-list>
+                </md-list-item>
+            </md-list>
+        </div>
+    </div>
 </template>
 
 <script>
     export default {
         name: 'PropertyPanel',
+        data: function () {
+            return {
+                expandNews: false,
+                expandSingle: false
+            }
+        },
         watch: {
             tag: function (newVal, oldVal) { // watch it
                 //console.log('Prop changed: ', newVal, ' | was: ', oldVal)
             }
         },
-        methods: {},
         props: {
             tag: {
                 validator: prop => typeof prop === 'object' || prop === null,
@@ -29,84 +102,30 @@
 </script>
 
 <style scoped>
-    .demo-toolbar > * {
-        vertical-align: middle;
+    .full-control {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap-reverse;
     }
 
-    .demo-toolbar button {
-        line-height: normal;
-        height: 24px;
+    .list {
+        width: 100%;
     }
 
-    .demo-toolbar button,
-    .demo-toolbar > label {
+    .full-control > .md-list {
+        width: 100%;
+        max-width: 100%;
+        height: 400px;
         display: inline-block;
-        outline: none;
-        border: none;
-        background-repeat: no-repeat;
-        background-position: 50% 50%;
-        background-color: transparent;
-        height: 24px;
-        width: 24px;
-        line-height: 24px;
-        box-sizing: border-box;
-        padding: 0;
-        cursor: pointer;
+        overflow: auto;
+        border: 1px solid;
+        vertical-align: top;
     }
 
-    .demo-toolbar button:hover,
-    .demo-toolbar > label:hover {
-        background-color: #dedede;
-    }
-
-    .demo-toggle-button {
-        display: none !important;
-    }
-
-    .demo-toggle-button:checked + label {
-        background-color: #dedede;
-    }
-
-    .demo-toggle-button:checked:hover + label {
-        background-color: #b2b2b2;
-    }
-
-    .demo-toggle-button:disabled + label {
-        opacity: 0.5;
-        cursor: default;
-        background-color: transparent;
-    }
-
-    .demo-toggle-button.labeled + label {
-        background-position-x: left;
-        width: inherit;
-        padding: 0 2px;
-        line-height: 24px;
-    }
-
-    .demo-toolbar button:active,
-    .demo-toolbar > label:active,
-    .demo-toolbar .demo-toggle-button:checked:active + label {
-        background-color: #b2b2b2;
-    }
-
-    .demo-toolbar button:disabled,
-    .demo-toolbar > .demo-toggle-button:disabled + label {
-        opacity: 0.5;
-        cursor: default;
-        background-color: transparent;
-    }
-
-    .demo-separator {
-        height: 20px;
-        width: 1px;
-        background: #999;
-        display: inline-block;
-        vertical-align: middle;
-        margin: 0 2px;
-    }
-
-    .demo-icon-yIconReload {
-        background-image: url('../../assets/reload-16.svg');
+    .control {
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
     }
 </style>

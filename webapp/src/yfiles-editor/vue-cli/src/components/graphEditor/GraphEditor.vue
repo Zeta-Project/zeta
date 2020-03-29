@@ -31,6 +31,10 @@
                     :item="selectedItem"
                     :is-open="selectedItem != null"
                     :tag="sharedData.focusedNodeData"
+                    @add-attribute="addAttribute"
+                    @delete-attribute="deleteAttribute"
+                    @add-operation="addOperation"
+                    @delete-operation="deleteOperation"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -334,6 +338,22 @@
             toggleDnd() {
                 this.isDndExpanded = !this.isDndExpanded;
                 this.$emit('on-toggle-dndPanel', this.isDndExpanded);
+            },
+
+            deleteAttribute(name){
+                this.sharedData.focusedNodeData.attributes = this.sharedData.focusedNodeData.attributes.filter(attribute => attribute.name !== name)
+            },
+
+            addAttribute(name){
+                this.sharedData.focusedNodeData.attributes = this.sharedData.focusedNodeData.attributes.concat({name: name})
+            },
+
+            deleteOperation(name){
+                this.sharedData.focusedNodeData.methods = this.sharedData.focusedNodeData.methods.filter(method => method.name !== name)
+            },
+
+            addOperation(name){
+                this.sharedData.focusedNodeData.methods = this.sharedData.focusedNodeData.methods.concat({name: name})
             }
         }
     }
