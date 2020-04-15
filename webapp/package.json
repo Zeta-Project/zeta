@@ -40,7 +40,7 @@
     "vue": "^2.6.10",
     "vue-material": "^1.0.0-beta-11",
     "webcomponents.js": "github:webcomponents/webcomponentsjs#0.7.24",
-    "yfiles": "../../yfiles-for-html/lib/es-modules",
+    "yfiles": "../../yFiles-for-html/lib/es-modules",
     "zxcvbn": "4.2.0"
   },
   "devDependencies": {

@@ -21,7 +21,7 @@
                     v-if="graphComponent"
                     :graph-component="graphComponent"
                     :is-expanded="isDndExpanded"
-                    :passive-supported="true"/>
+            :passive-supported="true"/>
         </aside>
         <aside
                 class="md-scrollbar property-panel"
@@ -30,11 +30,17 @@
             <PropertyPanel
                     :item="selectedItem"
                     :is-open="selectedItem != null"
-                    :tag="sharedData.focusedNodeData"
-                    @add-attribute="addAttribute"
-                    @delete-attribute="deleteAttribute"
-                    @add-operation="addOperation"
-                    @delete-operation="deleteOperation"
+                    :node="sharedData.focusedNodeData"
+                    :edge="sharedData.focusedEdgeData"
+                    @add-attribute-to-node="(node, attributeName) => addAttributeToNode(node, attributeName)"
+                    @add-operation-to-node="(node, operationName) => addOperationToNode(node, operationName)"
+                    @delete-attribute-from-node="(node, attributeName) => deleteAttributeFromNode(node, attributeName)"
+                    @delete-operation-from-node="(node, operationName) => deleteOperationFromNode(node, operationName)"
+
+                    @add-attribute-to-edge="(edge, attributeName) => addAttributeToEdge(edge, attributeName)"
+                    @add-operation-to-edge="(edge, operationName) => addOperationToEdge(edge, operationName)"
+                    @delete-attribute-from-edge="(edge, attributeName) => deleteAttributeFromEdge(edge, attributeName)"
+                    @delete-operation-from-edge="(edge, operationName) => deleteOperationFromEdge(edge, operationName)"
             />
         </aside>
         <div class="graph-component-container" ref="GraphComponentElement"></div>
@@ -66,7 +72,7 @@
     import Toolbar from '../toolbar/Toolbar'
     import PropertyPanel from "../propertyPanel/PropertyPanel";
     import DndPanel from "../dndPanel/DndPanel"
-    import Node from "../Node"
+    import Node from "../nodes/Node"
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/nodes/UMLClassModel";
@@ -77,7 +83,7 @@
     import {getDefaultDndInputMode} from "../dndPanel/DndUtils";
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../../../layout/grid/Grid";
-    import VuejsNodeStyle from "../VuejsNodeStyle";
+    import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 
     License.value = licenseData
 
@@ -107,7 +113,7 @@
                 isDndExpanded: false,
                 grid: null,
                 selectedItem: null,
-                sharedData: {focusedNodeData: null}
+                sharedData: {focusedNodeData: null, focusedEdgeData: null}
             }
         },
         computed: {
@@ -229,9 +235,10 @@
                 edges = addEdgeStyleToEdges(edges);
                 edges.forEach(edge => {
                     const tempEdge = graph.createEdge({
+                        tag: edge,
                         source: edge.source,
                         target: edge.target,
-                        style: edge.style
+                        style: edge.style, // Might be redundant,
                     });
                     graph.addLabel(tempEdge, edge.name)
                 });
@@ -249,20 +256,27 @@
                 // execute a layout after certain gestures
                 mode.moveInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
                 mode.handleInputMode.addDragFinishedListener((src, args) => this.routeEdgesAtSelectedNodes())
-                mode.addCanvasClickedListener((src, args) => this.handleCanvasClicked(src, args));
-                //mode.addItemClickedListener((src, args) => this.handleItemClicked(src, args))
+                mode.addCanvasClickedListener(() => this.handleCanvasClicked());
+                mode.addItemClickedListener((src, args) => {
+                    if(args.item.tag && args.item.style && args.item.style instanceof UMLEdgeStyle)
+                        this.handleItemClicked(args.item.tag, args.item.style)
+                }) // For edges only
                 // Configure input mode for dndPanel actions
                 mode.nodeDropInputMode = getDefaultDndInputMode(graphComponent.graph);
                 this.$graphComponent.focusIndicatorManager.showFocusPolicy = ShowFocusPolicy.ALWAYS
                 this.$graphComponent.focusIndicatorManager.addPropertyChangedListener(() => {
                     if (this.$graphComponent.focusIndicatorManager.focusedItem)
-                        this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem.tag)
-                })
+                        this.handleItemClicked(this.$graphComponent.focusIndicatorManager.focusedItem.tag, this.$graphComponent.focusIndicatorManager.focusedItem.style)
+                }) // For nodes only
 
                 return mode
             },
 
-            routeEdgesAtSelectedNodes(src, args) {
+            /**
+             * Routes all edges that connect to selected nodes.
+             * This is used when a selection of nodes is moved or resized.
+             */
+            routeEdgesAtSelectedNodes() {
                 const edgeRouter = new EdgeRouter()
                 edgeRouter.minimumNodeToEdgeDistance = 100 //Distance increased
                 edgeRouter.scope = EdgeRouterScope.ROUTE_EDGES_AT_AFFECTED_NODES
@@ -297,18 +311,34 @@
             /**
              * Handles the item click action. Used as a callback for a item-clicked-event.
              */
-            handleItemClicked(tag) {
-                this.sharedData.focusedNodeData = tag;
+            handleItemClicked(tag, type) {
+                if(type instanceof VuejsNodeStyle){
+                    this.sharedData.focusedNodeData = tag;
+                    this.sharedData.focusedEdgeData = null;
+                } else if(type instanceof UMLEdgeStyle){
+                    this.sharedData.focusedEdgeData = tag;
+                    this.sharedData.focusedNodeData = null;
+                }
                 this.selectedItem = tag;
             },
 
-            handleCanvasClicked(src, args) {
+            /**
+             * Handles the canvas clicked event. The canvas is the "empty" part of the graph. Whenever a user
+             * clicks the empty graph (neither a node, nor an edge), this function will be called.
+             * The focused node as well as the focused edge will be set to null and no item is selected.
+             */
+            handleCanvasClicked() {
                 this.sharedData.focusedNodeData = null;
+                this.sharedData.focusedEdgeData = null;
                 this.selectedItem = null;
             },
 
             /**
-             * Enables/disables interactive editing of the graph
+             * Enables/disables interactive editing of the graph.
+             * If the graph is not editable, various functions will be disabled the graph will be put in
+             * a view-mode. The user interactions possible with the graph are defined in the input mode of
+             * the $graphComponent. Currently the input mode for an editable graph are predefined in the function
+             * "this.getInputMode()".
              */
             toggleEditable(editable) {
                 if (editable) {
@@ -320,7 +350,10 @@
             },
 
             /**
-             * Toggles the grid and snapping to the grid
+             * Toggles the grid and snapping to the grid.
+             * Needs a parameter on which the toggle state of the grid is based on, since the decision
+             * to toggle the grid is made in the toolbar and is not directly controlled by this
+             * component. It will be called as a callback from the child-event of the toolbar.
              * @param isEnabled
              */
             toggleGrid(isEnabled) {
@@ -335,26 +368,109 @@
                 //saveGraph(this.$graphComponent, this.concept)
             },
 
+            /**
+             * Lets the drag and drop panel toggle. When called the open-state of the drag-and-drop-panel changes
+             * based on its previous state. If it was previously open, the state of the drag-and-drop-panel will
+             * be closed and vise-versa.
+             *
+             * Emits an event to let the parent know what the current state is.
+             */
             toggleDnd() {
                 this.isDndExpanded = !this.isDndExpanded;
                 this.$emit('on-toggle-dndPanel', this.isDndExpanded);
             },
 
-            deleteAttribute(name){
-                this.sharedData.focusedNodeData.attributes = this.sharedData.focusedNodeData.attributes.filter(attribute => attribute.name !== name)
+            /**
+             * Adds an attribute to a given node.
+             *
+             * @param node: node the attribute should be added to.
+             * @param name: name of the attribute to add.
+             */
+            addAttributeToNode(node, name){
+                node.attributes = node.attributes.concat({name: name});
             },
 
-            addAttribute(name){
-                this.sharedData.focusedNodeData.attributes = this.sharedData.focusedNodeData.attributes.concat({name: name})
+            /**
+             * Deletes an attribute from the given node by its name.
+             * Deletes all attributes from the node with the same name.
+             * This is currently a feature, not a bug, since multiple attributes with the same
+             * name are not allowed. This might change in the future.
+             *
+             * @param node: node the attribute should be deleted from.
+             * @param name: name of the attribute to delete.
+             */
+            deleteAttributeFromNode(node, name){
+                node.attributes = node.attributes.filter(attribute => attribute.name !== name);
             },
 
-            deleteOperation(name){
-                this.sharedData.focusedNodeData.methods = this.sharedData.focusedNodeData.methods.filter(method => method.name !== name)
+            /**
+             * Adds an operation to the given node.
+             *
+             * @param node: node the operation should be added to.
+             * @param name: name of the operation to add.
+             */
+            addOperationToNode(node, name){
+                node.methods = node.methods.concat({name: name});
             },
 
-            addOperation(name){
-                this.sharedData.focusedNodeData.methods = this.sharedData.focusedNodeData.methods.concat({name: name})
-            }
+            /**
+             * Deletes an operation from the given node by its name.
+             * Deletes all operation from the node with the same name.
+             * This is currently a feature, not a bug, since multiple operations with the same
+             * name are not allowed. This might change in the future.
+             *
+             * @param node: node the operation should be deleted from.
+             * @param name: name of the operation to delete
+             */
+            deleteOperationFromNode(node, name){
+                node.methods = node.methods.filter(attribute => attribute.name !== name);
+            },
+
+            /**
+             * Adds an attribute to a given edge.
+             *
+             * @param edge: edge the attribute should be added to.
+             * @param name: name of the attribute to add.
+             */
+            addAttributeToEdge(edge, name){
+                edge.attributes = edge.attributes.concat({name: name});
+            },
+
+            /**
+             * Deletes an attribute from the given edge by its name.
+             * Deletes all attributes from the edge with the same name.
+             * This is currently a feature, not a bug, since multiple attributes with the same
+             * name are not allowed. This might change in the future.
+             *
+             * @param edge: edge the attribute should be deleted from.
+             * @param name: name of the attribute to delete.
+             */
+            deleteAttributeFromEdge(edge, name){
+                edge.attributes = edge.attributes.filter(attribute => attribute.name !== name);
+            },
+
+            /**
+             * Adds an operation to the given edge.
+             *
+             * @param edge: edge the operation should be added to.
+             * @param name: name of the operation to add.
+             */
+            addOperationToEdge(edge, name){
+                edge.operations = edge.operations.concat({name: name});
+            },
+
+            /**
+             * Deletes an operation from the given edge by its name.
+             * Deletes all operation from the node with the same name.
+             * This is currently a feature, not a bug, since multiple operations with the same
+             * name are not allowed. This might change in the future.
+             *
+             * @param edge: edge the operation should be deleted from.
+             * @param name: name of the operation to delete
+             */
+            deleteOperationFromEdge(edge, name){
+                edge.operations = edge.operations.filter(attribute => attribute.name !== name);
+            },
         }
     }
 </script>

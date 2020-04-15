@@ -39,7 +39,7 @@ import {Parameter} from "../../uml/parameters/Parameter";
 import {Operation} from "../../uml/operations/Operation";
 import {createAggregationStyle, createAssociationStyle, createCompositionStyle, createGeneralizationStyle, isInheritance} from "../../uml/edges/styles/UMLEdgeStyleFactory";
 import {configureDndInputMode} from "../dndPanel/DndUtils";
-import VuejsNodeStyle from "../VuejsNodeStyle";
+import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
 
 // We need to load the yfiles/view-layout-bridge module explicitly to prevent the webpack
 // tree shaker from removing this dependency which is needed for 'morphLayout' in this demo.
@@ -236,7 +236,7 @@ export function addNodeStyleToNodes(vuejsComponent, nodes) {
 export function getEdgesFromReferences(graph, references, nodes) {
     // Filter all relevant references
     // Remove all references that don't have a target AND source
-    references.filter(reference => {
+    references = references.filter(reference => {
         return nodes.some(node => (node.tag.name === reference.sourceClassName) || (node.tag.name === reference.targetClassName))
     });
     // Transform references to Zeta specific EdgeModels
@@ -256,7 +256,6 @@ export function getEdgesFromReferences(graph, references, nodes) {
             targetUpperBounds: reference.targetUpperBounds,
             operations: reference.operations,
             attributes: reference.attributes,
-
         });
 
         model.source = source;

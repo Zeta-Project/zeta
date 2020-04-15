@@ -31,9 +31,9 @@
         VoidNodeStyle
     } from "yfiles";
     import {addClass, removeClass} from "../../../../utils/Bindings";
-    import VuejsNodeStyle from "../VuejsNodeStyle";
+    import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
     import Vue from "vue";
-    import Node from "../Node";
+    import Node from "../nodes/Node";
     import {getNodesFromClasses} from "../graphEditor/GraphEditorUtils";
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
 
