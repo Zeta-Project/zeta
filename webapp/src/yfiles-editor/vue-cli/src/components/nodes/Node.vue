@@ -1,8 +1,23 @@
 <template>
     <g v-if="tag" class="vue-node-style-node uml-node">
-        <rect fill="#FFFFFF" stroke="#C0C0C0" width="285" height="100"></rect>
-        <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: '#444' }">
-            <text :transform="zoom >= 1 ? 'translate(100 25)' : 'translate(75 40)'" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: '#336699' }">{{tag.name}}</text>
+        <rect fill="#FFFFFF" x="-1" y="-1" stroke="#C0C0C0" width="202" height="150"/>
+
+        <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
+            <rect x="0" y="0" width="200" height="30" />
+            <text x="10" y="20" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >{{tag.name}}</text>
+            <rect x="0" y="50" width="200" height="30" />
+            <text x="10" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
+            <rect  v-for="(attribute, index) in tag.attributes" :key="attribute.name" x="0" y="29" width="200" height="30"
+                :style="{ fontSize: zoom >= 1 ? '16px' : '26px'}"
+                :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`"/>
+            <text  v-for="(attribute, index) in tag.attributes" :key="attribute.name" x="10" y="50" 
+                :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
+                :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+
+                {{attribute.name}}
+            </text>
+            
+            
             <!--<text :transform="zoom >= 1 ? 'translate(100 57)' : 'translate(75 90)'" style="text-transform: uppercase; font-weight: 400">{{positionSecondLine}}</text>
             <text v-show="zoom >= 1" transform="translate(100 72)">{{tag.email}}</text>
             <text v-show="zoom >= 1" transform="translate(100 88)">{{tag.phone}}</text>
