@@ -1,22 +1,20 @@
 <template>
     <g v-if="tag" class="vue-node-style-node uml-node">
-        <rect fill="#FFFFFF" x="-1" y="-1" stroke="#C0C0C0" width="202" height="150"/>
+        <rect fill="#FFFFFF" x="-1" y="-1" stroke="black" width="202" :height="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"/>
 
         <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
-            <rect x="0" y="0" width="200" height="30" />
-            <text x="10" y="20" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >{{tag.name}}</text>
-            <rect x="0" y="50" width="200" height="30" />
-            <text x="10" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
-            <rect  v-for="(attribute, index) in tag.attributes" :key="attribute.name" x="0" y="29" width="200" height="30"
-                :style="{ fontSize: zoom >= 1 ? '16px' : '26px'}"
-                :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`"/>
-            <text  v-for="(attribute, index) in tag.attributes" :key="attribute.name" x="10" y="50" 
+            <rect x="0" y="0" width="200" :height="30" />
+            <text x="8" y="20" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >{{tag.name}}</text>
+            <rect x="0" y="50" width="200" :height=" 30 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" />
+            <polygon v-on:click="attributes_open =  change_attributes_open(attributes_open)" points="8,57 8,69 16,63" style="fill:black"  :transform="attributes_open ? 'rotate(90,12,63)' : 'rotate(0)' "/>
+            <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
+            <g v-if="attributes_open">
+            <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
                 :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
                 :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
-
                 {{attribute.name}}
             </text>
-            
+            </g>
             
             <!--<text :transform="zoom >= 1 ? 'translate(100 57)' : 'translate(75 90)'" style="text-transform: uppercase; font-weight: 400">{{positionSecondLine}}</text>
             <text v-show="zoom >= 1" transform="translate(100 72)">{{tag.email}}</text>
@@ -42,6 +40,9 @@
             </text>-->
         </g>
     </g>
+
+
+
 </template>
 
 <script>
@@ -56,12 +57,34 @@
         name: 'node',
         data: function () {
             return {
+                attributes_open : false ,
                 zoom: 1,
-                focused: false
-            }
+                focused: false,
+                }
         },
         // the node tag is passed as a prop
         props: ['tag'],
+
+        created(){
+            console.log("created" + this.tag)
+        },
+
+        watch: {
+            //counter: function (val) {
+            //console.log("counter: " + counter )
+            //}
+        },
+
+        //console.log(tag.attributes),
+        methods: {
+            change_attributes_open(status) {
+                if (status) {
+                    return false;
+                } 
+                return true;
+            },
+        },
+
         computed: {
             statusColor() {
                 return statusColors[this.tag.status]
@@ -80,7 +103,22 @@
                     secondLine.unshift(words.pop())
                 }
                 return secondLine.join(' ')
-            }
+            },
+  /*          
+            change_attributes_open() {
+                    if (a > 0) {
+                        return "positive";
+                    } else {
+                        return "NOT positive";
+                    }
+                const words = this.tag.position ? this.tag.position.split(' ') : []
+                while (words.join(' ').length > 20) {
+                    words.pop()
+                }
+                return words.join(' ')
+            },
+    */        
+
         }
     }
 </script>
