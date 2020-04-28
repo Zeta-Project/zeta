@@ -5,15 +5,27 @@
         <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
             <rect x="0" y="0" width="200" :height="30" />
             <text x="8" y="20" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >{{tag.name}}</text>
+            
             <rect x="0" y="50" width="200" :height=" 30 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" />
-            <polygon v-on:click="attributes_open =  change_attributes_open(attributes_open)" points="8,57 8,69 16,63" style="fill:black"  :transform="attributes_open ? 'rotate(90,12,63)' : 'rotate(0)' "/>
+            <polygon v-on:click="attributes_open =  change_status(attributes_open)" points="8,57 8,69 16,63" style="fill:black"  :transform="attributes_open ? 'rotate(90,12,63)' : 'rotate(0)' "/>
             <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
             <g v-if="attributes_open">
-            <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
-                :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
-                :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
-                {{attribute.name}}
-            </text>
+                <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
+                    :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
+                    :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                    {{attribute.name}}
+                </text>
+            </g>
+
+            <!--rect x="0" y="50" width="200" :height=" 30 + 30 * (operations_open ? Object.keys(tag.Operations).length : 0)" />
+            <polygon v-on:click="operations_open =  change_status(operations_open)" points="8,57 8,69 16,63" style="fill:black"  :transform="operations_open ? 'rotate(90,12,63)' : 'rotate(0)' "/>
+            <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Operations::</text>
+            <g v-if="operations_open">
+                <text x="20" y="50" v-for="(Operations, index) in tag.operation" :key="Operations.name" 
+                    :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
+                    :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                    {{Operations.name}}
+                </text>
             </g>
             
             <!--<text :transform="zoom >= 1 ? 'translate(100 57)' : 'translate(75 90)'" style="text-transform: uppercase; font-weight: 400">{{positionSecondLine}}</text>
@@ -58,6 +70,7 @@
         data: function () {
             return {
                 attributes_open : false ,
+                operations_open : false ,
                 zoom: 1,
                 focused: false,
                 }
@@ -77,7 +90,7 @@
 
         //console.log(tag.attributes),
         methods: {
-            change_attributes_open(status) {
+            change_status(status) {
                 if (status) {
                     return false;
                 } 
@@ -103,22 +116,7 @@
                     secondLine.unshift(words.pop())
                 }
                 return secondLine.join(' ')
-            },
-  /*          
-            change_attributes_open() {
-                    if (a > 0) {
-                        return "positive";
-                    } else {
-                        return "NOT positive";
-                    }
-                const words = this.tag.position ? this.tag.position.split(' ') : []
-                while (words.join(' ').length > 20) {
-                    words.pop()
-                }
-                return words.join(' ')
-            },
-    */        
-
+            },      
         }
     }
 </script>
