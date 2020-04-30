@@ -1,56 +1,51 @@
 <template>
     <g v-if="tag" class="vue-node-style-node uml-node">
-        <rect fill="#FFFFFF" x="-1" y="-1" stroke="black" width="202" :height="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)"/>
+        <svg :width="layout.width" :height="layout.height">
+            <rect fill="white"  width="100%" height="100%" />
 
-        <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
-            <rect x="0" y="0" width="200" :height="30" />
-            <text x="8" y="20" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >{{tag.name}}</text>
-            
-            <rect x="0" y="50" width="200" :height=" 30 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" />
-            <polygon v-on:click="attributes_open =  change_status(attributes_open)" points="8,57 8,69 16,63" style="fill:black"  :transform="attributes_open ? 'rotate(90,12,63)' : 'rotate(0)' "/>
-            <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
-            <g v-if="attributes_open">
-                <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
-                    :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
-                    :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
-                    {{attribute.name}}
-                </text>
+            <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
+                <rect x="0%" y="0%" width="100%" :height="40" />
+                <text x="50%" y="25" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
+                
+                <g>
+                    <rect x="o" y="50" width="100%" :height=" 30 " />
+                    <g>
+                        <image v-if="attributes_open==false" x="" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
+                        <image v-if="attributes_open==true"  x="" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
+                    </g>
+                    <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
+
+                    <g v-if="attributes_open">
+                        <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
+                            :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
+                            :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                            {{attribute.name}}
+                        </text>
+                    </g>
+                </g>
+
+                <g>
+                    <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />
+                
+                    <g v-on:click="operations_open=change_status(operations_open)">
+                        <image v-if="operations_open==false" x="" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
+                        <image v-if="operations_open==true"  x="" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
+                    </g>
+                    <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Operation:</text>
+                    <g v-if="operations_open">
+                        <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" v-for="(method, index) in tag.methods" :key="method.name" 
+                            :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
+                            :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                            {{method.name}}
+                            {{style}}
+                        </text>
+                    </g>
+                </g>
             </g>
 
-            <!--rect x="0" y="50" width="200" :height=" 30 + 30 * (operations_open ? Object.keys(tag.Operations).length : 0)" />
-            <polygon v-on:click="operations_open =  change_status(operations_open)" points="8,57 8,69 16,63" style="fill:black"  :transform="operations_open ? 'rotate(90,12,63)' : 'rotate(0)' "/>
-            <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Operations::</text>
-            <g v-if="operations_open">
-                <text x="20" y="50" v-for="(Operations, index) in tag.operation" :key="Operations.name" 
-                    :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
-                    :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
-                    {{Operations.name}}
-                </text>
-            </g>
-            
-            <!--<text :transform="zoom >= 1 ? 'translate(100 57)' : 'translate(75 90)'" style="text-transform: uppercase; font-weight: 400">{{positionSecondLine}}</text>
-            <text v-show="zoom >= 1" transform="translate(100 72)">{{tag.email}}</text>
-            <text v-show="zoom >= 1" transform="translate(100 88)">{{tag.phone}}</text>
-            <text v-show="zoom >= 1" transform="translate(170 88)">{{tag.fax}}</text>
-            <text :transform="zoom >= 1 ? 'translate(100 50)' : 'translate(75 65)'" style="font-weight: 400">Attributes:</text>
-            <text
-                    v-for="(attribute, index) in tag.attributes"
-                    :key="`node-${tag.name}-attribute-property-${index + 1}`"
-                    :transform="zoom >= 1 ? `translate(${100} ${(index + 2)*25})` : `translate(${75} ${(index + 2)* 40})`"
-                    style="font-weight: 200"
-            >
-                {{attribute.name}}
-            </text>
-            <text :transform="zoom >= 1 ? 'translate(100 100)' : 'translate(75 100)'" style="font-weight: 400">Operations:</text>
-            <text
-                    v-for="(method, index) in tag.methods"
-                    :key="`node-${tag.name}-operation-property-${index + 1}`"
-                    :transform="zoom >= 1 ? `translate(${100} ${(index + 2)*25+50})` : `translate(${75} ${(index + 2)* 40+50})`"
-                    style="font-weight: 200"
-            >
-                {{method.name}}
-            </text>-->
-        </g>
+            <rect fill="none" x="0" y="0" stroke="black" stroke-width="3" width="100%" height="100%" />
+
+        </svg>
     </g>
 
 
@@ -71,23 +66,25 @@
             return {
                 attributes_open : false ,
                 operations_open : false ,
+                width : 150,
                 zoom: 1,
                 focused: false,
+                offset: 97,
                 }
         },
         // the node tag is passed as a prop
-        props: ['tag'],
+        props: ['tag','layout'],
 
         created(){
             console.log("created" + this.tag)
         },
 
-        watch: {
-            //counter: function (val) {
-            //console.log("counter: " + counter )
-            //}
+    watch: {
+        tag: function () {
+           this.tag
         },
 
+    },
         //console.log(tag.attributes),
         methods: {
             change_status(status) {
@@ -96,7 +93,15 @@
                 } 
                 return true;
             },
+            size_element(element){
+
+            },
+
+            total_size(tag) {
+
+            }
         },
+
 
         computed: {
             statusColor() {

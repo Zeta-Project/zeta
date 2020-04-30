@@ -58,6 +58,9 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
         // changes.
         component.$props.tag = node.tag
+        console.log(node.layout)
+        component.$props.layout = node.layout
+        //component.$props.tag = node.tag
         component.$data.zoom = context.zoom
         // mount the component without passing in a DOM element
         component.$mount()
