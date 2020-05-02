@@ -158,12 +158,20 @@
             /**
              * Sets default styles for the graph.
              */
+
+            adjustNodeSize(height, width) {
+
+            },
+
             initializeDefaultStyles() {
                 const NodeConstructor = Vue.extend(Node);
-                this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
+                //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
                 this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor)
                 this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
-                this.$graphComponent.graph.nodeDefaults.size = new Size(285, 100)
+                this.$graphComponent.graph.nodeDefaults.size = new Size(150, 250)
+               // this.$graphComponent.graph.
+               // this.$graphComponent.setNodeLayout(node, new Rect(layout.x, layout.y, 500, 50))
+                //this.$graphComponent.graph.size = nodeData.size || [50, 50]
                 this.$graphComponent.graph.nodeDefaults.labels.style = new DefaultLabelStyle({
                     textFill: '#fff',
                     font: new Font('Robot, sans-serif', 14)
