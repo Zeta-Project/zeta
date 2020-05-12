@@ -23,7 +23,7 @@
     "ionicons": "github:ionic-team/ionicons#1.5.2",
     "jest-cli": "^22.4.3",
     "jointjs": "2.0.1",
-    "jquery": "3.3.1",
+    "jquery": "3.5.0",
     "jquery-mobile": "^1.5.0-alpha.1",
     "jquery-ui": "1.12.1",
     "jquery-ui-themes": "1.12.0",
