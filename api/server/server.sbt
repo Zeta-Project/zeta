@@ -22,7 +22,8 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.mohiva" %% "play-silhouette-crypto-jca" % ZetaBuild.silhouetteVersion,
 
     //typesafe
-    "org.webjars" %% "webjars-play" % "2.6.2",
+    "org.webjars" %% "webjars-play" % "2.6.3",
+    "org.webjars" % "bootstrap" % "3.1.1-2",
     "com.iheart" %% "ficus" % "1.4.3",
     "com.typesafe.play" %% "play-mailer" % "6.0.1",
     "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
@@ -30,7 +31,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-cache" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-ehcache" % ZetaBuild.playVersion,
-    "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
+    "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B4-RC2", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % ZetaBuild.playVersion,
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster" % ZetaBuild.akkaVersion,
@@ -43,7 +44,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "org.scala-lang" % "scala-compiler" % ZetaBuild.scalaVersionNumber,
 
     // quicklens
-    "com.softwaremill.quicklens" %% "quicklens" % "1.4.11",
+    "com.softwaremill.quicklens" %% "quicklens" % "1.4.13",
 
     // test mock framework
     "org.scalamock" %% "scalamock" % "4.1.0" % Test

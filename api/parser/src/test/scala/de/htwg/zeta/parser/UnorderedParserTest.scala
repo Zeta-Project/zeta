@@ -2,11 +2,11 @@ package de.htwg.zeta.parser
 
 import scala.util.parsing.combinator.JavaTokenParsers
 
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser with JavaTokenParsers {
+class UnorderedParserTest extends AnyFreeSpec with Matchers with UnorderedParser with JavaTokenParsers {
 
   val pointLiteral = "point"
   val widthLiteral = "width"

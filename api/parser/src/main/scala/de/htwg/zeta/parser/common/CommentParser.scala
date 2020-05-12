@@ -66,9 +66,9 @@ object CommentParser {
 
     def chars(): Int = text.length
 
-    private def rowIndex(input: String): Int = input.lines.toList.last.length
+    private def rowIndex(input: String): Int = input.linesIterator.toList.last.size
 
-    private def lineIndex(input: String): Int = input.lines.size
+    private def lineIndex(input: String): Int = input.linesIterator.size
   }
   case class TextResult(text: String) extends ParsedResult
   case class CommentResult(text: String) extends ParsedResult

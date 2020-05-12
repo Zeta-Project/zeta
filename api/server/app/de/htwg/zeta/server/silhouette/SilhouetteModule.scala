@@ -204,7 +204,7 @@ class SilhouetteModule extends ScalaModule {
       implicit val booleanValueReader: ValueReader[Boolean] = Ficus.booleanValueReader
       implicit val finiteDurationReader: ValueReader[FiniteDuration] = Ficus.finiteDurationReader
 
-      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
+      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[A] = valueReader
 
       configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
     }

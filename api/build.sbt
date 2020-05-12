@@ -14,3 +14,5 @@ lazy val server = ZetaBuild.server.aggregate(common, generatorControl, parser, p
 
 // TODO  remove this in the future
 lazy val images = project
+// scala test fix. See https://github.com/scalatest/autofix/tree/master/3.1.x
+scalafixDependencies in ThisBuild += "org.scalatest" %% "autofix" % "3.1.0.0"

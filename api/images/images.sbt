@@ -7,7 +7,7 @@ def image(name: String, d: sbt.File) = {
     dockerBaseImage := "openjdk:8u151-jre-stretch",
     fork := true,
     libraryDependencies ++= Seq(
-      "org.clapper" %% "grizzled-slf4j" % "1.2.0",
+      "org.clapper" %% "grizzled-slf4j" % "1.3.4",
       "org.slf4j" % "slf4j-simple" % "1.7.9",
       "org.rogach" %% "scallop" % "3.1.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
       "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,

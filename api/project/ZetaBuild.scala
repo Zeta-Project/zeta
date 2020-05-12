@@ -6,6 +6,7 @@ import sbt.file
 import sbt.project
 import sbt.stringToOrganization
 import sbt.taskKey
+import sbt.addCompilerPlugin
 import wartremover.WartRemover.autoImport.Wart
 import wartremover.WartRemover.autoImport.Warts
 import wartremover.WartRemover.autoImport.wartremoverWarnings
@@ -20,11 +21,13 @@ object ZetaBuild {
   lazy val server = project
 
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
-  val silhouetteVersion = "5.0.3"
-  val playVersion = "2.6.10"
-  val akkaVersion = "2.5.8"
+  val silhouetteVersion = "5.0.7"
+  val playVersion = "2.6.25"
+  val akkaVersion = "2.5.31"
+  val javaFxVersion = "11"
+  val scalaFxVersion = "11-R16"
 
-  val scalaVersionNumber = "2.12.4"
+  val scalaVersionNumber = "2.12.11"
   val scalaVersion = Keys.scalaVersion := scalaVersionNumber
 
   val scalaOptions = scalacOptions ++= Seq(
@@ -41,6 +44,8 @@ object ZetaBuild {
     "-Ywarn-numeric-widen" // Warn when numerics are widened.
   )
 
+  val autoCompilerPlugins = true
+
   val linterSettings = Seq(
     //    scalastyleFailOnError := true,
     //    ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
@@ -51,16 +56,34 @@ object ZetaBuild {
       Wart.Product,
     )
   )
+  lazy val osName = System.getProperty("os.name") match {
+    case n if n.startsWith("Linux")   => "linux"
+    case n if n.startsWith("Mac")     => "mac"
+    case n if n.startsWith("Windows") => "win"
+    case _ => throw new Exception("Unknown platform!")
+  }
 
+  lazy val javaFXModules = Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
+
+  val javaFxDep = javaFXModules.map( m =>
+    "org.openjfx" % s"javafx-$m" % javaFxVersion classifier osName
+  )
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
+    // fix workaround
+    "org.webjars" % "npm" % "4.2.0",
+    "com.google.code.findbugs" % "jsr305" % "1.3.9",
     // injection
     "net.codingwell" %% "scala-guice" % "4.1.1",
     // test
-    "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+    "org.scalatest" %% "scalatest" % "3.1.1" % "test",
     // logging
-    "org.clapper" %% "grizzled-slf4j" % "1.3.2"
-  )
+    "org.clapper" %% "grizzled-slf4j" % "1.3.4",
+    // javafx
+    "org.scalafx" %% "scalafx" % scalaFxVersion,
+  ) ++ javaFxDep
+
+
 
   val defaultSettings: Seq[Def.SettingsDefinition] = linterSettings ++ Seq(
     scalaOptions,
@@ -68,6 +91,7 @@ object ZetaBuild {
     standardLibraries
   )
 
+  //addCompilerPlugin(scalafixSemanticdb) // enable SemanticDB
 
   /**
    * change project to current file
@@ -78,4 +102,6 @@ object ZetaBuild {
    * change project to current file and add defaultSettings
    */
   def defaultProject(project: Project): Project = inCurrent(project).settings(defaultSettings: _*)
+
+
 }

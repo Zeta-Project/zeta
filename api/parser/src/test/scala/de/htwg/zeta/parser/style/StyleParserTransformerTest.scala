@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint
+import scalafx.scene.paint
 
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed

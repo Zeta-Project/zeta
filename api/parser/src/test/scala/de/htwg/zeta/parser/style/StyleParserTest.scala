@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint.Color
+import scalafx.scene.paint.Color
 import org.scalatest.FlatSpec
 import org.scalatest.Inside
 import org.scalatest.Matchers
