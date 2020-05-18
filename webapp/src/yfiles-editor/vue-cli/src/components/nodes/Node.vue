@@ -13,7 +13,7 @@
                         <image v-if="attributes_open==false" x="" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
                         <image v-if="attributes_open==true"  x="" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
-                    <text x="20" y="70":style="{ fontSize:'16px', fill: 'black' }" >Attributes:</text>
+                    <text x="20" y="70" :style="{ fontSize:'16px', fill: 'black' }" >Attributes:</text>
 
                     <g v-if="attributes_open">
                         <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
