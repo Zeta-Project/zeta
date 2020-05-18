@@ -5,6 +5,7 @@ import java.util.UUID
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import scala.concurrent.Future
+
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
 import de.htwg.zeta.common.format.project.GdslProjectFormat
 import de.htwg.zeta.common.models.project.GdslProject
@@ -12,13 +13,14 @@ import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.general.{EntityRepository, GraphicalDslInstanceRepository}
 import org.scalamock.scalatest.MockFactory
-import org.scalatest.Matchers
-import org.scalatest.FreeSpec
-
+import org.scalatest.matchers.should.Matchers
 import scala.concurrent.ExecutionContext.Implicits.global
+
+import de.htwg.zeta.common.models.project.concept.Concept
+import org.scalatest.freespec.AnyFreeSpec
 import play.api.libs.json.JsObject
 
-class ProjectExportTest extends FreeSpec with Matchers with MockFactory {
+class ProjectExportTest extends AnyFreeSpec with Matchers with MockFactory {
 
   "A ProjectExporter" - {
 
@@ -27,7 +29,7 @@ class ProjectExportTest extends FreeSpec with Matchers with MockFactory {
       val projectId = UUID.randomUUID()
       val instanceId = UUID.randomUUID()
       val userId = UUID.randomUUID()
-      val project = new GdslProject(projectId, "project", null, "", "", "")
+      val project = new GdslProject(projectId, "project", Concept.empty, "", "", "")
       val instance = new GraphicalDslInstance(instanceId, "model", projectId, Nil, Nil, Nil, Map.empty, Nil, "")
 
       // create stub for instance repo

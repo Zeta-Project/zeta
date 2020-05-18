@@ -3,13 +3,13 @@ package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Point
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Polygon
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class PolygonFormatTest extends FreeSpec with Matchers {
+class PolygonFormatTest extends AnyFreeSpec with Matchers {
 
   "A PolygonFormat should" - {
     "write an object" in {

@@ -4,8 +4,8 @@ lazy val common = ZetaBuild.defaultProject(project).settings(
   resolvers += Resolver.jcenterRepo,
 
   libraryDependencies ++= Seq(
-    // play json
-    "com.typesafe.play" %% "play-json" % "2.6.14",
+    // play json. Should be fixed in the future, see https://github.com/playframework/play-json/issues/236
+    "com.typesafe.play" %% "play-json" % "2.6.10",
     // akka actor
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-cluster-tools" % ZetaBuild.akkaVersion,
