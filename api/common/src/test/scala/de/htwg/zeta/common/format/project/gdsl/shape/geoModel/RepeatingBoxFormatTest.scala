@@ -2,13 +2,13 @@ package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.RepeatingBox
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class RepeatingBoxFormatTest extends FreeSpec with Matchers {
+class RepeatingBoxFormatTest extends AnyFreeSpec with Matchers {
 
   "A RepeatingBoxFormat should" - {
     "write an object" in {

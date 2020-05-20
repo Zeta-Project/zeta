@@ -1,11 +1,11 @@
 package de.htwg.zeta.parser.diagram
 
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class DiagramParserTest extends FreeSpec with Matchers with Inside {
+class DiagramParserTest extends AnyFreeSpec with Matchers with Inside {
 
   "A diagram parser will" - {
 

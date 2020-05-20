@@ -10,10 +10,10 @@ import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ElementsIdUniqueTest extends FlatSpec with Matchers {
+class ElementsIdUniqueTest extends AnyFlatSpec with Matchers {
 
   val rule = new ElementsIdsUnique
   private val emptyString = ""

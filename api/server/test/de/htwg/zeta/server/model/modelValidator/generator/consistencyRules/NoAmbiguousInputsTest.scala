@@ -4,10 +4,10 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MClass
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class NoAmbiguousInputsTest extends FlatSpec with Matchers {
+class NoAmbiguousInputsTest extends AnyFlatSpec with Matchers {
 
   val superClass = MClass(
     name = "superClass",

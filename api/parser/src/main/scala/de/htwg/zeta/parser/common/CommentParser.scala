@@ -44,7 +44,7 @@ class CommentParser extends CommonParserMethods {
 
   private def text: Parser[ParsedResult] = anyString ^^ (a => TextResult(a))
 
-  private def comment: Parser[ParsedResult] = lineComment | multilineComment
+  private def comment: Parser[ParsedResult] = lineComment ||| multilineComment
 
   private def multilineComment: Parser[CommentResult] =
     """(?s)/\*.+?\*/""".r ^^ (a => CommentResult(a))
@@ -66,9 +66,9 @@ object CommentParser {
 
     def chars(): Int = text.length
 
-    private def rowIndex(input: String): Int = input.linesIterator.toList.last.size
+    private def rowIndex(input: String): Int = input.linesIterator.toList.last.length
 
-    private def lineIndex(input: String): Int = input.linesIterator.size
+    private def lineIndex(input: String): Int = input.linesIterator.length
   }
   case class TextResult(text: String) extends ParsedResult
   case class CommentResult(text: String) extends ParsedResult

@@ -1,12 +1,12 @@
 package de.htwg.zeta.parser.check
 
 import de.htwg.zeta.parser.check.Check.Id
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class FindInvalidReferencesTest extends FreeSpec with Matchers with Inside {
+class FindInvalidReferencesTest extends AnyFreeSpec with Matchers with Inside {
 
   val elementToId: Element => Id = element => element.name
   val availableIds: List[String] = List("t1", "t2", "t3", "t4")

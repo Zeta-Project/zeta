@@ -7,12 +7,12 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.String
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.concept.elements.MClass
-import org.scalatest.FlatSpec
 import org.scalatest.Ignore
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 @Ignore
-class NoAmbiguousAttributesTest extends FlatSpec with Matchers {
+class NoAmbiguousAttributesTest extends AnyFlatSpec with Matchers {
 
   val superClassAttribute = MAttribute(
     name = "superClassAttribute",

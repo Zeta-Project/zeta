@@ -2,11 +2,11 @@ package de.htwg.zeta.common.format.project.gdsl.shape
 
 import de.htwg.zeta.common.models.project.gdsl.shape.Edge
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class MetaFormatTest extends FreeSpec with Matchers {
+class MetaFormatTest extends AnyFreeSpec with Matchers {
 
   "A MetaFormat should" - {
     "write meta info for link edge concept element" in {

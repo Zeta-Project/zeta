@@ -6,8 +6,8 @@ import scala.concurrent.Future
 
 import de.htwg.zeta.common.models.entity.Entity
 import de.htwg.zeta.persistence.general.EntityRepository
-import org.scalatest.AsyncFlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AsyncFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 
 /** PersistenceBehavior. */

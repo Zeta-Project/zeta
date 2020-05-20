@@ -47,9 +47,6 @@ object ZetaBuild {
   val autoCompilerPlugins = true
 
   val linterSettings = Seq(
-    //    scalastyleFailOnError := true,
-    //    ZetaBuild.compileScalastyle := scalastyle.in(Compile).toTask("").value,
-    //    compile in Compile := ((compile in Compile) dependsOn ZetaBuild.compileScalastyle).value,
     wartremoverWarnings ++= Warts.unsafe diff List(
       Wart.NonUnitStatements,
       Wart.Any,
@@ -70,9 +67,6 @@ object ZetaBuild {
   )
 
   val standardLibraries = Keys.libraryDependencies ++= Seq(
-    // fix workaround
-    "org.webjars" % "npm" % "4.2.0",
-    "com.google.code.findbugs" % "jsr305" % "1.3.9",
     // injection
     "net.codingwell" %% "scala-guice" % "4.1.1",
     // test
@@ -80,7 +74,7 @@ object ZetaBuild {
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.3.4",
     // javafx
-    "org.scalafx" %% "scalafx" % scalaFxVersion,
+    "org.scalafx" %% "scalafx" % scalaFxVersion
   ) ++ javaFxDep
 
 
@@ -90,8 +84,6 @@ object ZetaBuild {
     scalaVersion,
     standardLibraries
   )
-
-  //addCompilerPlugin(scalafixSemanticdb) // enable SemanticDB
 
   /**
    * change project to current file

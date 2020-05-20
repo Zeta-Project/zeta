@@ -1,11 +1,11 @@
 package de.htwg.zeta.parser.check
 
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class ErrorCheckerTest extends FreeSpec with Matchers with Inside {
+class ErrorCheckerTest extends AnyFreeSpec with Matchers with Inside {
 
   case class ErrorCheckImpl(definedErrors: List[String]) extends ErrorCheck[String] {
     override def check(): List[String] = definedErrors

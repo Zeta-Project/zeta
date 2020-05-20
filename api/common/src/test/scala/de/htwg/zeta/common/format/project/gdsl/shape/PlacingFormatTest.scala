@@ -6,13 +6,13 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Ellipse
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Size
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class PlacingFormatTest extends FreeSpec with Matchers {
+class PlacingFormatTest extends AnyFreeSpec with Matchers {
 
   "A PlacingFormat should" - {
     "write an object" in {
