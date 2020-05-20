@@ -74,11 +74,6 @@
         },
         // the node tag is passed as a prop
         props: ['tag','layout'],
-
-        created(){
-            console.log("created" + this.tag)
-        },
-
     watch: {
         tag: function () {
            this.tag

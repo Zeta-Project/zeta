@@ -73,6 +73,7 @@
     import PropertyPanel from "../propertyPanel/PropertyPanel";
     import DndPanel from "../dndPanel/DndPanel"
     import Node from "../nodes/Node"
+    import Edge from "../edges/Edge"
 
     import {UMLNodeStyle} from "../../uml/nodes/styles/UMLNodeStyle";
     import * as umlModel from "../../uml/nodes/UMLClassModel";
@@ -84,6 +85,7 @@
     import UMLContextButtonsInputMode from "../../uml/utils/UMLContextButtonsInputMode";
     import {Grid} from "../../../../layout/grid/Grid";
     import VuejsNodeStyle from "../../uml/nodes/styles/VuejsNodeStyle";
+    import VuejsEdgeStyle from "../../uml/edges/styles/VuejsEdgeStyle";
 
     License.value = licenseData
 
@@ -93,7 +95,8 @@
             Toolbar,
             PropertyPanel,
             DndPanel,
-            Node
+            Node,
+            Edge
         },
         mounted() {
             this.initGraphComponent().then(response => {
@@ -165,6 +168,7 @@
 
             initializeDefaultStyles() {
                 const NodeConstructor = Vue.extend(Node);
+                const EdgeConstructor = Vue.extend(Edge);
                 //this.$graphComponent.graph.nodeDefaults.size = new Size(60, 40);
                 this.$graphComponent.graph.nodeDefaults.style = new VuejsNodeStyle(NodeConstructor)
                 this.$graphComponent.graph.nodeDefaults.shareStyleInstance = false;
@@ -176,7 +180,7 @@
                     textFill: '#fff',
                     font: new Font('Robot, sans-serif', 14)
                 })
-                this.$graphComponent.graph.edgeDefaults.style = new UMLEdgeStyle(new umlEdgeModel.UMLEdgeModel());
+                this.$graphComponent.graph.edgeDefaults.style = new VuejsEdgeStyle(EdgeConstructor);
                 this.$graphComponent.graph.undoEngineEnabled = true
             },
 
@@ -238,15 +242,17 @@
              * @param graphNodes: has to be already existing nodes in the graph for it to work
              * */
             plotEdges(concept, graphNodes) {
+                // Get the node constructor from the node component
+                const EdgeConstructor = Vue.extend(Edge);
                 const graph = this.$graphComponent.graph;
                 let edges = getEdgesFromReferences(graph, concept.references, graphNodes)
-                edges = addEdgeStyleToEdges(edges);
+                // edges = addEdgeStyleToEdges(edges);
                 edges.forEach(edge => {
                     const tempEdge = graph.createEdge({
                         tag: edge,
                         source: edge.source,
                         target: edge.target,
-                        style: edge.style, // Might be redundant,
+                        style: new VuejsEdgeStyle(EdgeConstructor), // Might be redundant,
                     });
                     graph.addLabel(tempEdge, edge.name)
                 });

@@ -26,13 +26,21 @@
  ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  **
  ***************************************************************************/
-import {Fill, INode, IRenderContext, NodeStyleBase, Rect, Size, SvgVisual} from 'yfiles'
+import {Arrow, ArrowType, EdgeStyleBase, Fill, INode, IRenderContext, Rect, Size, Stroke, SvgVisual} from 'yfiles'
 
+
+const defaultStyle = {
+    targetArrow: new Arrow({
+        stroke: Stroke.BLACK,
+        fill: Fill.BLACK,
+        type: ArrowType.DIAMOND
+    })
+}
 
 /**
  * A node style which uses a Vuejs component to display a node.
  */
-export default class VuejsNodeStyle extends NodeStyleBase {
+export default class VuejsEdgeStyle extends EdgeStyleBase {
     /**
      * Creates a new instance of the UML node style.
      * @param vueComponentConstructor: constructor of a vue js node
@@ -48,17 +56,17 @@ export default class VuejsNodeStyle extends NodeStyleBase {
      * Creates a visual that uses a Vuejs component to display a node.
      * @see Overrides {@link LabelStyleBase#createVisual}
      * @param {IRenderContext} context
-     * @param {INode} node
+     * @param edge
      * @return {SvgVisual}
      */
-    createVisual(context, node) {
+    createVisual(context, edge) {
         // create the Vue component
         const component = new this.$vueComponentConstructor()
         // Populate it with the node data.
         // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
         // changes.
-        component.$props.tag = node.tag
-        component.$props.layout = node.layout
+        console.log(edge)
+        component.$props.tag = edge.tag
         //component.$props.tag = node.tag
         component.$data.zoom = context.zoom
         // mount the component without passing in a DOM element
@@ -67,7 +75,7 @@ export default class VuejsNodeStyle extends NodeStyleBase {
         const svgElement = component.$el
 
         // set the location
-        SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
+        // SvgVisual.setTranslate(svgElement, edge.sourcePort.location.x, edge.sourcePort.location.y);
 
         // save the component instance with the DOM element so we can retrieve it later
         svgElement['data-vueComponent'] = component
@@ -85,20 +93,20 @@ export default class VuejsNodeStyle extends NodeStyleBase {
      * Updates the visual by returning the old visual, as Vuejs handles updating the component.
      * @see Overrides {@link LabelStyleBase#updateVisual}
      * @param {IRenderContext} context
-     * @param {SvgVisual} oldVisual
-     * @param {INode} node
+     * @param {Visual} oldVisual
+     * @param edge
      * @return {SvgVisual}
      */
-    updateVisual(context, oldVisual, node) {
+    updateVisual(context, oldVisual, edge) {
         const svgElement = oldVisual.svgElement
 
         // Update the location
-        SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
+        // SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
         // the zoom property is a primitive value, so we must update it manually on the component
         svgElement['data-vueComponent'].$data.zoom = context.zoom
         // set the focused property of each component
         svgElement['data-vueComponent'].$data.focused =
-            context.canvasComponent.focusIndicatorManager.focusedItem === node
+            context.canvasComponent.focusIndicatorManager.focusedItem === edge
         return oldVisual
     }
 
