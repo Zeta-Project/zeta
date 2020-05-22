@@ -27,11 +27,11 @@ import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Solid
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
 //noinspection ScalaStyle
-class IntegrationGraphicalDSLParserTest extends FreeSpec with Matchers {
+class IntegrationGraphicalDSLParserTest extends AnyFreeSpec with Matchers {
 
   private val parser = new GraphicalDSLParser()
 

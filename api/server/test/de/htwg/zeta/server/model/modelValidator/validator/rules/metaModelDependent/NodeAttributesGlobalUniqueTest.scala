@@ -9,10 +9,10 @@ import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.Concept
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class NodeAttributesGlobalUniqueTest extends FlatSpec with Matchers {
+class NodeAttributesGlobalUniqueTest extends AnyFlatSpec with Matchers {
 
   val mClass1 = MClass("nodeType1", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)
   val mClass2 = MClass("nodeType2", "", abstractness = false, Seq.empty, Seq.empty, Seq.empty, Seq[MAttribute](), Seq.empty)

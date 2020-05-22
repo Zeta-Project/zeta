@@ -20,10 +20,10 @@ import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDepende
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodesNoAttributes
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodesNoInputs
 import de.htwg.zeta.server.model.modelValidator.validator.rules.metaModelDependent.NodesNoOutputs
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DslTest extends FlatSpec with Matchers {
+class DslTest extends AnyFlatSpec with Matchers {
 
   private val emptyString = ""
 

@@ -1,10 +1,9 @@
 package de.htwg.zeta.parser
-
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
 //noinspection ScalaStyle
-class ReferenceCollectorTest extends FreeSpec with Matchers {
+class ReferenceCollectorTest extends AnyFreeSpec with Matchers {
 
   private case class Element(name: String, index: Int)
   private val list = List(Element("1", 0), Element("2", 1), Element("2", 2), Element("3", 3), Element("4", 4))

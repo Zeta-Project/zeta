@@ -1,15 +1,14 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint
-
+import scalafx.scene.paint
 import de.htwg.zeta.common.models.project.gdsl.style.Color
 import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class StyleParserTransformerTest extends FreeSpec with Matchers {
+class StyleParserTransformerTest extends AnyFreeSpec with Matchers {
 
   "A style transformer will" - {
     "transform without errors" - {

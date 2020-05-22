@@ -13,7 +13,10 @@ object StyleParser extends CommonParserMethods with UniteParsers {
       case Left(l) => Left(l)
       case Right(t) =>
         parseAll(styles, t.text) match {
-          case NoSuccess(msg, next) =>
+          case Error(msg, next) =>
+            val newPosition = t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column)))
+            Left(newPosition)
+          case Failure(msg, next) =>
             val newPosition = t.recalculatePosition(ParseError(msg, next.offset, (next.pos.line, next.pos.column)))
             Left(newPosition)
           case Success(s, _) => Right(s)

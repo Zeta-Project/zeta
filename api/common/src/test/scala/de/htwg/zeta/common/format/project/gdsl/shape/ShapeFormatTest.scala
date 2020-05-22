@@ -6,13 +6,13 @@ import de.htwg.zeta.common.models.project.gdsl.shape.Resizing
 import de.htwg.zeta.common.models.project.gdsl.shape.Shape
 import de.htwg.zeta.common.models.project.gdsl.shape.Size
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class ShapeFormatTest extends FreeSpec with Matchers {
+class ShapeFormatTest extends AnyFreeSpec with Matchers {
 
   "A ShapeFormat should" - {
     val shapeObject = Shape(

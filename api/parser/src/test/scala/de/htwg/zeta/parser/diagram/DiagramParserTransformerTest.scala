@@ -11,12 +11,12 @@ import de.htwg.zeta.common.models.project.gdsl.style.Dashed
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class DiagramParserTransformerTest extends FreeSpec with Matchers with Inside {
+class DiagramParserTransformerTest extends AnyFreeSpec with Matchers with Inside {
 
   private object NodeFactory {
     def apply(name: String): Node = Node(

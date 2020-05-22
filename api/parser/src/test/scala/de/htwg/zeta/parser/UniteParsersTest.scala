@@ -1,10 +1,9 @@
 package de.htwg.zeta.parser
-
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
 //noinspection ScalaStyle
-class UniteParsersTest extends FreeSpec with Matchers {
+class UniteParsersTest extends AnyFreeSpec with Matchers {
 
   "Multiple Parsers extending 'UniteParsers'" - {
 

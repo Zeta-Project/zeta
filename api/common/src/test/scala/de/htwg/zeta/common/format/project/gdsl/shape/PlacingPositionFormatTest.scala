@@ -1,13 +1,13 @@
 package de.htwg.zeta.common.format.project.gdsl.shape
 
 import de.htwg.zeta.common.models.project.gdsl.shape.PlacingPosition
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class PlacingPositionFormatTest extends FreeSpec with Matchers {
+class PlacingPositionFormatTest extends AnyFreeSpec with Matchers {
 
   "A PlacingPositionFormat should" - {
     "write an object" in {

@@ -1,6 +1,6 @@
 package de.htwg.zeta.parser
 
-import javafx.scene.paint.Color
+import scalafx.scene.paint.Color
 
 import scala.util.Try
 import scala.util.parsing.combinator.JavaTokenParsers

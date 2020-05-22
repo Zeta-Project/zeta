@@ -15,9 +15,9 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     // this is needed in akka persistence
     "org.iq80.leveldb" % "leveldb" % "0.10",
     // docker client
-    "com.spotify" % "docker-client" % "8.10.0",
+    "com.spotify" % "docker-client" % "8.10.1",
     // scallop
-    "org.rogach" %% "scallop" % "3.1.1", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
+    "org.rogach" %% "scallop" % "3.1.5", // migration guide: https://github.com/scallop/scallop/wiki/Migration-notes
     //play ws
     "com.typesafe.play" %% "play-ahc-ws" % ZetaBuild.playVersion,
     // kryo serialization

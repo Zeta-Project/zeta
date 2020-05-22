@@ -1,6 +1,6 @@
 language: scala
 scala:
-  - 2.12.4
+  - 2.12.11
 env:
   - BUILD_DIR=api
 script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport

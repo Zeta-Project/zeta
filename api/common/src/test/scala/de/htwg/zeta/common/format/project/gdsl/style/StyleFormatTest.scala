@@ -6,13 +6,13 @@ import de.htwg.zeta.common.models.project.gdsl.style.Dotted
 import de.htwg.zeta.common.models.project.gdsl.style.Font
 import de.htwg.zeta.common.models.project.gdsl.style.Line
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class StyleFormatTest extends FreeSpec with Matchers {
+class StyleFormatTest extends AnyFreeSpec with Matchers {
 
   "A StyleFormat should" - {
     "write an object" in {

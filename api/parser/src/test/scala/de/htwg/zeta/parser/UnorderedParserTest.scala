@@ -2,11 +2,12 @@ package de.htwg.zeta.parser
 
 import scala.util.parsing.combinator.JavaTokenParsers
 
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalactic.source
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser with JavaTokenParsers {
+class UnorderedParserTest extends AnyFreeSpec with Matchers with UnorderedParser with JavaTokenParsers {
 
   val pointLiteral = "point"
   val widthLiteral = "width"
@@ -23,6 +24,10 @@ class UnorderedParserTest extends FreeSpec with Matchers with UnorderedParser wi
   private val parsePoint: Parser[Point] = pointLiteral ^^ (_ => Point())
   private val parseWidth: Parser[Width] = widthLiteral ^^ (_ => Width())
   private val parseHeight: Parser[Height] = heightLiteral ^^ (_ => Height())
+
+  // FIX for scala compiler problem. Compiler could not find correct method to apply to String followed by `-`
+  // Define implicit wrapper directly in class to fix.
+  override implicit def convertToFreeSpecStringWrapper(s: String)(implicit pos: source.Position): FreeSpecStringWrapper = new FreeSpecStringWrapper(s, pos)
 
   "An unordered parse will give " - {
     "a successful result when " - {

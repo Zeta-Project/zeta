@@ -8,10 +8,10 @@ import de.htwg.zeta.common.models.project.concept.elements.AttributeValue.String
 import de.htwg.zeta.common.models.project.concept.elements.MAttribute
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.server.model.modelValidator.generator.consistencyRules.NoAmbiguousAttributes
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ConceptConsistencyCheckerTest extends FlatSpec with Matchers {
+class ConceptConsistencyCheckerTest extends AnyFlatSpec with Matchers {
 
   val superClassAttribute = MAttribute(
     name = "superClassAttribute",

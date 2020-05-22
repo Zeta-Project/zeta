@@ -38,6 +38,7 @@ import com.mohiva.play.silhouette.impl.util.PlayCacheLayer
 import com.mohiva.play.silhouette.impl.util.SecureRandomIDGenerator
 import com.mohiva.play.silhouette.password.BCryptPasswordHasher
 import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepository
+import com.typesafe.config.Config
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
 import net.ceedubs.ficus.Ficus
@@ -48,6 +49,7 @@ import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.ws.WSClient
+import play.api.mvc.Cookie.SameSite
 import play.api.mvc.CookieHeaderEncoding
 
 /**
@@ -93,7 +95,8 @@ class SilhouetteModule extends ScalaModule {
   ): IdentityService[ZetaIdentity] = {
     new IdentityService[ZetaIdentity] {
       override def retrieve(loginInfo: LoginInfo): Future[Option[ZetaIdentity]] = {
-        val futureIdentityOpt = for { // future
+        val futureIdentityOpt = for {
+          // future
           userId <- loginInfoPersistence.read(loginInfo)
           user <- userPersistence.read(userId)
         } yield {
@@ -172,7 +175,7 @@ class SilhouetteModule extends ScalaModule {
    */
   @Provides
   def provideAuthInfoRepository(
-    passwordInfoPersistence: PasswordInfoRepository
+      passwordInfoPersistence: PasswordInfoRepository
   ): AuthInfoRepository = {
     new DelegableAuthInfoRepository(new SilhouettePasswordInfoDao(passwordInfoPersistence))
   }
@@ -204,7 +207,19 @@ class SilhouetteModule extends ScalaModule {
       implicit val booleanValueReader: ValueReader[Boolean] = Ficus.booleanValueReader
       implicit val finiteDurationReader: ValueReader[FiniteDuration] = Ficus.finiteDurationReader
 
-      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] = Ficus.optionValueReader[A](valueReader)
+      implicit val sameSiteReader: ValueReader[SameSite] = new ValueReader[SameSite] {
+        override def read(config: Config, path: String): SameSite = {
+          val s = stringValueReader.read(config, path)
+          SameSite.parse(s) match {
+            case None => throw new IllegalArgumentException("Cannot parse SameSite")
+            case Some(ss) => ss
+          }
+        }
+      }
+
+      implicit def optionReader[A](implicit valueReader: ValueReader[A]): ValueReader[Option[A]] =
+        Ficus.optionValueReader[A](valueReader)
+
 
       configuration.underlying.as[CookieAuthenticatorSettings]("silhouette.authenticator")
     }

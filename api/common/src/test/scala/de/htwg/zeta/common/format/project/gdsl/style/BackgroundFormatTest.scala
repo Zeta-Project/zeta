@@ -2,13 +2,13 @@ package de.htwg.zeta.common.format.project.gdsl.style
 
 import de.htwg.zeta.common.models.project.gdsl.style.Background
 import de.htwg.zeta.common.models.project.gdsl.style.Color
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class BackgroundFormatTest extends FreeSpec with Matchers {
+class BackgroundFormatTest extends AnyFreeSpec with Matchers {
 
   "A BackgroundFormat should" - {
     "write an object" in {

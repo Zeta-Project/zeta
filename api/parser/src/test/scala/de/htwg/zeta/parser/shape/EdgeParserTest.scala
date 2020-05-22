@@ -8,12 +8,12 @@ import de.htwg.zeta.parser.shape.parsetree.EdgeAttributes.Target
 import de.htwg.zeta.parser.shape.parsetree.EdgeParseTree
 import de.htwg.zeta.parser.shape.parsetree.GeoModelAttributes.Point
 import de.htwg.zeta.parser.shape.parsetree.GeoModelParseTrees.LineParseTree
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class EdgeParserTest extends FreeSpec with Matchers with Inside {
+class EdgeParserTest extends AnyFreeSpec with Matchers with Inside {
 
   private def parseEdge(input: String) = {
     EdgeParser.parse(EdgeParser.edge, input)

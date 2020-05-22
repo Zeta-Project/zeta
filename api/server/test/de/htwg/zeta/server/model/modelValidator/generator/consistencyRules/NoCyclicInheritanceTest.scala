@@ -4,10 +4,10 @@ import scala.collection.immutable.Seq
 
 import de.htwg.zeta.common.models.project.concept.elements.MClass
 import de.htwg.zeta.common.models.project.concept.Concept
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class NoCyclicInheritanceTest extends FlatSpec with Matchers {
+class NoCyclicInheritanceTest extends AnyFlatSpec with Matchers {
 
   val nonCyclicClassOne = MClass(
     name = "nonCyclicClassOne",

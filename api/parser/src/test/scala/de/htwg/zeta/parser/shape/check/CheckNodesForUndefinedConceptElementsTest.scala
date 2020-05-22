@@ -13,12 +13,12 @@ import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
 import de.htwg.zeta.parser.shape.parsetree.ShapeParseTree
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class CheckNodesForUndefinedConceptElementsTest extends FreeSpec with Matchers with Inside {
+class CheckNodesForUndefinedConceptElementsTest extends AnyFreeSpec with Matchers with Inside {
 
   "the check should" - {
     "succeed" - {

@@ -1,13 +1,13 @@
 package de.htwg.zeta.common.format.project.gdsl.style
 
 import de.htwg.zeta.common.models.project.gdsl.style.Color
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsString
 import play.api.libs.json.JsSuccess
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class ColorFormatTest extends FreeSpec with Matchers {
+class ColorFormatTest extends AnyFreeSpec with Matchers {
 
   "A ColorFormat should" - {
     "write an object" in {

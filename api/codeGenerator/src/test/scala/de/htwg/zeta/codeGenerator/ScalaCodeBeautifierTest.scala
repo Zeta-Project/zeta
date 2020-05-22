@@ -1,9 +1,9 @@
 package de.htwg.zeta.codeGenerator
 
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
-class ScalaCodeBeautifierTest extends FreeSpec with Matchers {
+class ScalaCodeBeautifierTest extends AnyFreeSpec with Matchers {
 
   "A scala code beautifier should" - {
     "beautify a case class string" in {

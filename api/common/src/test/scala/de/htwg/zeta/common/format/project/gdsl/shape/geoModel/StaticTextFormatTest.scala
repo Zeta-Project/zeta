@@ -4,13 +4,13 @@ import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Position
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.Size
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.StaticText
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class StaticTextFormatTest extends FreeSpec with Matchers {
+class StaticTextFormatTest extends AnyFreeSpec with Matchers {
 
   "A StaticTextFormat should" - {
     "write an object" in {

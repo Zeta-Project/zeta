@@ -2,13 +2,13 @@ package de.htwg.zeta.common.format.project.gdsl.shape.geoModel
 
 import de.htwg.zeta.common.models.project.gdsl.shape.geomodel.VerticalLayout
 import de.htwg.zeta.common.models.project.gdsl.style.Style
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 import play.api.libs.json.JsSuccess
 import play.api.libs.json.Json
 
 //noinspection ScalaStyle
-class GeoModelFormatTest extends FreeSpec with Matchers {
+class GeoModelFormatTest extends AnyFreeSpec with Matchers {
 
   "A GeoModelFormat should" - {
     "write an object and add id" in {

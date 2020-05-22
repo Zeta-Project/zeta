@@ -12,11 +12,11 @@ import de.htwg.zeta.common.models.project.concept.elements.MReference
 import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 // scalastyle:off null
-class NullChecksTests extends FlatSpec with Matchers {
+class NullChecksTests extends AnyFlatSpec with Matchers {
 
   def nodesToModel(nodes: Seq[NodeInstance]): GraphicalDslInstance = GraphicalDslInstance.empty("", UUID.randomUUID()).copy(nodes = nodes)
 

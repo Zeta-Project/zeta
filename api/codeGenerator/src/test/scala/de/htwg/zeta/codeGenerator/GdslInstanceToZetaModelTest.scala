@@ -12,10 +12,10 @@ import de.htwg.zeta.common.models.project.instance.GraphicalDslInstance
 import de.htwg.zeta.common.models.project.instance.elements
 import de.htwg.zeta.common.models.project.instance.elements.EdgeInstance
 import de.htwg.zeta.common.models.project.instance.elements.NodeInstance
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
-class GdslInstanceToZetaModelTest extends FreeSpec with Matchers {
+class GdslInstanceToZetaModelTest extends AnyFreeSpec with Matchers {
 
   val instance: GraphicalDslInstance = GraphicalDslInstance(
     UUID.fromString("c07e0c4d-4172-49a2-bab1-09f4cd2a59c6"),

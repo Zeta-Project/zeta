@@ -23,12 +23,12 @@ import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.Resizing
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMax
 import de.htwg.zeta.parser.shape.parsetree.NodeAttributes.SizeMin
 import de.htwg.zeta.parser.shape.parsetree.NodeParseTree
-import org.scalatest.FreeSpec
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class NodeParserTest extends FreeSpec with Matchers with Inside {
+class NodeParserTest extends AnyFreeSpec with Matchers with Inside {
 
   private def parse(input: String) = {
     NodeParser.parse(NodeParser.node, input)

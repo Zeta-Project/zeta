@@ -4,9 +4,9 @@ import de.htwg.zeta.codeGenerator.generation.KlimaCodeGenerator
 import de.htwg.zeta.codeGenerator.model.Anchor
 import de.htwg.zeta.codeGenerator.model.Entity
 import de.htwg.zeta.codeGenerator.model.Link
-import org.scalatest.FreeSpec
+import org.scalatest.freespec.AnyFreeSpec
 
-class KlimaCodeGeneratorTest extends FreeSpec {
+class KlimaCodeGeneratorTest extends AnyFreeSpec {
 
   private val generatorToTest = KlimaCodeGenerator
 

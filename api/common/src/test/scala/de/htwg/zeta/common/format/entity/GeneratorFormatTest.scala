@@ -2,11 +2,11 @@ package de.htwg.zeta.common.format.entity
 
 import java.util.UUID
 
-import org.scalatest.{FreeSpec, Matchers}
-
 import de.htwg.zeta.common.models.entity.Generator
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class GeneratorFormatTest extends FreeSpec with Matchers {
+class GeneratorFormatTest extends AnyFreeSpec with Matchers {
 
   "A GeneratorFormat can format from Generator to Json and back to Generator" in {
     val target = new GeneratorFormat();

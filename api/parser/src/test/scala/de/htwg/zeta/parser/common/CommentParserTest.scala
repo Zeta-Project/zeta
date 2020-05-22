@@ -1,10 +1,11 @@
 package de.htwg.zeta.parser.common
 
 import de.htwg.zeta.parser.style.StyleParser
-import org.scalatest.FreeSpec
-import org.scalatest.Matchers
+import de.htwg.zeta.parser.style.StyleParseTree
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.freespec.AnyFreeSpec
 
-class CommentParserTest extends FreeSpec with Matchers {
+class CommentParserTest extends AnyFreeSpec with Matchers {
 
   "A comment parser should" - {
     val parser = CommentParser()
@@ -26,8 +27,11 @@ class CommentParserTest extends FreeSpec with Matchers {
 
       val value = parser.parseComments(input)
       value.isRight shouldBe true
-      val result = value.right.get
-      result.text shouldBe expectedOutput
+      val result = value.right.toOption
+      result match {
+        case Some(v) => v.text shouldBe expectedOutput
+        case None => None shouldBe Some
+      }
     }
 
     "append this parser in front of other parsers" - {
@@ -41,10 +45,11 @@ class CommentParserTest extends FreeSpec with Matchers {
            |  /* comment 3 */
            |}
           """.stripMargin
-
-        val result = parser.parseComments(input).right.get
-        val styleResult = StyleParser.parseStyles(result.text)
-        styleResult.isRight shouldBe true
+        val result = parser.parseComments(input).right.toOption match {
+          case Some(v) => StyleParser.parseStyles(v.text).isRight
+          case None => false
+        }
+        result shouldBe true
       }
       "and should fail with correct line if following parser fails" - {
         "with sample 1" in {
@@ -54,10 +59,13 @@ class CommentParserTest extends FreeSpec with Matchers {
              |style ChildStyle extends ParentStyle { // comment 2
              |  /* description = "Style which extends a single parent style"*/
              |}""".stripMargin
-
           val styleResult = StyleParser.parseStyles(input)
-          styleResult.isRight shouldBe false
-          styleResult.left.get.offset shouldBe input.length - 1 // last character
+          styleResult.isLeft shouldBe true
+          styleResult match {
+            case Left(v) =>
+              v.position shouldBe (3,1)
+            case Right(v) => v shouldBe false
+          }
         }
         "with sample 2" in {
           val input: String =
@@ -66,10 +74,13 @@ class CommentParserTest extends FreeSpec with Matchers {
              |style ChildStyle extends ParentStyle { // comment 2
              |     description = "Style which extends a single parent style/* ignored */
              |}""".stripMargin
-
           val styleResult = StyleParser.parseStyles(input)
           styleResult.isRight shouldBe false
-          styleResult.left.get.offset shouldBe input.indexOf(""""S""") // in front of '"S'
+          styleResult.left.toOption match {
+            case Some(v) =>
+              v.position shouldBe (3,1)
+            case None => None shouldBe Some
+          }
         }
         "with sample 3" in {
           val input: String =
@@ -85,7 +96,30 @@ class CommentParserTest extends FreeSpec with Matchers {
 
           val styleResult = StyleParser.parseStyles(input)
           styleResult.isRight shouldBe false
-          styleResult.left.get.offset shouldBe input.indexOf(""""a"""") // in front of '"a"'
+          styleResult.left.toOption match {
+            case Some(v) =>
+              v.position shouldBe (3,1)
+            case None => None shouldBe Some
+          }
+        }
+        "with sample 4" in {
+          val input: String =
+            """style ParentStyle { description = "Parent style" }
+             |// comment 1
+             |style FirstChildStyle extends ParentStyle { // comment 2
+             |  description = "Style which extends a single parent style"
+             |}
+             |style SecChildStyle extends ParentStyle { // comment 2
+             |  description = "Style which extends a single parent style"
+             |  line-color  = red
+             |  line-color = "blue"
+             |}""".stripMargin
+          val styleResult = StyleParser.parseStyles(input)
+          styleResult match {
+            case Left(v) =>
+              v.position shouldBe (6,1)
+            case _ => false shouldBe true
+          }
         }
       }
     }

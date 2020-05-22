@@ -1,12 +1,12 @@
 package de.htwg.zeta.parser.style
 
-import javafx.scene.paint.Color
-import org.scalatest.FlatSpec
+import scalafx.scene.paint.Color
 import org.scalatest.Inside
-import org.scalatest.Matchers
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
 //noinspection ScalaStyle
-class StyleParserTest extends FlatSpec with Matchers with Inside {
+class StyleParserTest extends AnyFlatSpec with Matchers with Inside {
 
   val styleToTestSuccess: String =
     """
