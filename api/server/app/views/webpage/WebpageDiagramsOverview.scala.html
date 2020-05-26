@@ -2,6 +2,7 @@
 @import de.htwg.zeta.common.format.ProjectShortInfo
 @import de.htwg.zeta.common.models.entity.User
 @import de.htwg.zeta.common.models.project.GdslProject
+@import de.htwg.zeta.server.routing.routes
 @(user: Option[User], metaModels: Seq[ProjectShortInfo], gdslProject: Option[GdslProject], modelInstances: Seq[GraphicalDslInstanceShortInfo])
 
 @styles = {
@@ -157,7 +158,7 @@
           } else {
             <div class="list-group">
             @for(model <- modelInstances) {
-              <a href="@controllers.routes.ScalaRoutes.getModelEditor(model.id)" class="list-group-item list-item-container">
+              <a href="@routes.ScalaRoutes.getModelEditor(model.id)" class="list-group-item list-item-container">
                 @model.name
               <div data-model-id="@model.id" class="delete-list-item delete-model-instance glyphicon glyphicon-trash" data-toggle="tooltip" title="Delete model instance"></div>
               <div data-model-id="@model.id" class="validate-list-item validate-model-instance glyphicon glyphicon-thumbs-up" data-toggle="tooltip" title="Validate model instance against its meta model"></div>

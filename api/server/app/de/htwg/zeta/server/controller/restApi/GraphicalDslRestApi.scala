@@ -8,7 +8,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.softwaremill.quicklens.ModifyPimp
-import controllers.routes
 import de.htwg.zeta.common.format.ProjectShortInfo
 import de.htwg.zeta.common.format.project.ClassFormat
 import de.htwg.zeta.common.format.project.ConceptFormat
@@ -20,6 +19,7 @@ import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepo
 import de.htwg.zeta.persistence.general.{AccessAuthorisationRepository, GraphicalDslInstanceRepository, UserRepository}
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGeneratorResult
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import grizzled.slf4j.Logging
 import play.api.libs.json.JsArray

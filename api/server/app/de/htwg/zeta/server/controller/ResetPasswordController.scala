@@ -1,21 +1,21 @@
 package de.htwg.zeta.server.controller
 
 import java.util.UUID
+
 import javax.inject.Inject
 
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.routes
 import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.controller.ResetPasswordController.error
 import de.htwg.zeta.server.controller.ResetPasswordController.invalidResetLink
 import de.htwg.zeta.server.forms.ResetPasswordForm
+import de.htwg.zeta.server.routing.routes
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.mvc.AnyContent

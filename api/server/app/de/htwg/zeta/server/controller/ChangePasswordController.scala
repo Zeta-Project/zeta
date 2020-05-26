@@ -3,7 +3,6 @@ package de.htwg.zeta.server.controller
 import javax.inject.Inject
 
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
@@ -11,8 +10,8 @@ import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.routes
 import de.htwg.zeta.server.forms.ChangePasswordForm
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext

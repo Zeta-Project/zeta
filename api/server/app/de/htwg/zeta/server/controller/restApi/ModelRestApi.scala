@@ -6,9 +6,7 @@ import java.util.zip.ZipFile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import controllers.routes
 import de.htwg.zeta.codeGenerator.GdslInstanceToZetaModel
 import de.htwg.zeta.common.format.model.EdgeFormat
 import de.htwg.zeta.common.format.model.GraphicalDslInstanceFormat
@@ -20,6 +18,7 @@ import de.htwg.zeta.persistence.general.GdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
 import de.htwg.zeta.server.model.modelValidator.generator.ValidatorGenerator
 import de.htwg.zeta.server.model.modelValidator.validator.ModelValidationResult
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.util.ExportResult
 import de.htwg.zeta.server.util.FileZipper

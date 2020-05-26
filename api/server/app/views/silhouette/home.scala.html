@@ -1,4 +1,6 @@
 @import de.htwg.zeta.common.models.entity.User
+@import de.htwg.zeta.server.routing.routes
+@import views.html.silhouette.main
 @(user: User, request: RequestHeader, messages: Messages)
 
 @main(messages("home.title"), Some(user))(request, messages) {

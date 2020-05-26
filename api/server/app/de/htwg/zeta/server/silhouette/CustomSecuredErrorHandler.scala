@@ -3,9 +3,8 @@ package de.htwg.zeta.server.silhouette
 import javax.inject.Inject
 
 import scala.concurrent.Future
-
 import com.mohiva.play.silhouette.api.actions.SecuredErrorHandler
-import controllers.routes
+import de.htwg.zeta.server.routing.routes
 import play.api.i18n.I18nSupport
 import play.api.i18n.Messages
 import play.api.i18n.MessagesApi

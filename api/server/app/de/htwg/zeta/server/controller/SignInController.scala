@@ -4,7 +4,6 @@ import javax.inject.Inject
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
-
 import com.mohiva.play.silhouette.api.Authenticator.Implicits.RichDateTime
 import com.mohiva.play.silhouette.api.LoginEvent
 import com.mohiva.play.silhouette.api.Silhouette
@@ -12,9 +11,9 @@ import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import controllers.routes
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignInForm
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
 import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao

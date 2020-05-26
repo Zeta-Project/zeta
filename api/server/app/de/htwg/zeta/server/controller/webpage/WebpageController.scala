@@ -7,11 +7,11 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import controllers.routes
 import de.htwg.zeta.common.format.GraphicalDslInstanceShortInfo
 import de.htwg.zeta.common.format.ProjectShortInfo
 import de.htwg.zeta.persistence.accessRestricted.AccessRestrictedGdslProjectRepository
 import de.htwg.zeta.persistence.general.GraphicalDslInstanceRepository
+import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import play.api.libs.ws.WSClient
 import play.api.mvc.AnyContent
