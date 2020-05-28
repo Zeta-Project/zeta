@@ -3,7 +3,7 @@
         <svg :width="layout.width" :height="layout.height">
             <rect fill="white"  width="100%" height="100%" />
 
-            <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
+            <g :style="{ fontSize: '10px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
                 <rect x="0%" y="0%" width="100%" :height="40" />
                 <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
                 
@@ -18,7 +18,7 @@
                     <g v-if="attributes_open">
                         <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
                             :style="{ fontSize:'16px', fill: 'black' }"
-                            :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                            :transform="`translate(${0} ${(index + 2)*25})`">
                             {{attribute.name}}
                         </text>
                     </g>
@@ -35,7 +35,7 @@
                     <g v-if="operations_open">
                         <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" v-for="(method, index) in tag.methods" :key="method.name" 
                             :style="{fontSize: '16px', fill: 'black' }"
-                            :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                            :transform="`translate(${0} ${(index + 2)*25})`">
                             {{method.name}}
                             {{style}}
                         </text>
