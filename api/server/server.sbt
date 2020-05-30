@@ -3,7 +3,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
   version := "0.1",
 
   wartremoverExcluded += baseDirectory.value / "conf" / "routes",
-  wartremoverExcluded += baseDirectory.value / "target" / "scala-2.11" / "routes" / "main" / "router" / "Routes.scala",
+  //wartremoverExcluded += baseDirectory.value / "target" / "scala-2.11" / "routes" / "main" / "router" / "Routes.scala",
 
   wartremoverExcluded ++= routes.in(Compile).value,
   routesGenerator := InjectedRoutesGenerator,
@@ -23,8 +23,8 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
 
     //typesafe
     "org.webjars" %% "webjars-play" % "2.6.3",
-    "org.webjars" % "bootstrap" % "3.1.1-2",
-    "com.iheart" %% "ficus" % "1.4.3",
+    "org.webjars" % "bootstrap" % "3.1.1",
+    "com.iheart" %% "ficus" % "1.4.7",
     "com.typesafe.play" %% "play-mailer" % "6.0.1",
     "com.typesafe.play" %% "play-mailer-guice" % "6.0.1",
     "com.typesafe.play" %% "play-guice" % ZetaBuild.playVersion,

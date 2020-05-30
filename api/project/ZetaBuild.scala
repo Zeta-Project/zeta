@@ -23,7 +23,7 @@ object ZetaBuild {
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "5.0.7"
   val playVersion = "2.6.25"
-  val akkaVersion = "2.5.31"
+  val akkaVersion = "2.6.5"
   val javaFxVersion = "11"
   val scalaFxVersion = "11-R16"
 
@@ -70,7 +70,7 @@ object ZetaBuild {
     // injection
     "net.codingwell" %% "scala-guice" % "4.1.1",
     // test
-    "org.scalatest" %% "scalatest" % "3.1.1" % "test",
+    "org.scalatest" %% "scalatest" % "3.1.2" % "test",
     // logging
     "org.clapper" %% "grizzled-slf4j" % "1.3.4",
     // javafx
