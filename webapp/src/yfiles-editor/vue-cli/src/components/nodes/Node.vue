@@ -8,10 +8,10 @@
                 <text x="50%" y="25" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
                 
                 <g>
-                    <rect x="o" y="50" width="100%" :height=" 30 " />
+                    <rect x="0" y="50" width="100%" :height=" 30 " />
                     <g>
-                        <image v-if="attributes_open==false" x="" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
-                        <image v-if="attributes_open==true"  x="" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
+                        <image v-if="attributes_open==false" x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
+                        <image v-if="attributes_open==true"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
                     <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
 
@@ -28,8 +28,8 @@
                     <rect x="1" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" width="100%" :height="30" />
                 
                     <g v-on:click="operations_open=change_status(operations_open)">
-                        <image v-if="operations_open==false" x="" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
-                        <image v-if="operations_open==true"  x="" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
+                        <image v-if="operations_open==false" x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
+                        <image v-if="operations_open==true"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
                     <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Operation:</text>
                     <g v-if="operations_open">

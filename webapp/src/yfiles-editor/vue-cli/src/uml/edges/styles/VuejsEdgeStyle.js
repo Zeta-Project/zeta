@@ -62,13 +62,14 @@ export default class VuejsEdgeStyle extends EdgeStyleBase {
     createVisual(context, edge) {
         // create the Vue component
         const component = new this.$vueComponentConstructor()
-        // Populate it with the node data.
+        const cache = this.createRenderDataCache(context, edge)
+        // Populate it with the edge data.
         // The properties are reactive, which means the view will be automatically updated by Vue.js when the data
         // changes.
-        console.log(edge)
         component.$props.tag = edge.tag
-        //component.$props.tag = node.tag
         component.$data.zoom = context.zoom
+        component.$props.cache = cache
+
         // mount the component without passing in a DOM element
         component.$mount()
 
@@ -78,13 +79,13 @@ export default class VuejsEdgeStyle extends EdgeStyleBase {
         // SvgVisual.setTranslate(svgElement, edge.sourcePort.location.x, edge.sourcePort.location.y);
 
         // save the component instance with the DOM element so we can retrieve it later
-        svgElement['data-vueComponent'] = component
+        svgElement['data-renderDataCache'] = component
 
         // return an SvgVisual that uses the DOM element of the component
         const svgVisual = new SvgVisual(svgElement)
         context.setDisposeCallback(svgVisual, (context, visual) => {
             // clean up vue component instance after the visual is disposed
-            visual.svgElement['data-vueComponent'].$destroy()
+            visual.svgElement['data-renderDataCache'].$destroy()
         })
         return svgVisual
     }
@@ -100,62 +101,61 @@ export default class VuejsEdgeStyle extends EdgeStyleBase {
     updateVisual(context, oldVisual, edge) {
         const svgElement = oldVisual.svgElement
 
+        const cache = this.createRenderDataCache(context, edge)
         // Update the location
         // SvgVisual.setTranslate(svgElement, node.layout.x, node.layout.y)
         // the zoom property is a primitive value, so we must update it manually on the component
-        svgElement['data-vueComponent'].$data.zoom = context.zoom
+        svgElement['data-renderDataCache'].$data.zoom = context.zoom
+        svgElement['data-renderDataCache'].$props.cache = cache
         // set the focused property of each component
-        svgElement['data-vueComponent'].$data.focused =
+        svgElement['data-renderDataCache'].$data.focused =
             context.canvasComponent.focusIndicatorManager.focusedItem === edge
         return oldVisual
     }
 
-    /**
-     * Adjusts the size of the given node considering UML data of the node. If the current node layout is bigger than
-     * the minimal needed size for the UML data then the current node layout will be used instead.
-     * @param {INode} node The node whose size should be adjusted.
-     * @param {GraphEditorInputMode} geim The responsible input mode.
-     */
-    adjustSize(node, geim) {
-        const layout = node.layout
-        const minSize = this.getPreferredSize(node)
-        const width = Math.max(minSize.width, layout.width)
-        const height = Math.max(minSize.height, layout.height)
-        // GEIM's setNodeLayout handles affected orthogonal edges automatically
-        geim.setNodeLayout(node, new Rect(layout.x, layout.y, width, height))
-        geim.graphComponent.invalidate()
-    }
 
     /**
-     * Return the size of this node considering the associated UML data.
-     * @param {INode} node The node of which the size should be determined.
-     * @returns {Size} The preferred size of this node.
+     * Creates an object containing all necessary data to create an edge visual.
+     * @return {object}
      */
-    getPreferredSize(node) {
-        const data = node.tag
-        const entriesCount = Object.keys(data).length
+    createRenderDataCache (context, edge) {
+        // Get the owner node's color
+        const node = edge.sourcePort.owner
+        let color
+        const nodeStyle = node.style
+        if (typeof nodeStyle.getNodeColor === 'function') {
+            color = nodeStyle.getNodeColor(node)
+        } else if (
+            typeof nodeStyle.wrapper !== 'undefined' &&
+            typeof nodeStyle.wrapper.getNodeColor === 'function'
+        ) {
+            color = nodeStyle.wrapper.getNodeColor(node)
+        } else {
+            color = 'black'
+        }
 
-        // determine width
-        /*let width = 125
-        const elementFont = this.elementLabel.style.font
-        const elements = data.attributes.concat(data.operations)
-        elements.forEach(element => {
-            const size = TextRenderSupport.measureText(element.name, elementFont)
-            width = Math.max(width, size.width + LEFT_SPACING + 5)
-        })
-        const classNameSize = TextRenderSupport.measureText(data.className, this.classLabel.style.font)
-        width = Math.max(width, classNameSize.width)
-        const stereotypeSize = TextRenderSupport.measureText(
-            data.stereotype,
-            this.stereotypeLabel.style.font
-        )
-        width = Math.max(width, stereotypeSize.width)
-        const constraintSize = TextRenderSupport.measureText(
-            data.className,
-            this.constraintLabel.style.font
-        )
-        width = Math.max(width, constraintSize.width)*/
-
-        return new Size(100, 50)
+        const selection = context.canvasComponent !== null ? context.canvasComponent.selection : null
+        const selected = selection !== null && selection.isSelected(edge)
+        return {
+            thickness: this.pathThickness,
+            selected,
+            color,
+            path: this.getPath(edge),
+            arrows: this.arrows,
+            equals (other) {
+                return this.pathEquals(other) && this.stateEquals(other)
+            },
+            stateEquals (other) {
+                return (
+                    other.thickness === this.thickness &&
+                    other.selected === this.selected &&
+                    other.color === this.color &&
+                    this.arrows.equals(other.arrows)
+                )
+            },
+            pathEquals (other) {
+                return other.path.hasSameValue(this.path)
+            }
+        }
     }
 }

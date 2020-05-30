@@ -243,7 +243,6 @@
              * */
             plotEdges(concept, graphNodes) {
                 // Get the node constructor from the node component
-                const EdgeConstructor = Vue.extend(Edge);
                 const graph = this.$graphComponent.graph;
                 let edges = getEdgesFromReferences(graph, concept.references, graphNodes)
                 // edges = addEdgeStyleToEdges(edges);
@@ -251,8 +250,7 @@
                     const tempEdge = graph.createEdge({
                         tag: edge,
                         source: edge.source,
-                        target: edge.target,
-                        style: new VuejsEdgeStyle(EdgeConstructor), // Might be redundant,
+                        target: edge.target
                     });
                     graph.addLabel(tempEdge, edge.name)
                 });
@@ -329,7 +327,7 @@
                 if(type instanceof VuejsNodeStyle){
                     this.sharedData.focusedNodeData = tag;
                     this.sharedData.focusedEdgeData = null;
-                } else if(type instanceof UMLEdgeStyle){
+                } else if(type instanceof VuejsEdgeStyle){
                     this.sharedData.focusedEdgeData = tag;
                     this.sharedData.focusedNodeData = null;
                 }
