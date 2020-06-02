@@ -51,20 +51,6 @@ class RouteControllerContainer @Inject() private(
     val abstractWebSocketDependencies: AbstractWebSocket.Dependencies,
     val abstractActionDependencies: AbstractAction.Dependencies)
 
-class ScalaRoutesApi @Inject()(
-                                  protected val routeCont: RouteControllerContainer,
-                                  protected val webCont: WebControllerContainer
-                                ) extends RouteController with WebController {
-
-  def triggerParse(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.triggerParse(metaModelId) _)
-
-  def getMetaModelShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getShape(metaModelId) _)
-
-  def getMetaModelStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getStyle(metaModelId) _)
-
-  def getMetaModelDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getDiagram(metaModelId) _)
-}
-
 class ScalaRoutes @Inject()(
                              protected val routeCont: RouteControllerContainer,
                              protected val webCont: WebControllerContainer
@@ -292,4 +278,18 @@ class ScalaRoutes @Inject()(
 
   def getMethodCommonCodeEditor(metaModelId: UUID, methodName: String) = AuthenticatedGet(codeEditorController.methodMainCodeEditor(metaModelId, methodName) _)
 
+}
+
+class ScalaRoutesApi @Inject()(
+                                protected val routeCont: RouteControllerContainer,
+                                protected val webCont: WebControllerContainer
+                              ) extends RouteController with WebController {
+
+  def triggerParse(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.triggerParse(metaModelId) _)
+
+  def getMetaModelShape(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getShape(metaModelId) _)
+
+  def getMetaModelStyle(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getStyle(metaModelId) _)
+
+  def getMetaModelDiagram(metaModelId: UUID): Action[AnyContent] = AuthenticatedGet(metaModelRestApiV2.getDiagram(metaModelId) _)
 }
