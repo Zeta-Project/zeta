@@ -12,6 +12,7 @@ lazy val generatorControl = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-stream" % ZetaBuild.akkaVersion,
     "com.typesafe.akka" %% "akka-persistence" % ZetaBuild.akkaVersion,
+    "com.typesafe.akka" %% "akka-slf4j" % ZetaBuild.akkaVersion,
     // this is needed in akka persistence
     "org.iq80.leveldb" % "leveldb" % "0.10",
     // docker client
