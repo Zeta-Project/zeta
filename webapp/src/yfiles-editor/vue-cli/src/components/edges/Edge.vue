@@ -1,16 +1,19 @@
 <template>
     <g v-if="tag" class="vue-edge-style-edge uml-edge">       
         <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"></path>
-<!--            <line stroke="black" stroke-width="2" :x1="tag.source.layout.x" :y1="tag.source.layout.y" :x2="tag.target.layout.x" :y2="tag.target.layout.y"/>-->
-<!--            <line stroke="black" stroke-width="2"/>-->
-        <!--path :d="arrowRotation" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"></path>
-        v-if="arrowRotation=='down'"
+
+        <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/association-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+
+        <!--
+
+        ###############
+        this has to be connected to the actual arrow type
+        ###############
+
+        <image :x="arrowPosition[0]-25" :y="arrowPosition[1]-15" xlink:href="../../assets/composition-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+        <image :x="arrowPosition[0]-25" :y="arrowPosition[1]-15" xlink:href="../../assets/aggregation-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
         -->
-        <g >
 
-
-        </g>
-        <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
     </g>
 </template>
 
