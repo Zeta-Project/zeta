@@ -3,9 +3,9 @@
         <svg :width="layout.width" :height="layout.height">
             <rect fill="white"  width="100%" height="100%" />
 
-            <g :style="{ fontSize: zoom >= 1 ? '10px' : '15px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
+            <g :style="{ fontSize: '10px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(205, 40, 40)' :'rgb(147, 176, 255)' )}" >           
                 <rect x="0%" y="0%" width="100%" :height="40" />
-                <text x="50%" y="25" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
+                <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
                 
                 <g>
                     <rect x="0" y="50" width="100%" :height=" 30 " />
@@ -13,12 +13,12 @@
                         <image v-if="attributes_open==false" x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
                         <image v-if="attributes_open==true"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
-                    <text x="20" y="70" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Attributes:</text>
+                    <text x="20" y="70" :style="{ fontSize:'16px', fill: 'black' }" >Attributes:</text>
 
                     <g v-if="attributes_open">
                         <text x="20" y="50" v-for="(attribute, index) in tag.attributes" :key="attribute.name" 
-                            :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
-                            :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                            :style="{ fontSize:'16px', fill: 'black' }"
+                            :transform="`translate(${0} ${(index + 2)*25})`">
                             {{attribute.name}}
                         </text>
                     </g>
@@ -31,11 +31,11 @@
                         <image v-if="operations_open==false" x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle.svg" />
                         <image v-if="operations_open==true"  x="0" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
                     </g>
-                    <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }" >Operation:</text>
+                    <text x="20" :y="102 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" :style="{  fontSize: '16px', fill: 'black' }" >Operation:</text>
                     <g v-if="operations_open">
                         <text x="20" :y="82 + 30 * (attributes_open ? Object.keys(tag.attributes).length : 0)" v-for="(method, index) in tag.methods" :key="method.name" 
-                            :style="{ fontSize: zoom >= 1 ? '16px' : '26px', fill: 'black' }"
-                            :transform="zoom >= 1 ? `translate(${0} ${(index + 2)*25})` : `translate(${0} ${(index + 2)* 40})`">
+                            :style="{fontSize: '16px', fill: 'black' }"
+                            :transform="`translate(${0} ${(index + 2)*25})`">
                             {{method.name}}
                             {{style}}
                         </text>
