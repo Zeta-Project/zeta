@@ -3,12 +3,12 @@
         <svg :width="layout.width" :height="layout.height">
             <rect fill="white"  width="100%" height="100%" />
 
-            <g :style="{ fontSize: '10px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, backgroundColor: tag.abstractness && 'red',  fill: 'rgb(147, 176, 255)' }" >           
+            <g :style="{ fontSize: '10px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(205, 40, 40)' :'rgb(147, 176, 255)' )}" >           
                 <rect x="0%" y="0%" width="100%" :height="40" />
-                <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
+                <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.abstractness}}</text>
                 
                 <g>
-                    <rect x="o" y="50" width="100%" :height=" 30 " />
+                    <rect x="0" y="50" width="100%" :height=" 30 " />
                     <g>
                         <image v-if="attributes_open==false" x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle.svg" />
                         <image v-if="attributes_open==true"  x="0" y="50" v-on:click="attributes_open=change_status(attributes_open)" xlink:href="../../assets/triangle_90deg_rotated.svg" />
