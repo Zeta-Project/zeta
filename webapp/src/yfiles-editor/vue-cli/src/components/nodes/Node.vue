@@ -5,7 +5,7 @@
 
             <g :style="{ fontSize: '10px', fontFamily: 'Roboto,sans-serif', fontWeight: 300, fill: (tag.abstractness ? 'rgb(205, 40, 40)' :'rgb(147, 176, 255)' )}" >           
                 <rect x="0%" y="0%" width="100%" :height="40" />
-                <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.abstractness}}</text>
+                <text x="50%" y="25" :style="{ fontSize:'16px', fill: 'black' }" text-anchor="middle" >{{tag.name}}</text>
                 
                 <g>
                     <rect x="0" y="50" width="100%" :height=" 30 " />
