@@ -1,10 +1,11 @@
 <template>
     <g v-if="tag" class="vue-edge-style-edge uml-edge">
-        <svg width="100%" height="100%">
+        
+            <rect x="0%" y="0%" width="100%" height="100%" fill="green" fill-opacity="0.1"/>
             <path :d="path" fill="none" stroke-width="5" stroke-linejoin="round" stroke="black"></path>
 <!--            <line stroke="black" stroke-width="2" :x1="tag.source.layout.x" :y1="tag.source.layout.y" :x2="tag.target.layout.x" :y2="tag.target.layout.y"/>-->
 <!--            <line stroke="black" stroke-width="2"/>-->
-        </svg>
+        
     </g>
 </template>
 
