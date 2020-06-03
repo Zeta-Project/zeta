@@ -1,10 +1,19 @@
 <template>
-    <g v-if="tag" class="vue-edge-style-edge uml-edge">
-        <svg width="100%" height="100%">
-            <path :d="path" fill="none" stroke-width="5" stroke-linejoin="round" stroke="black"></path>
-<!--            <line stroke="black" stroke-width="2" :x1="tag.source.layout.x" :y1="tag.source.layout.y" :x2="tag.target.layout.x" :y2="tag.target.layout.y"/>-->
-<!--            <line stroke="black" stroke-width="2"/>-->
-        </svg>
+    <g v-if="tag" class="vue-edge-style-edge uml-edge">       
+        <path :d="path" fill="none" stroke-width="2" stroke-linejoin="round" stroke="black"></path>
+
+        <image :x="arrowPosition[0]-15" :y="arrowPosition[1]-15" xlink:href="../../assets/association-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+
+        <!--
+
+        ###############
+        this has to be connected to the actual arrow type
+        ###############
+
+        <image :x="arrowPosition[0]-25" :y="arrowPosition[1]-15" xlink:href="../../assets/composition-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+        <image :x="arrowPosition[0]-25" :y="arrowPosition[1]-15" xlink:href="../../assets/aggregation-arrow.svg" :transform="`rotate(${arrowRotation},${arrowPosition[0]},${arrowPosition[1]})`" />
+        -->
+
     </g>
 </template>
 
@@ -27,7 +36,7 @@
         props: ['tag','layout', 'cache'],
         computed: {
             path: function() {
-                console.log(this.cache.path)
+                //console.log(this.cache.path)
                 const p =  this.cache.path.createSvgPath()
 
                 p.setAttribute('fill', 'none')
@@ -45,8 +54,41 @@
 
                 // add the arrows to the container
                 // super.addArrows(context, container, edge, cache.path, cache.arrows, cache.arrows)
-                console.log(p)
+                //console.log(p.getAttribute('d'))
                 return p.getAttribute('d')
+            },
+            arrowRotation: function() {
+                var pathSVGArray = this.path.split(" ");
+                var lastPoint = pathSVGArray[pathSVGArray.length - 1].split(",").map(x=>+x);
+                var penultimatePoint = pathSVGArray[pathSVGArray.length - 3].split(",").map(x=>+x);
+                var rotation = 0
+                if (lastPoint[1]<penultimatePoint[1]){
+                    //arrow up
+                    rotation = 270
+                }
+                else if(lastPoint[0]<penultimatePoint[0]){
+                    //arrow right
+                    rotation = 180
+                }
+                else if(lastPoint[1]>penultimatePoint[1]){
+                     //arrow down
+                     rotation = 90
+                }
+                //console.log(penultimatePoint)
+                //console.log(lastPoint)
+                console.log(pathSVGArray)
+                console.log(rotation)
+                //console.log(0 == rotation.localeCompare('down'))
+                return rotation //should return the actual transfromation
+            },
+
+            arrowPosition: function(){
+                const p = this.cache.path.createSvgPath()
+                var pathSVG =  p.getAttribute('d');
+                var pathSVGArray = pathSVG.split(" ");
+                var lastPoint = pathSVGArray[pathSVGArray.length - 1].split(",").map(x=>+x);
+                
+                return lastPoint
             }
         }
     }
