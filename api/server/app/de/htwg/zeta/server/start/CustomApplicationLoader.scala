@@ -123,7 +123,7 @@ object CustomApplicationLoader {
 
     envOpt match {
       case Some(env) => env
-      case None => throw new IllegalArgumentException(noDeploymentMessage)
+      case None => DevDeployment
     }
   }
 
