@@ -3,9 +3,12 @@ services:
   - docker
   - xvfb
 env:
-  - DOCKER_COMPOSE_VERSION=1.26.0
-  - BUILD_DIR=api
-  - DISPLAY=:99.0 
+  global:
+    - DOCKER_COMPOSE_VERSION=1.26.0
+    - DISPLAY=:99.0
+  jobs:
+    - BUILD_DIR=api
+  
 language: scala
 scala:
   - 2.12.11
