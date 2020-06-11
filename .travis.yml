@@ -6,5 +6,6 @@ env:
 script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 before_script:
   - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-for-html.git && cd -
+  - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-dev-key.git && cd -
 after_success:
   - bash <(curl -s https://codecov.io/bash)
