@@ -6,6 +6,7 @@ env:
   global:
     - DOCKER_COMPOSE_VERSION=1.26.0
     - DISPLAY=:99.0
+    - TOKEN=${token}
   jobs:
     - BUILD_DIR=api
   

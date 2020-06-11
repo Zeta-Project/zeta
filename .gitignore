@@ -26,3 +26,4 @@ docker-compose\.override\.yml
 /webapp/node_modules
 
 webapp/coverage/
+.env
