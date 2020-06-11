@@ -1,11 +1,24 @@
+os: linux
+services:
+  - docker
+  - xvfb
+env:
+  - DOCKER_COMPOSE_VERSION=1.26.0
+  - DISPLAY=:99.0 
 language: scala
 scala:
   - 2.12.11
 env:
   - BUILD_DIR=api
-script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
-before_script:
+addons:
+  chrome: stable
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
   - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-for-html.git && cd -
   - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-dev-key.git && cd -
+script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
