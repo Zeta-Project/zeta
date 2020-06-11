@@ -6,3 +6,5 @@ npm-debug.log
 yarn-error.log
 .env
 yfiles-for-html
+yFiles-for-html
+yFiles-dev-key

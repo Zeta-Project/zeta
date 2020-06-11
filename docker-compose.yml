@@ -1,23 +1,24 @@
-version: '2'
+version: '3.7'
 services:
    mongodb:
      image: mongo:3.4.13
      volumes:
        - ./mongodb:/data/db
      ports:
-       - 127.0.0.1:27017:27017
-
+       - 27017:27017
    webapp:
-     image: node:10.6.0 # Alpine cannot be used, because git executable is needed
+     image: webapp:latest
+     build:
+      context: ./webapp
+      args: 
+        YFILES_ACCESS: "${TOKEN}"
+     ports:
+      - "8080:8080"
      volumes:
-       - ./webapp:/src
-       - ../yFiles-for-HTML-Complete-2.2.0.2:/src/yfiles-for-html/:ro
-     command: "bash -c 'yarn install && yarn run dev'"
-     working_dir: /src
-
+      - ./webapp:/src
    api:
-     image: zeta-sbt:1.0.6
-     build: ./api
+     image: api:latest
+     build: ./api/.
      volumes:
        - ./api:/app
        - ./sbt/server:/root
@@ -28,9 +29,9 @@ services:
      stdin_open: true
      ports:
        - 80:9000
-     links:
-       - mongodb
-       - webapp
+     depends_on:
+       - "mongodb"
+       - "webapp"
      command: ["-Dlogger.play=ERROR","-Dlogger.application=ERROR","-Dzeta.webapp.host=webapp", "project server", "run"]
 
 # --> temporarily deactivated: generation will not currently take place in the dockers <--
