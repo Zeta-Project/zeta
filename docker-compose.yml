@@ -11,7 +11,6 @@ services:
      build:
       context: ./webapp
       args: 
-        #YFILES_ACCESS: b1e6a21e23aef46e32e9fc158573ef4e03bc8c07
         YFILES_ACCESS: "insert access token here"
      ports:
       - "8080:8080"
