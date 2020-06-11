@@ -8,13 +8,15 @@ services:
        - 127.0.0.1:27017:27017
 
    webapp:
-     image: node:10.6.0 # Alpine cannot be used, because git executable is needed
+     build:
+      context: ./webapp
+      args: 
+        #YFILES_ACCESS: b1e6a21e23aef46e32e9fc158573ef4e03bc8c07
+        YFILES_ACCESS: "insert access token here"
+     ports:
+      - "8080:8080"
      volumes:
-       - ./webapp:/src
-       - ../yFiles-for-HTML-Complete-2.2.0.2:/src/yfiles-for-html/:ro
-     command: "bash -c 'yarn install && yarn run dev'"
-     working_dir: /src
-
+      - ./webapp:/src
    api:
      image: zeta-sbt:1.0.6
      build: ./api
