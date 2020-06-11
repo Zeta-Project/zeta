@@ -12,6 +12,11 @@ env:
 language: scala
 scala:
   - 2.12.11
+cache:
+  directories:
+    - $HOME/.sbt
+    - $HOME/.ivy2
+    - node_modules
 addons:
   chrome: stable
 before_install:
