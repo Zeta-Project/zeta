@@ -25,8 +25,9 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-for-html.git && cd -
-  - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-dev-key.git && cd -
+  # - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-for-html.git && cd -
+  # - cd ../ && git clone https://${token}@github.com/Zeta-Project/yFiles-dev-key.git && cd -
+  - docker-compose build webapp
 script:  cd $BUILD_DIR && sbt "compile" "scalastyle" coverage test coverageReport
 after_success:
   - bash <(curl -s https://codecov.io/bash)
