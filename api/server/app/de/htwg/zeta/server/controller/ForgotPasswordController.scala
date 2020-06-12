@@ -3,11 +3,14 @@ package de.htwg.zeta.server.controller
 import javax.inject.Inject
 
 import scala.concurrent.Future
+
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
+import de.htwg.zeta.server.actor.TokenCacheActor
+import de.htwg.zeta.server.actor.TransientTokenCacheActor
 import de.htwg.zeta.server.forms.ForgotPasswordForm
+import de.htwg.zeta.server.model.TokenCache
 import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import play.api.i18n.Messages
@@ -15,7 +18,9 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
 import play.api.mvc.AnyContent
+import play.api.mvc.BaseController
 import play.api.mvc.Controller
+import play.api.mvc.ControllerComponents
 import play.api.mvc.Request
 import play.api.mvc.Result
 
@@ -25,11 +30,12 @@ import play.api.mvc.Result
  * @param mailerClient The mailer client.
  */
 class ForgotPasswordController @Inject()(
+    val controllerComponents: ControllerComponents,
     mailerClient: MailerClient,
-    tokenCache: TokenCache,
     loginInfoRepo: SilhouetteLoginInfoDao,
-    userRepo: UserRepository
-) extends Controller {
+    userRepo: UserRepository,
+    tokenCache: TokenCache
+) extends BaseController {
 
   /** Views the `Forgot Password` page.
    *

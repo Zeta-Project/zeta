@@ -1,7 +1,8 @@
 package de.htwg.zeta.server.controller
 
 import java.util.UUID
-
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.SignUpEvent
@@ -10,21 +11,19 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import de.htwg.zeta.common.models.entity.User
-import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.forms.SignUpForm
 import de.htwg.zeta.server.forms.SignUpForm.Data
+import de.htwg.zeta.server.model.TokenCache
 import de.htwg.zeta.server.routing.routes
 import de.htwg.zeta.server.silhouette.SilhouetteLoginInfoDao
 import de.htwg.zeta.server.silhouette.ZetaEnv
 import de.htwg.zeta.server.silhouette.ZetaIdentity
-import javax.inject.Inject
 import play.api.i18n.Messages
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.mailer.Email
 import play.api.libs.mailer.MailerClient
 import play.api.mvc.AnyContent
-import play.api.mvc.Controller
+import play.api.mvc.InjectedController
 import play.api.mvc.Request
 import play.api.mvc.Result
 
@@ -41,10 +40,12 @@ class SignUpController @Inject()(
     authInfoRepository: AuthInfoRepository,
     passwordHasherRegistry: PasswordHasherRegistry,
     mailerClient: MailerClient,
-    tokenCache: TokenCache,
     userRepo: UserRepository,
-    loginInfoRepo: SilhouetteLoginInfoDao
-) extends Controller {
+    loginInfoRepo: SilhouetteLoginInfoDao,
+    tokenCache: TokenCache,
+  implicit val ec: ExecutionContext
+) extends InjectedController {
+
 
   /** Views the `Sign Up` page.
    *

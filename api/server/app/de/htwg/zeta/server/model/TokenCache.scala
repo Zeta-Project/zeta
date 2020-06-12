@@ -1,4 +1,4 @@
-package de.htwg.zeta.persistence.general
+package de.htwg.zeta.server.model
 
 import java.util.UUID
 
