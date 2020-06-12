@@ -23,7 +23,7 @@ object ZetaBuild {
   val compileScalastyle = taskKey[Unit]("compileScalastyle")
   val silhouetteVersion = "5.0.7"
   val playVersion = "2.6.25"
-  val akkaVersion = "2.5.8"
+  val akkaVersion = "2.6.6"
   val javaFxVersion = "11"
   val scalaFxVersion = "11-R16"
 

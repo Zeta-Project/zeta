@@ -10,11 +10,11 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordHasherRegistry
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import de.htwg.zeta.persistence.general.TokenCache
 import de.htwg.zeta.persistence.general.UserRepository
 import de.htwg.zeta.server.controller.ResetPasswordController.error
 import de.htwg.zeta.server.controller.ResetPasswordController.invalidResetLink
 import de.htwg.zeta.server.forms.ResetPasswordForm
+import de.htwg.zeta.server.model.TokenCache
 import de.htwg.zeta.server.routing.routes
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -59,7 +59,6 @@ class ResetPasswordController @Inject()(
    * @return The result to display.
    */
   def submit(token: UUID)(request: Request[AnyContent], messages: Messages): Future[Result] = {
-
     tokenCache.read(token).flatMap[Result](userId => {
       ResetPasswordForm.form.bindFromRequest()(request).fold(
         form => Future(BadRequest(views.html.silhouette.resetPassword(form, token, request, messages))),

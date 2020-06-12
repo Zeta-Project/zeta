@@ -31,6 +31,7 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.typesafe.play" %% "play-ws" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-cache" % ZetaBuild.playVersion,
     "com.typesafe.play" %% "play-ehcache" % ZetaBuild.playVersion,
+    "com.typesafe.play" %% "play-json" % "2.6.10",
     "com.adrianhurt" %% "play-bootstrap" % "1.2-P26-B3", // used in play for bootstrap integration
     "com.typesafe.play" %% "filters-helpers" % ZetaBuild.playVersion,
     "com.typesafe.akka" %% "akka-actor" % ZetaBuild.akkaVersion,
@@ -47,7 +48,8 @@ lazy val server = ZetaBuild.defaultProject(project).settings(
     "com.softwaremill.quicklens" %% "quicklens" % "1.4.13",
 
     // test mock framework
-    "org.scalamock" %% "scalamock" % "4.1.0" % Test
+    "org.scalamock" %% "scalamock" % "4.1.0" % Test,
+    guice
   ),
   PlayKeys.devSettings := Seq("play.server.akka.requestTimeout" -> "infinite")
 ).enablePlugins(PlayScala).dependsOn(

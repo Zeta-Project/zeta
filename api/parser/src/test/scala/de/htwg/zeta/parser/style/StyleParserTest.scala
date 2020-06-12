@@ -156,17 +156,17 @@ class StyleParserTest extends AnyFlatSpec with Matchers with Inside {
         style.description shouldBe "Style for a connection between an interface and its implementing class"
 
         style.attributes should contain(Transparency(1.0))
-        style.attributes should contain(BackgroundColor(Color.WHITE))
-        style.attributes should contain(LineColor(Color.BLACK))
+        style.attributes should contain(BackgroundColor(Color.White))
+        style.attributes should contain(LineColor(Color.Black))
         style.attributes should contain(LineStyle("dash"))
         style.attributes should contain(LineWidth(1))
-        style.attributes should contain(FontColor(Color.BLACK))
+        style.attributes should contain(FontColor(Color.Black))
         style.attributes should contain(FontName("Helvetica"))
         style.attributes should contain(FontSize(20))
         style.attributes should contain(FontBold(true))
         style.attributes should contain(FontItalic(true))
         style.attributes should contain(GradientOrientation("vertical"))
-        style.attributes should contain(GradientAreaColor(Color.BLACK))
+        style.attributes should contain(GradientAreaColor(Color.Black))
         style.attributes should contain(GradientAreaOffset(2.0))
     }
   }

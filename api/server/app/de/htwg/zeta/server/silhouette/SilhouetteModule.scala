@@ -1,8 +1,12 @@
 package de.htwg.zeta.server.silhouette
 
+import java.util.concurrent.TimeUnit
+
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 import scala.concurrent.duration.FiniteDuration
 
+import akka.util.Timeout
 import com.google.inject.Provides
 import com.google.inject.name.Named
 import com.mohiva.play.silhouette.api.Environment
@@ -41,6 +45,8 @@ import com.mohiva.play.silhouette.persistence.repositories.DelegableAuthInfoRepo
 import com.typesafe.config.Config
 import de.htwg.zeta.persistence.general.PasswordInfoRepository
 import de.htwg.zeta.persistence.general.UserRepository
+import de.htwg.zeta.server.actor.TokenCacheActor
+import de.htwg.zeta.server.model.TokenCache
 import net.ceedubs.ficus.Ficus
 import net.ceedubs.ficus.Ficus.toFicusConfig
 import net.ceedubs.ficus.readers.ArbitraryTypeReader.arbitraryTypeValueReader
@@ -65,12 +71,16 @@ class SilhouetteModule extends ScalaModule {
     bind[UnsecuredErrorHandler].to[CustomUnsecuredErrorHandler]
     bind[SecuredErrorHandler].to[CustomSecuredErrorHandler]
     bind[CacheLayer].to[PlayCacheLayer]
+    bind[TokenCache].to[TokenCacheActor]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
     bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
     bind[Clock].toInstance(Clock())
   }
+
+  @Provides
+  def getTimeoutTimer(): Timeout = Duration(1, TimeUnit.MINUTES)
 
   /**
    * Provides the HTTP layer implementation.
